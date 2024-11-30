@@ -1016,7 +1016,7 @@ std::unique_ptr<DawnBufferRepresentation> D3DImageBacking::ProduceDawnBuffer(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type) {
-  DCHECK(usage() & SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER);
+  DCHECK(usage().Has(SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER));
   DCHECK(d3d12_resource_.Get() != nullptr);
 
   if (backend_type != wgpu::BackendType::D3D12) {

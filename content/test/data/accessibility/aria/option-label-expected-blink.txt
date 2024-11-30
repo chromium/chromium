@@ -1,0 +1,25 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++listBox
+++++++++listBoxOption name='A B' selected=false
+++++++++++staticText name='A'
+++++++++++++inlineTextBox name='A'
+++++++++++genericContainer
+++++++++++++staticText name='B'
+++++++++++++++inlineTextBox name='B'
+++++++listBox
+++++++++listBoxOption name='Other' selected=false
+++++++++++staticText name='C'
+++++++++++++inlineTextBox name='C'
+++++++++++genericContainer
+++++++++++++staticText name='D'
+++++++++++++++inlineTextBox name='D'
+++++++listBox
+++++++++listBoxOption name='E F' selected=false
+++++++++++genericContainer
+++++++++++++staticText name='E'
+++++++++++++++inlineTextBox name='E'
+++++++++++genericContainer
+++++++++++++staticText name='F'
+++++++++++++++inlineTextBox name='F'

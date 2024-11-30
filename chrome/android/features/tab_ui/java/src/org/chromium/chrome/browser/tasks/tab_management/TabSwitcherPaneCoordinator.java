@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -160,7 +159,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param profileProviderSupplier The supplier for profiles.
      * @param tabGroupModelFilterSupplier The supplier of the tab model filter fo rthis pane.
      * @param tabContentManager For management of thumbnails.
-     * @param tabCreatorManager For creating new tabs.
      * @param browserControlsStateProvider For determining thumbnail size.
      * @param scrimCoordinator The scrim coordinator to use for the tab grid dialog.
      * @param modalDialogManager The modal dialog manager for the activity.
@@ -186,7 +184,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             @NonNull TabContentManager tabContentManager,
-            @NonNull TabCreatorManager tabCreatorManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ModalDialogManager modalDialogManager,
@@ -242,7 +239,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     filter.isIncognitoBranded()
                             ? null
                             : new ActionConfirmationManager(
-                                    profile, mActivity, filter, mModalDialogManager);
+                                    profile, mActivity, mModalDialogManager);
 
             mDialogControllerSupplier =
                     LazyOneshotSupplier.fromSupplier(
@@ -255,7 +252,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 dataSharingTabManager,
                                                 tabGroupModelFilterSupplier,
                                                 tabContentManager,
-                                                tabCreatorManager,
                                                 coordinatorView,
                                                 resetHandler,
                                                 getGridCardOnClickListenerProvider(),
@@ -325,6 +321,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                     ? R.string.tabswitcher_no_tabs_open_to_visit_different_pages
                                     : Resources.ID_NULL,
                             onTabGroupCreation,
+                            /* backgroundColorSupplier= */ null,
                             /* allowDragAndDrop= */ true);
             mTabListCoordinator = tabListCoordinator;
             tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);

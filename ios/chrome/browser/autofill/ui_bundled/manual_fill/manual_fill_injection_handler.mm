@@ -12,11 +12,14 @@
 #import "base/functional/bind.h"
 #import "base/json/string_escape.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
@@ -53,6 +56,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 // Returns true if the FormSuggestionClient is stateless.
 bool IsStateless() {
   return base::FeatureList::IsEnabled(kStatelessFormSuggestionController);
+}
+
+// Returns true if the `suggestion` is supported by the injection handler.
+bool IsSupportedSuggestion(FormSuggestion* suggestion) {
+  autofill::SuggestionType type = suggestion.type;
+  return type == autofill::SuggestionType::kAddressEntry ||
+         type == autofill::SuggestionType::kVirtualCreditCardEntry ||
+         type == autofill::SuggestionType::kCreditCardEntry;
 }
 
 }  // namespace
@@ -93,13 +104,19 @@ bool IsStateless() {
   // Holds the FormActivityParams from the last focus. Can be nullopt if there
   // wasn't any focus done.
   std::optional<autofill::FormActivityParams> _lastFocusedElementParams;
+
+  // Injected getter that returns the Autofill FormSuggestionProvider for a
+  // given `webState`. This is there to solve a dependency cycle between model/
+  // and ui_bundled/.
+  AutofillProviderGetter _autofillProviderGetter;
 }
 
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
     reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
-      formSuggestionClient:(id<FormSuggestionClient>)formSuggestionClient {
+      formSuggestionClient:(id<FormSuggestionClient>)formSuggestionClient
+    autofillProviderGetter:(AutofillProviderGetter)autofillProviderGetter {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
@@ -109,6 +126,7 @@ bool IsStateless() {
     _formHelper.delegate = self;
     _reauthenticationModule = reauthenticationModule;
     _formSuggestionClient = formSuggestionClient;
+    _autofillProviderGetter = autofillProviderGetter;
   }
   return self;
 }
@@ -204,8 +222,17 @@ bool IsStateless() {
 
 - (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
                            atIndex:(NSInteger)index {
-  if (_lastFocusedElementParams && IsStateless()) {
-    [self.formSuggestionClient didSelectSuggestion:formSuggestion
+  if (IsStateless()) {
+    // It is really odd to not have params here as getting a suggestion for the
+    // manual fallback should correlate with a form activity. Only
+    // crash when stateless is enabled so we don't perturbate the current flow.
+    CHECK(_lastFocusedElementParams, base::NotFatalUntil::M134);
+
+    FormSuggestion* decoratedSuggestion =
+        [FormSuggestion copy:formSuggestion
+                andSetParams:*_lastFocusedElementParams
+                    provider:[self providerForSuggestion:formSuggestion]];
+    [self.formSuggestionClient didSelectSuggestion:decoratedSuggestion
                                            atIndex:index
                                             params:*_lastFocusedElementParams];
   } else {
@@ -424,6 +451,23 @@ bool IsStateless() {
 - (autofill::FormRendererId)lastFocusedElementFormIdentifier {
   return _lastFocusedElementParams.value_or(autofill::FormActivityParams())
       .form_renderer_id;
+}
+
+// Returns the provider that matches the type of `suggestion`. Returns nil if
+// no provider can be determined.
+- (id<FormSuggestionProvider>)providerForSuggestion:
+    (FormSuggestion*)suggestion {
+  if (IsSupportedSuggestion(suggestion)) {
+    return _autofillProviderGetter.Run(self.webStateList->GetActiveWebState());
+  }
+
+  // The manual fill injector should not use Suggestion objects for any other
+  // types, even password types.
+  SCOPED_CRASH_KEY_NUMBER("ManualFillInjection", "suggestion_type",
+                          static_cast<int>(suggestion.type));
+  NOTREACHED(base::NotFatalUntil::M134);
+
+  return nil;
 }
 
 @end

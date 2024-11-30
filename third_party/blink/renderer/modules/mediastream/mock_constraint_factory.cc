@@ -29,7 +29,6 @@ void MockConstraintFactory::DisableDefaultAudioConstraints() {
   basic_.echo_cancellation.SetExact(false);
   basic_.auto_gain_control.SetExact(false);
   basic_.noise_suppression.SetExact(false);
-  basic_.goog_highpass_filter.SetExact(false);
   basic_.voice_isolation.SetExact(false);
 }
 

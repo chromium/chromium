@@ -42,7 +42,7 @@ constexpr base::TimeDelta kKSAdminTimeout = base::Minutes(5);
 bool RegisterInstallation(const base::FilePath& install_directory) {
   base::FilePath ksadmin_path = GetKSAdminPath();
   if (!base::PathExists(ksadmin_path)) {
-    LOG(ERROR) << "Could not locate ksadmin.";
+    VLOG(1) << "Could not locate ksadmin.";
     return false;
   }
 
@@ -59,14 +59,14 @@ bool RegisterInstallation(const base::FilePath& install_directory) {
   int exit_code = -1;
   base::Process process = base::LaunchProcess(command_line, {});
   if (!process.IsValid()) {
-    LOG(ERROR) << "Failed to launch ksadmin";
+    VLOG(1) << "Failed to launch ksadmin";
     return false;
   } else if (!process.WaitForExitWithTimeout(kKSAdminTimeout, &exit_code)) {
-    LOG(ERROR) << "Failed to wait for ksadmin to register the installation.";
+    VLOG(1) << "Failed to wait for ksadmin to register the installation.";
     return false;
   } else if (exit_code != 0) {
-    LOG(ERROR) << "Failed to register the installation with ksadmin. "
-               << "Recieved exit code " << exit_code;
+    VLOG(1) << "Failed to register the installation with ksadmin. "
+            << "Recieved exit code " << exit_code;
     return false;
   }
 
@@ -76,17 +76,16 @@ bool RegisterInstallation(const base::FilePath& install_directory) {
 bool InstallToDir(const base::FilePath& install_directory) {
   base::FilePath source_exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &source_exe_path)) {
-    LOG(ERROR) << "Failed to retrieve the current executable's path.";
+    VLOG(1) << "Failed to retrieve the current executable's path.";
     return false;
   }
 
   base::FilePath source_app_bundle_path =
       base::apple::GetInnermostAppBundlePath(source_exe_path);
   if (source_app_bundle_path.empty()) {
-    LOG(ERROR)
-        << "Failed to determine the path to the app bundle containing "
-        << source_exe_path
-        << ". The installer must be run from within an application bundle.";
+    VLOG(1) << "Failed to determine the path to the app bundle containing "
+            << source_exe_path
+            << ". The installer must be run from within an application bundle.";
     return false;
   }
 
@@ -94,15 +93,15 @@ bool InstallToDir(const base::FilePath& install_directory) {
                            install_directory.AppendASCII(
                                base::StrCat({PRODUCT_FULLNAME_STRING, ".app"})),
                            /*recursive=*/true)) {
-    LOG(ERROR)
+    VLOG(1)
         << "Failed to copy the application bundle to the install directory.";
     return false;
   }
 
   if (!base::SetPosixFilePermissions(install_directory,
                                      kInstallDirPermissionsMask)) {
-    LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at"
-               << install_directory;
+    VLOG(1) << "Failed to set permissions to drwxr-xr-x at"
+            << install_directory;
     return false;
   }
 
@@ -114,7 +113,7 @@ bool InstallToDir(const base::FilePath& install_directory) {
 bool Install() {
   std::optional<base::FilePath> install_directory = GetInstallDirectory();
   if (!install_directory) {
-    LOG(ERROR) << "Failed to get install directory";
+    VLOG(1) << "Failed to get install directory";
     return false;
   }
 
@@ -123,7 +122,7 @@ bool Install() {
   base::FilePath backup_path = app_path.AddExtensionASCII("old");
   if (base::PathExists(app_path) &&
       !base::CopyDirectory(app_path, backup_path, /*recursive=*/true)) {
-    LOG(ERROR) << "Failed to backup existing installation.";
+    VLOG(1) << "Failed to backup existing installation.";
     return false;
   }
   absl::Cleanup delete_backup = [&] {
@@ -137,7 +136,7 @@ bool Install() {
 #if defined(ADDRESS_SANITIZER)
   base::FilePath dir_exe;
   if (!base::PathService::Get(base::DIR_EXE, &dir_exe)) {
-    LOG(ERROR) << "Failed to get the current executable's directory.";
+    VLOG(1) << "Failed to get the current executable's directory.";
     return false;
   }
 
@@ -145,8 +144,8 @@ bool Install() {
   if (base::PathExists(asan_dylib_path) &&
       !base::CopyFile(asan_dylib_path,
                       install_directory->Append(asan_dylib_path.BaseName()))) {
-    LOG(ERROR) << "Failed to copy " << asan_dylib_path << " to "
-               << *install_directory;
+    VLOG(1) << "Failed to copy " << asan_dylib_path << " to "
+            << *install_directory;
     return false;
   }
 #endif
@@ -154,11 +153,11 @@ bool Install() {
   if (!RegisterInstallation(*install_directory)) {
     if (base::PathExists(backup_path)) {
       if (!base::Move(backup_path, app_path)) {
-        LOG(ERROR) << "Failed to restore installation backup.";
+        VLOG(1) << "Failed to restore installation backup.";
       }
     } else {
       if (!base::DeletePathRecursively(app_path)) {
-        LOG(ERROR) << "Failed to clean installation after failure";
+        VLOG(1) << "Failed to clean installation after failure";
       }
     }
     return false;

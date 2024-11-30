@@ -226,11 +226,11 @@ class FFmpegVideoDecoderTest : public testing::Test {
   OutputFrames output_frames_;
 };
 
-TEST_F(FFmpegVideoDecoderTest, Initialize_Normal) {
+TEST_F(FFmpegVideoDecoderTest, InitializeNormal) {
   Initialize();
 }
 
-TEST_F(FFmpegVideoDecoderTest, Initialize_OpenDecoderFails) {
+TEST_F(FFmpegVideoDecoderTest, InitializeOpenDecoderFails) {
   // Specify Theora w/o extra data so that avcodec_open2() fails.
   VideoDecoderConfig config(VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             VideoDecoderConfig::AlphaMode::kIsOpaque,
@@ -240,25 +240,25 @@ TEST_F(FFmpegVideoDecoderTest, Initialize_OpenDecoderFails) {
   InitializeWithConfigWithResult(config, false);
 }
 
-TEST_F(FFmpegVideoDecoderTest, Reinitialize_Normal) {
+TEST_F(FFmpegVideoDecoderTest, ReinitializeNormal) {
   Initialize();
   Reinitialize();
 }
 
-TEST_F(FFmpegVideoDecoderTest, Reinitialize_AfterDecodeFrame) {
+TEST_F(FFmpegVideoDecoderTest, ReinitializeAfterDecodeFrame) {
   Initialize();
   EnterDecodingState();
   Reinitialize();
 }
 
-TEST_F(FFmpegVideoDecoderTest, Reinitialize_AfterReset) {
+TEST_F(FFmpegVideoDecoderTest, ReinitializeAfterReset) {
   Initialize();
   EnterDecodingState();
   Reset();
   Reinitialize();
 }
 
-TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Normal) {
+TEST_F(FFmpegVideoDecoderTest, DecodeFrameNormal) {
   Initialize();
 
   // Simulate decoding a single frame.
@@ -266,7 +266,7 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Normal) {
   ASSERT_EQ(1U, output_frames_.size());
 }
 
-TEST_F(FFmpegVideoDecoderTest, DecodeFrame_OOM) {
+TEST_F(FFmpegVideoDecoderTest, DecodeFrameOOM) {
   Initialize();
   decoder_->force_allocation_error_for_testing();
   EXPECT_MEDIA_LOG(_);
@@ -274,7 +274,7 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_OOM) {
   EXPECT_TRUE(output_frames_.empty());
 }
 
-TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeError) {
+TEST_F(FFmpegVideoDecoderTest, DecodeFrameDecodeError) {
   Initialize();
 
   EXPECT_MEDIA_LOG(ContainsFailedToSendLog());
@@ -294,7 +294,7 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeError) {
 }
 
 // A corrupt frame followed by an EOS buffer should raise a decode error.
-TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeErrorAtEndOfStream) {
+TEST_F(FFmpegVideoDecoderTest, DecodeFrameDecodeErrorAtEndOfStream) {
   Initialize();
 
   EXPECT_MEDIA_LOG(ContainsFailedToDecode());
@@ -305,31 +305,31 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeErrorAtEndOfStream) {
 
 // Decode |i_frame_buffer_| and then a smaller frame and verify the output size
 // was adjusted.
-TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Smaller) {
+TEST_F(FFmpegVideoDecoderTest, DecodeFrameSmaller) {
   DecodeIFrameThenTestFile("red-green.h264", 80, 128, /*expected_frames=*/4);
 }
 
 // Decode |i_frame_buffer_| and then a larger frame and verify the output size
 // was adjusted.
-TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Larger) {
+TEST_F(FFmpegVideoDecoderTest, DecodeFrameLarger) {
   DecodeIFrameThenTestFile("bear-320x192-baseline-frame-0.h264", 320, 192);
 }
 
 // Test resetting when decoder has initialized but not decoded.
-TEST_F(FFmpegVideoDecoderTest, Reset_Initialized) {
+TEST_F(FFmpegVideoDecoderTest, ResetInitialized) {
   Initialize();
   Reset();
 }
 
 // Test resetting when decoder has decoded single frame.
-TEST_F(FFmpegVideoDecoderTest, Reset_Decoding) {
+TEST_F(FFmpegVideoDecoderTest, ResetDecoding) {
   Initialize();
   EnterDecodingState();
   Reset();
 }
 
 // Test resetting when decoder has hit end of stream.
-TEST_F(FFmpegVideoDecoderTest, Reset_EndOfStream) {
+TEST_F(FFmpegVideoDecoderTest, ResetEndOfStream) {
   Initialize();
   EnterDecodingState();
   EnterEndOfStreamState();
@@ -337,20 +337,20 @@ TEST_F(FFmpegVideoDecoderTest, Reset_EndOfStream) {
 }
 
 // Test destruction when decoder has initialized but not decoded.
-TEST_F(FFmpegVideoDecoderTest, Destroy_Initialized) {
+TEST_F(FFmpegVideoDecoderTest, DestroyInitialized) {
   Initialize();
   Destroy();
 }
 
 // Test destruction when decoder has decoded single frame.
-TEST_F(FFmpegVideoDecoderTest, Destroy_Decoding) {
+TEST_F(FFmpegVideoDecoderTest, DestroyDecoding) {
   Initialize();
   EnterDecodingState();
   Destroy();
 }
 
 // Test destruction when decoder has hit end of stream.
-TEST_F(FFmpegVideoDecoderTest, Destroy_EndOfStream) {
+TEST_F(FFmpegVideoDecoderTest, DestroyEndOfStream) {
   Initialize();
   EnterDecodingState();
   EnterEndOfStreamState();

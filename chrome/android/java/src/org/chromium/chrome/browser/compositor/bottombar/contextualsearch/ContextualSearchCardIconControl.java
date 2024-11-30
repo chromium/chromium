@@ -24,7 +24,6 @@ import org.chromium.ui.resources.dynamics.ViewResourceInflater;
  */
 public class ContextualSearchCardIconControl extends ViewResourceInflater {
     private final Context mContext;
-    private boolean mHasIcon;
 
     /**
      * @param context The Android Context used to inflate the View.
@@ -55,15 +54,7 @@ public class ContextualSearchCardIconControl extends ViewResourceInflater {
             inflate();
             ((ImageView) getView()).setImageDrawable(drawable);
             invalidate();
-            mHasIcon = true;
         }
-    }
-
-    /**
-     * @return The resource id for the icon associated with the card, if present.
-     */
-    private int getIconResId() {
-        return mHasIcon ? getViewId() : 0;
     }
 
     @Override

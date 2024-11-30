@@ -604,6 +604,7 @@ class RoutesBuilder:
             ("GET", "/.well-known/interest-group/permissions/", handlers.PythonScriptHandler),
             ("*", "/.well-known/interest-group/real-time-report", handlers.PythonScriptHandler),
             ("*", "/.well-known/private-aggregation/*", handlers.PythonScriptHandler),
+            ("GET", "/.well-known/shared-storage/trusted-origins", handlers.PythonScriptHandler),
             ("*", "/.well-known/web-identity", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)

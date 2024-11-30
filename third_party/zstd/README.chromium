@@ -1,8 +1,8 @@
 Name: Zstandard
 Short Name: zstd
 URL: https://github.com/facebook/zstd
-Version: 7fb5347e88f10472226c9aa1962a148e55d8c480
-License: BSD or GPLv2
+Version: b0a179d469680276adbd4007435989a6b7fd8b4f
+License: BSD-3-Clause
 License File: src/LICENSE
 CPEPrefix: cpe:/a:facebook:zstandard:1.5.5
 Security Critical: yes
@@ -12,6 +12,9 @@ Description:
 Zstandard is a fast lossless compression algorithm, targeting real-time
 compression scenarios at zlib-level and better compression ratios.
 This library is used to decode "Content-Encoding: zstd" responses.
+
+Zstandard is dual-licensed under BSD-3-Clause OR GPLv2. The BSD-3-Clause
+license is used here as it is more permissive.
 
 Local Modifications:
 - BUILD.gn: Added targets for compression and decompression.

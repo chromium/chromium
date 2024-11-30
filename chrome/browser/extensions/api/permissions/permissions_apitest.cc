@@ -33,7 +33,7 @@ static void AddPattern(URLPatternSet* extent, const std::string& pattern) {
 
 }  // namespace
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExperimentalApiTest : public ExtensionApiTest {
  public:
@@ -281,35 +281,35 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          PermissionsApiTestWithContextType,
                          testing::Values(ContextType::kServiceWorker));
 
-class PermissionsApiSiteAccessRequestsTest : public PermissionsApiTest {
+class PermissionsApiHostAccessRequestsTest : public PermissionsApiTest {
  public:
-  PermissionsApiSiteAccessRequestsTest() {
+  PermissionsApiHostAccessRequestsTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kApiPermissionsSiteAccessRequests);
+        extensions_features::kApiPermissionsHostAccessRequests);
   }
-  ~PermissionsApiSiteAccessRequestsTest() override = default;
-  PermissionsApiSiteAccessRequestsTest(
-      const PermissionsApiSiteAccessRequestsTest&) = delete;
-  PermissionsApiSiteAccessRequestsTest& operator=(
-      const PermissionsApiSiteAccessRequestsTest&) = delete;
+  ~PermissionsApiHostAccessRequestsTest() override = default;
+  PermissionsApiHostAccessRequestsTest(
+      const PermissionsApiHostAccessRequestsTest&) = delete;
+  PermissionsApiHostAccessRequestsTest& operator=(
+      const PermissionsApiHostAccessRequestsTest&) = delete;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PermissionsApiSiteAccessRequestsTest,
-                       InvalidAddSiteAccessRequests) {
+IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
+                       InvalidAddHostAccessRequests) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  ASSERT_TRUE(RunExtensionTest("permissions/add_site_access_request"))
+  ASSERT_TRUE(RunExtensionTest("permissions/add_host_access_request"))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionsApiSiteAccessRequestsTest,
-                       InvalidRemoveSiteAccessRequests) {
+IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
+                       InvalidRemoveHostAccessRequests) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  ASSERT_TRUE(RunExtensionTest("permissions/remove_site_access_request"))
+  ASSERT_TRUE(RunExtensionTest("permissions/remove_host_access_request"))
       << message_;
 }
 

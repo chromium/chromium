@@ -35,8 +35,8 @@
 
 namespace payments {
 
-RefetchedIcon::RefetchedIcon() = default;
-RefetchedIcon::~RefetchedIcon() = default;
+RefetchedMetadata::RefetchedMetadata() = default;
+RefetchedMetadata::~RefetchedMetadata() = default;
 
 // TODO(crbug.com/40548519): Use cache to accelerate crawling procedure.
 InstallablePaymentAppCrawler::InstallablePaymentAppCrawler(
@@ -61,14 +61,14 @@ InstallablePaymentAppCrawler::~InstallablePaymentAppCrawler() = default;
 
 void InstallablePaymentAppCrawler::Start(
     const std::vector<mojom::PaymentMethodDataPtr>& requested_method_data,
-    std::set<GURL> method_manifest_urls_for_icon_refresh,
+    std::set<GURL> method_manifest_urls_for_metadata_refresh,
     FinishedCrawlingCallback callback,
     base::OnceClosure finished_using_resources) {
   callback_ = std::move(callback);
   finished_using_resources_ = std::move(finished_using_resources);
 
   std::set<GURL> manifests_to_download;
-  if (method_manifest_urls_for_icon_refresh.empty()) {
+  if (method_manifest_urls_for_metadata_refresh.empty()) {
     // Crawl for JIT installable web apps.
     crawling_mode_ = CrawlingMode::kJustInTimeInstallation;
     for (const auto& method_data : requested_method_data) {
@@ -80,11 +80,11 @@ void InstallablePaymentAppCrawler::Start(
       }
     }
   } else {
-    // Crawl to refresh icons of already installed apps.
-    crawling_mode_ = CrawlingMode::kInstalledAppIconRefresh;
-    method_manifest_urls_for_icon_refresh_ =
-        std::move(method_manifest_urls_for_icon_refresh);
-    for (const auto& method : method_manifest_urls_for_icon_refresh_) {
+    // Crawl to refresh metadata for already installed apps.
+    crawling_mode_ = CrawlingMode::kInstalledAppMetadataRefresh;
+    method_manifest_urls_for_metadata_refresh_ =
+        std::move(method_manifest_urls_for_metadata_refresh);
+    for (const auto& method : method_manifest_urls_for_metadata_refresh_) {
       DCHECK(method.is_valid());
       manifests_to_download.insert(method);
     }
@@ -374,8 +374,19 @@ bool InstallablePaymentAppCrawler::CompleteAndStorePaymentWebAppInfoIfValid(
         downloader_->FindTestServerURL(GURL(app_info->sw_scope)).spec();
   }
 
-  if (crawling_mode_ == CrawlingMode::kJustInTimeInstallation) {
-    installable_apps_[method_manifest_url] = std::move(app_info);
+  switch (crawling_mode_) {
+    case CrawlingMode::kJustInTimeInstallation:
+      installable_apps_[method_manifest_url] = std::move(app_info);
+      break;
+    case CrawlingMode::kInstalledAppMetadataRefresh: {
+      auto refetched_metadata = std::make_unique<RefetchedMetadata>();
+      refetched_metadata->method_name = method_manifest_url.spec();
+      refetched_metadata->supported_delegations =
+          app_info->supported_delegations;
+      refetched_app_metadata_.insert(
+          std::make_pair(web_app_manifest_url, std::move(refetched_metadata)));
+      break;
+    }
   }
 
   return true;
@@ -493,40 +504,44 @@ void InstallablePaymentAppCrawler::OnPaymentWebAppIconDownloadAndDecoded(
     const SkBitmap& icon) {
   number_of_web_app_icons_to_download_and_decode_--;
 
-  if (crawling_mode_ == CrawlingMode::kJustInTimeInstallation) {
-    auto it = installable_apps_.find(method_manifest_url);
-    CHECK(it != installable_apps_.end(), base::NotFatalUntil::M130);
-    DCHECK(IsSameOriginWith(GURL(it->second->sw_scope), web_app_manifest_url));
-    if (icon.drawsNothing() &&
-        !base::FeatureList::IsEnabled(
-            features::kAllowJITInstallationWhenAppIconIsMissing)) {
-      log_.Error(
-          "Failed to download or decode the icon from web app manifest \"" +
-          web_app_manifest_url.spec() + "\" for payment handler manifest \"" +
-          method_manifest_url.spec() + "\".");
-      std::string error_message = base::ReplaceStringPlaceholders(
-          errors::kInvalidWebAppIcon, {web_app_manifest_url.spec()}, nullptr);
-      SetFirstError(error_message);
-      installable_apps_.erase(it);
-    } else {
-      it->second->icon = std::make_unique<SkBitmap>(icon);
+  switch (crawling_mode_) {
+    case CrawlingMode::kJustInTimeInstallation: {
+      auto it = installable_apps_.find(method_manifest_url);
+      CHECK(it != installable_apps_.end(), base::NotFatalUntil::M130);
+      DCHECK(
+          IsSameOriginWith(GURL(it->second->sw_scope), web_app_manifest_url));
+      if (icon.drawsNothing() &&
+          !base::FeatureList::IsEnabled(
+              features::kAllowJITInstallationWhenAppIconIsMissing)) {
+        log_.Error(
+            "Failed to download or decode the icon from web app manifest \"" +
+            web_app_manifest_url.spec() + "\" for payment handler manifest \"" +
+            method_manifest_url.spec() + "\".");
+        std::string error_message = base::ReplaceStringPlaceholders(
+            errors::kInvalidWebAppIcon, {web_app_manifest_url.spec()}, nullptr);
+        SetFirstError(error_message);
+        installable_apps_.erase(it);
+      } else {
+        it->second->icon = std::make_unique<SkBitmap>(icon);
+      }
+      break;
     }
-  } else {
-    DCHECK_EQ(CrawlingMode::kInstalledAppIconRefresh, crawling_mode_);
-    auto it = method_manifest_urls_for_icon_refresh_.find(method_manifest_url);
-    CHECK(it != method_manifest_urls_for_icon_refresh_.end(),
-          base::NotFatalUntil::M130);
-    if (icon.drawsNothing()) {
-      log_.Warn("Failed to refetch a valid icon from web app manifest \"" +
-                web_app_manifest_url.spec() +
-                "\" for payment handler manifest \"" +
-                method_manifest_url.spec() + "\".");
-    } else {
-      auto refetched_icon = std::make_unique<RefetchedIcon>();
-      refetched_icon->method_name = method_manifest_url.spec();
-      refetched_icon->icon = std::make_unique<SkBitmap>(icon);
-      refetched_icons_.insert(
-          std::make_pair(web_app_manifest_url, std::move(refetched_icon)));
+    case CrawlingMode::kInstalledAppMetadataRefresh: {
+      auto it =
+          method_manifest_urls_for_metadata_refresh_.find(method_manifest_url);
+      CHECK(it != method_manifest_urls_for_metadata_refresh_.end(),
+            base::NotFatalUntil::M130);
+      if (icon.drawsNothing()) {
+        log_.Warn("Failed to refetch a valid icon from web app manifest \"" +
+                  web_app_manifest_url.spec() +
+                  "\" for payment handler manifest \"" +
+                  method_manifest_url.spec() + "\".");
+      } else {
+        CHECK(refetched_app_metadata_.contains(web_app_manifest_url));
+        refetched_app_metadata_[web_app_manifest_url]->icon =
+            std::make_unique<SkBitmap>(icon);
+      }
+      break;
     }
   }
 
@@ -552,7 +567,8 @@ void InstallablePaymentAppCrawler::FinishCrawlingPaymentAppsIfReady() {
   }
 
   std::move(callback_).Run(std::move(installable_apps_),
-                           std::move(refetched_icons_), first_error_message_);
+                           std::move(refetched_app_metadata_),
+                           first_error_message_);
   std::move(finished_using_resources_).Run();
 }
 

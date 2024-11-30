@@ -42,7 +42,7 @@ CrashIdsSource::CrashIdsSource()
       crash_upload_list_(CreateCrashUploadList()),
       pending_crash_list_loading_(false) {}
 
-CrashIdsSource::~CrashIdsSource() {}
+CrashIdsSource::~CrashIdsSource() = default;
 
 void CrashIdsSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

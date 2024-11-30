@@ -29,21 +29,26 @@ BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
              "WebViewDigitalAssetLinksLoadIncludes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disables MSAA and default sharpening when rendering scaled elements. This is
+// often preferable when rendering images/video but can have adverse effects for
+// text on some displays.
+BASE_FEATURE(kWebViewDisableSharpeningAndMSAA,
+             "WebViewDisableSharpeningAndMSAA",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows JS DataTransfer Files from content URIs in drag-drop.
 BASE_FEATURE(kWebViewDragDropFiles,
              "WebViewDragDropFiles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable JS FileSystemAccess API.
-// TODO(b/364980165): Add targetSdkVersion checks before enabling.
+// This flag is set by WebView internal code based on an app's targetSdkVersion.
+// It is enabled for version B+. The default value here is not relevant, and is
+// not expected to be manually changed.
+// TODO(b/364980165): Flag can be removed when SDK versions prior to B are no
+// longer supported.
 BASE_FEATURE(kWebViewFileSystemAccess,
              "WebViewFileSystemAccess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable WebView to automatically darken the page in FORCE_DARK_AUTO mode if
-// the app's theme is dark.
-BASE_FEATURE(kWebViewForceDarkModeMatchTheme,
-             "WebViewForceDarkModeMatchTheme",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature parameter for `network::features::kMaskedDomainList` that sets the
@@ -55,11 +60,6 @@ const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria{
     &network::features::kMaskedDomainList,
     "WebViewIpProtectionExclusionCriteria",
     /*WebviewExclusionPolicy::kNone*/ 0};
-
-// Enable display cutout support for Android P and above.
-BASE_FEATURE(kWebViewDisplayCutout,
-             "WebViewDisplayCutout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Fetch Hand Writing icon lazily.
 BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
@@ -123,7 +123,9 @@ BASE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs,
              "WebViewSuppressDifferentOriginSubframeJSDialogs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A Feature used for WebView variations tests. Not used in production.
+// A Feature used for WebView variations tests. Not used in production. Please
+// do not clean up this stale feature: we intentionally keep this feature flag
+// around for testing purposes.
 BASE_FEATURE(kWebViewTestFeature,
              "WebViewTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);

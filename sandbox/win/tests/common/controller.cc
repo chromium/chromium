@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
@@ -146,7 +147,7 @@ class TestBrokerServicesDelegateImpl : public BrokerServicesDelegate {
       base::OnceCallback<void(CreateTargetResult)> reply) override {
     // This function is only used for parallel launching and should not get
     // called.
-    CHECK(false);
+    NOTREACHED();
   }
 
   void BeforeTargetProcessCreateOnCreationThread(

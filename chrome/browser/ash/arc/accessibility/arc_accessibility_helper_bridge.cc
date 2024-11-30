@@ -523,7 +523,7 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
     if (surface_manager) {
       ash::ArcNotificationSurface* surface =
           surface_manager->GetArcSurface(event_data->notification_key.value());
-      if (surface) {
+      if (surface && surface->IsAttached()) {
         surface->GetAttachedHost()->NotifyAccessibilityEvent(
             ax::mojom::Event::kTextSelectionChanged, true);
       }

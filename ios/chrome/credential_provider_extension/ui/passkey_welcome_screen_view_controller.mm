@@ -120,7 +120,7 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
                       delegate:(id<PasskeyWelcomeScreenViewControllerDelegate>)
                                    delegate
            primaryButtonAction:(ProceduralBlock)primaryButtonAction {
-  self = [super initWithNibName:nil bundle:nil];
+  self = [super init];
   if (self) {
     _purpose = purpose;
     _navigationItemTitleView = navigationItemTitleView;
@@ -239,10 +239,12 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
 }
 
 - (void)didTapPrimaryActionButton {
-  ProceduralBlock primaryButtonAction = _primaryButtonAction;
-  _primaryButtonAction = nil;
+  if (self.navigationController.topViewController != self) {
+    return;
+  }
 
-  primaryButtonAction();
+  CHECK(_primaryButtonAction);
+  _primaryButtonAction();
 }
 
 - (void)didTapSecondaryActionButton {

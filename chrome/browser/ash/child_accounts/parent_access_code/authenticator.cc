@@ -148,9 +148,9 @@ std::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   }
 
   // Read 4 bytes in Big-endian order starting from |offset|.
-  const int8_t offset = digest.back() & 0xf;
+  const size_t offset = digest.back() & 0xf;
   int32_t result =
-      base::U32FromBigEndian(base::span(digest).subspan(offset).first<4u>());
+      base::U32FromBigEndian(base::span(digest).subspan(offset).first<4>());
   // Clear sign bit.
   result &= 0x7fffffff;
 

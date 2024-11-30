@@ -10,6 +10,7 @@
 
 #import "base/check.h"
 #import "base/check_deref.h"
+#import "base/containers/to_vector.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
@@ -19,8 +20,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
-#import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
+#import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/single_field_fill_router.h"
@@ -147,8 +148,8 @@ ChromeAutofillClientIOS::GetCrowdsourcingManager() {
   return crowdsourcing_manager_.get();
 }
 
-PersonalDataManager* ChromeAutofillClientIOS::GetPersonalDataManager() {
-  return personal_data_manager_;
+PersonalDataManager& ChromeAutofillClientIOS::GetPersonalDataManager() {
+  return CHECK_DEREF(personal_data_manager_.get());
 }
 
 FieldClassificationModelHandler*
@@ -215,10 +216,6 @@ StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {
 
 ukm::UkmRecorder* ChromeAutofillClientIOS::GetUkmRecorder() {
   return GetApplicationContext()->GetUkmRecorder();
-}
-
-ukm::SourceId ChromeAutofillClientIOS::GetUkmSourceId() {
-  return ukm::GetSourceIdForWebStateDocument(web_state_);
 }
 
 AddressNormalizer* ChromeAutofillClientIOS::GetAddressNormalizer() {
@@ -317,18 +314,6 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
       std::move(delegate)));
 }
 
-void ChromeAutofillClientIOS::ShowEditAddressProfileDialog(
-    const AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED();
-}
-
-void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
-    const AutofillProfile& profile,
-    AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED();
-}
-
 AutofillClient::SuggestionUiSessionId
 ChromeAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
@@ -412,6 +397,11 @@ LogManager* ChromeAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
 }
 
+autofill_metrics::FormInteractionsUkmLogger&
+ChromeAutofillClientIOS::GetFormInteractionsUkmLogger() {
+  return form_interactions_ukm_logger_;
+}
+
 const AutofillAblationStudy& ChromeAutofillClientIOS::GetAblationStudy() const {
   return ablation_study_;
 }
@@ -490,12 +480,14 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
     return {};
   }
 
+  auto field_ids = base::ToVector(renderer_form.value().fields(),
+                                  &autofill::FormFieldData::global_id);
   // The driver id is irrelevant here because it would only be used by password
   // manager logic that handles the `PasswordForm` returned by the parser.
   return password_manager::ClassifyAsPasswordForm(
       *renderer_form, password_manager::ConvertToFormPredictions(
                           /*driver_id=*/0, *renderer_form,
-                          form_structure->GetServerPredictions()));
+                          form_structure->GetServerPredictions(field_ids)));
 }
 
 AutofillSaveCardInfoBarDelegateIOS*

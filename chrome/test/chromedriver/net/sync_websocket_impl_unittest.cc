@@ -27,7 +27,7 @@ class SyncWebSocketImplTest : public testing::Test {
  protected:
   SyncWebSocketImplTest()
       : client_thread_("ClientThread"), long_timeout_(base::Minutes(1)) {}
-  ~SyncWebSocketImplTest() override {}
+  ~SyncWebSocketImplTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(client_thread_.StartWithOptions(

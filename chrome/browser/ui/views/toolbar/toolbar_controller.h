@@ -51,6 +51,13 @@ class ToolbarController : public views::MenuDelegate,
   // Data structure to store information specifically used to support
   // ui::ElementIdentifier as element reference.
   struct ElementIdInfo {
+    explicit ElementIdInfo(ui::ElementIdentifier overflow_identifier,
+                           int menu_text_id,
+                           raw_ptr<const gfx::VectorIcon> menu_icon,
+                           ui::ElementIdentifier activate_identifier,
+                           std::optional<ui::ElementIdentifier>
+                               observed_identifier = std::nullopt);
+
     // The identifier of toolbar element that potentially overflows.
     ui::ElementIdentifier overflow_identifier;
 
@@ -67,6 +74,10 @@ class ToolbarController : public views::MenuDelegate,
     // overflowed element is kToolbarExtensionsContainerElementId the
     // `activate_identifier` should be kExtensionsMenuButtonElementId.
     ui::ElementIdentifier activate_identifier;
+
+    // Pop out button when `observed_identifier` is shown. End pop out when it's
+    // hidden.
+    std::optional<ui::ElementIdentifier> observed_identifier;
   };
 
   // Data structure to store information of responsive elements. Supports both
@@ -92,10 +103,9 @@ class ToolbarController : public views::MenuDelegate,
     // |=================| -> potential separator
     // | Profile         |
     // |-----------------|
-
-    ResponsiveElementInfo(absl::variant<ElementIdInfo, actions::ActionId>,
-                          bool = false,
-                          std::optional<ui::ElementIdentifier> = std::nullopt);
+    explicit ResponsiveElementInfo(
+        absl::variant<ElementIdInfo, actions::ActionId> overflow_id,
+        bool is_section_end = false);
     ResponsiveElementInfo(const ResponsiveElementInfo&);
     ~ResponsiveElementInfo();
 
@@ -104,11 +114,6 @@ class ToolbarController : public views::MenuDelegate,
 
     // True if current element is a section end in overflow menu structure.
     bool is_section_end = false;
-
-    // Pop out button when `observed_identifier` is shown. End pop out when it's
-    // hidden. Could be empty e.g. when `overflow_key` is an ActionId that opens
-    // a side panel rather than a View bubble.
-    std::optional<ui::ElementIdentifier> observed_identifier;
   };
 
   ToolbarController(

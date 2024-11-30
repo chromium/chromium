@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -156,8 +157,8 @@ TranslateBubbleView::~TranslateBubbleView() {
   advanced_done_button_source_ = nullptr;
   advanced_done_button_target_ = nullptr;
   RemoveAllChildViews();
-  if (features::IsToolbarPinningEnabled() && translate_action_item_) {
-    translate_action_item_->SetIsShowingBubble(false);
+  if (features::IsToolbarPinningEnabled() && translate_action_item_.get()) {
+    translate_action_item_.get()->SetIsShowingBubble(false);
   }
 }
 
@@ -219,10 +220,13 @@ void TranslateBubbleView::Init() {
   if (features::IsToolbarPinningEnabled()) {
     Browser* browser = chrome::FindLastActive();
     if (browser) {
-      translate_action_item_ = actions::ActionManager::Get().FindAction(
-          kActionShowTranslate, browser->browser_actions()->root_action_item());
-      CHECK(translate_action_item_);
-      translate_action_item_->SetIsShowingBubble(true);
+      translate_action_item_ =
+          actions::ActionManager::Get()
+              .FindAction(kActionShowTranslate,
+                          browser->browser_actions()->root_action_item())
+              ->GetAsWeakPtr();
+      CHECK(translate_action_item_.get());
+      translate_action_item_.get()->SetIsShowingBubble(true);
     }
   }
 }

@@ -76,8 +76,8 @@
 namespace autofill {
 namespace {
 
-using test::CreateFormDataForRenderFrameHost;
-using test::CreateTestFormField;
+using ::autofill::test::CreateFormDataForRenderFrameHost;
+using ::autofill::test::CreateTestFormField;
 using ::testing::_;
 using ::testing::A;
 using ::testing::AllOf;
@@ -86,23 +86,9 @@ using ::testing::InSequence;
 using ::testing::Ref;
 using ::testing::Return;
 using ::testing::ReturnRef;
-using user_education::test::MockFeaturePromoController;
+using ::user_education::test::MockFeaturePromoController;
 
-#if BUILDFLAG(IS_ANDROID)
-class MockAutofillSaveCardBottomSheetBridge
-    : public AutofillSaveCardBottomSheetBridge {
- public:
-  MockAutofillSaveCardBottomSheetBridge()
-      : AutofillSaveCardBottomSheetBridge(
-            base::android::ScopedJavaGlobalRef<jobject>(nullptr)) {}
-
-  MOCK_METHOD(void,
-              RequestShowContent,
-              (const AutofillSaveCardUiInfo&,
-               std::unique_ptr<AutofillSaveCardDelegateAndroid>),
-              (override));
-};
-#else
+#if !BUILDFLAG(IS_ANDROID)
 class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
  public:
   explicit MockSaveCardBubbleController(content::WebContents* web_contents)
@@ -129,30 +115,12 @@ class MockAutofillFieldPromoController : public AutofillFieldPromoController {
   MOCK_METHOD(const base::Feature&, GetFeaturePromo, (), (const override));
 };
 
+// This test class is needed to make the constructor public.
 class TestChromeAutofillClient : public ChromeAutofillClient {
  public:
   explicit TestChromeAutofillClient(content::WebContents* web_contents)
       : ChromeAutofillClient(web_contents) {}
   ~TestChromeAutofillClient() override = default;
-
-#if BUILDFLAG(IS_ANDROID)
-  MockFastCheckoutClient* GetFastCheckoutClient() override {
-    return &fast_checkout_client_;
-  }
-
-  // Inject a new MockAutofillSaveCardBottomSheetBridge.
-  // Returns a pointer to the mock.
-  MockAutofillSaveCardBottomSheetBridge*
-  InjectMockAutofillSaveCardBottomSheetBridge() {
-    auto mock = std::make_unique<MockAutofillSaveCardBottomSheetBridge>();
-    auto* pointer = mock.get();
-    GetPaymentsAutofillClient()->SetAutofillSaveCardBottomSheetBridgeForTesting(
-        std::move(mock));
-    return pointer;
-  }
-
-  MockFastCheckoutClient fast_checkout_client_;
-#endif
 };
 
 class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
@@ -205,11 +173,6 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 
   ContentAutofillDriver* driver(content::RenderFrameHost* rfh) {
     return ContentAutofillDriver::GetForRenderFrameHost(rfh);
-  }
-
-  TestPersonalDataManager* personal_data_manager() {
-    return static_cast<TestPersonalDataManager*>(
-        client()->GetPersonalDataManager());
   }
 
   MockAutofillFieldPromoController* autofill_field_promo_controller() {
@@ -470,32 +433,6 @@ TEST_F(ChromeAutofillClientTest,
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout,
       /*on_confirmation_closed_callback=*/std::nullopt);
-}
-
-TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {
-  EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
-  auto* controller =
-      EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
-  controller->SetViewFactoryForTest(base::BindRepeating(
-      [](content::WebContents*, EditAddressProfileDialogController*) {
-        return static_cast<AutofillBubbleBase*>(nullptr);
-      }));
-
-  // Non-account profile
-  client()->ShowEditAddressProfileDialog(test::GetFullProfile(),
-                                         base::DoNothing());
-  EXPECT_EQ(controller->GetFooterMessage(), u"");
-
-  // Account profile
-  AutofillProfile profile2 = test::GetFullProfile();
-  test_api(profile2).set_record_type(AutofillProfile::RecordType::kAccount);
-  client()->ShowEditAddressProfileDialog(profile2, base::DoNothing());
-  std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
-      web_contents()->GetBrowserContext());
-  EXPECT_EQ(controller->GetFooterMessage(),
-            l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
-                base::ASCIIToUTF16(account->email)));
 }
 
 TEST_F(ChromeAutofillClientTest,

@@ -19,10 +19,12 @@ ExtensionSidePanelViewHost::ExtensionSidePanelViewHost(
     const Extension* extension,
     content::SiteInstance* site_instance,
     const GURL& url,
+    content::BrowserContext* browser_context,
     Browser* browser,
     content::WebContents* web_contents)
     : ExtensionViewHost(extension,
                         site_instance,
+                        browser_context,
                         url,
                         mojom::ViewType::kExtensionSidePanel,
                         browser),

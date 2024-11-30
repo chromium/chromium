@@ -48,8 +48,16 @@ namespace {
 // Represents what decision should be made on keeping a web state.
 enum class KeepWebStateDecision {
   kKeep,
+  kKeepNTP,
   kDiscard,
   kDiscardDuplicate,
+  kDiscardNTP,
+};
+
+// Holds the relevent information for a tab group for NTP cleanup.
+struct GroupNTPInfo {
+  int last_empty_ntp_index = -1;
+  bool has_non_empty_ntp = false;
 };
 
 // Returns a decision on whether a web state should be kept or filtered out.
@@ -65,8 +73,8 @@ KeepWebStateDecision ShouldKeepWebState(
 
   if (IsAvoidNTPCleanupOnBackgroundEnabled()) {
     if (IsUrlNtp(web_state->GetVisibleURL())) {
-      return navigation_item_count <= 1 ? KeepWebStateDecision::kDiscard
-                                        : KeepWebStateDecision::kKeep;
+      return navigation_item_count <= 1 ? KeepWebStateDecision::kDiscardNTP
+                                        : KeepWebStateDecision::kKeepNTP;
     }
   }
 
@@ -99,6 +107,7 @@ KeepWebStateDecision ShouldKeepWebState(
 RemovingIndexes GetIndexOfWebStatesToDrop(const WebStateList& web_state_list) {
   std::vector<int> web_state_to_skip_indexes;
   std::set<web::WebStateID> seen_identifiers;
+  std::map<const TabGroup*, GroupNTPInfo> groups_to_ntp_info;
 
   int duplicate_count = 0;
 
@@ -119,6 +128,39 @@ RemovingIndexes GetIndexOfWebStatesToDrop(const WebStateList& web_state_list) {
       case KeepWebStateDecision::kKeep:
         seen_identifiers.insert(web_state->GetUniqueIdentifier());
         break;
+
+      // Record the identifier of the tab and update `groups_to_ntp_info`.
+      case KeepWebStateDecision::kKeepNTP: {
+        const TabGroup* tab_group = web_state_list.GetGroupOfWebStateAt(index);
+        groups_to_ntp_info[tab_group].has_non_empty_ntp = true;
+        seen_identifiers.insert(web_state->GetUniqueIdentifier());
+        break;
+      }
+        // Add the tab to the map of groups to NTPs and update
+        // `groups_to_ntp_info`.
+      case KeepWebStateDecision::kDiscardNTP: {
+        const TabGroup* tab_group = web_state_list.GetGroupOfWebStateAt(index);
+        groups_to_ntp_info[tab_group].last_empty_ntp_index = index;
+        web_state_to_skip_indexes.push_back(index);
+        break;
+      }
+    }
+  }
+
+  // For each tab group, if there are only empty NTPs, keep the last one by
+  // removing it from `web_state_to_skip_indexes`.
+  for (const auto& pair : groups_to_ntp_info) {
+    const GroupNTPInfo& ntp_info = pair.second;
+    if (ntp_info.has_non_empty_ntp) {
+      continue;
+    }
+    if (ntp_info.last_empty_ntp_index != -1) {
+      auto index = std::find(web_state_to_skip_indexes.begin(),
+                             web_state_to_skip_indexes.end(),
+                             ntp_info.last_empty_ntp_index);
+      if (index != web_state_to_skip_indexes.end()) {
+        web_state_to_skip_indexes.erase(index);
+      }
     }
   }
 

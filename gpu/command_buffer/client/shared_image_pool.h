@@ -89,9 +89,16 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
   // for re-use or destruction.
   void SetReleaseSyncToken(SyncToken release_sync_token);
 
+  // Only used for testing purposes.
+  int GetPoolIdForTesting() const;
+
  protected:
   friend class base::RefCounted<ClientImage>;
   friend class SharedImagePoolBase;
+
+  // Allow each instantiation of SharedImagePool to access `pool_id_`.
+  template <typename ClientImageType>
+  friend class SharedImagePool;
   virtual ~ClientImage();
 
  private:
@@ -106,6 +113,9 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
   // recycled images in the pool based on the optional expiration time set by
   // the client.
   base::TimeTicks last_used_time_ = base::TimeTicks::Now();
+
+  // Unique identifier to identify the pool this image belongs to.
+  int pool_id_;
 };
 
 // This class is designed to handle bulk of functionality of the image pool.
@@ -133,6 +143,9 @@ class GPU_EXPORT SharedImagePoolBase {
   void ReleaseImageInternal(scoped_refptr<ClientImage> image);
   void ClearInternal();
   void ReconfigureInternal(const ImageInfo& image_info);
+
+  // Unique identifier to identify this pool and all images generated from it.
+  const int pool_id_;
 
   // Information used to create new ClientSharedImage.
   ImageInfo image_info_;
@@ -195,7 +208,10 @@ class GPU_EXPORT SharedImagePool : public SharedImagePoolBase {
       LOG(ERROR) << "Unable to create a shared image.";
       return nullptr;
     }
-    return base::MakeRefCounted<ClientImageType>(std::move(shared_image));
+    auto new_image =
+        base::MakeRefCounted<ClientImageType>(std::move(shared_image));
+    new_image->pool_id_ = pool_id_;
+    return new_image;
   }
 
   // Releases an |image| to the Pool. The |image| will be released/destroyed if

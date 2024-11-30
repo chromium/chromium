@@ -28,7 +28,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/paint/render_surface_filters.h"
@@ -2614,11 +2613,9 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   // We need only RGB portion of the color space, YUV conversion handled in
   // skia.
   const gfx::ColorSpace src_color_space =
-      resource_provider()
-          ->GetColorSpace(quad->resource_id())
-          .GetAsFullRangeRGB();
+      resource_provider()->GetColorSpace(quad->resource_id).GetAsFullRangeRGB();
   const gfx::HDRMetadata& src_hdr_metadata =
-      resource_provider()->GetHDRMetadata(quad->resource_id());
+      resource_provider()->GetHDRMetadata(quad->resource_id);
   const bool needs_color_conversion_filter =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&
@@ -2645,10 +2642,10 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 #endif
 
   ScopedSkImageBuilder builder(
-      this, quad->resource_id(), /*maybe_concurrent_reads=*/true,
+      this, quad->resource_id, /*maybe_concurrent_reads=*/true,
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
-      quad->y_flipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
-      override_color_space, false, quad->force_rgbx);
+      resource_provider()->GetOrigin(quad->resource_id), override_color_space,
+      false, quad->force_rgbx);
   const SkImage* image = builder.sk_image();
   if (!image)
     return;
@@ -2759,7 +2756,7 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   bool raw_draw_if_possible =
       is_using_raw_draw_ && !quad->ShouldDrawWithBlending();
   ScopedSkImageBuilder builder(
-      this, quad->resource_id(), /*maybe_concurrent_reads=*/false,
+      this, quad->resource_id, /*maybe_concurrent_reads=*/false,
       quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       /*origin=*/kTopLeft_GrSurfaceOrigin,
       /*override_color_space=*/nullptr, raw_draw_if_possible);
@@ -4080,8 +4077,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     overlay->display_rect =
         quad->shared_quad_state->quad_to_target_transform.MapRect(
             gfx::RectF(filter_bounds));
-    // Apply all clipping because we can't always delegate quads that extend
-    // beyond window bounds in Lacros.
+    // Apply all clipping because we may not always delegate quads that extend
+    // beyond window bounds.
     gfx::Rect apply_clip = gfx::Rect(current_frame()->device_viewport_size);
     if (overlay->clip_rect.has_value()) {
       apply_clip.Intersect(overlay->clip_rect.value());

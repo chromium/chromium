@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_impl.h"
 
 #import "base/memory/ptr_util.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer_bridge.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_system_notification_observer.h"
 #import "ios/web/common/features.h"
 
@@ -165,11 +165,10 @@ bool FullscreenControllerImpl::IsForceFullscreenMode() const {
   return model_.IsForceFullscreenMode();
 }
 
-void FullscreenControllerImpl::EnterForceFullscreenMode() {
-  if (IsForceFullscreenMode()) {
-    return;
-  }
+void FullscreenControllerImpl::EnterForceFullscreenMode(
+    bool insets_update_enabled) {
   model_.SetForceFullscreenMode(true);
+  model_.SetInsetsUpdateEnabled(insets_update_enabled);
   // Disable fullscreen because:
   // - It interfers with the animation when moving the secondary toolbar above
   // the keyboard.
@@ -184,6 +183,7 @@ void FullscreenControllerImpl::ExitForceFullscreenMode() {
   }
   DecrementDisabledCounter();
   model_.SetForceFullscreenMode(false);
+  model_.SetInsetsUpdateEnabled(true);
   mediator_.ExitFullscreenWithoutAnimation();
 }
 

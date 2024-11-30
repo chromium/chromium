@@ -53,14 +53,6 @@ extern const base::FeatureParam<double>
 extern const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsAiAssistanceNetworkAgentUserTier;
 
-BASE_DECLARE_FEATURE(kDevToolsAiAssistancePerformanceAgentDogfood);
-extern const base::FeatureParam<std::string>
-    kDevToolsAiAssistancePerformanceAgentDogfoodModelId;
-extern const base::FeatureParam<double>
-    kDevToolsAiAssistancePerformanceAgentDogfoodTemperature;
-extern const base::FeatureParam<DevToolsFreestylerUserTier>
-    kDevToolsAiAssistancePerformanceAgentDogfoodUserTier;
-
 BASE_DECLARE_FEATURE(kDevToolsAiAssistancePerformanceAgent);
 extern const base::FeatureParam<std::string>
     kDevToolsAiAssistancePerformanceAgentModelId;

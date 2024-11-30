@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] <form target=_blank>.submit()
+  assert_true: popup test window should have user activation expected true got false
+[FAIL] <form target=_blank>.requestSubmit()
+  assert_true: popup test window should have user activation expected true got false
+Harness: the test ran to completion.
+

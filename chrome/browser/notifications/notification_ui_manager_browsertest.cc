@@ -71,7 +71,7 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
     const std::string& log() { return log_; }
 
    private:
-    ~TestDelegate() override {}
+    ~TestDelegate() override = default;
     std::string log_;
   };
 

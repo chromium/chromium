@@ -274,9 +274,9 @@ void GenerateNtlmResponseV1WithSessionSecurity(
   GenerateSessionHashV1WithSessionSecurity(server_challenge, client_challenge,
                                            session_hash);
 
-  GenerateResponseDesl(
-      ntlm_hash, base::make_span(session_hash).subspan<0, kChallengeLen>(),
-      ntlm_response);
+  GenerateResponseDesl(ntlm_hash,
+                       base::span(session_hash).first<kChallengeLen>(),
+                       ntlm_response);
 }
 
 void GenerateResponsesV1WithSessionSecurity(

@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -86,9 +87,6 @@ class HttpStreamPool::AttemptManager
   void StartJob(Job* job,
                 RequestPriority priority,
                 const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-                RespectLimits respect_limits,
-                bool enable_ip_based_pooling,
-                bool enable_alternative_services,
                 quic::ParsedQuicVersion quic_version,
                 const NetLogWithSource& net_log);
 
@@ -115,7 +113,7 @@ class HttpStreamPool::AttemptManager
   size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
 
   // Cancels all in-flight attempts.
-  void CancelInFlightAttempts();
+  void CancelInFlightAttempts(StreamCloseReason reason);
 
   // Called when `job` is going to be destroyed.
   void OnJobComplete(Job* job);
@@ -261,6 +259,16 @@ class HttpStreamPool::AttemptManager
   // effects.
   CanAttemptResult CanAttemptConnection();
 
+  // Returns true only when there are no jobs that ignore the pool and group
+  // limits.
+  bool ShouldRespectLimits() const;
+
+  // Returns true only when there are no jobs that disable IP based pooling.
+  bool IsIpBasedPoolingEnabled() const;
+
+  // Returns true only when there are no jobs that disable alternative services.
+  bool IsAlternativeServiceEnabled() const;
+
   // Returns true when connection attempts should be throttled because there is
   // an in-flight attempt and the destination is known to support HTTP/2.
   bool ShouldThrottleAttemptForSpdy();
@@ -285,10 +293,12 @@ class HttpStreamPool::AttemptManager
   // Notifies all preconnects of completion.
   void NotifyPreconnectsComplete(int rv);
 
-  // Called after completion of a connection attempt to decriment stream
+  // Called after completion of a connection attempt to decrement stream
   // counts in preconnect entries. Invokes the callback of an entry when the
-  // entry's stream counts becomes zero (i.e., `this` has enough streams).
-  void ProcessPreconnectsAfterAttemptComplete(int rv);
+  // entry's stream counts is less than or equal to `active_stream_count`
+  // (i.e., `this` has enough streams).
+  void ProcessPreconnectsAfterAttemptComplete(int rv,
+                                              size_t active_stream_count);
 
   // Creates a text based stream and notifies the highest priority job.
   void CreateTextBasedStreamAndNotify(
@@ -363,12 +373,6 @@ class HttpStreamPool::AttemptManager
 
   const NetLogWithSource net_log_;
 
-  RespectLimits respect_limits_ = RespectLimits::kRespect;
-
-  bool enable_ip_based_pooling_ = true;
-
-  bool enable_alternative_services_ = true;
-
   NextProtoSet allowed_alpns_ = NextProtoSet::All();
 
   // Holds jobs that are waiting for notifications.
@@ -376,6 +380,12 @@ class HttpStreamPool::AttemptManager
   // Holds jobs that are already notified results. We need to keep them to avoid
   // dangling pointers.
   std::set<raw_ptr<Job>> notified_jobs_;
+
+  base::flat_set<raw_ptr<Job>> limit_ignoring_jobs_;
+
+  base::flat_set<raw_ptr<Job>> ip_based_pooling_disabling_jobs_;
+
+  base::flat_set<raw_ptr<Job>> alternative_service_disabling_jobs_;
 
   // Holds preconnect requests.
   std::set<std::unique_ptr<PreconnectEntry>, base::UniquePtrComparator>

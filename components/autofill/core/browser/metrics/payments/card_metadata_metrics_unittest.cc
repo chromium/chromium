@@ -223,7 +223,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   // Verify that:
   // 1. if the card suggestion selected had metadata,
@@ -272,7 +272,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -328,11 +328,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().back().global_id(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+                           AutofillTriggerSource::kPopup, card());
 
   // Verify that:
   // 1. if the card suggestion filled had metadata,
@@ -379,8 +378,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   // Fill the suggestion again.
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().back().global_id(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+                           AutofillTriggerSource::kPopup, card());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -418,11 +416,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().back().global_id(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+                           AutofillTriggerSource::kPopup, card());
   SubmitForm(form());
 
   // Verify that:
@@ -550,7 +547,7 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(
           kTestMaskedCardId),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   std::string latency_histogram_prefix =
       "Autofill.CreditCard.SelectionLatencySinceShown.";
@@ -562,19 +559,16 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   // 2. card_metadata_available() and card_art_image_enabled() both return true.
   if (card_metadata_available()) {
     if (card_product_name_enabled() && card_art_image_enabled()) {
-      latency_histogram_suffix =
-          autofill_metrics::kProductNameAndArtImageBothShownSuffix;
+      latency_histogram_suffix = kProductNameAndArtImageBothShownSuffix;
     } else if (card_product_name_enabled()) {
-      latency_histogram_suffix = autofill_metrics::kProductNameShownOnlySuffix;
+      latency_histogram_suffix = kProductNameShownOnlySuffix;
     } else if (card_art_image_enabled()) {
-      latency_histogram_suffix = autofill_metrics::kArtImageShownOnlySuffix;
+      latency_histogram_suffix = kArtImageShownOnlySuffix;
     } else {
-      latency_histogram_suffix =
-          autofill_metrics::kProductNameAndArtImageNotShownSuffix;
+      latency_histogram_suffix = kProductNameAndArtImageNotShownSuffix;
     }
   } else {
-    latency_histogram_suffix =
-        autofill_metrics::kProductNameAndArtImageNotShownSuffix;
+    latency_histogram_suffix = kProductNameAndArtImageNotShownSuffix;
   }
   histogram_tester.ExpectUniqueSample(
       latency_histogram_prefix + latency_histogram_suffix, 2000, 1);
@@ -645,7 +639,7 @@ class CardBenefitFormEventMetricsTest
     ShowCardSuggestions();
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form(), form().fields()[credit_card_number_field_index()].global_id(),
-        *card, {.trigger_source = AutofillTriggerSource::kPopup});
+        *card, AutofillTriggerSource::kPopup);
   }
 
   // Simulating selecting and filling the given `card` from a list of
@@ -656,8 +650,7 @@ class CardBenefitFormEventMetricsTest
         .OnCreditCardFetched(
             form(),
             form().fields()[credit_card_number_field_index()].global_id(),
-            AutofillTriggerSource::kPopup,
-            /*result=*/CreditCardFetchResult::kSuccess, card);
+            AutofillTriggerSource::kPopup, CHECK_DEREF(card));
   }
 
   const CreditCard* GetCreditCard() {

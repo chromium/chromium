@@ -14,7 +14,7 @@ import {
   SummaryEnableState,
   TranscriptionEnableState,
 } from './state/settings.js';
-import {assertExists} from './utils/assert.js';
+import {assertExists, checkEnumVariant} from './utils/assert.js';
 
 interface ConfigForTest {
   includeSystemAudio: boolean;
@@ -22,6 +22,7 @@ interface ConfigForTest {
   speakerLabelForceEnabled: boolean;
   summaryForceEnabled: boolean;
   transcriptionForceEnabled: boolean;
+  transcriptionLanguage: string;
 }
 
 interface RecordingDataForTest {
@@ -30,6 +31,7 @@ interface RecordingDataForTest {
   title: string;
   powers: number[];
   textTokens?: TextToken[];
+  language?: string;
 }
 
 function base64ToBlob(data: string): Blob {
@@ -42,6 +44,12 @@ function base64ToBlob(data: string): Blob {
     byteArray[i] = byteCharacters.charCodeAt(i);
   }
   return new Blob([byteArray], {type: mimeType});
+}
+
+function stringToLanguageCode(language: string): LanguageCode {
+  const languageCode = checkEnumVariant(LanguageCode, language);
+  // Returns en-US if language cannot be transformed to `LanguageCode`.
+  return languageCode ?? LanguageCode.EN_US;
 }
 
 /**
@@ -86,6 +94,8 @@ export class TestHelper {
       }
       if (config.transcriptionForceEnabled) {
         s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
+        s.transcriptionLanguage =
+          stringToLanguageCode(config.transcriptionLanguage);
       }
     });
   }
@@ -99,7 +109,8 @@ export class TestHelper {
     recordings: RecordingDataForTest[],
   ): Promise<void> {
     for (const data of recordings) {
-      const {audio, durationMs, powers, title, textTokens: tokens} = data;
+      const {audio, durationMs, powers, title, textTokens: tokens, language} =
+        data;
       const blob = base64ToBlob(audio);
 
       const params = {
@@ -108,7 +119,7 @@ export class TestHelper {
         recordedAt: Date.now(),
         powers: powers,
         transcription: tokens !== undefined ?
-          new Transcription(tokens, LanguageCode.EN_US) :
+          new Transcription(tokens, stringToLanguageCode(language ?? 'en-US')) :
           null,
       };
       await useRecordingDataManager().createRecording(params, blob);
@@ -118,9 +129,8 @@ export class TestHelper {
   /**
    * Installs the model used for transcription.
    */
-  static installTranscriptionModel(): void {
-    // TODO(hsuanling): Support testing different languages
-    void usePlatformHandler().installSoda(LanguageCode.EN_US);
+  static installTranscriptionModel(language = 'en-US'): void {
+    void usePlatformHandler().installSoda(stringToLanguageCode(language));
   }
 
   /**
@@ -128,9 +138,9 @@ export class TestHelper {
    *
    * @return Boolean indicating if the transcription model is installed.
    */
-  static isTranscriptionModelInstalled(): boolean {
-    // TODO(hsuanling): Support testing different languages
-    const state = usePlatformHandler().getSodaState(LanguageCode.EN_US).value;
+  static isTranscriptionModelInstalled(language = 'en-US'): boolean {
+    const state =
+      usePlatformHandler().getSodaState(stringToLanguageCode(language)).value;
     return state.kind === 'installed';
   }
 

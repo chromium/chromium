@@ -153,8 +153,7 @@ void AutofillManager::LogTypePredictionsAvailable(
 }
 
 AutofillManager::AutofillManager(AutofillDriver* driver)
-    : driver_(CHECK_DEREF(driver)),
-      form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
+    : driver_(CHECK_DEREF(driver)) {
   if (auto* translate_driver = client().GetTranslateDriver()) {
     translate_observation_.Observe(translate_driver);
   }
@@ -180,7 +179,6 @@ void AutofillManager::OnAutofillDriverLifecycleStateChanged(
 void AutofillManager::Reset() {
   parsing_weak_ptr_factory_.InvalidateWeakPtrs();
   form_structures_.clear();
-  form_interactions_ukm_logger_ = CreateFormInteractionsUkmLogger();
 }
 
 void AutofillManager::OnLanguageDetermined(
@@ -253,7 +251,7 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
 void AutofillManager::OnFormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {
-  auto erase_removed_forms = [&]() {
+  auto erase_removed_forms = [&] {
     // Erase forms that have been removed from the DOM. This prevents
     // |form_structures_| from growing up its upper bound
     // kAutofillManagerMaxFormCacheSize.
@@ -502,12 +500,6 @@ bool AutofillManager::GetCachedFormAndField(
   return *autofill_field != nullptr;
 }
 
-std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
-AutofillManager::CreateFormInteractionsUkmLogger() {
-  return std::make_unique<autofill_metrics::FormInteractionsUkmLogger>(
-      &client(), client().GetUkmRecorder());
-}
-
 size_t AutofillManager::FindCachedFormsBySignature(
     FormSignature form_signature,
     std::vector<raw_ptr<FormStructure, VectorExperimental>>* form_structures)
@@ -539,12 +531,26 @@ void AutofillManager::TriggerFormExtractionInAllFrames(
 }
 
 base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-AutofillManager::GetServerPredictionsForForm(FormGlobalId form_id) const {
+AutofillManager::GetServerPredictionsForForm(
+    FormGlobalId form_id,
+    const std::vector<FieldGlobalId>& field_ids) const {
   FormStructure* cached_form = FindCachedFormById(form_id);
   if (!cached_form) {
     return {};
   }
-  return cached_form->GetServerPredictions();
+  return cached_form->GetServerPredictions(field_ids);
+}
+
+base::flat_map<FieldGlobalId, FieldType>
+AutofillManager::GetHeursticPredictionForForm(
+    HeuristicSource source,
+    FormGlobalId form_id,
+    const std::vector<FieldGlobalId>& field_ids) const {
+  FormStructure* cached_form = FindCachedFormById(form_id);
+  if (!cached_form) {
+    return {};
+  }
+  return cached_form->GetHeuristicPredictions(source, field_ids);
 }
 
 void AutofillManager::ParseFormsAsync(
@@ -817,10 +823,10 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.
-  if (auto* logger = form_interactions_ukm_logger()) {
-    for (FormStructure* cur_form : queried_forms) {
-      autofill_metrics::LogQualityMetricsBasedOnAutocomplete(*cur_form, logger);
-    }
+  for (FormStructure* cur_form : queried_forms) {
+    autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
+        *cur_form, client().GetFormInteractionsUkmLogger(),
+        driver().GetPageUkmSourceId());
   }
 
   // Send field type predictions to the renderer so that it can possibly

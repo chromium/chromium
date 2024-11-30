@@ -30,6 +30,31 @@
 
 namespace viz {
 
+namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+
+void ForwardVizInputTransferToken(
+    const input::ScopedInputTransferToken& viz_input_token,
+    const gpu::SurfaceHandle& surface_handle) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaGlobalRef<jobject> viz_input_token_java(
+      env, base::AndroidInputReceiverCompat::GetInstance()
+               .AInputTransferToken_toJavaFn(
+                   env, viz_input_token.a_input_transfer_token()));
+
+  input::InputTokenForwarder::GetInstance()->ForwardVizInputTransferToken(
+      surface_handle, viz_input_token_java);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
+bool IsFrameMetadataAvailable(CompositorFrameSinkSupport* support) {
+  return support && support->GetLastActivatedFrameMetadata();
+}
+
+}  // namespace
+
 FrameSinkMetadata::FrameSinkMetadata(
     uint32_t grouping_id,
     std::unique_ptr<RenderInputRouterSupportBase> support,
@@ -47,7 +72,8 @@ FrameSinkMetadata& FrameSinkMetadata::operator=(FrameSinkMetadata&& other) =
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-constexpr char kInputSurfaceControlName[] = "ChromeInputSurfaceControl";
+constexpr char kInputSCName[] = "ChromeInputSurfaceControl";
+constexpr char kParentInputSCName[] = "ChromeParentInputSurfaceControl";
 
 constexpr char kInputReceiverCreationResultHistogram[] =
     "Android.InputOnViz.InputReceiverCreationResult";
@@ -62,7 +88,8 @@ enum class CreateAndroidInputReceiverResult {
   kFailedNullInputTransferToken = 4,
   kFailedNullCallbacks = 5,
   kSuccessfulButNullTransferToken = 6,
-  kMaxValue = kSuccessfulButNullTransferToken,
+  kReuseExistingInputReceiver = 7,
+  kMaxValue = kReuseExistingInputReceiver,
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -92,9 +119,10 @@ void InputManager::OnCreateCompositorFrameSink(
   if (create_input_receiver) {
     CHECK(is_root);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&InputManager::CreateAndroidInputReceiver,
-                                  weak_ptr_factory_.GetWeakPtr(), frame_sink_id,
-                                  surface_handle));
+        FROM_HERE,
+        base::BindOnce(&InputManager::CreateOrReuseAndroidInputReceiver,
+                       weak_ptr_factory_.GetWeakPtr(), frame_sink_id,
+                       surface_handle));
     return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -124,11 +152,14 @@ void InputManager::OnCreateCompositorFrameSink(
   auto rir_delegate = std::make_unique<RenderInputRouterDelegateImpl>(
       it->second, *this, frame_sink_id, grouping_id);
 
+  // Sets up RenderInputRouter.
   auto render_input_router = std::make_unique<input::RenderInputRouter>(
       /* host */ nullptr,
       /* fling_scheduler */ nullptr,
       /* delegate */ rir_delegate.get(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  render_input_router->SetupInputRouter(
+      GetDeviceScaleFactorForId(frame_sink_id));
 
   frame_sink_metadata_map_.emplace(std::make_pair(
       frame_sink_id,
@@ -145,6 +176,12 @@ void InputManager::OnDestroyedCompositorFrameSink(
     const FrameSinkId& frame_sink_id) {
   TRACE_EVENT("viz", "InputManager::OnDestroyedCompositorFrameSink",
               "frame_sink_id", frame_sink_id);
+#if BUILDFLAG(IS_ANDROID)
+  if (receiver_data_) {
+    receiver_data_->OnDestroyedCompositorFrameSink(frame_sink_id);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   auto rir_iter = rir_map_.find(frame_sink_id);
   // Return early if |frame_sink_id| is associated with a non layer tree frame
   // sink.
@@ -171,6 +208,21 @@ void InputManager::OnDestroyedCompositorFrameSink(
   }
 }
 
+void InputManager::OnFrameSinkDeviceScaleFactorChanged(
+    const FrameSinkId& frame_sink_id,
+    float device_scale_factor) {
+  auto rir_iter = rir_map_.find(frame_sink_id);
+  // Return early if |frame_sink_id| is associated with a non layer tree frame
+  // sink.
+  if (rir_iter == rir_map_.end()) {
+    return;
+  }
+
+  // Update device scale factor in RenderInputRouter from latest activated
+  // compositor frame.
+  rir_iter->second->SetDeviceScaleFactor(device_scale_factor);
+}
+
 input::TouchEmulator* InputManager::GetTouchEmulator(bool create_if_necessary) {
   return nullptr;
 }
@@ -183,7 +235,20 @@ float InputManager::GetDeviceScaleFactorForId(
     const FrameSinkId& frame_sink_id) {
   auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
   CHECK(support);
-  CHECK(support->GetLastActivatedFrameMetadata());
+
+  if (!IsFrameMetadataAvailable(support)) {
+    // If a CompositorFrame hasn't been submitted yet for a child frame, we fall
+    // back to use RootCompositorFrameSink's submitted frame metadata.
+    support = frame_sink_manager_->GetFrameSinkForId(
+        GetRootCompositorFrameSinkId(frame_sink_id));
+
+    // If there's still no activated frame metadata available, return a default
+    // scale factor of 1.0.
+    if (!IsFrameMetadataAvailable(support)) {
+      return 1.0;
+    }
+  }
+
   return support->GetLastActivatedFrameMetadata()->device_scale_factor;
 }
 
@@ -301,9 +366,15 @@ void InputManager::OnRIRDelegateClientDisconnected(uint32_t grouping_id) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void InputManager::CreateAndroidInputReceiver(
+void InputManager::CreateOrReuseAndroidInputReceiver(
     const FrameSinkId& frame_sink_id,
     const gpu::SurfaceHandle& surface_handle) {
+  if (receiver_data_ && receiver_data_->root_frame_sink_id().is_valid()) {
+    // Only allow input receiver "creation" for single root compositor frame
+    // sink.
+    return;
+  }
+
   // This results in a sync binder to Browser, the same call is made on
   // CompositorGpu thread as well but to keep the code simple and not having to
   // plumb through Android SurfaceControl and InputTransferToken, this duplicate
@@ -317,10 +388,29 @@ void InputManager::CreateAndroidInputReceiver(
       absl::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
 
   gl::ScopedANativeWindow window(scoped_java_surface);
-  scoped_refptr<gfx::SurfaceControl::Surface> surface =
+  scoped_refptr<gfx::SurfaceControl::Surface> parent_input_surface =
       base::MakeRefCounted<gfx::SurfaceControl::Surface>(
-          window.a_native_window(), kInputSurfaceControlName);
-  if (!surface->surface()) {
+          window.a_native_window(), kParentInputSCName);
+
+  if (receiver_data_) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kInputReceiverCreationResultHistogram,
+        CreateAndroidInputReceiverResult::kReuseExistingInputReceiver);
+
+    receiver_data_->AttachToFrameSink(frame_sink_id, parent_input_surface);
+
+    const input::ScopedInputTransferToken& viz_input_token =
+        receiver_data_->viz_input_token();
+    DCHECK(viz_input_token);
+
+    ForwardVizInputTransferToken(viz_input_token, surface_handle);
+    return;
+  }
+
+  scoped_refptr<gfx::SurfaceControl::Surface> input_surface =
+      base::MakeRefCounted<gfx::SurfaceControl::Surface>(*parent_input_surface,
+                                                         kInputSCName);
+  if (!parent_input_surface->surface() || !input_surface->surface()) {
     UMA_HISTOGRAM_ENUMERATION(
         kInputReceiverCreationResultHistogram,
         CreateAndroidInputReceiverResult::kFailedNullSurfaceControl);
@@ -345,12 +435,13 @@ void InputManager::CreateAndroidInputReceiver(
     return;
   }
 
-  AndroidInputCallback android_input_callback(frame_sink_id, this);
+  std::unique_ptr<input::AndroidInputCallback> android_input_callback =
+      std::make_unique<input::AndroidInputCallback>(frame_sink_id, this);
   // Destructor of |ScopedInputReceiverCallbacks| will call
   // |AInputReceiverCallbacks_release|, so we don't have to explicitly unset the
   // motion event callback we set below using
   // |AInputReceiverCallbacks_setMotionEventCallback|.
-  input::ScopedInputReceiverCallbacks callbacks(&android_input_callback);
+  input::ScopedInputReceiverCallbacks callbacks(android_input_callback.get());
   if (!callbacks) {
     UMA_HISTOGRAM_ENUMERATION(
         kInputReceiverCreationResultHistogram,
@@ -361,11 +452,11 @@ void InputManager::CreateAndroidInputReceiver(
   base::AndroidInputReceiverCompat::GetInstance()
       .AInputReceiverCallbacks_setMotionEventCallbackFn(
           callbacks.a_input_receiver_callbacks(),
-          AndroidInputCallback::OnMotionEventThunk);
+          input::AndroidInputCallback::OnMotionEventThunk);
 
   input::ScopedInputReceiver receiver(
-      looper, browser_input_token.a_input_transfer_token(), surface->surface(),
-      callbacks.a_input_receiver_callbacks());
+      looper, browser_input_token.a_input_transfer_token(),
+      input_surface->surface(), callbacks.a_input_receiver_callbacks());
 
   if (!receiver) {
     UMA_HISTOGRAM_ENUMERATION(kInputReceiverCreationResultHistogram,
@@ -385,14 +476,12 @@ void InputManager::CreateAndroidInputReceiver(
       kInputReceiverCreationResultHistogram,
       CreateAndroidInputReceiverResult::kSuccessfullyCreated);
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaGlobalRef<jobject> viz_input_token_java(
-      env, base::AndroidInputReceiverCompat::GetInstance()
-               .AInputTransferToken_toJavaFn(
-                   env, viz_input_token.a_input_transfer_token()));
+  ForwardVizInputTransferToken(viz_input_token, surface_handle);
 
-  input::InputTokenForwarder::GetInstance()->ForwardVizInputTransferToken(
-      surface_handle, viz_input_token_java);
+  receiver_data_ = std::make_unique<input::InputReceiverData>(
+      parent_input_surface, input_surface, std::move(browser_input_token),
+      std::move(android_input_callback), std::move(callbacks),
+      std::move(receiver), std::move(viz_input_token));
 }
 
 bool InputManager::OnMotionEvent(AInputEvent* input_event,

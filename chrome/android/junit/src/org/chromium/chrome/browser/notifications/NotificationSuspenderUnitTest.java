@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import android.content.Context;
@@ -37,7 +38,6 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -295,13 +295,13 @@ public class NotificationSuspenderUnitTest {
         Mockito.verify(mNotificationSuspenderJniMock)
                 .reDisplayNotifications(
                         ArgumentMatchers.eq(mProfile),
-                        /* origins= */ (List<String>)
-                                MockitoHamcrest.argThat(
-                                        containsInAnyOrder(
-                                                TEST_ORIGIN,
-                                                TEST_ORIGIN_HTTP,
-                                                TEST_OTHER_ORIGIN,
-                                                TEST_OTHER_ORIGIN_HTTP)));
+                        /* origins= */ MockitoHamcrest.argThat(
+                                arrayContainingInAnyOrder(
+                                        TEST_ORIGIN,
+                                        TEST_ORIGIN_HTTP,
+                                        TEST_OTHER_ORIGIN,
+                                        TEST_OTHER_ORIGIN_HTTP),
+                                String[].class));
     }
 
     /**
@@ -321,13 +321,13 @@ public class NotificationSuspenderUnitTest {
         Mockito.verify(mNotificationSuspenderJniMock)
                 .reDisplayNotifications(
                         ArgumentMatchers.eq(mProfile),
-                        /* origins= */ (List<String>)
-                                MockitoHamcrest.argThat(
-                                        containsInAnyOrder(
-                                                TEST_ORIGIN_HTTP,
-                                                TEST_ORIGIN_SUBDOMAIN,
-                                                TEST_ORIGIN_OTHER_PORT,
-                                                TEST_OTHER_ORIGIN)));
+                        /* origins= */ MockitoHamcrest.argThat(
+                                arrayContainingInAnyOrder(
+                                        TEST_ORIGIN_HTTP,
+                                        TEST_ORIGIN_SUBDOMAIN,
+                                        TEST_ORIGIN_OTHER_PORT,
+                                        TEST_OTHER_ORIGIN),
+                                String[].class));
     }
 
     /**

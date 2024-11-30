@@ -44,11 +44,10 @@
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/compositor_lock.h"
+#include "ui/compositor/compositor_metrics_tracker_host.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/host_begin_frame_observer.h"
 #include "ui/compositor/layer_animator_collection.h"
-#include "ui/compositor/throughput_tracker.h"
-#include "ui/compositor/throughput_tracker_host.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size.h"
@@ -59,7 +58,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-}
+}  // namespace base
 
 namespace cc {
 class AnimationHost;
@@ -82,13 +81,14 @@ class Size;
 
 namespace gpu {
 class GpuMemoryBufferManager;
-}
+}  // namespace gpu
 
 namespace viz {
 namespace mojom {
 class DisplayPrivate;
 class ExternalBeginFrameController;
 }  // namespace mojom
+
 class HostFrameSinkManager;
 class LocalSurfaceId;
 class RasterContextProvider;
@@ -99,7 +99,7 @@ class Compositor;
 class Layer;
 class ScopedAnimationDurationScaleMode;
 class ScrollInputHandler;
-class ThroughputTracker;
+class CompositorMetricsTracker;
 struct PendingBeginFrameArgs;
 
 constexpr int kCompositorLockTimeoutMs = 67;
@@ -149,7 +149,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
                                      public cc::LayerTreeHostClient,
                                      public cc::LayerTreeHostSingleThreadClient,
                                      public viz::HostFrameSinkClient,
-                                     public ThroughputTrackerHost {
+                                     public CompositorMetricsTrackerHost {
  public:
   Compositor(const viz::FrameSinkId& frame_sink_id,
              ui::ContextFactory* context_factory,
@@ -377,8 +377,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
       bool force,
       base::OnceCallback<void(const viz::BeginFrameAck&)> callback);
 
-  // Creates a ThroughputTracker for tracking this Compositor.
-  ThroughputTracker RequestNewThroughputTracker();
+  // Creates a CompositorMetricsTracker for tracking this Compositor.
+  CompositorMetricsTracker RequestNewCompositorMetricsTracker();
 
   // Returns a percentage of dropped frames of the last second.
   double GetPercentDroppedFrames() const;
@@ -427,7 +427,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
       cc::ActiveFrameSequenceTrackers trackers) override {}
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
-  void NotifyThroughputTrackerResults(
+  void NotifyCompositorMetricsTrackerResults(
       cc::CustomTrackerResults results) override;
   void DidObserveFirstScrollDelay(
       int source_frame_number,
@@ -446,12 +446,12 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void OnFrameTokenChanged(uint32_t frame_token,
                            base::TimeTicks activation_time) override;
 
-  // ThroughputTrackerHost implementation.
-  void StartThroughputTracker(
+  // CompositorMetricsTrackerHost implementation.
+  void StartMetricsTracker(
       TrackerId tracker_id,
-      ThroughputTrackerHost::ReportCallback callback) override;
-  bool StopThroughputTracker(TrackerId tracker_id) override;
-  void CancelThroughputTracker(TrackerId tracker_id) override;
+      CompositorMetricsTrackerHost::ReportCallback callback) override;
+  bool StopMetricsTracker(TrackerId tracker_id) override;
+  void CancelMetricsTracker(TrackerId tracker_id) override;
 
   // base::PowerSuspendObserver:
   void OnResume() override;
@@ -499,9 +499,9 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
     return host_->saved_events_metrics_count_for_testing();
   }
 
-  // Returns true if there are throughput trackers.
-  bool has_throughput_trackers_for_testing() const {
-    return !throughput_tracker_map_.empty();
+  // Returns true if there are compositor metrics trackers.
+  bool has_compositor_metrics_trackers_for_testing() const {
+    return !compositor_metrics_tracker_map_.empty();
   }
 
   const cc::LayerTreeHost* host_for_testing() const { return host_.get(); }
@@ -641,7 +641,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // See go/report-ux-metrics-at-painting for details.
   bool animation_started_ = false;
 
-  TrackerId next_throughput_tracker_id_ = 1u;
+  TrackerId next_compositor_metrics_tracker_id_ = 1u;
   struct TrackerState {
     TrackerState();
     TrackerState(TrackerState&&);
@@ -651,15 +651,17 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
     // Whether a tracker is waiting for report and `report_callback` should be
     // invoked. This is set to true when a tracker is stopped.
     bool should_report = false;
+
     // Whether the report for a tracker has happened. This is set when an
     // involuntary report happens before the tracker is stopped and set
     // `should_report` field above.
     bool report_attempted = false;
+
     // Invoked to send report to the owner of a tracker.
-    ThroughputTrackerHost::ReportCallback report_callback;
+    CompositorMetricsTrackerHost::ReportCallback report_callback;
   };
-  using ThroughputTrackerMap = base::flat_map<TrackerId, TrackerState>;
-  ThroughputTrackerMap throughput_tracker_map_;
+  using CompositorMetricsTrackerMap = base::flat_map<TrackerId, TrackerState>;
+  CompositorMetricsTrackerMap compositor_metrics_tracker_map_;
 
   base::WeakPtrFactory<Compositor> context_creation_weak_ptr_factory_{this};
   base::WeakPtrFactory<Compositor> weak_ptr_factory_{this};

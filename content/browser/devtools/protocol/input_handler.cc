@@ -69,7 +69,7 @@ gfx::Vector2dF CssPixelsToVector2dF(double x, double y, float scale_factor) {
   return gfx::Vector2dF(x * scale_factor, y * scale_factor);
 }
 
-bool StringToGestureSourceType(Maybe<std::string> in,
+bool StringToGestureSourceType(std::optional<std::string> in,
                                content::mojom::GestureSourceType& out) {
   if (!in.has_value()) {
     out = content::mojom::GestureSourceType::kDefaultInput;
@@ -128,7 +128,7 @@ int GetEventModifiers(int modifiers,
   return result;
 }
 
-base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
+base::TimeTicks GetEventTimeTicks(const std::optional<double>& timestamp) {
   // Convert timestamp, in seconds since unix epoch, to an event timestamp
   // which is time ticks since platform start time.
   return timestamp.has_value()
@@ -138,7 +138,7 @@ base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
 
 bool SetKeyboardEventText(
     base::span<char16_t, blink::WebKeyboardEvent::kTextLengthCap> to,
-    Maybe<std::string> from) {
+    std::optional<std::string> from) {
   if (!from.has_value()) {
     return true;
   }
@@ -388,19 +388,19 @@ CreateWebMouseEvent(const std::string& event_type,
                     double x,
                     double y,
                     float scale_factor,
-                    Maybe<int> modifiers,
-                    Maybe<double> timestamp,
-                    Maybe<std::string> button,
-                    Maybe<int> buttons,
-                    Maybe<int> click_count,
-                    Maybe<double> force,
-                    Maybe<double> tangential_pressure,
-                    Maybe<double> tilt_x,
-                    Maybe<double> tilt_y,
-                    Maybe<int> twist,
-                    Maybe<double> delta_x,
-                    Maybe<double> delta_y,
-                    Maybe<std::string> pointer_type) {
+                    std::optional<int> modifiers,
+                    std::optional<double> timestamp,
+                    std::optional<std::string> button,
+                    std::optional<int> buttons,
+                    std::optional<int> click_count,
+                    std::optional<double> force,
+                    std::optional<double> tangential_pressure,
+                    std::optional<double> tilt_x,
+                    std::optional<double> tilt_y,
+                    std::optional<int> twist,
+                    std::optional<double> delta_x,
+                    std::optional<double> delta_y,
+                    std::optional<std::string> pointer_type) {
   blink::WebInputEvent::Type type = GetMouseEventType(event_type);
   if (type == blink::WebInputEvent::Type::kUndefined) {
     return base::unexpected(Response::InvalidParams(
@@ -471,8 +471,8 @@ CreateWebMouseEvent(const std::string& event_type,
 base::expected<std::vector<blink::WebTouchEvent>, protocol::Response>
 CreateWebTouchEvents(
     const std::string& event_type,
-    Maybe<int> modifiers,
-    Maybe<double> timestamp,
+    std::optional<int> modifiers,
+    std::optional<double> timestamp,
     float scale_factor,
     base::flat_map<blink::PointerId, blink::WebTouchPoint>& touched_points,
     std::unique_ptr<Array<Input::TouchPoint>> touch_points) {
@@ -702,7 +702,7 @@ class InputHandler::InputInjector
   }
 
   void InjectKeyboardEvent(const input::NativeWebKeyboardEvent& keyboard_event,
-                           Maybe<Array<std::string>> commands,
+                           std::unique_ptr<Array<std::string>> commands,
                            std::unique_ptr<DispatchKeyEventCallback> callback) {
     if (!widget_host_) {
       callback->sendFailure(Response::InternalError());
@@ -1112,20 +1112,20 @@ Response InputHandler::Disable() {
 
 void InputHandler::DispatchKeyEvent(
     const std::string& type,
-    Maybe<int> modifiers,
-    Maybe<double> timestamp,
-    Maybe<std::string> text,
-    Maybe<std::string> unmodified_text,
-    Maybe<std::string> key_identifier,
-    Maybe<std::string> code,
-    Maybe<std::string> key,
-    Maybe<int> windows_virtual_key_code,
-    Maybe<int> native_virtual_key_code,
-    Maybe<bool> auto_repeat,
-    Maybe<bool> is_keypad,
-    Maybe<bool> is_system_key,
-    Maybe<int> location,
-    Maybe<Array<std::string>> commands,
+    std::optional<int> modifiers,
+    std::optional<double> timestamp,
+    std::optional<std::string> text,
+    std::optional<std::string> unmodified_text,
+    std::optional<std::string> key_identifier,
+    std::optional<std::string> code,
+    std::optional<std::string> key,
+    std::optional<int> windows_virtual_key_code,
+    std::optional<int> native_virtual_key_code,
+    std::optional<bool> auto_repeat,
+    std::optional<bool> is_keypad,
+    std::optional<bool> is_system_key,
+    std::optional<int> location,
+    std::unique_ptr<Array<std::string>> commands,
     std::unique_ptr<DispatchKeyEventCallback> callback) {
   blink::WebInputEvent::Type web_event_type;
 
@@ -1234,8 +1234,8 @@ void InputHandler::ImeSetComposition(
     const std::string& text,
     int selection_start,
     int selection_end,
-    Maybe<int> replacement_start,
-    Maybe<int> replacement_end,
+    std::optional<int> replacement_start,
+    std::optional<int> replacement_end,
     std::unique_ptr<ImeSetCompositionCallback> callback) {
   std::u16string text16 = base::UTF8ToUTF16(text);
   if (!host_ || !host_->GetRenderWidgetHost() || !web_contents_) {
@@ -1288,19 +1288,19 @@ void InputHandler::DispatchMouseEvent(
     const std::string& event_type,
     double x,
     double y,
-    Maybe<int> modifiers,
-    Maybe<double> timestamp,
-    Maybe<std::string> button,
-    Maybe<int> buttons,
-    Maybe<int> click_count,
-    Maybe<double> force,
-    Maybe<double> tangential_pressure,
-    Maybe<double> tilt_x,
-    Maybe<double> tilt_y,
-    Maybe<int> twist,
-    Maybe<double> delta_x,
-    Maybe<double> delta_y,
-    Maybe<std::string> pointer_type,
+    std::optional<int> modifiers,
+    std::optional<double> timestamp,
+    std::optional<std::string> button,
+    std::optional<int> buttons,
+    std::optional<int> click_count,
+    std::optional<double> force,
+    std::optional<double> tangential_pressure,
+    std::optional<double> tilt_x,
+    std::optional<double> tilt_y,
+    std::optional<int> twist,
+    std::optional<double> delta_x,
+    std::optional<double> delta_y,
+    std::optional<std::string> pointer_type,
     std::unique_ptr<DispatchMouseEventCallback> callback) {
   base::expected<std::unique_ptr<blink::WebMouseEvent>, protocol::Response>
       maybe_event = CreateWebMouseEvent(
@@ -1365,7 +1365,7 @@ void InputHandler::DispatchDragEvent(
     double x,
     double y,
     std::unique_ptr<Input::DragData> data,
-    Maybe<int> modifiers,
+    std::optional<int> modifiers,
     std::unique_ptr<DispatchDragEventCallback> callback) {
   if (!allow_file_access_ && data->HasFiles()) {
     callback->sendFailure(Response::InvalidParams("Not allowed"));
@@ -1395,7 +1395,7 @@ void InputHandler::OnWidgetForDispatchDragEvent(
     double x,
     double y,
     std::unique_ptr<Input::DragData> data,
-    Maybe<int> modifiers,
+    std::optional<int> modifiers,
     std::unique_ptr<DispatchDragEventCallback> callback,
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> maybe_point) {
@@ -1574,8 +1574,8 @@ void InputHandler::OnWidgetForDispatchMouseEvent(
 void InputHandler::DispatchTouchEvent(
     const std::string& event_type,
     std::unique_ptr<Array<Input::TouchPoint>> touch_points,
-    protocol::Maybe<int> modifiers,
-    protocol::Maybe<double> timestamp,
+    std::optional<int> modifiers,
+    std::optional<double> timestamp,
     std::unique_ptr<DispatchTouchEventCallback> callback) {
   if (base::FeatureList::IsEnabled(features::kSyntheticPointerActions)) {
     DispatchSyntheticPointerActionTouch(
@@ -1603,8 +1603,8 @@ void InputHandler::CancelDragging(
 void InputHandler::DispatchWebTouchEvent(
     const std::string& event_type,
     std::unique_ptr<Array<Input::TouchPoint>> touch_points,
-    protocol::Maybe<int> modifiers,
-    protocol::Maybe<double> timestamp,
+    std::optional<int> modifiers,
+    std::optional<double> timestamp,
     std::unique_ptr<DispatchTouchEventCallback> callback) {
   base::expected<std::vector<blink::WebTouchEvent>, protocol::Response>
       maybe_events = CreateWebTouchEvents(
@@ -1688,8 +1688,8 @@ void InputHandler::OnWidgetForDispatchWebTouchEvent(
 void InputHandler::DispatchSyntheticPointerActionTouch(
     const std::string& event_type,
     std::unique_ptr<Array<Input::TouchPoint>> touch_points,
-    protocol::Maybe<int> modifiers,
-    protocol::Maybe<double> timestamp,
+    std::optional<int> modifiers,
+    std::optional<double> timestamp,
     std::unique_ptr<DispatchTouchEventCallback> callback) {
   if (!host_ || !host_->GetRenderWidgetHost()) {
     callback->sendFailure(Response::InternalError());
@@ -1875,15 +1875,16 @@ SyntheticPointerActionParams InputHandler::PrepareSyntheticPointerActionParams(
   return action_params;
 }
 
-Response InputHandler::EmulateTouchFromMouseEvent(const std::string& type,
-                                                  int x,
-                                                  int y,
-                                                  const std::string& button,
-                                                  Maybe<double> timestamp,
-                                                  Maybe<double> delta_x,
-                                                  Maybe<double> delta_y,
-                                                  Maybe<int> modifiers,
-                                                  Maybe<int> click_count) {
+Response InputHandler::EmulateTouchFromMouseEvent(
+    const std::string& type,
+    int x,
+    int y,
+    const std::string& button,
+    std::optional<double> timestamp,
+    std::optional<double> delta_x,
+    std::optional<double> delta_y,
+    std::optional<int> modifiers,
+    std::optional<int> click_count) {
   blink::WebInputEvent::Type event_type;
   if (type == Input::EmulateTouchFromMouseEvent::TypeEnum::MouseWheel) {
     event_type = blink::WebInputEvent::Type::kMouseWheel;
@@ -1999,8 +2000,8 @@ void InputHandler::SynthesizePinchGesture(
     double x,
     double y,
     double scale_factor,
-    Maybe<int> relative_speed,
-    Maybe<std::string> gesture_source_type,
+    std::optional<int> relative_speed,
+    std::optional<std::string> gesture_source_type,
     std::unique_ptr<SynthesizePinchGestureCallback> callback) {
   if (!host_ || !host_->GetRenderWidgetHost()) {
     callback->sendFailure(Response::InternalError());
@@ -2043,16 +2044,16 @@ void InputHandler::SynthesizePinchGesture(
 void InputHandler::SynthesizeScrollGesture(
     double x,
     double y,
-    Maybe<double> x_distance,
-    Maybe<double> y_distance,
-    Maybe<double> x_overscroll,
-    Maybe<double> y_overscroll,
-    Maybe<bool> prevent_fling,
-    Maybe<int> speed,
-    Maybe<std::string> gesture_source_type,
-    Maybe<int> repeat_count,
-    Maybe<int> repeat_delay_ms,
-    Maybe<std::string> interaction_marker_name,
+    std::optional<double> x_distance,
+    std::optional<double> y_distance,
+    std::optional<double> x_overscroll,
+    std::optional<double> y_overscroll,
+    std::optional<bool> prevent_fling,
+    std::optional<int> speed,
+    std::optional<std::string> gesture_source_type,
+    std::optional<int> repeat_count,
+    std::optional<int> repeat_delay_ms,
+    std::optional<std::string> interaction_marker_name,
     std::unique_ptr<SynthesizeScrollGestureCallback> callback) {
   if (!host_ || !host_->GetRenderWidgetHost()) {
     callback->sendFailure(Response::InternalError());
@@ -2156,9 +2157,9 @@ void InputHandler::OnScrollFinished(
 void InputHandler::SynthesizeTapGesture(
     double x,
     double y,
-    Maybe<int> duration,
-    Maybe<int> tap_count,
-    Maybe<std::string> gesture_source_type,
+    std::optional<int> duration,
+    std::optional<int> tap_count,
+    std::optional<std::string> gesture_source_type,
     std::unique_ptr<SynthesizeTapGestureCallback> callback) {
   if (!host_ || !host_->GetRenderWidgetHost()) {
     callback->sendFailure(Response::InternalError());

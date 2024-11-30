@@ -18,23 +18,28 @@ class FormInteractionsUkmLogger;
 // set for each field.
 // `interaction_time` corresponds to the user's first interaction with the form.
 // `submission_time` corresponds to the form's submission time.
+// `source_id` is the UKM source ID of the page at the time of the submission
+// (which may be distinct from the current page because this function is called
+// asynchronously).
 // `observed_submission` indicates whether this method is called as a result of
 // observing a submission event (otherwise, it may be that an upload was
 // triggered after a form was unfocused or a navigation occurred).
-void LogQualityMetrics(
-    const FormStructure& form_structure,
-    base::TimeTicks load_time,
-    base::TimeTicks interaction_time,
-    base::TimeTicks submission_time,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    bool observed_submission);
+void LogQualityMetrics(const FormStructure& form_structure,
+                       base::TimeTicks load_time,
+                       base::TimeTicks interaction_time,
+                       base::TimeTicks submission_time,
+                       FormInteractionsUkmLogger& form_interactions_ukm_logger,
+                       ukm::SourceId source_id,
+                       bool observed_submission);
 
 // Log the quality of the heuristics and server predictions for the
 // `form_structure` structure, if autocomplete attributes are present on the
 // fields (they are used as golden truths).
+// `source_id` is the UKM source ID of the page at the time of the submission.
 void LogQualityMetricsBasedOnAutocomplete(
     const FormStructure& form_structure,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id);
 
 }  // namespace autofill::autofill_metrics
 

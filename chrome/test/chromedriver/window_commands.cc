@@ -890,8 +890,8 @@ Status ExecuteNewWindow(Session* session,
                                        : Chrome::WindowType::kTab;
 
   std::string handle;
-  Status status =
-      session->chrome->NewWindow(session->window, window_type, true, &handle);
+  Status status = session->chrome->NewWindow(session->window, window_type, true,
+                                             session->w3c_compliant, &handle);
 
   if (status.IsError())
     return status;

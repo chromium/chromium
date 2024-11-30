@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_child_removal_tracker.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -2017,39 +2016,6 @@ void ContainerNode::CheckSoftNavigationHeuristicsTracking(
       }
     }
   }
-}
-
-String ContainerNode::getInnerHTML(const GetInnerHTMLOptions* options) const {
-  CHECK(RuntimeEnabledFeatures::ElementGetInnerHTMLEnabled());
-  DCHECK(IsShadowRoot() || IsElementNode());
-
-  auto* context = GetExecutionContext();
-  context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kDeprecation,
-      mojom::blink::ConsoleMessageLevel::kWarning,
-      "The getInnerHTML() function is non-standard, deprecated, and will "
-      "be removed from this browser very soon. At that point, this console "
-      "warning will become a JavaScript exception. Please use getHTML() "
-      "instead. See https://chromestatus.com/feature/5081733588582400 for "
-      "more information."));
-  Deprecation::CountDeprecation(context, WebFeature::kElementGetInnerHTML);
-
-  // This is the deprecated behavior: if includeShadowRoots is true, then
-  // include *all* open shadow roots (even if they aren't marked serializable).
-  // If includeShadowRoots is true and closedRoots is provided, also serialize
-  // the provided shadow roots, even if they're closed.
-  ShadowRootInclusion shadow_root_inclusion{
-      options->includeShadowRoots()
-          ? ShadowRootInclusion::Behavior::kIncludeAllOpenShadowRoots
-          : ShadowRootInclusion::Behavior::kOnlyProvidedShadowRoots};
-  if (options->includeShadowRoots() && options->hasClosedRoots()) {
-    for (auto& shadow_root : options->closedRoots()) {
-      shadow_root_inclusion.include_shadow_roots.insert(shadow_root);
-    }
-  }
-
-  return CreateMarkup(this, kChildrenOnly, kDoNotResolveURLs,
-                      shadow_root_inclusion);
 }
 
 String ContainerNode::getHTML(const GetHTMLOptions* options,

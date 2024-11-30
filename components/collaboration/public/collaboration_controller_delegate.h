@@ -6,6 +6,7 @@
 #define COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_CONTROLLER_DELEGATE_H_
 
 #include "base/functional/callback.h"
+#include "components/data_sharing/public/group_data.h"
 
 namespace collaboration {
 
@@ -23,6 +24,8 @@ class CollaborationControllerDelegate {
     explicit ErrorInfo(Type type) : type(type) {}
 
     Type type;
+
+    bool operator==(const ErrorInfo& other) const { return type == other.type; }
   };
 
   enum class Outcome {
@@ -60,14 +63,18 @@ class CollaborationControllerDelegate {
   // that the update propagated to all relevant components.
   virtual void NotifySignInAndSyncStatusChange() = 0;
 
-  // Request to show the invitation dialog.
-  virtual void ShowJoinDialog(ResultCallback result) = 0;
+  // Request to show the invitation dialog with preview data.
+  virtual void ShowJoinDialog(data_sharing::SharedDataPreview preview_data,
+                              ResultCallback result) = 0;
 
   // Request to show the share dialog.
   virtual void ShowShareDialog(ResultCallback result) = 0;
 
   // Open the local tab group in UI.
   virtual void PromoteTabGroup(ResultCallback result) = 0;
+
+  // Focus the UI screen associated with the current delegate instance.
+  virtual void PromoteCurrentScreen() = 0;
 };
 
 }  // namespace collaboration

@@ -67,7 +67,8 @@ class TestDelegate : public AppManagementPageHandlerBase::Delegate {
 
 class AppManagementPageHandlerTestBase
     : public WebAppTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   void SetUp() override {
     WebAppTest::SetUp();
@@ -86,8 +87,8 @@ class AppManagementPageHandlerTestBase
     handler_ = std::make_unique<WebAppSettingsPageHandler>(
         handler.BindNewPipeAndPassReceiver(),
         page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
-    auto features_and_params = apps::test::GetFeaturesToEnableLinkCapturingUX(
-        /*override_captures_by_default=*/GetParam());
+    auto features_and_params =
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
     features_and_params.push_back(
         {blink::features::kWebAppEnableScopeExtensions, {}});
     scoped_feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
@@ -99,7 +100,13 @@ class AppManagementPageHandlerTestBase
     WebAppTest::TearDown();
   }
 
-  bool LinkCapturingEnabledByDefault() { return GetParam(); }
+  bool LinkCapturingEnabledByDefault() {
+#if BUILDFLAG(IS_CHROMEOS)
+    return false;
+#else
+    return GetParam() == apps::test::LinkCapturingFeatureVersion::kV2DefaultOn;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   AppManagementPageHandlerBase* handler() { return handler_.get(); }
 
@@ -791,6 +798,25 @@ TEST_P(AppManagementPageHandlerTestBase, UseCase_AEnabledBEnabled) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+TEST_P(AppManagementPageHandlerTestBase, NavigationCapturingUserChoice) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
+  web_app_info->title = u"app_name";
+  web_app_info->scope = GURL("https://example.com/");
+  web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
+
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  base::test::TestFuture<app_management::mojom::AppPtr> app_future;
+  handler()->GetApp(app_id, app_future.GetCallback());
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  EXPECT_FALSE(app_future.Get()->disable_user_choice_navigation_capturing);
+#else
+  EXPECT_TRUE(app_future.Get()->disable_user_choice_navigation_capturing);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class AppManagementPageHandlerArcTest
     : public AppManagementPageHandlerTestBase {
@@ -910,25 +936,23 @@ TEST_P(AppManagementPageHandlerArcTest, SetAppLocale) {
             arc_test()->app_instance()->selected_locale(test_package_name));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         AppManagementPageHandlerArcTest,
-                         testing::Values(false),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "CapturingDefaultOn"
-                                             : "CapturingDefaultOff";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AppManagementPageHandlerArcTest,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
+    apps::test::LinkCapturingVersionToString);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-INSTANTIATE_TEST_SUITE_P(,
-                         AppManagementPageHandlerTestBase,
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AppManagementPageHandlerTestBase,
 #if BUILDFLAG(IS_CHROMEOS)
-                         testing::Values(false),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
 #else
-                         testing::Values(true, false),
-#endif
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "CapturingDefaultOn"
-                                             : "CapturingDefaultOff";
-                         });
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);
 
 }  // namespace apps

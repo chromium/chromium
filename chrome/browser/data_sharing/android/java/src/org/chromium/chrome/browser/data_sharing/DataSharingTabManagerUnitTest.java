@@ -25,7 +25,9 @@ import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -57,7 +59,15 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.collaboration.messaging.ActivityLogItem;
+import org.chromium.components.collaboration.messaging.CollaborationEvent;
+import org.chromium.components.collaboration.messaging.MessageAttribution;
+import org.chromium.components.collaboration.messaging.MessagingBackendService;
+import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
+import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.DataSharingService.ParseUrlResult;
@@ -67,7 +77,10 @@ import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.ParseUrlStatus;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
+import org.chromium.components.data_sharing.SharedDataPreview;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
+import org.chromium.components.data_sharing.SharedTabGroupPreview;
+import org.chromium.components.data_sharing.TabPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
@@ -87,6 +100,9 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit test for {@link DataSharingTabManager} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -125,9 +141,11 @@ public class DataSharingTabManagerUnitTest {
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
     @Mock private Profile mProfile;
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ShareDelegate mShareDelegate;
@@ -137,6 +155,7 @@ public class DataSharingTabManagerUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private TabModel mTabModel;
+    @Mock private FaviconHelper mFaviconHelper;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCallbackCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
@@ -144,7 +163,7 @@ public class DataSharingTabManagerUnitTest {
     private DataSharingTabManager mDataSharingTabManager;
     private SavedTabGroup mSavedTabGroup;
     private Activity mActivity;
-    private ObservableSupplier<Profile> mProfileSupplier;
+    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private SyncedGroupTestHelper mSyncedGroupTestHelper;
@@ -155,20 +174,23 @@ public class DataSharingTabManagerUnitTest {
 
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
+        mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
         mBottomSheetControllerSupplier = new ObservableSupplierImpl<>(mBottomSheetController);
         mShareDelegateSupplier = new ObservableSupplierImpl<>(mShareDelegate);
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
 
         mDataSharingTabManager =
                 new DataSharingTabManager(
+                        mTabModelSelectorSupplier,
                         mDataSharingTabSwitcherDelegate,
-                        mProfileSupplier,
                         mBottomSheetControllerSupplier,
                         mShareDelegateSupplier,
                         mWindowAndroid,
                         ApplicationProvider.getApplicationContext().getResources(),
                         mTabGroupUiActionHandlerSupplier);
+
+        mDataSharingTabManager.initWithProfile(
+                mProfile, mDataSharingService, mMessagingBackendService);
 
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
         mSavedTabGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
@@ -194,6 +216,15 @@ public class DataSharingTabManagerUnitTest {
         when(mDataSharingService.parseDataSharingUrl(any())).thenReturn(result);
     }
 
+    private void mockPreviewApiFetch() {
+        mDataSharingTabManager.setFaviconHelperForTesting(mFaviconHelper);
+        ArgumentCaptor<Callback<DataSharingService.SharedDataPreviewOrFailureOutcome>>
+                previewCallbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        verify(mDataSharingService)
+                .getSharedEntitiesPreview(any(), previewCallbackCaptor.capture());
+        previewCallbackCaptor.getValue().onResult(getPreviewData());
+    }
+
     private void mockUnsuccessfulParseDataSharingUrl(@ParseUrlStatus int status) {
         assertNotEquals(ParseUrlStatus.SUCCESS, status);
         ParseUrlResult result =
@@ -208,13 +239,20 @@ public class DataSharingTabManagerUnitTest {
                 .build();
     }
 
+    private DataSharingService.SharedDataPreviewOrFailureOutcome getPreviewData() {
+        List<TabPreview> tabs = new ArrayList<>();
+        tabs.add(new TabPreview(new GURL("https://example.com"), "example.com"));
+        return new DataSharingService.SharedDataPreviewOrFailureOutcome(
+                new SharedDataPreview(new SharedTabGroupPreview("title", tabs)),
+                PeopleGroupActionFailure.UNKNOWN);
+    }
+
     @Test
     public void testNoProfile() {
-        mProfileSupplier = new ObservableSupplierImpl<>();
         mDataSharingTabManager =
                 new DataSharingTabManager(
+                        mTabModelSelectorSupplier,
                         mDataSharingTabSwitcherDelegate,
-                        mProfileSupplier,
                         mBottomSheetControllerSupplier,
                         mShareDelegateSupplier,
                         mWindowAndroid,
@@ -289,6 +327,8 @@ public class DataSharingTabManagerUnitTest {
 
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
 
+        mockPreviewApiFetch();
+
         ArgumentCaptor<DataSharingJoinUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingJoinUiConfig.class);
         verify(mDataSharingUiDelegate).showJoinFlow(uiConfigCaptor.capture());
@@ -319,6 +359,8 @@ public class DataSharingTabManagerUnitTest {
         mSyncedGroupTestHelper.removeTabGroup(SYNC_GROUP_ID1);
 
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
+
+        mockPreviewApiFetch();
 
         ArgumentCaptor<DataSharingJoinUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingJoinUiConfig.class);
@@ -550,5 +592,76 @@ public class DataSharingTabManagerUnitTest {
                 mPropertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
         controller.onClick(mPropertyModelCaptor.getValue(), ButtonType.POSITIVE);
         verify(mModalDialogManager).dismissDialog(any(), anyInt());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
+    public void testShowRecentActivity() {
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        mDataSharingTabManager.setFaviconHelperForTesting(mFaviconHelper);
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
+        setupActivityLogItemsOnTheBackend();
+        mDataSharingTabManager.showRecentActivity(mActivity, COLLABORATION_ID1);
+        verify(mMessagingBackendService).getActivityLog(any());
+    }
+
+    private void setupActivityLogItemsOnTheBackend() {
+        List<ActivityLogItem> logItems = new ArrayList<>();
+
+        // Add item that has action to focus tab.
+        ActivityLogItem logItem1 = new ActivityLogItem();
+        logItem1.collaborationEvent = CollaborationEvent.TAB_ADDED;
+        setTabMetadata(logItem1, mSavedTabGroup.savedTabs.get(0).localId, null);
+        logItems.add(logItem1);
+
+        // Add item that has action to reopen tab.
+        ActivityLogItem logItem2 = new ActivityLogItem();
+        logItem2.collaborationEvent = CollaborationEvent.TAB_REMOVED;
+        setTabMetadata(logItem2, null, "https://google.com");
+        logItems.add(logItem2);
+
+        // Add item that has action to show tab group dialog.
+        ActivityLogItem logItem3 = new ActivityLogItem();
+        logItem3.collaborationEvent = CollaborationEvent.TAB_GROUP_COLOR_UPDATED;
+        setTabGroupMetadata(logItem3, mSavedTabGroup.localId);
+        setTabMetadata(logItem3, null, null);
+        logItems.add(logItem3);
+
+        // Add item that has action to show share UI.
+        ActivityLogItem logItem4 = new ActivityLogItem();
+        logItem4.collaborationEvent = CollaborationEvent.COLLABORATION_MEMBER_ADDED;
+        setCollaborationId(logItem4, COLLABORATION_ID1);
+        setTabMetadata(logItem4, null, null);
+        logItems.add(logItem4);
+
+        when(mMessagingBackendService.getActivityLog(any())).thenReturn(logItems);
+    }
+
+    private void setCollaborationId(ActivityLogItem logItem, String collaborationId) {
+        if (logItem.activityMetadata == null) logItem.activityMetadata = new MessageAttribution();
+        logItem.activityMetadata.collaborationId = collaborationId;
+    }
+
+    private void setTabGroupMetadata(ActivityLogItem logItem, LocalTabGroupId localTabGroupId) {
+        if (logItem.activityMetadata == null) logItem.activityMetadata = new MessageAttribution();
+        if (logItem.activityMetadata.tabGroupMetadata == null) {
+            logItem.activityMetadata.tabGroupMetadata = new TabGroupMessageMetadata();
+        }
+        logItem.activityMetadata.tabGroupMetadata.localTabGroupId = localTabGroupId;
+    }
+
+    private void setTabMetadata(
+            ActivityLogItem logItem, @Nullable Integer tabId, @Nullable String lastKnownUrl) {
+        if (logItem.activityMetadata == null) logItem.activityMetadata = new MessageAttribution();
+        if (logItem.activityMetadata.tabMetadata == null) {
+            logItem.activityMetadata.tabMetadata = new TabMessageMetadata();
+        }
+        TabMessageMetadata tabMessageMetadata = logItem.activityMetadata.tabMetadata;
+        if (tabId != null) {
+            tabMessageMetadata.localTabId = tabId;
+        }
+        if (!TextUtils.isEmpty(lastKnownUrl)) {
+            tabMessageMetadata.lastKnownUrl = lastKnownUrl;
+        }
     }
 }

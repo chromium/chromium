@@ -160,7 +160,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
            const gpu::SyncToken& sync_token, bool is_lost) {
           if (is_lost || !context_provider)
             return;
-          auto* ri = context_provider->ContextProvider()->RasterInterface();
+          auto* ri = context_provider->ContextProvider().RasterInterface();
           media::WaitAndReplaceSyncTokenClient client(ri);
           frame->UpdateReleaseSyncToken(&client);
         },
@@ -313,8 +313,8 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
                               bool ignore_video_transformation) {
   viz::RasterContextProvider* raster_context_provider = nullptr;
   if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-    if (auto* context_provider = wrapper->ContextProvider())
-      raster_context_provider = context_provider->RasterContextProvider();
+    raster_context_provider =
+        wrapper->ContextProvider().RasterContextProvider();
   }
 
   media::PaintCanvasVideoRenderer video_renderer;
@@ -333,10 +333,8 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
   if (!wrapper)
     return nullptr;
 
-  if (auto* provider = wrapper->ContextProvider())
-    return base::WrapRefCounted(provider->RasterContextProvider());
-
-  return nullptr;
+  return base::WrapRefCounted(
+      wrapper->ContextProvider().RasterContextProvider());
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
@@ -346,8 +344,10 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
-    return CanvasResourceProvider::CreateBitmapProvider(info, kFilterQuality,
-                                                        kShouldInitialize);
+    return CanvasResourceProvider::CreateBitmapProvider(
+        gfx::Size(info.width(), info.height()), info.colorType(),
+        info.alphaType(), info.refColorSpace(), kFilterQuality,
+        kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
       info, kFilterQuality, kShouldInitialize,

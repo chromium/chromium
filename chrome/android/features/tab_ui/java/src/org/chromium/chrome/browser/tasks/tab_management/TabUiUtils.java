@@ -23,11 +23,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -37,7 +35,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -45,7 +42,6 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogUtils;
 
@@ -154,23 +150,6 @@ public class TabUiUtils {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Opens a new tab page in the last position of the tab group and selects the new tab.
-     *
-     * @param filter The {@link TabGroupModelFilter} to act on.
-     * @param tabCreator The {@link TabCreator} to use to create new tab.
-     * @param tabId The ID of one of the tabs in the tab group.
-     * @param type The launch type of the new tab.
-     */
-    public static void openNtpInGroup(
-            TabGroupModelFilter filter, TabCreator tabCreator, int tabId, @TabLaunchType int type) {
-        List<Tab> relatedTabs = filter.getRelatedTabList(tabId);
-        assert relatedTabs.size() > 0;
-
-        Tab parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
-        tabCreator.createNewTab(new LoadUrlParams(UrlConstants.NTP_URL), type, parentTabToAttach);
     }
 
     /**
@@ -352,6 +331,16 @@ public class TabUiUtils {
         contentSensitivitySetter.onResult(/* contentIsSensitive= */ false);
     }
 
+    /** Returns whether any tabs have sensitive content. */
+    public static boolean anySensitiveContent(List<Tab> tabs) {
+        for (Tab tab : tabs) {
+            if (tab.getTabHasSensitiveContent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Mark the tab switcher view as sensitive if at least one of the tabs in {@param tabList} has
      * sensitive content. Note that if all sensitive tabs are removed from the tab switcher, the tab
@@ -369,12 +358,8 @@ public class TabUiUtils {
             return;
         }
 
-        if (tabList.stream().anyMatch(tab -> tab.getTabHasSensitiveContent())) {
-            contentSensitivitySetter.onResult(/* contentIsSensitive= */ true);
-        } else {
-            // If not marked as not sensitive, the tab switcher might remain sensitive from a
-            // previous set of tabs.
-            contentSensitivitySetter.onResult(/* contentIsSensitive= */ false);
-        }
+        // If not marked as not sensitive, the tab switcher might remain sensitive from a
+        // previous set of tabs.
+        contentSensitivitySetter.onResult(anySensitiveContent(tabList));
     }
 }

@@ -960,8 +960,10 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServicePolicyAndUserRootsTest,
       user_root_info.der_cert = base::ToVector(root_cert->cert_span());
 
       base::test::TestFuture<bool> future;
-      server_certificate_database_service->AddOrUpdateUserCertificate(
-          std::move(user_root_info), future.GetCallback());
+      std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+      cert_infos.push_back(std::move(user_root_info));
+      server_certificate_database_service->AddOrUpdateUserCertificates(
+          std::move(cert_infos), future.GetCallback());
       ASSERT_TRUE(future.Get());
     }
     {
@@ -977,8 +979,10 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServicePolicyAndUserRootsTest,
       user_hint_info.der_cert = base::ToVector(hint_cert->cert_span());
 
       base::test::TestFuture<bool> future;
-      server_certificate_database_service->AddOrUpdateUserCertificate(
-          std::move(user_hint_info), future.GetCallback());
+      std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+      cert_infos.push_back(std::move(user_hint_info));
+      server_certificate_database_service->AddOrUpdateUserCertificates(
+          std::move(cert_infos), future.GetCallback());
       ASSERT_TRUE(future.Get());
     }
 

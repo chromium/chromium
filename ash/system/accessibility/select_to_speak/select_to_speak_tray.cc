@@ -21,6 +21,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 
@@ -101,6 +102,9 @@ SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf,
   // Observe the accessibility controller state changes to know when Select to
   // Speak state is updated or when it is disabled/enabled.
   Shell::Get()->accessibility_controller()->AddObserver(this);
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME));
 }
 
 SelectToSpeakTray::~SelectToSpeakTray() {
@@ -119,11 +123,6 @@ SelectToSpeakTray::~SelectToSpeakTray() {
 void SelectToSpeakTray::Initialize() {
   TrayBackgroundView::Initialize();
   UpdateUXOnCurrentStatus();
-}
-
-std::u16string SelectToSpeakTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME);
 }
 
 void SelectToSpeakTray::HandleLocaleChange() {

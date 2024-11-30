@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.ukm.UkmRecorder;
@@ -48,7 +47,6 @@ public class TrustedWebActivityOpenTimeRecorderTest {
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock WebContents mWebContents;
     @Mock Tab mTab;
-    @Mock public BaseCustomTabActivity mActivity;
 
     private TrustedWebActivityOpenTimeRecorder mRecorder;
 
@@ -60,10 +58,9 @@ public class TrustedWebActivityOpenTimeRecorderTest {
         doNothing()
                 .when(mCurrentPageVerifier)
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
-        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
         mRecorder =
                 new TrustedWebActivityOpenTimeRecorder(
-                        mActivity, mCurrentPageVerifier, mTabProvider);
+                        mCurrentPageVerifier, mTabProvider, mLifecycleDispatcher);
 
         when(mTabProvider.get()).thenReturn(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);

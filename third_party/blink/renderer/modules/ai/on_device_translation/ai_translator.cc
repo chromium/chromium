@@ -14,17 +14,15 @@
 
 namespace blink {
 
-AITranslator::AITranslator(scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(task_runner) {}
+AITranslator::AITranslator(
+    mojo::PendingRemote<mojom::blink::Translator> pending_remote,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  translator_remote_.Bind(std::move(pending_remote), task_runner);
+}
 
 void AITranslator::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(translator_remote_);
-}
-
-mojo::PendingReceiver<blink::mojom::blink::Translator>
-AITranslator::GetTranslatorReceiver() {
-  return translator_remote_.BindNewPipeAndPassReceiver(task_runner_);
 }
 
 ScriptPromise<IDLString> AITranslator::translate(
@@ -36,6 +34,12 @@ ScriptPromise<IDLString> AITranslator::translate(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
+    return EmptyPromise();
+  }
+
+  if (!translator_remote_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The translator has been destroyed.");
     return EmptyPromise();
   }
 
@@ -64,7 +68,7 @@ ScriptPromise<IDLString> AITranslator::translate(
 }
 
 void AITranslator::destroy(ScriptState*) {
-  // TODO(crbug.com/322229993): Implement the function.
+  translator_remote_.reset();
 }
 
 }  // namespace blink

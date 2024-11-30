@@ -105,7 +105,7 @@ static inline String ToString(const xmlChar* string) {
 
 static inline AtomicString ToAtomicString(const xmlChar* string,
                                           size_t length) {
-  return AtomicString::FromUTF8(reinterpret_cast<const char*>(string), length);
+  return AtomicString::FromUTF8(base::span(string, length));
 }
 
 static inline AtomicString ToAtomicString(const xmlChar* string) {

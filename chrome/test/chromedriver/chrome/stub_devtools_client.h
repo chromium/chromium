@@ -62,6 +62,7 @@ class StubDevToolsClient : public DevToolsClient {
   WebViewImpl* GetOwner() const override;
   DevToolsClient* GetParentClient() const override;
   bool IsMainPage() const override;
+  bool IsTabTarget() const override;
   Status SendRaw(const std::string& message) override;
   bool HasMessageForAnySession() const override;
 
@@ -91,6 +92,7 @@ class StubDevToolsClient : public DevToolsClient {
   raw_ptr<WebViewImpl> owner_ = nullptr;
   bool is_connected_ = false;
   bool autoaccept_beforeunload_ = false;
+  bool is_tab_ = false;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_STUB_DEVTOOLS_CLIENT_H_

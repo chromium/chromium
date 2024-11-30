@@ -1,0 +1,104 @@
+This is a testharness.js-based test.
+Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] AnimationTimeline interface: operation play(optional AnimationEffect?)
+  assert_own_property: interface prototype object missing non-static operation expected property "play" missing
+[FAIL] AnimationTimeline interface: document.timeline must inherit property "currentTime" with the proper type
+  Right-hand side of 'instanceof' is not an object
+[FAIL] AnimationTimeline interface: document.timeline must inherit property "play(optional AnimationEffect?)" with the proper type
+  assert_inherits: property "play" not found in prototype chain
+[FAIL] AnimationTimeline interface: calling play(optional AnimationEffect?) on document.timeline with too few arguments must throw TypeError
+  assert_inherits: property "play" not found in prototype chain
+[FAIL] AnimationEffect interface: attribute parent
+  assert_true: The prototype object must have a property "parent" expected true got false
+[FAIL] AnimationEffect interface: attribute previousSibling
+  assert_true: The prototype object must have a property "previousSibling" expected true got false
+[FAIL] AnimationEffect interface: attribute nextSibling
+  assert_true: The prototype object must have a property "nextSibling" expected true got false
+[FAIL] AnimationEffect interface: operation before(AnimationEffect...)
+  assert_own_property: interface prototype object missing non-static operation expected property "before" missing
+[FAIL] AnimationEffect interface: operation after(AnimationEffect...)
+  assert_own_property: interface prototype object missing non-static operation expected property "after" missing
+[FAIL] AnimationEffect interface: operation replace(AnimationEffect...)
+  assert_own_property: interface prototype object missing non-static operation expected property "replace" missing
+[FAIL] AnimationEffect interface: operation remove()
+  assert_own_property: interface prototype object missing non-static operation expected property "remove" missing
+[FAIL] KeyframeEffect interface: attribute iterationComposite
+  assert_true: The prototype object must have a property "iterationComposite" expected true got false
+[FAIL] KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "iterationComposite" with the proper type
+  assert_inherits: property "iterationComposite" not found in prototype chain
+[FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "parent" with the proper type
+  assert_inherits: property "parent" not found in prototype chain
+[FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "previousSibling" with the proper type
+  assert_inherits: property "previousSibling" not found in prototype chain
+[FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "nextSibling" with the proper type
+  assert_inherits: property "nextSibling" not found in prototype chain
+[FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "before(AnimationEffect...)" with the proper type
+  assert_inherits: property "before" not found in prototype chain
+[FAIL] AnimationEffect interface: calling before(AnimationEffect...) on new KeyframeEffect(null, null) with too few arguments must throw TypeError
+  assert_inherits: property "before" not found in prototype chain
+[FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "after(AnimationEffect...)" with the proper type
+  assert_inherits: property "after" not found in prototype chain
+[FAIL] AnimationEffect interface: calling after(AnimationEffect...) on new KeyframeEffect(null, null) with too few arguments must throw TypeError
+  assert_inherits: property "after" not found in prototype chain
+[FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "replace(AnimationEffect...)" with the proper type
+  assert_inherits: property "replace" not found in prototype chain
+[FAIL] AnimationEffect interface: calling replace(AnimationEffect...) on new KeyframeEffect(null, null) with too few arguments must throw TypeError
+  assert_inherits: property "replace" not found in prototype chain
+[FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "remove()" with the proper type
+  assert_inherits: property "remove" not found in prototype chain
+[FAIL] GroupEffect interface: existence and properties of interface object
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface object length
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface object name
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface: attribute children
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface: attribute firstChild
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface: attribute lastChild
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface: operation clone()
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface: operation prepend(AnimationEffect...)
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] GroupEffect interface: operation append(AnimationEffect...)
+  assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
+[FAIL] AnimationNodeList interface: existence and properties of interface object
+  assert_own_property: self does not have own property "AnimationNodeList" expected property "AnimationNodeList" missing
+[FAIL] AnimationNodeList interface object length
+  assert_own_property: self does not have own property "AnimationNodeList" expected property "AnimationNodeList" missing
+[FAIL] AnimationNodeList interface object name
+  assert_own_property: self does not have own property "AnimationNodeList" expected property "AnimationNodeList" missing
+[FAIL] AnimationNodeList interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "AnimationNodeList" expected property "AnimationNodeList" missing
+[FAIL] AnimationNodeList interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "AnimationNodeList" expected property "AnimationNodeList" missing
+[FAIL] AnimationNodeList interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "AnimationNodeList" expected property "AnimationNodeList" missing
+[FAIL] AnimationNodeList interface: attribute length
+  assert_own_property: self does not have own property "AnimationNodeList" expected property "AnimationNodeList" missing
+[FAIL] AnimationNodeList interface: operation item(unsigned long)
+  assert_own_property: self does not have own property "AnimationNodeList" expected property "AnimationNodeList" missing
+[FAIL] SequenceEffect interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
+[FAIL] SequenceEffect interface object length
+  assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
+[FAIL] SequenceEffect interface object name
+  assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
+[FAIL] SequenceEffect interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
+[FAIL] SequenceEffect interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
+[FAIL] SequenceEffect interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
+[FAIL] SequenceEffect interface: operation clone()
+  assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
+Harness: the test ran to completion.
+

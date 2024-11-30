@@ -27,8 +27,8 @@ public abstract class AwParameterizedTest {
             new AwSettingsMutation(
                     settings -> {
                         settings.setAllowFileAccess(true);
-                        settings.setAllowFileAccessFromFileURLs(true);
-                        settings.setAllowUniversalAccessFromFileURLs(true);
+                        settings.setAllowFileAccessFromFileUrls(true);
+                        settings.setAllowUniversalAccessFromFileUrls(true);
                         settings.setBuiltInZoomControls(true);
                         settings.setDatabaseEnabled(true);
                         settings.setDisplayZoomControls(false);

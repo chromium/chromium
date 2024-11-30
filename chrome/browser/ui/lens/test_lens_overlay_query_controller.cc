@@ -55,7 +55,7 @@ void TestLensOverlayQueryController::StartQueryFlow(
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
-    lens::PageContentMimeType underlying_content_type,
+    lens::MimeType underlying_content_type,
     float ui_scale_factor) {
   last_sent_underlying_content_bytes_ = underlying_content_bytes;
   last_sent_underlying_content_type_ = underlying_content_type;
@@ -125,7 +125,7 @@ void TestLensOverlayQueryController::SendContextualTextQuery(
 
 void TestLensOverlayQueryController::SendPageContentUpdateRequest(
     base::span<const uint8_t> new_content_bytes,
-    lens::PageContentMimeType new_content_type,
+    lens::MimeType new_content_type,
     GURL new_page_url) {
   // TODO(crbug.com/378918804): Update these variables in the endpoint
   // fetcher creator.
@@ -143,7 +143,7 @@ void TestLensOverlayQueryController::ResetTestingState() {
   last_queried_text_.clear();
   last_queried_region_bytes_ = std::nullopt;
   last_sent_underlying_content_bytes_ = base::span<const uint8_t>();
-  last_sent_underlying_content_type_ = lens::PageContentMimeType::kNone;
+  last_sent_underlying_content_type_ = lens::MimeType::kUnknown;
   last_sent_page_url_ = GURL();
   num_interaction_requests_sent_ = 0;
 }
@@ -171,6 +171,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
              !request->objects_request().has_image_data() &&
              request->objects_request().has_payload()) {
     // Page content upload request.
+    num_page_content_update_requests_sent_++;
     sent_page_content_objects_request_.CopyFrom(request->objects_request());
     // The server doesn't send a response to this request, so no need to set
     // the response string to something meaningful.

@@ -384,17 +384,16 @@ TEST(MultipartResponseTest, EatLeadingLF) {
   Vector<char> boundary;
   boundary.Append("bound", 5);
 
-  const char kData[] =
-      "\n\n\n--bound\n\n\ncontent-type: 1\n\n"
-      "\n\n\n--bound\n\ncontent-type: 2\n\n"
-      "\n\n\n--bound\ncontent-type: 3\n\n";
-  const auto data = base::span_from_cstring(kData);
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
                                                          client);
-
-  for (size_t i = 0; i < data.size(); ++i) {
-    parser->AppendData(data.subspan(i, 1));
+  static constexpr char kData[] =
+      "\n\n\n--bound\n\n\ncontent-type: 1\n\n"
+      "\n\n\n--bound\n\ncontent-type: 2\n\n"
+      "\n\n\n--bound\ncontent-type: 3\n\n";
+  for (base::span<const char> data = base::span_from_cstring(kData);
+       !data.empty(); data = data.subspan<1>()) {
+    parser->AppendData(data.first<1>());
   }
   parser->Finish();
 
@@ -421,17 +420,16 @@ TEST(MultipartResponseTest, EatLeadingCRLF) {
   Vector<char> boundary;
   boundary.Append("bound", 5);
 
-  const char kData[] =
-      "\r\n\r\n\r\n--bound\r\n\r\n\r\ncontent-type: 1\r\n\r\n"
-      "\r\n\r\n\r\n--bound\r\n\r\ncontent-type: 2\r\n\r\n"
-      "\r\n\r\n\r\n--bound\r\ncontent-type: 3\r\n\r\n";
-  const auto data = base::span_from_cstring(kData);
   MultipartImageResourceParser* parser =
       MakeGarbageCollected<MultipartImageResourceParser>(response, boundary,
                                                          client);
-
-  for (size_t i = 0; i < data.size(); ++i) {
-    parser->AppendData(data.subspan(i, 1));
+  static constexpr char kData[] =
+      "\r\n\r\n\r\n--bound\r\n\r\n\r\ncontent-type: 1\r\n\r\n"
+      "\r\n\r\n\r\n--bound\r\n\r\ncontent-type: 2\r\n\r\n"
+      "\r\n\r\n\r\n--bound\r\ncontent-type: 3\r\n\r\n";
+  for (base::span<const char> data = base::span_from_cstring(kData);
+       !data.empty(); data = data.subspan<1>()) {
+    parser->AppendData(data.first<1>());
   }
   parser->Finish();
 

@@ -60,6 +60,7 @@ suite('AppSettingsAppTest', () => {
       selectedLocale: null,
       showSystemNotificationsSettingsLink: false,
       allowUninstall: true,
+      disableUserChoiceNavigationCapturing: false,
     };
 
     if (optConfig) {

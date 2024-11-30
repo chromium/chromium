@@ -67,12 +67,12 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
     RCHECK(!buf.empty());  // A payload unit must start immediately.
     int pointer_field = buf[0];
     leading_bytes_to_discard_ = pointer_field;
-    buf = buf.subspan(1);
+    buf = buf.subspan<1>();
   }
 
   // Discard some leading bytes if needed.
   if (leading_bytes_to_discard_ > 0) {
-    int nbytes_to_discard = std::min(leading_bytes_to_discard_, buf.size());
+    size_t nbytes_to_discard = std::min(leading_bytes_to_discard_, buf.size());
     leading_bytes_to_discard_ -= nbytes_to_discard;
     buf = buf.subspan(nbytes_to_discard);
   }

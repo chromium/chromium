@@ -33,6 +33,9 @@ class SupportsUserData;
 class AIManagerKeyedService : public KeyedService,
                               public blink::mojom::AIManager {
  public:
+  using AILanguageModelOrCreationError =
+      base::expected<std::unique_ptr<AILanguageModel>,
+                     blink::mojom::AIManagerCreateLanguageModelError>;
   explicit AIManagerKeyedService(content::BrowserContext* browser_context);
   AIManagerKeyedService(const AIManagerKeyedService&) = delete;
   AIManagerKeyedService& operator=(const AIManagerKeyedService&) = delete;
@@ -116,7 +119,7 @@ class AIManagerKeyedService : public KeyedService,
   CreateLanguageModelInternal(
       const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
       AIContextBoundObjectSet& context_bound_object_set,
-      base::OnceCallback<void(std::unique_ptr<AILanguageModel>)> callback,
+      base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
       const std::optional<const AILanguageModel::Context>& context =
           std::nullopt,
       base::SupportsUserData* context_user_data = nullptr);

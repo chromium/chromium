@@ -46,14 +46,23 @@ class AlphaVideoEncoderWrapperTest
   void SetUp() override {
     profile_ = GetParam();
     codec_ = VideoCodecProfileToVideoCodec(profile_);
-    encoder_ = CreateEncoder();
-    if (!encoder_) {
-      GTEST_SKIP()
-          << "Couldn't create encoder for this configuration - skipping test";
-    }
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+    auto yuv_encoder = std::make_unique<VpxVideoEncoder>();
+    auto alpha_encoder = std::make_unique<VpxVideoEncoder>();
+    yuv_encoder_ = yuv_encoder.get();
+    alpha_encoder_ = alpha_encoder.get();
+    encoder_ = std::make_unique<AlphaVideoEncoderWrapper>(
+        std::move(yuv_encoder), std::move(alpha_encoder));
+#else
+    GTEST_SKIP()
+        << "Couldn't create encoder for this configuration - skipping test";
+#endif  // ENABLE_LIBVPX
   }
 
   void TearDown() override {
+    yuv_encoder_ = nullptr;
+    alpha_encoder_ = nullptr;
     encoder_.reset();
     decoder_.reset();
     RunUntilIdle();
@@ -108,17 +117,6 @@ class AlphaVideoEncoderWrapperTest
     return frame;
   }
 
-  std::unique_ptr<VideoEncoder> CreateEncoder() {
-#if BUILDFLAG(ENABLE_LIBVPX)
-    auto yuv_encoder = std::make_unique<VpxVideoEncoder>();
-    auto alpha_encoder = std::make_unique<VpxVideoEncoder>();
-    return std::make_unique<AlphaVideoEncoderWrapper>(std::move(yuv_encoder),
-                                                      std::move(alpha_encoder));
-#else
-    return nullptr;
-#endif  // ENABLE_LIBVPX
-  }
-
   VideoEncoder::EncoderStatusCB ValidatingStatusCB(
       bool quit_run_loop_on_call = false,
       base::Location loc = FROM_HERE) {
@@ -154,6 +152,8 @@ class AlphaVideoEncoderWrapperTest
   MockMediaLog media_log_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<VideoEncoder> encoder_;
+  raw_ptr<VideoEncoder> yuv_encoder_ = nullptr;
+  raw_ptr<VideoEncoder> alpha_encoder_ = nullptr;
   std::unique_ptr<VideoDecoder> decoder_;
 };
 
@@ -169,9 +169,9 @@ TEST_P(AlphaVideoEncoderWrapperTest, InitializeAndFlush) {
   encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
                        std::move(output_cb),
                        ValidatingStatusCB(
-                           /* quit_run_loop_on_call */ true));
+                           /*quit_run_loop_on_call=*/true));
   RunUntilQuit();
-  encoder_->Flush(ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+  encoder_->Flush(ValidatingStatusCB(/*quit_run_loop_on_call=*/true));
   RunUntilQuit();
   EXPECT_FALSE(output_called) << "Output callback shouldn't be called";
 }
@@ -192,18 +192,18 @@ TEST_P(AlphaVideoEncoderWrapperTest, ForceAllKeyFrames) {
 
   encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
                        std::move(output_cb),
-                       ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+                       ValidatingStatusCB(/*quit_run_loop_on_call=*/true));
   RunUntilQuit();
 
   for (int i = 0; i < frames; i++) {
     auto timestamp = i * frame_duration;
     auto frame = CreateFrame(options.frame_size, timestamp);
     encoder_->Encode(frame, VideoEncoder::EncodeOptions(true),
-                     ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+                     ValidatingStatusCB(/*quit_run_loop_on_call=*/true));
     RunUntilQuit();
   }
 
-  encoder_->Flush(ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+  encoder_->Flush(ValidatingStatusCB(/*quit_run_loop_on_call=*/true));
   RunUntilQuit();
   EXPECT_EQ(outputs_count, frames);
 }
@@ -231,7 +231,7 @@ TEST_P(AlphaVideoEncoderWrapperTest, OutputCountEqualsFrameCount) {
 
   encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
                        std::move(output_cb),
-                       ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+                       ValidatingStatusCB(/*quit_run_loop_on_call=*/true));
 
   RunUntilQuit();
   uint32_t color = 0x964050;
@@ -243,7 +243,7 @@ TEST_P(AlphaVideoEncoderWrapperTest, OutputCountEqualsFrameCount) {
                      ValidatingStatusCB());
   }
 
-  encoder_->Flush(ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+  encoder_->Flush(ValidatingStatusCB(/*quit_run_loop_on_call=*/true));
   RunUntilQuit();
   EXPECT_EQ(outputs_count, total_frames_count);
 }
@@ -252,14 +252,12 @@ TEST_P(AlphaVideoEncoderWrapperTest, EncodeAndDecode) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(320, 200);
   options.bitrate = Bitrate::ConstantBitrate(1000000u);  // 1Mbps
-  options.framerate = 20;
-  options.keyframe_interval = options.framerate.value() * 3;  // every 3s
+  options.framerate = 30;
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
   std::vector<scoped_refptr<VideoFrame>> decoded_frames;
-  int total_frames_count = options.framerate.value();
+  int total_frames_count = 30;
 
   auto frame_duration = base::Seconds(1.0 / options.framerate.value());
-
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&, this](VideoEncoderOutput output,
                 std::optional<VideoEncoder::CodecDescription> desc) {
@@ -285,7 +283,19 @@ TEST_P(AlphaVideoEncoderWrapperTest, EncodeAndDecode) {
 
   encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
                        std::move(encoder_output_cb),
-                       ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+                       ValidatingStatusCB(/*quit_run_loop_on_call=*/false));
+
+  // Set up keyframe mismatch for YUV and alpha encoders, to test how well
+  // AlphaVideoEncoderWrapper handles it.
+  options.keyframe_interval = 5;
+  yuv_encoder_->ChangeOptions(
+      options, VideoEncoder::OutputCB(),
+      ValidatingStatusCB(/*quit_run_loop_on_call=*/false));
+
+  options.keyframe_interval = 10;
+  alpha_encoder_->ChangeOptions(
+      options, VideoEncoder::OutputCB(),
+      ValidatingStatusCB(/*quit_run_loop_on_call=*/true));
   RunUntilQuit();
 
   uint32_t color = 0x964050;
@@ -298,7 +308,7 @@ TEST_P(AlphaVideoEncoderWrapperTest, EncodeAndDecode) {
                      ValidatingStatusCB());
   }
 
-  encoder_->Flush(ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+  encoder_->Flush(ValidatingStatusCB(/*quit_run_loop_on_call=*/true));
   RunUntilQuit();
 
   auto quit = task_environment_.QuitClosure();

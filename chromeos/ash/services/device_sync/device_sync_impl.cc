@@ -22,7 +22,6 @@
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_client_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_activity_getter_impl.h"
-#include "chromeos/ash/services/device_sync/cryptauth_device_manager_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_notifier_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enroller_factory_impl.h"

@@ -15,7 +15,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -59,11 +58,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Updates the parameters. This calls existing callbacks with error values,
   // and requires `ProfilePicker::Params::CanReusePickerWindow()` to be true.
   void UpdateParams(ProfilePicker::Params&& params);
-
-  // Displays sign in error message that is created by Chrome but not GAIA
-  // without browser window. If the dialog is not currently shown, this does
-  // nothing.
-  void DisplayErrorMessage();
 
   // ProfilePickerWebContentsHost:
   void ShowScreen(content::WebContents* contents,
@@ -133,9 +127,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   };
 
   State state_for_testing() { return state_; }
-  content::WebContents* get_dialog_web_contents_for_testing() const {
-    return dialog_host_.get_web_contents_for_testing();
-  }
 
  protected:
   // To display the Profile picker, use ProfilePicker::Show().
@@ -224,16 +215,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
       ProfilePicker::ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
-  // Starts the forced sign-in flow (and creates a new profile).
-  // `switch_finished_callback` gets informed whether the creation of the new
-  // profile succeeded and the sign-in UI gets displayed.
-  void SwitchToForcedSignIn(
-      base::OnceCallback<void(bool)> switch_finished_callback);
-
-  // Handles profile creation when forced sign-in is enabled.
-  void OnProfileForDiceForcedSigninCreated(
-      base::OnceCallback<void(bool)> switch_finished_callback,
-      Profile* new_profile);
   // Switches the profile picker layout to display the reauth page to the main
   // account of the given `profile` if needed. On success the `profile` is
   // unlocked and a browser is opend. On failure the user is redirected to the
@@ -256,14 +237,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Register basic keyboard accelerators such as closing the window (Alt-F4
   // on Windows).
   void ConfigureAccelerators();
-
-  // Shows a dialog where the user can auth the profile or see the
-  // auth error message. If a dialog is already shown, this destroys the current
-  // dialog and creates a new one.
-  void ShowDialog(Profile* profile, const GURL& url);
-
-  // Hides the dialog if it is showing.
-  void HideDialog();
 
   // Getter of the target page url. If not empty and is valid, it opens on
   // profile selection instead of the new tab page.
@@ -334,9 +307,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Creation time of the picker, to measure performance on startup. Only set
   // when the picker is shown on startup.
   base::TimeTicks creation_time_on_startup_;
-
-  // Hosts dialog displayed when a locked profile is selected in ProfilePicker.
-  ProfilePickerForceSigninDialogHost dialog_host_;
 
   // Manages IPH promos displayed through the Profile Picker.
   std::unique_ptr<ProfilePickerFeaturePromoController> feature_promo_;

@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_consumer.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -169,7 +171,10 @@ NSString* GetPromoLabelString(
 }  // namespace
 
 @interface ConsistencyDefaultAccountMediator () <
-    ChromeAccountManagerServiceObserver> {
+    ChromeAccountManagerServiceObserver,
+    IdentityManagerObserverBridgeDelegate> {
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   signin_metrics::AccessPoint _accessPoint;
@@ -177,24 +182,32 @@ NSString* GetPromoLabelString(
 }
 
 @property(nonatomic, strong) UIImage* avatar;
-@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
-@implementation ConsistencyDefaultAccountMediator
+@implementation ConsistencyDefaultAccountMediator {
+  raw_ptr<signin::IdentityManager> _identityManager;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
+}
 
-- (instancetype)initWithAccountManagerService:
-                    (ChromeAccountManagerService*)accountManagerService
-                                  syncService:(syncer::SyncService*)syncService
-                                  accessPoint:
-                                      (signin_metrics::AccessPoint)accessPoint {
+- (instancetype)
+    initWithIdentityManager:(signin::IdentityManager*)identityManager
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                syncService:(syncer::SyncService*)syncService
+                accessPoint:(signin_metrics::AccessPoint)accessPoint {
   if ((self = [super init])) {
-    DCHECK(accountManagerService);
+    CHECK(identityManager);
+    CHECK(accountManagerService);
     CHECK(syncService);
 
+    _identityManager = identityManager;
     _accountManagerService = accountManagerService;
     _syncService = syncService;
     _accessPoint = accessPoint;
+
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
@@ -203,13 +216,16 @@ NSString* GetPromoLabelString(
 }
 
 - (void)dealloc {
-  DCHECK(!self.accountManagerService);
+  DCHECK(!_identityManager);
+  DCHECK(!_accountManagerService);
   DCHECK(!_syncService);
 }
 
 - (void)disconnect {
-  self.accountManagerService = nullptr;
+  _identityManager = nullptr;
+  _accountManagerService = nullptr;
   _syncService = nullptr;
+  _identityManagerObserver.reset();
   _accountManagerServiceObserver.reset();
 }
 
@@ -257,15 +273,13 @@ NSString* GetPromoLabelString(
 // Updates the default identity, or hide the default identity if there isn't
 // one present on the device.
 - (void)selectSelectedIdentity {
-  if (!self.accountManagerService) {
+  if (!_identityManager || !_accountManagerService) {
     return;
   }
 
-  id<SystemIdentity> identity =
-      self.accountManagerService->GetDefaultIdentity();
-
   // Here, default identity may be nil.
-  self.selectedIdentity = identity;
+  self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
+      _identityManager, _accountManagerService);
 }
 
 // Updates the view controller using the default identity, or hide the default
@@ -277,7 +291,7 @@ NSString* GetPromoLabelString(
   }
 
   id<SystemIdentity> selectedIdentity = self.selectedIdentity;
-  UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
+  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
       selectedIdentity, IdentityAvatarSize::TableViewIcon);
   [self.consumer showDefaultAccountWithFullName:selectedIdentity.userFullName
                                       givenName:selectedIdentity.userGivenName
@@ -285,22 +299,58 @@ NSString* GetPromoLabelString(
                                          avatar:avatar];
 }
 
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)identityListChanged {
+- (void)handleIdentityListChanged {
   [self selectSelectedIdentity];
 }
 
-- (void)identityUpdated:(id<SystemIdentity>)identity {
+- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateSelectedIdentityUI];
   }
+}
+
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityListChanged {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onAccountsOnDeviceChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
+}
+
+- (void)identityUpdated:(id<SystemIdentity>)identity {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onExtendedAccountInfoUpdated` instead.
+    return;
+  }
+  [self handleIdentityUpdated:identity];
 }
 
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
   // TODO(crbug.com/40284086): Remove `[self disconnect]`.
   [self disconnect];
+}
+
+#pragma mark -  IdentityManagerObserver
+
+- (void)onAccountsOnDeviceChanged {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityListChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityUpdated` instead.
+    return;
+  }
+  id<SystemIdentity> identity =
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  [self handleIdentityUpdated:identity];
 }
 
 @end

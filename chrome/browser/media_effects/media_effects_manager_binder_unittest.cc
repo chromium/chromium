@@ -10,12 +10,16 @@
 #include "content/public/test/browser_task_environment.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "services/video_effects/public/cpp/video_effects_service_host.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "services/video_effects/test/fake_video_effects_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets_f.h"
+
+static_assert(BUILDFLAG(ENABLE_VIDEO_EFFECTS),
+              "Requires enable_video_effects to be true");
 
 namespace {
 media::mojom::VideoEffectsConfigurationPtr GetConfigurationSync(

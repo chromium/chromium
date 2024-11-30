@@ -265,7 +265,10 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
 
   StartWebAppProvider();
 
-  EXPECT_TRUE(registrar().IsInstalled(app_id));
+  EXPECT_TRUE(registrar().IsInstallState(
+      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   const WebApp* app = registrar().GetAppById(app_id);
 
   EXPECT_EQ(app_id, app->app_id());
@@ -277,24 +280,36 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
 
   EXPECT_FALSE(registrar().is_empty());
 
-  EXPECT_TRUE(registrar().IsInstalled(app_id2));
+  EXPECT_TRUE(registrar().IsInstallState(
+      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   const WebApp* app2 = registrar().GetAppById(app_id2);
   EXPECT_EQ(app_id2, app2->app_id());
   EXPECT_FALSE(registrar().is_empty());
   EXPECT_EQ(CountApps(registrar().GetApps()), 2);
 
   Uninstall(app_id);
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
+  EXPECT_FALSE(registrar().IsInstallState(
+      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(nullptr, registrar().GetAppById(app_id));
   EXPECT_FALSE(registrar().is_empty());
 
   // Check that app2 is still registered.
   app2 = registrar().GetAppById(app_id2);
-  EXPECT_TRUE(registrar().IsInstalled(app_id2));
+  EXPECT_TRUE(registrar().IsInstallState(
+      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(app_id2, app2->app_id());
 
   Uninstall(app_id2);
-  EXPECT_FALSE(registrar().IsInstalled(app_id2));
+  EXPECT_FALSE(registrar().IsInstallState(
+      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(nullptr, registrar().GetAppById(app_id2));
   EXPECT_TRUE(registrar().is_empty());
   EXPECT_EQ(CountApps(registrar().GetApps()), 0);
@@ -483,10 +498,11 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
 
   {
     EXPECT_FALSE(registrar().IsNotInRegistrar(app_id));
+    // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
+    // correctness.
     EXPECT_FALSE(registrar().IsInstallState(
         app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                  proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-    EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 
     EXPECT_TRUE(registrar().IsNotInRegistrar("unknown"));
     EXPECT_FALSE(registrar().IsInstallState(
@@ -495,10 +511,11 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
     base::test::TestFuture<void> future;
     fake_provider().scheduler().InstallAppLocally(app_id, future.GetCallback());
     ASSERT_TRUE(future.Wait());
+    // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
+    // correctness.
     EXPECT_TRUE(registrar().IsInstallState(
         app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                  proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-    EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
   }
 
   {
@@ -525,6 +542,8 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   }
 }
 
+// TODO(crbug.com/379916273): Evaluate call sites of FindBestAppWithUrlInScope
+// for correctness.
 TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
   StartWebAppProvider();
 
@@ -541,53 +560,108 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
   const webapps::AppId app3_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, app3_scope);
 
-  std::vector<webapps::AppId> in_scope =
-      registrar().FindAppsInScope(origin_scope);
+  std::vector<webapps::AppId> in_scope = registrar().FindAllAppsNestedInUrl(
+      origin_scope, {
+                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                    });
   EXPECT_EQ(0u, in_scope.size());
-  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(origin_scope));
-  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(app3_scope));
+  // TODO(crbug.com/340952100): Evaluate call sites of DoesScopeContainAnyApp
+  // for correctness (note: multiple instances within this function).
+  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
+      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
+      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   auto app1 = test::CreateWebApp(app1_scope);
   app1->SetScope(app1_scope);
   RegisterAppUnsafe(std::move(app1));
 
-  in_scope = registrar().FindAppsInScope(origin_scope);
+  in_scope = registrar().FindAllAppsNestedInUrl(
+      origin_scope, {
+                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                    });
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(origin_scope));
-  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(app3_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
+      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
-  in_scope = registrar().FindAppsInScope(app1_scope);
+  in_scope = registrar().FindAllAppsNestedInUrl(
+      app1_scope, {
+                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  });
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(app1_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      app1_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   auto app2 = test::CreateWebApp(app2_scope);
   app2->SetScope(app2_scope);
   RegisterAppUnsafe(std::move(app2));
 
-  in_scope = registrar().FindAppsInScope(origin_scope);
+  in_scope = registrar().FindAllAppsNestedInUrl(
+      origin_scope, {
+                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                    });
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id, app2_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(origin_scope));
-  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(app3_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
+      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
-  in_scope = registrar().FindAppsInScope(app1_scope);
+  in_scope = registrar().FindAllAppsNestedInUrl(
+      app1_scope, {
+                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  });
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id, app2_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(app1_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      app1_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
-  in_scope = registrar().FindAppsInScope(app2_scope);
+  in_scope = registrar().FindAllAppsNestedInUrl(
+      app2_scope, {
+                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  });
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app2_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(app2_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      app2_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   auto app3 = test::CreateWebApp(app3_scope);
   app3->SetScope(app3_scope);
   RegisterAppUnsafe(std::move(app3));
 
-  in_scope = registrar().FindAppsInScope(origin_scope);
+  in_scope = registrar().FindAllAppsNestedInUrl(
+      origin_scope, {
+                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                    });
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id, app2_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(origin_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
-  in_scope = registrar().FindAppsInScope(app3_scope);
+  in_scope = registrar().FindAllAppsNestedInUrl(
+      app3_scope, {
+                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  });
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app3_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(app3_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 }
 
 TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
@@ -613,17 +687,31 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
   app1->SetScope(app1_scope);
   RegisterAppUnsafe(std::move(app1));
 
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness (multiple instances in this file).
   std::optional<webapps::AppId> app2_match =
-      registrar().FindAppWithUrlInScope(app2_scope);
+      registrar().FindBestAppWithUrlInScope(
+          app2_scope, {
+                          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                      });
   DCHECK(app2_match);
   EXPECT_EQ(*app2_match, app1_id);
 
   std::optional<webapps::AppId> app3_match =
-      registrar().FindAppWithUrlInScope(app3_scope);
+      registrar().FindBestAppWithUrlInScope(
+          app3_scope, {
+                          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                      });
   EXPECT_FALSE(app3_match);
 
   std::optional<webapps::AppId> app4_match =
-      registrar().FindAppWithUrlInScope(app4_scope);
+      registrar().FindBestAppWithUrlInScope(
+          app4_scope, {
+                          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                      });
   EXPECT_FALSE(app4_match);
 
   auto app2 = test::CreateWebApp(app2_scope);
@@ -640,24 +728,45 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
   RegisterAppUnsafe(std::move(app4));
 
   std::optional<webapps::AppId> origin_match =
-      registrar().FindAppWithUrlInScope(origin_scope);
+      registrar().FindBestAppWithUrlInScope(
+          origin_scope,
+          {
+              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          });
   EXPECT_FALSE(origin_match);
 
   std::optional<webapps::AppId> app1_match =
-      registrar().FindAppWithUrlInScope(app1_scope);
+      registrar().FindBestAppWithUrlInScope(
+          app1_scope, {
+                          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                      });
   DCHECK(app1_match);
   EXPECT_EQ(*app1_match, app1_id);
 
-  app2_match = registrar().FindAppWithUrlInScope(app2_scope);
+  app2_match = registrar().FindBestAppWithUrlInScope(
+      app2_scope, {
+                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  });
   DCHECK(app2_match);
   EXPECT_EQ(*app2_match, app2_id);
 
-  app3_match = registrar().FindAppWithUrlInScope(app3_scope);
+  app3_match = registrar().FindBestAppWithUrlInScope(
+      app3_scope, {
+                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  });
   DCHECK(app3_match);
   EXPECT_EQ(*app3_match, app3_id);
 
   // Apps in the process of uninstalling are ignored.
-  app4_match = registrar().FindAppWithUrlInScope(app4_scope);
+  app4_match = registrar().FindBestAppWithUrlInScope(
+      app4_scope, {
+                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  });
   EXPECT_FALSE(app4_match);
 }
 
@@ -684,11 +793,19 @@ TEST_F(WebAppRegistrarTest, CanFindShortcutWithUrlInScope) {
   RegisterAppUnsafe(std::move(app1));
 
   std::optional<webapps::AppId> app2_match =
-      registrar().FindAppWithUrlInScope(app2_page);
+      registrar().FindBestAppWithUrlInScope(
+          app2_page, {
+                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     });
   EXPECT_FALSE(app2_match);
 
   std::optional<webapps::AppId> app3_match =
-      registrar().FindAppWithUrlInScope(app3_page);
+      registrar().FindBestAppWithUrlInScope(
+          app3_page, {
+                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     });
   EXPECT_FALSE(app3_match);
 
   auto app2 = test::CreateWebApp(app2_launch);
@@ -698,15 +815,27 @@ TEST_F(WebAppRegistrarTest, CanFindShortcutWithUrlInScope) {
   RegisterAppUnsafe(std::move(app3));
 
   std::optional<webapps::AppId> app1_match =
-      registrar().FindAppWithUrlInScope(app1_page);
+      registrar().FindBestAppWithUrlInScope(
+          app1_page, {
+                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     });
   DCHECK(app1_match);
   EXPECT_EQ(app1_match, std::optional<webapps::AppId>(app1_id));
 
-  app2_match = registrar().FindAppWithUrlInScope(app2_page);
+  app2_match = registrar().FindBestAppWithUrlInScope(
+      app2_page, {
+                     proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                 });
   DCHECK(app2_match);
   EXPECT_EQ(app2_match, std::optional<webapps::AppId>(app2_id));
 
-  app3_match = registrar().FindAppWithUrlInScope(app3_page);
+  app3_match = registrar().FindBestAppWithUrlInScope(
+      app3_page, {
+                     proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                 });
   DCHECK(app3_match);
   EXPECT_EQ(app3_match, std::optional<webapps::AppId>(app3_id));
 }
@@ -734,7 +863,11 @@ TEST_F(WebAppRegistrarTest, FindPwaOverShortcut) {
   RegisterAppUnsafe(std::move(app3));
 
   std::optional<webapps::AppId> app2_match =
-      registrar().FindAppWithUrlInScope(app2_page);
+      registrar().FindBestAppWithUrlInScope(
+          app2_page, {
+                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     });
   DCHECK(app2_match);
   EXPECT_EQ(app2_match, std::optional<webapps::AppId>(app2_id));
 }
@@ -1242,7 +1375,7 @@ TEST_F(WebAppRegistrarTest, TestIsDefaultManagementInstalled) {
   EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id1));
 }
 
-TEST_F(WebAppRegistrarTest, DefaultNotActivelyInstalled) {
+TEST_F(WebAppRegistrarTest, DefaultNotInstalledWithOsIntegration) {
   std::unique_ptr<WebApp> default_app = test::CreateWebApp(
       GURL("https://example.com/path"), WebAppManagement::kDefault);
   default_app->SetDisplayMode(DisplayMode::kStandalone);
@@ -1256,40 +1389,13 @@ TEST_F(WebAppRegistrarTest, DefaultNotActivelyInstalled) {
   PopulateRegistry(registry);
   StartWebAppProvider();
 
-  EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
+  // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
+  // correctness.
+  EXPECT_FALSE(registrar().IsInstallState(
+      app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
-// Link capturing preferences & overlapping scopes have custom behavior on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(WebAppRegistrarTest, AppsOverlapIfSharesScope) {
-  base::test::ScopedFeatureList enable_link_capturing;
-  enable_link_capturing.InitWithFeaturesAndParameters(
-      apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
-  StartWebAppProvider();
-
-  // Initialize 2 apps, both having the same scope, and set the second
-  // app to capture links. If app1 is passed as an input, then
-  // app2 is returned as an overlapping app that matches the scope and
-  // is set by the user to handle links.
-  auto web_app1 =
-      test::CreateWebApp(GURL("https://example.com"), WebAppManagement::kSync);
-  web_app1->SetScope(GURL("https://example_scope.com"));
-
-  auto web_app2 = test::CreateWebApp(GURL("https://example.com/def"),
-                                     WebAppManagement::kDefault);
-  web_app2->SetScope(GURL("https://example_scope.com"));
-  web_app2->SetLinkCapturingUserPreference(
-      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
-
-  const webapps::AppId app_id1 = web_app1->app_id();
-  const webapps::AppId app_id2 = web_app2->app_id();
-  RegisterAppUnsafe(std::move(web_app1));
-  RegisterAppUnsafe(std::move(web_app2));
-
-  EXPECT_THAT(registrar().GetOverlappingAppsMatchingScope(app_id1),
-              ElementsAre(app_id2));
-}
-
 TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
   StartWebAppProvider();
 
@@ -1555,16 +1661,39 @@ TEST_F(WebAppRegistrarAshTest, SourceSupported) {
   EXPECT_EQ(registrar.CountUserInstalledApps(), 1);
   EXPECT_EQ(CountApps(registrar.GetApps()), 2);
 
-  EXPECT_EQ(registrar.FindAppWithUrlInScope(example_url), example_id);
+  EXPECT_EQ(
+      registrar.FindBestAppWithUrlInScope(
+          example_url,
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          }),
+      example_id);
   EXPECT_EQ(registrar.GetAppScope(example_id),
             GURL("https://example.com/my-app/"));
   EXPECT_TRUE(registrar.GetAppUserDisplayMode(example_id).has_value());
 
-  EXPECT_EQ(registrar.FindAppWithUrlInScope(swa_url), swa_id);
+  EXPECT_EQ(
+      registrar.FindBestAppWithUrlInScope(
+          swa_url,
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          }),
+      swa_id);
   EXPECT_EQ(registrar.GetAppScope(swa_id), GURL("chrome://swa/"));
   EXPECT_TRUE(registrar.GetAppUserDisplayMode(swa_id).has_value());
 
-  EXPECT_FALSE(registrar.FindAppWithUrlInScope(uninstalling_url).has_value());
+  EXPECT_FALSE(
+      registrar
+          .FindBestAppWithUrlInScope(
+              uninstalling_url,
+              {
+                  web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                  web_app::proto::InstallState::
+                      INSTALLED_WITHOUT_OS_INTEGRATION,
+              })
+          .has_value());
   EXPECT_EQ(registrar.GetAppScope(uninstalling_id),
             GURL("https://example.com/uninstalling/"));
   EXPECT_TRUE(registrar.GetAppUserDisplayMode(uninstalling_id).has_value());
@@ -1605,7 +1734,14 @@ TEST_F(WebAppRegistrarLacrosTest, SwaSourceNotSupported) {
     registrar.InitRegistry(std::move(registry));
   }
 
-  EXPECT_EQ(registrar.FindAppWithUrlInScope(example_url), example_id);
+  EXPECT_EQ(
+      registrar.FindBestAppWithUrlInScope(
+          example_url,
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          }),
+      example_id);
   EXPECT_EQ(registrar.GetAppScope(example_id),
             GURL("https://example.com/my-app/"));
   EXPECT_TRUE(registrar.GetAppUserDisplayMode(example_id).has_value());
@@ -1615,11 +1751,29 @@ TEST_F(WebAppRegistrarLacrosTest, SwaSourceNotSupported) {
   // WebAppRegistrar.
   EXPECT_EQ(CountApps(registrar.GetApps()), 1);
 
-  EXPECT_FALSE(registrar.FindAppWithUrlInScope(swa_url).has_value());
+  EXPECT_FALSE(
+      registrar
+          .FindBestAppWithUrlInScope(
+              swa_url,
+              {
+                  web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                  web_app::proto::InstallState::
+                      INSTALLED_WITHOUT_OS_INTEGRATION,
+              })
+          .has_value());
   EXPECT_TRUE(registrar.GetAppScope(swa_id).is_empty());
   EXPECT_FALSE(registrar.GetAppUserDisplayMode(swa_id).has_value());
 
-  EXPECT_FALSE(registrar.FindAppWithUrlInScope(uninstalling_url).has_value());
+  EXPECT_FALSE(
+      registrar
+          .FindBestAppWithUrlInScope(
+              uninstalling_url,
+              {
+                  web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                  web_app::proto::InstallState::
+                      INSTALLED_WITHOUT_OS_INTEGRATION,
+              })
+          .has_value());
   EXPECT_EQ(registrar.GetAppScope(uninstalling_id),
             GURL("https://example.com/uninstalling/"));
   EXPECT_TRUE(registrar.GetAppUserDisplayMode(uninstalling_id).has_value());
@@ -1627,5 +1781,59 @@ TEST_F(WebAppRegistrarLacrosTest, SwaSourceNotSupported) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class WebAppRegistrarParameterizedTest
+    : public WebAppRegistrarTest,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
+ public:
+  WebAppRegistrarParameterizedTest() {
+    link_capturing_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
+  }
+
+ private:
+  base::test::ScopedFeatureList link_capturing_feature_list_;
+};
+
+TEST_P(WebAppRegistrarParameterizedTest, AppsOverlapIfSharesScope) {
+  StartWebAppProvider();
+
+  // Initialize 2 apps, both having the same scope, and set the second
+  // app to capture links. If app1 is passed as an input, then
+  // app2 is returned as an overlapping app that matches the scope and
+  // is set by the user to handle links.
+  auto web_app1 =
+      test::CreateWebApp(GURL("https://example.com"), WebAppManagement::kSync);
+  web_app1->SetScope(GURL("https://example_scope.com"));
+
+  auto web_app2 = test::CreateWebApp(GURL("https://example.com/def"),
+                                     WebAppManagement::kDefault);
+  web_app2->SetScope(GURL("https://example_scope.com"));
+  web_app2->SetLinkCapturingUserPreference(
+      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
+
+  const webapps::AppId app_id1 = web_app1->app_id();
+  const webapps::AppId app_id2 = web_app2->app_id();
+  RegisterAppUnsafe(std::move(web_app1));
+  RegisterAppUnsafe(std::move(web_app2));
+
+  EXPECT_THAT(registrar().GetOverlappingAppsMatchingScope(app_id1),
+              ElementsAre(app_id2));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WebAppRegistrarParameterizedTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

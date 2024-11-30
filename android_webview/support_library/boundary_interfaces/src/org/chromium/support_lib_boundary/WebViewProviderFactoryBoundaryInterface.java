@@ -28,4 +28,8 @@ public interface WebViewProviderFactoryBoundaryInterface {
     /* DropDataContentProviderBoundaryInterface*/ InvocationHandler getDropDataProvider();
 
     /* ProfileStoreBoundaryInterface */ InvocationHandler getProfileStore();
+
+    void startUpWebView(
+            /* WebViewStartUpConfig */ InvocationHandler config,
+            /* WebViewStartUpCallback */ InvocationHandler callback);
 }

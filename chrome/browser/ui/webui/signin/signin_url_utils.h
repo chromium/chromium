@@ -55,6 +55,10 @@ GURL AppendProfileCustomizationQueryParams(const GURL& url,
                                            ProfileCustomizationStyle style);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// TODO(crbug.com/381231566): `AddFromProfilePickerURLParameter()` is not called
+// anymore and is now dead code, it should be removed in upcoming changes along
+// with calls to `HasFromProfilePickerURLParameter()` and the dependant code.
+//
 // Checks if the |url| is coming from the ProfilePicker.
 bool HasFromProfilePickerURLParameter(const GURL& url);
 // Adds the ProfilePicker tag to the |url|. Returns the appended URL.

@@ -80,7 +80,7 @@ SelectedKeywordView::SelectedKeywordView(
   }
 }
 
-SelectedKeywordView::~SelectedKeywordView() {}
+SelectedKeywordView::~SelectedKeywordView() = default;
 
 void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
   using_custom_image_ = !image.IsEmpty();

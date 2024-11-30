@@ -104,7 +104,7 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
 }  // namespace
 
 std::string GetHexEncodedString(const std::string& input) {
-  return base::HexEncode(base::as_bytes(base::make_span(input)));
+  return base::HexEncode(base::as_byte_span(input));
 }
 
 class FileSystemAccessSafeMoveHelperTest : public testing::Test {

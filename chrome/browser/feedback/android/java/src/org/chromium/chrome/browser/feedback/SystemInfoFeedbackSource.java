@@ -7,12 +7,10 @@ package org.chromium.chrome.browser.feedback;
 import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
-import android.util.Pair;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.LocaleUtils;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
@@ -34,21 +32,19 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
     @Override
     public Map<String, String> getFeedback() {
         Map<String, String> feedback =
-                CollectionUtil.newHashMap(
-                        Pair.create(
-                                "CPU Architecture",
-                                SystemInfoFeedbackSourceJni.get().getCpuArchitecture()),
-                        Pair.create(
-                                "Available Memory (MB)",
-                                Integer.toString(
-                                        SystemInfoFeedbackSourceJni.get().getAvailableMemoryMB())),
-                        Pair.create(
-                                "Total Memory (MB)",
-                                Integer.toString(
-                                        SystemInfoFeedbackSourceJni.get().getTotalMemoryMB())),
-                        Pair.create("GPU Vendor", SystemInfoFeedbackSourceJni.get().getGpuVendor()),
-                        Pair.create("GPU Model", SystemInfoFeedbackSourceJni.get().getGpuModel()),
-                        Pair.create("UI Locale", LocaleUtils.getDefaultLocaleString()));
+                Map.of(
+                        "CPU Architecture",
+                        SystemInfoFeedbackSourceJni.get().getCpuArchitecture(),
+                        "Available Memory (MB)",
+                        Integer.toString(SystemInfoFeedbackSourceJni.get().getAvailableMemoryMB()),
+                        "Total Memory (MB)",
+                        Integer.toString(SystemInfoFeedbackSourceJni.get().getTotalMemoryMB()),
+                        "GPU Vendor",
+                        SystemInfoFeedbackSourceJni.get().getGpuVendor(),
+                        "GPU Model",
+                        SystemInfoFeedbackSourceJni.get().getGpuModel(),
+                        "UI Locale",
+                        LocaleUtils.getDefaultLocaleString());
 
         StatFs statFs = getResult();
         if (statFs != null) {

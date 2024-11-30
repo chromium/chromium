@@ -428,35 +428,6 @@ public class CoreImpl implements Core {
         }
     }
 
-    /**
-     * @return the mojo handle associated to the given handle, considering invalid handles.
-     */
-    private long getMojoHandle(Handle handle) {
-        if (handle.isValid()) {
-            return ((HandleBase) handle).getMojoHandle();
-        }
-        return 0;
-    }
-
-    private static boolean isUnrecoverableError(int code) {
-        switch (code) {
-            case MojoResult.OK:
-            case MojoResult.DEADLINE_EXCEEDED:
-            case MojoResult.CANCELLED:
-            case MojoResult.FAILED_PRECONDITION:
-                return false;
-            default:
-                return true;
-        }
-    }
-
-    private static int filterMojoResultForWait(int code) {
-        if (isUnrecoverableError(code)) {
-            throw new MojoException(code);
-        }
-        return code;
-    }
-
     private ByteBuffer allocateDirectBuffer(int capacity) {
         ByteBuffer buffer = ByteBuffer.allocateDirect(capacity + mByteBufferOffset);
         if (mByteBufferOffset != 0) {

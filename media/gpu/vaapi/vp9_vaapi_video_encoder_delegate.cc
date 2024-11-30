@@ -144,92 +144,6 @@ scoped_refptr<VP9Picture> GetVP9Picture(
       reinterpret_cast<VP9Picture*>(job.picture().get()));
 }
 
-// Checks if all the bitrate values in the active layers range are not zero and
-// all the ones in non active layers range are zero.
-bool ValidateBitrates(const VideoBitrateAllocation& bitrate_allocation,
-                      size_t begin_active_spatial_layer,
-                      size_t end_active_spatial_layer,
-                      size_t num_temporal_layers) {
-  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
-    for (size_t tid = 0; tid < VideoBitrateAllocation::kMaxTemporalLayers;
-         ++tid) {
-      const bool is_active = bitrate_allocation.GetBitrateBps(sid, tid) > 0;
-      const bool expected_active = begin_active_spatial_layer <= sid &&
-                                   sid < end_active_spatial_layer &&
-                                   tid < num_temporal_layers;
-      if (is_active != expected_active) {
-        DVLOG(1) << "Invalid bitrate, sid=" << sid << ", tid=" << tid
-                 << " : bitrate_allocation=" << bitrate_allocation.ToString();
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-// Fills the spatial layers range and the number of temporal layers whose
-// bitrate is not zero.
-// |begin_active_spatial_layer| - the lowest active spatial layer index.
-// |end_active_spatial_layer| - the last active spatial layer index + 1.
-// |num_temporal_layers| - the number of temporal layers.
-//
-// The active spatial layer doesn't have to start with the bottom one, but the
-// active temporal layer must start with the bottom one. In other words, if
-// the spatial layer, spatial_index, is active, then
-// GetBitrateBps(spatial_index, 0) must not be zero.
-// Returns false VideoBitrateAllocation is invalid.
-bool ValidateAndGetActiveLayers(
-    const VideoBitrateAllocation& bitrate_allocation,
-    size_t& begin_active_spatial_layer,
-    size_t& end_active_spatial_layer,
-    size_t& num_temporal_layers) {
-  if (bitrate_allocation.GetSumBps() == 0) {
-    DVLOG(1) << "No active bitrate: bitrate_allocation="
-             << bitrate_allocation.ToString();
-    return false;
-  }
-
-  begin_active_spatial_layer = 0;
-  end_active_spatial_layer = 0;
-  num_temporal_layers = 0;
-
-  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
-    if (bitrate_allocation.GetBitrateBps(sid, 0) != 0) {
-      begin_active_spatial_layer = sid;
-      break;
-    }
-  }
-  for (int sid = VideoBitrateAllocation::kMaxSpatialLayers - 1;
-       sid >= base::checked_cast<int>(begin_active_spatial_layer); --sid) {
-    if (bitrate_allocation.GetBitrateBps(sid, 0) != 0) {
-      end_active_spatial_layer = sid + 1;
-      break;
-    }
-  }
-
-  if (end_active_spatial_layer == 0) {
-    DVLOG(1) << "Invalid bitrate: bitrate_allocation="
-             << bitrate_allocation.ToString();
-    return false;
-  }
-
-  // This assumes the number of temporal layers are the same in all the spatial
-  // layers. This will not be satisfied if we support a mix of hw/sw encoders.
-  // See the discussion:
-  // https://chromium-review.googlesource.com/c/chromium/src/+/5040171/2/media/base/video_bitrate_allocation.cc#200
-  for (int tid = VideoBitrateAllocation::kMaxTemporalLayers - 1; tid >= 0;
-       --tid) {
-    if (bitrate_allocation.GetBitrateBps(begin_active_spatial_layer, tid) !=
-        0) {
-      num_temporal_layers = tid + 1;
-      break;
-    }
-  }
-
-  return ValidateBitrates(bitrate_allocation, begin_active_spatial_layer,
-                          end_active_spatial_layer, num_temporal_layers);
-}
 }  // namespace
 
 std::unique_ptr<VP9RateControlWrapper> VP9RateControlWrapper::Create(
@@ -527,60 +441,6 @@ void VP9VaapiVideoEncoderDelegate::BitrateControlUpdate(
   rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes, frame_params);
 }
 
-bool VP9VaapiVideoEncoderDelegate::RecreateSVCLayersIfNeeded(
-    VideoBitrateAllocation& bitrate_allocation) {
-  CHECK(svc_layers_);
-  size_t begin_active_spatial_layer;
-  size_t end_active_spatial_layer;
-  size_t num_temporal_layers;
-  if (!ValidateAndGetActiveLayers(
-          bitrate_allocation, begin_active_spatial_layer,
-          end_active_spatial_layer, num_temporal_layers)) {
-    // Invalid active layer.
-    // See ValidateAndGetActiveLayers() comment for detail.
-    return false;
-  }
-
-  const auto& config = svc_layers_->config();
-  if (end_active_spatial_layer > config.spatial_layer_resolutions.size() ||
-      end_active_spatial_layer - begin_active_spatial_layer >
-          config.spatial_layer_resolutions.size()) {
-    DVLOGF(1) << "Requested spatial layer exceeds the initial spatial layer "
-              << "configuration: " << bitrate_allocation.ToString();
-    return false;
-  }
-
-  // Only updating the number of temporal layers don't have to force keyframe.
-  // But we produce keyframe in the case to not complex the code, assuming
-  // updating the number of temporal layers don't often happen.
-  // If this is not true, we should avoid producing keyframe in this case.
-  if (config.begin_active_layer != begin_active_spatial_layer ||
-      config.end_active_layer != end_active_spatial_layer ||
-      config.num_temporal_layers != num_temporal_layers) {
-    svc_layers_ = std::make_unique<SVCLayers>(
-        SVCLayers::Config(config.spatial_layer_resolutions,
-                          begin_active_spatial_layer, end_active_spatial_layer,
-                          num_temporal_layers, config.inter_layer_pred));
-  }
-
-  // Change VideoBitrateAllocation so that the active spatial layers to
-  // start with 0. This is necessary for the software rate controller.
-  if (begin_active_spatial_layer > 0) {
-    for (size_t sid = begin_active_spatial_layer;
-         sid < end_active_spatial_layer; sid++) {
-      for (size_t tid = 0; tid < num_temporal_layers; tid++) {
-        const uint32_t bitrate = bitrate_allocation.GetBitrateBps(sid, tid);
-        CHECK_NE(bitrate, 0u);
-        bitrate_allocation.SetBitrate(sid - begin_active_spatial_layer, tid,
-                                      bitrate);
-        bitrate_allocation.SetBitrate(sid, tid, 0u);
-      }
-    }
-  }
-
-  return true;
-}
-
 bool VP9VaapiVideoEncoderDelegate::ApplyPendingUpdateRates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pending_update_rates_)
@@ -596,8 +456,14 @@ bool VP9VaapiVideoEncoderDelegate::ApplyPendingUpdateRates() {
   // Update active layer status in |svc_layers_|, and key frame is produced
   // when active layer changed.
   if (svc_layers_) {
-    if (!RecreateSVCLayersIfNeeded(current_params_.bitrate_allocation)) {
+    std::pair<bool, std::optional<std::unique_ptr<SVCLayers>>> result =
+        svc_layers_->RecreateSVCLayersIfNeeded(
+            current_params_.bitrate_allocation);
+    if (!result.first) {
       return false;
+    }
+    if (result.second.has_value()) {
+      svc_layers_ = std::move(result.second.value());
     }
   } else {
     // Simple stream encoding.
@@ -676,7 +542,7 @@ VP9VaapiVideoEncoderDelegate::SetFrameHeader(
     SVCLayers::PictureParam picture_param{};
 
     svc_layers_->GetPictureParamAndMetadata(
-        picture_param, picture->metadata_for_encoding.emplace());
+        picture_param, &(picture->metadata_for_encoding.emplace()));
 
     CHECK_EQ(keyframe, svc_layers_->IsKeyFrame());
     CHECK_EQ(svc_layers_->IsKeyFrame(), picture_param.key_frame);

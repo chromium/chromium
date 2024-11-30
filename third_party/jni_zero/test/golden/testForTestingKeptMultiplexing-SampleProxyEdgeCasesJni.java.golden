@@ -6,19 +6,18 @@ package org.jni_zero;
 import java.util.Map;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
-import org.jni_zero.JniStaticTestMocker;
+import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForTests;
 import org.jni_zero.SampleProxyEdgeCases;
 import org.jni_zero.internal.Boolean;
-import org.jni_zero.internal.JniOverrideHolder;
 
 @CheckDiscard("crbug.com/993421")
 class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
-  private static JniOverrideHolder sOverride;
+  private static JniTestInstanceHolder sOverride;
 
   public static SampleProxyEdgeCases.Natives get() {
-    JniOverrideHolder holder = sOverride;
+    JniTestInstanceHolder holder = sOverride;
     if (holder != null && holder.value != null) {
       return (SampleProxyEdgeCases.Natives) holder.value;
     }
@@ -28,34 +27,25 @@ class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
 
   public static void setInstanceForTesting(SampleProxyEdgeCases.Natives impl) {
     if (sOverride == null) {
-      sOverride = JniOverrideHolder.create();
+      sOverride = JniTestInstanceHolder.create();
     }
     sOverride.value = impl;
   }
 
-  // TODO(crbug.com/329069277): Delete.
-  public static final JniStaticTestMocker TEST_HOOKS = x -> setInstanceForTesting((SampleProxyEdgeCases.Natives) x);
-
 
   @Override
   public int addStructB(SampleForTests caller, SampleForTests.InnerStructB b) {
-    return (int) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_addStructB(
-        caller,
-        b);
+    return (int) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_addStructB(caller, b);
   }
 
   @Override
   public String[][] arrayTypes1(int[] a, Object[][] b) {
-    return (String[][]) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(
-        a,
-        b);
+    return (String[][]) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(a, b);
   }
 
   @Override
   public int[] arrayTypes2(int[] a, Throwable[][] b) {
-    return (int[]) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(
-        a,
-        b);
+    return (int[]) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(a, b);
   }
 
   @Override
@@ -75,13 +65,12 @@ class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
 
   @Override
   public void foo__weirdly__escaped_name1() {
-    GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1();
+    GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1();
   }
 
   @Override
   public Map[] genericsWithNestedClassArray(Map[] arg) {
-    return (Map[]) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(
-        arg);
+    return (Map[]) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(arg);
   }
 
   @Override
@@ -91,13 +80,11 @@ class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
 
   @Override
   public boolean setStringBuilder(StringBuilder sb) {
-    return (boolean) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
-        sb);
+    return (boolean) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(sb);
   }
 
   @Override
   public int setStringBuilder(int sb) {
-    return (int) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
-        sb);
+    return (int) GEN_JNI.org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(sb);
   }
 }

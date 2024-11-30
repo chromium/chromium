@@ -48,7 +48,7 @@ TEST_F(DnsUdpTrackerTest, ReusedMismatches) {
   EXPECT_TRUE(tracker_.low_entropy());
 }
 
-TEST_F(DnsUdpTrackerTest, ReusedMismatches_Expired) {
+TEST_F(DnsUdpTrackerTest, ReusedMismatchesExpired) {
   static const uint16_t kOldId = 786;
   tracker_.RecordQuery(123 /* port */, kOldId);
 
@@ -70,7 +70,7 @@ TEST_F(DnsUdpTrackerTest, ReusedMismatches_Expired) {
 
 // Test for ID mismatches using an ID still kept in recorded queries, but not
 // recent enough to be considered reognized.
-TEST_F(DnsUdpTrackerTest, ReusedMismatches_Old) {
+TEST_F(DnsUdpTrackerTest, ReusedMismatchesOld) {
   static const uint16_t kOldId = 786;
   tracker_.RecordQuery(123 /* port */, kOldId);
 
@@ -90,7 +90,7 @@ TEST_F(DnsUdpTrackerTest, ReusedMismatches_Old) {
   EXPECT_TRUE(tracker_.low_entropy());
 }
 
-TEST_F(DnsUdpTrackerTest, ReusedMismatches_Full) {
+TEST_F(DnsUdpTrackerTest, ReusedMismatchesFull) {
   static const uint16_t kOldId = 786;
   tracker_.RecordQuery(123 /* port */, kOldId);
 
@@ -135,7 +135,7 @@ TEST_F(DnsUdpTrackerTest, ReusedPort) {
   EXPECT_TRUE(tracker_.low_entropy());
 }
 
-TEST_F(DnsUdpTrackerTest, ReusedPort_Expired) {
+TEST_F(DnsUdpTrackerTest, ReusedPortExpired) {
   static const uint16_t kPort = 2135;
   tracker_.RecordQuery(kPort, 579 /* query_id */);
 
@@ -151,7 +151,7 @@ TEST_F(DnsUdpTrackerTest, ReusedPort_Expired) {
   }
 }
 
-TEST_F(DnsUdpTrackerTest, ReusedPort_Full) {
+TEST_F(DnsUdpTrackerTest, ReusedPortFull) {
   static const uint16_t kPort = 2135;
   tracker_.RecordQuery(kPort, 579 /* query_id */);
 
@@ -176,7 +176,7 @@ TEST_F(DnsUdpTrackerTest, ConnectionError) {
   EXPECT_FALSE(tracker_.low_entropy());
 }
 
-TEST_F(DnsUdpTrackerTest, ConnectionError_InsufficientResources) {
+TEST_F(DnsUdpTrackerTest, ConnectionErrorInsufficientResources) {
   tracker_.RecordConnectionError(ERR_INSUFFICIENT_RESOURCES);
 
   EXPECT_TRUE(tracker_.low_entropy());

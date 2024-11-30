@@ -4,11 +4,16 @@
 
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash::demo_mode {
+
+namespace {
+bool g_should_fall_back_mgs = false;
+}
 
 bool IsDeviceInDemoMode() {
   if (!InstallAttributes::IsInitialized()) {
@@ -35,6 +40,17 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Demo login controller prefs:
   registry->RegisterStringPref(prefs::kDemoAccountGaiaId, std::string());
+  registry->RegisterStringPref(prefs::kDemoModeSessionIdentifier,
+                               std::string());
+}
+
+bool ShouldFallBackToMGS() {
+  // Always fall back to MGS if demo mode sign in not enable.
+  return !features::IsDemoModeSignInEnabled() || g_should_fall_back_mgs;
+}
+
+void SetShouldFallBackMGS(bool should_fall_back_mgs) {
+  g_should_fall_back_mgs = should_fall_back_mgs;
 }
 
 }  // namespace ash::demo_mode

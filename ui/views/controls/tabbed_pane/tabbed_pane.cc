@@ -35,11 +35,36 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
+
+namespace {
+
+bool IsValidOrientationStyleCombo(TabbedPane::Orientation orientation,
+                                  TabbedPane::TabStripStyle style) {
+  const bool is_horizontal =
+      orientation == TabbedPane::Orientation::kHorizontal;
+  const bool is_vertical = orientation == TabbedPane::Orientation::kVertical;
+
+  const bool is_highlight_style =
+      style == TabbedPane::TabStripStyle::kHighlight;
+  const bool is_compact_with_icon =
+      style == TabbedPane::TabStripStyle::kCompactWithIcon;
+  const bool is_with_icon = style == TabbedPane::TabStripStyle::kWithIcon;
+
+  // Determine if the combination is invalid.
+  const bool horizontal_highlight = is_horizontal && is_highlight_style;
+  const bool vertical_icon =
+      is_vertical && (is_compact_with_icon || is_with_icon);
+
+  return !horizontal_highlight && !vertical_icon;
+}
+
+}  // namespace
 
 TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
                              const std::u16string& title,
@@ -68,8 +93,8 @@ TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
 
   SetState(State::kInactive);
 
-  // Create an icon for the kCompactWithIcon style
-  if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon) {
+  // Create an icon if the style requests one.
+  if (tabbed_pane_->HasIconStyle()) {
     auto icon = std::make_unique<views::ImageView>(
         GetImageModelForTab(GetIconTitleColor()));
     icon->SetProperty(views::kMarginsKey,
@@ -84,7 +109,7 @@ TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
   // Therefore, for a single child, FillLayout is okay. However when multiple
   // elements are present (e.g. icon + text), we need to use a BoxLayout to
   // arrange them correctly.
-  if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon) {
+  if (tabbed_pane_->HasIconStyle()) {
     auto box_layout = std::make_unique<BoxLayout>();
     box_layout->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kCenter);
@@ -166,8 +191,9 @@ gfx::Size TabbedPaneTab::CalculatePreferredSize(
     const SizeBounds& available_size) const {
   int width = preferred_title_width_ + GetInsets().width();
 
-  // There is no icon if the component is not kCompactWithIcon.
-  if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon &&
+  // An icon is only present in kCompactWithIcon or kWithIcon styles, in a
+  // horizontal orientation.
+  if (tabbed_pane_->HasIconStyle() &&
       tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kHorizontal) {
     width += icon_view_->GetPreferredSize({}).width() + kIconRightMargin;
   }
@@ -402,6 +428,28 @@ void TabbedPaneTabStrip::AnimationEnded(const gfx::Animation* animation) {
   }
 }
 
+// Computes the starting and ending points of the selection slider for a given
+// tab from the origin.
+//
+// For example (s = starting_x, e = ending_x):
+//   |(x) Label|
+// --s^------e^
+// In this situation, starting_x = 0, and ending_x = tab->width()
+//
+// However, if the tab is in a FillLayout:
+//   |     (x) Label     |
+// -------s^------e^
+// The starting_x will be the dynamic distance between the start of the tab |,
+// and the icon (x) in the tab. Likewise, ending_x is starting_x + content_width
+TabbedPaneTabStrip::Coordinates TabbedPaneTabStrip::GetIconLabelStartEndingX(
+    TabbedPaneTab* tab) {
+  const int target_halfwidth = tab->CalculatePreferredSize({}).width() / 2;
+  const int current_halfwidth = tab->width() / 2;
+  const int starting_x = current_halfwidth - target_halfwidth;
+  const int ending_x = current_halfwidth + target_halfwidth;
+  return {starting_x, ending_x};
+}
+
 void TabbedPaneTabStrip::OnSelectedTabChanged(TabbedPaneTab* from_tab,
                                               TabbedPaneTab* to_tab,
                                               bool animate) {
@@ -412,10 +460,23 @@ void TabbedPaneTabStrip::OnSelectedTabChanged(TabbedPaneTab* from_tab,
   }
 
   if (GetOrientation() == TabbedPane::Orientation::kHorizontal) {
-    animating_from_ = {from_tab->GetMirroredX(),
-                       from_tab->GetMirroredX() + from_tab->width()};
-    animating_to_ = {to_tab->GetMirroredX(),
-                     to_tab->GetMirroredX() + to_tab->width()};
+    if (GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon) {
+      // Compute the starting/ending points, which begins at the icon and spans
+      // any margins + length of text.
+      const TabbedPaneTabStrip::Coordinates from_x =
+          GetIconLabelStartEndingX(from_tab);
+      const TabbedPaneTabStrip::Coordinates to_x =
+          GetIconLabelStartEndingX(to_tab);
+      animating_from_ = {from_tab->GetMirroredX() + from_x.start,
+                         from_tab->GetMirroredX() + from_x.end};
+      animating_to_ = {to_tab->GetMirroredX() + to_x.start,
+                       to_tab->GetMirroredX() + to_x.end};
+    } else {
+      animating_from_ = {from_tab->GetMirroredX(),
+                         from_tab->GetMirroredX() + from_tab->width()};
+      animating_to_ = {to_tab->GetMirroredX(),
+                       to_tab->GetMirroredX() + to_tab->width()};
+    }
   } else {
     animating_from_ = {from_tab->bounds().y(),
                        from_tab->bounds().y() + from_tab->height()};
@@ -476,6 +537,8 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
   // underneath or on the right of the selected tab will be overdrawn later.
   const bool is_horizontal =
       GetOrientation() == TabbedPane::Orientation::kHorizontal;
+  const bool is_compact_with_icon =
+      GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon;
   int max_cross_axis;
   gfx::Rect rect;
   constexpr int kUnselectedBorderThickness = 1;
@@ -533,6 +596,10 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
           anim_value, animating_from_.start, animating_to_.start);
       max_main_axis = animating_to_.end;
     }
+  } else if (is_horizontal && is_compact_with_icon) {
+    const TabbedPaneTabStrip::Coordinates tab_x = GetIconLabelStartEndingX(tab);
+    min_main_axis = tab->GetMirroredX() + tab_x.start;
+    max_main_axis = tab->GetMirroredX() + tab_x.end;
   } else if (is_horizontal) {
     min_main_axis = tab->GetMirroredX();
     max_main_axis = min_main_axis + tab->width();
@@ -543,14 +610,28 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
 
   DCHECK_NE(min_main_axis, max_main_axis);
   // Draw over the unselected border from above.
-  constexpr int kSelectedBorderThickness = 2;
-  rect = gfx::Rect(min_main_axis, max_cross_axis - kSelectedBorderThickness,
+  const int kSelectedBorderThickness = is_compact_with_icon ? 8 : 2;
+  const int stylized_border_thickness = is_compact_with_icon ? 4 : 2;
+  rect = gfx::Rect(min_main_axis, max_cross_axis - stylized_border_thickness,
                    max_main_axis - min_main_axis, kSelectedBorderThickness);
   if (!is_horizontal) {
     rect.Transpose();
   }
-  canvas->FillRect(rect,
-                   GetColorProvider()->GetColor(ui::kColorTabBorderSelected));
+
+  const SkColor color =
+      GetColorProvider()->GetColor(ui::kColorTabBorderSelected);
+  if (is_compact_with_icon) {
+    const int radius =
+        LayoutProvider::Get()->GetCornerRadiusMetric(views::Emphasis::kMedium);
+    cc::PaintFlags flags;
+    flags.setColor(color);
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setBlendMode(SkBlendMode::kSrcOver);
+    canvas->DrawRoundRect(rect, static_cast<float>(radius), flags);
+  } else {
+    canvas->FillRect(rect, color);
+  }
 }
 
 BEGIN_METADATA(TabbedPaneTabStrip)
@@ -562,10 +643,7 @@ END_METADATA
 TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
                        TabbedPane::TabStripStyle style,
                        bool scrollable) {
-  DCHECK(orientation != TabbedPane::Orientation::kHorizontal ||
-         style != TabbedPane::TabStripStyle::kHighlight);
-  DCHECK(orientation != TabbedPane::Orientation::kVertical ||
-         style != TabbedPane::TabStripStyle::kCompactWithIcon);
+  CHECK(IsValidOrientationStyleCombo(orientation, style));
 
   if (orientation == TabbedPane::Orientation::kHorizontal)
     SetOrientation(views::LayoutOrientation::kVertical);
@@ -701,6 +779,11 @@ bool TabbedPane::MoveSelectionBy(int delta) {
   }
   SelectTab(tab_strip_->GetTabAtDeltaFromSelected(delta));
   return true;
+}
+
+bool TabbedPane::HasIconStyle() const {
+  return GetStyle() == TabStripStyle::kCompactWithIcon ||
+         GetStyle() == TabStripStyle::kWithIcon;
 }
 
 gfx::Size TabbedPane::CalculatePreferredSize(

@@ -209,6 +209,11 @@ FileSystemChooser::Options::Options(
       default_path_(default_directory.Append(
           ResolveSuggestedNameExtension(std::move(suggested_name),
                                         file_types_))) {
+  // If suggested_name is empty, then ensure default path ends with a separator
+  // so it can be parsed back into default_directory and suggested_name.
+  if (!default_path_.empty() && default_path_ == default_directory) {
+    default_path_ = default_path_.AsEndingWithSeparator();
+  }
 }
 
 FileSystemChooser::Options::Options(const Options& other) = default;

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<p id="paragraph"><i>foo</i><strong>bar</strong><i>pi</i></p>
+<script>
+test(() => {
+  const paragraph = document.getElementById('paragraph');
+  const selection = document.getSelection();
+  selection.collapse(paragraph, 1);
+  selection.extend(paragraph, 2);
+  assert_equals(selection.anchorOffset, 1);
+  assert_equals(selection.focusOffset, 2);
+  assert_equals(selection.toString(), 'bar', 'Initial selection is "bar"');
+
+  paragraph.insertBefore(document.createTextNode('baz'), paragraph.childNodes[1]);
+  assert_equals(selection.anchorOffset, 1);
+  assert_equals(selection.focusOffset, 3);
+  assert_equals(selection.toString(), 'bazbar', 'Selection is updated after inserting "baz"');
+
+  paragraph.insertBefore(document.createTextNode('abc'), paragraph.childNodes[0]);
+  assert_equals(selection.anchorOffset, 2);
+  assert_equals(selection.focusOffset, 4);
+  assert_equals(selection.toString(), 'bazbar', 'Selection is same after inserting "abc"');
+})
+</script>

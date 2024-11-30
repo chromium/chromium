@@ -1331,6 +1331,30 @@ TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingChoiceVersion) {
       search_engines::kSearchEngineChoiceRepromptHistogram, 0);
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+TEST_F(SearchEngineChoiceServiceTest, ClearPrefForUnknownCountry) {
+#if BUILDFLAG(IS_ANDROID)
+  TestSupportAndroid test_support;
+  test_support.ReturnDeviceCountry(
+      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+#endif
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kClearPrefForUnknownCountry};
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kSearchEngineChoiceCountry);
+  InitService(kBelgiumCountryId);
+  histogram_tester_.ExpectTotalCount(
+      "Search.ChoiceDebug.UnknownCountryIdStored", 0);
+
+  pref_service()->SetInteger(country_codes::kCountryIDAtInstall,
+                             country_codes::kCountryIDUnknown);
+  EXPECT_EQ(search_engine_choice_service().GetCountryId(), kBelgiumCountryId);
+  histogram_tester_.ExpectBucketCount(
+      "Search.ChoiceDebug.UnknownCountryIdStored", 2, 1);
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_LINUX)
+
 struct RepromptTestParam {
   // Whether the user should be reprompted or not.
   std::optional<WipeSearchEngineChoiceReason> wipe_reason;

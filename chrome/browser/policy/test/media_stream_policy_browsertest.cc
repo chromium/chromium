@@ -35,12 +35,6 @@ class MediaStreamDevicesControllerBrowserTest
     : public PolicyTest,
       public testing::WithParamInterface<bool> {
  public:
-  MediaStreamDevicesControllerBrowserTest()
-      : request_url_allowed_via_allowlist_(false) {
-    policy_value_ = GetParam();
-  }
-  virtual ~MediaStreamDevicesControllerBrowserTest() {}
-
   void SetUpOnMainThread() override {
     PolicyTest::SetUpOnMainThread();
 
@@ -170,8 +164,8 @@ class MediaStreamDevicesControllerBrowserTest
   }
 
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
-  bool policy_value_;
-  bool request_url_allowed_via_allowlist_;
+  bool policy_value_ = GetParam();
+  bool request_url_allowed_via_allowlist_ = false;
   GURL request_url_;
   std::string request_pattern_;
   base::RepeatingClosure quit_closure_;

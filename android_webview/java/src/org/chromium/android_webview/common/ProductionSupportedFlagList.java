@@ -192,9 +192,6 @@ public final class ProductionSupportedFlagList {
                 "Enable optimization for immediate activation and draw when interactive."),
         Flag.baseFeature(GpuFeatures.USE_GLES2_FOR_OOP_R, "Force Skia context to use es2 only."),
         Flag.baseFeature(
-                NetFeatures.ZSTD_CONTENT_ENCODING,
-                "Enables zstd content-encoding support in the browser."),
-        Flag.baseFeature(
                 NetFeatures.USE_NEW_ALPS_CODEPOINT_QUIC,
                 "Enables using the new ALPS codepoint to negotiate application settings for QUIC."),
         Flag.baseFeature(
@@ -212,9 +209,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
                 "Only allow extra headers added via loadUrl() to be sent to the same origin "
                         + "as the original request."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_DISPLAY_CUTOUT,
-                "Enables display cutout (notch) support in WebView for Android P and above."),
         Flag.baseFeature(
                 BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
                 "Accelerate all canvases in webview."),
@@ -244,10 +238,6 @@ public final class ProductionSupportedFlagList {
                 "Splits Autofill labels among consecutive fields for better heuristic"
                         + " predictions."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PHONE_NUMBER_TRUNK_TYPES,
-                "Rationalizes city-and-number and city-code fields to the "
-                        + "correct trunk-prefix types."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_CACHING_ON_JAVA_SCRIPT_CHANGES,
                 "When enabled, Autofill will reset the autofill state of fields modified by JS"),
         Flag.baseFeature(
@@ -266,12 +256,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_CURRENT_VALUE_IN_IMPORT,
                 "Prevents the AutofillField's current value from being reset for import"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_INFER_COUNTRY_CALLING_CODE,
-                "Infers the country calling code from the profile's country, if available."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_INFER_COUNTRY_CALLING_CODE,
-                "Infers the country calling code from the profile's country, if available."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_INFER_LABEL_FROM_DEFAULT_SELECT_TEXT,
                 "Considers the text of a <select> element's first <option> as a potential label"),
         Flag.baseFeature(
@@ -288,10 +272,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_PARSE_EMAIL_LABEL_AND_PLACEHOLDER,
                 "Classifies fields as email fields if their label or placeholder have valid email"
                         + " format."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_PREFER_PARSED_PHONE_NUMBER,
-                "When enabled, Autofill will always prefer the phone number parsed using "
-                        + "libphonenumber over the format provided by the field during imports."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PREFER_SAVED_FORM_AS_SUBMITTED_FORM,
                 "When enabled, Autofill will start preferring the saved form over performing form "
@@ -335,9 +315,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_EMAIL_HEURISTIC_ONLY_ADDRESS_FORMS,
                 "When enabled, Autofill supports forms consisting of only email fields."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_CONSIDER_PHONE_NUMBER_SEPARATORS_VALID_LABELS,
-                "Makes label inference accept strings made up of  '(', ')', and '-' as labels."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_CACHE_FOR_REGEX_MATCHING,
                 "When enabled, autofill uses an extra cache for matching regular expressions "
                         + "while executing local heuristics."),
@@ -368,10 +345,6 @@ public final class ProductionSupportedFlagList {
                 "Enables use selective image inversion to automatically darken page, it will be"
                         + " used when WebView is in dark mode, but website doesn't provide dark"
                         + " style."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_FORCE_DARK_MODE_MATCH_THEME,
-                "Automatically darken page if"
-                        + " WebView is set to FORCE_DARK_AUTO and the app has dark theme"),
         Flag.baseFeature(
                 ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
                 "Enables reporting of browser and renderer navigation inconsistencies on"
@@ -423,6 +396,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_REDUCE_UA_ANDROID_VERSION_DEVICE_MODEL,
                 "Enables reduce webview user-agent android version and device model."),
         Flag.baseFeature(
+                BlinkFeatures.REDUCE_USER_AGENT_MINOR_VERSION,
+                "Enables reduce webview user-agent minor version."),
+        Flag.baseFeature(
                 BlinkFeatures.VIEWPORT_HEIGHT_CLIENT_HINT_HEADER,
                 "Enables the use of sec-ch-viewport-height client hint."),
         Flag.baseFeature(
@@ -433,9 +409,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.ESTABLISH_GPU_CHANNEL_ASYNC,
                 "Enables establishing the GPU channel asnchronously when requesting a new "
                         + "layer tree frame sink."),
-        Flag.baseFeature(
-                BlinkFeatures.ELEMENT_GET_INNER_HTML,
-                "Enables the getInnerHTML() function on elements."),
         Flag.baseFeature(BlinkFeatures.TEXT_SIZE_ADJUST_IMPROVEMENTS, "Improved text-size-adjust."),
         Flag.baseFeature(
                 BlinkFeatures.PREFETCH_FONT_LOOKUP_TABLES,
@@ -500,10 +473,6 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.USE_DMSAA_FOR_TILES,
                 "Switches skia to use DMSAA instead of MSAA for tile raster"),
         Flag.baseFeature(
-                CcFeatures.USE_DMSAA_FOR_TILES_ANDROID_GL,
-                "Switches skia to use DMSAA instead of MSAA for tile raster"
-                        + " on Android GL backend."),
-        Flag.baseFeature(
                 BlinkFeatures.THREADED_BODY_LOADER,
                 "If enabled, reads and decodes navigation body data off the main thread."),
         Flag.baseFeature(BlinkFeatures.HIT_TEST_OPAQUENESS),
@@ -519,6 +488,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_DRAG_DROP_FILES,
                 "If enabled, files can be dropped into WebView"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS, "Enables JS File System Access API"),
         Flag.baseFeature(
                 BlinkFeatures.WEB_RTC_COMBINED_NETWORK_AND_WORKER_THREAD,
                 "Combines WebRTC's worker thread and network thread onto a single thread."),
@@ -780,7 +751,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("WebAssemblyTurboshaft"),
         Flag.baseFeature("WebAssemblyTurboshaftInstructionSelection"),
         Flag.baseFeature("WebAssemblyInlining"),
-        Flag.baseFeature("WebAssemblyLiftoffCodeFlushing"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION,
                 "Enable the WebView Media Integrity API as a Blink extension. Only works if"
@@ -829,9 +799,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.POST_GET_MY_MEMORY_STATE_TO_BACKGROUND,
                 "If enabled, getMyMemoryState IPC will be posted to background."),
-        Flag.baseFeature(
-                BlinkFeatures.REGISTER_JS_SOURCE_LOCATION_BLOCKING_BF_CACHE,
-                "Starts capturing bfcache blocking details"),
         Flag.baseFeature(
                 "MojoChannelAssociatedSendUsesRunOrPostTask",
                 "Enables optimization for sending messages on channel-associated interfaces"),
@@ -1078,6 +1045,9 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Prerender2 by Speculation Rules API is delayed until LCP is"
                         + " finished."),
         Flag.baseFeature("SyntheticResponseReportUnexpectedHeader"),
+        Flag.baseFeature(
+                "SelectParserRelaxation",
+                "Enables new HTML parser behavior for the <select> element."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

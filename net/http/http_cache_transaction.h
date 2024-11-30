@@ -295,13 +295,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     STATE_NETWORK_READ_COMPLETE,
   };
 
-  enum MemoryEntryDataHints {
-    // If this hint is set, the caching headers indicate we can't do anything
-    // with this entry (unless we are ignoring them thanks to a loadflag),
-    // i.e. it's expired and has nothing that permits validations.
-    HINT_UNUSABLE_PER_CACHING_HEADERS = (1 << 0),
-  };
-
   // Runs the state transition loop. Resets and calls |callback_| on exit,
   // unless the return value is ERR_IO_PENDING.
   int DoLoop(int result);

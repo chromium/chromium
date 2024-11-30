@@ -21,6 +21,7 @@
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Refactoring.h"
+#include "llvm/ADT/STLExtras.h"
 #include "llvm/Support/FormatVariadic.h"
 #include "llvm/Support/TargetSelect.h"
 
@@ -166,12 +167,10 @@ class OutputHelper {
   std::set<std::string> node_pairs_;
 };
 
-static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
-    const clang::SourceRange replacement_range,
+static std::string GetReplacementDirective(
+    const clang::SourceRange& replacement_range,
     std::string replacement_text,
-    const clang::SourceManager& source_manager,
-    const char* include_path = nullptr,
-    bool is_system_include_path = false) {
+    const clang::SourceManager& source_manager) {
   clang::tooling::Replacement replacement(
       source_manager, clang::CharSourceRange::getCharRange(replacement_range),
       replacement_text);
@@ -182,9 +181,23 @@ static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
   // If `replacement_text` is a special keyword, e.g. "<empty>", should not
   // escape `replacement_text`.
   replacement_text = EscapeReplacementText(replacement_text);
-  std::string replacement_directive = llvm::formatv(
-      "r:::{0}:::{1}:::{2}:::{3}", file_path, replacement.getOffset(),
-      replacement.getLength(), replacement_text);
+  return llvm::formatv("r:::{0}:::{1}:::{2}:::{3}", file_path,
+                       replacement.getOffset(), replacement.getLength(),
+                       replacement_text);
+}
+
+static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
+    const clang::SourceRange replacement_range,
+    std::string replacement_text,
+    const clang::SourceManager& source_manager,
+    const char* include_path = nullptr,
+    bool is_system_include_path = false) {
+  std::string replacement_directive = GetReplacementDirective(
+      replacement_range, replacement_text, source_manager);
+
+  std::string file_path =
+      GetFilename(source_manager, replacement_range.getBegin(),
+                  raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
 
   if (!include_path) {
     include_path = kBaseSpanIncludePath;
@@ -372,6 +385,20 @@ static Node getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
   return n;
 }
 
+// Creates a node as a placeholder for dependent edits that depend on the array
+// variable rewrite.
+static Node getProxyVarNodeFromArrayVariable(
+    const clang::VarDecl* var_decl,
+    const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  auto replacement_range =
+      clang::SourceRange(var_decl->getBeginLoc(), var_decl->getBeginLoc());
+  Node n;
+  n.replacement =
+      GetReplacementDirective(replacement_range, "", source_manager);
+  return n;
+}
+
 static Node getNodeFromRawPtrTypeLoc(
     const clang::TemplateSpecializationTypeLoc* raw_ptr_type_loc,
     const MatchFinder::MatchResult& result) {
@@ -507,6 +534,47 @@ static Node getNodeFromSizeExpr(const clang::Expr* size_expr,
   return n;
 }
 
+static Node getNodeFromSizeOfArrayExpr(
+    const clang::UnaryExprOrTypeTraitExpr* sizeof_array_expr,
+    const MatchFinder::MatchResult& result) {
+  clang::SourceManager& source_manager = *result.SourceManager;
+
+  const auto* array_variable =
+      result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
+  const std::string& array_variable_as_string =
+      array_variable->getNameAsString();
+
+  // sizeof_array_expr matches with "sizeof(c_array)" in case of
+  // `sizeof(c_array)`, and "sizeof " in case of `sizeof c_array`. In the
+  // latter case, we need to include "c_array" in the replacement range.
+  int end_offset = 1;
+  if (const auto* decl_ref = clang::dyn_cast_or_null<clang::DeclRefExpr>(
+          sizeof_array_expr->getArgumentExpr())) {
+    // Unfortunately decl_ref matches with "" (the empty string) at the
+    // beginning of "c_array", so we cannot use decl_ref->getSourceRange().
+    // Count the length of "c_array" (variable name) instead.
+    const clang::DeclarationNameInfo& name_info = decl_ref->getNameInfo();
+    const clang::DeclarationName& name = name_info.getName();
+    end_offset = name.getAsString().length();
+  }
+
+  const clang::SourceRange replacement_range = {
+      sizeof_array_expr->getBeginLoc(),
+      sizeof_array_expr->getEndLoc().getLocWithOffset(end_offset)};
+
+  // The outer-most parentheses are redundant for most cases. But it's
+  // necessary in cases like "x / sizeof(c_array)", which is unlikely though.
+  std::string replacement_text =
+      llvm::formatv("({0}.size() * sizeof(decltype({0})::value_type))",
+                    array_variable_as_string);
+  std::string replacement_directive = GetReplacementDirective(
+      replacement_range, std::move(replacement_text), source_manager);
+
+  Node n;
+  n.replacement = replacement_directive;
+  return n;
+}
+
 static Node getDataChangeNode(const std::string& lhs_replacement,
                               const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -540,23 +608,38 @@ static Node getDataChangeNode(const std::string& lhs_replacement,
   return data_node;
 }
 
-// Takes in a copy of a variable assumed to be in snake_case and switches it
-// into CamelCase.
-std::string snakeCaseToCamelCase(std::string snake_case) {
-  // We want the first char to be capitalized so start with '_'.
-  char prev = '_';
-  for (char& c : snake_case) {
+// Generate a class name for rewriting unnamed struct/class types. This is
+// based on the `var_name` which is the name of the array variable.
+std::string GenerateClassName(std::string var_name) {
+  // Chrome coding style is either:
+  // - snake_case for variables.
+  // - kCamelCase for constants.
+  //
+  // Variables are rewritten in CamelCase. Same for constants, but we need to
+  // drop the 'k'.
+  const bool is_constant =
+      var_name.size() > 2 && var_name[0] == 'k' &&
+      std::isupper(static_cast<unsigned char>(var_name[1])) &&
+      var_name.find('_') == std::string::npos;
+  if (is_constant) {
+    var_name = var_name.substr(1);
+  }
+
+  // Convert to CamelCase:
+  char prev = '_';  // Force the first character to be uppercase.
+  for (char& c : var_name) {
     if (prev == '_') {
-      c = std::toupper(c);
+      c = llvm::toUpper(c);
     }
     prev = c;
   }
   // Now we need to remove the '_'s from the string, recall std::remove moves
   // everything to the end and then returns the first '_' (or end()). We then
   // call erase from there to the end to actually remove.
-  snake_case.erase(std::remove(snake_case.begin(), snake_case.end(), '_'),
-                   snake_case.end());
-  return snake_case;
+  // var_name.erase(std::remove(var_name.begin(), var_name.end(), '_'),
+  // var_name.end());
+  llvm::erase(var_name, '_');
+  return var_name;
 }
 
 // Checks if the given array definition involves an unnamed struct type
@@ -611,7 +694,7 @@ std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
     clang::DeclarationName original_name = record_decl->getDeclName();
     clang::DeclarationName temporal_class_name;
     if (is_unnamed) {
-      new_class_name_string = snakeCaseToCamelCase(array_variable_as_string);
+      new_class_name_string = GenerateClassName(array_variable_as_string);
       clang::StringRef new_class_name(new_class_name_string);
       clang::IdentifierInfo& new_class_name_identifier =
           ast_context.Idents.get(new_class_name);
@@ -768,6 +851,39 @@ std::string GetStringViewType(const clang::QualType element_type,
       .str();
 }
 
+// If needed, insert a trailing comma in the `init_list_expr` to make the code
+// more readable. This makes clang-format to put each elements in a new line.
+// Everything is aligned nicely, and the output is more readable. This is
+// particularly helpful when the original code is not formatted with
+// clang-format, and isn't using a trailing comma, but was originally formatted
+// on multiple lines.
+void InsertTrailingComma(const clang::InitListExpr* init_list_expr,
+                         clang::Rewriter& rewriter,
+                         const clang::SourceManager& source_manager) {
+  // To allow for one-liner, we don't add the trailing comma when the size is
+  // below 3 or the content length is below 40.
+  const int length =
+      source_manager.getFileOffset(init_list_expr->getRBraceLoc()) -
+      source_manager.getFileOffset(init_list_expr->getLBraceLoc());
+  if (init_list_expr->getNumInits() < 3 || length < 40) {
+    return;
+  }
+
+  const clang::Expr* last_element =
+      init_list_expr->getInit(init_list_expr->getNumInits() - 1);
+
+  // Conservatively search for the trailing comma. If it's already there, we do
+  // not need to insert another one.
+  for (auto loc = last_element->getEndLoc().getLocWithOffset(1);
+       loc != init_list_expr->getRBraceLoc(); loc = loc.getLocWithOffset(1)) {
+    if (source_manager.getCharacterData(loc)[0] == ',') {
+      return;
+    }
+  }
+
+  rewriter.InsertTextAfterToken(last_element->getEndLoc(), ",");
+}
+
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
@@ -787,7 +903,7 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       array_variable->getNameAsString();
   const std::string& array_size_as_string =
       GetArraySize(array_type_loc, source_manager, ast_context);
-  const clang::QualType& element_type = array_type->getElementType();
+  const clang::QualType& original_element_type = array_type->getElementType();
 
   std::stringstream qualifier_string;
   if (array_variable->isConstexpr()) {
@@ -796,9 +912,19 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   if (array_variable->isStaticLocal()) {
     qualifier_string << "static ";
   }
-  // `const int buf[] = ...` must be `const std::array<int,...> buf = ...`.
-  if (!element_type->isPointerOrReferenceType() &&
-      element_type.isConstant(ast_context)) {
+
+  // Move const qualifier from the element type to the array type.
+  // This is equivalent, because std::array provides a 'const' overload for the
+  // operator[].
+  // -       reference operator[](size_type pos);
+  // - const_reference operator[](size_type pos) const;
+  //
+  // Note: The `volatile` qualifier is not moved to the array type. It is kept
+  //       in the element type. This is correct.
+  //       Anyway, Chrome doesn't have any volatile arrays at the moment.
+  clang::QualType new_element_type = original_element_type;
+  new_element_type.removeLocalConst();
+  if (original_element_type.isConstant(ast_context)) {
     qualifier_string << "const ";
   }
 
@@ -812,14 +938,15 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   //   - Multi-dimensional array with redundant struct/class keyword
   std::string element_type_as_string;
   const auto& [unnamed_class, class_definition] = maybeGetUnnamedAndDefinition(
-      element_type, array_variable, array_variable_as_string, ast_context);
+      new_element_type, array_variable, array_variable_as_string, ast_context);
   if (!unnamed_class.empty()) {
     element_type_as_string = unnamed_class;
-  } else if (element_type->isElaboratedTypeSpecifier()) {
-    // If the `element_type` is an elaborated type with a keyword, i.e.
+  } else if (original_element_type->isElaboratedTypeSpecifier()) {
+    // If the `original_element_type` is an elaborated type with a keyword, i.e.
     // `struct`, `class`, `union`, we will create another ElaboratedType
     // without the keyword. So `struct funcHasName` will be `funcHasHame`.
-    auto* original_type = element_type->getAs<clang::ElaboratedType>();
+    auto* original_type = new_element_type->getAs<clang::ElaboratedType>();
+
     // Create a new ElaboratedType without 'struct', 'class', 'union'
     // keywords.
     auto new_element_type = ast_context.getElaboratedType(
@@ -833,9 +960,9 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
         nullptr);
     element_type_as_string = GetTypeAsString(new_element_type, ast_context);
   } else {
-    element_type_as_string =
-        RewriteCArrayToStdArray(element_type, array_type_loc.getElementLoc(),
-                                source_manager, ast_context);
+    element_type_as_string = RewriteCArrayToStdArray(
+        new_element_type, array_type_loc.getElementLoc(), source_manager,
+        ast_context);
   }
 
   const clang::InitListExpr* init_list_expr = GetArrayInitList(array_variable);
@@ -862,16 +989,17 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
 
   const char* include_path = kArrayIncludePath;
   std::string replacement_text;
-  if (element_type->isAnyCharacterType() &&
-      element_type.isConstant(ast_context) &&
+  if (original_element_type->isAnyCharacterType() &&
+      original_element_type.isConstant(ast_context) &&
       clang::dyn_cast_or_null<clang::StringLiteral>(
           array_variable->getInit())) {
-    replacement_text =
-        llvm::formatv("{0} {1}", GetStringViewType(element_type, ast_context),
-                      array_variable_as_string);
+    replacement_text = llvm::formatv(
+        "{0} {1}", GetStringViewType(new_element_type, ast_context),
+        array_variable_as_string);
     include_path = kStringViewIncludePath;
   } else if (init_list_expr) {
     clang::Rewriter rw(source_manager, ast_context.getLangOpts());
+    InsertTrailingComma(init_list_expr, rw, source_manager);
     std::string init_expr_as_string =
         rw.getRewrittenText(init_list_expr->getSourceRange());
 
@@ -896,6 +1024,7 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       source_manager, include_path,
       /* is_system_include_header =*/true);
   Node n;
+  n.is_buffer = true;
   n.replacement = replacement_and_include_pair.first;
   n.include_directive = replacement_and_include_pair.second;
   n.size_info_available = true;
@@ -955,6 +1084,8 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (result.Nodes.getNodeAs<clang::VarDecl>("array_variable")) {
       return getNodeFromArrayType(result);
     }
+
+    // Not supposed to get here.
     assert(false);
   }
 
@@ -963,6 +1094,22 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (auto* type_loc =
             result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
       return getNodeFromPointerTypeLoc(type_loc, result);
+    }
+
+    if (const auto* sizeof_array_expr =
+            result.Nodes.getNodeAs<clang::UnaryExprOrTypeTraitExpr>(
+                "sizeof_array_expr")) {
+      return getNodeFromSizeOfArrayExpr(sizeof_array_expr, result);
+    }
+
+    if (auto* rhs_array_var =
+            result.Nodes.getNodeAs<clang::VarDecl>("array_variable")) {
+      return getProxyVarNodeFromArrayVariable(rhs_array_var, result);
+    }
+
+    if (auto* rhs_array_var =
+            result.Nodes.getNodeAs<clang::VarDecl>("array_variable_rhs")) {
+      return getProxyVarNodeFromArrayVariable(rhs_array_var, result);
     }
 
     if (auto* raw_ptr_type_loc =
@@ -989,6 +1136,7 @@ class PotentialNodes : public MatchFinder::MatchCallback {
             result.Nodes.getNodeAs<clang::Expr>("size_node")) {
       return getNodeFromSizeExpr(size_expr, result);
     }
+
     // Not supposed to get here.
     assert(false);
   }
@@ -1353,16 +1501,25 @@ class Spanifier {
             .bind("buffer_expr"));
     match_finder_.addMatcher(buffer_expr1, &potential_nodes_);
 
+    auto array_variable =
+        varDecl(hasType(arrayType().bind("array_type")),
+                hasTypeLoc(loc(qualType(anything())).bind("array_type_loc")),
+                unless(exclusions), unless(hasExternalFormalLinkage()))
+            .bind("array_variable");
+
     auto buffer_expr2 = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        expr(ignoringParenCasts(arraySubscriptExpr(hasLHS(declRefExpr(to(
-                 varDecl(hasType(arrayType().bind("array_type")),
-                         hasTypeLoc(
-                             loc(qualType(anything())).bind("array_type_loc")),
-                         unless(exclusions), unless(hasExternalFormalLinkage()))
-                     .bind("array_variable")))))))
-            .bind("buffer_expr"));
+        expr(ignoringParenCasts(
+            arraySubscriptExpr(hasLHS(declRefExpr(to(array_variable)))))));
     match_finder_.addMatcher(buffer_expr2, &potential_nodes_);
+
+    // `sizeof(c_array)` is rewritten to
+    // `std_array.size() * sizeof(element_size)`.
+    auto sizeof_array_expr =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 sizeOfExpr(has(declRefExpr(to(array_variable))))
+                     .bind("sizeof_array_expr"));
+    match_finder_.addMatcher(sizeof_array_expr, &potential_nodes_);
 
     auto deref_expression = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
@@ -1403,6 +1560,33 @@ class Spanifier {
                          .bind("passing_a_buffer_to_third_party_function"),
                      parmVarDecl())));
     match_finder_.addMatcher(passing_a_buffer_to_external_functions,
+                             &potential_nodes_);
+
+    // When passing c-style arrays to third_party functions as parameters, we
+    // need to add `.data()` to extract the pointer and keep things compiling.
+    auto c_style_array_var = varDecl(hasType(arrayType()), unless(exclusions),
+                                     unless(hasExternalFormalLinkage()));
+    // Functions that are annotated with UNSAFE_BUFFER_USAGE also get this
+    // treatment because the annotation means it was left there intentionally.
+    // And since they emit warnings we can easily find and spanify them later.
+    // Functions that are known to accept both c-style arrays and std::array,
+    // like std::size() are excluded.
+    auto passing_a_c_array_to_external_functions_etc = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        callExpr(callee(functionDecl(
+                     anyOf(isExpansionInSystemHeader(),
+                           raw_ptr_plugin::isInExternCContext(),
+                           raw_ptr_plugin::isInThirdPartyLocation(),
+                           hasAttr(clang::attr::UnsafeBufferUsage)),
+                     unless(matchesName(
+                         "^::std::(size|begin|end|empty|swap|ranges::)")))),
+                 forEachArgumentWithParam(
+                     expr(declRefExpr(
+                              to(c_style_array_var.bind("array_variable_rhs")))
+                              .bind("rhs_expr"))
+                         .bind("passing_a_buffer_to_third_party_function"),
+                     parmVarDecl())));
+    match_finder_.addMatcher(passing_a_c_array_to_external_functions_etc,
                              &potential_nodes_);
 
     // Handles assignment:

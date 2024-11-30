@@ -94,7 +94,7 @@ TEST(H265AnnexBToHevcBitstreamConverterTest, Success) {
 
 // Tests that stream can contain multiple picture parameter sets and switch
 // between them without having to reconfigure the decoder.
-TEST(H265AnnexBToHevcBitstreamConverterTest, PPS_SwitchWithoutReconfig) {
+TEST(H265AnnexBToHevcBitstreamConverterTest, PPSSwitchWithoutReconfig) {
   std::vector<uint8_t> vps{0x00, 0x00, 0x00, 0x01, 0x40, 0x01, 0x0c,
                            0x01, 0xff, 0xff, 0x22, 0x20, 0x00, 0x00,
                            0x03, 0x00, 0x90, 0x00, 0x00, 0x03, 0x00,

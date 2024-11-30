@@ -70,4 +70,8 @@ BASE_FEATURE(kPrefetchNewWaitLoop,
              "PrefetchNewWaitLoop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchServiceWorkerNoFetchHandlerFix,
+             "PrefetchServiceWorkerNoFetchHandlerFix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

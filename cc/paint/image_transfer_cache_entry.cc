@@ -464,7 +464,9 @@ ClientImageTransferCacheEntry::Image::Image(
   DCHECK_EQ(yuva_info.sitingX(), SkYUVAInfo::Siting::kCentered);
   DCHECK_EQ(yuva_info.sitingY(), SkYUVAInfo::Siting::kCentered);
   DCHECK(IsYUVAInfoValid(yuv_plane_config, yuv_subsampling, yuv_color_space));
-  for (int i = 0; i < SkYUVAInfo::NumPlanes(yuv_plane_config); ++i) {
+  const auto num_planes =
+      base::checked_cast<size_t>(SkYUVAInfo::NumPlanes(yuv_plane_config));
+  for (size_t i = 0; i < num_planes; ++i) {
     pixmaps[i] = &yuva_pixmaps[i];
   }
 }

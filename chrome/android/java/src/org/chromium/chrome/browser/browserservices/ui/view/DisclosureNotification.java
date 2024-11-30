@@ -23,7 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -36,8 +36,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable;
 
-import javax.inject.Inject;
-
 /**
  * Displays a notification when the user is on the verified domain. The first such notification (per
  * TWA) is urgent priority, subsequent ones are low priority.
@@ -48,14 +46,15 @@ public class DisclosureNotification
     private final TrustedWebActivityModel mModel;
     private String mCurrentScope;
 
-    @Inject
-    DisclosureNotification(
-            Resources resources, TrustedWebActivityModel model, BaseCustomTabActivity activity) {
+    public DisclosureNotification(
+            Resources resources,
+            TrustedWebActivityModel model,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mResources = resources;
         mModel = model;
 
         mModel.addObserver(this);
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
     }
 
     private void show() {

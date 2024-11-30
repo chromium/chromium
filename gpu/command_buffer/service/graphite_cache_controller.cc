@@ -79,6 +79,7 @@ void GraphiteCacheController::CleanUpAllResources() {
 #if BUILDFLAG(SKIA_USE_DAWN)
   if (dawn_context_provider_) {
     dawn::native::ReduceMemoryUsage(dawn_context_provider_->GetDevice().Get());
+    dawn::native::PerformIdleTasks(dawn_context_provider_->GetDevice());
   }
 #endif
 }

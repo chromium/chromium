@@ -243,14 +243,18 @@ bool GPUCanvasContext::PushFrame() {
   auto client_si = swap_buffers_->GetCurrentSharedImage();
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
-  if (!swap_buffers_->PrepareTransferableResource(
-          nullptr, &transferable_resource, &release_callback)) {
+  if (!swap_buffers_->PrepareTransferableResource(&transferable_resource,
+                                                  &release_callback)) {
     return false;
   }
 
   // If it was possible to prepare the transferable resource, the
   // ClientSharedImage must also be valid.
   CHECK(client_si);
+
+  // TODO(crbug.com/378688985): Move this inside PrepareTransferableResource.
+  transferable_resource.origin = client_si->surface_origin();
+
   auto canvas_resource = ExternalCanvasResource::Create(
       std::move(client_si), transferable_resource, std::move(release_callback),
       GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
@@ -311,8 +315,8 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
   auto client_si = swap_buffers_->GetCurrentSharedImage();
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
-  if (!swap_buffers_->PrepareTransferableResource(
-          nullptr, &transferable_resource, &release_callback)) {
+  if (!swap_buffers_->PrepareTransferableResource(&transferable_resource,
+                                                  &release_callback)) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
@@ -816,8 +820,9 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
       SharedGpuContext::ContextProviderWrapper();
-  if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
+  if (!shared_context_wrapper) {
     return false;
+  }
 
   auto dst_client_si =
       resource_provider->GetBackingClientSharedImageForOverwrite();
@@ -825,7 +830,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     return false;
   }
 
-  auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
+  auto* ri = shared_context_wrapper->ContextProvider().RasterInterface();
 
   if (!GetContextProviderWeakPtr()) {
     return false;
@@ -833,7 +838,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   // todo(crbug/1267244) Use WebGPUMailboxTexture here instead of doing things
   // manually.
   gpu::webgpu::WebGPUInterface* webgpu =
-      GetContextProviderWeakPtr()->ContextProvider()->WebGPUInterface();
+      GetContextProviderWeakPtr()->ContextProvider().WebGPUInterface();
   gpu::webgpu::ReservedTexture reservation =
       webgpu->ReserveTexture(device_->GetHandle().Get());
   DCHECK(reservation.texture);

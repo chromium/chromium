@@ -732,7 +732,6 @@ public class TabStripTransitionCoordinatorUnitTest {
     public void enterDesktopWindow_WideInitialWidth() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         // Create the transition coordinator again for a large desktop window.
-        int newHeight = TEST_TAB_STRIP_HEIGHT + mReservedTopPadding;
         setUpTabStripTransitionCoordinator(
                 /* isInDesktopWindow= */ true, LARGE_DESKTOP_WINDOW_WIDTH);
         verifyFadeTransitionState(/* expectedScrimOpacity= */ 0f);
@@ -746,7 +745,6 @@ public class TabStripTransitionCoordinatorUnitTest {
         doReturn(0).when(mSpyControlContainer).getWidth();
 
         // Create the transition coordinator for a desktop window.
-        int newHeight = TEST_TAB_STRIP_HEIGHT + mReservedTopPadding;
         setUpTabStripTransitionCoordinator(
                 /* isInDesktopWindow= */ true, LARGE_DESKTOP_WINDOW_WIDTH);
 

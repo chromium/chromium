@@ -213,10 +213,9 @@ RenderPassBuilder& RenderPassBuilder::AddTextureQuad(
   auto* quad = pass_->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetAll(sqs, rect, visible_rect, params.needs_blending, resource_id,
                rect.size(), params.premultiplied_alpha, gfx::PointF(0.0f, 0.0f),
-               gfx::PointF(1.0f, 1.0f), params.background_color, params.flipped,
+               gfx::PointF(1.0f, 1.0f), params.background_color,
                params.nearest_neighbor, params.secure_output_only,
                params.protected_video_type);
-
   return *this;
 }
 
@@ -547,17 +546,14 @@ void PopulateTransferableResources(CompositorFrame& frame) {
   std::set<ResourceId> resources_added;
   for (auto& render_pass : frame.render_pass_list) {
     for (auto* quad : render_pass->quad_list) {
-      for (ResourceId resource_id : quad->resources) {
-        if (resource_id == kInvalidResourceId)
-          continue;
-
+      if (quad->resource_id != kInvalidResourceId) {
         // Adds a TransferableResource the first time seeing a ResourceId.
-        if (resources_added.insert(resource_id).second) {
+        if (resources_added.insert(quad->resource_id).second) {
           frame.resource_list.push_back(
               TransferableResource::MakeSoftwareSharedBitmap(
                   SharedBitmap::GenerateId(), gpu::SyncToken(),
                   quad->rect.size(), SinglePlaneFormat::kRGBA_8888));
-          frame.resource_list.back().id = resource_id;
+          frame.resource_list.back().id = quad->resource_id;
         }
       }
     }

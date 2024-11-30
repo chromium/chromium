@@ -37,27 +37,26 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
     FakeServer();
     ~FakeServer();
 
-    void StoreKeysOnServer(const std::string& gaia_id,
+    void StoreKeysOnServer(const GaiaId& gaia_id,
                            const std::vector<std::vector<uint8_t>>& keys);
 
     // Mimics a user going through a key-retrieval flow (e.g. reauth) such that
     // keys are fetched from the server and cached in |client|.
     // TODO(crbug.com/40264843): replace usages with GetKeysFromServer() +
     // client.StoreKeys()?
-    void MimicKeyRetrievalByUser(const std::string& gaia_id,
+    void MimicKeyRetrievalByUser(const GaiaId& gaia_id,
                                  TrustedVaultClient* client);
 
     // Mimics the server RPC endpoint that allows key rotation.
     std::vector<std::vector<uint8_t>> RequestRotatedKeysFromServer(
-        const std::string& gaia_id,
+        const GaiaId& gaia_id,
         const std::vector<uint8_t>& key_known_by_client);
 
-    void AddRecoveryMethod(const std::string& gaia_id,
+    void AddRecoveryMethod(const GaiaId& gaia_id,
                            const std::vector<uint8_t>& public_key,
                            int method_type_hint);
 
-    std::vector<RecoveryMethod> GetRecoveryMethods(
-        const std::string& gaia_id) const;
+    std::vector<RecoveryMethod> GetRecoveryMethods(const GaiaId& gaia_id) const;
 
    private:
     std::map<std::string, std::vector<std::vector<uint8_t>>> gaia_id_to_keys_;
@@ -91,8 +90,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
 
   // Similar to FetchKeys(), but synchronous and never requests new keys from
   // `server_`.
-  std::vector<std::vector<uint8_t>> GetStoredKeys(
-      const std::string& gaia_id) const;
+  std::vector<std::vector<uint8_t>> GetStoredKeys(const GaiaId& gaia_id) const;
 
   // Mimics the completion of all FetchKeys() and GetIsRecoverabilityDegraded()
   // requests.
@@ -109,7 +107,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
           callback) override;
-  void StoreKeys(const std::string& gaia_id,
+  void StoreKeys(const GaiaId& gaia_id,
                  const std::vector<std::vector<uint8_t>>& keys,
                  int last_key_version) override;
   void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
@@ -117,7 +115,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   void GetIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(bool)> callback) override;
-  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+  void AddTrustedRecoveryMethod(const GaiaId& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceClosure callback) override;

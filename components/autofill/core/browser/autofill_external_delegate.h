@@ -16,10 +16,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
-#include "components/autofill/core/browser/form_filler.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -38,11 +37,9 @@ namespace autofill {
 class AutofillDriver;
 class BrowserAutofillManager;
 class CreditCard;
-enum class CreditCardFetchResult;
 
 // Delegate for in-browser Autocomplete and Autofill display and selection.
-class AutofillExternalDelegate : public AutofillSuggestionDelegate,
-                                 public AddressDataManager::Observer {
+class AutofillExternalDelegate : public AutofillSuggestionDelegate {
  public:
   class ScopedSuggestionSelectionShortcut;
 
@@ -104,16 +101,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
       std::optional<autofill_metrics::SuggestionRankingContext>
           suggestion_ranking_context);
 
-  // Returns the type of the last accepted address filling suggestion.
-  // This is used by group filling to keep users in the same granularity level
-  // by filtering out fields that do not match the last targeted fields group
-  // granularity. For example, if users choose to fill every address field, we
-  // will store these fields so that in a next iteration, when the user clicks,
-  // say a name field only fields that are of group name are filled, therefore
-  // staying at a group filling level.
-  SuggestionType GetLastAcceptedSuggestionToFillForSection(
-      const Section& section) const;
-
   // Returns true if there is a screen reader installed on the machine.
   virtual bool HasActiveScreenReader() const;
 
@@ -126,9 +113,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // Informs the delegate that the text field editing has ended. This is
   // used to help record the metrics of when a new popup is shown.
   void DidEndTextFieldEditing();
-
-  // AddressDataManager::Observer:
-  void OnAddressDataChanged() override;
 
   const FormData& query_form() const { return query_form_; }
 
@@ -147,9 +131,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AutofillExternalDelegateUnitTest,
-                           FillCreditCardForm);
-
   // Tries to display `suggestions` in the suggestions UI. If `is_update` is
   // true, then `AutofillClient::UpdateAutofillSuggestions` is called, which
   // means that suggestions will only be shown if there is currently suggestion
@@ -197,29 +178,18 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // the argument from UTF8 to UTF16 and set `EMAIL_ADDRESS` as the filled type.
   PlusAddressCallback CreatePlusAddressCallback(SuggestionType suggestion_type);
 
+  // Creates a plus address callback (see `CreatePlusAddressCallback`) which
+  // triggers a plus address was created using the manual fallback.
+  PlusAddressCallback CreateInlinePlusAddressCallback(
+      SuggestionType suggestion_type);
+
   // Informs the `AutofillPlusAddress` delegate and passes callbacks for
   // hiding/updating suggestions UI and filling.
   void DidAcceptCreateNewPlusAddressInlineSuggestion(
       const Suggestion& suggestion);
 
-  // Shows the address editor to the user. The Autofill profile to edit is
-  // determined by passed `guid`.
-  void ShowEditAddressProfileDialog(const std::string& guid);
-
-  // Shows the delete address profile dialog to the user. The Autofill profile
-  // to delete is determined by the passed `guid`.
-  void ShowDeleteAddressProfileDialog(const std::string& guid);
-
-  // Triggered when the user closes the address editor dialog.
-  void OnAddressEditorClosed(AutofillClient::AddressPromptUserDecision decision,
-                             base::optional_ref<const AutofillProfile> profile);
-
-  // Triggered when the user closes the delete address profile dialog.
-  void OnDeleteDialogClosed(const std::string& guid, bool user_accepted_delete);
-
   // Called when a credit card is scanned using device camera.
-  void OnCreditCardScanned(const AutofillTriggerSource trigger_source,
-                           const CreditCard& card);
+  void OnCreditCardScanned(const CreditCard& card);
 
   // Returns the last Autofill triggering field. Derived from the `form` and
   // `field` parameters of `OnQuery(). Returns nullptr if called before
@@ -234,24 +204,11 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
                             const Suggestion::Payload& payload,
                             std::optional<SuggestionMetadata> metadata,
                             bool is_preview,
-                            const AutofillTriggerDetails& trigger_details);
-
-  // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
-  // previewed and previews the corresponding field-by-field filling suggestion.
-  void PreviewFieldByFieldFillingSuggestion(const Suggestion& suggestion);
-
-  // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
-  // filled and fills the corresponding field-by-field filling suggestion.
-  void FillFieldByFieldFillingSuggestion(const Suggestion& suggestion,
-                                         const SuggestionMetadata& metadata);
+                            AutofillTriggerSource trigger_source);
 
   // Previews the value from `profile` specified in the `suggestion`.
   void PreviewAddressFieldByFieldFillingSuggestion(
       const AutofillProfile& profile,
-      const Suggestion& suggestion);
-
-  // Previews the main text from the `suggestion`.
-  void PreviewCreditCardFieldByFieldFillingSuggestion(
       const Suggestion& suggestion);
 
   // Fills the value from `profile` specified in the `suggestion`. Emits
@@ -262,25 +219,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
       const Suggestion& suggestion,
       const SuggestionMetadata& metadata);
 
-  // Uses the `credit_card` to optionally fetch the credit card number depending
-  // on the `suggestion.field_by_field_filling_type_used`. Fills the fetched
-  // credit card number or the `suggestion::main_text`.
-  void FillCreditCardFieldByFieldFillingSuggestion(
-      const CreditCard& credit_card,
-      const Suggestion& suggestion);
-
   // Fills `values_to_fill` into the fields of `query_form_`.
   void FillPredictionImprovements(const Suggestion& suggestion);
-
-  // Triggered when the user closes the authentication flow needed to access
-  // the number and cvc of the `credit_card`.
-  void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card);
-
-  // Triggered when the user completes the authentication flow needed to access
-  // virtual credit card details.
-  void OnVirtualCreditCardFetched(CreditCardFetchResult result,
-                                  const CreditCard* credit_card);
 
   // Handle applying any Autofill option listings to the Autofill popup.
   // This function should only get called when there is at least one
@@ -325,11 +265,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // The method how suggestions were triggered on the current form.
   AutofillSuggestionTriggerSource trigger_source_;
 
-  // We key this information by form section to guarantee granular filling
-  // side effects are specific are not "leaked" to other forms.
-  base::flat_map<Section, SuggestionType>
-      last_accepted_address_suggestion_for_address_form_section_;
-
   bool show_cards_from_account_suggestion_was_shown_ = false;
 
   std::vector<SuggestionType> shown_suggestion_types_;
@@ -345,12 +280,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
 
   // The caret position of the focused field.
   gfx::Rect caret_bounds_;
-
-  // Autofill profile update and deletion are async operations. ADM observer is
-  // used to detect when these operations finish. These operations can happen at
-  // the same time.
-  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
-      adm_observation_{this};
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
 };

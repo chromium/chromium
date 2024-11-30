@@ -75,14 +75,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Suggestion Deleted"/>
 </enum>
 
-<enum name="AutofillAddNewAddressPromptOutcome">
-  <summary>
-    Describes the user's decision on the 'And new address' prompt.
-  </summary>
-  <int value="0" label="Accepted and saved a new address."/>
-  <int value="1" label="Canceled explicitly or ignored"/>
-</enum>
-
 <enum name="AutofillAddressProfileImportCountrySpecificFieldRequirement">
   <int value="0" label="All required fields present"/>
   <int value="1" label="Missing: ZIP"/>
@@ -994,26 +986,6 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Closed without user interaction"/>
 </enum>
 
-<enum name="AutofillFieldByFieldFillingTypes">
-  <int value="0" label="Name first"/>
-  <int value="1" label="Name middle"/>
-  <int value="2" label="Name last"/>
-  <int value="3" label="Addres home line 1"/>
-  <int value="4" label="Address home line 2"/>
-  <int value="5" label="Address home zip"/>
-  <int value="6" label="Phone home whole number"/>
-  <int value="7" label="Email address"/>
-  <int value="8" label="Address home house number"/>
-  <int value="9" label="Address home street name"/>
-  <int value="10" label="Credit card full name"/>
-  <int value="11" label="Credit card number"/>
-  <int value="12" label="Credit card expiration date"/>
-  <int value="13" label="Credir card expiration year"/>
-  <int value="14" label="Credit card expiration month"/>
-  <int value="15" label="City"/>
-  <int value="16" label="Company"/>
-</enum>
-
 <enum name="AutofillFieldPredictionQuality">
   <int value="0" label="True Positive"/>
   <int value="1" label="True Negative (Ambiguous)"/>
@@ -1821,15 +1793,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
 </enum>
 
-<enum name="AutofillFillingMethodMetric">
-  <int value="0" label="Full form"/>
-  <int value="1" label="Group filling name fields"/>
-  <int value="2" label="Group filling address fields"/>
-  <int value="3" label="Group filling email fields"/>
-  <int value="4" label="Group filling phone fields"/>
-  <int value="5" label="Field by field filling"/>
-</enum>
-
 <enum name="AutofillFormEvent">
   <int value="0" label="Interacted (once)"/>
   <int value="1" label="Suggestions shown"/>
@@ -1847,14 +1810,11 @@ Called by update_autofill_enums.py.-->
              (once)"/>
   <int value="12"
       label="Submitted with masked server card suggestion filled (once)"/>
-  <int value="13"
-      label="(DEPRECATED, USE NEW VERSION) Masked server card suggestion
-             selected">
+  <int value="13" label="(Obsolete) Masked server card suggestion selected">
     The user selected a masked server card that triggered an unmask attempt.
   </int>
   <int value="14"
-      label="(DEPRECATED, USE NEW VERSION) Masked server card suggestion
-             selected (once)">
+      label="(Obsolete) Masked server card suggestion selected (once)">
     The user selected a masked server card that triggered an unmask attempt at
     least once.
   </int>
@@ -2138,6 +2098,13 @@ Called by update_autofill_enums.py.-->
       label="Context menu, after trigger manual fallback and having no
              addresses stored."/>
   <int value="1" label="Settings page."/>
+</enum>
+
+<enum name="AutofillMatchAttribute">
+  <int value="0" label="None"/>
+  <int value="1" label="Ambiguous"/>
+  <int value="2" label="Label"/>
+  <int value="3" label="Name"/>
 </enum>
 
 <enum name="AutofillOfferNotificationBubbleResult">
@@ -4238,6 +4205,26 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Some other item selected"/>
 </enum>
 
+<enum name="AutofillScanCreditCardResult">
+  <int value="0" label="Unknown result"/>
+  <int value="1"
+      label="Credit card was scanned to fill the form and the form was
+             submitted without any additional edits by the user"/>
+  <int value="2"
+      label="Credit card was scanned to fill the form and the form was
+             submitted with edits by the user to fields that were NOT filled
+             by the scanner"/>
+  <int value="3"
+      label="Credit card was scanned to fill the form and the form was
+             submitted with edits by the user to fields filled by the scanner"/>
+  <int value="4"
+      label="Credit card was scanned to fill the form and but the form was
+             not submitted and instead the user closed the form"/>
+  <int value="5" label="Credit card scanner was started but cancelled"/>
+  <int value="6"
+      label="Credit card scanner option was shown to the user but not used"/>
+</enum>
+
 <enum name="AutofillServerCardUnmaskResult">
   <int value="0" label="Unknown result"/>
   <int value="1" label="Local cache hit"/>
@@ -4733,12 +4720,6 @@ Called by update_autofill_enums.py.-->
   <int value="10" label="Failure: Unsuported country."/>
 </enum>
 
-<enum name="FieldClassificationType">
-  <int value="0" label="Classified with recognized autocomplete."/>
-  <int value="1" label="Classified with unrecognized autocomplete."/>
-  <int value="2" label="Unclassified."/>
-</enum>
-
 <enum name="FieldFillingStatus">
   <int value="0" label="Accepted"/>
   <int value="1" label="CorrectedToSameType"/>
@@ -4987,7 +4968,7 @@ Called by update_autofill_enums.py.-->
   <int value="9" label="Phone: [ac] Prefix: [phone] Suffix: [suffix]"/>
   <int value="10" label="Phone: [ac] - [phone]:3 - [suffix]:4"/>
   <int value="11" label="Phone: [cc] - [ac] - [phone]"/>
-  <int value="12" label="Phone: [cc]:3 - [phone]"/>
+  <int value="12" label="Phone: [cc]:3 [phone]"/>
   <int value="13" label="Phone: [ac] - [phone]"/>
   <int value="14" label="Phone: [phone]"/>
 </enum>
@@ -5053,14 +5034,21 @@ Called by update_autofill_enums.py.-->
 <enum name="SuggestionType">
   <int value="0" label="Autocomplete entry"/>
   <int value="1" label="Address entry"/>
-  <int value="2" label="Fill full address"/>
-  <int value="3" label="Fill full name"/>
-  <int value="4" label="Fill everything"/>
-  <int value="5" label="Fill full phone number"/>
-  <int value="6" label="Fill full email"/>
+  <int value="2"
+      label="(Obsolete) Fill full address (Deprecated by an M133 launch)"/>
+  <int value="3"
+      label="(Obsolete) Fill full name (Deprecated by an M133 launch)"/>
+  <int value="4"
+      label="(Obsolete) Fill everything (Deprecated by an M133 launch)"/>
+  <int value="5"
+      label="(Obsolete) Fill full phone number (Deprecated by an M133 launch)"/>
+  <int value="6"
+      label="(Obsolete) Fill full email (Deprecated by an M133 launch)"/>
   <int value="7" label="Address field-by-field filling"/>
-  <int value="8" label="Edit address profile"/>
-  <int value="9" label="Delete address profile"/>
+  <int value="8"
+      label="(Obsolete) Edit address profile (Deprecated by an M133 launch)"/>
+  <int value="9"
+      label="(Obsolete) Delete address profile (Deprecated by an M133 launch)"/>
   <int value="10" label="Manage address"/>
   <int value="11" label="Manage credit card"/>
   <int value="12" label="Manage IBAN"/>
@@ -5088,7 +5076,7 @@ Called by update_autofill_enums.py.-->
   <int value="34" label="Insecure context payment disabled message"/>
   <int value="35" label="Scan credit card"/>
   <int value="36" label="Virtual credit card entry"/>
-  <int value="37" label="Credit card field-by-field filling"/>
+  <int value="37" label="(DEPRECATED) Credit card field-by-field filling"/>
   <int value="38" label="Iban entry"/>
   <int value="39" label="Create new plus address"/>
   <int value="40" label="Fill existing plus address"/>
@@ -5177,6 +5165,12 @@ Called by update_autofill_enums.py.-->
   <int value="6"
       label="Form about to be submitted after suggestion filled (once)"/>
   <int value="7" label="Form submitted after suggestion filled (once)"/>
+</enum>
+
+<enum name="WebAuthnCredManDelegateState">
+  <int value="0" label="Not ready"/>
+  <int value="1" label="No passkeys"/>
+  <int value="2" label="Has passkeys"/>
 </enum>
 
 <enum name="WebauthnOptInPromoNotOfferedReason">

@@ -2215,6 +2215,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ICON_INFO" desc="Accessibility label for the info icon [iOS only].">
         Info
       </message>
+      <message name="IDS_IOS_ICON_OPTION_MENU" desc="Accessibility label for the three-dot menu item. The accessibility string should announce that there are ‘more actions’ available, and should not reference the visual look of the button. [iOS only]">
+        More actions
+      </message>
       <message name="IDS_IOS_ICON_SEARCH" desc="Accessibility label for the search icon [iOS only].">
         Search
       </message>
@@ -4815,6 +4818,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_TITLE" desc="Title for the Send Tab To Self modal dialog that chooses the device to which the current tab will be sent. [iOS only]">
         Send webpage
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_ADDRESS_BAR_LONG_DESCRIPTION" desc="The description for the Set Up List item that encourages users to select the position of their address bar.">
+        Pick the position of your address bar that works best for you.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_ADDRESS_BAR_SHORT_DESCRIPTION" desc="The description for the Set Up List item that encourages users to select the position of their address bar (used when the Set Up List is in compact mode).">
+        Select the position that works best for you.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_ADDRESS_BAR_TITLE" desc="The title of the Set Up List item that encourages users to select the position of their address bar.">
+        Choose Address Bar Position
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_DOCK_CHROME_LONG_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to add Chrome to their iOS dock.">
+        Get faster access from your Home Screen.
+      </message>
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION" desc="Footer text shown when the user is trying to add a new credential manually via settings [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
         Make sure you're saving your current password for this site.
       </message>
@@ -5136,6 +5151,21 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SHARED_GROUP_SHARE_GROUP" desc="The Voice Over label for the button allowing the user to share a group.">
         Share group
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_SHARE_GROUP_BUTTON_TEXT" desc="Button text allowing the user to share a group.">
+        Share
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_USER_EDUCATION_IPH_FOREGROUND" desc="The description of the in-product help displayed when the user is coming back to a shared tab group in foreground">
+            Changes made are seen by everyone in the group
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_GOT_IT" desc="The title of the button to mark the understanding of the user education about shared tab groups">
+            Got it
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_SUBTITLE" desc="The title of the half sheet displaying informations about the shared tab group">
+            Changes made are seen by everyone in the group
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_TITLE" desc="The subtitle of the half sheet displaying informations about the shared tab group">
+            Everyone can make changes to your shared tab groups
       </message>
       <message name="IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. When selected, the user will be taken to a help article explaining how the highlighting feature works. [Length: 25em]">
         Learn more…
@@ -6712,6 +6742,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB" desc="The iOS menu item for managing a selected item. [iOS only]">
         Manage
+      </message>
+      <message name="IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON" desc="The accessibility label for the collapsed toolbar button in primary toolbar. [iOS only].">
+        Collapsed primary toolbar button
       </message>
     </messages>
   </release>

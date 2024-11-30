@@ -15,7 +15,8 @@ class WebContents;
 namespace safe_browsing {
 
 // Get referring app info from Java side.
-ReferringAppInfo GetReferringAppInfo(content::WebContents* web_contents);
+internal::ReferringAppInfo GetReferringAppInfo(
+    content::WebContents* web_contents);
 
 }  // namespace safe_browsing
 

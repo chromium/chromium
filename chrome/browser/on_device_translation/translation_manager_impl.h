@@ -12,7 +12,7 @@
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
@@ -64,7 +64,7 @@ class TranslationManagerImpl
   const url::Origin origin_;
   scoped_refptr<OnDeviceTranslationServiceController> service_controller_;
   mojo::UniqueReceiverSet<blink::mojom::Translator> translators_;
-  mojo::Receiver<blink::mojom::TranslationManager> receiver_{this};
+  mojo::ReceiverSet<blink::mojom::TranslationManager> receiver_set_;
   base::WeakPtrFactory<TranslationManagerImpl> weak_ptr_factory_{this};
 };
 

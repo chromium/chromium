@@ -4,23 +4,8 @@
 
 package org.chromium.chrome.test.transit.hub;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.CoreMatchers.allOf;
-
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
-import android.view.View;
-
-import org.hamcrest.Matcher;
-
+import androidx.annotation.Nullable;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 
@@ -36,31 +21,35 @@ import java.util.List;
  * ActivityElement is matched to an Activity because the Activity needs to be used as context to get
  * the expected background color to build the matcher.
  */
-public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
-    public static final Matcher<View> CARD_MATCHER = withId(R.id.card_view);
-    private final ViewSpec mCardTitleSpec;
-    private final List<Integer> mTabIdsToGroup;
-    private final String mTitle;
+public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
+    /**
+     * Expect the default title "N tabs".
+     *
+     * <p>Equivalent to using the constructor {@link #TabSwitcherGroupCardFacility(Integer, List)}.
+     */
+    public static final String DEFAULT_N_TABS_TITLE = "_DEFAULT_N_TABS_TITLE";
 
-    public TabSwitcherGroupCardFacility(List<Integer> tabIdsToGroup) {
-        this(tabIdsToGroup, TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size()));
+    private final List<Integer> mTabIdsToGroup;
+
+    public TabSwitcherGroupCardFacility(@Nullable Integer cardIndex, List<Integer> tabIdsToGroup) {
+        this(cardIndex, tabIdsToGroup, DEFAULT_N_TABS_TITLE);
     }
 
-    public TabSwitcherGroupCardFacility(List<Integer> tabIdsToGroup, String title) {
+    public TabSwitcherGroupCardFacility(@Nullable Integer cardIndex, List<Integer> tabIdsToGroup, String title) {
+        super(
+                cardIndex,
+                title.equals(DEFAULT_N_TABS_TITLE)
+                        ? TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size())
+                        : title);
         assert !tabIdsToGroup.isEmpty();
 
         mTabIdsToGroup = new ArrayList<>(tabIdsToGroup);
         Collections.sort(mTabIdsToGroup);
-        mTitle = title;
-
-        mCardTitleSpec = viewSpec(allOf(withText(mTitle), withId(R.id.tab_title),
-                withParent(CARD_MATCHER)));
     }
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        String titleElementId = "Tab Group card title: " + mTitle;
-        elements.declareView(mCardTitleSpec, ViewElement.elementIdOption(titleElementId));
+        super.declareElements(elements);
 
         elements.declareEnterCondition(
                 new TabGroupExistsCondition(
@@ -73,6 +62,6 @@ public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
     public TabGroupDialogFacility<TabSwitcherStation> clickCard() {
         boolean isIncognito = mHostStation.isIncognito();
         return mHostStation.enterFacilitySync(
-                new TabGroupDialogFacility<>(mTabIdsToGroup, isIncognito), mCardTitleSpec::click);
+                new TabGroupDialogFacility<>(mTabIdsToGroup, isIncognito), clickTitleTrigger());
     }
 }

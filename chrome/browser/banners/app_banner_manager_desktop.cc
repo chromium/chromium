@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -223,8 +224,14 @@ void AppBannerManagerDesktop::OnWebAppInstalledWithOsHooks(
   if (!validated_url()) {
     return;
   }
-  std::optional<webapps::AppId> app_id =
-      registrar().FindAppWithUrlInScope(validated_url().value());
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  std::optional<webapps::AppId> app_id = registrar().FindBestAppWithUrlInScope(
+      validated_url().value(),
+      {
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+      });
   if (app_id.has_value() && *app_id == installed_app_id &&
       registrar().GetAppUserDisplayMode(*app_id) ==
           web_app::mojom::UserDisplayMode::kStandalone) {

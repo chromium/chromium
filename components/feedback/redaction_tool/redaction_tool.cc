@@ -482,39 +482,6 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
   return "";
 }
 
-// Some strings can contain pieces that match like IPv4 addresses but aren't.
-// This function can be used to determine if this was the case by evaluating
-// the skipped piece. It returns true, if the matched address was erroneous
-// and should be skipped instead.
-bool ShouldSkipIPv4Address(std::string_view skipped) {
-  // Only look for patterns on the same line as the IPv4 address.
-  const auto nlpos = skipped.rfind("\n");
-  if (nlpos != std::string_view::npos) {
-    skipped = skipped.substr(nlpos);
-  }
-  // MomdemManager can dump out firmware revision fields that can also
-  // confuse the IPv4 matcher e.g. "Revision: 81600.0000.00.29.19.16_DO"
-  // so ignore the replacement if the skipped piece looks like
-  // "Revision: .*<ipv4>". Note however that if this field contains
-  // values delimited by multiple spaces, any matches after the first
-  // will lose the context and be redacted.
-  static const std::string_view rev("Revision: ");
-  static const std::string_view space(" ");
-  const auto pos = skipped.rfind(rev);
-  if (pos != std::string_view::npos &&
-      skipped.find(space, pos + rev.length()) == std::string_view::npos) {
-    return true;
-  }
-  // URLs with an IP Address should be handled by the "URL" entry in
-  // kCustomPatternsWithoutContext instead. If the skipped piece ends with an
-  // IRI, skip it.
-  re2::RE2 re_iri(".*" IRI);
-  if (re2::RE2::FullMatch(skipped, re_iri)) {
-    return true;
-  }
-  return false;
-}
-
 // TODO(battre): Use http://tools.ietf.org/html/rfc5322 to represent email
 // addresses. Capture names as well ("First Lastname" <foo@bar.com>).
 
@@ -1172,6 +1139,35 @@ RedactionToolCaller RedactionTool::GetCaller(const base::Location& location) {
     return RedactionToolCaller::kFeedbackToolLogs;
   }
   return RedactionToolCaller::kUnknown;
+}
+
+bool RedactionTool::ShouldSkipIPv4Address(std::string_view skipped) {
+  // Only look for patterns on the same line as the IPv4 address.
+  const auto nlpos = skipped.rfind("\n");
+  if (nlpos != std::string_view::npos) {
+    skipped = skipped.substr(nlpos);
+  }
+  // MomdemManager can dump out firmware revision fields that can also
+  // confuse the IPv4 matcher e.g. "Revision: 81600.0000.00.29.19.16_DO"
+  // so ignore the replacement if the skipped piece looks like
+  // "Revision: .*<ipv4>". Note however that if this field contains
+  // values delimited by multiple spaces, any matches after the first
+  // will lose the context and be redacted.
+  static const std::string_view rev("Revision: ");
+  static const std::string_view space(" ");
+  const auto pos = skipped.rfind(rev);
+  if (pos != std::string_view::npos &&
+      skipped.find(space, pos + rev.length()) == std::string_view::npos) {
+    return true;
+  }
+  // URLs with an IP Address should be handled by the "URL" entry in
+  // kCustomPatternsWithoutContext instead. If the skipped piece ends with an
+  // IRI, skip it.
+  RE2* re_iri = GetRegExp(".*" IRI);
+  if (RE2::FullMatch(skipped, *re_iri)) {
+    return true;
+  }
+  return false;
 }
 
 std::string RedactionTool::RedactCustomPatternWithContext(

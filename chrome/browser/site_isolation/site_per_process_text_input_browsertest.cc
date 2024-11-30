@@ -279,14 +279,14 @@ class RecordActiveViewsObserver {
 // Main class for all TextInputState and IME related tests.
 class SitePerProcessTextInputManagerTest : public InProcessBrowserTest {
  public:
-  SitePerProcessTextInputManagerTest() {}
+  SitePerProcessTextInputManagerTest() = default;
 
   SitePerProcessTextInputManagerTest(
       const SitePerProcessTextInputManagerTest&) = delete;
   SitePerProcessTextInputManagerTest& operator=(
       const SitePerProcessTextInputManagerTest&) = delete;
 
-  ~SitePerProcessTextInputManagerTest() override {}
+  ~SitePerProcessTextInputManagerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
@@ -1246,7 +1246,7 @@ class ShowDefinitionForWordObserver
   ShowDefinitionForWordObserver& operator=(
       const ShowDefinitionForWordObserver&) = delete;
 
-  ~ShowDefinitionForWordObserver() override {}
+  ~ShowDefinitionForWordObserver() override = default;
 
   const std::string& WaitForWordLookUp() {
     if (did_receive_string_)

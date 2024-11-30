@@ -95,8 +95,7 @@ void Key::Transform(KeyType target_key_type, const std::string& salt) {
     default:
       // The resulting key will be sent to cryptohomed. It should always be
       // hashed. If hashing fails, crash instead of sending a plain-text key.
-      CHECK(false);
-      return;
+      NOTREACHED();
   }
 
   key_type_ = target_key_type;

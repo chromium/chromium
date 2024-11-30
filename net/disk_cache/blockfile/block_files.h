@@ -157,10 +157,10 @@ class NET_EXPORT_PRIVATE BlockFiles {
   std::vector<scoped_refptr<MappedFile>> block_files_;  // The actual files.
   std::unique_ptr<base::ThreadChecker> thread_checker_;
 
-  FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_ZeroSizeFile);
-  FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_TruncatedFile);
-  FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_InvalidFile);
-  FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFiles_Stats);
+  FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFilesZeroSizeFile);
+  FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFilesTruncatedFile);
+  FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFilesInvalidFile);
+  FRIEND_TEST_ALL_PREFIXES(DiskCacheTest, BlockFilesStats);
 };
 
 }  // namespace disk_cache

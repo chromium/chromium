@@ -383,8 +383,9 @@ inline bool EqualIgnoringASCIICase(const StringView& a,
                                    const char (&literal)[N]) {
   if (a.length() != N - 1 || (N == 1 && a.IsNull()))
     return false;
-  return a.Is8Bit() ? EqualIgnoringASCIICase(a.Characters8(), literal, N - 1)
-                    : EqualIgnoringASCIICase(a.Characters16(), literal, N - 1);
+  base::span<const char> span = base::span(literal).template first<N - 1>();
+  return a.Is8Bit() ? EqualIgnoringASCIICase(a.Span8(), span)
+                    : EqualIgnoringASCIICase(a.Span16(), span);
 }
 
 // TODO(esprehn): Can't make this an overload of WTF::equal since that makes
@@ -402,8 +403,8 @@ inline bool operator!=(const StringView& a, const StringView& b) {
 
 inline wtf_size_t StringView::Find(CharacterMatchFunctionPtr match_function,
                                    wtf_size_t start) const {
-  return Is8Bit() ? WTF::Find(Characters8(), length_, match_function, start)
-                  : WTF::Find(Characters16(), length_, match_function, start);
+  return Is8Bit() ? WTF::Find(Span8(), match_function, start)
+                  : WTF::Find(Span16(), match_function, start);
 }
 
 template <bool isSpecialCharacter(UChar), typename CharacterType>

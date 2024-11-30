@@ -429,6 +429,7 @@ class ArchiveBuildTest(BisectTestCase):
         stdout=ANY,
         stderr=ANY)
 
+  @unittest.skipIf(sys.platform.startswith('win'), 'This test is not for win')
   @patch('subprocess.Popen', spec=subprocess.Popen)
   def test_launch_revision_should_run_command_for_mac(self, mock_Popen):
     mock_Popen.return_value.communicate.return_value = ('', '')
@@ -450,6 +451,8 @@ class ArchiveBuildTest(BisectTestCase):
         stdout=ANY,
         stderr=ANY)
 
+  @unittest.skipUnless(sys.platform.startswith('win'),
+                       'This test is for win only')
   @patch('subprocess.Popen', spec=subprocess.Popen)
   def test_launch_revision_should_run_command_for_win(self, mock_Popen):
     mock_Popen.return_value.communicate.return_value = ('', '')
@@ -460,7 +463,7 @@ class ArchiveBuildTest(BisectTestCase):
             'chrome': 'C:\\temp-dir\\full-build-win\\chrome.exe'
         }, [])
     mock_Popen.assert_called_once_with(
-        "'C:\\temp-dir\\full-build-win\\chrome.exe' "
+        "C:\\temp-dir\\full-build-win\\chrome.exe "
         '--user-data-dir=C:\\temp-dir/profile',
         cwd=None,
         shell=True,
@@ -479,15 +482,26 @@ class ArchiveBuildTest(BisectTestCase):
         'chrome': '/tmp/chrome',
         'chromedriver': '/tmp/chromedriver'
     }, ['--args', '--args2="word 1"', 'word 2'])
-    mock_Popen.assert_called_once_with(
-        'CHROMEDRIVER=/tmp/chromedriver BROWSER_EXECUTABLE_PATH=/tmp/chrome '
-        'pytest --user-data-dir=/tmp/profile --args \'--args2="word 1"\' '
-        '\'word 2\'',
-        cwd=None,
-        shell=True,
-        bufsize=-1,
-        stdout=ANY,
-        stderr=ANY)
+    if sys.platform.startswith('win'):
+      mock_Popen.assert_called_once_with(
+          'CHROMEDRIVER=/tmp/chromedriver BROWSER_EXECUTABLE_PATH=/tmp/chrome '
+          'pytest --user-data-dir=/tmp/profile --args "--args2=\\"word 1\\"" '
+          '"word 2"',
+          cwd=None,
+          shell=True,
+          bufsize=-1,
+          stdout=ANY,
+          stderr=ANY)
+    else:
+      mock_Popen.assert_called_once_with(
+          'CHROMEDRIVER=/tmp/chromedriver BROWSER_EXECUTABLE_PATH=/tmp/chrome '
+          'pytest --user-data-dir=/tmp/profile --args \'--args2="word 1"\' '
+          '\'word 2\'',
+          cwd=None,
+          shell=True,
+          bufsize=-1,
+          stdout=ANY,
+          stderr=ANY)
 
 
 class ReleaseBuildTest(BisectTestCase):
@@ -1510,6 +1524,19 @@ class MethodTest(BisectTestCase):
         call('https://chromium.googlesource.com/chromium/src/'
              '+/refs/tags/91.0.4472.38^?format=JSON'),
     ])
+
+  def test_join_args(self):
+    test_data = ['a', 'b c', 'C:\\a b\\c', '/a b/c', '"a"', "'a'"]
+    quoted_command = bisect_builds.join_args(
+        [sys.executable, '-c', 'import sys, json; print(json.dumps(sys.argv))']
+        + test_data)
+
+    subproc = subprocess.Popen(
+        quoted_command, shell=True, stdout=subprocess.PIPE)
+    stdout, _ = subproc.communicate()
+    dumped_argv = json.loads(stdout.decode('utf-8'))
+
+    self.assertListEqual(dumped_argv, ['-c'] + test_data)
 
 
 if __name__ == '__main__':

@@ -60,8 +60,6 @@ class IbanSaveManagerTest : public testing::Test {
  public:
   IbanSaveManagerTest() {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    autofill_client_.set_personal_data_manager(
-        std::make_unique<TestPersonalDataManager>());
     autofill_client_.GetPaymentsAutofillClient()
         ->set_test_payments_network_interface(
             std::make_unique<MockTestPaymentsNetworkInterface>());
@@ -129,8 +127,7 @@ class IbanSaveManagerTest : public testing::Test {
 
  protected:
   TestPersonalDataManager& personal_data() {
-    return static_cast<TestPersonalDataManager&>(
-        *autofill_client_.GetPersonalDataManager());
+    return autofill_client_.GetPersonalDataManager();
   }
 
   MockTestPaymentsNetworkInterface* payments_network_interface() {

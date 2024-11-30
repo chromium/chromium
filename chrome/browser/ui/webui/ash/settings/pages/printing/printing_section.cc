@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/containers/span.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
@@ -116,16 +115,10 @@ PrintingSection::~PrintingSection() {
 }
 
 void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"printingPageTitle", IDS_SETTINGS_PRINT_AND_SCAN},
-      {"cupsPrintTitle", kIsRevampEnabled
-                             ? IDS_OS_SETTINGS_REVAMP_PRINTING_CUPS_PRINT_TITLE
-                             : IDS_SETTINGS_PRINTING_CUPS_PRINTERS},
-      {"cupsPrintDescription",
-       IDS_OS_SETTINGS_REVAMP_PRINTING_CUPS_PRINT_DESCRIPTION},
+      {"cupsPrintTitle", IDS_OS_SETTINGS_PRINTING_CUPS_PRINT_TITLE},
+      {"cupsPrintDescription", IDS_OS_SETTINGS_PRINTING_CUPS_PRINT_DESCRIPTION},
       {"cupsPrintersLearnMoreLabel",
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_LEARN_MORE_LABEL},
       {"addCupsPrinterManually",
@@ -352,7 +345,7 @@ void PrintingSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kScanningApp);
 
   // Printing details.
-  generator->RegisterTopLevelSubpage(IDS_SETTINGS_PRINTING_CUPS_PRINTERS,
+  generator->RegisterTopLevelSubpage(IDS_OS_SETTINGS_PRINTING_CUPS_PRINT_TITLE,
                                      mojom::Subpage::kPrintingDetails,
                                      mojom::SearchResultIcon::kPrinter,
                                      mojom::SearchResultDefaultRank::kMedium,

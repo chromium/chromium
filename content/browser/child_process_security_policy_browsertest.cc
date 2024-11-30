@@ -21,13 +21,6 @@
 
 namespace content {
 
-namespace {
-bool AndroidWillCreateSpareRendererWithTimeout() {
-  return base::FeatureList::IsEnabled(
-      features::kAndroidWarmUpSpareRendererWithTimeout);
-}
-}  // namespace
-
 class ChildProcessSecurityPolicyInProcessBrowserTest
     : public ContentBrowserTest {
  public:
@@ -51,22 +44,20 @@ class ChildProcessSecurityPolicyInProcessBrowserTest
 };
 
 #if !defined(NDEBUG) && BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest,
-                       DISABLED_NoLeak) {
+#define MAYBE_NoLeak DISABLED_NoLeak
 #else
-IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest, NoLeak) {
+#define MAYBE_NoLeak NoLeak
 #endif
+IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest,
+                       MAYBE_NoLeak) {
   GURL url = GetTestUrl("", "simple_page.html");
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  const bool kWillCreateSpareRenderer =
-      RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() ||
-      AndroidWillCreateSpareRendererWithTimeout();
-
   EXPECT_TRUE(NavigateToURL(shell(), url));
   {
     base::AutoLock lock(policy->lock_);
-    EXPECT_EQ(kWillCreateSpareRenderer ? 2u : 1u,
-              policy->security_state_.size());
+    size_t spare_count =
+        content::SpareRenderProcessHostManager::Get().GetSpares().size();
+    EXPECT_EQ(1u + spare_count, policy->security_state_.size());
   }
 
   WebContents* web_contents = shell()->web_contents();
@@ -80,8 +71,9 @@ IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest, NoLeak) {
   web_contents->GetController().Reload(ReloadType::NORMAL, true);
   {
     base::AutoLock lock(policy->lock_);
-    EXPECT_EQ(kWillCreateSpareRenderer ? 2u : 1u,
-              policy->security_state_.size());
+    size_t spare_count =
+        content::SpareRenderProcessHostManager::Get().GetSpares().size();
+    EXPECT_EQ(1u + spare_count, policy->security_state_.size());
   }
 }
 

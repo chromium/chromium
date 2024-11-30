@@ -39,7 +39,6 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
-#include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -67,6 +66,7 @@
 
 namespace cc {
 class Layer;
+class TextureLayer;
 }
 
 namespace gpu {
@@ -254,7 +254,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   // cc::TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
 
@@ -268,8 +267,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // a copy of the contents of the front buffer. This is only meant to be used
   // for unaccelerated canvases as for accelerated contexts there are better
   // ways to get a copy of the internal contents.
-  scoped_refptr<StaticBitmapImage> GetUnacceleratedStaticBitmapImage(
-      bool flip_y = false);
+  scoped_refptr<StaticBitmapImage> GetUnacceleratedStaticBitmapImage();
 
   bool CopyToPlatformTexture(gpu::gles2::GLES2Interface*,
                              GLenum dst_target,
@@ -307,6 +305,12 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   void RestoreAllState();
 
   bool UsingSwapChain() const { return using_swap_chain_; }
+
+  bool IsOriginTopLeft() const {
+    // If the context has the flip_y extension, it will behave as having the
+    // origin of coordinates on the top left.
+    return opengl_flip_y_extension_;
+  }
 
   // Keep track of low latency buffer status.
   bool low_latency_enabled() const { return low_latency_enabled_; }
@@ -349,13 +353,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   struct RegisteredBitmap {
     RegisteredBitmap(
         scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
-        cc::SharedBitmapIdRegistration registration,
         scoped_refptr<gpu::ClientSharedImage> shared_image,
         gpu::SyncToken sync_token,
         base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider>
             sii_provider)
         : bitmap(std::move(bitmap)),
-          registration(std::move(registration)),
           shared_image(std::move(shared_image)),
           sync_token(std::move(sync_token)),
           sii_provider(sii_provider) {}
@@ -366,7 +368,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     RegisteredBitmap& operator=(RegisteredBitmap&&) = default;
 
     scoped_refptr<cc::CrossThreadSharedBitmap> bitmap;
-    cc::SharedBitmapIdRegistration registration;
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken sync_token;
     base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;
@@ -522,11 +523,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       DiscardBehavior discardBehavior);
 
   bool PrepareTransferableResourceInternal(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
       scoped_refptr<gpu::ClientSharedImage>* client_si,
       viz::TransferableResource* out_resource,
-      viz::ReleaseCallback* out_release_callback,
-      bool force_gpu_result);
+      viz::ReleaseCallback* out_release_callback);
 
   // Helper functions to be called only by PrepareTransferableResourceInternal.
   bool FinishPrepareTransferableResourceGpu(

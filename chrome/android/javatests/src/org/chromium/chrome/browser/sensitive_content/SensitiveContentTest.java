@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
@@ -59,7 +60,10 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -143,10 +147,10 @@ public class SensitiveContentTest {
     @Test
     @MediumTest
     public void testTabHasSensitiveContentWhileSensitiveFieldsArePresent() {
-        assertEquals(
+        assertNotEquals(
                 "Initially, the tab does not have sensitive content",
                 getContentViewOfCurrentTab().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_AUTO);
+                View.CONTENT_SENSITIVITY_SENSITIVE);
 
         PageStation page =
                 mPage.loadPageProgrammatically(
@@ -162,10 +166,10 @@ public class SensitiveContentTest {
     @Test
     @MediumTest
     public void testSensitiveContentClientObserver() {
-        assertEquals(
+        assertNotEquals(
                 "Initially, the tab does not have sensitive content",
                 getContentViewOfCurrentTab().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_AUTO);
+                View.CONTENT_SENSITIVITY_SENSITIVE);
 
         final SensitiveContentClient client =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -202,10 +206,10 @@ public class SensitiveContentTest {
     @MediumTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testTabHasSensitiveContentAttributeIsUpdated() {
-        assertEquals(
+        assertNotEquals(
                 "Initially, the tab does not have sensitive content",
                 getContentViewOfCurrentTab().getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_AUTO);
+                View.CONTENT_SENSITIVITY_SENSITIVE);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         assertFalse(tab.getTabHasSensitiveContent());
@@ -351,6 +355,7 @@ public class SensitiveContentTest {
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testTabGroupUiOpenedFromBottomToolbarBecomesSensitive() {
         // Load sensitive content only into the first tab.
         final Tab firstTab = mPage.getLoadedTab();
@@ -507,6 +512,62 @@ public class SensitiveContentTest {
         assertEquals(
                 mLayoutManagerChromePhone.getContentContainer().getContentSensitivity(),
                 View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
+    public void testSensitiveContentIsRestoredFromTabState() {
+        // Create a new tab.
+        PageStation page = mPage.openNewTabFast();
+        final Tab secondTabBeforeFreeze = page.getLoadedTab();
+        page =
+                page.loadPageProgrammatically(
+                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        pollUiThread(() -> secondTabBeforeFreeze.getTabHasSensitiveContent());
+
+        // Save the state of the second tab (the only tab with sensitive content).
+        final TabState state =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> TabStateExtractor.from(secondTabBeforeFreeze));
+
+        Tab[] secondTabAfterFreeze = new Tab[] {null};
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    // Close the second tab.
+                    tabModel.getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(secondTabBeforeFreeze)
+                                            .allowUndo(false)
+                                            .build(),
+                                    /* allowDialog= */ false);
+                    assertEquals(1, tabModel.getCount());
+                    // Re-create the second tab using the same id and tab state.
+                    tabModel.getTabCreator()
+                            .createFrozenTab(state, secondTabBeforeFreeze.getId(), /* index= */ 1);
+                    assertEquals(2, tabModel.getCount());
+                    secondTabAfterFreeze[0] = tabModel.getTabAt(1);
+                    assertNotNull(secondTabAfterFreeze[0]);
+                    assertNull(secondTabAfterFreeze[0].getWebContents());
+                });
+
+        // Select the second tab.
+        final RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
+        regularTabSwitcher.selectTabAtIndex(1, WebPageStation.newBuilder());
+
+        // The second tab should have sensitive content. The content sensitivity should have been
+        // restored from tab state.
+        final SensitiveContentClient client =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                SensitiveContentClient.fromWebContents(
+                                        secondTabAfterFreeze[0].getWebContents()));
+        assertTrue(client.getContentRestoredFromTabStateIsSensitive().orElse(false));
+        assertEquals(
+                secondTabAfterFreeze[0].getContentView().getContentSensitivity(),
+                View.CONTENT_SENSITIVITY_SENSITIVE);
     }
 
     private void checkContentSensitivityOfViewWithId(int viewId, boolean contentIsSensitive) {

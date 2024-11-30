@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_TREES_LAYER_TREE_HOST_H_
 #define CC_TREES_LAYER_TREE_HOST_H_
 
@@ -518,6 +513,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // compositors. This is specified in device viewport coordinate space.
   void SetVisualDeviceViewportSize(const gfx::Size&);
 
+  void SetMaxSafeAreaInsets(const gfx::Insets& max_safe_area_insets);
   gfx::Rect device_viewport_rect() const {
     return pending_commit_state()->device_viewport_rect;
   }
@@ -786,7 +782,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void RecordStartOfFrameMetrics();
   void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time,
                                ActiveFrameSequenceTrackers trackers);
-  void NotifyThroughputTrackerResults(CustomTrackerResults results);
+  void NotifyCompositorMetricsTrackerResults(CustomTrackerResults results);
   void NotifyImageDecodeFinished(int request_id, bool decode_succeeded);
   void NotifyTransitionRequestsFinished(
       const uint32_t sequence_id,

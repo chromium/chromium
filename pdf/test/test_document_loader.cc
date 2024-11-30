@@ -89,9 +89,8 @@ bool TestDocumentLoader::GetBlock(uint32_t position,
     return false;
 
   // TODO(crbug.com/40284755): spanify function signature to fix the errors.
-  auto dest_span =
-      UNSAFE_TODO(base::make_span(static_cast<uint8_t*>(buf), size));
-  dest_span.copy_from(base::make_span(pdf_data_).subspan(position, size));
+  auto dest_span = UNSAFE_TODO(base::span(static_cast<uint8_t*>(buf), size));
+  dest_span.copy_from(base::span(pdf_data_).subspan(position, size));
   return true;
 }
 

@@ -49,26 +49,6 @@
     <message name="IDS_FLAGS_UI_RELAUNCH" desc="Label for button that restarts ChromeOS.">
       Restart
     </message>
-    <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT1" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
-      Looking for browser flags? Visit
-    </message>
-    <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT2" desc="End label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
-      .
-    </message>
-    <message name="IDS_FLAGS_UI_OS_FLAGS_LINK" translateable="false" desc="Label for button that will call a new window which allows to change ChromeOS system flags.">
-      chrome://flags
-    </message>
-  </if>
-  <if expr="chromeos_lacros">
-    <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT1" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
-      Looking for the ChromeOS flags? Visit
-    </message>
-    <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT2" desc="End label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
-      .
-    </message>
-    <message name="IDS_FLAGS_UI_OS_FLAGS_LINK" translateable="false" desc="Label for button that will call a new window which allows to change ChromeOS system flags.">
-      os://flags
-    </message>
   </if>
   <if expr="not chromeos_ash">
     <message name="IDS_FLAGS_UI_RELAUNCH" desc="Label for button that relaunches chrome.">

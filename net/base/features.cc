@@ -407,6 +407,22 @@ const base::FeatureParam<base::TimeDelta> kIpPrivacyExpirationFuzz{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyExpirationFuzz",
     /*default_value=*/base::Minutes(15)};
 
+const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensNotEligibleBackoff{
+        &kEnableIpProtectionProxy,
+        /*name=*/"IpPrivacyTryGetAuthTokensNotEligibleBackoff",
+        /*default_value=*/base::Days(1)};
+
+const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensTransientBackoff{
+        &kEnableIpProtectionProxy,
+        /*name=*/"IpPrivacyTryGetAuthTokensTransientBackoff",
+        /*default_value=*/base::Seconds(5)};
+
+const base::FeatureParam<base::TimeDelta> kIpPrivacyTryGetAuthTokensBugBackoff{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTryGetAuthTokensBugBackoff",
+    /*default_value=*/base::Minutes(10)};
+
 const base::FeatureParam<bool> kIpPrivacyRestrictTopLevelSiteSchemes{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyRestrictTopLevelSiteSchemes",
@@ -508,10 +524,6 @@ BASE_FEATURE(kEnableEarlyHintsOnHttp11,
 BASE_FEATURE(kEnableWebTransportDraft07,
              "EnableWebTransportDraft07",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kZstdContentEncoding,
-             "ZstdContentEncoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, partitioned storage will be allowed even if third-party cookies
 // are disabled by default. Partitioned storage will not be allowed if
@@ -624,5 +636,21 @@ const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
 BASE_FEATURE(kIgnoreHSTSForLocalhost,
              "IgnoreHSTSForLocalhost",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSimpleCachePrioritizedCaching,
+             "SimpleCachePrioritizedCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int>
+    kSimpleCachePrioritizedCachingPrioritizationFactor{
+        &kSimpleCachePrioritizedCaching,
+        /*name=*/"SimpleCachePrioritizedCachingPrioritizationFactor",
+        /*default_value=*/10};
+
+const base::FeatureParam<base::TimeDelta>
+    kSimpleCachePrioritizedCachingPrioritizationPeriod{
+        &kSimpleCachePrioritizedCaching,
+        /*name=*/"SimpleCachePrioritizedCachingPrioritizationPeriod",
+        /*default_value=*/base::Days(1)};
 
 }  // namespace net::features

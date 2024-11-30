@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/style/switch.h"
 #include "ash/system/time/calendar_unittest_utils.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/coral/coral_test_util.h"
@@ -70,6 +71,11 @@ bool HasSuggestionTypes(
       return chip->GetItem()->GetType() == type;
     });
   });
+}
+
+void WaitLayerAnimationEnd(ui::Layer* layer) {
+  ASSERT_TRUE(layer->GetAnimator()->is_animating());
+  ui::LayerAnimationStoppedWaiter().Wait(layer);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,9 +159,6 @@ class BirchBarTestBase : public AshTestBase {
         ->GetItemRemoverForTest()
         ->SetProtoInitCallbackForTest(run_loop.QuitClosure());
     run_loop.Run();
-
-    // Prepare a file item for test.
-    SetFileItems(/*num=*/1);
   }
 
   void TearDown() override {
@@ -323,6 +326,30 @@ class BirchBarTestBase : public AshTestBase {
     OverrideTestResponse(std::move(test_groups));
   }
 
+  BirchBarMenuModelAdapter* GetBirchBarChipMenuModelAdaper() {
+    auto* overview_session = GetOverviewSession();
+    CHECK(overview_session);
+    return overview_session->birch_bar_controller()
+        ->chip_menu_model_adapter_.get();
+  }
+
+  const std::vector<std::unique_ptr<BirchItem>>& GetBirchItemsInController()
+      const {
+    auto* overview_session = GetOverviewSession();
+    CHECK(overview_session);
+    return overview_session->birch_bar_controller()->items_;
+  }
+
+  // Remove the item and its related chips from current birch bars at given
+  // `pos`.
+  void RemoveItem(size_t pos) {
+    auto* birch_bar_controller = BirchBarController::Get();
+    ASSERT_LT(pos, birch_bar_controller->items_.size());
+    auto iter = birch_bar_controller->items_.begin() + pos;
+    birch_bar_controller->RemoveItemChips(iter->get());
+    birch_bar_controller->items_.erase(iter);
+  }
+
   std::unique_ptr<TestBirchClient> birch_client_;
   raw_ptr<TestBirchDataProvider<BirchWeatherItem>> weather_provider_;
 
@@ -338,6 +365,12 @@ class BirchBarTest : public BirchBarTestBase {
   BirchBarTest(const BirchBarTest&) = delete;
   BirchBarTest& operator=(const BirchBarTest&) = delete;
   ~BirchBarTest() override = default;
+
+  void SetUp() override {
+    BirchBarTestBase::SetUp();
+    // Prepare a file item for test.
+    SetFileItems(/*num=*/1);
+  }
 
  private:
   // Ensure base::Time::Now() is a fixed value.
@@ -544,21 +577,6 @@ class BirchBarMenuTest : public BirchBarTest {
     birch_client_->Reset();
     // Ensure screen is large enough to be able to click on all menu items.
     UpdateDisplay("1600x1200");
-  }
-
- protected:
-  BirchBarMenuModelAdapter* GetBirchBarChipMenuModelAdaper() {
-    auto* overview_session = GetOverviewSession();
-    CHECK(overview_session);
-    return overview_session->birch_bar_controller()
-        ->chip_menu_model_adapter_.get();
-  }
-
-  const std::vector<std::unique_ptr<BirchItem>>& GetBirchItemsInController()
-      const {
-    auto* overview_session = GetOverviewSession();
-    CHECK(overview_session);
-    return overview_session->birch_bar_controller()->items_;
   }
 };
 
@@ -1477,33 +1495,7 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsByTappingChipMenu) {
 
 // The tests run with animations. Since the mock clock will be blocked by the
 // animation waiter, we don't use it in the tests.
-class BirchBarAnimationTest : public BirchBarTestBase {
- public:
-  BirchBarAnimationTest() = default;
-  BirchBarAnimationTest(const BirchBarAnimationTest&) = delete;
-  BirchBarAnimationTest& operator=(const BirchBarAnimationTest&) = delete;
-  ~BirchBarAnimationTest() override = default;
-
- protected:
-  const std::vector<std::unique_ptr<BirchItem>>& GetItems() const {
-    return BirchBarController::Get()->items_;
-  }
-
-  // Remove the item and its related chips from current birch bars at given
-  // `pos`.
-  void RemoveItem(size_t pos) {
-    auto* birch_bar_controller = BirchBarController::Get();
-    ASSERT_LT(pos, birch_bar_controller->items_.size());
-    auto iter = birch_bar_controller->items_.begin() + pos;
-    birch_bar_controller->RemoveItemChips(iter->get());
-    birch_bar_controller->items_.erase(iter);
-  }
-
-  void WaitLayerAnimationEnd(ui::Layer* layer) {
-    ASSERT_TRUE(layer->GetAnimator()->is_animating());
-    ui::LayerAnimationStoppedWaiter().Wait(layer);
-  }
-};
+using BirchBarAnimationTest = BirchBarTestBase;
 
 // Tests that there is no crash when removing a chip.
 TEST_F(BirchBarAnimationTest, NoCrashOnRemovingChip) {
@@ -1556,17 +1548,18 @@ TEST_F(BirchBarAnimationTest, RemoveMultipleChips) {
   ASSERT_TRUE(grid_test_api.birch_bar_view());
 
   // There should be 6 items in the controller.
-  EXPECT_EQ(6u, GetItems().size());
+  const auto& items = GetBirchItemsInController();
+  EXPECT_EQ(6u, items.size());
 
   // There should be 4 chips on the bar corresponding to the first 4 items.
   EXPECT_EQ(4u, grid_test_api.GetBirchChips().size());
 
   // The 5th and 6th items should not be on the bar.
-  const auto* item_5 = GetItems()[4].get();
+  const auto* item_5 = items[4].get();
   EXPECT_TRUE(std::ranges::none_of(
       grid_test_api.GetBirchChips(),
       [&item_5](const auto& chip) { return chip->GetItem() == item_5; }));
-  const auto* item_6 = GetItems()[5].get();
+  const auto* item_6 = items[5].get();
   EXPECT_TRUE(std::ranges::none_of(
       grid_test_api.GetBirchChips(),
       [&item_6](const auto& chip) { return chip->GetItem() == item_6; }));
@@ -1591,6 +1584,29 @@ TEST_F(BirchBarAnimationTest, RemoveMultipleChips) {
   // The last two chips on the bar correspond to the original 5th and 6th items.
   EXPECT_EQ(grid_test_api.GetBirchChips()[2]->GetItem(), item_5);
   EXPECT_EQ(grid_test_api.GetBirchChips()[3]->GetItem(), item_6);
+}
+
+// Tests that there is no dangling ptr issue if removing the first chip with
+// privacy nudge attached.
+TEST_F(BirchBarAnimationTest, NoCrashOnRemovingFirstChipWithPrivacyNudge) {
+  SetCalendarItems(/*num=*/2);
+
+  // Enter Overview, the privacy nudge should show up.
+  EnterOverview();
+  EXPECT_TRUE(
+      Shell::Get()->anchored_nudge_manager()->IsNudgeShown("BirchPrivacyId"));
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Cache the first chip before removing.
+  auto* first_chip = OverviewGridTestApi(Shell::GetPrimaryRootWindow())
+                         .GetBirchChips()[0]
+                         .get();
+
+  // Remove the first chip. There should be no crash.
+  RemoveItem(0);
+  WaitLayerAnimationEnd(first_chip->layer());
 }
 
 // The parameter structure for birch bar responsive layout tests.

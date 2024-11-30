@@ -531,4 +531,4 @@ MediaGalleriesPermissionController::DialogIdMap::GetPrefId(
 
 // MediaGalleries dialog -------------------------------------------------------
 
-MediaGalleriesDialog::~MediaGalleriesDialog() {}
+MediaGalleriesDialog::~MediaGalleriesDialog() = default;

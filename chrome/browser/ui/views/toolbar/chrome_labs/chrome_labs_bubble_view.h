@@ -54,7 +54,7 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
  private:
   void NotifyRestartCallback();
 
-  raw_ptr<actions::ActionItem> chrome_labs_action_item_ = nullptr;
+  base::WeakPtr<actions::ActionItem> chrome_labs_action_item_ = nullptr;
 
   raw_ptr<Browser> browser_;
 

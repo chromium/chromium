@@ -23,27 +23,6 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
-namespace {
-
-// Fetches the platform-appropriate text of the accelerator used to switch
-// bubbles/panes.
-std::u16string GetFocusBubbleAcceleratorText(
-    const ui::AcceleratorProvider* provider) {
-  ui::Accelerator accelerator;
-#if BUILDFLAG(IS_CHROMEOS)
-  // IDC_FOCUS_NEXT_PANE still reports as F6 on ChromeOS, but many ChromeOS
-  // devices do not have function keys. Therefore, instead prompt the other
-  // accelerator that does the same thing.
-  static const auto kAccelerator = IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY;
-#else
-  static const auto kAccelerator = IDC_FOCUS_NEXT_PANE;
-#endif
-  CHECK(provider->GetAcceleratorForCommandId(kAccelerator, &accelerator));
-  return accelerator.GetShortcutText();
-}
-
-}  // namespace
-
 BrowserHelpBubbleDelegate::BrowserHelpBubbleDelegate() = default;
 BrowserHelpBubbleDelegate::~BrowserHelpBubbleDelegate() = default;
 
@@ -232,6 +211,22 @@ std::u16string BrowserHelpBubble::GetFocusTutorialBubbleScreenReaderHint(
       GetFocusBubbleAcceleratorText(accelerator_provider);
   return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION,
                                     accelerator_text);
+}
+
+// static
+std::u16string BrowserHelpBubble::GetFocusBubbleAcceleratorText(
+    const ui::AcceleratorProvider* provider) {
+  ui::Accelerator accelerator;
+#if BUILDFLAG(IS_CHROMEOS)
+  // IDC_FOCUS_NEXT_PANE still reports as F6 on ChromeOS, but many ChromeOS
+  // devices do not have function keys. Therefore, instead prompt the other
+  // accelerator that does the same thing.
+  static const auto kAccelerator = IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY;
+#else
+  static const auto kAccelerator = IDC_FOCUS_NEXT_PANE;
+#endif
+  CHECK(provider->GetAcceleratorForCommandId(kAccelerator, &accelerator));
+  return accelerator.GetShortcutText();
 }
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(FloatingWebUIHelpBubbleFactoryBrowser)

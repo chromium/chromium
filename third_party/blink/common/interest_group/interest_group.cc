@@ -98,7 +98,7 @@ void AppendReportingIdForSelectedReportingKeyKAnonKey(
   base::StrAppend(
       &k_anon_key,
       {"\n", std::string_view("\x01", 1),
-       base::as_string_view(base::as_chars(base::make_span(size_in_bytes))),
+       base::as_string_view(base::as_chars(base::span(size_in_bytes))),
        *reporting_id});
 }
 

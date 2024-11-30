@@ -57,6 +57,12 @@ void GeoNotifier::SetUseCachedPosition() {
 }
 
 void GeoNotifier::RunSuccessCallback(Geoposition* position) {
+  LocalDOMWindow* win = geolocation_->DomWindow();
+  UseCounter::Count(win, WebFeature::kGeolocationSucceeded);
+  if (!win->IsInjectionMitigatedContext()) {
+    UseCounter::Count(
+        win, WebFeature::kGeolocationSucceededWithoutInjectionMitigation);
+  }
   success_callback_->InvokeAndReportException(nullptr, position);
 }
 

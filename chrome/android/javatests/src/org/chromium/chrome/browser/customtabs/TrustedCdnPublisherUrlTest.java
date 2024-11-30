@@ -171,7 +171,7 @@ public class TrustedCdnPublisherUrlTest {
                 "https://www.example.com/test",
                 "com.example.test",
                 "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
         mScreenShooter.shoot("trustedPublisherUrlHttps");
     }
 
@@ -244,7 +244,7 @@ public class TrustedCdnPublisherUrlTest {
                 "https://example.com/test",
                 "com.example.test",
                 "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
         TestTouchUtils.performClickOnMainSync(
                 InstrumentationRegistry.getInstrumentation(),
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button));
@@ -263,7 +263,7 @@ public class TrustedCdnPublisherUrlTest {
                 "https://example.com/test",
                 "com.example.test",
                 "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
 
         String otherTestUrl = mWebServer.setResponse("/other.html", PAGE_WITH_TITLE, null);
         mCustomTabActivityTestRule.loadUrl(otherTestUrl);
@@ -285,7 +285,7 @@ public class TrustedCdnPublisherUrlTest {
                 publisherUrl.getSpec(),
                 "com.example.test",
                 "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
 
         final Instrumentation.ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation()
@@ -298,8 +298,7 @@ public class TrustedCdnPublisherUrlTest {
                 () -> {
                     Assert.assertEquals(publisherUrl, TrustedCdn.getPublisherUrl(tab));
                     customTabActivity
-                            .getComponent()
-                            .resolveNavigationController()
+                            .getCustomTabActivityNavigationController()
                             .openCurrentUrlInBrowser();
                     Assert.assertNull(customTabActivity.getActivityTab());
                 });
@@ -338,7 +337,7 @@ public class TrustedCdnPublisherUrlTest {
         String publisherUrl = "https://example.com/test";
         runTrustedCdnPublisherUrlTest(
                 publisherUrl, "com.example.test", "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
 
         // TODO (https://crbug.com/1063807):  Add incognito mode tests.
         OfflinePageBridge offlinePageBridge =

@@ -28,6 +28,8 @@ _robolectric_libs_dir =
     rebase_path(
         get_label_info("//:foo($robolectric_toolchain)", "root_out_dir"),
         root_build_dir)
+_nullaway_jar = "//third_party/android_build_tools/nullaway/cipd/nullaway.jar"
+_rebased_nullaway_jar = rebase_path(_nullaway_jar, root_build_dir)
 
 # The following _java_*_types variables capture all the existing target types.
 # If a new type is introduced, please add it to one of these categories,
@@ -3064,6 +3066,7 @@ if (enable_java_templates) {
   #    error-prone constructs in the language. If not provided, whether this is
   #    enabled depends on chromium_code and the global
   #    use_errorprone_java_compiler variable.
+  #  enable_nullaway: If True, enable @Nullable checking via NullAway.
   #  use_turbine: If True, compile headers using turbine.py.
   #  apk_name: Optional APK name. If provided, will tell compile_java.py to also
   #    generate an .apk.jar.info file under size-info/${apk_name}.apk.jar.info
@@ -3255,6 +3258,13 @@ if (enable_java_templates) {
           # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
           "//tools/android/errorprone_plugin/OWNERS",
         ]
+        if (defined(invoker.enable_nullaway) && invoker.enable_nullaway) {
+          inputs += [ _nullaway_jar ]
+          args += [
+            "--processorpath=$_rebased_nullaway_jar",
+            "--enable-nullaway",
+          ]
+        }
         if (defined(testonly) && testonly) {
           args += [ "--testonly" ]
         }
@@ -3950,6 +3960,14 @@ if (enable_java_templates) {
         _enable_errorprone =
             _java_files != [] && _chromium_code && use_errorprone_java_compiler
       }
+      if (_enable_errorprone) {
+        # Rely on the header jar to provide all .class files so that it is
+        # safe to omit generated files entirely for errorprone.
+        _errorprone_source_files =
+            filter_exclude(_java_files, [ "$root_gen_dir*" ])
+        _enable_errorprone =
+            _enable_errorprone && _errorprone_source_files != []
+      }
 
       if (defined(invoker.resources_package) && _type == "java_library") {
         # TODO(crbug.com/40821816): remove _bypass_platform_checks from the list
@@ -4008,51 +4026,37 @@ if (enable_java_templates) {
       template("compile_java_helper") {
         _enable_errorprone =
             defined(invoker.enable_errorprone) && invoker.enable_errorprone
-        if (_enable_errorprone) {
-          # Rely on the header jar to provide all .class files so that it is
-          # safe to omit generated files entirely for errorprone.
-          _filtered_source_files =
-              filter_exclude(_source_files, [ "$root_gen_dir*" ])
-        }
-        if (_enable_errorprone && _filtered_source_files == []) {
-          # Filtering out generated files resulted in no files left.
-          group(target_name) {
-            not_needed(invoker, "*")
-            deps = _header_classpath_deps
+        compile_java(target_name) {
+          forward_variables_from(invoker,
+                                 "*",
+                                 TESTONLY_AND_VISIBILITY + [ "deps" ])
+          deps = _header_classpath_deps
+          if (defined(invoker.deps)) {
+            deps += invoker.deps
           }
-        } else {
-          compile_java(target_name) {
-            forward_variables_from(invoker,
-                                   "*",
-                                   TESTONLY_AND_VISIBILITY + [ "deps" ])
-            deps = _header_classpath_deps
-            if (defined(invoker.deps)) {
-              deps += invoker.deps
-            }
-            output_jar_path = invoker.output_jar_path
-            if (defined(invoker.kotlin_jar_path)) {
-              deps += [ ":$_compile_kt_target_name" ]
-              kotlin_jar_path = invoker.kotlin_jar_path
-            }
-            enable_errorprone = _enable_errorprone
-            use_turbine = defined(invoker.use_turbine) && invoker.use_turbine
-
-            main_target_name = _main_target_name
-            build_config = _build_config
-
-            if (_enable_errorprone) {
-              source_files = _filtered_source_files
-            } else {
-              source_files = _source_files
-              srcjar_deps = _srcjar_deps
-            }
-
-            if (source_files != []) {
-              target_sources_file = _target_sources_file
-            }
-            chromium_code = _chromium_code
-            include_android_sdk = _is_robolectric || _requires_android
+          output_jar_path = invoker.output_jar_path
+          if (defined(invoker.kotlin_jar_path)) {
+            deps += [ ":$_compile_kt_target_name" ]
+            kotlin_jar_path = invoker.kotlin_jar_path
           }
+          enable_errorprone = _enable_errorprone
+          use_turbine = defined(invoker.use_turbine) && invoker.use_turbine
+
+          main_target_name = _main_target_name
+          build_config = _build_config
+
+          if (_enable_errorprone) {
+            source_files = _errorprone_source_files
+          } else {
+            source_files = _source_files
+            srcjar_deps = _srcjar_deps
+          }
+
+          if (source_files != []) {
+            target_sources_file = _target_sources_file
+          }
+          chromium_code = _chromium_code
+          include_android_sdk = _is_robolectric || _requires_android
         }
       }
       _compile_java_forward_variables = [
@@ -4101,6 +4105,7 @@ if (enable_java_templates) {
         _compile_java_errorprone_target = "${_main_target_name}__errorprone"
         compile_java_helper(_compile_java_errorprone_target) {
           forward_variables_from(invoker, _compile_java_forward_variables)
+          forward_variables_from(invoker, [ "enable_nullaway" ])
           enable_errorprone = true
           if (defined(invoker.errorprone_args)) {
             if (!defined(javac_args)) {
@@ -4119,6 +4124,8 @@ if (enable_java_templates) {
           output_jar_path = "$target_out_dir/$target_name.errorprone.stamp"
         }
         _java_validate_deps += [ ":$_compile_java_errorprone_target" ]
+      } else {
+        not_needed(invoker, [ "enable_nullaway" ])
       }
     }  # _has_sources
 

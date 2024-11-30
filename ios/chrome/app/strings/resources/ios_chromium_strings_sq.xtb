@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Përdor Chromium në iPad si parazgjedhje</translation>
 <translation id="1471084500615228555">Fshi të dhënat e shfletimit në Chromium</translation>
 <translation id="1472013873724362412">Llogaria jote nuk punon në Chromium. Kontakto me administratorin e domenit ose përdor një llogari të rregullt të Google për t'u identifikuar.</translation>
+<translation id="148576268809812097">Ruaj fjalëkalimet e tua në Chromium</translation>
 <translation id="1501302548410882220">Përdor Chromium kudo</translation>
 <translation id="1503199973012840174">Chromium është i papërditësuar. Përditësoje për të qëndruar i sigurt.</translation>
 <translation id="1515748263297244785">Përdor Chromium për iPad si parazgjedhje</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Fjalëkalimi yt do të ruhet në "Llogarinë" tënde (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">Për të marrë personalizimin dhe veçoritë e tjera, përfshi Chromium tek "<ph name="FEATURE_NAME_1" />" dhe te "<ph name="FEATURE_NAME_2" />"</translation>
 <translation id="1838412507805038478">Chromium verifikoi që <ph name="ISSUER" /> ka lëshuar certifikatën e këtij sajti të uebit.</translation>
+<translation id="1839447949248872139">Hapi lidhjet në Chromium si parazgjedhje</translation>
 <translation id="1843424232666537147">Chromium ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt mund të ngarkosh faqet e uebit.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps në Chromium</translation>
@@ -160,6 +162,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="5048795749726991615">Për t'i marrë me lehtësi fjalëkalimet e tua të ruajtura në aplikacionet e tjera, përdor Chromium për AutoFill</translation>
 <translation id="5053429694249468757">Po fshihen të dhënat e Chromium…</translation>
 <translation id="5071749685031362629">Chromium për iOS</translation>
+<translation id="5088872414922783602">Qasu më shpejt në Chromium nga Dock në ekranin bazë</translation>
 <translation id="5124429847818367226">Tani mund të përdorësh Chromium sa herë që shfleton ose troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="5131565040785979529">Organizata jote, <ph name="DOMAIN" />, menaxhon llogarinë ku je identifikuar dhe se si përdoret Chromium.</translation>
 <translation id="5224391634244552924">Nuk ka asnjë fjalëkalim të ruajtur. Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
@@ -272,6 +275,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="800380310260616129">Shkarko Chromium këtu.</translation>
 <translation id="8013573822802650211">Për të parë skedat e tua nga çdo vend ku përdor Chromium, identifikohu në të gjitha pajisjet e tua</translation>
 <translation id="8014091604604659473">Ke dalë nga Chromium</translation>
+<translation id="8035379487371146621">Zhvendose Chromium te Dock</translation>
 <translation id="8104697640054703121">Merr sigurinë më të fortë të Chromium ndaj sajteve të rrezikshme</translation>
 <translation id="8119542592987737574">Qasu më shpejt në Chromium nga stacioni i ekranit bazë të telefonit tënd iPhone.</translation>
 <translation id="8164086860209325020">Shko te "Cilësimet" e Chromium</translation>

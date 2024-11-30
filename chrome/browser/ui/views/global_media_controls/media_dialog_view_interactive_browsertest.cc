@@ -54,6 +54,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/view_utils.h"
 
 using media_session::mojom::MediaSessionAction;
@@ -364,6 +365,11 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   views::Label* GetLiveTranslateTitleLabel() {
     return MediaDialogView::GetDialogViewForTesting()->live_translate_title_;
+  }
+
+  views::View* GetLiveTranslateDropdown() {
+    return MediaDialogView::GetDialogViewForTesting()
+        ->target_language_container_;
   }
 
   void OnSodaProgress(int progress) {
@@ -935,6 +941,50 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveTranslate) {
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kLiveTranslateEnabled));
+}
+
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, TargetLanguageDropdown) {
+  // Live Caption is currently not supported on Win Arm64.
+  if (!captions::IsLiveCaptionFeatureSupported()) {
+    GTEST_SKIP() << "Live caption feature not supported";
+  }
+  // Open a tab and play media.
+  OpenTestURL();
+  StartPlayback();
+  WaitForStart();
+  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
+
+  // Open the media dialog.
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(GetLiveTranslateDropdown()->GetVisible());
+
+  // Click the Live Caption toggle to toggle it on. The dropdown should be
+  // hidden.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_TRUE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(GetLiveTranslateDropdown()->GetVisible());
+
+  // Click the Live Translate toggle to toggle it on. The dropdown should be
+  // visible.
+  ClickEnableLiveTranslateOnDialog();
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveTranslateEnabled));
+  EXPECT_TRUE(GetLiveTranslateDropdown()->GetVisible());
+
+  // Click the Live Caption toggle to toggle it off. Live Translate should still
+  // be enabled but the dropdown should be hidden.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveTranslateEnabled));
+  EXPECT_FALSE(GetLiveTranslateDropdown()->GetVisible());
 }
 
 class MediaDialogViewWithBackForwardCacheBrowserTest

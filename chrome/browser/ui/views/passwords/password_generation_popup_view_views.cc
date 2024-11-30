@@ -81,6 +81,7 @@ std::unique_ptr<views::View> CreatePasswordLabelWithIcon() {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
   label->SetMaximumWidth(kPasswordGenerationMaxWidth);
+  label->SetAccessibleRole(ax::mojom::Role::kHeading);
 
   return view;
 }
@@ -99,24 +100,18 @@ class NudgePasswordButtons : public views::View {
         views::BoxLayout::Orientation::kHorizontal));
     layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
 
-    const std::u16string help_text = base::JoinString(
-        {l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_TITLE),
-         l10n_util::GetStringFUTF16(
-             IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
-             l10n_util::GetStringUTF16(
-                 IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
-             controller_->GetPrimaryAccountEmail())},
-        u" ");
     const std::u16string cancel_button_label =
         l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_CANCEL_BUTTON);
     auto cancel_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&NudgePasswordButtons::CancelButtonPressed,
                             base::Unretained(this)),
         cancel_button_label);
+    cancel_button_has_focus_ = controller->cancel_button_selected();
     cancel_button->GetViewAccessibility().SetRole(
         ax::mojom::Role::kListBoxOption);
     cancel_button->GetViewAccessibility().SetName(cancel_button_label);
-    cancel_button->GetViewAccessibility().SetDescription(help_text);
+    cancel_button->GetViewAccessibility().SetIsSelected(
+        cancel_button_has_focus_);
     cancel_button_ = AddChildView(std::move(cancel_button));
 
     AddSpacerWithSize(autofill::PopupBaseView::ArrowHorizontalMargin(),
@@ -127,12 +122,14 @@ class NudgePasswordButtons : public views::View {
         base::BindRepeating(&NudgePasswordButtons::AcceptButtonPressed,
                             base::Unretained(this)),
         accept_button_label);
+    accept_button_has_focus_ = controller->accept_button_selected();
     accept_button->SetStyle(ui::ButtonStyle::kProminent);
     accept_button->GetViewAccessibility().SetRole(
         ax::mojom::Role::kListBoxOption);
     accept_button->GetViewAccessibility().SetName(
         base::JoinString({accept_button_label, controller_->password()}, u" "));
-    accept_button->GetViewAccessibility().SetDescription(help_text);
+    accept_button->GetViewAccessibility().SetIsSelected(
+        accept_button_has_focus_);
     accept_button_ = AddChildView(std::move(accept_button));
 
     // Set up custom focus predicates for buttons as the default ones check if

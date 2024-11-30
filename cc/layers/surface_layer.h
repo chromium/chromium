@@ -59,6 +59,8 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   void SetIsReflection(bool is_reflection);
 
+  void SetOverrideChildPaintFlags(bool override_child_paint_flags);
+
   void SetMayContainVideo(bool may_contain_video);
 
   // Layer overrides.
@@ -114,6 +116,10 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   // This surface layer is reflecting the root surface of another display.
   ProtectedSequenceReadable<bool> is_reflection_;
+
+  // If true, then this layer should override its child layer's PaintFlags.
+  // This is used for SurfaceLayers where the child layer is in the same DOM.
+  ProtectedSequenceWritable<bool> override_child_paint_flags_{false};
 
   // Keep track when we change LayerTreeHosts as SurfaceLayerImpl needs to know
   // in order to keep the visibility callback state consistent.

@@ -119,7 +119,7 @@ class V4StoreFuzzer {
       return false;
     }
     *datum = (*data)[0];
-    *data = data->subspan(1);
+    *data = data->subspan<1>();
     return true;
   }
 

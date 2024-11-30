@@ -383,8 +383,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       const DeepQuery& query);
 
   // Possibly waits for `element_id` to be painted if it is a WebContents.
-  [[nodiscard]] MultiStep MaybeWaitForPaint(ElementSpecifier element,
-                                            const std::string& desc);
+  [[nodiscard]] MultiStep MaybeWaitForPaint(ElementSpecifier element);
 
   Browser* GetBrowserFor(ui::ElementContext current_context,
                          BrowserSpecifier spec);

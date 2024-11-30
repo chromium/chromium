@@ -67,10 +67,6 @@ class MEDIA_EXPORT FFmpegGlue {
 
   ~FFmpegGlue();
 
-  // Returns the list of allowed decoders for audio/video respectively.
-  static const char* GetAllowedAudioDecoders();
-  static const char* GetAllowedVideoDecoders();
-
   // Opens an AVFormatContext specially prepared to process reads and seeks
   // through the FFmpegURLProtocol provided during construction.
   // |is_local_file| is an optional parameter used for metrics reporting.

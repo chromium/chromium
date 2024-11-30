@@ -695,25 +695,8 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
         << "Unexpected write stream: " << static_cast<int>(access_stream)
         << ", " << static_cast<int>(last_write_stream_) << ", "
         << write_streams_count_;
-    // Always need end fence for multiple write streams. For single write stream
-    // need an end fence for all usages except for raster using delegated
-    // compositing. If the image will be used for delegated compositing, no need
-    // to put fences at this moment as there are many raster tasks in the CPU gl
-    // context that end up creating a big number of fences, which may have some
-    // performance overhead depending on the gpu. Instead, when these images
-    // will be scheduled as overlays, a single fence will be created.
-    // TODO(crbug.com/40199420): this block of code shall be removed after cc is
-    // able to set a single (duplicated) fence for bunch of tiles instead of
-    // having the SI framework creating fences for each single message when
-    // write access ends.
-
-    // TODO(crbug.com/41495896): Implement vk fence optimization in the case of
-    // raster delegation.
-    const bool skip_fence_in_delegation =
-        usage().Has(SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
-        context_state_->GrContextIsGL();
-
-    need_end_fence = (write_streams_count_ > 1) || !skip_fence_in_delegation;
+    // Always need end fence.
+    need_end_fence = true;
   }
 
   return true;

@@ -84,6 +84,10 @@ using set_up_list_prefs::SetUpListItemState;
                                   unknown);
   set_up_list_prefs::SetItemState(localState, SetUpListItemType::kNotifications,
                                   unknown);
+  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kDocking,
+                                  unknown);
+  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kAddressBar,
+                                  unknown);
 }
 
 + (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete {

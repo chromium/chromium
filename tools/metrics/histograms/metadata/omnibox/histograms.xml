@@ -694,6 +694,25 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram
+    name="Omnibox.DocumentSuggest.HttpResponseCode.IsSubjectToEnterprisePolicies.{SigninTribool}"
+    enum="HttpResponseCode" expires_after="2025-03-09">
+  <owner>mahmadi@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Counts the number of responses from the DocumentSuggestionsService and if
+    the user is subject to Enterprise policies bucketed by the HTTP response
+    code. Recorded once per response received, which is at most 1 time per
+    request sent, which is at most 1 time per omnibox autocompletion cycle,
+    i.e., each time the user changes the omnibox input.
+  </summary>
+  <token key="SigninTribool">
+    <variant name="False" summary="False"/>
+    <variant name="True" summary="True"/>
+    <variant name="Unknown" summary="Unknown"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.DocumentSuggest.ProviderAllowed"
     enum="DocumentProviderAllowedReason" expires_after="2025-05-11">
   <owner>manukh@chromium.org</owner>
@@ -1013,7 +1032,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.InputType" enum="OmniboxInputType"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>

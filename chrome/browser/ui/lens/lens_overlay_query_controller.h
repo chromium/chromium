@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_invocation_source.h"
-#include "components/lens/lens_overlay_page_content_mime_type.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
@@ -91,7 +91,7 @@ class LensOverlayQueryController {
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const uint8_t> underlying_content_bytes,
-      lens::PageContentMimeType underlying_content_type,
+      lens::MimeType underlying_content_type,
       float ui_scale_factor);
 
   // Clears the state and resets stored values.
@@ -108,7 +108,7 @@ class LensOverlayQueryController {
   // Sends a request to the server to update the page content.
   virtual void SendPageContentUpdateRequest(
       base::span<const uint8_t> new_content_bytes,
-      lens::PageContentMimeType new_content_type,
+      lens::MimeType new_content_type,
       GURL new_page_url);
 
   // Sends a region search interaction. Expected to be called multiple times. If
@@ -574,7 +574,7 @@ class LensOverlayQueryController {
 
   // The mime type of underlying_content_bytes. Will be kNone if
   // underlying_content_bytes_ is empty.
-  lens::PageContentMimeType underlying_content_type_;
+  lens::MimeType underlying_content_type_;
 
   // Whether or not the parent interaction query has been sent. This should
   // always be the first interaction in a query flow.

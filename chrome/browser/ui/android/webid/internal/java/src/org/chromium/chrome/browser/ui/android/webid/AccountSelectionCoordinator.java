@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
@@ -161,9 +160,7 @@ public class AccountSelectionCoordinator
                 rpMode == RpMode.ACTIVE
                         ? R.layout.account_selection_active_mode_sheet
                         : R.layout.account_selection_sheet;
-        View contentView =
-                (LinearLayout)
-                        LayoutInflater.from(context).inflate(accountSelectionSheetLayout, null);
+        View contentView = LayoutInflater.from(context).inflate(accountSelectionSheetLayout, null);
 
         PropertyModelChangeProcessor.create(
                 model, contentView, AccountSelectionViewBinder::bindContentView);
@@ -200,7 +197,7 @@ public class AccountSelectionCoordinator
         return contentView;
     }
 
-    static int generatedFedCMId() {
+    static int generatedFedCmId() {
         // Get a non-negative number so that we can use -1 as an error.
         return ++sCurrentFedcmId;
     }
@@ -295,7 +292,7 @@ public class AccountSelectionCoordinator
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         assert context instanceof Activity;
         // Set a new FedCM ID, and store it.
-        int fedcmId = generatedFedCMId();
+        int fedcmId = generatedFedCmId();
         sFedCMDelegateMap.put(
                 fedcmId, new WeakReference<AccountSelectionComponent.Delegate>(mDelegate));
         intent.putExtra(IntentHandler.EXTRA_FEDCM_ID, fedcmId);

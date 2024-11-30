@@ -355,7 +355,7 @@ AccountInfo IdentityManager::FindExtendedAccountInfoByEmailAddress(
 }
 
 AccountInfo IdentityManager::FindExtendedAccountInfoByGaiaId(
-    const std::string& gaia_id) const {
+    const GaiaId& gaia_id) const {
   AccountInfo account_info =
       account_tracker_service_->FindAccountInfoByGaiaId(gaia_id);
   // AccountTrackerService always returns an AccountInfo, even on failure. In
@@ -405,7 +405,7 @@ void IdentityManager::OnNetworkInitialized() {
 }
 
 CoreAccountId IdentityManager::PickAccountIdForAccount(
-    const std::string& gaia,
+    const GaiaId& gaia,
     const std::string& email) const {
   return account_tracker_service_->PickAccountIdForAccount(gaia, email);
 }

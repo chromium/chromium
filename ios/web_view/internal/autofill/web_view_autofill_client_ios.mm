@@ -13,7 +13,7 @@
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
-#import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -81,6 +81,13 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       log_manager_(std::move(log_manager)) {}
 
 WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
+  if (auto* factory = AutofillDriverIOSFactory::FromWebState(web_state_)) {
+    // Autofill expects that AutofillDrivers and their ownees are destroyed
+    // before the AutofillClient. It's not clear if that's the case on iOS
+    // WebView. As a temporary fix, we explicitly delete the drivers.
+    // TODO(crbug.com/380442588): Investigate and look for a better fix.
+    static_cast<web::WebStateObserver*>(factory)->WebStateDestroyed(web_state_);
+  }
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
 }
 
@@ -117,8 +124,8 @@ WebViewAutofillClientIOS::GetCrowdsourcingManager() {
   return crowdsourcing_manager_.get();
 }
 
-PersonalDataManager* WebViewAutofillClientIOS::GetPersonalDataManager() {
-  return personal_data_manager_;
+PersonalDataManager& WebViewAutofillClientIOS::GetPersonalDataManager() {
+  return CHECK_DEREF(personal_data_manager_);
 }
 
 SingleFieldFillRouter& WebViewAutofillClientIOS::GetSingleFieldFillRouter() {
@@ -174,11 +181,6 @@ ukm::UkmRecorder* WebViewAutofillClientIOS::GetUkmRecorder() {
   return nullptr;
 }
 
-ukm::SourceId WebViewAutofillClientIOS::GetUkmSourceId() {
-  // UKM recording is not supported for WebViews.
-  return 0;
-}
-
 AddressNormalizer* WebViewAutofillClientIOS::GetAddressNormalizer() {
   return nullptr;
 }
@@ -219,22 +221,6 @@ void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
   [bridge_ confirmSaveAddressProfile:profile
                      originalProfile:original_profile
                             callback:std::move(callback)];
-}
-
-void WebViewAutofillClientIOS::ShowEditAddressProfileDialog(
-    const AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-  // Please note: This method is only implemented on desktop and is therefore
-  // unreachable here.
-  NOTREACHED();
-}
-
-void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
-    const AutofillProfile& profile,
-    AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  // Please note: This method is only implemented on desktop and is therefore
-  // unreachable here.
-  NOTREACHED();
 }
 
 AutofillClient::SuggestionUiSessionId
@@ -302,6 +288,11 @@ bool WebViewAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
 
 LogManager* WebViewAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
+}
+
+autofill_metrics::FormInteractionsUkmLogger&
+WebViewAutofillClientIOS::GetFormInteractionsUkmLogger() {
+  return form_interactions_ukm_logger_;
 }
 
 void WebViewAutofillClientIOS::set_bridge(

@@ -215,8 +215,8 @@ class TelemetryLogger
 
     telemetry_logger::proto::LogResponse response;
     if (!response_body || !response.ParseFromString(*response_body)) {
-      LOG(ERROR) << "Failed to parse log response proto, response body: "
-                 << response_body.value_or("");
+      VLOG(1) << "Failed to parse log response proto, response body: "
+              << response_body.value_or("");
       SetCooldown(delegate_->MinimumCooldownTime());
       return;
     }

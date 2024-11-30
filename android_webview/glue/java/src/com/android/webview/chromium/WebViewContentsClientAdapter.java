@@ -1253,6 +1253,12 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 return value.getFilenameHint();
             }
 
+            // TODO(crbug.com/40101963): Add @Override and @PermissionMode when SDK is updated.
+            @SuppressWarnings("all")
+            public int getPermissionMode() {
+                return value.getPermissionMode();
+            }
+
             @Override
             public Intent createIntent() {
                 return value.createIntent();

@@ -86,6 +86,35 @@ public @interface ClassName {
                                               ('VALUE_ONE', 1)]),
                      definition.entries)
 
+  def testOutputFlag(self):
+    for [attr, want_flag] in [
+        ['0', False],
+        ['1', True],
+        ['false', False],
+        ['true', True],
+    ]:
+      test_data = ("""
+        // GENERATED_JAVA_ENUM_PACKAGE: test.namespace
+        // GENERATED_JAVA_IS_FLAG: %s
+        enum EnumName {
+          ZERO = 1 << 0,
+          ONE = 1 << 1,
+        };
+      """ % attr).split('\n')
+      definitions = HeaderParser(test_data).ParseDefinitions()
+      output = GenerateOutput('/path/to/file', definitions[0])
+      int_def = output[output.index("@IntDef"):]
+      expected = """@IntDef(%s{
+    EnumName.ZERO, EnumName.ONE
+})
+@Retention(RetentionPolicy.SOURCE)
+public @interface EnumName {
+  int ZERO = 1 << 0;
+  int ONE = 1 << 1;
+}
+""" % ('flag = true, value = ' if want_flag else '')
+      self.assertEqual(int_def, expected)
+
   def testParseBitShifts(self):
     test_data = """
       // GENERATED_JAVA_ENUM_PACKAGE: test.namespace

@@ -416,5 +416,58 @@ TEST_F(SurfaceLayerImplAlignToPixelGridTest, FractionalOffsetSnapsToPixelGrid) {
   EXPECT_TRUE(quad_to_target_transform.IsIdentityOrIntegerTranslation());
 }
 
+// This test verifies that paint flag overrides are propagated to the
+// viz::SurfaceDrawQuad.
+TEST(SurfaceLayerImplTest, OverrideChildPaintFlags) {
+  LayerTreeImplTestBase impl;
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>();
+  CopyProperties(impl.root_layer(), surface_layer_impl);
+
+  gfx::Size viewport_size(1000, 1000);
+  impl.CalcDrawProps(viewport_size);
+
+  {
+    const viz::LocalSurfaceId kArbitraryLocalSurfaceId1(
+        1, base::UnguessableToken::Create());
+    viz::SurfaceId surface_id1(kArbitraryFrameSinkId,
+                               kArbitraryLocalSurfaceId1);
+
+    gfx::Size layer_size(400, 100);
+    surface_layer_impl->SetBounds(layer_size);
+    surface_layer_impl->SetDrawsContent(true);
+    surface_layer_impl->SetRange(viz::SurfaceRange(surface_id1), 1u);
+    surface_layer_impl->SetFilterQuality(PaintFlags::FilterQuality::kNone);
+  }
+
+  // By default, surfaces don't override their child paint flags.
+  {
+    auto render_pass = viz::CompositorRenderPass::Create();
+    AppendQuadsData data;
+    surface_layer_impl->AppendQuads(render_pass.get(), &data);
+    const viz::SurfaceDrawQuad* surface_draw_quad =
+        viz::SurfaceDrawQuad::MaterialCast(render_pass->quad_list.ElementAt(0));
+    EXPECT_EQ(surface_draw_quad->override_child_filter_quality, std::nullopt);
+    EXPECT_EQ(surface_draw_quad->override_child_dynamic_range_limit,
+              std::nullopt);
+  }
+
+  // When specified, surfaces will propagate their paint flags (using the
+  // default when none has been set on the layer).
+  {
+    surface_layer_impl->SetOverrideChildPaintFlags(true);
+
+    auto render_pass = viz::CompositorRenderPass::Create();
+    AppendQuadsData data;
+    surface_layer_impl->AppendQuads(render_pass.get(), &data);
+    const viz::SurfaceDrawQuad* surface_draw_quad =
+        viz::SurfaceDrawQuad::MaterialCast(render_pass->quad_list.ElementAt(0));
+    EXPECT_EQ(surface_draw_quad->override_child_filter_quality,
+              PaintFlags::FilterQuality::kNone);
+    EXPECT_EQ(surface_draw_quad->override_child_dynamic_range_limit,
+              PaintFlags::DynamicRangeLimitMixture());
+  }
+}
+
 }  // namespace
 }  // namespace cc

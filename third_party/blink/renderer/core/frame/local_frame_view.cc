@@ -2361,6 +2361,23 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       break;
   }
 
+  // Updating the rendering time here, after view transition operations, as per
+  // spec. Note that "pre-paint" has already occurred, because it's needed for
+  // view transitions and resize observers.
+  base::TimeTicks rendering_update_end_time = base::TimeTicks::Now();
+
+  // https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering
+  // 20. For each doc of docs, record rendering time for doc..
+  if (FrameWidget* widget = frame_->GetWidgetForLocalRoot()) {
+    widget->RecordRenderingUpdateEndTime(rendering_update_end_time);
+  }
+
+  // 21. For each doc of docs, mark paint timing for doc.
+  ForAllNonThrottledLocalFrameViews([&](LocalFrameView& frame_view) {
+    PaintTiming::From(*frame_view.frame_->GetDocument())
+        .SetRenderingUpdateEndTime(rendering_update_end_time);
+  });
+
   // This must be after all other updates for position-visibility.
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.frame_->CheckPositionAnchorsForChainedVisibilityChanges();
@@ -2452,7 +2469,9 @@ bool LocalFrameView::RunResizeObserverSteps(
   disconnected_elements_with_remembered_size_.clear();
 
   // https://drafts.csswg.org/css-anchor-position-1/#last-successful-position-option
-  bool re_run_lifecycles = UpdateLastSuccessfulPositionFallbacks();
+  StyleEngine& engine = GetFrame().GetDocument()->GetStyleEngine();
+  bool re_run_lifecycles =
+      engine.UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift();
 
   ForAllNonThrottledLocalFrameViews(
       [&re_run_lifecycles](LocalFrameView& frame_view) {
@@ -2669,7 +2688,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   if (AnyFrameIsPrintingOrPaintingPreview())
     return;
 
-  bool needed_update;
+  bool needed_full_update = false;
   {
     // paint_controller will be constructed when PaintTree repaints, and will
     // be destructed after PushPaintArtifactToCompositor.
@@ -2681,14 +2700,15 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
             PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate) {
       paint_artifact_compositor_->SetNeedsUpdate();
     }
-    needed_update = !paint_artifact_compositor_ ||
-                    paint_artifact_compositor_->NeedsUpdate();
+    needed_full_update = !paint_artifact_compositor_ ||
+                         paint_artifact_compositor_->NeedsUpdate() ==
+                             PaintArtifactCompositor::UpdateType::kFull;
     PushPaintArtifactToCompositor(paint_controller.has_value());
   }
 
   size_t total_animations_count = 0;
   ForAllNonThrottledLocalFrameViews(
-      [this, needed_update,
+      [this, needed_full_update,
        &total_animations_count](LocalFrameView& frame_view) {
         if (auto* scrollable_area = frame_view.GetScrollableArea())
           scrollable_area->UpdateCompositorScrollAnimations();
@@ -2711,7 +2731,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
           ScriptForbiddenScope forbid_script;
           document.GetDocumentAnimations().UpdateAnimations(
               DocumentLifecycle::kPaintClean, paint_artifact_compositor_.Get(),
-              needed_update);
+              needed_full_update);
         }
         total_animations_count +=
             document.GetDocumentAnimations().GetAnimationsCount();
@@ -2730,7 +2750,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   // nodes according to the current animation state. This is mainly for
   // the running composited animations which didn't change state during
   // above UpdateAnimations() but associated with new paint property nodes.
-  if (needed_update) {
+  if (needed_full_update) {
     auto* root_layer = RootCcLayer();
     if (root_layer && root_layer->layer_tree_host()) {
       root_layer->layer_tree_host()->mutator_host()->InitClientAnimationState();
@@ -2894,7 +2914,7 @@ void LocalFrameView::PaintTree(
 
     needs_clear_repaint_flags = true;
     if (paint_artifact_compositor_) {
-      paint_artifact_compositor_->SetNeedsFullUpdateAfterPaintIfNeeded(
+      paint_artifact_compositor_->SetNeedsUpdateAfterRepaint(
           previous_artifact,
           paint_controller_persistent_data_->GetPaintArtifact());
     }
@@ -2966,10 +2986,9 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 
   // Skip updating property trees, pushing cc::Layers, and issuing raster
   // invalidations if possible.
-  if (!paint_artifact_compositor_->NeedsUpdate()) {
+  if (paint_artifact_compositor_->TryFastPathUpdate(
+          paint_controller_persistent_data_->GetPaintArtifact())) {
     if (repainted) {
-      paint_artifact_compositor_->UpdateRepaintedLayers(
-          paint_controller_persistent_data_->GetPaintArtifact());
       CreatePaintTimelineEvents();
     }
     // TODO(pdr): Should we clear the property tree state change bits (
@@ -5100,13 +5119,6 @@ void LocalFrameView::ExecutePendingSnapUpdates() {
 void LocalFrameView::NotifyElementWithRememberedSizeDisconnected(
     Element* element) {
   disconnected_elements_with_remembered_size_.insert(element);
-}
-
-bool LocalFrameView::UpdateLastSuccessfulPositionFallbacks() {
-  return GetFrame()
-      .GetDocument()
-      ->GetStyleEngine()
-      .UpdateLastSuccessfulPositionFallbacks();
 }
 
 }  // namespace blink

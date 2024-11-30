@@ -2,26 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/common/pref_names.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/browser_context.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -77,8 +85,6 @@ const char* const kWebPrefsToObserve[] = {
     prefs::kPageColorsBlockList,
 };
 
-const int kWebPrefsToObserveLength = std::size(kWebPrefsToObserve);
-
 }  // namespace
 
 // Watching all these settings per tab is slow when a user has a lot of tabs and
@@ -121,8 +127,7 @@ PrefWatcher::PrefWatcher(Profile* profile)
   PrefChangeRegistrar::NamedChangeCallback webkit_callback =
       base::BindRepeating(&PrefWatcher::OnWebPrefChanged,
                           base::Unretained(this));
-  for (int i = 0; i < kWebPrefsToObserveLength; ++i) {
-    const char* pref_name = kWebPrefsToObserve[i];
+  for (const auto* pref_name : kWebPrefsToObserve) {
     profile_pref_change_registrar_.Add(pref_name, webkit_callback);
   }
   // LocalState can be NULL in tests.

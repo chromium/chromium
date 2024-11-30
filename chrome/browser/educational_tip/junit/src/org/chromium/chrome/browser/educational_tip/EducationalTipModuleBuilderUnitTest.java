@@ -27,10 +27,12 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 /** Test relating to {@link EducationalTipModuleBuilder} */
@@ -46,6 +48,7 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
     @Mock private ObservableSupplier<Profile> mProfileSupplier;
     @Mock private Profile mProfile;
+    @Mock private Tracker mTracker;
 
     private EducationalTipModuleBuilder mModuleBuilder;
 
@@ -55,6 +58,7 @@ public class EducationalTipModuleBuilderUnitTest {
         when(mProfileSupplier.hasValue()).thenReturn(true);
         when(mProfileSupplier.get()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        TrackerFactory.setTrackerForTests(mTracker);
         mModuleBuilder = new EducationalTipModuleBuilder(mActionDelegate);
     }
 

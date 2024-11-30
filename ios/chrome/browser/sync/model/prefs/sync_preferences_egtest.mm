@@ -111,7 +111,15 @@ void WaitForPreferenceValue(int pref_value) {
 }
 
 // Tests that the value is written to local and account when signed in.
-- (void)testPrefWrittenToLocalAndAccountIfSignedIn {
+// TODO(crbug.com/379843232): Test fails on ios-simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPrefWrittenToLocalAndAccountIfSignedIn \
+  DISABLED_testPrefWrittenToLocalAndAccountIfSignedIn
+#else
+#define MAYBE_testPrefWrittenToLocalAndAccountIfSignedIn \
+  testPrefWrittenToLocalAndAccountIfSignedIn
+#endif
+- (void)MAYBE_testPrefWrittenToLocalAndAccountIfSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
@@ -140,7 +148,15 @@ void WaitForPreferenceValue(int pref_value) {
 
 // Tests that the account pref value is removed on signout and the local pref
 // value takes effect.
-- (void)testAccountPrefValueRemovedOnSignout {
+// TODO(crbug.com/379843232): Test fails on ios-simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAccountPrefValueRemovedOnSignout \
+  DISABLED_testAccountPrefValueRemovedOnSignout
+#else
+#define MAYBE_testAccountPrefValueRemovedOnSignout \
+  testAccountPrefValueRemovedOnSignout
+#endif
+- (void)MAYBE_testAccountPrefValueRemovedOnSignout {
   // Set a pref value of `kTestPrefValue2` in account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];

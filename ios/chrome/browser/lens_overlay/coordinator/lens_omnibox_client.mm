@@ -50,7 +50,7 @@ LensOmniboxClient::LensOmniboxClient(
       engagement_tracker_(tracker),
       web_provider_(web_provider),
       delegate_(omnibox_delegate),
-      thumbnail_removed_in_session_(NO) {
+      text_clobbered_in_session_(NO) {
   CHECK(engagement_tracker_);
 }
 
@@ -161,7 +161,7 @@ GURL LensOmniboxClient::GetNavigationEntryURL() const {
 
 metrics::OmniboxEventProto::PageClassification
 LensOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  if (lens_result_has_thumbnail_ && !thumbnail_removed_in_session_) {
+  if (lens_result_has_thumbnail_) {
     return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
   }
   return metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX;
@@ -215,13 +215,23 @@ gfx::Image LensOmniboxClient::GetFavicon() const {
   return gfx::Image();
 }
 
+void LensOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
+                                      bool user_input_in_progress,
+                                      const std::u16string& user_text,
+                                      const AutocompleteResult& result,
+                                      bool has_focus) {
+  if (user_input_in_progress && user_text.empty()) {
+    text_clobbered_in_session_ = YES;
+  }
+}
+
 void LensOmniboxClient::OnThumbnailRemoved() {
-  thumbnail_removed_in_session_ = YES;
+  [delegate_ omniboxDidRemoveThumbnail];
 }
 
 void LensOmniboxClient::OnFocusChanged(OmniboxFocusState state,
                                        OmniboxFocusChangeReason reason) {
-  thumbnail_removed_in_session_ = NO;
+  text_clobbered_in_session_ = NO;
 }
 
 void LensOmniboxClient::OnAutocompleteAccept(
@@ -239,14 +249,14 @@ void LensOmniboxClient::OnAutocompleteAccept(
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
   [delegate_ omniboxDidAcceptText:match.fill_into_edit
                    destinationURL:destination_url
-                 thumbnailRemoved:thumbnail_removed_in_session_];
+                    textClobbered:text_clobbered_in_session_];
 }
 
 void LensOmniboxClient::OnThumbnailOnlyAccept() {
   // The destinationURL is not used for multimodal suggestions.
   [delegate_ omniboxDidAcceptText:u""
                    destinationURL:GURL()
-                 thumbnailRemoved:NO];
+                    textClobbered:NO];
 }
 
 base::WeakPtr<OmniboxClient> LensOmniboxClient::AsWeakPtr() {

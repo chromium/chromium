@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import android.content.Intent;
 import android.graphics.Color;
 
+import androidx.annotation.ColorInt;
 import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
 import androidx.test.runner.lifecycle.Stage;
@@ -29,6 +30,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for the Settings menu. */
@@ -60,9 +62,14 @@ public class SettingsActivityTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    // TODO(crbug.com/378133407): Extend tests
     public void testEdgeToEdgeEverywhere() {
-        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        final @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(activity);
+
+        assertEquals(
+                defaultBgColor,
+                activity.ensureEdgeToEdgeLayoutCoordinator().getNavigationBarColor());
+        assertEquals(Color.TRANSPARENT, activity.getWindow().getNavigationBarColor());
     }
 
     @Test

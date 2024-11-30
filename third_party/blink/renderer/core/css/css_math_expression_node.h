@@ -127,13 +127,11 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool IsIdentifierLiteral() const { return false; }
   virtual bool IsKeywordLiteral() const { return false; }
   virtual bool IsContainerFeature() const { return false; }
+  virtual bool IsSiblingFunction() const { return false; }
 
   virtual bool IsMathFunction() const { return false; }
 
-  CSSPrimitiveValue::BoolStatus IsZero() const { return ResolvesTo(0.0); }
-  CSSPrimitiveValue::BoolStatus IsOne() const { return ResolvesTo(1.0); }
-  CSSPrimitiveValue::BoolStatus IsHundred() const { return ResolvesTo(100.0); }
-  virtual CSSPrimitiveValue::BoolStatus IsNegative() const = 0;
+  virtual std::optional<double> GetValueIfKnown() const = 0;
 
   // Resolves the expression into one value *without doing any type conversion*.
   // Hits DCHECK if type conversion is required.
@@ -264,7 +262,6 @@ class CORE_EXPORT CSSMathExpressionNode
                               const CSSLengthResolver& length_resolver) {
     return operand->ComputeDouble(length_resolver);
   }
-  virtual CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const = 0;
 
   CalculationResultCategory category_;
   bool is_nested_calc_ = false;
@@ -307,7 +304,6 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
 
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final;
-  CSSPrimitiveValue::BoolStatus IsNegative() const final;
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -333,7 +329,9 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final;
+  std::optional<double> GetValueIfKnown() const final {
+    return ComputeValueInCanonicalUnit();
+  }
 
  private:
   Member<const CSSNumericLiteralValue> value_;
@@ -383,9 +381,6 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
       const final {
     return this;
   }
-  CSSPrimitiveValue::BoolStatus IsNegative() const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
   String CustomCSSText() const final { return identifier_; }
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -431,9 +426,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED();
   }
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
   AtomicString identifier_;
@@ -490,9 +483,6 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
       const final {
     return this;
   }
-  CSSPrimitiveValue::BoolStatus IsNegative() const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
   String CustomCSSText() const final {
     return GetCSSValueNameAs<AtomicString>(keyword_);
   }
@@ -536,9 +526,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
   CSSValueID keyword_;
@@ -677,7 +665,6 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final;
-  CSSPrimitiveValue::BoolStatus IsNegative() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
@@ -710,7 +697,9 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final;
+  std::optional<double> GetValueIfKnown() const final {
+    return ComputeValueInCanonicalUnit();
+  }
 
  private:
   static const CSSMathExpressionNode* GetNumericLiteralSide(
@@ -727,7 +716,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
   // Helper for iterating from the 2nd to the last operands
   base::span<const Member<const CSSMathExpressionNode>> SecondToLastOperands()
       const {
-    return base::span(operands_).subspan(1);
+    return base::span(operands_).subspan<1>();
   }
 
   Operands operands_;
@@ -779,9 +768,6 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
       const final {
     return this;
   }
-  CSSPrimitiveValue::BoolStatus IsNegative() const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -828,9 +814,7 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
   Member<const CSSIdentifierValue> size_feature_;
@@ -871,9 +855,6 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final {
     return this;
-  }
-  CSSPrimitiveValue::BoolStatus IsNegative() const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
     return CSSPrimitiveValue::UnitType::kUnknown;
@@ -923,9 +904,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
 
  protected:
   double ComputeDouble(const CSSLengthResolver&) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
   std::optional<LayoutUnit> EvaluateQuery(const AnchorQuery& query,
@@ -942,6 +921,102 @@ template <>
 struct DowncastTraits<CSSMathExpressionAnchorQuery> {
   static bool AllowFrom(const CSSMathExpressionNode& node) {
     return node.IsAnchorQuery();
+  }
+};
+
+// sibling-index() and sibling-count()
+class CORE_EXPORT CSSMathExpressionSiblingFunction final
+    : public CSSMathExpressionNode {
+ public:
+  explicit CSSMathExpressionSiblingFunction(CSSValueID function_id)
+      : CSSMathExpressionNode(kCalcNumber,
+                              /*has_comparisons=*/false,
+                              /*has_anchor_functions=*/false,
+                              /*needs_tree_scope_population=*/false),
+        function_id_(function_id) {}
+
+  // TODO(crbug.com/1309178): This is not entirely correct, since "math
+  // function" should refer to functions defined in [1]. We may need to clean up
+  // the terminology in the code.
+  // [1] https://drafts.csswg.org/css-values-4/#math
+  bool IsMathFunction() const final { return true; }
+
+  CSSMathExpressionNode* Copy() const override {
+    return MakeGarbageCollected<CSSMathExpressionSiblingFunction>(function_id_);
+  }
+
+  bool IsSiblingFunction() const override { return true; }
+
+  const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const final {
+    return this;
+  }
+  CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
+    return CSSPrimitiveValue::UnitType::kNumber;
+  }
+  std::optional<double> ComputeValueInCanonicalUnit() const final {
+    return std::nullopt;
+  }
+  std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED();
+  }
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
+      const CSSLengthResolver&) const final {
+    return std::nullopt;
+  }
+  bool AccumulateLengthArray(CSSLengthArray& length_array,
+                             double multiplier) const final {
+    return false;
+  }
+  bool IsComputationallyIndependent() const final { return false; }
+  double DoubleValue() const final { NOTREACHED(); }
+  double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED();
+  }
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const final {}
+
+  String CustomCSSText() const final;
+  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+      const CSSLengthResolver&) const final;
+  bool operator==(const CSSMathExpressionNode& other) const final;
+  const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope*) const final {
+    NOTREACHED();
+  }
+
+#if DCHECK_IS_ON()
+  bool InvolvesPercentageComparisons() const final { return false; }
+#endif
+
+  const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const final {
+    return this;
+  }
+
+  bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final {
+    return false;
+  }
+
+ protected:
+  double ComputeDouble(const CSSLengthResolver&) const final;
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
+
+ private:
+  std::optional<LayoutUnit> EvaluateQuery(const AnchorQuery& query,
+                                          const CSSLengthResolver&) const;
+  AnchorQuery ToQuery(const CSSLengthResolver& length_resolver) const;
+
+  CSSValueID function_id_;
+};
+
+template <>
+struct DowncastTraits<CSSMathExpressionSiblingFunction> {
+  static bool AllowFrom(const CSSMathExpressionNode& node) {
+    return node.IsSiblingFunction();
   }
 };
 

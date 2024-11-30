@@ -48,8 +48,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   ~AccountSelectionBubbleView() override;
 
   // AccountSelectionViewBase:
-  void InitDialogWidget() override;
-
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
@@ -78,22 +76,16 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list) override;
 
-  void ShowLoadingDialog() override;
-
-  void CloseDialog() override;
-
-  void UpdateDialogPosition() override;
-
   void OnAnchorBoundsChanged() override;
 
   std::string GetDialogTitle() const override;
 
+  // views::BubbleDialogDelegateView:
+  gfx::Rect GetBubbleBounds() override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountSelectionBubbleViewTest,
                            WebContentsLargeEnoughToFitDialog);
-
-  // views::BubbleDialogDelegateView:
-  gfx::Rect GetBubbleBounds() override;
 
   // Returns a View containing the logo of the identity provider. Creates the
   // `header_icon_view_` if `has_idp_icon` is true.
@@ -159,10 +151,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // The relying party context to show in the title.
   blink::mojom::RpContext rp_context_;
-
-  // Whether the dialog has been populated via either ShowMultiAccountPicker()
-  // or ShowVerifyingSheet().
-  bool has_sheet_{false};
 
   // View containing the logo of the identity provider and the title.
   raw_ptr<views::View> header_view_ = nullptr;

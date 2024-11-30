@@ -29,16 +29,17 @@ public class SplitCompatJobService extends JobService {
     }
 
     @Override
-    protected void attachBaseContext(Context context) {
+    protected void attachBaseContext(Context unused) {
+        Context splitContext;
         // Make sure specified split is installed, otherwise fall back to chrome split.
         if (mSplitName != null && BundleUtils.isIsolatedSplitInstalled(mSplitName)) {
-            context = BundleUtils.createIsolatedSplitContext(context, mSplitName);
+            splitContext = BundleUtils.createIsolatedSplitContext(mSplitName);
         } else {
-            context = SplitCompatApplication.createChromeContext(context);
+            splitContext = SplitCompatApplication.createChromeContext();
         }
-        mImpl = (Impl) BundleUtils.newInstance(context, mServiceClassName);
+        mImpl = (Impl) BundleUtils.newInstance(splitContext, mServiceClassName);
         mImpl.setService(this);
-        super.attachBaseContext(context);
+        super.attachBaseContext(splitContext);
     }
 
     @Override

@@ -229,11 +229,18 @@ bool IsAccessibilityFlashScreenFeatureEnabled() {
       ::features::kAccessibilityFlashScreenFeature);
 }
 
-BASE_FEATURE(kAccessibilityFilterKeys,
-             "AccessibilityFilterKeys",
+BASE_FEATURE(kAccessibilityBounceKeys,
+             "AccessibilityBounceKeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityFilterKeysEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAccessibilityFilterKeys);
+bool IsAccessibilityBounceKeysEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityBounceKeys);
+}
+
+BASE_FEATURE(kAccessibilitySlowKeys,
+             "AccessibilitySlowKeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilitySlowKeysEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilitySlowKeys);
 }
 
 BASE_FEATURE(kAccessibilityShakeToLocate,
@@ -301,14 +308,6 @@ BASE_FEATURE(kReadAnythingReadAloud,
 
 bool IsReadAnythingReadAloudEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud);
-}
-
-BASE_FEATURE(kReadAloudAutoVoiceSwitching,
-             "ReadAloudAutoVoiceSwitching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAloudAutoVoiceSwitchingEnabled() {
-  return IsReadAnythingReadAloudEnabled() &&
-         base::FeatureList::IsEnabled(::features::kReadAloudAutoVoiceSwitching);
 }
 
 BASE_FEATURE(kReadAnythingReadAloudPhraseHighlighting,

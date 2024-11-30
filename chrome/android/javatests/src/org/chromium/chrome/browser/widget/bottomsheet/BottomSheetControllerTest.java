@@ -153,14 +153,6 @@ public class BottomSheetControllerTest {
                 });
     }
 
-    /**
-     * @return The height of the container view.
-     */
-    private int getContainerHeight() {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getActivityTabProvider().get().getView().getHeight());
-    }
-
     @Test
     @SmallTest
     @Feature({"BottomSheetController"})
@@ -230,7 +222,6 @@ public class BottomSheetControllerTest {
     @Test
     @SmallTest
     @Feature({"BottomSheetController"})
-    @DisabledTest(message = "https://crbug.com/376478156")
     public void testShowWithBottomInset_LargeBottomInsets() {
         mEdgeToEdgeController.bottomInset = 2000;
 
@@ -413,9 +404,7 @@ public class BottomSheetControllerTest {
     @Feature({"BottomSheetController"})
     public void testSheetGoneAfterTransitioningToAndFromSwitcher() throws TimeoutException {
         // Open a second tab.
-        Tab tab1 = mActivity.getActivityTab();
         openNewTabInForeground();
-        Tab tab2 = mActivity.getActivityTab();
 
         requestContentInSheet(mLowPriorityContent, true);
         assertEquals(

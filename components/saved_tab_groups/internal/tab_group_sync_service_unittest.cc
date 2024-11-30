@@ -46,11 +46,13 @@ using testing::_;
 using testing::An;
 using testing::ByRef;
 using testing::ContainerEq;
+using testing::Contains;
 using testing::DoAll;
 using testing::Eq;
 using testing::Invoke;
 using testing::IsEmpty;
 using testing::Matcher;
+using testing::Not;
 using testing::NotNull;
 using testing::Return;
 using testing::Sequence;
@@ -62,6 +64,14 @@ namespace tab_groups {
 namespace {
 
 const char kTestCacheGuid[] = "test_cache_guid";
+
+MATCHER_P(HasGuid, guid, "") {
+  return arg.saved_guid() == guid;
+}
+
+MATCHER(IsSharedGroup, "") {
+  return arg.is_shared_tab_group();
+}
 
 optimization_guide::OptimizationMetadata GetPageEntitiesMetadata(
     const std::string& title) {
@@ -85,6 +95,9 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
   MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
+  MOCK_METHOD(void,
+              OnTabGroupMigrated,
+              (const SavedTabGroup&, const base::Uuid&, TriggerSource));
   MOCK_METHOD(void,
               OnTabGroupLocalIdChanged,
               (const base::Uuid&, const std::optional<LocalTabGroupID>&));
@@ -111,6 +124,9 @@ class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
   MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
+  MOCK_METHOD(void,
+              OnTabGroupMigrated,
+              (const SavedTabGroup&, const base::Uuid&, TriggerSource));
 };
 
 class MockCollaborationFinder : public CollaborationFinder {
@@ -789,6 +805,167 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabIgnoresSameUrl) {
   WaitForPostedTasks();
 }
 
+TEST_F(TabGroupSyncServiceTest, NavigateTabWithEmptyUrlRestriction) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  optimization_guide::OptimizationMetadata metadata;
+
+  // Update tab and verify observers.
+  std::u16string new_title = u"tab title";
+  GURL new_url = GURL("http://www.example.com");
+
+  // False was returned by optimization guide.
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  new_url, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          ByRef(metadata)));
+
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       new_url, new_title);
+  WaitForPostedTasks();
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  SavedTabGroupTab* tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(new_title, tab->title());
+  EXPECT_EQ(new_url, tab->url());
+  VerifyCacheGuids(*group, tab, kTestCacheGuid, kTestCacheGuid, kTestCacheGuid,
+                   kTestCacheGuid);
+}
+
+TEST_F(TabGroupSyncServiceTest, NavigateTabNotBlockedByUrlRestriction) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  optimization_guide::OptimizationMetadata metadata;
+  std::u16string title_1 = u"tab title";
+  GURL url_1 = GURL("http://www.example.com#1");
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  url_1, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          ByRef(metadata)));
+
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       url_1, title_1);
+  WaitForPostedTasks();
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  SavedTabGroupTab* tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(title_1, tab->title());
+  EXPECT_EQ(url_1, tab->url());
+
+  proto::UrlRestriction url_restriction;
+  url_restriction.set_block_for_sync(true);
+  url_restriction.set_block_for_share(true);
+  url_restriction.set_block_if_similar_to_last_synced_url(true);
+  metadata.set_any_metadata(optimization_guide::AnyWrapProto(url_restriction));
+
+  // Update tab and verify observers.
+  std::u16string title_2 = u"tab title";
+  GURL url_2 = GURL("http://www.foo.com");
+
+  // True was returned by optimization guide.
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  url_2, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(metadata)));
+
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       url_2, title_2);
+  WaitForPostedTasks();
+
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(title_2, tab->title());
+  EXPECT_EQ(url_2, tab->url());
+}
+
+TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSimilarUrl) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  optimization_guide::OptimizationMetadata metadata;
+  std::u16string title_1 = u"tab title";
+  GURL url_1 = GURL("http://www.example.com#1");
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  url_1, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          ByRef(metadata)));
+
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       url_1, title_1);
+  WaitForPostedTasks();
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  SavedTabGroupTab* tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(title_1, tab->title());
+  EXPECT_EQ(url_1, tab->url());
+
+  proto::UrlRestriction url_restriction;
+  url_restriction.set_block_for_sync(true);
+  url_restriction.set_block_for_share(true);
+  url_restriction.set_block_if_similar_to_last_synced_url(true);
+  metadata.set_any_metadata(optimization_guide::AnyWrapProto(url_restriction));
+
+  // Update tab and verify observers.
+  std::u16string title_2 = u"tab title 2";
+  GURL url_2 = GURL("http://www.example.com#2");
+
+  // True was returned by optimization guide.
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  url_2, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(metadata)));
+
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(0);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       url_2, title_2);
+  WaitForPostedTasks();
+
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(title_1, tab->title());
+  EXPECT_EQ(url_1, tab->url());
+}
+
 TEST_F(TabGroupSyncServiceTest, MoveTab) {
   base::HistogramTester histogram_tester;
   auto local_tab_id_2 = test::GenerateRandomTabID();
@@ -904,19 +1081,19 @@ TEST_F(TabGroupSyncServiceTest, SharedTabGroupAddedWillWaitForCollaboration) {
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
 
   // Create shared tab group 4 for which collaboration ID isn't yet available.
-  std::string collaboration_id_1 = "foo_1";
+  CollaborationId collaboration_id_1("foo_1");
   SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
   group_4.SetCollaborationId(collaboration_id_1);
   ON_CALL(*collaboration_finder_,
-          IsCollaborationAvailable(Eq(collaboration_id_1)))
+          IsCollaborationAvailable(Eq(collaboration_id_1.value())))
       .WillByDefault(testing::Return(false));
 
   // Create shared tab group 5 for which collaboration ID is already available.
-  std::string collaboration_id_2 = "foo_2";
+  CollaborationId collaboration_id_2("foo_2");
   SavedTabGroup group_5 = test::CreateTestSavedTabGroup();
   group_5.SetCollaborationId(collaboration_id_2);
   ON_CALL(*collaboration_finder_,
-          IsCollaborationAvailable(Eq(collaboration_id_2)))
+          IsCollaborationAvailable(Eq(collaboration_id_2.value())))
       .WillByDefault(testing::Return(true));
 
   // Add both the groups to model from sync. Observers won't be notified for
@@ -948,9 +1125,9 @@ TEST_F(TabGroupSyncServiceTest, SharedTabGroupAddedWillWaitForCollaboration) {
       .Times(1);
 
   ON_CALL(*collaboration_finder_,
-          IsCollaborationAvailable(Eq(collaboration_id_1)))
+          IsCollaborationAvailable(Eq(collaboration_id_1.value())))
       .WillByDefault(testing::Return(true));
-  tab_group_sync_service_->OnCollaborationAvailable(collaboration_id_1);
+  tab_group_sync_service_->OnCollaborationAvailable(collaboration_id_1.value());
   WaitForPostedTasks();
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 5u);
 }
@@ -1175,10 +1352,10 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
             ByRef(metadata)));
     base::RunLoop run_loop;
     tab_group_sync_service_->GetURLRestriction(
-        test_url,
-        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
-          ASSERT_FALSE(restriction);
-        }).Then(run_loop.QuitClosure()));
+        test_url, base::BindOnce([](const std::optional<proto::UrlRestriction>&
+                                        restriction) {
+                    ASSERT_FALSE(restriction);
+                  }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -1194,10 +1371,10 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
             ByRef(metadata)));
     base::RunLoop run_loop;
     tab_group_sync_service_->GetURLRestriction(
-        test_url,
-        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
-          ASSERT_FALSE(restriction);
-        }).Then(run_loop.QuitClosure()));
+        test_url, base::BindOnce([](const std::optional<proto::UrlRestriction>&
+                                        restriction) {
+                    ASSERT_FALSE(restriction);
+                  }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -1213,10 +1390,10 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
             ByRef(metadata)));
     base::RunLoop run_loop;
     tab_group_sync_service_->GetURLRestriction(
-        test_url,
-        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
-          ASSERT_FALSE(restriction);
-        }).Then(run_loop.QuitClosure()));
+        test_url, base::BindOnce([](const std::optional<proto::UrlRestriction>&
+                                        restriction) {
+                    ASSERT_FALSE(restriction);
+                  }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -1237,12 +1414,12 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
             ByRef(metadata)));
     base::RunLoop run_loop;
     tab_group_sync_service_->GetURLRestriction(
-        test_url,
-        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
-          EXPECT_TRUE(restriction);
-          EXPECT_TRUE(restriction->block_for_sync());
-          EXPECT_TRUE(restriction->block_for_share());
-        }).Then(run_loop.QuitClosure()));
+        test_url, base::BindOnce([](const std::optional<proto::UrlRestriction>&
+                                        restriction) {
+                    EXPECT_TRUE(restriction);
+                    EXPECT_TRUE(restriction->block_for_sync());
+                    EXPECT_TRUE(restriction->block_for_share());
+                  }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 }
@@ -1349,6 +1526,9 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
       .InSequence(s);
   EXPECT_CALL(*coordinator_, ConnectLocalTabGroup(_, local_group_id_1_))
       .InSequence(s);
+
+  EXPECT_CALL(*observer_, OnTabGroupMigrated(_, group_1_.saved_guid(),
+                                             TriggerSource::LOCAL));
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
                                               "collaboration");
   // The new group replaces the originating one asynchronously.
@@ -1358,6 +1538,7 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
   // The originating group should remain mostly unchanged.
   originating_group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   ASSERT_TRUE(originating_group.has_value());
+
   EXPECT_FALSE(originating_group->is_shared_tab_group());
   EXPECT_EQ(originating_group->position(), group_1_.position());
   EXPECT_EQ(originating_group->creator_cache_guid(), kTestCacheGuid);
@@ -1374,7 +1555,7 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
   ASSERT_TRUE(shared_group.has_value());
   EXPECT_NE(shared_group->saved_guid(), group_1_.saved_guid());
   EXPECT_TRUE(shared_group->saved_guid().is_valid());
-  EXPECT_EQ(shared_group->collaboration_id(), "collaboration");
+  EXPECT_EQ(shared_group->collaboration_id(), CollaborationId("collaboration"));
   EXPECT_EQ(shared_group->originating_saved_tab_group_guid(),
             originating_group->saved_guid());
   EXPECT_EQ(shared_group->local_group_id(), local_group_id_1_);
@@ -1427,6 +1608,79 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
     EXPECT_EQ(shared_tab.local_tab_id(), std::nullopt);
     EXPECT_EQ(saved_tab.local_tab_id(), std::nullopt);
   }
+}
+
+TEST_F(TabGroupSyncServiceTest, ShouldNotReturnOriginatingTabGroup) {
+  ON_CALL(*collaboration_finder_, IsCollaborationAvailable)
+      .WillByDefault(Return(false));
+
+  tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
+                                              "collaboration");
+  WaitForPostedTasks();
+
+  std::optional<SavedTabGroup> saved_group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(saved_group.has_value());
+
+  // The group is still saved because it shouldn't be transitioned while it's
+  // not available.
+  ASSERT_FALSE(saved_group->is_shared_tab_group());
+
+  // The saved tab group should be present in GetAllGroups() while the shared
+  // one is not accessible.
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Contains(HasGuid(saved_group->saved_guid())));
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Not(Contains(IsSharedGroup())));
+
+  // Simulate collaboration availability.
+  ON_CALL(*collaboration_finder_, IsCollaborationAvailable)
+      .WillByDefault(Return(true));
+  tab_group_sync_service_->OnCollaborationAvailable("collaboration");
+  WaitForPostedTasks();
+
+  // The group is expected to be transitioned after the collaboration became
+  // available.
+  std::optional<SavedTabGroup> shared_group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(shared_group.has_value());
+  ASSERT_TRUE(shared_group->is_shared_tab_group());
+
+  // Only shared tab group should be returned.
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Not(Contains(HasGuid(saved_group->saved_guid()))));
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Contains(HasGuid(shared_group->saved_guid())));
+}
+
+TEST_F(TabGroupSyncServiceTest, ShouldNotReturnOriginatingTabGroupOnRemoteAdd) {
+  // Simulate remote transition to shared tab group from `group_1_`.
+  SavedTabGroup shared_group = test::CreateTestSavedTabGroupWithNoTabs();
+  shared_group.SetCollaborationId(CollaborationId("collaboration"));
+  shared_group.SetOriginatingSavedTabGroupGuid(group_1_.saved_guid());
+
+  model_->AddedFromSync(shared_group);
+  WaitForPostedTasks();
+
+  // The saved tab group should be present in GetAllGroups() while the shared
+  // one is not accessible.
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Contains(HasGuid(group_1_.saved_guid())));
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Not(Contains(IsSharedGroup())));
+
+  // Add new remote tabs to make the group available for the transition.
+  model_->AddTabToGroupFromSync(
+      shared_group.saved_guid(),
+      test::CreateSavedTabGroupTab("http://foo.com", u"title",
+                                   shared_group.saved_guid()));
+  WaitForPostedTasks();
+
+  // Only shared tab group should be returned now.
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Not(Contains(HasGuid(group_1_.saved_guid()))));
+  EXPECT_THAT(tab_group_sync_service_->GetAllGroups(),
+              Contains(HasGuid(shared_group.saved_guid())));
 }
 
 class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
@@ -1584,6 +1838,10 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSharedTabGroupOnly) {
 
   EXPECT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
   EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));
+
+  // The group is still accessible by ID.
+  EXPECT_NE(tab_group_sync_service_->GetGroup(group_1_.saved_guid()),
+            std::nullopt);
 }
 
 class EmptyTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
@@ -1597,8 +1855,8 @@ TEST_F(EmptyTabGroupSyncServiceTest,
 
   tab_group_sync_service_->SetIsInitializedForTesting(false);
 
-  std::string collaboration_id_1 = "foo";
-  std::string collaboration_id_2 = "bar";
+  CollaborationId collaboration_id_1("foo");
+  CollaborationId collaboration_id_2("bar");
 
   SavedTabGroup saved_tab_group(test::CreateTestSavedTabGroup());
 

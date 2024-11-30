@@ -210,7 +210,7 @@ class MessageStreamLookupImplTest : public testing::Test,
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
 };
 
-TEST_F(MessageStreamLookupImplTest, ConnectDevice_NoMessageStreamUUid) {
+TEST_F(MessageStreamLookupImplTest, ConnectDeviceNoMessageStreamUUid) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -227,7 +227,7 @@ TEST_F(MessageStreamLookupImplTest, ConnectDevice_NoMessageStreamUUid) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 }
 
-TEST_F(MessageStreamLookupImplTest, DeviceAdded_NoMessageStreamUUid) {
+TEST_F(MessageStreamLookupImplTest, DeviceAddedNoMessageStreamUUid) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -244,7 +244,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceAdded_NoMessageStreamUUid) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 }
 
-TEST_F(MessageStreamLookupImplTest, DeviceAdded_NotPaired) {
+TEST_F(MessageStreamLookupImplTest, DeviceAddedNotPaired) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -263,7 +263,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceAdded_NotPaired) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 }
 
-TEST_F(MessageStreamLookupImplTest, DeviceChanged_NoMessageStreamUUid) {
+TEST_F(MessageStreamLookupImplTest, DeviceChangedNoMessageStreamUUid) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -280,7 +280,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceChanged_NoMessageStreamUUid) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 }
 
-TEST_F(MessageStreamLookupImplTest, DeviceChanged_NotPaired) {
+TEST_F(MessageStreamLookupImplTest, DeviceChangedNotPaired) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -299,7 +299,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceChanged_NotPaired) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 }
 
-TEST_F(MessageStreamLookupImplTest, DevicePaired_NoMessageStreamUUid) {
+TEST_F(MessageStreamLookupImplTest, DevicePairedNoMessageStreamUUid) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -316,14 +316,14 @@ TEST_F(MessageStreamLookupImplTest, DevicePaired_NoMessageStreamUUid) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 }
 
-TEST_F(MessageStreamLookupImplTest, DevicePairedChanged_NoDevice) {
+TEST_F(MessageStreamLookupImplTest, DevicePairedChangedNoDevice) {
   EXPECT_EQ(GetMessageStream(), nullptr);
   EmptyDevicePairedChanged(/*new_paired_status=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetMessageStream(), nullptr);
 }
 
-TEST_F(MessageStreamLookupImplTest, ConnectDevice_ConnectToServiceFailure) {
+TEST_F(MessageStreamLookupImplTest, ConnectDeviceConnectToServiceFailure) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -341,7 +341,7 @@ TEST_F(MessageStreamLookupImplTest, ConnectDevice_ConnectToServiceFailure) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 1);
 }
 
-TEST_F(MessageStreamLookupImplTest, DeviceAdded_ConnectToServiceFailure) {
+TEST_F(MessageStreamLookupImplTest, DeviceAddedConnectToServiceFailure) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -379,7 +379,7 @@ TEST_F(MessageStreamLookupImplTest,
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 1);
 }
 
-TEST_F(MessageStreamLookupImplTest, DeviceChanged_ConnectToServiceFailure) {
+TEST_F(MessageStreamLookupImplTest, DeviceChangedConnectToServiceFailure) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -397,7 +397,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceChanged_ConnectToServiceFailure) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 1);
 }
 
-TEST_F(MessageStreamLookupImplTest, ConnectDevice_ConnectToServiceSuccess) {
+TEST_F(MessageStreamLookupImplTest, ConnectDeviceConnectToServiceSuccess) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -432,7 +432,7 @@ TEST_F(MessageStreamLookupImplTest,
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 1);
 }
 
-TEST_F(MessageStreamLookupImplTest, DeviceAdded_ConnectToServiceSuccess) {
+TEST_F(MessageStreamLookupImplTest, DeviceAddedConnectToServiceSuccess) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -449,7 +449,7 @@ TEST_F(MessageStreamLookupImplTest, DeviceAdded_ConnectToServiceSuccess) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 1);
 }
 
-TEST_F(MessageStreamLookupImplTest, DeviceChanged_ConnectToServiceSuccess) {
+TEST_F(MessageStreamLookupImplTest, DeviceChangedConnectToServiceSuccess) {
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
@@ -507,7 +507,7 @@ TEST_F(MessageStreamLookupImplTest,
   EXPECT_NE(message_stream_, nullptr);
 }
 
-TEST_F(MessageStreamLookupImplTest, ConnectDevice_DisconnectDevice) {
+TEST_F(MessageStreamLookupImplTest, ConnectDeviceDisconnectDevice) {
   device_->AddUUID(kMessageStreamUuid);
 
   EXPECT_EQ(GetMessageStream(), nullptr);
@@ -519,7 +519,7 @@ TEST_F(MessageStreamLookupImplTest, ConnectDevice_DisconnectDevice) {
   EXPECT_EQ(GetMessageStream(), nullptr);
 }
 
-TEST_F(MessageStreamLookupImplTest, PairDevice_UnpairDevice) {
+TEST_F(MessageStreamLookupImplTest, PairDeviceUnpairDevice) {
   device_->AddUUID(kMessageStreamUuid);
   device_->SetConnected(true);
   EXPECT_EQ(device_->IsConnected(), true);
@@ -533,7 +533,7 @@ TEST_F(MessageStreamLookupImplTest, PairDevice_UnpairDevice) {
   EXPECT_EQ(GetMessageStream(), nullptr);
 }
 
-TEST_F(MessageStreamLookupImplTest, DevicePairedChanged_NotConnected) {
+TEST_F(MessageStreamLookupImplTest, DevicePairedChangedNotConnected) {
   device_->AddUUID(kMessageStreamUuid);
   device_->SetConnected(false);
   EXPECT_EQ(GetMessageStream(), nullptr);
@@ -543,7 +543,7 @@ TEST_F(MessageStreamLookupImplTest, DevicePairedChanged_NotConnected) {
   EXPECT_EQ(message_stream_, nullptr);
 }
 
-TEST_F(MessageStreamLookupImplTest, AddDevice_RemoveDevice) {
+TEST_F(MessageStreamLookupImplTest, AddDeviceRemoveDevice) {
   device_->AddUUID(kMessageStreamUuid);
 
   EXPECT_EQ(GetMessageStream(), nullptr);
@@ -555,7 +555,7 @@ TEST_F(MessageStreamLookupImplTest, AddDevice_RemoveDevice) {
   EXPECT_EQ(GetMessageStream(), nullptr);
 }
 
-TEST_F(MessageStreamLookupImplTest, RemoveDevice_NoMessageStream) {
+TEST_F(MessageStreamLookupImplTest, RemoveDeviceNoMessageStream) {
   device_->AddUUID(kMessageStreamUuid);
 
   EXPECT_EQ(GetMessageStream(), nullptr);

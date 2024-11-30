@@ -113,10 +113,13 @@ GestureListenerManager::GestureListenerManager(JNIEnv* env,
   RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
   if (host) {
     host->GetRenderWidgetHost()->AddInputEventObserver(this);
+    observed_render_frames_.insert(host->GetGlobalId());
   }
 }
 
 GestureListenerManager::~GestureListenerManager() {
+  UnobserveRenderFrames();
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
   if (j_obj.is_null())
@@ -157,13 +160,19 @@ void GestureListenerManager::SetRootScrollOffsetUpdateFrequency(
     rwhva_->UpdateRootScrollOffsetUpdateFrequency();
 }
 
+void GestureListenerManager::RenderFrameDeleted(
+    RenderFrameHost* render_frame_host) {
+  if (static_cast<RenderFrameHostImpl*>(render_frame_host)->is_local_root() &&
+      observed_render_frames_.erase(render_frame_host->GetGlobalId())) {
+    render_frame_host->GetRenderWidgetHost()->RemoveInputEventObserver(this);
+  }
+}
+
 void GestureListenerManager::RenderFrameHostChanged(RenderFrameHost* old_host,
                                                     RenderFrameHost* new_host) {
-  if (old_host && old_host->GetVisibilityState() ==
-                      blink::mojom::PageVisibilityState::kHidden) {
-    old_host->GetRenderWidgetHost()->RemoveInputEventObserver(this);
-  }
-  if (new_host) {
+  if (new_host &&
+      static_cast<RenderFrameHostImpl*>(new_host)->is_local_root() &&
+      observed_render_frames_.insert(new_host->GetGlobalId()).second) {
     new_host->GetRenderWidgetHost()->AddInputEventObserver(this);
   }
 }
@@ -347,6 +356,20 @@ void GestureListenerManager::ResetPopupsAndInput(bool render_process_gone) {
     return;
   Java_GestureListenerManagerImpl_resetPopupsAndInput(env, obj,
                                                       render_process_gone);
+}
+
+void GestureListenerManager::UnobserveRenderFrames() {
+  for (GlobalRenderFrameHostId& id : observed_render_frames_) {
+    RenderFrameHost* rfh = RenderFrameHost::FromID(id);
+    if (!rfh) {
+      continue;
+    }
+    RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
+    if (rwh) {
+      rwh->RemoveInputEventObserver(this);
+    }
+  }
+  observed_render_frames_.clear();
 }
 
 jlong JNI_GestureListenerManagerImpl_Init(

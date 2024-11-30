@@ -23,6 +23,16 @@
 
 namespace language_detection {
 
+namespace {
+// Pads out `s` with spaces until it is `len` long.
+void pad(std::u16string& s, size_t len) {
+  while (s.length() < len) {
+    s += u" ";
+  }
+}
+
+}  // namespace
+
 base::File CreateInvalidModelFile() {
   base::ScopedTempDir temp_dir;
   EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -196,6 +206,93 @@ TEST_F(LanguageDetectionValidTest, DetectLanguageMetrics) {
       "LanguageDetection.TFLiteModel.ClassifyText.Duration", 1);
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.ClassifyText.Detected", true, 1);
+}
+
+// This directly tests the sampling method for longer strings. We have 1 piece
+// of text that is unambiguously EN and one that is mixes AR and ZH. We combine
+// these so that they become the samples. Since EN is unambiguous, the result
+// should be EN.
+// This test is highly dependent on the sampling implementation.
+// See https://crbug.com/378011996
+TEST_F(LanguageDetectionValidTest, DetectWithSampling) {
+  // If this changes, this test needs to be rewritten.
+  ASSERT_EQ(LanguageDetectionModel::kNumTextSamples, 3);
+  std::string predicted_language;
+  std::u16string en_sample = u"This is a page apparently written in English.";
+  pad(en_sample, LanguageDetectionModel::kTextSampleLength);
+  std::u16string ar_zh_sample =
+      u"متصفح الويب أو مستعرض الويب هو تطبيق برمجي لاسترجاع المعلومات "
+      "产品的简报和公告 提交该申请后无法进行更改 请确认您的选择是正确的 ";
+  pad(ar_zh_sample, LanguageDetectionModel::kTextSampleLength);
+
+  ASSERT_EQ(en_sample.length(), LanguageDetectionModel::kTextSampleLength);
+  ASSERT_EQ(ar_zh_sample.length(), LanguageDetectionModel::kTextSampleLength);
+
+  // Test against strings where the EN string in the `pos`th sample.
+  for (int pos = 0; pos < 3; pos++) {
+    SCOPED_TRACE(pos);
+    std::u16string s1 = pos == 0 ? en_sample : ar_zh_sample;
+    std::u16string s2 = pos == 1 ? en_sample : ar_zh_sample;
+    std::u16string s3 = pos == 2 ? en_sample : ar_zh_sample;
+    // Construct a string that starts with s1, has s2 starting at mid-point
+    // and then ends with s3. The string will of length `6*kTextSampleLength`.
+    std::u16string contents = s1;
+    pad(contents, LanguageDetectionModel::kTextSampleLength * 3);
+    contents += s2;
+    pad(contents, LanguageDetectionModel::kTextSampleLength * 5);
+    contents += s3;
+    ASSERT_EQ(contents.length(), 6 * LanguageDetectionModel::kTextSampleLength);
+    language_detection::Prediction prediction =
+        language_detection_model_->PredictTopLanguageWithSamples(contents);
+    EXPECT_EQ("en", prediction.language);
+  }
+}
+
+TEST_F(LanguageDetectionValidTest, PredictWithScan) {
+  std::string predicted_language;
+  std::u16string en_sample = u"This is a page apparently written in English.";
+  pad(en_sample, LanguageDetectionModel::kScanWindowSize);
+  std::u16string ar_sample =
+      u"متصفح الويب أو مستعرض الويب هو تطبيق برمجي لاسترجاع المعلومات ";
+  pad(ar_sample, LanguageDetectionModel::kScanWindowSize);
+  std::u16string zh_sample =
+      u"产品的简报和公告 提交该申请后无法进行更改 请确认您的选择是正确的 ";
+  pad(zh_sample, LanguageDetectionModel::kScanWindowSize);
+
+  ASSERT_EQ(en_sample.length(), LanguageDetectionModel::kScanWindowSize);
+  ASSERT_EQ(ar_sample.length(), LanguageDetectionModel::kScanWindowSize);
+  ASSERT_EQ(zh_sample.length(), LanguageDetectionModel::kScanWindowSize);
+
+  std::u16string final_sample = en_sample + ar_sample + zh_sample;
+  // Scanning over the concatencated sample shall result in a mean value of the
+  // three detection results.
+  std::vector<Prediction> results_en =
+      language_detection_model_->PredictWithScan(en_sample);
+  ASSERT_EQ(TopPrediction(results_en).language, "en");
+  std::vector<Prediction> results_ar =
+      language_detection_model_->PredictWithScan(ar_sample);
+  ASSERT_EQ(TopPrediction(results_ar).language, "ar");
+  std::vector<Prediction> results_zh =
+      language_detection_model_->PredictWithScan(zh_sample);
+  ASSERT_EQ(TopPrediction(results_zh).language, "zh");
+  std::map<std::string, float> confidence_sum;
+  for (auto&& results : {results_en, results_ar, results_zh}) {
+    for (auto&& prediction : results) {
+      confidence_sum[prediction.language] += prediction.score;
+    }
+  }
+  std::vector<Prediction> results_final =
+      language_detection_model_->PredictWithScan(final_sample);
+
+  // The prediction confidence is the mean value of confidence of the
+  // corresponding language in the three samples.
+  for (auto&& prediction : results_final) {
+    ASSERT_TRUE(confidence_sum.contains(prediction.language));
+    ASSERT_GE(prediction.score * 3,
+              confidence_sum[prediction.language] - 0.0001);
+    ASSERT_LE(prediction.score * 3,
+              confidence_sum[prediction.language] + 0.0001);
+  }
 }
 
 TEST_F(LanguageDetectionValidTest, Truncation) {

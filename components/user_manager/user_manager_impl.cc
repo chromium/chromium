@@ -43,7 +43,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
-#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
@@ -124,10 +123,6 @@ bool IsDeviceLocalAccountChanged(
 // static
 const char UserManagerImpl::kLegacySupervisedUsersHistogramName[] =
     "ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen";
-// static
-BASE_FEATURE(kRemoveLegacySupervisedUsersOnStartup,
-             "RemoveLegacySupervisedUsersOnStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 const char UserManagerImpl::kDeprecatedArcKioskUsersHistogramName[] =
@@ -172,14 +167,12 @@ void UserManagerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
-UserManagerImpl::UserManagerImpl(
-    std::unique_ptr<Delegate> delegate,
-    PrefService* local_state,
-    ash::CrosSettings* cros_settings)
+UserManagerImpl::UserManagerImpl(std::unique_ptr<Delegate> delegate,
+                                 PrefService* local_state,
+                                 ash::CrosSettings* cros_settings)
     : delegate_(std::move(delegate)),
       local_state_(local_state),
-      cros_settings_(cros_settings),
-      multi_user_sign_in_policy_controller_(local_state, this) {
+      cros_settings_(cros_settings) {
   // |local_state| can be nullptr only for testing.
   if (!local_state) {
     CHECK_IS_TEST();
@@ -1490,7 +1483,7 @@ void UserManagerImpl::RegularUserLoggedIn(const AccountId& account_id,
   KnownUser known_user(local_state_.get());
 
   if (active_user_ && active_user_->GetType() != user_type) {
-    active_user_->UpdateType(user_type);
+    active_user_->SetType(user_type);
     // Clear information about profile policy requirements to enforce setting it
     // again for the new account type.
     known_user.ClearProfileRequiresPolicy(account_id);
@@ -1563,17 +1556,14 @@ bool UserManagerImpl::OnUserProfileCreated(const AccountId& account_id,
     return false;
   }
 
+  // Update `user` profile profs before profile created notification so that
+  // observers could get profile prefs via `user`.
   CHECK(!user->GetProfilePrefs());
-  user->SetProfileIsCreated();
   user->SetProfilePrefs(prefs);
 
-  if (IsUserLoggedIn() && !IsLoggedInAsGuest() && !IsLoggedInAsAnyKioskApp()) {
-    multi_user_sign_in_policy_controller_.StartObserving(user);
-  }
+  user->SetProfileIsCreated();
 
-  for (auto& observer : observer_list_) {
-    observer.OnUserProfileCreated(*user);
-  }
+  observer_list_.Notify(&UserManager::Observer::OnUserProfileCreated, *user);
 
   ProcessPendingUserSwitchId();
   return true;
@@ -1588,7 +1578,8 @@ void UserManagerImpl::OnUserProfileWillBeDestroyed(
   auto* user = it == user_storage_.end() ? nullptr : it->get();
   CHECK(user);
 
-  multi_user_sign_in_policy_controller_.StopObserving(user);
+  observer_list_.Notify(&UserManager::Observer::OnUserProfileWillBeDestroyed,
+                        *user);
 
   user->SetProfilePrefs(nullptr);
 }
@@ -1645,9 +1636,6 @@ bool UserManagerImpl::LoadForceOnlineSignin(const AccountId& account_id) const {
 }
 
 void UserManagerImpl::RemoveNonCryptohomeData(const AccountId& account_id) {
-  multi_user_sign_in_policy_controller_.RemoveCachedValues(
-      account_id.GetUserEmail());
-
   ScopedDictPrefUpdate(local_state_.get(), prefs::kUserDisplayName)
       ->Remove(account_id.GetUserEmail());
 
@@ -1727,11 +1715,6 @@ bool UserManagerImpl::HasBrowserRestarted() const {
   return base::SysInfo::IsRunningOnChromeOS() &&
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              ash::switches::kLoginUser);
-}
-
-MultiUserSignInPolicyController*
-UserManagerImpl::GetMultiUserSignInPolicyController() {
-  return &multi_user_sign_in_policy_controller_;
 }
 
 void UserManagerImpl::Initialize() {
@@ -1863,18 +1846,13 @@ void UserManagerImpl::DeleteUser(User* user) {
 // devices in the wild, remove this.
 void UserManagerImpl::RemoveLegacySupervisedUser(const AccountId& account_id) {
   DCHECK(IsDeprecatedSupervisedAccountId(account_id));
-  if (base::FeatureList::IsEnabled(kRemoveLegacySupervisedUsersOnStartup)) {
-    // Since we skip adding legacy supervised users to the users list,
-    // FindUser(account_id) returns nullptr and CanUserBeRemoved() returns
-    // false. This is why we call RemoveUserInternal() directly instead of
-    // RemoveUser().
-    RemoveUserInternal(account_id, UserRemovalReason::UNKNOWN);
-    base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
-                                  LegacySupervisedUserStatus::kLSUDeleted);
-  } else {
-    base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
-                                  LegacySupervisedUserStatus::kLSUHidden);
-  }
+  // Since we skip adding legacy supervised users to the users list,
+  // FindUser(account_id) returns nullptr and CanUserBeRemoved() returns
+  // false. This is why we call RemoveUserInternal() directly instead of
+  // RemoveUser().
+  RemoveUserInternal(account_id, UserRemovalReason::UNKNOWN);
+  base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
+                                LegacySupervisedUserStatus::kLSUDeleted);
 }
 
 bool UserManagerImpl::IsDeprecatedArcKioskAccountId(

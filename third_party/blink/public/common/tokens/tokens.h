@@ -143,10 +143,10 @@ using WebGPUExecutionContextToken = MultiToken<DocumentToken,
                                                SharedWorkerToken,
                                                ServiceWorkerToken>;
 
-// Identifies a ML context in a renderer process and the WebNN service.
+// Identify various WebNN types in a renderer process and the WebNN service.
 using WebNNContextToken = base::TokenType<class WebNNContextTokenTypeMarker>;
-
-// Identifies a ML buffer in a renderer process and the WebNN service.
+using WebNNPendingConstantToken =
+    base::TokenType<class WebNNPendingConstantTokenTypeMarker>;
 using WebNNTensorToken = base::TokenType<class WebNNTensorTokenTypeMarker>;
 
 }  // namespace blink

@@ -100,7 +100,7 @@ absl::uint128 GetCounter(base::span<const uint8_t, 16> counter_block,
   if (counter_length_remainder_bits != 0) {
     ret &= ~(0xFF << counter_length_remainder_bits);
   }
-  for (uint8_t b : suffix.subspan(1)) {
+  for (uint8_t b : suffix.subspan<1>()) {
     ret = (ret << 8) | b;
   }
   return ret;

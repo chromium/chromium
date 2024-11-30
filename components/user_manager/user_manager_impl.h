@@ -37,9 +37,6 @@ class UserManagerTest;
 
 namespace user_manager {
 
-// Feature that removes legacy supervised users.
-BASE_DECLARE_FEATURE(kRemoveLegacySupervisedUsersOnStartup);
-
 // Feature that removes deprecated ARC kiosk users.
 USER_MANAGER_EXPORT
 BASE_DECLARE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup);
@@ -256,8 +253,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void SetUserAffiliated(const AccountId& account_id,
                          bool is_affiliated) override;
   bool HasBrowserRestarted() const final;
-  MultiUserSignInPolicyController* GetMultiUserSignInPolicyController()
-      override;
 
   void Initialize() override;
 
@@ -463,9 +458,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   // Interface to the signed settings store.
   const raw_ptr<ash::CrosSettings> cros_settings_;
-
-  // Handles multi-user sign-in policy.
-  MultiUserSignInPolicyController multi_user_sign_in_policy_controller_;
 
   // Cached flag of whether the currently logged-in user existed before this
   // login.

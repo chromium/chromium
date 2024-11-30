@@ -33,7 +33,10 @@ chromium-metrics-reviews@google.com.
   <variant name="FormsAnnotations" summary="Forms Annotations"/>
   <variant name="FormsPredictions" summary="Forms Predictions"/>
   <variant name="HistorySearch" summary="History Search"/>
+  <variant name="PasswordChangeSubmission"
+      summary="Password Change Submission"/>
   <variant name="PromptApi" summary="Prompt API"/>
+  <variant name="ScamDetection" summary="Scam Detection"/>
   <variant name="Summarize" summary="Summarize"/>
   <variant name="TabOrganization" summary="Tab Organization"/>
   <variant name="Test" summary="Test"/>
@@ -61,6 +64,8 @@ chromium-metrics-reviews@google.com.
       summary="Model Execution Feature: History Search"/>
   <variant name="ModelExecutionFeaturePromptAPI"
       summary="Model Execution Feature: Prompt API"/>
+  <variant name="ModelExecutionFeatureScamDetection"
+      summary="Model ExecutionFeature: Scam Detection"/>
   <variant name="ModelExecutionFeatureSummarize"
       summary="Model Execution Feature: Summarize"/>
   <variant name="ModelValidation" summary="Model validation triggered via CLI"/>
@@ -239,6 +244,9 @@ chromium-metrics-reviews@google.com.
       summary="Provides trust data related to the merchant -- version 2."/>
   <variant name="MetadataFetchValidation"
       summary="Validates metadata fetch on navigation"/>
+  <variant name="OptimizationGuideIconView"
+      summary="Provides information for what to show in the debug
+               optimization guide icon view."/>
   <variant name="PageEntities"
       summary="Provides the entities that are present on the page"/>
   <variant name="PageInsights"
@@ -778,6 +786,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.AtRegistration.DiskSpaceWhenNotEnoughAvailable"
+    units="GB" expires_after="2025-04-13">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>holte@chromium.org</owner>
+  <summary>
+    Records the number of GB of free disk space if it is determined that there
+    is insufficient disk space to install the on-device model at registration.
+    Recorded when the on-device model installer is registered near startup and
+    only if the device failed the disk space check.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.{Event}.{Criteria}"
     enum="Boolean" expires_after="2025-04-13">
   <owner>harringtond@chromium.org</owner>
@@ -1184,7 +1205,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelHandler.HandlerCreated.{OptimizationTarget}"
-    enum="BooleanCreated" expires_after="2025-01-26">
+    enum="BooleanCreated" expires_after="2025-05-18">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1598,7 +1619,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded"
-    enum="BooleanSuccess" expires_after="M135">
+    enum="BooleanSuccess" expires_after="2025-05-18">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1771,7 +1792,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PredictionModelStore.ModelRemovalReason.{OptimizationTarget}"
     enum="OptimizationGuidePredictionModelStoreModelRemovalReason"
-    expires_after="2025-01-26">
+    expires_after="2025-05-18">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

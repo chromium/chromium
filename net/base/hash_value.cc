@@ -68,7 +68,7 @@ bool HashValue::FromString(std::string_view value) {
 }
 
 std::string HashValue::ToString() const {
-  std::string base64_str = base::Base64Encode(base::make_span(data(), size()));
+  std::string base64_str = base::Base64Encode(base::span(data(), size()));
   switch (tag_) {
     case HASH_VALUE_SHA256:
       return std::string(kSha256Slash) + base64_str;

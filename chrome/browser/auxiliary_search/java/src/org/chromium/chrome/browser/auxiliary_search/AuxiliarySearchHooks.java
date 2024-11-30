@@ -32,4 +32,9 @@ public interface AuxiliarySearchHooks {
      */
     default void setSchemaTypeVisibilityForPackage(
             @NonNull SetDocumentClassVisibilityForPackageCallback callback) {}
+
+    /** Returns whether the sharing Tabs with the system is enabled by default on the device. */
+    default boolean isSettingDefaultEnabledByOs() {
+        return false;
+    }
 }

@@ -10,6 +10,8 @@ import android.window.InputTransferToken;
 
 import androidx.annotation.RequiresApi;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
 
@@ -39,5 +41,16 @@ public class InputTransferHandler {
         WindowManager wm =
                 ContextUtils.getApplicationContext().getSystemService(WindowManager.class);
         return wm.transferTouchGesture(mBrowserToken, mVizToken);
+    }
+
+    @CalledByNative
+    private static boolean maybeTransferInputToViz(int surfaceId) {
+        InputTransferHandler handler = SurfaceInputTransferHandlerMap.getMap().get(surfaceId);
+
+        if (handler == null) {
+            return false;
+        }
+
+        return handler.maybeTransferInputToViz();
     }
 }

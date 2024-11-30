@@ -18,7 +18,7 @@ namespace reorder {
 // An interface to provide functions for app list sorting.
 class AppListReorderDelegate {
  public:
-  virtual ~AppListReorderDelegate() {}
+  virtual ~AppListReorderDelegate() = default;
 
   // Sets the preferred sorting order.
   virtual void SetAppListPreferredOrder(ash::AppListSortOrder order) = 0;

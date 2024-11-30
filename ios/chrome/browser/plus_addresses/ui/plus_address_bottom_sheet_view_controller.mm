@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/logging.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/types/expected.h"
@@ -201,12 +202,16 @@ UIImageView* BrandingImageView() {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.OfferedPlusAddressAccepted"));
   [self willConfirmPlusAddress];
 }
 
 - (void)confirmationAlertSecondaryAction {
   // The cancel button was tapped, which dismisses the bottom sheet.
   // Call out to the command handler to hide the view and stop the coordinator.
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.OfferedPlusAddressDeclined"));
   [self dismiss];
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
@@ -222,6 +227,7 @@ UIImageView* BrandingImageView() {
           [_delegate shouldShowNotice]);
     }
   _reservedPlusAddress = plusAddress;
+  _bottomSheetErrorStatus.reset();
   [_reservedPlusAddressTableView reloadData];
 }
 
@@ -230,7 +236,7 @@ UIImageView* BrandingImageView() {
       PlusAddressModalCompletionStatus::kModalConfirmed,
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
-
+  _bottomSheetErrorStatus.reset();
   self.isLoading = NO;
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
@@ -341,7 +347,7 @@ UIImageView* BrandingImageView() {
   _reservedPlusAddress = l10n_util::GetNSString(
       IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS);
   [_reservedPlusAddressTableView reloadData];
-
+  base::RecordAction(base::UserMetricsAction("PlusAddresses.Refreshed"));
   [_delegate didTapRefreshButton];
 }
 
@@ -440,6 +446,19 @@ UIImageView* BrandingImageView() {
           PlusAddressModalCompletionStatus::kModalCanceled),
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, was_notice_shown);
+  if (_bottomSheetErrorStatus) {
+    if (*_bottomSheetErrorStatus ==
+        PlusAddressModalCompletionStatus::kReservePlusAddressError) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
+    }
+    if (*_bottomSheetErrorStatus ==
+        PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.CreateErrorCanceled"));
+    }
+  }
+
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 

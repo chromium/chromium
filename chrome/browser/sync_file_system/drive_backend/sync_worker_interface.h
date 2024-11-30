@@ -49,15 +49,15 @@ class SyncWorkerInterface {
                                     const std::string& description) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
-  SyncWorkerInterface() {}
+  SyncWorkerInterface() = default;
 
   SyncWorkerInterface(const SyncWorkerInterface&) = delete;
   SyncWorkerInterface& operator=(const SyncWorkerInterface&) = delete;
 
-  virtual ~SyncWorkerInterface() {}
+  virtual ~SyncWorkerInterface() = default;
 
   // Initializes SyncWorkerInterface after constructions of some member classes.
   virtual void Initialize(

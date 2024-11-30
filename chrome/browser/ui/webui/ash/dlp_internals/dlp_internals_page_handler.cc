@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals.mojom.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/rule.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -104,6 +104,9 @@ dlp_internals::mojom::DlpEvent::Restriction EventRestrictionToMojo(
       return dlp_internals::mojom::DlpEvent::Restriction::kEprivacy;
     case DlpPolicyEvent_Restriction_FILES:
       return dlp_internals::mojom::DlpEvent::Restriction::kFiles;
+    case DlpPolicyEvent_Restriction_DlpPolicyEvent_Restriction_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case DlpPolicyEvent_Restriction_DlpPolicyEvent_Restriction_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
   }
 }
 
@@ -118,6 +121,9 @@ dlp_internals::mojom::DlpEvent::UserType EventUserTypeToMojo(
       return dlp_internals::mojom::DlpEvent::UserType::kKiosk;
     case DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE:
       return dlp_internals::mojom::DlpEvent::UserType::kUndefinedUserType;
+    case DlpPolicyEvent_UserType_DlpPolicyEvent_UserType_INT_MAX_SENTINEL_DO_NOT_USE_:
+    case DlpPolicyEvent_UserType_DlpPolicyEvent_UserType_INT_MIN_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
   }
 }
 
@@ -134,6 +140,9 @@ dlp_internals::mojom::DlpEvent::Mode EventModeToMojo(
       return dlp_internals::mojom::DlpEvent::Mode::kWarn;
     case DlpPolicyEvent_Mode_WARN_PROCEED:
       return dlp_internals::mojom::DlpEvent::Mode::kWarnProceed;
+    case DlpPolicyEvent_Mode_DlpPolicyEvent_Mode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case DlpPolicyEvent_Mode_DlpPolicyEvent_Mode_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
   }
 }
 
@@ -156,6 +165,9 @@ EventDestinationComponentToMojo(
       return dlp_internals::mojom::EventDestination::Component::kDrive;
     case DlpPolicyEventDestination_Component_ONEDRIVE:
       return dlp_internals::mojom::EventDestination::Component::kOnedrive;
+    case DlpPolicyEventDestination_Component_DlpPolicyEventDestination_Component_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case DlpPolicyEventDestination_Component_DlpPolicyEventDestination_Component_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
   }
 }
 
@@ -163,14 +175,9 @@ dlp_internals::mojom::EventDestinationPtr EventDestinationToMojo(
     DlpPolicyEventDestination destination) {
   auto destination_mojo = dlp_internals::mojom::EventDestination::New();
 
-  if (destination.has_component()) {
-    destination_mojo->component =
-        EventDestinationComponentToMojo(destination.component());
-  }
-
-  if (destination.has_url()) {
-    destination_mojo->url_pattern = destination.url();
-  }
+  destination_mojo->component =
+      EventDestinationComponentToMojo(destination.component());
+  destination_mojo->url_pattern = destination.url();
   return destination_mojo;
 }
 
@@ -298,42 +305,15 @@ void DlpInternalsPageHandler::GetFileInode(const std::string& file_name,
 void DlpInternalsPageHandler::OnReportEvent(DlpPolicyEvent event) {
   dlp_internals::mojom::DlpEventPtr event_mojo =
       dlp_internals::mojom::DlpEvent::New();
-  if (event.has_source() && event.source().has_url()) {
-    event_mojo->source_pattern = event.source().url();
-  }
-
-  if (event.has_destination()) {
-    event_mojo->destination = EventDestinationToMojo(event.destination());
-  }
-
-  if (event.has_restriction()) {
-    event_mojo->restriction = EventRestrictionToMojo(event.restriction());
-  }
-
-  if (event.mode()) {
-    event_mojo->mode = EventModeToMojo(event.mode());
-  }
-
-  if (event.has_timestamp_micro()) {
-    event_mojo->timestamp_micro = event.timestamp_micro();
-  }
-
-  if (event.has_user_type()) {
-    event_mojo->user_type = EventUserTypeToMojo(event.user_type());
-  }
-
-  if (event.has_content_name()) {
-    event_mojo->content_name = event.content_name();
-  }
-
-  if (event.has_triggered_rule_name()) {
-    event_mojo->triggered_rule_name = event.triggered_rule_name();
-  }
-
-  if (event.has_triggered_rule_id()) {
-    event_mojo->triggered_rule_id = event.triggered_rule_id();
-  }
-
+  event_mojo->source_pattern = event.source().url();
+  event_mojo->destination = EventDestinationToMojo(event.destination());
+  event_mojo->restriction = EventRestrictionToMojo(event.restriction());
+  event_mojo->mode = EventModeToMojo(event.mode());
+  event_mojo->timestamp_micro = event.timestamp_micro();
+  event_mojo->user_type = EventUserTypeToMojo(event.user_type());
+  event_mojo->content_name = event.content_name();
+  event_mojo->triggered_rule_name = event.triggered_rule_name();
+  event_mojo->triggered_rule_id = event.triggered_rule_id();
   for (auto& observer : reporting_observers_) {
     observer->OnReportEvent(event_mojo.Clone());
   }

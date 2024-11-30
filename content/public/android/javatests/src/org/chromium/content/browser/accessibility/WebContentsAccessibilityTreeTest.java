@@ -24,6 +24,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -340,6 +341,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaCaption() {
+        performAriaTest("aria-caption.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaCell() {
         performAriaTest("aria-cell.html");
     }
@@ -635,6 +642,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaLink() {
+        performAriaTest("aria-link.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaListboxAriaSelected() {
         performAriaTest("aria-listbox-aria-selected.html");
     }
@@ -665,14 +678,30 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     public void test_ariaLive() {
         performAriaTest("aria-live.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    public void test_ariaLive_exp() {
+        performAriaTest("aria-live.html", "aria-live-exp");
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     public void test_ariaLiveWithContent() {
         performAriaTest("aria-live-with-content.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    public void test_ariaLiveWithContent_exp() {
+        performAriaTest("aria-live-with-content.html", "aria-live-with-content-exp");
     }
 
     @Test
@@ -822,6 +851,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaParagraph() {
+        performAriaTest("aria-paragraph.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaPresentation() {
         performAriaTest("aria-presentation.html");
     }
@@ -956,6 +991,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaSortHtmlTable() {
         performAriaTest("aria-sort-html-table.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSpinbutton() {
+        performAriaTest("aria-spinbutton.html");
     }
 
     @Test
@@ -1100,6 +1141,18 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaTreeitemNestedInLists() {
         performAriaTest("aria-treeitem-nested-in-lists.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaValuemax() {
+        performAriaTest("aria-valuemax.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaValuemin() {
+        performAriaTest("aria-valuemin.html");
     }
 
     @Test

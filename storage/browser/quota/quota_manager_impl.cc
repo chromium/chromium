@@ -1399,10 +1399,14 @@ void QuotaManagerImpl::GetBucketUsageAndReportedQuota(
                          blink::mojom::UsageBreakdownPtr usage_breakdown) {
                         DCHECK(callback);
 
-                        int64_t reported_quota = quota;
-                        if (!is_storage_unlimited && bucket.quota <= 0) {
-                          reported_quota = usage + 10 * kGBytes;
-                        }
+                        // For limited storage cases, return static quota for
+                        // buckets with default quota, otherwise return the
+                        // requested quota regardless of if it was capped at the
+                        // StorageKey quota or not.
+                        int64_t reported_quota = is_storage_unlimited ? quota
+                                                 : bucket.quota > 0
+                                                     ? bucket.quota
+                                                     : usage + 10 * kGBytes;
 
                         std::move(callback).Run(status, usage, reported_quota);
                       },

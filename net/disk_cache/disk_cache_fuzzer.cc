@@ -111,7 +111,7 @@ struct InitGlobals {
     // IOBuffer rules but it shouldn't cause any actual problems.
     buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(
         static_cast<size_t>(kMaxEntrySize));
-    CacheTestFillBuffer(buffer_->data(), kMaxEntrySize, false);
+    CacheTestFillBuffer(buffer_->span(), false);
 
 #define CREATE_IO_CALLBACK(IO_TYPE) \
   io_callbacks_.push_back(base::BindRepeating(&IOCallback, #IO_TYPE));

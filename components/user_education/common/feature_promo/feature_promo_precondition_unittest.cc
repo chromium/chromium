@@ -34,8 +34,8 @@ DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(std::string, kStringData);
 }  // namespace
 
 TEST(FeaturePromoPreconditionTest, SetAndGetCachedData) {
-  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
-                                           kPrecondName, false);
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
+                                           kPrecondFailure);
   precond1.InitCache(kIntegerData);
   precond1.InitCache(kStringData);
   EXPECT_EQ(0, precond1.GetCachedData(kIntegerData));
@@ -47,14 +47,14 @@ TEST(FeaturePromoPreconditionTest, SetAndGetCachedData) {
 }
 
 TEST(FeaturePromoPreconditionTest, GetCachedDataCrashesIfDataNotPresent) {
-  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
-                                           kPrecondName, false);
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
+                                           kPrecondFailure);
   EXPECT_CHECK_DEATH(precond1.GetCachedData(kIntegerData));
 }
 
 TEST(FeaturePromoPreconditionTest, ExtractCachedData) {
-  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
-                                           kPrecondName, false);
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
+                                           kPrecondFailure);
   precond1.InitCache(kIntegerData, kStringData);
   precond1.GetCachedData(kIntegerData) = 2;
   precond1.GetCachedData(kStringData) = "3";
@@ -66,8 +66,8 @@ TEST(FeaturePromoPreconditionTest, ExtractCachedData) {
 }
 
 TEST(FeaturePromoPreconditionTest, GetAfterExtractCachedDataFails) {
-  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
-                                           kPrecondName, false);
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
+                                           kPrecondFailure);
   precond1.InitCache(kIntegerData, kStringData);
   precond1.GetCachedData(kIntegerData) = 2;
   precond1.GetCachedData(kStringData) = "3";
@@ -78,51 +78,50 @@ TEST(FeaturePromoPreconditionTest, GetAfterExtractCachedDataFails) {
 }
 
 TEST(FeaturePromoPreconditionTest, CachingFeaturePromoPrecondition) {
-  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
-                                           kPrecondName, false);
-  EXPECT_EQ(false, precond1.IsAllowed());
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
+                                           kPrecondFailure);
   EXPECT_EQ(kTestId, precond1.GetIdentifier());
-  EXPECT_EQ(kPrecondFailure, precond1.GetFailure());
+  EXPECT_EQ(kPrecondFailure, precond1.CheckPrecondition());
   EXPECT_EQ(kPrecondName, precond1.GetDescription());
 
-  precond1.set_is_allowed_for_testing(true);
-  EXPECT_EQ(true, precond1.IsAllowed());
-  precond1.set_is_allowed_for_testing(false);
-  EXPECT_EQ(false, precond1.IsAllowed());
+  precond1.set_check_result_for_testing(FeaturePromoResult::Success());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond1.CheckPrecondition());
+  precond1.set_check_result_for_testing(kPrecondFailure);
+  EXPECT_EQ(kPrecondFailure, precond1.CheckPrecondition());
 
-  CachingFeaturePromoPrecondition precond2(kTestId, kPrecondFailure,
-                                           kPrecondName, true);
-  EXPECT_EQ(true, precond2.IsAllowed());
+  CachingFeaturePromoPrecondition precond2(kTestId, kPrecondName,
+                                           FeaturePromoResult::Success());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond2.CheckPrecondition());
 }
 
 TEST(FeaturePromoPreconditionTest, CallbackFeaturePromoPrecondition) {
-  UNCALLED_MOCK_CALLBACK(base::RepeatingCallback<bool()>, callback);
-  CallbackFeaturePromoPrecondition precond(kTestId, kPrecondFailure,
-                                           kPrecondName, callback.Get());
+  UNCALLED_MOCK_CALLBACK(base::RepeatingCallback<FeaturePromoResult()>,
+                         callback);
+  CallbackFeaturePromoPrecondition precond(kTestId, kPrecondName,
+                                           callback.Get());
   EXPECT_EQ(kTestId, precond.GetIdentifier());
-  EXPECT_EQ(kPrecondFailure, precond.GetFailure());
   EXPECT_EQ(kPrecondName, precond.GetDescription());
 
-  EXPECT_CALL(callback, Run).WillOnce(testing::Return(true));
-  EXPECT_EQ(true, precond.IsAllowed());
+  EXPECT_CALL(callback, Run)
+      .WillOnce(testing::Return(FeaturePromoResult::Success()));
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 
-  EXPECT_CALL(callback, Run).WillOnce(testing::Return(false));
-  EXPECT_EQ(false, precond.IsAllowed());
+  EXPECT_CALL(callback, Run).WillOnce(testing::Return(kPrecondFailure));
+  EXPECT_EQ(kPrecondFailure, precond.CheckPrecondition());
 }
 
 TEST(FeaturePromoPreconditionTest, ForwardingFeaturePromoPrecondition) {
-  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondFailure,
-                                           kPrecondName, false);
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
+                                           kPrecondFailure);
   ForwardingFeaturePromoPrecondition precond2(precond1);
-  EXPECT_EQ(false, precond2.IsAllowed());
   EXPECT_EQ(kTestId, precond2.GetIdentifier());
-  EXPECT_EQ(kPrecondFailure, precond2.GetFailure());
+  EXPECT_EQ(kPrecondFailure, precond2.CheckPrecondition());
   EXPECT_EQ(kPrecondName, precond2.GetDescription());
 
-  precond1.set_is_allowed_for_testing(true);
-  EXPECT_EQ(true, precond2.IsAllowed());
-  precond1.set_is_allowed_for_testing(false);
-  EXPECT_EQ(false, precond2.IsAllowed());
+  precond1.set_check_result_for_testing(FeaturePromoResult::Success());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond2.CheckPrecondition());
+  precond1.set_check_result_for_testing(kPrecondFailure);
+  EXPECT_EQ(kPrecondFailure, precond2.CheckPrecondition());
 }
 
 namespace {
@@ -130,11 +129,10 @@ namespace {
 std::unique_ptr<FeaturePromoPrecondition> MakeTestPrecondition(
     CachingFeaturePromoPrecondition*& ptr_out,
     FeaturePromoPrecondition::Identifier identifier,
-    FeaturePromoResult::Failure failure,
     std::string description) {
   CHECK_EQ(nullptr, ptr_out);
   auto result = std::make_unique<CachingFeaturePromoPrecondition>(
-      identifier, failure, std::move(description), true);
+      identifier, std::move(description), FeaturePromoResult::Success());
   ptr_out = result.get();
   return result;
 }
@@ -147,41 +145,40 @@ TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList) {
   CachingFeaturePromoPrecondition* precond3 = nullptr;
   using CheckResult = FeaturePromoPreconditionList::CheckResult;
   FeaturePromoPreconditionList list(
-      MakeTestPrecondition(precond1, kTestId, kPrecondFailure, kPrecondName),
-      MakeTestPrecondition(precond2, kTestId2, kPrecondFailure2, kPrecondName2),
-      MakeTestPrecondition(precond3, kTestId3, kPrecondFailure3,
-                           kPrecondName3));
+      MakeTestPrecondition(precond1, kTestId, kPrecondName),
+      MakeTestPrecondition(precond2, kTestId2, kPrecondName2),
+      MakeTestPrecondition(precond3, kTestId3, kPrecondName3));
 
   // true, true, true
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
             list.CheckPreconditions());
 
-  precond3->set_is_allowed_for_testing(false);
+  precond3->set_check_result_for_testing(kPrecondFailure3);
   // true, true, false
-  EXPECT_EQ(CheckResult(precond3->GetFailure(), precond3->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure3, precond3->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond1->set_is_allowed_for_testing(false);
+  precond1->set_check_result_for_testing(kPrecondFailure);
   // false, true, false
-  EXPECT_EQ(CheckResult(precond1->GetFailure(), precond1->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond2->set_is_allowed_for_testing(false);
+  precond2->set_check_result_for_testing(kPrecondFailure2);
   // false, false, false
-  EXPECT_EQ(CheckResult(precond1->GetFailure(), precond1->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond1->set_is_allowed_for_testing(true);
+  precond1->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, false
-  EXPECT_EQ(CheckResult(precond2->GetFailure(), precond2->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond3->set_is_allowed_for_testing(true);
+  precond3->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, true
-  EXPECT_EQ(CheckResult(precond2->GetFailure(), precond2->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond2->set_is_allowed_for_testing(true);
+  precond2->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, true, true
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
             list.CheckPreconditions());
@@ -195,42 +192,40 @@ TEST(FeaturePromoPreconditionTest,
   CachingFeaturePromoPrecondition* precond3 = nullptr;
   using CheckResult = FeaturePromoPreconditionList::CheckResult;
   FeaturePromoPreconditionList list(
-      MakeTestPrecondition(precond1, kTestId, kPrecondFailure, kPrecondName));
-  list.AddPrecondition(MakeTestPrecondition(precond2, kTestId2,
-                                            kPrecondFailure2, kPrecondName2));
-  list.AddPrecondition(MakeTestPrecondition(precond3, kTestId3,
-                                            kPrecondFailure3, kPrecondName3));
+      MakeTestPrecondition(precond1, kTestId, kPrecondName));
+  list.AddPrecondition(MakeTestPrecondition(precond2, kTestId2, kPrecondName2));
+  list.AddPrecondition(MakeTestPrecondition(precond3, kTestId3, kPrecondName3));
 
   // true, true, true
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
             list.CheckPreconditions());
 
-  precond3->set_is_allowed_for_testing(false);
+  precond3->set_check_result_for_testing(kPrecondFailure3);
   // true, true, false
-  EXPECT_EQ(CheckResult(precond3->GetFailure(), precond3->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure3, precond3->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond1->set_is_allowed_for_testing(false);
+  precond1->set_check_result_for_testing(kPrecondFailure);
   // false, true, false
-  EXPECT_EQ(CheckResult(precond1->GetFailure(), precond1->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond2->set_is_allowed_for_testing(false);
+  precond2->set_check_result_for_testing(kPrecondFailure2);
   // false, false, false
-  EXPECT_EQ(CheckResult(precond1->GetFailure(), precond1->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond1->set_is_allowed_for_testing(true);
+  precond1->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, false
-  EXPECT_EQ(CheckResult(precond2->GetFailure(), precond2->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond3->set_is_allowed_for_testing(true);
+  precond3->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, true
-  EXPECT_EQ(CheckResult(precond2->GetFailure(), precond2->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond2->set_is_allowed_for_testing(true);
+  precond2->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, true, true
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
             list.CheckPreconditions());
@@ -243,43 +238,42 @@ TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList_AppendAll) {
   CachingFeaturePromoPrecondition* precond3 = nullptr;
   using CheckResult = FeaturePromoPreconditionList::CheckResult;
   FeaturePromoPreconditionList temp(
-      MakeTestPrecondition(precond2, kTestId2, kPrecondFailure2, kPrecondName2),
-      MakeTestPrecondition(precond3, kTestId3, kPrecondFailure3,
-                           kPrecondName3));
+      MakeTestPrecondition(precond2, kTestId2, kPrecondName2),
+      MakeTestPrecondition(precond3, kTestId3, kPrecondName3));
   FeaturePromoPreconditionList list(
-      MakeTestPrecondition(precond1, kTestId, kPrecondFailure, kPrecondName));
+      MakeTestPrecondition(precond1, kTestId, kPrecondName));
   list.AppendAll(std::move(temp));
 
   // true, true, true
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
             list.CheckPreconditions());
 
-  precond3->set_is_allowed_for_testing(false);
+  precond3->set_check_result_for_testing(kPrecondFailure3);
   // true, true, false
-  EXPECT_EQ(CheckResult(precond3->GetFailure(), precond3->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure3, precond3->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond1->set_is_allowed_for_testing(false);
+  precond1->set_check_result_for_testing(kPrecondFailure);
   // false, true, false
-  EXPECT_EQ(CheckResult(precond1->GetFailure(), precond1->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond2->set_is_allowed_for_testing(false);
+  precond2->set_check_result_for_testing(kPrecondFailure2);
   // false, false, false
-  EXPECT_EQ(CheckResult(precond1->GetFailure(), precond1->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure, precond1->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond1->set_is_allowed_for_testing(true);
+  precond1->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, false
-  EXPECT_EQ(CheckResult(precond2->GetFailure(), precond2->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond3->set_is_allowed_for_testing(true);
+  precond3->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, false, true
-  EXPECT_EQ(CheckResult(precond2->GetFailure(), precond2->GetIdentifier()),
+  EXPECT_EQ(CheckResult(kPrecondFailure2, precond2->GetIdentifier()),
             list.CheckPreconditions());
 
-  precond2->set_is_allowed_for_testing(true);
+  precond2->set_check_result_for_testing(FeaturePromoResult::Success());
   // true, true, true
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
             list.CheckPreconditions());
@@ -288,9 +282,9 @@ TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList_AppendAll) {
 TEST(FeaturePromoPreconditionTest,
      FeaturePromoPreconditionList_ExtractCachedData) {
   auto precond1 = std::make_unique<CachingFeaturePromoPrecondition>(
-      kTestId, kPrecondFailure, kPrecondName, true);
+      kTestId, kPrecondName, FeaturePromoResult::Success());
   auto precond2 = std::make_unique<CachingFeaturePromoPrecondition>(
-      kTestId2, kPrecondFailure2, kPrecondName2, true);
+      kTestId2, kPrecondName2, FeaturePromoResult::Success());
   precond1->InitCache(kIntegerData);
   precond2->InitCache(kStringData);
   precond1->GetCachedData(kIntegerData) = 2;

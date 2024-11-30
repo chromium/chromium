@@ -26,7 +26,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -81,7 +80,6 @@ public class PrivacyGuideFragment extends Fragment
 
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
-    private CustomTabIntentHelper mCustomTabHelper;
     private PrivacyGuidePagerAdapter mPagerAdapter;
     private View mView;
     private ViewPager2 mViewPager;
@@ -253,10 +251,6 @@ public class PrivacyGuideFragment extends Fragment
             ((SafeBrowsingFragment) childFragment)
                     .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
         }
-        if (childFragment instanceof DoneFragment) {
-            DoneFragment doneFragment = (DoneFragment) childFragment;
-            doneFragment.setCustomTabIntentHelper(mCustomTabHelper);
-        }
     }
 
     @Override
@@ -299,10 +293,6 @@ public class PrivacyGuideFragment extends Fragment
     public void setBottomSheetControllerSupplier(
             OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier) {
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
-    }
-
-    public void setCustomTabIntentHelper(CustomTabIntentHelper tabHelper) {
-        mCustomTabHelper = tabHelper;
     }
 
     void setPrivacyGuideMetricsDelegateForTesting(

@@ -1529,7 +1529,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Assistent är inte tillgänglig i en gästsession.</translation>
 <translation id="6127395413317891856">Du är offline. Kontrollera anslutningen och försök igen.</translation>
-<translation id="6129953537138746214">Blanksteg</translation>
+<translation id="6129953537138746214">Rymden</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Vad vill du fokusera på?</translation>
 <translation id="6141988275892716286">Bekräfta nedladdning</translation>
@@ -2124,6 +2124,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8142699993796781067">Privat nätverk</translation>
 <translation id="8144760705599030999">Spara <ph name="NAME" /> i <ph name="EMAIL" /> för snabbare parkoppling med dina andra enheter</translation>
 <translation id="8144914663975476336">Välj inspelningsformat</translation>
+<translation id="8145272500474066209">Generativ AI kan göra misstag, inklusive om personer, så dubbelkolla svaren. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Visa Bluetooth-inställningar. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Stäng genom att trycka på Ctrl. + W</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autoslutför</translation>

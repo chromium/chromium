@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <concepts>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
@@ -26,16 +26,14 @@ class ErrorBuilder {
   ErrorBuilder(const ErrorBuilder&) = delete;
   ErrorBuilder& operator=(const ErrorBuilder&) = delete;
 
-  // Appends a literal string |error|.
-  void Append(std::string_view error) {
+  // Appends a single error consisting of one or more strings.
+  template <typename... Ts>
+    requires(sizeof...(Ts) > 0) &&
+            (... && std::convertible_to<Ts, std::string_view>)
+  void Append(Ts... errors) {
     if (!error_->empty())
       error_->append(u"; ");
-    error_->append(base::UTF8ToUTF16(error));
-  }
-
-  // Appends a string |error| with the first %s replaced by |sub|.
-  void Append(std::string_view error, std::string_view sub) {
-    Append(base::StringPrintfNonConstexpr(error.data(), sub.data()));
+    (..., error_->append(base::UTF8ToUTF16(errors)));
   }
 
  private:
@@ -53,7 +51,7 @@ bool ConvertManifestRule(DeclarativeManifestData::Rule& rule,
     for (base::Value& value : list) {
       base::Value::Dict* dictionary = value.GetIfDict();
       if (!dictionary) {
-        error_builder->Append("expected dictionary, got %s",
+        error_builder->Append("expected dictionary, got ",
                               base::Value::GetTypeName(value.type()));
         return false;
       }
@@ -130,14 +128,14 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
   std::unique_ptr<DeclarativeManifestData> result(
       new DeclarativeManifestData());
   if (!value.is_list()) {
-    error_builder.Append("'event_rules' expected list, got %s",
+    error_builder.Append("'event_rules' expected list, got ",
                          base::Value::GetTypeName(value.type()));
     return nullptr;
   }
 
   for (const auto& element : value.GetList()) {
     if (!element.is_dict()) {
-      error_builder.Append("expected dictionary, got %s",
+      error_builder.Append("expected dictionary, got ",
                            base::Value::GetTypeName(element.type()));
       return nullptr;
     }

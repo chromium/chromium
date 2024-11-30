@@ -24,7 +24,6 @@
 #include "ash/capture_mode/fake_folder_selection_dialog_factory.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
-#include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -56,7 +55,6 @@
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "chromeos/ui/frame/frame_header.h"
@@ -1792,10 +1790,7 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
   // capture button.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
-  // The index of the focused item depends on whether the recording type drop
-  // down button exists or not.
-  const size_t expected_index = features::IsGifRecordingEnabled() ? 1u : 0u;
-  EXPECT_EQ(expected_index, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
 
   // Shift tab again until the focus is moved from the capture button back to
   // the resize button inside the camera preview.

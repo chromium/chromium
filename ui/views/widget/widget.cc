@@ -809,6 +809,19 @@ void Widget::SetShape(std::unique_ptr<ShapeRects> shape) {
 }
 
 void Widget::CloseWithReason(ClosedReason closed_reason) {
+  // This logic intentionally exists before the 5 early returns below. If a
+  // client does not want a Widget to Close(), the client should not call
+  // Close(). Each of the cases below is to handle client-specific cases that
+  // added logic into this class, rather than modifying the client to not call
+  // Close().
+  if (override_close_) {
+    base::WeakPtr<Widget> weak_this = weak_ptr_factory_.GetWeakPtr();
+    std::move(override_close_).Run(closed_reason);
+    // Ensure that `this` was destroyed.
+    CHECK(!weak_this);
+    return;
+  }
+
   if (widget_closed_) {
     // It appears we can hit this code path if you close a modal dialog then
     // close the last browser before the destructor is hit, which triggers
@@ -854,6 +867,11 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
 
   if (native_widget_)
     native_widget_->Close();
+}
+
+void Widget::MakeCloseSynchronous(
+    base::OnceCallback<void(ClosedReason)> override_close) {
+  override_close_ = std::move(override_close);
 }
 
 void Widget::Close() {

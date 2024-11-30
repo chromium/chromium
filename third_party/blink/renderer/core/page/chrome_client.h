@@ -538,6 +538,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void DidUpdateBrowserControls() const {}
 
+  virtual void DidUpdateMaxSafeAreaInsets(
+      const gfx::Insets& max_safe_area_insets) const {}
+
   virtual void RegisterPopupOpeningObserver(PopupOpeningObserver*) = 0;
   virtual void UnregisterPopupOpeningObserver(PopupOpeningObserver*) = 0;
   virtual void NotifyPopupOpeningObservers() const = 0;

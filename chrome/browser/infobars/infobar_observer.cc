@@ -11,7 +11,7 @@ InfoBarObserver::InfoBarObserver(infobars::InfoBarManager* manager, Type type)
     infobar_observation_.Observe(manager);
 }
 
-InfoBarObserver::~InfoBarObserver() {}
+InfoBarObserver::~InfoBarObserver() = default;
 
 void InfoBarObserver::Wait() {
   // When there is no manager being observed, there is nothing to wait on, so

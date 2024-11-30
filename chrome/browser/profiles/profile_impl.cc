@@ -242,14 +242,17 @@
 #include "chrome/browser/background/background_mode_manager.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_pref_store.h"
+#include "extensions/browser/extension_pref_value_map.h"
+#include "extensions/browser/extension_pref_value_map_factory.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "components/guest_view/browser/guest_view_manager.h"
-#include "extensions/browser/extension_pref_store.h"
-#include "extensions/browser/extension_pref_value_map.h"
-#include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #endif
@@ -924,7 +927,7 @@ ProfileImpl::~ProfileImpl() {
 
   // Destroy all OTR profiles and their profile services first.
   std::vector<Profile*> raw_otr_profiles;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   bool primary_otr_available = false;
 #endif
 
@@ -932,7 +935,7 @@ ProfileImpl::~ProfileImpl() {
   // be modified after the call to |DestroyProfileNow|.
   for (auto& otr_profile : otr_profiles_) {
     raw_otr_profiles.push_back(otr_profile.second.get());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     primary_otr_available |= (otr_profile.first == OTRProfileID::PrimaryID());
 #endif
   }
@@ -940,7 +943,7 @@ ProfileImpl::~ProfileImpl() {
   for (Profile* otr_profile : raw_otr_profiles)
     ProfileDestroyer::DestroyOTRProfileImmediately(otr_profile);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!primary_otr_available &&
       !extensions::ChromeContentBrowserClientExtensionsPart::
           AreExtensionsDisabledForProfile(this)) {
@@ -1055,7 +1058,7 @@ void ProfileImpl::DestroyOffTheRecordProfile(Profile* otr_profile) {
   OTRProfileID profile_id = otr_profile->GetOTRProfileID();
   DCHECK(HasOffTheRecordProfile(profile_id));
   otr_profiles_.erase(profile_id);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extensions are only supported on primary OTR profile.
   if (profile_id == OTRProfileID::PrimaryID() &&
       !extensions::ChromeContentBrowserClientExtensionsPart::

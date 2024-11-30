@@ -18,6 +18,12 @@ enum FileSystemChangeType {
     SecureContext,
     RuntimeEnabled=FileSystemObserver
 ] interface FileSystemChangeRecord {
+  constructor(FileSystemHandle root,
+              FileSystemHandle changedHandle,
+              FrozenArray<USVString> relativePathComponents,
+              FileSystemChangeType type,
+              optional FrozenArray<USVString> relativePathMovedFrom);
+
   // The handle that was passed to FileSystemObserver.observe().
   readonly attribute FileSystemHandle root;
 

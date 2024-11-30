@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
@@ -17,8 +18,11 @@ enable_vulkan_backend_tests =
     enable_vulkan &&
     ((is_linux && !is_castos && !is_cfi) || (is_fuchsia && target_cpu == "x64"))
 
+# TODO(crbug.com/381109466): SkiaGraphite is failing Linux+MSAN due to
+# uninitialized memory. Enable on msan once fixed.
 enable_skia_graphite_tests =
-    (skia_use_dawn || skia_use_metal) && enable_skia_graphite_gtests
+    (skia_use_dawn || skia_use_metal) &&
+    (is_mac || is_win || (is_linux && !is_msan) || (is_ios && use_blink))
 
 # TODO(crbug.com/1336055): Determine whether is_cast_android needs this.
 enable_cast_overlay_strategy = is_castos || is_cast_android

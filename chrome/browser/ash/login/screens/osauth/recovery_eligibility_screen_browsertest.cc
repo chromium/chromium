@@ -46,7 +46,7 @@ namespace ash {
 
 class RecoveryEligibilityScreenTest : public OobeBaseTest {
  public:
-  RecoveryEligibilityScreenTest() {}
+  RecoveryEligibilityScreenTest() = default;
 
   ~RecoveryEligibilityScreenTest() override = default;
 
@@ -120,7 +120,7 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
 class RecoveryEligibilityScreenConsumerTest
     : public RecoveryEligibilityScreenTest {
  public:
-  RecoveryEligibilityScreenConsumerTest() {}
+  RecoveryEligibilityScreenConsumerTest() = default;
   ~RecoveryEligibilityScreenConsumerTest() override = default;
 
   void LoginAsUserImpl(bool is_child) override {
@@ -143,7 +143,7 @@ class RecoveryEligibilityScreenConsumerTest
 class RecoveryEligibilityScreenEnterpriseTest
     : public RecoveryEligibilityScreenTest {
  public:
-  RecoveryEligibilityScreenEnterpriseTest() {}
+  RecoveryEligibilityScreenEnterpriseTest() = default;
   ~RecoveryEligibilityScreenEnterpriseTest() override = default;
 
   void LoginAsUserImpl(bool is_child) override {

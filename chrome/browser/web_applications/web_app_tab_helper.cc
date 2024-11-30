@@ -112,7 +112,10 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
 
   // If the app_id is changing, then it should exist in the database.
   DCHECK(app_id_ == app_id || !app_id ||
-         provider_->registrar_unsafe().IsInstalled(*app_id) ||
+         provider_->registrar_unsafe().IsInstallState(
+             *app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
   if (app_id_ == app_id && window_app_id_ == window_app_id) {
     return;
@@ -141,7 +144,13 @@ void WebAppTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {
     const GURL& url = navigation_handle->GetURL();
-    SetAppId(FindAppWithUrlInScope(url));
+    // TODO(crbug.com/379827962): Evaluate call sites of
+    // FindBestAppWithUrlInScope for correctness.
+    SetAppId(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+        url, {
+                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+             }));
   }
 
   // If navigating to a Web App (including navigation in sub frames), let
@@ -195,15 +204,29 @@ WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
       provider_(WebAppProvider::GetForLocalAppsUnchecked(
           tab->GetBrowserWindowInterface()->GetProfile())) {
   observation_.Observe(&provider_->install_manager());
-  SetState(FindAppWithUrlInScope(contents->GetLastCommittedURL()),
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  SetState(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+               contents->GetLastCommittedURL(),
+               {
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               }),
            /*window_app_id=*/std::nullopt);
 }
 
 void WebAppTabHelper::OnWebAppInstalled(
     const webapps::AppId& installed_app_id) {
   // Check if current web_contents url is in scope for the newly installed app.
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<webapps::AppId> app_id =
-      FindAppWithUrlInScope(web_contents()->GetLastCommittedURL());
+      provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+          web_contents()->GetLastCommittedURL(),
+          {
+              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          });
   if (app_id == installed_app_id) {
     SetAppId(app_id);
   }
@@ -277,11 +300,6 @@ void WebAppTabHelper::UpdateAudioFocusGroupId() {
 void WebAppTabHelper::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
   provider_->policy_manager().ReinstallPlaceholderAppIfNecessary(
       url, base::DoNothing());
-}
-
-std::optional<webapps::AppId> WebAppTabHelper::FindAppWithUrlInScope(
-    const GURL& url) const {
-  return provider_->registrar_unsafe().FindAppWithUrlInScope(url);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);

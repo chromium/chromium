@@ -147,7 +147,7 @@ void HoldingSpaceItemViewsSection::Init() {
 
   SetVisible(false);
 
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kHoldingSpaceSectionChildSpacing));
 
@@ -170,7 +170,6 @@ void HoldingSpaceItemViewsSection::Init() {
     scroll->ClipHeightTo(0, INT_MAX);
     scroll->SetDrawOverflowIndicator(false);
     scroll->SetVerticalScrollBarMode(ScrollBarMode::kHiddenButEnabled);
-    layout->SetFlexForView(scroll, 1);
     container_ = scroll->SetContents(CreateContainer());
     scroll_view_ = scroll;
   }

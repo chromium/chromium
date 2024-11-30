@@ -68,6 +68,8 @@ class RealboxHandler : public SearchboxHandler {
   // AutocompleteController::Observer:
   void OnAutocompleteStopTimerTriggered(
       const AutocompleteInput& input) override;
+  void OnResultChanged(AutocompleteController* controller,
+                       bool default_match_changed) override;
 
   // searchbox::mojom::PageHandler:
   void SetPage(

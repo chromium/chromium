@@ -149,18 +149,6 @@ bool IsRunOnOsLoginModeEnabledForAutostart(RunOnOsLoginMode login_mode);
 bool IsWebAppsCrosapiEnabled();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Allow user web apps on profiles other than the main profile.
-void SetSkipMainProfileCheckForTesting(bool skip_check);
-
-bool IsMainProfileCheckSkippedForTesting();
-
-// The storage partitions' domain name for the experimental web app isolation.
-// TODO(crbug.com/40260833): use a better domain name, or maybe use a unique
-// domain for each app.
-constexpr char kExperimentalWebAppStorageParitionDomain[] = "goldfish";
-#endif
-
 constexpr char kAppSettingsPageEntryPointsHistogramName[] =
     "WebApp.AppSettingsPage.EntryPoints";
 

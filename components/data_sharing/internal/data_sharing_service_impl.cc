@@ -192,6 +192,10 @@ void DataSharingServiceImpl::ReadAllGroups(
   for (const GroupId& group_id :
        collaboration_group_sync_bridge_->GetCollaborationGroupIds()) {
     params.add_group_ids(group_id.value());
+    data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
+        params.add_group_params();
+    group_params->set_group_id(group_id.value());
+    group_params->set_consistency_token("");
   }
 
   if (params.group_ids().empty()) {
@@ -222,10 +226,22 @@ void DataSharingServiceImpl::ReadGroup(
 
   data_sharing_pb::ReadGroupsParams params;
   params.add_group_ids(group_id.value());
+  data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
+      params.add_group_params();
+  group_params->set_group_id(group_id.value());
+  group_params->set_consistency_token("");
+
   sdk_delegate_->ReadGroups(
       params,
       base::BindOnce(&DataSharingServiceImpl::OnReadSingleGroupCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DataSharingServiceImpl::ReadNewGroup(
+    const GroupToken& token,
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
+  // TODO(crbug.com/377780190): Implement this.
+  return std::move(callback).Run(GroupData());
 }
 
 void DataSharingServiceImpl::CreateGroup(

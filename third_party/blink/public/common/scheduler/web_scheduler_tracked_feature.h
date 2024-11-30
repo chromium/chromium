@@ -163,10 +163,14 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   kUnloadHandler = 67,
   kParserAborted = 68,
 
+  // Aggressive throttling is disabled when the page has an active Bluetooth
+  // connection.
+  kWebBluetooth = 69,
+
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
-  kMaxValue = kParserAborted,
+  kMaxValue = kWebBluetooth,
 };
 
 using WebSchedulerTrackedFeatures =

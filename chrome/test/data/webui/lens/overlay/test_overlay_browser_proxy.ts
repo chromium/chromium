@@ -32,6 +32,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'infoRequestedByOverlay',
       'issueLensRegionRequest',
       'issueLensObjectRequest',
+      'issueMathSelectionRequest',
       'issueTextSelectionRequest',
       'issueTranslateSelectionRequest',
       'issueTranslateFullPageRequest',
@@ -95,6 +96,10 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   issueTranslateSelectionRequest(query: string) {
     this.methodCalled('issueTranslateSelectionRequest', query);
+  }
+
+  issueMathSelectionRequest(query: string, formula: string) {
+    this.methodCalled('issueMathSelectionRequest', query, formula);
   }
 
   issueTranslateFullPageRequest(

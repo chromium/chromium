@@ -46,7 +46,7 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
             std::make_unique<payments::TestPaymentsNetworkInterface>(
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(),
-                &personal_data_manager_));
+                &autofill_client_.GetPersonalDataManager()));
     authenticator_ =
         std::make_unique<CreditCardRiskBasedAuthenticator>(&autofill_client_);
     card_ = test::GetMaskedServerCard();
@@ -71,7 +71,7 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
   }
 
   TestPersonalDataManager& personal_data() {
-    return *autofill_client_.GetPersonalDataManager();
+    return autofill_client_.GetPersonalDataManager();
   }
 
   TestAutofillClient* autofill_client() { return &autofill_client_; }
@@ -80,7 +80,6 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestAuthenticationRequester> requester_;
   syncer::TestSyncService sync_service_;
-  TestPersonalDataManager personal_data_manager_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> authenticator_;
   CreditCard card_;

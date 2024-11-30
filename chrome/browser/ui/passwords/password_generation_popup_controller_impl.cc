@@ -45,6 +45,7 @@
 #include "ui/gfx/text_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/accessibility/accessibility_state_utils.h"  // nogncheck
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/consent_level.h"
@@ -303,6 +304,10 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
 #if !BUILDFLAG(IS_ANDROID)
   if (ShouldShowNudgePassword()) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
+    // For the screen reader users, move the focus to the accept button on show.
+    if (accessibility_state_utils::IsScreenReaderEnabled()) {
+      SelectElement(PasswordGenerationPopupElement::kNudgePasswordAcceptButton);
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

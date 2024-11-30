@@ -245,6 +245,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   };
   void SkipTransition(PromiseResponse response = PromiseResponse::kRejectAbort);
 
+  // This can be called inside of the lifecycle. It will skip the transition
+  // whenever view transition steps are run within the lifecycle.
+  void SkipTransitionSoon();
+
   // Dispatched when the promise returned from the author's update callback has
   // resolved and start phase of the animation can be initiated. Note: this is
   // called only if a callback is provided.
@@ -390,6 +394,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool dom_callback_succeeded_ = false;
   bool first_animating_frame_ = true;
   bool context_destroyed_ = false;
+  bool pending_skip_view_transitions_ = false;
 };
 
 }  // namespace blink

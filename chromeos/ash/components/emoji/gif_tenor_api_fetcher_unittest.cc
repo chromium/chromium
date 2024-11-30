@@ -8,15 +8,22 @@
 #include <string>
 #include <vector>
 
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
-#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -24,6 +31,12 @@
 namespace ash {
 
 namespace {
+
+using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
+using ::testing::ElementsAre;
+using ::testing::FieldsAre;
+using ::testing::Pointee;
 
 constexpr char kFakeCategoriesResponse[] = R"json(
   {
@@ -112,43 +125,26 @@ constexpr char kFakeGifsResponse[] = R"json(
   }
 )json";
 
-std::vector<tenor::mojom::GifResponsePtr> GetFakeGifs() {
-  std::vector<tenor::mojom::GifResponsePtr> gifs;
-  gifs.push_back(tenor::mojom::GifResponse::New(
-      "0", "GIF0",
-      tenor::mojom::GifUrls::New(
-          GURL("https://tenor.com/view/media.tenor.com/full_url0"),
-          GURL("https://tenor.com/view/media.tenor.com/preview_url0"),
-          GURL("https://tenor.com/view/media.tenor.com/preview_image_url0")),
-      gfx::Size(220, 150), gfx::Size(498, 339)));
-  gifs.push_back(tenor::mojom::GifResponse::New(
-      "1", "GIF1",
-      tenor::mojom::GifUrls::New(
-          GURL("https://tenor.com/view/media.tenor.com/full_url1"),
-          GURL("https://tenor.com/view/media.tenor.com/preview_url1"),
-          GURL("https://tenor.com/view/media.tenor.com/preview_image_url1")),
-      gfx::Size(220, 220), gfx::Size(498, 498)));
-  return gifs;
+auto IsFakeGifs() {
+  return ElementsAre(
+      Pointee(FieldsAre(
+          "0", "GIF0",
+          Pointee(FieldsAre(
+              GURL("https://tenor.com/view/media.tenor.com/full_url0"),
+              GURL("https://tenor.com/view/media.tenor.com/preview_url0"),
+              GURL("https://tenor.com/view/media.tenor.com/"
+                   "preview_image_url0"))),
+          gfx::Size(220, 150), gfx::Size(498, 339))),
+      Pointee(FieldsAre(
+          "1", "GIF1",
+          Pointee(FieldsAre(
+              GURL("https://tenor.com/view/media.tenor.com/full_url1"),
+              GURL("https://tenor.com/view/media.tenor.com/preview_url1"),
+              GURL("https://tenor.com/view/media.tenor.com/"
+                   "preview_image_url1"))),
+          gfx::Size(220, 220), gfx::Size(498, 498))));
 }
 }  // namespace
-
-class FakeEndpointFetcher : public EndpointFetcher {
- public:
-  explicit FakeEndpointFetcher(EndpointResponse response)
-      : EndpointFetcher(net::DefineNetworkTrafficAnnotation(
-            "chromeos_emoji_picker_mock_fetcher",
-            R"()")),
-        response_(response) {}
-
-  void PerformRequest(EndpointFetcherCallback endpoint_fetcher_callback,
-                      const char* key) override {
-    std::move(endpoint_fetcher_callback)
-        .Run(std::make_unique<EndpointResponse>(response_));
-  }
-
- private:
-  EndpointResponse response_;
-};
 
 class GifTenorApiFetcherTest : public testing::Test {
  public:
@@ -156,159 +152,104 @@ class GifTenorApiFetcherTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& url,
-      const net::NetworkTrafficAnnotationTag& annotation_tag) {
-    return std::make_unique<FakeEndpointFetcher>(response_);
+  void SimulateResponse(net::Error net_error,
+                        net::HttpStatusCode http_status_code,
+                        std::string_view contents) {
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(), network::URLLoaderCompletionStatus(net_error),
+        network::CreateURLResponseHead(http_status_code), contents,
+        static_cast<network::TestURLLoaderFactory::ResponseMatchFlags>(
+            network::TestURLLoaderFactory::kUrlMatchPrefix |
+            network::TestURLLoaderFactory::kWaitForRequest));
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  EndpointResponse response_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  GifTenorApiFetcher gif_tenor_api_fetcher_ = GifTenorApiFetcher(
-      base::BindRepeating(&GifTenorApiFetcherTest::CreateEndpointFetcher,
-                          base::Unretained(this)));
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 TEST_F(GifTenorApiFetcherTest, FetchCategories) {
-  task_environment_.RunUntilIdle();
-  base::test::TestFuture<tenor::mojom::Status, const std::vector<std::string>&>
-      create_future_http_error;
-  gif_tenor_api_fetcher_.FetchCategories(
-      url_loader_factory_, create_future_http_error.GetCallback());
-  ASSERT_EQ(create_future_http_error.Get<0>(),
-            tenor::mojom::Status::kHttpError);
-  ASSERT_EQ(create_future_http_error.Get<1>(), std::vector<std::string>{});
+  base::test::TestFuture<
+      base::expected<std::vector<std::string>, GifTenorApiFetcher::Error>>
+      future;
+  GifTenorApiFetcher::FetchCategories(
+      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_NOT_FOUND, "");
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
-  response_.error_type = std::make_optional(FetchErrorType::kNetError);
-  base::test::TestFuture<tenor::mojom::Status, const std::vector<std::string>&>
-      create_future_net_error;
-  gif_tenor_api_fetcher_.FetchCategories(url_loader_factory_,
-                                         create_future_net_error.GetCallback());
-  ASSERT_EQ(create_future_net_error.Get<0>(), tenor::mojom::Status::kNetError);
-  ASSERT_EQ(create_future_net_error.Get<1>(), std::vector<std::string>{});
+  GifTenorApiFetcher::FetchCategories(
+      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+  SimulateResponse(net::ERR_FAILED, net::HTTP_NOT_FOUND, "");
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
-  base::test::TestFuture<tenor::mojom::Status, const std::vector<std::string>&>
-      create_future_http_ok;
-  response_.response = kFakeCategoriesResponse;
-  response_.http_status_code = net::HTTP_OK;
-  gif_tenor_api_fetcher_.FetchCategories(url_loader_factory_,
-                                         create_future_http_ok.GetCallback());
-  std::vector<std::string> expected{"#awesome", "#jk"};
-  ASSERT_EQ(create_future_http_ok.Get<0>(), tenor::mojom::Status::kHttpOk);
-  ASSERT_EQ(create_future_http_ok.Get<1>(), expected);
+  GifTenorApiFetcher::FetchCategories(
+      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_OK, kFakeCategoriesResponse);
+  EXPECT_THAT(future.Take(), ValueIs(ElementsAre("#awesome", "#jk")));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchFeaturedGifs) {
-  task_environment_.RunUntilIdle();
-  base::test::TestFuture<tenor::mojom::Status,
-                         tenor::mojom::PaginatedGifResponsesPtr>
-      create_future_http_error;
-  gif_tenor_api_fetcher_.FetchFeaturedGifs(
-      url_loader_factory_, "", create_future_http_error.GetCallback());
-  ASSERT_EQ(create_future_http_error.Get<0>(),
-            tenor::mojom::Status::kHttpError);
-  ASSERT_EQ(create_future_http_error.Get<1>(),
-            tenor::mojom::PaginatedGifResponses::New(
-                "", std::vector<tenor::mojom::GifResponsePtr>{}));
+  base::test::TestFuture<base::expected<tenor::mojom::PaginatedGifResponsesPtr,
+                                        GifTenorApiFetcher::Error>>
+      future;
+  GifTenorApiFetcher::FetchFeaturedGifs(
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_NOT_FOUND, "");
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
-  response_.error_type = std::make_optional(FetchErrorType::kNetError);
-  base::test::TestFuture<tenor::mojom::Status,
-                         tenor::mojom::PaginatedGifResponsesPtr>
-      create_future_net_error;
-  gif_tenor_api_fetcher_.FetchFeaturedGifs(
-      url_loader_factory_, "", create_future_net_error.GetCallback());
-  ASSERT_EQ(create_future_net_error.Get<0>(), tenor::mojom::Status::kNetError);
-  ASSERT_EQ(create_future_net_error.Get<1>(),
-            tenor::mojom::PaginatedGifResponses::New(
-                "", std::vector<tenor::mojom::GifResponsePtr>{}));
+  GifTenorApiFetcher::FetchFeaturedGifs(
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::ERR_FAILED, net::HTTP_NOT_FOUND, "");
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
-  response_.response = kFakeGifsResponse;
-  response_.http_status_code = net::HTTP_OK;
-  base::test::TestFuture<tenor::mojom::Status,
-                         tenor::mojom::PaginatedGifResponsesPtr>
-      create_future_http_ok;
-  gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
-                                           create_future_http_ok.GetCallback());
-  ASSERT_EQ(create_future_http_ok.Get<0>(), tenor::mojom::Status::kHttpOk);
-  ASSERT_EQ(create_future_http_ok.Get<1>(),
-            tenor::mojom::PaginatedGifResponses::New("1", GetFakeGifs()));
+  GifTenorApiFetcher::FetchFeaturedGifs(
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_OK, kFakeGifsResponse);
+  EXPECT_THAT(future.Take(), ValueIs(Pointee(FieldsAre("1", IsFakeGifs()))));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifSearch) {
-  task_environment_.RunUntilIdle();
-  base::test::TestFuture<tenor::mojom::Status,
-                         tenor::mojom::PaginatedGifResponsesPtr>
-      create_future_http_error;
-  gif_tenor_api_fetcher_.FetchGifSearch(url_loader_factory_, "", "",
-                                        std::nullopt,
-                                        create_future_http_error.GetCallback());
-  ASSERT_EQ(create_future_http_error.Get<0>(),
-            tenor::mojom::Status::kHttpError);
-  ASSERT_EQ(create_future_http_error.Get<1>(),
-            tenor::mojom::PaginatedGifResponses::New(
-                "", std::vector<tenor::mojom::GifResponsePtr>{}));
+  base::test::TestFuture<base::expected<tenor::mojom::PaginatedGifResponsesPtr,
+                                        GifTenorApiFetcher::Error>>
+      future;
+  GifTenorApiFetcher::FetchGifSearch(
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", "", std::nullopt,
+      future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_NOT_FOUND, "");
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
-  response_.error_type = std::make_optional(FetchErrorType::kNetError);
-  base::test::TestFuture<tenor::mojom::Status,
-                         tenor::mojom::PaginatedGifResponsesPtr>
-      create_future_net_error;
-  gif_tenor_api_fetcher_.FetchFeaturedGifs(
-      url_loader_factory_, "", create_future_net_error.GetCallback());
-  ASSERT_EQ(create_future_net_error.Get<0>(), tenor::mojom::Status::kNetError);
-  ASSERT_EQ(create_future_net_error.Get<1>(),
-            tenor::mojom::PaginatedGifResponses::New(
-                "", std::vector<tenor::mojom::GifResponsePtr>{}));
+  GifTenorApiFetcher::FetchFeaturedGifs(
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::ERR_FAILED, net::HTTP_NOT_FOUND, "");
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
-  response_.response = kFakeGifsResponse;
-  response_.http_status_code = net::HTTP_OK;
-  base::test::TestFuture<tenor::mojom::Status,
-                         tenor::mojom::PaginatedGifResponsesPtr>
-      create_future_http_ok;
-  gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
-                                           create_future_http_ok.GetCallback());
-  ASSERT_EQ(create_future_http_ok.Get<0>(), tenor::mojom::Status::kHttpOk);
-  ASSERT_EQ(create_future_http_ok.Get<1>(),
-            tenor::mojom::PaginatedGifResponses::New("1", GetFakeGifs()));
+  GifTenorApiFetcher::FetchFeaturedGifs(
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_OK, kFakeGifsResponse);
+  EXPECT_THAT(future.Take(), ValueIs(Pointee(FieldsAre("1", IsFakeGifs()))));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifsByIds) {
-  task_environment_.RunUntilIdle();
-  base::test::TestFuture<tenor::mojom::Status,
-                         std::vector<tenor::mojom::GifResponsePtr>>
-      create_future_http_error;
-  gif_tenor_api_fetcher_.FetchGifsByIds(url_loader_factory_,
-                                        std::vector<std::string>(),
-                                        create_future_http_error.GetCallback());
-  ASSERT_EQ(create_future_http_error.Get<0>(),
-            tenor::mojom::Status::kHttpError);
-  ASSERT_EQ(create_future_http_error.Get<1>(),
-            std::vector<tenor::mojom::GifResponsePtr>{});
+  base::test::TestFuture<base::expected<
+      std::vector<tenor::mojom::GifResponsePtr>, GifTenorApiFetcher::Error>>
+      future;
+  GifTenorApiFetcher::FetchGifsByIds(
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::vector<std::string>(),
+      future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_NOT_FOUND, "");
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
-  response_.error_type = std::make_optional(FetchErrorType::kNetError);
-  base::test::TestFuture<tenor::mojom::Status,
-                         std::vector<tenor::mojom::GifResponsePtr>>
-      create_future_net_error;
-  gif_tenor_api_fetcher_.FetchGifsByIds(url_loader_factory_,
-                                        std::vector<std::string>(),
-                                        create_future_net_error.GetCallback());
-  ASSERT_EQ(create_future_net_error.Get<0>(), tenor::mojom::Status::kNetError);
-  ASSERT_EQ(create_future_net_error.Get<1>(),
-            std::vector<tenor::mojom::GifResponsePtr>{});
+  GifTenorApiFetcher::FetchGifsByIds(
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::vector<std::string>(),
+      future.GetCallback());
+  SimulateResponse(net::ERR_FAILED, net::HTTP_NOT_FOUND, "");
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
-  response_.response = kFakeGifsResponse;
-  response_.http_status_code = net::HTTP_OK;
-  base::test::TestFuture<tenor::mojom::Status,
-                         std::vector<tenor::mojom::GifResponsePtr>>
-      create_future_http_ok;
-  gif_tenor_api_fetcher_.FetchGifsByIds(url_loader_factory_,
-                                        std::vector<std::string>(),
-                                        create_future_http_ok.GetCallback());
-  ASSERT_EQ(create_future_http_ok.Get<0>(), tenor::mojom::Status::kHttpOk);
-  ASSERT_EQ(create_future_http_ok.Get<1>(), GetFakeGifs());
+  GifTenorApiFetcher::FetchGifsByIds(
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::vector<std::string>(),
+      future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_OK, kFakeGifsResponse);
+  EXPECT_THAT(future.Take(), ValueIs(IsFakeGifs()));
 }
 
 }  // namespace ash

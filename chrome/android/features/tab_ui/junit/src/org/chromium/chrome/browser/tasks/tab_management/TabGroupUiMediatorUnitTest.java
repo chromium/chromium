@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -146,6 +147,7 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
     @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private ObservableSupplierImpl<Integer> mBackgroundColorSupplier;
     @Mock private ColorStateList mTintList1;
     @Mock private ColorStateList mTintList2;
     @Captor private ArgumentCaptor<Callback<TabModel>> mTabModelSupplierObserverCaptor;
@@ -246,7 +248,8 @@ public class TabGroupUiMediatorUnitTest {
                         mDialogControllerSupplier,
                         mOmniboxFocusStateSupplier,
                         mSharedImageTilesCoordinator,
-                        mThemeColorProvider);
+                        mThemeColorProvider,
+                        mBackgroundColorSupplier);
 
         if (currentTab == null) {
             verifyNeverReset();
@@ -1168,9 +1171,11 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(Color.RED).when(mThemeColorProvider).getThemeColor();
         initAndAssertProperties(mTab2);
         assertEquals(Color.RED, mModel.get(TabGroupUiProperties.BACKGROUND_COLOR));
+        verify(mBackgroundColorSupplier).set(Color.RED);
 
         mTabGroupUiMediator.onThemeColorChanged(Color.BLUE, false);
         assertEquals(Color.BLUE, mModel.get(TabGroupUiProperties.BACKGROUND_COLOR));
+        verify(mBackgroundColorSupplier).set(Color.BLUE);
     }
 
     @Test

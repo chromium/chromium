@@ -77,15 +77,13 @@ class BASE_EXPORT CheckError {
  public:
   static CheckError Check(
       const char* condition,
-      base::NotFatalUntil fatal_milestone =
-          base::NotFatalUntil::NoSpecifiedMilestoneInternal,
+      base::NotFatalUntil fatal_milestone,
       const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // CHECK_op macros.
   static CheckError CheckOp(
       char* log_message_str,
-      base::NotFatalUntil fatal_milestone =
-          base::NotFatalUntil::NoSpecifiedMilestoneInternal,
+      base::NotFatalUntil fatal_milestone,
       const base::Location& location = base::Location::Current());
 
   static CheckError DCheck(
@@ -106,17 +104,8 @@ class BASE_EXPORT CheckError {
       char* log_message_str,
       const base::Location& location = base::Location::Current());
 
-  static CheckError PCheck(
-      const char* condition,
-      const base::Location& location = base::Location::Current());
-  static CheckError PCheck(
-      const base::Location& location = base::Location::Current());
-
   static CheckError DPCheck(
       const char* condition,
-      const base::Location& location = base::Location::Current());
-
-  static CheckError DumpWillBeNotReachedNoreturn(
       const base::Location& location = base::Location::Current());
 
   static CheckError NotImplemented(
@@ -145,13 +134,38 @@ class BASE_EXPORT CheckError {
   std::unique_ptr<LogMessage> log_message_;
 };
 
-// Used for NOTREACHED(base::NotFatalUntil).
-// TODO(pbos): Reconsider the name of this + NotReachedNoreturnError to be less
-// confusing.
+// Used for NOTREACHED(), its destructor is importantly [[noreturn]].
+class BASE_EXPORT CheckNoreturnError : public CheckError {
+ public:
+  [[noreturn]] NOMERGE NOINLINE NOT_TAIL_CALLED ~CheckNoreturnError();
+
+  static CheckNoreturnError Check(
+      const char* condition,
+      const base::Location& location = base::Location::Current());
+  // Takes ownership over (free()s after using) `log_message_str`, for use with
+  // CHECK_op macros.
+  static CheckNoreturnError CheckOp(
+      char* log_message_str,
+      const base::Location& location = base::Location::Current());
+
+  static CheckNoreturnError PCheck(
+      const char* condition,
+      const base::Location& location = base::Location::Current());
+  static CheckNoreturnError PCheck(
+      const base::Location& location = base::Location::Current());
+
+ private:
+  using CheckError::CheckError;
+};
+
+// Used for NOTREACHED(base::NotFatalUntil) and DUMP_WILL_BE_NOTREACHED().
 class BASE_EXPORT NotReachedError : public CheckError {
  public:
   static NotReachedError NotReached(
       base::NotFatalUntil fatal_milestone,
+      const base::Location& location = base::Location::Current());
+
+  static NotReachedError DumpWillBeNotReached(
       const base::Location& location = base::Location::Current());
 
   NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedError();
@@ -180,20 +194,28 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 // if (a == 1)
 //   CHECK(Foo());
 //
-// TODO(crbug.com/40244950): Remove the const bool when the blink-gc plugin has
-// been updated to accept `if (!field_) [[likely]]` as well as `if (!field_)`.
-#define LOGGING_CHECK_FUNCTION_IMPL(check_stream, condition)              \
-  switch (0)                                                              \
-  case 0:                                                                 \
-  default:                                                                \
-    /* Hint to the optimizer that `condition` is unlikely to be false. */ \
-    /* The optimizer can use this as a hint to place the failure path */  \
-    /* out-of-line, e.g. at the tail of the function. */                  \
-    if (const bool probably_true = static_cast<bool>(condition);          \
-        ANALYZER_ASSUME_TRUE(probably_true))                              \
-      [[likely]];                                                         \
-    else                                                                  \
+// The weird ternary is to still generate an "is not contextually convertible to
+// 'bool' when provided weird parameters (regardless of ANALYZER_ASSUME_TRUE's
+// implementation). See base/check_nocompile.nc.
+#define LOGGING_CHECK_FUNCTION_IMPL(check_stream, condition) \
+  switch (0)                                                 \
+  case 0:                                                    \
+  default:                                                   \
+    if (ANALYZER_ASSUME_TRUE((condition) ? true : false))    \
+      [[likely]];                                            \
+    else                                                     \
       (check_stream)
+
+// A helper macro like LOGGING_CHECK_FUNCTION_IMPL above but discarding any
+// log-stream parameters rather than evaluate them on failure.
+#define DISCARDING_CHECK_FUNCTION_IMPL(check_failure, condition) \
+  switch (0)                                                     \
+  case 0:                                                        \
+  default:                                                       \
+    if (!ANALYZER_ASSUME_TRUE((condition) ? true : false))       \
+      check_failure;                                             \
+    else [[likely]]                                              \
+      EAT_CHECK_STREAM_PARAMS()
 
 #if defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 #error "Debug builds are not expected to be optimized as official builds."
@@ -212,49 +234,34 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
   base::ImmediateCrash();
 }
 
-// TODO(crbug.com/357081797): Use `[[unlikely]]` instead when there's a way to
-// switch the expression below to a statement without breaking
-// -Wthread-safety-analysis.
-#if HAS_BUILTIN(__builtin_expect)
-#define BASE_INTERNAL_EXPECT_FALSE(cond) __builtin_expect(!(cond), 0)
-#else
-#define BASE_INTERNAL_EXPECT_FALSE(cond) !(cond)
-#endif
 // Discard log strings to reduce code bloat when there is no NotFatalUntil
 // argument (which temporarily preserves logging both locally and in crash
 // reports).
-//
-// This is not calling BreakDebugger since this is called frequently, and
-// calling an out-of-line function instead of a noreturn inline macro prevents
-// compiler optimizations. Unlike the other check macros, this one does not use
-// LOGGING_CHECK_FUNCTION_IMPL(), since it is incompatible with
-// EAT_CHECK_STREAM_PARAMETERS().
-#define CHECK(cond, ...)                                                \
-  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                                   \
-          BASE_INTERNAL_EXPECT_FALSE(cond) ? logging::CheckFailure()    \
-                                           : EAT_CHECK_STREAM_PARAMS(), \
-          LOGGING_CHECK_FUNCTION_IMPL(                                  \
-              logging::CheckError::Check(#cond, __VA_ARGS__), cond))
-
-// Strip the conditional string from official builds.
-#define PCHECK(condition) \
-  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(), condition)
+#define CHECK_INTERNAL_IMPL(cond) \
+  DISCARDING_CHECK_FUNCTION_IMPL(::logging::CheckFailure(), cond)
 
 #else
 
 // Generate logging versions of CHECKs to help diagnosing failures.
 #define CHECK_WILL_STREAM() true
 
-#define CHECK(condition, ...)                                              \
-  LOGGING_CHECK_FUNCTION_IMPL(                                             \
-      ::logging::CheckError::Check(#condition __VA_OPT__(, ) __VA_ARGS__), \
-      condition)
-
-#define PCHECK(condition)                                                \
-  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(#condition), \
-                              condition)
+#define CHECK_INTERNAL_IMPL(cond) \
+  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckNoreturnError::Check(#cond), cond)
 
 #endif
+
+#define CHECK(cond, ...)                                         \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), CHECK_INTERNAL_IMPL(cond), \
+          LOGGING_CHECK_FUNCTION_IMPL(                           \
+              logging::CheckError::Check(#cond, __VA_ARGS__), cond))
+
+// Strip the conditional string based on CHECK_WILL_STREAM()
+#define PCHECK(cond)                                        \
+  LOGGING_CHECK_FUNCTION_IMPL(                              \
+      BASE_IF(CHECK_WILL_STREAM(),                          \
+              ::logging::CheckNoreturnError::PCheck(#cond), \
+              ::logging::CheckNoreturnError::PCheck()),     \
+      cond)
 
 #if DCHECK_IS_ON()
 

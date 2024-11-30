@@ -18,10 +18,6 @@
 
 namespace {
 
-// TODO(https://crbug.com/354070625): This should be exported from the component
-// as a constant.
-const unsigned kModelInputMaxChars = 128;
-
 void DetectLanguageWithModel(
     const WTF::String& text,
     blink::DetectLanguageCallback on_complete,
@@ -31,31 +27,19 @@ void DetectLanguageWithModel(
         .Run(base::unexpected(blink::DetectLanguageError::kUnavailable));
     return;
   }
+  WTF::String content = text;
+  content.Ensure16Bit();
+  std::vector<language_detection::Prediction> predictions =
+      model.PredictWithScan(
+          std::u16string_view(content.Characters16(), content.length()));
 
-  std::map<std::string, double> score_by_language;
-
-  // Call the model on the entire string in chunks of kModelInputMaxChars and
-  // average the reliabilty score across all of the calls.
-  wtf_size_t pos = 0;
-  size_t count = 0;
-  while (pos < text.length()) {
-    WTF::String substring = text.Substring(pos, kModelInputMaxChars);
-    pos += kModelInputMaxChars;
-    count++;
-    substring.Ensure16Bit();
-    auto predictions = model.Predict(
-        std::u16string(substring.Characters16(), substring.length()));
-    for (const auto& prediction : predictions) {
-      score_by_language[prediction.language] += prediction.score;
-    }
+  WTF::Vector<blink::LanguagePrediction> blink_predictions;
+  blink_predictions.ReserveInitialCapacity(
+      static_cast<wtf_size_t>(predictions.size()));
+  for (const auto& it : predictions) {
+    blink_predictions.emplace_back(it.language, it.score);
   }
-
-  WTF::Vector<blink::LanguagePrediction> predictions;
-  predictions.reserve(static_cast<wtf_size_t>(score_by_language.size()));
-  for (const auto& it : score_by_language) {
-    predictions.emplace_back(it.first, it.second / count);
-  }
-  std::move(on_complete).Run(std::move(predictions));
+  std::move(on_complete).Run(std::move(blink_predictions));
 }
 
 }  // namespace

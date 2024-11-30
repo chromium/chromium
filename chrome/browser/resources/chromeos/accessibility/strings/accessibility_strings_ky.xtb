@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
-<translation id="100421257800558142">Оңго жебе баскычын басыңыз</translation>
+<translation id="100421257800558142">Оңго жебе баскычын басуу</translation>
 <translation id="100506692671054486">мурунку буйрук жок</translation>
 <translation id="1009046985747440431">Чабыттоо үчүн өйдө же ылдый басыңыз; жандыруу үчүн Enter'ди басыңыз</translation>
 <translation id="1011903154582639569">Клавиатураны таап, экрандын үстүнө көтөрүп алып, терип баштаңыз</translation>
@@ -62,7 +62,7 @@
 <translation id="1291286136605998134">Күйгүзүү/өчүрүү баскычы</translation>
 <translation id="1299774449519412690">Ачык асмандын түсүндөй көк</translation>
 <translation id="1303806948938513162">ChromeVox менюсуна өтүү үчүн 4 манжаңыз менен таптаңыз</translation>
-<translation id="1304162325618937178">Боштук баскычын басыңыз</translation>
+<translation id="1304162325618937178">Боштук баскычын басуу</translation>
 <translation id="1313373992684326101">Мурунку бөлүмгө өтүү. Мисалы, Абал түпкүчү жана Жүргүзгүч.</translation>
 <translation id="1315077335264761176">Тийүүнүн багыты</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, менюдагы нерсенин радио баскычы тандоодон чыгарылды</translation>
@@ -192,7 +192,7 @@
 <translation id="2216790501338699346">Шилтеменин URL дареги: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Бир тамга артка жылдыруу</translation>
 <translation id="2220529011494928058">Маселе жөнүндө кабар берүү</translation>
-<translation id="2239819015858077439">Ылдый жебе баскычын басыңыз</translation>
+<translation id="2239819015858077439">Ылдый жебе баскычын басуу</translation>
 <translation id="2243633977138166243">Өтүү үчүн солго же оңго жебени, жандыруу үчүн Enter баскычын басыңыз</translation>
 <translation id="224426591676115802">Төмөнкү тил үчүн жеткиликтүү үн жок: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Үйрөнүү режими токтотулууда</translation>
@@ -241,6 +241,7 @@
 <translation id="2556326187583116255">Текстти окууну токтотуу үчүн 2 манжаңыз менен таптаңыз</translation>
 <translation id="2573256689920773241">Өтүү негиздери</translation>
 <translation id="257674075312929031">Топ</translation>
+<translation id="2577127557293415225">Эки көзүңүздү тең бир азга жумуңуз</translation>
 <translation id="2582407057977008361">Четке</translation>
 <translation id="2592212930811759050">Түзөтүп баштоо үчүн эки жолу таптаңыз</translation>
 <translation id="2598495320872286378">Грамматикалык ката</translation>
@@ -553,7 +554,7 @@
 <translation id="4432457053224379116">Индустардын кызыл түсү</translation>
 <translation id="4432896207833262240">Белгиленген мазмун</translation>
 <translation id="4437615272777527928">Менюларда издөө үчүн териңиз. Натыйжаларды карап чыгуу үчүн жогору жана төмөн баскычтарын басыңыз. Курсорду тууралоо жана менюдан менюга жылуу үчүн солго жана оңго баскычтарын басыңыз.</translation>
-<translation id="4441677939526091190">Өйдө жебе баскычын басыңыз</translation>
+<translation id="4441677939526091190">Өйдө жебе баскычын басуу</translation>
 <translation id="4453530046591759283">Куралдар тилкеси же маселелер тактасы сыяктуу экрандын башка бөлүктөрүнө өтүү үчүн Control+F1 баскычтарын басыңыз. F1 — Escape баскычынын оң жагындагы биринчи баскыч.</translation>
 <translation id="4457472090507035117">Учурдагы үндү тандаңыз:</translation>
 <translation id="4476183483923481720">жаңы сап</translation>
@@ -735,7 +736,7 @@
 <translation id="5653397561111110475">Chromebook'тун сенсордук экранынын атайын мүмкүнчүлүктөр функциясын пайдалануу</translation>
 <translation id="5655682562155942719">Секирүү буйруктары</translation>
 <translation id="56637627897541303">Текст аймагы</translation>
-<translation id="5666746275818170484">Солго жебе баскычын басыңыз</translation>
+<translation id="5666746275818170484">Солго жебе баскычын басуу</translation>
 <translation id="5669637233317991674">Бул сабактагы нерселерге өтүү үчүн Издөө + Оңго жебе же Издөө + Солго жебени басыңыз</translation>
 <translation id="5677240841070992068">Учурда турган жер</translation>
 <translation id="5678161956734658133">mled</translation>

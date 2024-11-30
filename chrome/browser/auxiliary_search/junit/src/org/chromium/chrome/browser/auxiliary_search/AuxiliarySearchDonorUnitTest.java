@@ -29,9 +29,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,7 +64,7 @@ public class AuxiliarySearchDonorUnitTest {
     public void testDefaultTtlIsNotZero() {
         assertNotEquals(0L, mAuxiliarySearchDonor.getDocumentTtlMs());
         assertEquals(
-                AuxiliarySearchUtils.DEFAULT_TTL_HOURS * 60 * 60 * 1000,
+                ((long) AuxiliarySearchUtils.DEFAULT_TTL_HOURS) * 60 * 60 * 1000,
                 mAuxiliarySearchDonor.getDocumentTtlMs());
     }
 
@@ -71,7 +74,7 @@ public class AuxiliarySearchDonorUnitTest {
     public void testConfiguredTtlCannotBeZero() {
         assertNotEquals(0L, mAuxiliarySearchDonor.getDocumentTtlMs());
         assertEquals(
-                AuxiliarySearchUtils.DEFAULT_TTL_HOURS * 60 * 60 * 1000,
+                ((long) AuxiliarySearchUtils.DEFAULT_TTL_HOURS) * 60 * 60 * 1000,
                 mAuxiliarySearchDonor.getDocumentTtlMs());
     }
 
@@ -126,5 +129,43 @@ public class AuxiliarySearchDonorUnitTest {
         mAuxiliarySearchDonor.onSetSchemaResponseAvailable(setSchemaResponse);
         assertNull(mAuxiliarySearchDonor.getPendingDocumentsForTesting());
         assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testSharedPreferenceKeyIsUpdated() {
+        SetSchemaResponse setSchemaResponse = new SetSchemaResponse.Builder().build();
+        assertTrue(setSchemaResponse.getMigrationFailures().isEmpty());
+
+        SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
+        assertFalse(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
+        assertFalse(
+                chromeSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false));
+
+        // Verifies that ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET is set to true after
+        // the schema is set successful.
+        mAuxiliarySearchDonor.onSetSchemaResponseAvailable(setSchemaResponse);
+        assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
+        assertTrue(
+                chromeSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false));
+
+        chromeSharedPreferences.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
+    }
+
+    @Test
+    @SmallTest
+    public void testDoNotSetSchemaAgain() {
+        SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
+        chromeSharedPreferences.writeBoolean(
+                ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
+        assertFalse(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
+
+        // Verifies not to set the schema again if it has been set.
+        assertFalse(mAuxiliarySearchDonor.maySetSchema());
+        assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
+
+        chromeSharedPreferences.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
     }
 }

@@ -6,17 +6,16 @@ package org.jni_zero;
 import android.content.Context;
 import android.view.View;
 import org.jni_zero.CheckDiscard;
-import org.jni_zero.JniStaticTestMocker;
+import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForAnnotationProcessor;
-import org.jni_zero.internal.JniOverrideHolder;
 import org.stubs.MyClass;
 
 class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Natives {
-  private static JniOverrideHolder sOverride;
+  private static JniTestInstanceHolder sOverride;
 
   public static SampleForAnnotationProcessor.Natives get() {
-    JniOverrideHolder holder = sOverride;
+    JniTestInstanceHolder holder = sOverride;
     if (holder != null && holder.value != null) {
       return (SampleForAnnotationProcessor.Natives) holder.value;
     }
@@ -26,135 +25,133 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
 
   public static void setInstanceForTesting(SampleForAnnotationProcessor.Natives impl) {
     if (sOverride == null) {
-      sOverride = JniOverrideHolder.create();
+      sOverride = JniTestInstanceHolder.create();
     }
     sOverride.value = impl;
   }
 
-  // TODO(crbug.com/329069277): Delete.
-  public static final JniStaticTestMocker TEST_HOOKS = x -> setInstanceForTesting((SampleForAnnotationProcessor.Natives) x);
-
+  private static native Object nativeBar(Object sample);
 
   @Override
   public SampleForAnnotationProcessor bar(SampleForAnnotationProcessor sample) {
     return (SampleForAnnotationProcessor) nativeBar(sample);
   }
-  private static native Object nativeBar(Object sample);
+  private static native void nativeFoo();
 
   @Override
   public void foo() {
     nativeFoo();
   }
-  private static native void nativeFoo();
+  private static native boolean nativeHasPhalange();
 
   @Override
   public boolean hasPhalange() {
     return (boolean) nativeHasPhalange();
   }
-  private static native boolean nativeHasPhalange();
+  private static native Object nativeReturnClass();
 
   @Override
   public Class returnClass() {
     return (Class) nativeReturnClass();
   }
-  private static native Object nativeReturnClass();
+  private static native Object nativeReturnClasses();
 
   @Override
   public Class[] returnClasses() {
     return (Class[]) nativeReturnClasses();
   }
-  private static native Object nativeReturnClasses();
+  private static native Object nativeReturnConvertedAppObjects(Object __arrayClazz);
 
   @Override
   public SampleForAnnotationProcessor[] returnConvertedAppObjects() {
     return (SampleForAnnotationProcessor[]) nativeReturnConvertedAppObjects(
         SampleForAnnotationProcessor.class);
   }
-  private static native Object nativeReturnConvertedAppObjects(Class __arrayClazz);
+  private static native Object nativeReturnConvertedInts();
 
   @Override
   public int[] returnConvertedInts() {
     return (int[]) nativeReturnConvertedInts();
   }
-  private static native Object nativeReturnConvertedInts();
+  private static native Object nativeReturnConvertedString();
 
   @Override
   public String returnConvertedString() {
     return (String) nativeReturnConvertedString();
   }
-  private static native Object nativeReturnConvertedString();
+  private static native Object nativeReturnConvertedStrings();
 
   @Override
   public String[] returnConvertedStrings() {
     return (String[]) nativeReturnConvertedStrings();
   }
-  private static native Object nativeReturnConvertedStrings();
+  private static native Object nativeReturnObject();
 
   @Override
   public Object returnObject() {
     return (Object) nativeReturnObject();
   }
-  private static native Object nativeReturnObject();
+  private static native Object nativeReturnObjects();
 
   @Override
   public Object[] returnObjects() {
     return (Object[]) nativeReturnObjects();
   }
-  private static native Object nativeReturnObjects();
+  private static native Object nativeReturnString();
 
   @Override
   public String returnString() {
     return (String) nativeReturnString();
   }
-  private static native Object nativeReturnString();
+  private static native Object nativeReturnStrings();
 
   @Override
   public String[] returnStrings() {
     return (String[]) nativeReturnStrings();
   }
-  private static native Object nativeReturnStrings();
+  private static native Object nativeReturnStruct();
 
   @Override
   public SampleForAnnotationProcessor.TestStruct returnStruct() {
     return (SampleForAnnotationProcessor.TestStruct) nativeReturnStruct();
   }
-  private static native Object nativeReturnStruct();
+  private static native Object nativeReturnStructs();
 
   @Override
   public SampleForAnnotationProcessor.TestStruct[] returnStructs() {
     return (SampleForAnnotationProcessor.TestStruct[]) nativeReturnStructs();
   }
-  private static native Object nativeReturnStructs();
+  private static native Object nativeReturnThrowable();
 
   @Override
   public Throwable returnThrowable() {
     return (Throwable) nativeReturnThrowable();
   }
-  private static native Object nativeReturnThrowable();
+  private static native Object nativeReturnThrowables();
 
   @Override
   public Throwable[] returnThrowables() {
     return (Throwable[]) nativeReturnThrowables();
   }
-  private static native Object nativeReturnThrowables();
+  private static native Object nativeRevString(Object stringToReverse);
 
   @Override
   public String revString(String stringToReverse) {
     return (String) nativeRevString(stringToReverse);
   }
-  private static native Object nativeRevString(Object stringToReverse);
+  private static native Object nativeSendSamplesToNative(Object strs);
 
   @Override
   public SampleForAnnotationProcessor[] sendSamplesToNative(SampleForAnnotationProcessor[] strs) {
     return (SampleForAnnotationProcessor[]) nativeSendSamplesToNative(strs);
   }
-  private static native Object nativeSendSamplesToNative(Object strs);
+  private static native Object nativeSendToNative(Object strs);
 
   @Override
   public String[] sendToNative(String[] strs) {
     return (String[]) nativeSendToNative(strs);
   }
-  private static native Object nativeSendToNative(Object strs);
+  private static native Object nativeTestAllPrimitives(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools);
 
   @Override
   public int[] testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools) {
@@ -176,7 +173,7 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
         zbool,
         bools);
   }
-  private static native Object nativeTestAllPrimitives(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools);
+  private static native void nativeTestSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
 
   @Override
   public void testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, SampleForAnnotationProcessor.TestStruct tStruct, SampleForAnnotationProcessor.TestStruct[] structs, Object obj, Object convertedObj, Object[] objects, MyClass.SecondNestedInterface nestedInterface, View view, Context context, Object[] convertedObjects) {
@@ -200,5 +197,4 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
         context,
         convertedObjects);
   }
-  private static native void nativeTestSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
 }

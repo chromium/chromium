@@ -258,7 +258,7 @@ base::SequenceBound<URLLoaderFactoryProvider> CreateOutOfProcessNetWorker(
   base::LaunchOptions options;
   base::FilePath exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
-    LOG(ERROR) << "Failed to retrieve the current executable's path.";
+    VLOG(1) << "Failed to retrieve the current executable's path.";
     return {};
   }
 
@@ -271,7 +271,7 @@ base::SequenceBound<URLLoaderFactoryProvider> CreateOutOfProcessNetWorker(
   // Contexts".
   std::optional<uid_t> uid = GuessLoggedInUser();
   if (!uid) {
-    LOG(ERROR)
+    VLOG(1)
         << "Could not determine a logged-in user to impersonate for "
            "networking. The root bootstrap namespace (in formal Mach kernel "
            "terms, the \"startup context\") will be used, which may cause "
@@ -285,7 +285,7 @@ base::SequenceBound<URLLoaderFactoryProvider> CreateOutOfProcessNetWorker(
   base::Process process = base::LaunchProcess(command_line, options);
   channel.RemoteProcessLaunchAttempted();
   if (!process.IsValid()) {
-    LOG(ERROR) << "Failed to launch network process.";
+    VLOG(1) << "Failed to launch network process.";
     return {};
   }
 
@@ -294,7 +294,7 @@ base::SequenceBound<URLLoaderFactoryProvider> CreateOutOfProcessNetWorker(
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote(
       std::move(pipe), network::mojom::URLLoaderFactory::Version_);
   if (!pending_remote) {
-    LOG(ERROR) << "Failed to establish IPC with the network process.";
+    VLOG(1) << "Failed to establish IPC with the network process.";
     return {};
   }
 

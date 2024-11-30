@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import android.app.Activity;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -17,15 +21,24 @@ import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.hats.SurveyClient;
+import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
+import org.chromium.chrome.browser.ui.hats.SurveyConfig;
+import org.chromium.chrome.browser.ui.hats.SurveyUiDelegate;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.Map;
 
 /**
  * Helper for triggering the Safety Hub HaTS survey. Holds the state for the last requested survey
  * and triggers the HaTS survey when a WebContents becomes available.
  */
 class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
+    private static final String TAG = "SafetyHubHatsHelper";
     @VisibleForTesting static final String CONTROL_NOTIFICATION_MODULE = "none";
+    private static final String SENTIMENT_ORGANIC_SURVEY_TRIGGER =
+            "safety_hub_android_organic_survey";
     private static ProfileKeyedMap<SafetyHubHatsHelper> sProfileMap;
 
     private final Profile mProfile;
@@ -35,6 +48,26 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
 
     private String mModuleType;
     private boolean mHasTappedCard;
+    private boolean mHasVisited;
+
+    private SafetyHubSurveyUiDelegate mSafetyHubSurveyUiDelegate = new SafetyHubSurveyUiDelegate();
+
+    private static class SafetyHubSurveyUiDelegate implements SurveyUiDelegate {
+        @Override
+        public void showSurveyInvitation(
+                Runnable onSurveyAccepted,
+                Runnable onSurveyDeclined,
+                Runnable onSurveyPresentationFailed) {
+            // No invitation UI is shown, trigger the survey right away.
+            assert onSurveyAccepted != null;
+            onSurveyAccepted.run();
+        }
+
+        @Override
+        public void dismiss() {
+            // no-op.
+        }
+    }
 
     static SafetyHubHatsHelper getForProfile(Profile profile) {
         if (sProfileMap == null) {
@@ -48,6 +81,29 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
     @VisibleForTesting
     SafetyHubHatsHelper(Profile profile) {
         mProfile = profile;
+    }
+
+    // Triggers the organic HaTS survey for Safety Hub. No invitation UI is shown when the survey is
+    // triggered by this method.
+    void triggerOrganicHatsSurvey(@NonNull Activity activity) {
+        mHasVisited = true;
+        if (!ChromeFeatureList.sSafetyHubAndroidOrganicSurvey.isEnabled()) {
+            return;
+        }
+
+        SurveyConfig config = SurveyConfig.get(SENTIMENT_ORGANIC_SURVEY_TRIGGER);
+        SurveyClient surveyClient =
+                SurveyClientFactory.getInstance()
+                        .createClient(config, mSafetyHubSurveyUiDelegate, mProfile);
+        if (surveyClient == null) {
+            Log.d(TAG, "SurveyClient is null. config: " + SurveyConfig.toString(config));
+            return;
+        }
+        surveyClient.showSurvey(
+                activity,
+                /* lifecyclerDispatcher= */ null,
+                getSurveyPsbBitValues(),
+                getSurveyPsbStringValues());
     }
 
     void triggerControlHatsSurvey(TabModelSelector tabModelSelector) {
@@ -123,7 +179,12 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
         }
         boolean didShowSurvey =
                 SafetyHubHatsBridge.triggerHatsSurveyIfEnabled(
-                        mProfile, webContents, mModuleType, mHasTappedCard, getOverallState());
+                        mProfile,
+                        webContents,
+                        getModuleType(),
+                        mHasTappedCard,
+                        mHasVisited,
+                        getOverallState());
         if (didShowSurvey) {
             removeObserver();
         }
@@ -134,12 +195,26 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
         removeObserver();
     }
 
+    private Map<String, Boolean> getSurveyPsbBitValues() {
+        return Map.of("Tapped card", mHasTappedCard, "Has visited", mHasVisited);
+    }
+
+    private Map<String, String> getSurveyPsbStringValues() {
+        return Map.of(
+                "Notification module type", getModuleType(), "Global state", getOverallState());
+    }
+
+    private @NonNull String getModuleType() {
+        return mModuleType != null ? mModuleType : "";
+    }
+
     /**
      * Returns a string that represents the overall state of Safety Hub. The overall state
      * represents the most severe state of all the modules. The logic for the state of each module
      * should be equivalent to {@link SafetyHubModuleViewBinder#getModuleState()}.
      */
     @VisibleForTesting
+    @NonNull
     String getOverallState() {
         @ModuleState int[] moduleStates = new int[5];
 

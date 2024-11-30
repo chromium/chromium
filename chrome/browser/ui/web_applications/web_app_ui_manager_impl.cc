@@ -86,6 +86,7 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chromeos/ash/components/nonclosable_app_ui/nonclosable_app_ui_utils.h"
 #include "components/sync/model/string_ordinal.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -265,21 +266,6 @@ bool WebAppUiManagerImpl::IsAppInQuickLaunchBar(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return false;
-}
-
-bool WebAppUiManagerImpl::IsInAppWindow(
-    content::WebContents* web_contents) const {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  return AppBrowserController::IsWebApp(browser);
-}
-
-const webapps::AppId* WebAppUiManagerImpl::GetAppIdForWindow(
-    const content::WebContents* web_contents) const {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (AppBrowserController::IsWebApp(browser)) {
-    return &browser->app_controller()->app_id();
-  }
-  return nullptr;
 }
 
 bool WebAppUiManagerImpl::CanReparentAppTabToWindow(
@@ -612,13 +598,16 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
 void WebAppUiManagerImpl::TabCloseCancelled(
     const content::WebContents* contents) {
-  const webapps::AppId* app_id = GetAppIdForWindow(contents);
-  if (!app_id) {
+  CHECK(contents);
+  const WebAppTabHelper* tab_helper =
+      WebAppTabHelper::FromWebContents(contents);
+  if (!tab_helper || !tab_helper->window_app_id()) {
     return;
   }
 
   ShowNonclosableAppToast(
-      WebAppProvider::GetForWebApps(profile_)->registrar_unsafe(), *app_id);
+      WebAppProvider::GetForWebApps(profile_)->registrar_unsafe(),
+      *tab_helper->window_app_id());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

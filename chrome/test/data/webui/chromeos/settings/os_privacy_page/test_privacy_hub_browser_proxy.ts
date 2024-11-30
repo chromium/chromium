@@ -19,8 +19,6 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
       'getInitialMicrophoneHardwareToggleState',
       'getInitialMicrophoneMutedBySecurityCurtainState',
       'getInitialCameraSwitchForceDisabledState',
-      'sendLeftOsPrivacyPage',
-      'sendOpenedOsPrivacyPage',
       'getCameraLedFallbackState',
       'getCurrentTimeZoneName',
       'getCurrentSunriseTime',
@@ -68,13 +66,5 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
   getCurrentSunsetTime(): Promise<string> {
     this.methodCalled('getCurrentSunsetTime');
     return Promise.resolve(this.currentSunSetTime);
-  }
-
-  sendLeftOsPrivacyPage(): void {
-    this.methodCalled('sendLeftOsPrivacyPage');
-  }
-
-  sendOpenedOsPrivacyPage(): void {
-    this.methodCalled('sendOpenedOsPrivacyPage');
   }
 }

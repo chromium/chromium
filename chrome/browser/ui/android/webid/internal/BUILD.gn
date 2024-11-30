@@ -33,6 +33,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
+    "//components/ukm/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",

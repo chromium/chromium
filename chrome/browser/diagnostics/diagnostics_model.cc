@@ -53,7 +53,7 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
   DiagnosticsModelImpl(const DiagnosticsModelImpl&) = delete;
   DiagnosticsModelImpl& operator=(const DiagnosticsModelImpl&) = delete;
 
-  ~DiagnosticsModelImpl() override {}
+  ~DiagnosticsModelImpl() override = default;
 
   int GetTestRunCount() const override { return tests_run_; }
 

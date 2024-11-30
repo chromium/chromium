@@ -150,6 +150,7 @@ component("features") {
     "//components/variations",
     "//google_apis",
     "//net",
+    "//services/preferences/public/cpp",
     "//third_party/metrics_proto:metrics_proto",
     "//ui/base",
   ]
@@ -327,6 +328,7 @@ static_library("core") {
   deps = [
     ":bloomfilter",
     "//base",
+    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//components/prefs",
     "//components/signin/public/identity_manager:identity_manager",
     "//components/unified_consent",
@@ -661,6 +663,7 @@ action("on_device_model_execution_proto_generator") {
     "$root_gen_dir/components/optimization_guide/proto/prompt_api.descriptor",
     "$root_gen_dir/components/optimization_guide/proto/summarize.descriptor",
     "$root_gen_dir/components/optimization_guide/proto/history_query_intent.descriptor",
+    "$root_gen_dir/components/optimization_guide/proto/scam_detection.descriptor",
   ]
   outputs = [ output_proto_descriptors_cc_file ]
 
@@ -674,6 +677,7 @@ action("on_device_model_execution_proto_generator") {
     "--include=\"components/optimization_guide/proto/features/prompt_api.pb.h\"",
     "--include=\"components/optimization_guide/proto/features/summarize.pb.h\"",
     "--include=\"components/optimization_guide/proto/features/history_query_intent.pb.h\"",
+    "--include=\"components/optimization_guide/proto/features/scam_detection.pb.h\"",
     "--request=.optimization_guide.proto.ComposeRequest",
     "--request=.optimization_guide.proto.TabOrganizationRequest",
     "--request=.optimization_guide.proto.HistoryAnswerRequest",
@@ -681,10 +685,12 @@ action("on_device_model_execution_proto_generator") {
     "--request=.optimization_guide.proto.SummarizeRequest",
     "--request=.optimization_guide.proto.PromptApiRequest",
     "--request=.optimization_guide.proto.HistoryQueryIntentRequest",
+    "--request=.optimization_guide.proto.ScamDetectionRequest",
     "--response=.optimization_guide.proto.ComposeResponse",
     "--response=.optimization_guide.proto.TabOrganizationResponse",
     "--response=.optimization_guide.proto.HistoryAnswerResponse",
     "--response=.optimization_guide.proto.HistoryQueryIntentResponse",
+    "--response=.optimization_guide.proto.ScamDetectionResponse",
     "--response=.optimization_guide.proto.StringValue",
   ]
   foreach(file, inputs) {
@@ -699,6 +705,7 @@ action("on_device_model_execution_proto_generator") {
     "//components/optimization_guide/proto:history_answer_proto_descriptor",
     "//components/optimization_guide/proto:history_query_intent_proto_descriptor",
     "//components/optimization_guide/proto:prompt_api_proto_descriptor",
+    "//components/optimization_guide/proto:scam_detection_proto_descriptor",
     "//components/optimization_guide/proto:string_value_proto_descriptor",
     "//components/optimization_guide/proto:summarize_descriptor",
     "//components/optimization_guide/proto:tab_organization_proto_descriptor",

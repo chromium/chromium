@@ -34,7 +34,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -183,12 +183,19 @@ bool CreditCardSaveManager::ShouldOfferCvcSave(
       existing_credit_card =
           payments_data_manager().GetCreditCardByGUID(card.guid());
       break;
-    case FormDataImporter::CreditCardImportType::kServerCard:
     case FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard:
       // Payments autofill shows the server card suggestion in the duplicate
       // case. Thus, set `exsting_credit_card` in the same way server cards are
       // set.
-      if (is_credit_card_upstream_enabled) {
+    case FormDataImporter::CreditCardImportType::kServerCard:
+      // Offering CVC save for card info retrieval cards would be a bad user
+      // experience because users would not be able to use the saved CVC, since
+      // the card has a dynamic CVC that would be retrieved from the Payments
+      // servers.
+      if (is_credit_card_upstream_enabled &&
+          card.card_info_retrieval_enrollment_state() !=
+              CreditCard::CardInfoRetrievalEnrollmentState::
+                  kRetrievalEnrolled) {
         existing_credit_card =
             payments_data_manager().GetCreditCardByInstrumentId(
                 card.instrument_id());
@@ -206,7 +213,8 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
     const FormStructure& submitted_form,
     const CreditCard& card,
     FormDataImporter::CreditCardImportType credit_card_import_type,
-    bool is_credit_card_upstream_enabled) {
+    bool is_credit_card_upstream_enabled,
+    ukm::SourceId ukm_source_id) {
   // Prioritize card upload save if it is allowed. Check if card upload save
   // should be offer and attempt to offer card upload save. Card upload is only
   // offered if import_type is local card or new card. It can't be duplicate or
@@ -219,7 +227,8 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
     AttemptToOfferCardUploadSave(
         submitted_form, card,
         /*uploading_local_card=*/credit_card_import_type ==
-            FormDataImporter::CreditCardImportType::kLocalCard);
+            FormDataImporter::CreditCardImportType::kLocalCard,
+        ukm_source_id);
     return true;
   }
 
@@ -261,7 +270,8 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
 void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     const FormStructure& submitted_form,
     const CreditCard& card,
-    const bool uploading_local_card) {
+    const bool uploading_local_card,
+    ukm::SourceId ukm_source_id) {
   payments::PaymentsNetworkInterface* payments_network_interface =
       client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface();
   // Abort the uploading if `payments_network_interface` is nullptr.
@@ -369,7 +379,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
        should_request_expiration_date_from_user_) ||
       (should_request_expiration_date_from_user_ &&
        payments_data_manager().IsPaymentsWalletSyncTransportEnabled())) {
-    LogCardUploadDecisions(upload_decision_metrics_);
+    LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
     pending_upload_request_origin_ = url::Origin();
     return;
   }
@@ -413,7 +423,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       country_only_profiles, upload_request_.detected_values,
       upload_request_.client_behavior_signals, client_->GetAppLocale(),
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), ukm_source_id),
       payments::kUploadPaymentMethodBillableServiceNumber,
       payments::GetBillingCustomerId(&payments_data_manager()),
       payments::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
@@ -621,6 +631,7 @@ CreditCardSaveManager::GetLocalCardMigrationStrikeDatabase() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void CreditCardSaveManager::OnDidGetUploadDetails(
+    ukm::SourceId ukm_source_id,
     PaymentsRpcResult result,
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message,
@@ -640,7 +651,7 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
       }
       upload_decision_metrics_ |=
           autofill_metrics::UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE;
-      LogCardUploadDecisions(upload_decision_metrics_);
+      LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
       return;
     }
 
@@ -657,11 +668,11 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
       }
       upload_decision_metrics_ |=
           autofill_metrics::UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE;
-      LogCardUploadDecisions(upload_decision_metrics_);
+      LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
       return;
     }
     upload_request_.context_token = context_token;
-    OfferCardUploadSave();
+    OfferCardUploadSave(ukm_source_id);
   } else {
     // If the upload details request failed and we *know* we have all possible
     // information (card number, expiration, cvc, name, and address), fall back
@@ -689,7 +700,7 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
     }
     upload_decision_metrics_ |=
         autofill_metrics::UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED;
-    LogCardUploadDecisions(upload_decision_metrics_);
+    LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
   }
 }
 
@@ -741,7 +752,7 @@ void CreditCardSaveManager::OfferCvcLocalSave() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CreditCardSaveManager::OfferCardUploadSave() {
+void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool is_mobile_build = true;
 #else
@@ -803,7 +814,7 @@ void CreditCardSaveManager::OfferCardUploadSave() {
     upload_decision_metrics_ |=
         autofill_metrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE;
   }
-  LogCardUploadDecisions(upload_decision_metrics_);
+  LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
   if (show_save_prompt_.has_value() && !show_save_prompt_.value()) {
     autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
         AutofillMetrics::SaveTypeMetric::SERVER);
@@ -905,9 +916,8 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
 
   // Second, collect all of the already stored addresses used or modified
   // recently.
-  for (const AutofillProfile* profile : client_->GetPersonalDataManager()
-                                            ->address_data_manager()
-                                            .GetProfiles()) {
+  for (const AutofillProfile* profile :
+       client_->GetPersonalDataManager().address_data_manager().GetProfiles()) {
     has_profile = true;
     if ((now - profile->use_date()) < fifteen_minutes ||
         (now - profile->modification_date()) < fifteen_minutes) {
@@ -1329,10 +1339,11 @@ CreditCardSaveManager::GetCVCCardUploadDecisionMetric() const {
 }
 
 void CreditCardSaveManager::LogCardUploadDecisions(
+    ukm::SourceId ukm_source_id,
     int upload_decision_metrics) {
   autofill_metrics::LogCardUploadDecisionMetrics(upload_decision_metrics);
   autofill_metrics::LogCardUploadDecisionsUkm(
-      client_->GetUkmRecorder(), client_->GetUkmSourceId(),
+      client_->GetUkmRecorder(), ukm_source_id,
       pending_upload_request_origin_.GetURL(), upload_decision_metrics);
   pending_upload_request_origin_ = url::Origin();
   LogCardUploadDecisionsToAutofillInternals(upload_decision_metrics);
@@ -1467,7 +1478,7 @@ PaymentsDataManager& CreditCardSaveManager::payments_data_manager() {
 
 const PaymentsDataManager& CreditCardSaveManager::payments_data_manager()
     const {
-  return client_->GetPersonalDataManager()->payments_data_manager();
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 }  // namespace autofill

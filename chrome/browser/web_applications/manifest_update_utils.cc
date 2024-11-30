@@ -278,9 +278,6 @@ ManifestDataChanges GetManifestDataChanges(
         new_install_info.protocol_handlers) {
       return true;
     }
-    if (existing_web_app.url_handlers() != new_install_info.url_handlers) {
-      return true;
-    }
     if (base::FeatureList::IsEnabled(
             blink::features::kWebAppManifestLockScreen) &&
         existing_web_app.lock_screen_start_url() !=

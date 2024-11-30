@@ -151,6 +151,11 @@ public class ContentTextSelectionTest {
             return new ArrayList<>();
         }
 
+        @Override
+        public boolean canReuseCachedSelectionMenu() {
+            return true;
+        }
+
         private ResolveInfo createResolveInfoWithActivityInfo(
                 String activityName, boolean exported) {
             String packageName = "org.chromium.content.browser.ContentTextSelectionTest";

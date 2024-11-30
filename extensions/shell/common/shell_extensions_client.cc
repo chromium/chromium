@@ -44,8 +44,7 @@ class ShellPermissionMessageProvider : public PermissionMessageProvider {
                            const PermissionSet& requested_permissions,
                            Manifest::Type extension_type) const override {
     // Ensure we implement this before shipping.
-    CHECK(false);
-    return false;
+    NOTREACHED();
   }
 
   PermissionIDSet GetAllPermissionIDs(

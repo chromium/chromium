@@ -109,13 +109,16 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-
-
-
-
+# Fails on GL, Metal, Graphite and Ganesh, AMD and Intel
+crbug.com/377724727 [ mac amd-0x67ef passthrough ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
+crbug.com/377724727 [ mac amd-0x67ef passthrough ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/377724727 [ mac passthrough ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 # Longstanding flaking test - page reported failure
 crbug.com/40877266 [ android android-shield-android-tv ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+
+# Legacy Canvas path crash libyuv
+crbug.com/377724727 [ android android-pixel-6 angle-opengles graphite-disabled passthrough ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

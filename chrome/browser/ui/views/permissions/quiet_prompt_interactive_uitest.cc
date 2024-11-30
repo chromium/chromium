@@ -74,7 +74,7 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
 
-  ~QuietPromptInteractiveUITest() override {}
+  ~QuietPromptInteractiveUITest() override = default;
 
   void SetUpOnMainThread() override {
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);

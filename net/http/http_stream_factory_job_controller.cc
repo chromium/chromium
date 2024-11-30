@@ -28,7 +28,7 @@
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
-#include "net/http/http_stream_pool_switching_info.h"
+#include "net/http/http_stream_pool_request_info.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -897,7 +897,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     if (alternative_service_info_.protocol() != kProtoUnknown &&
         !preconnect_job->HasAvailableQuicSession()) {
       GURL alternative_url = CreateAltSvcUrl(
-          origin_url_, alternative_service_info_.host_port_pair());
+          origin_url_, alternative_service_info_.GetHostPortPair());
       RewriteUrlWithHostMappingRules(alternative_url);
 
       url::SchemeHostPort alternative_destination =
@@ -939,12 +939,12 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     DCHECK(origin_url_.SchemeIs(url::kHttpsScheme));
     DCHECK(!is_websocket_);
     DVLOG(1) << "Selected alternative service (host: "
-             << alternative_service_info_.host_port_pair().host()
-             << " port: " << alternative_service_info_.host_port_pair().port()
+             << alternative_service_info_.GetHostPortPair().host()
+             << " port: " << alternative_service_info_.GetHostPortPair().port()
              << " version: " << quic_version << ")";
 
     GURL alternative_url = CreateAltSvcUrl(
-        origin_url_, alternative_service_info_.host_port_pair());
+        origin_url_, alternative_service_info_.GetHostPortPair());
     RewriteUrlWithHostMappingRules(alternative_url);
 
     url::SchemeHostPort alternative_destination =
@@ -1354,7 +1354,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
         request_info.secure_dns_policy, /*require_dns_https_alpn=*/false);
 
     GURL destination = CreateAltSvcUrl(
-        original_url, alternative_service_info.host_port_pair());
+        original_url, alternative_service_info.GetHostPortPair());
     if (session_key.host() != destination.host_piece() &&
         !session_->context().quic_context->params()->allow_remote_alt_svc) {
       continue;
@@ -1495,17 +1495,17 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
 
   bool disable_cert_network_fetches =
       !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
-  HttpStreamKey stream_key(
-      url::SchemeHostPort(origin_url_), request_info_.privacy_mode,
+  url::SchemeHostPort destination(origin_url_);
+  session_->ApplyTestingFixedPort(destination);
+  HttpStreamPoolRequestInfo pool_request_info(
+      std::move(destination), request_info_.privacy_mode,
       request_info_.socket_tag, request_info_.network_anonymization_key,
-      request_info_.secure_dns_policy, disable_cert_network_fetches);
-
+      request_info_.secure_dns_policy, disable_cert_network_fetches,
+      alternative_service_info_, request_info_.is_http1_allowed,
+      request_info_.load_flags, proxy_info_);
   if (is_preconnect_) {
     int rv = session_->http_stream_pool()->Preconnect(
-        HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
-                                    request_info_.is_http1_allowed,
-                                    request_info_.load_flags, proxy_info_),
-        num_streams_,
+        std::move(pool_request_info), num_streams_,
         base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                        ptr_factory_.GetWeakPtr()));
     if (rv != ERR_IO_PENDING) {
@@ -1519,8 +1519,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&JobController::CallOnSwitchesToHttpStreamPool,
-                     ptr_factory_.GetWeakPtr(), std::move(stream_key),
-                     alternative_service_info_));
+                     ptr_factory_.GetWeakPtr(), std::move(pool_request_info)));
 }
 
 void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
@@ -1530,16 +1529,13 @@ void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
 }
 
 void HttpStreamFactory::JobController::CallOnSwitchesToHttpStreamPool(
-    HttpStreamKey stream_key,
-    AlternativeServiceInfo alternative_service_info) {
+    HttpStreamPoolRequestInfo request_info) {
   CHECK(request_);
   CHECK(delegate_);
 
   // `request_` and `delegate_` will be reset later.
 
-  delegate_->OnSwitchesToHttpStreamPool(HttpStreamPoolSwitchingInfo(
-      std::move(stream_key), std::move(alternative_service_info),
-      request_info_.is_http1_allowed, request_info_.load_flags, proxy_info_));
+  delegate_->OnSwitchesToHttpStreamPool(std::move(request_info));
 }
 
 }  // namespace net

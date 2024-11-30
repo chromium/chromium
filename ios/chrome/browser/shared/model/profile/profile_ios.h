@@ -115,7 +115,7 @@ class ProfileIOS : public web::BrowserState {
   virtual void DestroyOffTheRecordProfile() = 0;
 
   // Retrieves a pointer to the ProfilePolicyConnector that manages policy
-  // for this BrowserState. May return nullptr if policy is disabled.
+  // for this ProfileIOS. May return nullptr if policy is disabled.
   virtual ProfilePolicyConnector* GetPolicyConnector() = 0;
 
   // Returns a pointer to the UserCloudPolicyManager that is a facade for the
@@ -142,7 +142,7 @@ class ProfileIOS : public web::BrowserState {
   // Works asynchronously, however if the `completion` callback is non-null, it
   // will be posted on the UI thread once the removal process completes.
   // Be aware that theoretically it is possible that `completion` will be
-  // invoked after the BrowserState instance has been destroyed.
+  // invoked after the ProfileIOS instance has been destroyed.
   virtual void ClearNetworkingHistorySince(base::Time time,
                                            base::OnceClosure completion) = 0;
 
@@ -161,8 +161,8 @@ class ProfileIOS : public web::BrowserState {
   // Returns a weak pointer to the current instance.
   virtual base::WeakPtr<ProfileIOS> AsWeakPtr() = 0;
 
-  // Returns the path where the off-the-record BrowserState data is stored.
-  // If the BrowserState is off-the-record, this is equal to GetStatePath().
+  // Returns the path where the off-the-record ProfileIOS data is stored.
+  // If the ProfileIOS is off-the-record, this is equal to GetStatePath().
   base::FilePath GetOffTheRecordStatePath() const;
 
   // web::BrowserState

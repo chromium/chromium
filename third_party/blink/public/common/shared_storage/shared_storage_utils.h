@@ -60,8 +60,8 @@ enum class SharedStorageWorkletErrorType {
   kSelectURLWebVisible = 4,
   kOBSOLETE_SelectURLNonWebVisible = 5,  // Replaced by finer-grained types.
   kSuccess = 6,
-  kAddModuleNonWebVisibleMulipleWorkletsDisabled = 7,
-  kAddModuleNonWebVisibleCrossOriginWorkletsDisabled = 8,
+  kOBSOLETE_AddModuleNonWebVisibleMulipleWorkletsDisabled = 7,
+  kOBSOLETE_AddModuleNonWebVisibleCrossOriginWorkletsDisabled = 8,
   kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled = 9,
   kAddModuleNonWebVisibleOther = 10,
   kRunNonWebVisibleInvalidContextId = 11,
@@ -91,9 +91,10 @@ enum class SharedStorageWorkletErrorType {
   kSelectURLNonWebVisibleOther = 35,
   kRunNonWebVisibleInvalidFilteringIdMaxBytes = 36,
   kSelectURLNonWebVisibleInvalidFilteringIdMaxBytes = 37,
+  kAddModuleNonWebVisibleCustomDataOriginDisabled = 38,
 
   // Keep this at the end and equal to the last entry.
-  kMaxValue = kSelectURLNonWebVisibleInvalidFilteringIdMaxBytes,
+  kMaxValue = kAddModuleNonWebVisibleCustomDataOriginDisabled,
 };
 
 // Whether or not there is sufficient budget for the `selectURL()` call, and if

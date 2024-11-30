@@ -22,6 +22,13 @@
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_view_controlling.h"
+#import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -47,18 +54,10 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
-#import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
-#import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -111,7 +110,7 @@
 }
 
 - (void)dealloc {
-  CHECK(!_mediator);
+  DCHECK(!_mediator);
 }
 
 - (void)start {
@@ -263,15 +262,16 @@
 }
 
 - (void)triggerProfileSwitchToProfileNamed:(NSString*)profileName
-                                completion:(void (^)(bool success))completion {
+                                  observer:
+                                      (id<ChangeProfileObserving>)observer {
   SceneState* sceneState = self.browser->GetSceneState();
   [_changeProfileHandler changeProfile:profileName
                               forScene:sceneState.sceneSessionID
-                            completion:completion];
+                              observer:observer];
 }
 
 - (void)didTapAddAccountWithCompletion:
-    (ShowSigninCommandCompletionCallback)completion {
+    (SigninCoordinatorCompletionCallback)completion {
   [self openAddAccountWithBaseViewController:_navigationController
                                   completion:completion];
 }
@@ -363,7 +363,7 @@
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+      syncer::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
   SigninTrustedVaultDialogIntent intent =
@@ -385,7 +385,7 @@
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+      syncer::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
   SigninTrustedVaultDialogIntent intent =
@@ -429,7 +429,8 @@
   ProceduralBlock childrenCompletion = ^() {
     [weakSelf
         runCompletionWithSigninResult:weakSelf.mediator.signinCoordinatorResult
-                       completionInfo:weakSelf.mediator.signinCompletionInfo];
+                   completionIdentity:weakSelf.mediator
+                                          .signinCompletionIdentity];
     if (completion) {
       completion();
     }
@@ -450,7 +451,7 @@
             (ManageAccountsCoordinator*)manageAccountsCoordinator
     didRequestAddAccountWithBaseViewController:(UIViewController*)viewController
                                     completion:
-                                        (ShowSigninCommandCompletionCallback)
+                                        (SigninCoordinatorCompletionCallback)
                                             completion {
   CHECK_EQ(manageAccountsCoordinator, _manageAccountsCoordinator);
   [self openAddAccountWithBaseViewController:viewController
@@ -459,24 +460,30 @@
 
 #pragma mark - Private
 
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+}
+
 - (void)startSigninCoordinatorWithCompletion:
-    (ShowSigninCommandCompletionCallback)completion {
+    (SigninCoordinatorCompletionCallback)completion {
   CHECK(_signinCoordinator);
   __weak __typeof(self) weakSelf = self;
-  _signinCoordinator.signinCompletion = ^(
-      SigninCoordinatorResult signinResult,
-      SigninCompletionInfo* signinCompletionInfo) {
-    [weakSelf signinCoordinatorCompletionWithSigninResult:signinResult
-                                           completionInfo:signinCompletionInfo
-                                               completion:completion];
-  };
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        id<SystemIdentity> signinCompletionIdentity) {
+        [weakSelf
+            signinCoordinatorCompletionWithSigninResult:signinResult
+                                     completionIdentity:signinCompletionIdentity
+                                             completion:completion];
+      };
   [_signinCoordinator start];
 }
 
 // Opens the add account coordinator on top of `baseViewController`.
 - (void)openAddAccountWithBaseViewController:baseViewController
                                   completion:
-                                      (ShowSigninCommandCompletionCallback)
+                                      (SigninCoordinatorCompletionCallback)
                                           completion {
   _signinCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:baseViewController
@@ -489,15 +496,14 @@
 - (void)
     signinCoordinatorCompletionWithSigninResult:
         (SigninCoordinatorResult)signinResult
-                                 completionInfo:
-                                     (SigninCompletionInfo*)completionInfo
+                             completionIdentity:
+                                 (id<SystemIdentity>)completionIdentity
                                      completion:
-                                         (ShowSigninCommandCompletionCallback)
+                                         (SigninCoordinatorCompletionCallback)
                                              completion {
-  [_signinCoordinator stop];
-  _signinCoordinator = nil;
+  [self stopSigninCoordinator];
   if (completion) {
-    completion(signinResult, completionInfo);
+    completion(signinResult, completionIdentity);
   }
 }
 

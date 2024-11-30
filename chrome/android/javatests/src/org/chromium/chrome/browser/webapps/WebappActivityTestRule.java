@@ -25,7 +25,6 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -225,7 +224,10 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
                     Criteria.checkThat(getActivity().getActivityTab(), Matchers.notNullValue());
 
                     View splashScreen =
-                            getSplashController(getActivity()).getSplashScreenForTests();
+                            getActivity()
+                                    .getSplashControllerSupplier()
+                                    .get()
+                                    .getSplashScreenForTests();
                     Criteria.checkThat(splashScreen, Matchers.notNullValue());
 
                     if (!(splashScreen instanceof ViewGroup)) return;
@@ -236,7 +238,8 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        View splashScreen = getSplashController(getActivity()).getSplashScreenForTests();
+        View splashScreen =
+                getActivity().getSplashControllerSupplier().get().getSplashScreenForTests();
         assertNotNull("No splash screen available.", splashScreen);
 
         // TODO(pkotwicz): Change return type in order to accommodate new-style WebAPKs.
@@ -252,17 +255,15 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
     public static void waitUntilSplashHides(WebappActivity activity) {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
-                    return getSplashController(activity).wasSplashScreenHiddenForTests();
+                    return activity.getSplashControllerSupplier()
+                            .get()
+                            .wasSplashScreenHiddenForTests();
                 },
                 STARTUP_TIMEOUT,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     public boolean isSplashScreenVisible() {
-        return getSplashController(getActivity()).getSplashScreenForTests() != null;
-    }
-
-    public static SplashController getSplashController(WebappActivity activity) {
-        return activity.getComponent().resolveSplashController();
+        return getActivity().getSplashControllerSupplier().get().getSplashScreenForTests() != null;
     }
 }

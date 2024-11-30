@@ -59,12 +59,10 @@ class WaitUntilFulfill final : public ThenCallable<IDLAny, WaitUntilFulfill> {
 };
 
 class WaitUntilReject final
-    : public ThenCallable<IDLAny, WaitUntilReject, IDLAny> {
+    : public ThenCallable<IDLAny, WaitUntilReject, IDLPromise<IDLAny>> {
  public:
-  ScriptValue React(ScriptState* script_state, ScriptValue value) {
-    return ScriptValue(
-        script_state->GetIsolate(),
-        ScriptPromise<IDLUndefined>::Reject(script_state, value).V8Promise());
+  ScriptPromise<IDLAny> React(ScriptState* script_state, ScriptValue value) {
+    return ScriptPromise<IDLAny>::Reject(script_state, value);
   }
 };
 

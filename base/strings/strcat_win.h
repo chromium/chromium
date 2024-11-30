@@ -22,7 +22,7 @@ BASE_EXPORT void StrAppend(std::wstring* dest, span<const std::wstring> pieces);
 
 inline void StrAppend(std::wstring* dest,
                       std::initializer_list<std::wstring_view> pieces) {
-  StrAppend(dest, make_span(pieces));
+  StrAppend(dest, span(pieces));
 }
 
 [[nodiscard]] BASE_EXPORT std::wstring StrCat(
@@ -30,7 +30,7 @@ inline void StrAppend(std::wstring* dest,
 [[nodiscard]] BASE_EXPORT std::wstring StrCat(span<const std::wstring> pieces);
 
 inline std::wstring StrCat(std::initializer_list<std::wstring_view> pieces) {
-  return StrCat(make_span(pieces));
+  return StrCat(span(pieces));
 }
 
 }  // namespace base

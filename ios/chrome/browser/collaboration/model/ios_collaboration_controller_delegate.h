@@ -30,9 +30,11 @@ class IOSCollaborationControllerDelegate
   void Cancel(ResultCallback result) override;
   void ShowAuthenticationUi(ResultCallback result) override;
   void NotifySignInAndSyncStatusChange() override;
-  void ShowJoinDialog(ResultCallback result) override;
+  void ShowJoinDialog(data_sharing::SharedDataPreview preview_data,
+                      ResultCallback result) override;
   void ShowShareDialog(ResultCallback result) override;
   void PromoteTabGroup(ResultCallback result) override;
+  void PromoteCurrentScreen() override;
 
  private:
   std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow_;

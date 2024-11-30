@@ -31,12 +31,6 @@ namespace CryptoUtility {
 namespace {
 
 const unsigned int kWellKnownExponent = 65537;
-const size_t kAesKeySizeBits = 256;
-const size_t kAesBlockSize = 16;
-
-const unsigned char* StringAsConstOpenSSLBuffer(const std::string& s) {
-  return reinterpret_cast<const unsigned char*>(s.data());
-}
 
 unsigned char* StringAsOpenSSLBuffer(std::string* s) {
   return reinterpret_cast<unsigned char*>(std::data(*s));
@@ -105,49 +99,10 @@ bool VerifySignatureUsingHexKey(const std::string& public_key_modulus_hex,
   return verifier.VerifyFinal();
 }
 
-std::string HmacSha512(const std::string& key, const std::string& data) {
-  unsigned char mac[SHA512_DIGEST_LENGTH];
-  std::string mutable_data(data);
-  unsigned char* data_buffer = StringAsOpenSSLBuffer(&mutable_data);
-  HMAC(EVP_sha512(), key.data(), key.size(), data_buffer, data.size(), mac,
-       nullptr);
-  return std::string(std::begin(mac), std::end(mac));
-}
-
-bool EncryptWithSeed(const std::string& data,
-                     EncryptedData* encrypted,
-                     std::string& key) {
-  // Generate AES key of size 256 bits.
-  std::unique_ptr<crypto::SymmetricKey> symmetric_key(
-      crypto::SymmetricKey::GenerateRandomKey(crypto::SymmetricKey::AES,
-                                              kAesKeySizeBits));
-  if (!symmetric_key) {
-    return false;
-  }
-  key = symmetric_key->key();
-
-  // Generate initialized vector of size 128 bits.
-  std::string iv(kAesBlockSize, '\0');
-  crypto::RandBytes(base::as_writable_byte_span(iv));
-
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(symmetric_key.get(), crypto::Encryptor::CBC, iv)) {
-    return false;
-  }
-  if (!encryptor.Encrypt(data, encrypted->mutable_encrypted_data())) {
-    return false;
-  }
-
-  encrypted->set_iv(iv);
-  encrypted->set_mac(HmacSha512(key, iv + encrypted->encrypted_data()));
-  return true;
-}
-
-bool WrapKeyOAEP(const std::string& key,
+bool WrapKeyOAEP(base::span<const uint8_t> key,
                  RSA* wrapping_key,
                  const std::string& wrapping_key_id,
                  EncryptedData* output) {
-  const unsigned char* key_buffer = StringAsConstOpenSSLBuffer(key);
   std::string encrypted_key;
 
   if (!wrapping_key) {
@@ -157,7 +112,7 @@ bool WrapKeyOAEP(const std::string& key,
 
   encrypted_key.resize(RSA_size(wrapping_key));
   unsigned char* encrypted_key_buffer = StringAsOpenSSLBuffer(&encrypted_key);
-  int length = RSA_public_encrypt(key.size(), key_buffer, encrypted_key_buffer,
+  int length = RSA_public_encrypt(key.size(), key.data(), encrypted_key_buffer,
                                   wrapping_key, RSA_PKCS1_OAEP_PADDING);
   if (length == -1) {
     LOG(ERROR) << "RSA_public_encrypt failed.";

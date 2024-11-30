@@ -23,9 +23,8 @@
 namespace autofill::autofill_metrics {
 
 // This is defined in the prediction_quality_metrics.cc implementation file.
-int GetFieldTypeGroupPredictionQualityMetric(
-    FieldType field_type,
-    autofill_metrics::FieldTypeQualityMetric metric);
+int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
+                                             FieldTypeQualityMetric metric);
 
 namespace {
 
@@ -91,8 +90,7 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
                   .form_control_type = FormControlType::kInputTelephone,
                   .is_autofilled = true}},
       .renderer_id = test::MakeFormRendererId(),
-      .main_frame_origin =
-          url::Origin::Create(autofill_client_->form_origin())};
+      .main_frame_origin = url::Origin::Create(autofill_driver_->url())};
 
   std::vector<FieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,

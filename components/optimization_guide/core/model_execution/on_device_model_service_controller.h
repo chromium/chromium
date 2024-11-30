@@ -157,7 +157,6 @@ class OnDeviceModelServiceController
     mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
         override;
     void OnResponseCompleted() override;
-    void OnSessionTimedOut() override;
 
    private:
     ModelBasedCapabilityKey feature_;
@@ -202,7 +201,7 @@ class OnDeviceModelServiceController
   // Called when `base_model_remote_` is idle.
   void OnBaseModelRemoteIdle();
 
-  scoped_refptr<const OnDeviceModelFeatureAdapter> GetFeatureAdapter(
+  OnDeviceModelAdaptationMetadata* GetFeatureMetadata(
       ModelBasedCapabilityKey feature);
 
   // Begins the on-device model validation flow.

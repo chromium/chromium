@@ -394,15 +394,12 @@ std::unique_ptr<ActionView> ActionMove::CreateView(
 }
 
 void ActionMove::UnbindInput(const InputElement& input_element) {
-  if (!pending_input_) {
-    pending_input_ = std::make_unique<InputElement>(*current_input_);
-  }
   if (IsKeyboardBound(input_element)) {
     // It might be partially overlapped and only remove the keys overlapped.
     for (auto code : input_element.keys()) {
-      for (size_t i = 0; i < pending_input_->keys().size(); i++) {
-        if (code == pending_input_->keys()[i]) {
-          pending_input_->SetKey(i, ui::DomCode::NONE);
+      for (size_t i = 0; i < current_input_->keys().size(); i++) {
+        if (code == current_input_->keys()[i]) {
+          current_input_->SetKey(i, ui::DomCode::NONE);
         }
       }
     }

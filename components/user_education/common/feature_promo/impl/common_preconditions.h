@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/anchor_element_provider.h"
+#include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -20,6 +21,7 @@ DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kMeetsFeatureEngagementCriteriaPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kAnchorElementPrecondition);
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kLifecyclePrecondition);
 
 // Represents a precondition requiring the Feature Engagement Tracker to be
 // initialized.
@@ -52,7 +54,7 @@ class MeetsFeatureEngagementCriteriaPrecondition
   ~MeetsFeatureEngagementCriteriaPrecondition() override;
 
   // FeaturePromoPrecondition:
-  bool IsAllowed() const override;
+  FeaturePromoResult CheckPrecondition() const override;
 
  private:
   const raw_ref<const base::Feature> feature_;
@@ -65,19 +67,29 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
   DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(ui::SafeElementReference,
                                        kAnchorElement);
 
-  explicit AnchorElementPrecondition(const AnchorElementProvider& provider,
-                                     ui::ElementContext default_context);
+  AnchorElementPrecondition(const AnchorElementProvider& provider,
+                            ui::ElementContext default_context);
   ~AnchorElementPrecondition() override;
 
   // FeaturePromoPrecondition:
-  bool IsAllowed() const override;
+  FeaturePromoResult CheckPrecondition() const override;
 
  private:
   const raw_ref<const AnchorElementProvider> provider_;
   const ui::ElementContext default_context_;
 };
 
-// Represents a precondition requiring an element to be present.
+// Wraps a FeaturePromoLifecycle to determine if a promo can be shown.
+class LifecyclePrecondition : public FeaturePromoPreconditionBase {
+ public:
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(std::unique_ptr<FeaturePromoLifecycle>,
+                                       kLifecycle);
+  explicit LifecyclePrecondition(std::unique_ptr<FeaturePromoLifecycle>);
+  ~LifecyclePrecondition() override;
+
+  // FeaturePromoPrecondition:
+  FeaturePromoResult CheckPrecondition() const override;
+};
 
 }  // namespace user_education
 

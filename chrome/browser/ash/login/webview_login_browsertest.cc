@@ -2705,7 +2705,6 @@ class WebviewLoginQuickStartTest : public WebviewLoginTest {
  public:
   WebviewLoginQuickStartTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
     connection_broker_factory_.set_initial_feature_support_status(
         quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
             kUndetermined);

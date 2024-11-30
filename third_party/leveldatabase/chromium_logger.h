@@ -38,7 +38,7 @@ class ChromiumLogger : public Logger {
       str.push_back('\n');
     }
 
-    file_.WriteAtCurrentPosAndCheck(base::as_bytes(base::make_span(str)));
+    file_.WriteAtCurrentPosAndCheck(base::as_byte_span(str));
   }
 
  private:

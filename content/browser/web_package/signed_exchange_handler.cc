@@ -346,7 +346,7 @@ SignedExchangeHandler::ParsePrologueBeforeFallbackUrl() {
 
   prologue_before_fallback_url_ =
       signed_exchange_prologue::BeforeFallbackUrl::Parse(
-          base::make_span(
+          base::span(
               header_buf_->bytes(),
               signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes),
           devtools_proxy_.get());
@@ -368,7 +368,7 @@ SignedExchangeHandler::ParsePrologueFallbackUrlAndAfter() {
 
   prologue_fallback_url_and_after_ =
       signed_exchange_prologue::FallbackUrlAndAfter::Parse(
-          base::make_span(
+          base::span(
               header_buf_->bytes(),
               prologue_before_fallback_url_.ComputeFallbackUrlAndAfterLength()),
           prologue_before_fallback_url_, devtools_proxy_.get());
@@ -411,10 +411,9 @@ SignedExchangeHandler::ParseHeadersAndFetchCertificate() {
   std::string_view data(header_buf_->data(), header_read_buf_->size());
   std::string_view signature_header_field = data.substr(
       0, prologue_fallback_url_and_after_.signature_header_field_length());
-  base::span<const uint8_t> cbor_header =
-      base::as_bytes(base::make_span(data.substr(
-          prologue_fallback_url_and_after_.signature_header_field_length(),
-          prologue_fallback_url_and_after_.cbor_header_length())));
+  base::span<const uint8_t> cbor_header = base::as_byte_span(data.substr(
+      prologue_fallback_url_and_after_.signature_header_field_length(),
+      prologue_fallback_url_and_after_.cbor_header_length()));
   envelope_ = SignedExchangeEnvelope::Parse(
       *version_, prologue_fallback_url_and_after_.fallback_url(),
       signature_header_field, cbor_header, devtools_proxy_.get());

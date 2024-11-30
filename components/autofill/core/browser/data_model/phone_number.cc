@@ -75,11 +75,8 @@ void PhoneNumber::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(PHONE_HOME_CITY_CODE);
   supported_types->insert(PHONE_HOME_CITY_AND_NUMBER);
   supported_types->insert(PHONE_HOME_COUNTRY_CODE);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
-    supported_types->insert(PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX);
-    supported_types->insert(PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX);
-  }
+  supported_types->insert(PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX);
+  supported_types->insert(PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX);
 }
 
 std::u16string PhoneNumber::GetRawInfo(FieldType type) const {
@@ -157,8 +154,6 @@ void PhoneNumber::GetMatchingTypesWithProfileSources(
   // We explicitly keep both matches, as the type prediction doesn't make a
   // difference for these countries. Votes from other countries can then tip
   // the counts to the right type.
-  // This is only applicable when
-  // `kAutofillEnableSupportForPhoneNumberTrunkTypes` is enabled.
   //
   // When the phone number is stored without a country code,
   // PHONE_HOME_WHOLE_NUMBER and PHONE_HOME_CITY_AND_NUMBER coincide (and
@@ -296,23 +291,7 @@ bool PhoneNumber::SetInfoWithVerificationStatusImpl(
     cached_parsed_phone_ = i18n::PhoneObject();
     return false;
   }
-  // Store a formatted (i.e., pretty printed) version of the number if it
-  // doesn't contain formatting marks.
-  if (base::ContainsOnlyChars(number_, u"+0123456789") ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillPreferParsedPhoneNumber)) {
-    number_ = cached_parsed_phone_.GetFormattedNumber();
-  } else {
-    // Strip `number_` of extensions, e.g. "(123)-123 ext. 123" -> "(123)-123".
-    // In the if case, this is done by `GetFormattedNumber()` already. To
-    // preserve the formatting, everything after the last digit of the whole
-    // number is removed manually here. The whole number only consists of digits
-    // and has any extensions removed already.
-    size_t i = 0;
-    for (auto digit : cached_parsed_phone_.GetWholeNumber())
-      i = number_.find(digit, i) + 1;  // Skip `digit`.
-    number_ = number_.substr(0, i);
-  }
+  number_ = cached_parsed_phone_.GetFormattedNumber();
   return true;
 }
 
@@ -324,9 +303,7 @@ void PhoneNumber::UpdateCacheIfNeeded(const std::string& app_locale) const {
     // the number.
     cached_parsed_phone_ = i18n::PhoneObject(
         number_, region,
-        /*infer_country_code=*/profile_->HasInfo(ADDRESS_HOME_COUNTRY) &&
-            base::FeatureList::IsEnabled(
-                features::kAutofillInferCountryCallingCode));
+        /*infer_country_code=*/profile_->HasInfo(ADDRESS_HOME_COUNTRY));
   }
 }
 

@@ -628,7 +628,7 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
   const FontHeight line_box_metrics = container_builder_.Metrics();
   FontHeight intrinsic_metrics = line_box_metrics;
   InlineBoxState::AdjustEdges(
-      space.EffectiveTextBoxEdge(), line_style.GetFont(), baseline_type_,
+      line_style, line_style.GetFont(), baseline_type_,
       should_apply_over, should_apply_under, intrinsic_metrics);
 
   if (should_apply_start) {
@@ -1143,8 +1143,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     if (line_break_strategy.NeedsToPrepare()) [[unlikely]] {
       line_break_strategy.Prepare(
           context_, Node(), constraint_space,
-          base::make_span(opportunities_it, opportunities.end()),
-          line_opportunity, leading_floats, break_token, &GetExclusionSpace());
+          base::span(opportunities_it, opportunities.end()), line_opportunity,
+          leading_floats, break_token, &GetExclusionSpace());
     }
     bool is_line_info_cached = false;
     LineInfo& line_info =

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -49,6 +50,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_constants.h"
@@ -72,25 +74,6 @@
 
 namespace signin {
 namespace {
-
-const char kTestConsumerId[] = "dummy_consumer";
-const char kTestConsumerId2[] = "dummy_consumer 2";
-const char kTestGaiaId[] = "dummyId";
-const char kTestGaiaId2[] = "dummyId2";
-const char kTestGaiaId3[] = "dummyId3";
-const char kTestEmail[] = "me@gmail.com";
-const char kTestEmail2[] = "me2@gmail.com";
-const char kTestEmail3[] = "me3@gmail.com";
-
-const char kTestHostedDomain[] = "example.com";
-const char kTestFullName[] = "full_name";
-const char kTestGivenName[] = "given_name";
-const char kTestLocale[] = "locale";
-const char kTestPictureUrl[] = "http://picture.example.com/picture.jpg";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kTestEmailWithPeriod[] = "m.e@gmail.com";
-#endif
 
 // Subclass of FakeOAuth2AccessTokenManager with bespoke behavior.
 class CustomFakeOAuth2AccessTokenManager : public FakeOAuth2AccessTokenManager {
@@ -272,6 +255,25 @@ class IdentityManagerTest : public testing::Test {
  public:
   IdentityManagerTest(const IdentityManagerTest&) = delete;
   IdentityManagerTest& operator=(const IdentityManagerTest&) = delete;
+
+  const std::string kTestConsumerId = "dummy_consumer";
+  const std::string kTestConsumerId2 = "dummy_consumer 2";
+  const GaiaId kTestGaiaId = GaiaId("dummyId");
+  const GaiaId kTestGaiaId2 = GaiaId("dummyId2");
+  const GaiaId kTestGaiaId3 = GaiaId("dummyId3");
+  const std::string kTestEmail = "me@gmail.com";
+  const std::string kTestEmail2 = "me2@gmail.com";
+  const std::string kTestEmail3 = "me3@gmail.com";
+
+  const std::string kTestHostedDomain = "example.com";
+  const std::string kTestFullName = "full_name";
+  const std::string kTestGivenName = "given_name";
+  const std::string kTestLocale = "locale";
+  const std::string kTestPictureUrl = "http://picture.example.com/picture.jpg";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const std::string kTestEmailWithPeriod = "m.e@gmail.com";
+#endif
 
  protected:
   IdentityManagerTest()
@@ -1710,7 +1712,8 @@ TEST_F(IdentityManagerTest, CallbackSentOnRefreshTokenRemovalOfUnknownAccount) {
   // IdentityManager passes on the callback in this case.
   token_service()->set_all_credentials_loaded_for_testing(false);
 
-  CoreAccountId dummy_account_id = CoreAccountId::FromGaiaId("dummy_account");
+  CoreAccountId dummy_account_id =
+      CoreAccountId::FromGaiaId(GaiaId("dummy_account"));
 
   base::RunLoop run_loop;
   token_service()->RevokeCredentials(dummy_account_id);
@@ -1780,7 +1783,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account.id);
-  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id);
+  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id.ToString());
   EXPECT_EQ(kTestEmail, listed_account.email);
 }
 
@@ -1811,7 +1814,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account1.id);
-  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id);
+  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
   EXPECT_EQ(kTestEmail, listed_account1.email);
 
   gaia::ListedAccount account_info2 =
@@ -1819,7 +1822,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId2, kTestEmail2),
       account_info2.id);
-  EXPECT_EQ(kTestGaiaId2, account_info2.gaia_id);
+  EXPECT_EQ(kTestGaiaId2, account_info2.gaia_id.ToString());
   EXPECT_EQ(kTestEmail2, account_info2.email);
 }
 
@@ -1873,7 +1876,7 @@ TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
       EXPECT_EQ(
           identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
           listed_account1.id);
-    EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id);
+    EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
     EXPECT_EQ(kTestEmail, listed_account1.email);
 
     gaia::ListedAccount listed_account2 =
@@ -1885,7 +1888,7 @@ TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
       EXPECT_EQ(identity_manager()->PickAccountIdForAccount(kTestGaiaId2,
                                                             kTestEmail2),
                 listed_account2.id);
-    EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id);
+    EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id.ToString());
     EXPECT_EQ(kTestEmail2, listed_account2.email);
   }
 }
@@ -1979,7 +1982,7 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithOneAccount) {
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account.id);
-  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id);
+  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id.ToString());
   EXPECT_EQ(kTestEmail, listed_account.email);
 }
 
@@ -2021,7 +2024,7 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithTwoAccounts) {
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account1.id);
-  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id);
+  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
   EXPECT_EQ(kTestEmail, listed_account1.email);
 
   gaia::ListedAccount listed_account2 =
@@ -2029,18 +2032,16 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithTwoAccounts) {
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId2, kTestEmail2),
       listed_account2.id);
-  EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id);
+  EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id.ToString());
   EXPECT_EQ(kTestEmail2, listed_account2.email);
 }
 
 TEST_F(IdentityManagerTest,
        CallbackSentOnSetAccountsInCookieCompleted_Success) {
-  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId("account_id");
-  const CoreAccountId kTestAccountId2 =
-      CoreAccountId::FromGaiaId("account_id2");
-  const std::vector<std::pair<CoreAccountId, std::string>> accounts = {
-      {kTestAccountId, kTestAccountId.ToString()},
-      {kTestAccountId2, kTestAccountId2.ToString()}};
+  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId(kTestGaiaId);
+  const CoreAccountId kTestAccountId2 = CoreAccountId::FromGaiaId(kTestGaiaId2);
+  const std::vector<std::pair<CoreAccountId, GaiaId>> accounts = {
+      {kTestAccountId, kTestGaiaId}, {kTestAccountId2, kTestGaiaId2}};
 
   SetAccountsInCookieResult
       error_from_set_accounts_in_cookie_completed_callback;
@@ -2065,12 +2066,10 @@ TEST_F(IdentityManagerTest,
 
 TEST_F(IdentityManagerTest,
        CallbackSentOnSetAccountsInCookieCompleted_Failure) {
-  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId("account_id");
-  const CoreAccountId kTestAccountId2 =
-      CoreAccountId::FromGaiaId("account_id2");
-  const std::vector<std::pair<CoreAccountId, std::string>> accounts = {
-      {kTestAccountId, kTestAccountId.ToString()},
-      {kTestAccountId2, kTestAccountId2.ToString()}};
+  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId(kTestGaiaId);
+  const CoreAccountId kTestAccountId2 = CoreAccountId::FromGaiaId(kTestGaiaId2);
+  const std::vector<std::pair<CoreAccountId, GaiaId>> accounts = {
+      {kTestAccountId, kTestGaiaId}, {kTestAccountId2, kTestGaiaId2}};
 
   SetAccountsInCookieResult
       error_from_set_accounts_in_cookie_completed_callback;

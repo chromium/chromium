@@ -44,7 +44,7 @@ ServiceInfo ServiceInfoFromServiceDescription(
 OpenScreenListener::OpenScreenListener(std::string service_type)
     : service_type_(kOpenScreenServiceType) {}
 
-OpenScreenListener::~OpenScreenListener() {}
+OpenScreenListener::~OpenScreenListener() = default;
 
 bool OpenScreenListener::Start() {
   is_running_ = true;

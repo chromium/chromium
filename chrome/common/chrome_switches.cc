@@ -905,6 +905,7 @@ const char kForceNtpMobilePromo[] = "force-ntp-mobile-promo";
 #if BUILDFLAG(ENABLE_GLIC)
 // Overrides the glic guest URL.
 const char kGlicGuestURL[] = "glic-guest-url";
+const char kCSPOverride[] = "glic-webui-csp-override";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

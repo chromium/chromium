@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/form_autofill_history.h"
+#include "components/autofill/core/browser/filling/form_autofill_history.h"
 
 namespace autofill::autofill_metrics {
 

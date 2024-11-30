@@ -271,15 +271,12 @@ ScrollDirectionPhysical Scrollbar::PressedPartScrollDirectionPhysical() {
 }
 
 ui::ScrollGranularity Scrollbar::PressedPartScrollGranularity() {
-  if (pressed_part_ == kBackButtonStartPart ||
-      pressed_part_ == kBackButtonEndPart ||
-      pressed_part_ == kForwardButtonStartPart ||
-      pressed_part_ == kForwardButtonEndPart) {
-    return RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-               ? ui::ScrollGranularity::kScrollByPercentage
-               : ui::ScrollGranularity::kScrollByLine;
-  }
-  return ui::ScrollGranularity::kScrollByPage;
+  return (pressed_part_ == kBackButtonStartPart ||
+          pressed_part_ == kBackButtonEndPart ||
+          pressed_part_ == kForwardButtonStartPart ||
+          pressed_part_ == kForwardButtonEndPart)
+             ? ui::ScrollGranularity::kScrollByLine
+             : ui::ScrollGranularity::kScrollByPage;
 }
 
 void Scrollbar::MoveThumb(int pos, bool dragging_document) {
@@ -623,10 +620,9 @@ void Scrollbar::MouseDown(const WebMouseEvent& evt) {
 
 void Scrollbar::InjectScrollGestureForPressedPart(
     WebInputEvent::Type gesture_type) {
-  ui::ScrollGranularity granularity = PressedPartScrollGranularity();
-  ScrollOffset delta =
-      ToScrollDelta(PressedPartScrollDirectionPhysical(),
-                    ScrollableArea::DirectionBasedScrollDelta(granularity));
+  const ui::ScrollGranularity granularity = PressedPartScrollGranularity();
+  const ScrollOffset delta =
+      ToScrollDelta(PressedPartScrollDirectionPhysical(), 1);
   InjectScrollGesture(gesture_type, delta, granularity);
 }
 

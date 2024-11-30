@@ -11,6 +11,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace mojo {
@@ -46,7 +47,7 @@ PlatformSharedMemoryMapping::PlatformSharedMemoryMapping(
       return;
     }
   }
-  CHECK(false);
+  NOTREACHED();
 }
 
 PlatformSharedMemoryMapping::~PlatformSharedMemoryMapping() = default;

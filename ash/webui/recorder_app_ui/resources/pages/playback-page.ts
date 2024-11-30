@@ -48,7 +48,10 @@ import {
   ReactiveAudio,
 } from '../core/audio_player_controller.js';
 import {i18n} from '../core/i18n.js';
-import {useRecordingDataManager} from '../core/lit/context.js';
+import {
+  usePlatformHandler,
+  useRecordingDataManager,
+} from '../core/lit/context.js';
 import {
   ComputedState,
   ReactiveLitElement,
@@ -366,6 +369,8 @@ export class PlaybackPage extends ReactiveLitElement {
   private readonly exportDialog = createRef<ExportDialog>();
 
   private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
+
+  private readonly platformHandler = usePlatformHandler();
 
   private readonly recordingDataManager = useRecordingDataManager();
 
@@ -758,6 +763,9 @@ export class PlaybackPage extends ReactiveLitElement {
       const label = this.getSpeedLabel(speed);
       const onClick = () => {
         this.audioPlayer.playbackSpeed.value = speed;
+        this.platformHandler.eventsSender.sendChangePlaybackSpeedEvent(
+          {playbackSpeed: speed},
+        );
       };
 
       return html`<cra-menu-item
@@ -805,15 +813,27 @@ export class PlaybackPage extends ReactiveLitElement {
     `;
   }
 
+  // Updates volume states in audioPlayer and sends event
+  private updateVolume(muted: boolean, volume: number) {
+    this.audioPlayer.muted.value = muted;
+    this.audioPlayer.volume.value = volume / 100;
+    // Directly records the change because we don't do optimistic updates on
+    // those values in the audioPlayer.
+    this.platformHandler.eventsSender.sendChangePlaybackVolumeEvent(
+      {muted, volume},
+    );
+  }
+
   private onVolumeInput(ev: Event) {
     const slider = assertInstanceof(ev.target, CrosSlider);
-    this.audioPlayer.muted.value = false;
-    this.audioPlayer.volume.value = slider.value / 100;
+    this.updateVolume(/* muted= */ false, slider.value);
     this.requestUpdate();
   }
 
   private toggleMuted() {
-    this.audioPlayer.muted.update((s) => !s);
+    const muted = !this.audioPlayer.muted.value;
+    const volume = Math.round(this.audioPlayer.volume.value * 100);
+    this.updateVolume(muted, volume);
     this.requestUpdate();
   }
 

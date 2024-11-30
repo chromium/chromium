@@ -358,30 +358,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)
     public void testTrackingProtection() throws IOException {
-        setShowTrackingProtection(true);
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        // Verify that the Tracking Protection row is shown and 3PC/DNT are not.
-        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        Preference trackingProtectionPreference =
-                fragment.findPreference(PrivacySettings.PREF_TRACKING_PROTECTION);
-        assertTrue(trackingProtectionPreference.isVisible());
-        onView(withText(R.string.tracking_protection_title)).check(matches(isDisplayed()));
-
-        Preference thirdPartyCookiesPreference =
-                fragment.findPreference(PrivacySettings.PREF_THIRD_PARTY_COOKIES);
-        assertFalse(thirdPartyCookiesPreference.isVisible());
-
-        Preference dntPreference = fragment.findPreference(PrivacySettings.PREF_DO_NOT_TRACK);
-        assertFalse(dntPreference.isVisible());
-    }
-
-    @Test
-    @LargeTest
-    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)
-    public void testTrackingProtectionRewind() throws IOException {
         setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -562,7 +539,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP)
-    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testClearBrowsingData_withQuickDeleteV2Disabled() {
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
@@ -578,10 +554,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
-        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
-    })
+    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP})
     public void testClearBrowsingData_withQuickDeleteV2Enabled() {
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));

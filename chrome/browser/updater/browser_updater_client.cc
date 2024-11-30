@@ -101,16 +101,18 @@ void BrowserUpdaterClient::UpdateCompleted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Result of update was: " << result;
 
-  if (result != updater::UpdateService::Result::kSuccess) {
-    updater::UpdateService::UpdateState update_state;
-    update_state.state =
-        updater::UpdateService::UpdateState::State::kUpdateError;
-    update_state.error_category =
-        updater::UpdateService::ErrorCategory::kUpdateCheck;
-    update_state.error_code = static_cast<int>(result);
-
-    callback.Run(update_state);
+  if (result == updater::UpdateService::Result::kSuccess ||
+      result == updater::UpdateService::Result::kUpdateCheckFailed) {
+    // These statuses will have sent more descriptive information in the status
+    // callback, don't overwrite it.
+    return;
   }
+  updater::UpdateService::UpdateState update_state;
+  update_state.state = updater::UpdateService::UpdateState::State::kUpdateError;
+  update_state.error_category =
+      updater::UpdateService::ErrorCategory::kUpdateCheck;
+  update_state.error_code = static_cast<int>(result);
+  callback.Run(update_state);
 }
 
 void BrowserUpdaterClient::RunPeriodicTasks(base::OnceClosure callback) {

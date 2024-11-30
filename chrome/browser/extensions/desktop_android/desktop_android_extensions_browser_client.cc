@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/desktop_android/desktop_android_runtime_api_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -110,7 +111,11 @@ BrowserContext* DesktopAndroidExtensionsBrowserClient::GetOriginalContext(
 content::BrowserContext*
 DesktopAndroidExtensionsBrowserClient::GetContextRedirectedToOriginal(
     content::BrowserContext* context) {
-  return context;
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kRedirectedToOriginal)
+      .WithGuest(ProfileSelection::kRedirectedToOriginal)
+      .Build()
+      .ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
 
 content::BrowserContext*

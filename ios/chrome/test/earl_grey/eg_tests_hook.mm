@@ -224,8 +224,11 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
   return sync_service;
 }
 
-std::unique_ptr<ShareKitService> CreateShareKitService() {
-  return std::make_unique<TestShareKitService>();
+std::unique_ptr<ShareKitService> CreateShareKitService(
+    data_sharing::DataSharingService* data_sharing_service,
+    tab_groups::TabGroupSyncService* sync_service) {
+  return std::make_unique<TestShareKitService>(data_sharing_service,
+                                               sync_service);
 }
 
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>

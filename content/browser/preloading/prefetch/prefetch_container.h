@@ -572,9 +572,7 @@ class CONTENT_EXPORT PrefetchContainer {
     return no_vary_search_data_;
   }
   // Sets `no_vary_search_data_` from `GetHead()`. Exposed for tests.
-  // RenderFrameHost is being used on no_vary_search::ProcessHead() to put
-  // message to DevTools console and can be null.
-  void MaybeSetNoVarySearchData(RenderFrameHost* rfh);
+  void MaybeSetNoVarySearchData();
 
   // Called upon detecting a change to cookies within the redirect chain.
   //

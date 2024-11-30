@@ -107,8 +107,7 @@
 }
 
 - (void)stop {
-  [_historySyncCoordinator stop];
-  _historySyncCoordinator = nil;
+  [self stopHistorySyncCoordinator];
   _navigationController.presentationController.delegate = nil;
   [_navigationController dismissViewControllerAnimated:NO completion:nil];
   _navigationController = nil;
@@ -152,6 +151,11 @@
 
 #pragma mark - Private
 
+- (void)stopHistorySyncCoordinator {
+  [_historySyncCoordinator stop];
+  _historySyncCoordinator = nil;
+}
+
 - (void)viewWasDismissedWithResult:(SigninCoordinatorResult)result {
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
@@ -171,8 +175,7 @@
             (HistorySyncCoordinator*)historySyncCoordinator
                      declinedByUser:(BOOL)declined {
   CHECK(_navigationController);
-  [_historySyncCoordinator stop];
-  _historySyncCoordinator = nil;
+  [self stopHistorySyncCoordinator];
   SigninCoordinatorResult result = declined
                                        ? SigninCoordinatorResultCanceledByUser
                                        : SigninCoordinatorResultSuccess;
@@ -190,8 +193,7 @@
     (UIPresentationController*)presentationController {
   // This should be triggered only if user dismisses the screen manually.
   base::RecordAction(base::UserMetricsAction("Signin_HistorySync_SwipedDown"));
-  [_historySyncCoordinator stop];
-  _historySyncCoordinator = nil;
+  [self stopHistorySyncCoordinator];
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   [self viewWasDismissedWithResult:SigninCoordinatorResultCanceledByUser];

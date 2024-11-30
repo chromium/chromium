@@ -110,10 +110,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
   gpu::SharedImageInterface* SharedImageInterface() const {
     if (!weak_context_provider_)
       return nullptr;
-    auto* context_provider = weak_context_provider_->ContextProvider();
-    if (!context_provider)
-      return nullptr;
-    return context_provider->SharedImageInterface();
+    return weak_context_provider_->ContextProvider().SharedImageInterface();
   }
 
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
@@ -144,11 +141,9 @@ WebGraphicsContext3DVideoFramePool::~WebGraphicsContext3DVideoFramePool() =
 gpu::raster::RasterInterface*
 WebGraphicsContext3DVideoFramePool::GetRasterInterface() const {
   if (weak_context_provider_) {
-    if (auto* context_provider = weak_context_provider_->ContextProvider()) {
-      if (auto* raster_context_provider =
-              context_provider->RasterContextProvider()) {
-        return raster_context_provider->RasterInterface();
-      }
+    if (auto* raster_context_provider =
+            weak_context_provider_->ContextProvider().RasterContextProvider()) {
+      return raster_context_provider->RasterInterface();
     }
   }
   return nullptr;
@@ -160,9 +155,8 @@ void SignalGpuCompletion(
     GLenum query_target,
     base::OnceClosure callback) {
   DCHECK(ctx_wrapper);
-  auto* context_provider = ctx_wrapper->ContextProvider();
-  DCHECK(context_provider);
-  auto* raster_context_provider = context_provider->RasterContextProvider();
+  auto& context_provider = ctx_wrapper->ContextProvider();
+  auto* raster_context_provider = context_provider.RasterContextProvider();
   DCHECK(raster_context_provider);
   auto* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
@@ -176,11 +170,10 @@ void SignalGpuCompletion(
       [](base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
          unsigned query_id, base::OnceClosure wrapped_callback) {
         if (ctx_wrapper) {
-          if (auto* ctx_provider = ctx_wrapper->ContextProvider()) {
-            if (auto* ri_provider = ctx_provider->RasterContextProvider()) {
-              auto* ri = ri_provider->RasterInterface();
-              ri->DeleteQueriesEXT(1, &query_id);
-            }
+          if (auto* ri_provider =
+                  ctx_wrapper->ContextProvider().RasterContextProvider()) {
+            auto* ri = ri_provider->RasterInterface();
+            ri->DeleteQueriesEXT(1, &query_id);
           }
         }
         std::move(wrapped_callback).Run();
@@ -202,9 +195,8 @@ void CopyToGpuMemoryBuffer(
   CHECK(dst_frame->HasSharedImage());
 
   DCHECK(ctx_wrapper);
-  auto* context_provider = ctx_wrapper->ContextProvider();
-  DCHECK(context_provider);
-  auto* raster_context_provider = context_provider->RasterContextProvider();
+  auto& context_provider = ctx_wrapper->ContextProvider();
+  auto* raster_context_provider = context_provider.RasterContextProvider();
   DCHECK(raster_context_provider);
   auto* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
@@ -212,7 +204,7 @@ void CopyToGpuMemoryBuffer(
   gpu::SyncToken blit_done_sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
 
-  auto* sii = context_provider->SharedImageInterface();
+  auto* sii = context_provider.SharedImageInterface();
   DCHECK(sii);
 
   const bool use_async_copy =
@@ -276,16 +268,14 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
                       perfetto::Flow::ProcessScoped(flow_id));
   if (!weak_context_provider_)
     return false;
-  auto* context_provider = weak_context_provider_->ContextProvider();
-  if (!context_provider)
-    return false;
-  auto* raster_context_provider = context_provider->RasterContextProvider();
+  auto& context_provider = weak_context_provider_->ContextProvider();
+  auto* raster_context_provider = context_provider.RasterContextProvider();
   if (!raster_context_provider)
     return false;
 
 #if BUILDFLAG(IS_WIN)
   // CopyToGpuMemoryBuffer is only supported for D3D shared images on Windows.
-  if (!context_provider->SharedImageInterface()
+  if (!context_provider.SharedImageInterface()
            ->GetCapabilities()
            .shared_image_d3d) {
     DVLOG(1) << "CopyToGpuMemoryBuffer not supported.";

@@ -29,14 +29,11 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -45,21 +42,12 @@ import org.chromium.url.GURL;
 
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
  * Runs Digital Asset Link verification for AuthTab, returns as Activity result for the matching
  * redirect URL when navigated to it.
  */
-@ActivityScope
 @OptIn(markerClass = ExperimentalAuthTab.class)
 public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
-    public static final IntCachedFieldTrialParameter VERIFICATION_TIMEOUT_MS =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS,
-                    "verification_timeout_ms",
-                    10_000);
-
     private static boolean sDelayVerificationForTesting;
 
     private final Activity mActivity;
@@ -83,10 +71,13 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     private Long mHttpsReturnAttemptTime;
     private CallbackController mCallbackController;
 
-    @Inject
-    public AuthTabVerifier(BaseCustomTabActivity activity) {
-        mLifecycleDispatcher = activity.getLifecycleDispatcher();
-        mIntentDataProvider = activity.getIntentDataProvider();
+    public AuthTabVerifier(
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabActivityTabProvider customTabActivityTabProvider) {
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mIntentDataProvider = intentDataProvider;
         mActivity = activity;
         mRedirectHost = mIntentDataProvider.getAuthRedirectHost();
         mRedirectPath = mIntentDataProvider.getAuthRedirectPath();
@@ -99,10 +90,11 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
         mStatus = mVerifiedByAndroid ? VerificationStatus.SUCCESS : VerificationStatus.PENDING;
         mActivityResult = AuthTabIntent.RESULT_OK;
 
-        CustomTabActivityTabProvider tabProvider = activity.getCustomTabActivityTabProvider();
         if (shouldRunOriginVerifier()) {
             WebContents webContents =
-                    tabProvider.getTab() != null ? tabProvider.getTab().getWebContents() : null;
+                    customTabActivityTabProvider.getTab() != null
+                            ? customTabActivityTabProvider.getTab().getWebContents()
+                            : null;
             mOriginVerifier =
                     ChromeOriginVerifierFactory.create(
                             mIntentDataProvider.getClientPackageName(),
@@ -221,7 +213,8 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::returnTimeoutAsActivityResult),
-                    VERIFICATION_TIMEOUT_MS.getValue());
+                    ChromeFeatureList.sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs
+                            .getValue());
         }
     }
 

@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/sync_token.h"
 
 namespace media {
 
@@ -56,81 +57,68 @@ void VideoFrameSharedImageCache::ReleaseCachedData() {
     return;
   }
 
-  auto* ri = provider_->RasterInterface();
-  DCHECK(ri);
-  gpu::SyncToken token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(token.GetData());
-
   auto* sii = provider_->SharedImageInterface();
   DCHECK(sii);
   if (shared_image_) {
-    sii->DestroySharedImage(token, std::move(shared_image_));
+    sii->DestroySharedImage(sync_token_, std::move(shared_image_));
   }
 }
 
-const scoped_refptr<gpu::ClientSharedImage>&
+VideoFrameSharedImageCache::CachedData
 VideoFrameSharedImageCache::GetSharedImage(
     const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider) {
+    viz::RasterContextProvider* raster_context_provider,
+    gpu::SharedImageUsageSet usage) {
+  viz::SharedImageFormat format =
+      VideoPixelFormatToSharedImageFormat(video_frame->format());
+  CHECK(format.is_multi_plane());
+
+  if (shared_image_ && provider_ == raster_context_provider) {
+    // Return the cached shared image if it is the same video frame.
+    if (video_frame_id_ == video_frame->unique_id()) {
+      return {shared_image_, sync_token_, Status::kMatchedVideoFrameId};
+    }
+    // Return the cached shared image if the video frame data matches the shared
+    // image data.
+    if (video_frame->coded_size() == shared_image_->size() &&
+        video_frame->ColorSpace() == shared_image_->color_space() &&
+        format == shared_image_->format() && usage == shared_image_->usage()) {
+      return {shared_image_, sync_token_, Status::kMatchedSharedImageMetaData};
+    }
+  }
+
   // If we have cached shared image but the provider or video has changed we
   // need to release shared image created on the old context and recreate them.
-  if (shared_image_ &&
-      (provider_.get() != raster_context_provider ||
-       video_frame->coded_size() != shared_image_->size() ||
-       video_frame->ColorSpace() != shared_image_->color_space())) {
-    ReleaseCachedData();
-  }
+  ReleaseCachedData();
   provider_ = raster_context_provider;
   CHECK(provider_);
-  auto* ri = provider_->RasterInterface();
-  CHECK(ri);
   auto* sii = provider_->SharedImageInterface();
   CHECK(sii);
 
-  CHECK(!video_frame->HasSharedImage());
+  // Create a multiplanar shared image to upload the data to.
+  shared_image_ = sii->CreateSharedImage(
+      {format, video_frame->coded_size(), video_frame->ColorSpace(),
+       kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, usage, "VideoFrameYUV"},
+      gpu::kNullSurfaceHandle);
+  CHECK(shared_image_);
+  video_frame_id_ = video_frame->unique_id();
+  sync_token_ = sii->GenUnverifiedSyncToken();
 
-  // Create a multiplanar shared image to upload the data to, if one doesn't
-  // exist already.
-  if (!shared_image_) {
-    // This SharedImage will be written to (and later read from) via the raster
-    // interface. The full usage depends on whether raster is OOP or is going
-    // over the GLES2 interface.
-    gpu::SharedImageUsageSet mailbox_usage =
-        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-    auto& caps = provider_->ContextCapabilities();
-    if (caps.gpu_rasterization) {
-      mailbox_usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    } else {
-      // NOTE: This GLES2 usage is *only* for raster, as this SharedImage is
-      // created to hold YUV data that is then converted to RGBA via the raster
-      // interface before being shared with some other use case (e.g., WebGL).
-      // There is no flow wherein this SharedImage is directly exposed to
-      // WebGL. Moreover, this raster usage is by definition *only* over GLES2
-      // (since this is non-OOP-R). It is critical to specify both of these
-      // facts to the service side to ensure that the needed SharedImage backing
-      // gets created (see crbug.com/328472684).
-      mailbox_usage |= gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                       gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-                       gpu::SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
-                       gpu::SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY;
-    }
-
-    viz::SharedImageFormat format =
-        VideoPixelFormatToSharedImageFormat(video_frame->format());
-    CHECK(format.is_multi_plane());
-
-    shared_image_ = sii->CreateSharedImage(
-        {format, video_frame->coded_size(), video_frame->ColorSpace(),
-         kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, mailbox_usage,
-         "VideoFrameYUV"},
-        gpu::kNullSurfaceHandle);
-    CHECK(shared_image_);
-
-    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-  }
-
-  return shared_image_;
+  return {shared_image_, sync_token_, Status::kCreatedNewSharedImage};
 }
+
+void VideoFrameSharedImageCache::UpdateSyncToken(
+    const gpu::SyncToken& sync_token) {
+  sync_token_ = sync_token;
+}
+
+VideoFrameSharedImageCache::CachedData::CachedData(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    const gpu::SyncToken& sync_token,
+    Status status)
+    : shared_image(std::move(shared_image)),
+      sync_token(sync_token),
+      status(status) {}
+VideoFrameSharedImageCache::CachedData::~CachedData() = default;
 
 }  // namespace media

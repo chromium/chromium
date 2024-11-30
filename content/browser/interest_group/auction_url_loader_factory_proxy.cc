@@ -322,10 +322,11 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
               .GetDelegate()
               ->ShouldOverrideUserAgentForRendererInitiatedNavigation();
       if (override_user_agent) {
-        std::string maybe_user_agent = owner_frame_tree_node->navigator()
-                                           .GetDelegate()
-                                           ->GetUserAgentOverride()
-                                           .ua_string_override;
+        std::string maybe_user_agent =
+            owner_frame_tree_node->navigator()
+                .GetDelegate()
+                ->GetUserAgentOverride(owner_frame_tree_node->frame_tree())
+                .ua_string_override;
         if (!maybe_user_agent.empty()) {
           new_request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                         std::move(maybe_user_agent));

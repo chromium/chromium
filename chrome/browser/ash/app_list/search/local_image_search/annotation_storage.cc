@@ -161,6 +161,11 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
                                IndexingSource indexing_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Insert " << image_info.path;
+  if (indexing_source == IndexingSource::kIca) {
+    LogIcaUma(IcaStatus::kIcaInsertStart);
+  } else if (indexing_source == IndexingSource::kOcr) {
+    LogIcaUma(IcaStatus::kOcrInsertStart);
+  }
 
   int64_t document_id;
   if (!DocumentsTable::InsertOrIgnore(sql_database_.get(), image_info.path,
@@ -170,6 +175,11 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
                                      document_id)) {
     LOG(ERROR) << "Failed to insert into the db.";
     LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+    if (indexing_source == IndexingSource::kIca) {
+      LogIcaUma(IcaStatus::kIcaDocumentInsertFailed);
+    } else if (indexing_source == IndexingSource::kOcr) {
+      LogIcaUma(IcaStatus::kOcrDocumentInsertFailed);
+    }
     return;
   }
 
@@ -189,6 +199,7 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
                                         document_id, indexing_source)) {
           LOG(ERROR) << "Failed to insert into the db from OCR.";
           LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+          LogIcaUma(IcaStatus::kOcrAnnotationInsertFailed);
           return;
         }
       }
@@ -210,6 +221,7 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
                 annotation_info.y, annotation_info.area)) {
           LOG(ERROR) << "Failed to insert into the db from ICA.";
           LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+          LogIcaUma(IcaStatus::kIcaAnnotationInsertFailed);
           return;
         }
       }
@@ -221,6 +233,11 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
   if (!execution_succeed) {
     LOG(ERROR) << "Failed to update the document table.";
     LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+    if (indexing_source == IndexingSource::kIca) {
+      LogIcaUma(IcaStatus::kIcaUpdateFailed);
+    } else if (indexing_source == IndexingSource::kOcr) {
+      LogIcaUma(IcaStatus::kOcrUpdateFailed);
+    }
   }
 }
 

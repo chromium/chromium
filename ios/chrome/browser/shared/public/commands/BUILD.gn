@@ -93,6 +93,7 @@ source_set("commands") {
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web/public",
     "//net",

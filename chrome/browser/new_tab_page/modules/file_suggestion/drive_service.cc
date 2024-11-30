@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -399,7 +400,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
                      token_info.token),
       kMaxResponseSize);
   base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
-                           base::PersistentHash("drive"));
+                           base::PersistentHash(ntp_modules::kDriveModuleId));
 }
 
 void DriveService::OnJsonReceived(const std::string& token,

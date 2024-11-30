@@ -116,7 +116,7 @@ SSLClientCertificateSelector::SSLClientCertificateSelector(
       this));
 }
 
-SSLClientCertificateSelector::~SSLClientCertificateSelector() {}
+SSLClientCertificateSelector::~SSLClientCertificateSelector() = default;
 
 void SSLClientCertificateSelector::Init() {
   auth_observer_impl_->Init(base::BindOnce(

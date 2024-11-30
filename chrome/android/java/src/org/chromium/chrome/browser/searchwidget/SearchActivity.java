@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -72,7 +73,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.R
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
@@ -136,11 +136,6 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ static final String HISTOGRAM_SESSION_TERMINATION_REASON =
             "Android.Omnibox.SearchActivity.SessionTerminationReason";
 
-    /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
-    public static final BooleanCachedFieldTrialParameter SEARCH_IN_CCT_APPLY_REFERRER_ID =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SEARCH_IN_CCT, "apply_referrer_id", false);
-
     // NOTE: This is used to capture HISTOGRAM_NAVIGATION_TARGET_TYPE.
     // Do not shuffle or reassign values.
     @VisibleForTesting
@@ -170,6 +165,7 @@ public class SearchActivity extends AsyncInitializationActivity
         TerminationReason.ACTIVITY_FOCUS_LOST,
         TerminationReason.FRE_NOT_COMPLETED,
         TerminationReason.CUSTOM_BACK_ARROW,
+        TerminationReason.BRING_TAB_TO_FRONT,
         TerminationReason.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -182,7 +178,8 @@ public class SearchActivity extends AsyncInitializationActivity
         int ACTIVITY_FOCUS_LOST = 5;
         int FRE_NOT_COMPLETED = 6;
         int CUSTOM_BACK_ARROW = 7;
-        int COUNT = 8;
+        int BRING_TAB_TO_FRONT = 8;
+        int COUNT = 9;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:SearchActivityTerminationReason)
@@ -258,7 +255,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 new ActivityKeyboardVisibilityDelegate(new WeakReference(this)),
                 getIntentRequestTracker(),
                 getInsetObserver(),
-                /* trackOcclusion= */ false) {
+                /* trackOcclusion= */ true) {
             @Override
             public ModalDialogManager getModalDialogManager() {
                 return SearchActivity.this.getModalDialogManager();
@@ -320,7 +317,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         this::loadUrl,
                         /* backKeyBehavior= */ this,
                         /* pageInfoAction= */ (tab, pageInfoHighlight) -> {},
-                        IntentHandler::bringTabToFront,
+                        this::bringTabToFront,
                         /* saveOfflineButtonState= */ (tab) -> false,
                         /*omniboxUma*/ (url, transition, isNtp) -> {},
                         TabWindowManagerSingleton::getInstance,
@@ -369,7 +366,8 @@ public class SearchActivity extends AsyncInitializationActivity
                         null,
                         /* bottomWindowPaddingSupplier */ () -> 0,
                         /* onLongClickListener= */ null,
-                        /* browserControlsStateProvider= */ null);
+                        /* browserControlsStateProvider= */ null,
+                        /* isToolbarPositionCustomizationEnabled= */ false);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);
@@ -574,7 +572,7 @@ public class SearchActivity extends AsyncInitializationActivity
         // Start a new UMA session for the new activity.
         umaSessionResume();
         if (mIntentOrigin == IntentOrigin.CUSTOM_TAB
-                && SEARCH_IN_CCT_APPLY_REFERRER_ID.getValue()) {
+                && ChromeFeatureList.sSearchinCctApplyReferrerId.getValue()) {
             var referrer = SearchActivityUtils.getReferrer(getIntent());
             var referrerValid = !TextUtils.isEmpty(referrer);
             RecordHistogram.recordBooleanHistogram(HISTOGRAM_INTENT_REFERRER_VALID, referrerValid);
@@ -854,6 +852,11 @@ public class SearchActivity extends AsyncInitializationActivity
                     };
             RecordHistogram.recordEnumeratedHistogram(histogramName + suffix, sample, max);
         }
+    }
+
+    private void bringTabToFront(Tab tab) {
+        IntentHandler.bringTabToFront(tab);
+        finish(TerminationReason.BRING_TAB_TO_FRONT, /* loadUrlParams= */ null);
     }
 
     /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {

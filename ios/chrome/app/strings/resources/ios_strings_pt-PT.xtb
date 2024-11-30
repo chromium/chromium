@@ -402,6 +402,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2721190673959776287">Exemplo de ajuda detalhada no produto para o painel de contexto, que deve aparecer várias vezes por dia.</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">A seguir o canal <ph name="CHANNEL_NAME" /></translation>
+<translation id="2755485474385016903">As alterações feitas são vistas por todos os membros do grupo</translation>
 <translation id="2755595981383829244">Vai passar a receber notificações de conteúdo</translation>
 <translation id="2761788987260570878">Tire uma foto da sua pesquisa</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
@@ -431,6 +432,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="288902476966286676">Devolver ao remetente</translation>
 <translation id="2893168226686371498">Navegador predefinido</translation>
 <translation id="2894757982205307093">Novo separador no grupo</translation>
+<translation id="2902312830803030883">Mais ações</translation>
 <translation id="2905479111267140204">Tem <ph name="NUMBER_OF_PASSWORDS" /> palavras-passe reutilizadas que podem pôr a sua segurança em risco.</translation>
 <translation id="291754862089661335">Posicione o código QR ou o código de barras nesta moldura</translation>
 <translation id="2918688092312652908">Marcar como não lida</translation>
@@ -553,6 +555,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3549391962818677448">Tentativa de entrega. Vai ser feita uma nova tentativa</translation>
 <translation id="3557336313807607643">Adicionar aos contactos</translation>
 <translation id="355765753469272474">Anular</translation>
+<translation id="3562379378751492229">Selecione a posição que funciona melhor para si.</translation>
 <translation id="3565930036634619844">Separador <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Toque duas vezes para ver mais palavras-passe.</translation>
 <translation id="3572607909481582402">Na sua Conta Google</translation>
@@ -829,6 +832,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="484280513275854557">A sua sessão foi terminada e os dados de navegação foram eliminados</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4860895144060829044">Telefonar</translation>
+<translation id="4861953997778766866">Todos podem fazer alterações aos seus grupos de separadores partilhados</translation>
 <translation id="4869146460927742717">Posição da barra de endereço</translation>
 <translation id="4870911314065352661">Fechar todos os separadores?</translation>
 <translation id="4872664437015695612">Abrir nas transferências</translation>
@@ -967,6 +971,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5506763544823940561">Guardar imagem em…</translation>
 <translation id="5511959326926949696">Proteção opcional extrema para o seu navegador. Apenas deve ser usada se considerar que pode estar a ser alvo de um ciberataque altamente sofisticado.</translation>
 <translation id="5513681519188741830">Há <ph name="TIME" /> h</translation>
+<translation id="5524590039848017563">Botão da barra de ferramentas principal reduzido</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} palavra-passe fraca}other{{COUNT} palavras-passe fracas}}</translation>
 <translation id="5532545557415295622">Caixa de diálogo de limite de tempo de inatividade</translation>
 <translation id="5548760955356983418">A Entrega permite-lhe começar a navegar num Website neste dispositivo e, em seguida, continuar facilmente no seu Mac. O Website atualmente aberto aparece na Dock do seu Mac.
@@ -991,6 +996,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5611398002774823980">Guardar na conta</translation>
 <translation id="5613297089029360427">Ordenar por mais recente</translation>
 <translation id="5614553682702429503">Guardar a palavra-passe?</translation>
+<translation id="5614805397884895755">Aceda mais rapidamente a partir do ecrã principal.</translation>
 <translation id="5619871095170816857">Este cartão mostra o último separador aberto usado em todos os seus dispositivos sincronizados nas últimas 24 horas.</translation>
 <translation id="5624120631404540903">Gerir palavras-passe</translation>
 <translation id="5624637933505983014">Não ative a sincronização</translation>
@@ -1495,6 +1501,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7812377703891978671">Pode aceder a todo o seu histórico de navegação selecionando o botão <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Transferências</translation>
 <translation id="7815852444315004084">Ocultar para já</translation>
+<translation id="7831876841288640403">Escolha a posição da barra de endereço que funciona melhor para si.</translation>
 <translation id="7839994177130598711">Os membros da família já podem usar o seu nome de utilizador e palavra-passe quando usarem o Gestor de Palavras-passe da Google para iniciarem sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Os itens selecionados serão removidos.</translation>
 <translation id="7841180087127694526">Pesquisar texto copiado</translation>

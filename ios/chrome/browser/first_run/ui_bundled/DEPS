@@ -16,11 +16,11 @@ include_rules = [
   "+ios/chrome/browser/ui/authentication/signin/signin_constants.h",
   "+ios/chrome/browser/ui/authentication/signin_sync/signin_sync_coordinator.h",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
-  "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h",
-  "+ios/chrome/browser/ui/settings/sync/utils/sync_util.h",
-  "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h",
-  "+ios/chrome/browser/ui/screen",
-  "+ios/chrome/browser/ui/settings/elements",
+  "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h",
+  "+ios/chrome/browser/settings/ui_bundled/sync/utils/sync_util.h",
+  "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h",
+  "+ios/chrome/browser/screen/ui_bundled",
+  "+ios/chrome/browser/settings/ui_bundled/elements",
 ]
 
 specific_include_rules = {

@@ -6,6 +6,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/management_context_mixin.h"
 #include "chrome/browser/enterprise/connectors/test/test_constants.h"
@@ -124,7 +125,8 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
     // Since paste requests only receive sync responses, they don't use FCM and
     // shouldn't have a notification token.
     if (connector_ ==
-        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) {
+            enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY ||
+        enterprise_connectors::IsStopRegisterFcmEnabled()) {
       ASSERT_TRUE(request->fcm_notification_token().empty());
     } else {
       ASSERT_EQ(request->fcm_notification_token(), kTestInstanceId);
@@ -172,20 +174,31 @@ class TestRequest : public CloudBinaryUploadService::Request {
 
 class CloudBinaryUploadServiceRequestValidationBrowserTest
     : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<ManagementContextDeviceRequest> {
+      public testing::WithParamInterface<
+          std::tuple<ManagementContextDeviceRequest, bool>> {
  public:
   CloudBinaryUploadServiceRequestValidationBrowserTest()
       : management_mixin_(
             enterprise_connectors::test::ManagementContextMixin::Create(
                 &mixin_host_,
                 this,
-                management_context())) {}
-
-  enterprise_connectors::test::ManagementContext management_context() const {
-    return GetParam().context;
+                management_context())) {
+    is_stop_register_fcm_enabled()
+        ? scoped_feature_list_.InitAndEnableFeature(
+              enterprise_connectors::kStopRegisterFcmEnabled)
+        : scoped_feature_list_.InitAndDisableFeature(
+              enterprise_connectors::kStopRegisterFcmEnabled);
   }
 
-  bool profile_request() const { return GetParam().profile_request; }
+  enterprise_connectors::test::ManagementContext management_context() const {
+    return std::get<0>(GetParam()).context;
+  }
+
+  bool profile_request() const {
+    return std::get<0>(GetParam()).profile_request;
+  }
+
+  bool is_stop_register_fcm_enabled() const { return std::get<1>(GetParam()); }
 
   void SetUpOnMainThread() override {
     CloudBinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
@@ -273,7 +286,9 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
 IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
                        FileAttach) {
   set_connector(enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
-  set_valid_fcm(true);
+  if (!is_stop_register_fcm_enabled()) {
+    set_valid_fcm(true);
+  }
 
   enterprise_connectors::CloudAnalysisSettings cloud_settings;
   cloud_settings.analysis_url = GURL(kTestUrl);
@@ -300,7 +315,9 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
 IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
                        FileDownload) {
   set_connector(enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
-  set_valid_fcm(true);
+  if (!is_stop_register_fcm_enabled()) {
+    set_valid_fcm(true);
+  }
 
   enterprise_connectors::CloudAnalysisSettings cloud_settings;
   cloud_settings.analysis_url = GURL(kTestUrl);
@@ -327,7 +344,9 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
 IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
                        Print) {
   set_connector(enterprise_connectors::AnalysisConnector::PRINT);
-  set_valid_fcm(true);
+  if (!is_stop_register_fcm_enabled()) {
+    set_valid_fcm(true);
+  }
 
   enterprise_connectors::CloudAnalysisSettings cloud_settings;
   cloud_settings.analysis_url = GURL(kTestUrl);
@@ -353,6 +372,7 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CloudBinaryUploadServiceRequestValidationBrowserTest,
-                         testing::ValuesIn(kTestCases));
+                         testing::Combine(testing::ValuesIn(kTestCases),
+                                          testing::Bool()));
 
 }  // namespace safe_browsing

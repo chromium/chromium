@@ -30,7 +30,8 @@ using WebSocketHandlerCreator =
 // WebSocketHandler and return it.
 EmbeddedTestServer::HandleUpgradeRequestCallback CreateWebSocketHandler(
     std::string_view handle_path,
-    WebSocketHandlerCreator websocket_handler_creator);
+    WebSocketHandlerCreator websocket_handler_creator,
+    EmbeddedTestServer* server);
 
 // Registers a WebSocket handler for the specified subclass of WebSocketHandler.
 // This template function streamlines registration by eliminating the need for
@@ -57,7 +58,7 @@ EmbeddedTestServer::HandleUpgradeRequestCallback CreateWebSocketHandler(
 
 template <typename Handler>
   requires std::is_base_of_v<WebSocketHandler, Handler>
-void RegisterWebSocketHandler(EmbeddedTestServer& embedded_test_server,
+void RegisterWebSocketHandler(EmbeddedTestServer* server,
                               std::string_view handle_path) {
   const auto websocket_handler_creator =
       base::BindRepeating([](scoped_refptr<WebSocketConnection> connection)
@@ -65,9 +66,9 @@ void RegisterWebSocketHandler(EmbeddedTestServer& embedded_test_server,
         return std::make_unique<Handler>(std::move(connection));
       });
   const auto callback =
-      CreateWebSocketHandler(handle_path, websocket_handler_creator);
+      CreateWebSocketHandler(handle_path, websocket_handler_creator, server);
 
-  embedded_test_server.RegisterUpgradeRequestHandler(callback);
+  server->RegisterUpgradeRequestHandler(callback);
 }
 }  // namespace net::test_server
 

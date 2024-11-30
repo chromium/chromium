@@ -326,4 +326,35 @@ Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result) {
   NOTREACHED();
 }
 
+NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(
+    signin::IdentityManager* identityManager,
+    ChromeAccountManagerService* accountManagerService) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    return accountManagerService->GetAllIdentities();
+  }
+  std::vector<AccountInfo> accountInfos =
+      identityManager->GetAccountsOnDevice();
+  return accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
+}
+
+NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(ProfileIOS* profile) {
+  return GetIdentitiesOnDevice(
+      IdentityManagerFactory::GetForProfile(profile),
+      ChromeAccountManagerServiceFactory::GetForProfile(profile));
+}
+
+id<SystemIdentity> GetDefaultIdentityOnDevice(
+    signin::IdentityManager* identityManager,
+    ChromeAccountManagerService* accountManagerService) {
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      GetIdentitiesOnDevice(identityManager, accountManagerService);
+  return [identitiesOnDevice firstObject];
+}
+
+id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile) {
+  return GetDefaultIdentityOnDevice(
+      IdentityManagerFactory::GetForProfile(profile),
+      ChromeAccountManagerServiceFactory::GetForProfile(profile));
+}
+
 }  // namespace signin

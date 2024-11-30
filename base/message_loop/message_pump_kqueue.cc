@@ -500,14 +500,16 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, size_t count) {
         --event_count_;
       }
 
-      auto scoped_do_work_item = delegate->BeginWorkItem();
-      // WatchFileDescriptor() originally upcasts event->ident from an int.
-      if (event->filter == EVFILT_READ) {
-        fd_watcher->OnFileCanReadWithoutBlocking(
-            static_cast<int>(event->ident));
-      } else if (event->filter == EVFILT_WRITE) {
-        fd_watcher->OnFileCanWriteWithoutBlocking(
-            static_cast<int>(event->ident));
+      if (fd_watcher) {
+        auto scoped_do_work_item = delegate->BeginWorkItem();
+        // WatchFileDescriptor() originally upcasts event->ident from an int.
+        if (event->filter == EVFILT_READ) {
+          fd_watcher->OnFileCanReadWithoutBlocking(
+              static_cast<int>(event->ident));
+        } else if (event->filter == EVFILT_WRITE) {
+          fd_watcher->OnFileCanWriteWithoutBlocking(
+              static_cast<int>(event->ident));
+        }
       }
     } else if (event->filter == EVFILT_MACHPORT) {
       // WatchMachReceivePort() originally sets event->ident from a mach_port_t.

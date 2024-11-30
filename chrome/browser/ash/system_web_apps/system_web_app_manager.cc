@@ -78,6 +78,7 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -554,8 +555,15 @@ std::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
     return std::nullopt;
   }
 
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<webapps::AppId> app_id =
-      provider_->registrar_unsafe().FindAppWithUrlInScope(url);
+      provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+          url,
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          });
   if (!app_id.has_value()) {
     return std::nullopt;
   }

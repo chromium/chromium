@@ -7,6 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
+#include "chrome/browser/lens/core/mojom/lens_ghost_loader.mojom.h"
+#include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chrome/common/webui_url_constants.h"
@@ -18,9 +20,11 @@
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 
+class LensOverlayController;
+
 namespace ui {
 class ColorChangeHandler;
-}
+}  // namespace ui
 
 namespace lens {
 
@@ -84,6 +88,8 @@ class LensSidePanelUntrustedUI
   }
 
  private:
+  LensOverlayController& GetLensOverlayController();
+
   // lens::mojom::LensSidePanelPageHandlerFactory:
   void CreateSidePanelPageHandler(
       mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,

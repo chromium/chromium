@@ -132,6 +132,9 @@ public class AuxiliarySearchMetrics {
     private static final String SCHEDULE_FAVICON_FETCH_TIME_UMA =
             "Search.AuxiliarySearch.Schedule.Favicon.FetchTime";
 
+    private static final String HISTOGRAM_SHARE_TABS_WITH_OS =
+            "Search.AuxiliarySearch.ShareTabsWithOs";
+
     /** Record the amount of time spent deleting content from the auxiliary search. */
     public static void recordDeleteTime(
             long deleteTimeInMs, @AuxiliarySearchDataType int datatype) {
@@ -252,5 +255,10 @@ public class AuxiliarySearchMetrics {
     /** Records the total number of favicon donated via a background task. */
     static void recordScheduledFaviconDonateCount(int size) {
         RecordHistogram.recordCount1000Histogram(SCHEDULE_FAVICON_DONATE_COUNT_UMA, size);
+    }
+
+    /** Records whether sharing Tabs with the system is enabled. */
+    static void recordIsShareTabsWithOsEnabled(boolean enabled) {
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_SHARE_TABS_WITH_OS, enabled);
     }
 }

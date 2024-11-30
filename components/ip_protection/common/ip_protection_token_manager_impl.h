@@ -15,20 +15,21 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/ip_protection/common/ip_protection_config_getter.h"
-#include "components/ip_protection/common/ip_protection_core.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 
 namespace ip_protection {
 
+class IpProtectionTokenFetcher;
+class IpProtectionCore;
+enum class ProxyLayer;
+
 // An implementation of IpProtectionTokenManager that populates itself
-// using a passed in IpProtectionConfigGetter pointer from the cache.
+// using a passed in IpProtectionTokenFetcher pointer from the cache.
 class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
  public:
   explicit IpProtectionTokenManagerImpl(
       IpProtectionCore* core,
-      IpProtectionConfigGetter* config_getter,
+      std::unique_ptr<IpProtectionTokenFetcher> fetcher,
       ProxyLayer proxy_layer,
       bool disable_cache_management_for_testing = false);
   ~IpProtectionTokenManagerImpl() override;
@@ -115,7 +116,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   std::map<std::string, std::deque<BlindSignedAuthToken>> cache_by_geo_;
 
   // Source of proxy list, when needed.
-  raw_ptr<IpProtectionConfigGetter> config_getter_;
+  std::unique_ptr<IpProtectionTokenFetcher> fetcher_;
 
   // The proxy layer which the cache of tokens will be used for.
   ProxyLayer proxy_layer_;
@@ -127,8 +128,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   // testing).
   const raw_ptr<IpProtectionCore> ip_protection_core_;
 
-  // True if an invocation of `config_getter_.TryGetAuthTokens()` is
-  // outstanding.
+  // True if an attempt to fetch tokens is outstanding.
   bool fetching_auth_tokens_ = false;
 
   // True if the cache has been filled at least once.

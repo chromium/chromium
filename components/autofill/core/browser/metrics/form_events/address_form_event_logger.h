@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -18,8 +18,6 @@
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill::autofill_metrics {
-
-class FormInteractionsUkmLogger;
 
 // To measure the added value of kAccount profiles, the filling readiness and
 // assistance metrics are split by profile category.
@@ -36,9 +34,7 @@ enum class CategoryResolvedKeyMetricBucket {
 
 class AddressFormEventLogger : public FormEventLoggerBase {
  public:
-  AddressFormEventLogger(
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      AutofillClient* client);
+  explicit AddressFormEventLogger(BrowserAutofillManager* owner);
 
   ~AddressFormEventLogger() override;
 

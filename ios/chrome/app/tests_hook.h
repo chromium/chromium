@@ -15,28 +15,35 @@ class ProfileOAuth2TokenService;
 class ShareKitService;
 class SystemIdentityManager;
 class TrustedVaultClientBackend;
-namespace drive {
-class DriveService;
-}
-namespace policy {
-class ConfigurationPolicyProvider;
-}
-namespace password_manager {
-class BulkLeakCheckServiceInterface;
-class RecipientsFetcher;
-}
-
-namespace plus_addresses {
-class PlusAddressService;
-}
-
-namespace tab_groups {
-class TabGroupSyncService;
-}
 
 namespace base {
 class TimeDelta;
-}
+}  // namespace base
+
+namespace data_sharing {
+class DataSharingService;
+}  // namespace data_sharing
+
+namespace drive {
+class DriveService;
+}  // namespace drive
+
+namespace policy {
+class ConfigurationPolicyProvider;
+}  // namespace policy
+
+namespace password_manager {
+class BulkLeakCheckServiceInterface;
+class RecipientsFetcher;
+}  // namespace password_manager
+
+namespace plus_addresses {
+class PlusAddressService;
+}  // namespace plus_addresses
+
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
 
 namespace tests_hook {
 
@@ -116,7 +123,9 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
 
 // Allows overriding the ShareKitService factory. The real factory will be
 // used if this hook returns null.
-std::unique_ptr<ShareKitService> CreateShareKitService();
+std::unique_ptr<ShareKitService> CreateShareKitService(
+    data_sharing::DataSharingService* data_sharing_service,
+    tab_groups::TabGroupSyncService* sync_service);
 
 // Returns a bulk leak check service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.

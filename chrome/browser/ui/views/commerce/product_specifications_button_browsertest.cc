@@ -77,7 +77,7 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   TabSearchContainer* tab_search_container() {
-    return browser_view()->tab_strip_region_view()->tab_search_container();
+    return browser_view()->tab_strip_region_view()->GetTabSearchContainer();
   }
 
   ProductSpecificationsButton* product_specifications_button() {

@@ -99,6 +99,7 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
   void SetURLAndTitle(const String& url, const String& title);
   void HtmlAndBaseURL(String& html, KURL& base_url) const;
   void SetHTMLAndBaseURL(const String& html, const KURL& base_url);
+  Vector<String> Urls() const;
 
   // Used for dragging in files from the desktop.
   bool ContainsFilenames() const;

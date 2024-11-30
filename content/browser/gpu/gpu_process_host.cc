@@ -87,6 +87,7 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
+#include "services/webnn/buildflags.h"
 #include "services/webnn/webnn_switches.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/ui_base_features.h"
@@ -326,6 +327,9 @@ static const char* const kSwitchNames[] = {
     switches::kLacrosEnablePlatformHevc,
     switches::kLacrosUseChromeosProtectedMedia,
     switches::kLacrosUseChromeosProtectedAv1,
+#endif
+#if BUILDFLAG(WEBNN_USE_TFLITE)
+    switches::kWebNNTfliteDumpModel,
 #endif
 };
 

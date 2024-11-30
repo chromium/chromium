@@ -13,7 +13,7 @@
 namespace content {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  SignedExchangeCertificateChain::Parse(base::make_span(data, size), nullptr);
+  SignedExchangeCertificateChain::Parse(base::span(data, size), nullptr);
   return 0;
 }
 

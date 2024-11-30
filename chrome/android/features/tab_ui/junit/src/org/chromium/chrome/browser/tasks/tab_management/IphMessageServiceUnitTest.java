@@ -12,10 +12,12 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -31,6 +33,8 @@ import org.chromium.components.feature_engagement.Tracker;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class IphMessageServiceUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private TabSwitcherIphController mIphController;
 
     @Mock private Profile mProfile;
@@ -43,7 +47,6 @@ public class IphMessageServiceUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         IphMessageService.setSkipIphInTestsForTesting(false);
         TrackerFactory.setTrackerForTests(mTracker);
         mIphMessageService = new IphMessageService(mProfile, mIphController);

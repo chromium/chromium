@@ -191,59 +191,64 @@ std::map<std::string, std::string> AddStartTimeQueryParam(
   return additional_search_query_params;
 }
 
-std::map<std::string, std::string> AddVisualInputTypeQueryParam(
-    std::map<std::string, std::string> additional_search_query_params,
-    lens::PageContentMimeType content_type) {
+std::string VitQueryParamValueForMimeType(lens::MimeType mime_type) {
   // Default contextual visual input type.
   std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
-  switch (content_type) {
-    case lens::PageContentMimeType::kPdf:
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
       if (lens::features::UsePdfVitParam()) {
         vitValue = kPdfVisualInputTypeQueryParameterValue;
       }
       break;
-    case lens::PageContentMimeType::kHtml:
-    case lens::PageContentMimeType::kPlainText:
+    case lens::MimeType::kHtml:
+    case lens::MimeType::kPlainText:
       if (lens::features::UseWebpageVitParam()) {
         vitValue = kWebpageVisualInputTypeQueryParameterValue;
       }
       break;
-    case lens::PageContentMimeType::kNone:
+    case lens::MimeType::kUnknown:
       break;
   }
+  return vitValue;
+}
+
+std::map<std::string, std::string> AddVisualInputTypeQueryParam(
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::MimeType content_type) {
+  std::string vitValue = VitQueryParamValueForMimeType(content_type);
   additional_search_query_params.insert(
       {kVisualInputTypeQueryParameterKey, vitValue});
   return additional_search_query_params;
 }
 
-std::string ContentTypeToString(lens::PageContentMimeType content_type) {
+std::string ContentTypeToString(lens::MimeType content_type) {
   switch (content_type) {
-    case lens::PageContentMimeType::kPdf:
+    case lens::MimeType::kPdf:
       return kPdfMimeType;
-    case lens::PageContentMimeType::kHtml:
+    case lens::MimeType::kHtml:
       return kHtmlMimeType;
-    case lens::PageContentMimeType::kPlainText:
+    case lens::MimeType::kPlainText:
       return kPlainTextMimeType;
-    case lens::PageContentMimeType::kNone:
+    case lens::MimeType::kUnknown:
       return "";
   }
 }
 
 lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
-    lens::PageContentMimeType content_type) {
+    lens::MimeType content_type) {
   switch (content_type) {
-    case lens::PageContentMimeType::kPdf:
+    case lens::MimeType::kPdf:
       if (lens::features::UsePdfInteractionType()) {
         return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
       }
       break;
-    case lens::PageContentMimeType::kHtml:
-    case lens::PageContentMimeType::kPlainText:
+    case lens::MimeType::kHtml:
+    case lens::MimeType::kPlainText:
       if (lens::features::UseWebpageInteractionType()) {
         return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
       }
       break;
-    case lens::PageContentMimeType::kNone:
+    case lens::MimeType::kUnknown:
       break;
   }
   return lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY;
@@ -310,7 +315,7 @@ void LensOverlayQueryController::StartQueryFlow(
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
-    lens::PageContentMimeType underlying_content_type,
+    lens::MimeType underlying_content_type,
     float ui_scale_factor) {
   original_screenshot_ = screenshot;
   page_url_ = page_url;
@@ -322,6 +327,12 @@ void LensOverlayQueryController::StartQueryFlow(
   gen204_id_ = base::RandUint64();
   gen204_controller_->OnQueryFlowStart(invocation_source_, profile_,
                                        gen204_id_);
+
+  if (underlying_content_type != lens::MimeType::kUnknown) {
+    suggest_inputs_.set_contextual_visual_input_type(
+        VitQueryParamValueForMimeType(underlying_content_type_));
+    RunSuggestInputsCallback();
+  }
 
   // Reset translation languages in case they were set in a previous request.
   translate_options_.reset();
@@ -364,7 +375,7 @@ void LensOverlayQueryController::SendEndTranslateModeQuery() {
 
 void LensOverlayQueryController::SendPageContentUpdateRequest(
     base::span<const uint8_t> new_content_bytes,
-    lens::PageContentMimeType new_content_type,
+    lens::MimeType new_content_type,
     GURL new_page_url) {
   if (new_content_bytes == underlying_content_bytes_ &&
       new_content_type == underlying_content_type_) {
@@ -373,6 +384,10 @@ void LensOverlayQueryController::SendPageContentUpdateRequest(
   underlying_content_bytes_ = new_content_bytes;
   underlying_content_type_ = new_content_type;
   page_url_ = new_page_url;
+
+  suggest_inputs_.set_contextual_visual_input_type(
+      VitQueryParamValueForMimeType(underlying_content_type_));
+  RunSuggestInputsCallback();
 
   // Since the page content uses the full image request ID, but this is a new
   // request, update the latest_full_image_request_data_ with a new request ID.
@@ -620,6 +635,14 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   cluster_info_->set_server_session_id(server_response.server_session_id());
   cluster_info_->set_search_session_id(server_response.search_session_id());
 
+  // If routing info is enabled, store the routing info to be included in
+  // followup requests.
+  if (lens::features::IsLensOverlayRoutingInfoEnabled() &&
+      server_response.has_routing_info() &&
+      !request_id_generator_->HasRoutingInfo()) {
+    request_id_generator_->SetRoutingInfo(server_response.routing_info());
+  }
+
   // Clear the cluster info after its lifetime expires.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -647,12 +670,12 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   }
 
   // If the cluster info optimization is enabled, request the cluster info prior
-  // to making the full image request.
-  // TODO(crbug.com/373878302): Use a new cluster-info flag provided by the
-  // LensOverlayLatencyOptimizations feature instead.
+  // to making the full image request. Also do this for the contextual search
+  // flow since the request flow for contextual searchbox will fail without the
+  // cluster info handshake.
   if (!cluster_info_ &&
-      (lens::features::UseOptimizedRequestFlow() ||
-       lens::features::IsLensOverlayEarlyInteractionOptimizationEnabled())) {
+      (lens::features::IsLensOverlayClusterInfoOptimizationEnabled() ||
+       lens::features::IsLensOverlayContextualSearchboxEnabled())) {
     FetchClusterInfoRequest();
     return;
   }
@@ -744,15 +767,6 @@ void LensOverlayQueryController::
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
-
-  // The content bytes ideally are uploaded separately once the cluster info is
-  // retrieved. However, if the cluster info request fails, we should include
-  // them in this request. So if page content bytes are available, and the
-  // cluster info was not retrieved, included them in this request.
-  if (!underlying_content_bytes_.empty() && !cluster_info_.has_value()) {
-    request.mutable_objects_request()->mutable_payload()->CopyFrom(
-        CreatePageContentPayload());
-  }
 
   FullImageRequestDataReady(sequence_id, request);
 }
@@ -879,6 +893,14 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
             weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(
             lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
+
+    // If routing info is enabled, store the routing info to be included in
+    // followup requests.
+    if (lens::features::IsLensOverlayRoutingInfoEnabled() &&
+        cluster_info_->has_routing_info() &&
+        !request_id_generator_->HasRoutingInfo()) {
+      request_id_generator_->SetRoutingInfo(cluster_info_->routing_info());
+    }
   }
 
   // Image signals and vsint are only valid after an interaction request.
@@ -969,7 +991,7 @@ void LensOverlayQueryController::PageContentResponseHandler(
       base::TimeTicks::Now() -
       latest_full_image_request_data_->query_start_time_;
   std::string vit_param_value =
-      underlying_content_type_ == lens::PageContentMimeType::kPdf
+      underlying_content_type_ == lens::MimeType::kPdf
           ? kPdfVisualInputTypeQueryParameterValue
           : kWebpageVisualInputTypeQueryParameterValue;
   SendLatencyGen204IfEnabled(elapsed_time, translate_options_.has_value(),

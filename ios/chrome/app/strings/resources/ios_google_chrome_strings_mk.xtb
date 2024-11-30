@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Ја отвора поставката за Chrome за поставување на Chrome како стандарден прелистувач.</translation>
 <translation id="1670609221633730681">Совет за Chrome: изберете ја положбата на лентата за адреси</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Зачувувајте ги лозинките во Chrome</translation>
 <translation id="1790080846677398234">Ги додава внесените URL-адреси во вашите обележувачи во Chrome.</translation>
 <translation id="1799920918471566157">Совети за Chrome</translation>
 <translation id="1830634592642484976">Во моментов, адресава е зачувана на Chrome. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">Ова значи дека Chrome ќе го бара сајтот за мобилен уред секој пат.</translation>
 <translation id="3740397331642243698">Ги отвора внесените URL-адреси во Google Chrome во „Инкогнито“.</translation>
 <translation id="3741995255368156336">Го отвора „Списокот за читање“ на Chrome.</translation>
+<translation id="3808570423967020928">Пристапувајте до Chrome побрзо од докот на почетниот екран.</translation>
 <translation id="3827545470516145620">Добивате стандардна безбедносна заштита на уредов</translation>
 <translation id="384394811301901750">Google Chrome не може да ја користи камерата сега</translation>
 <translation id="3863841106411295595">Ги додава внесените URL-адреси во вашиот „Список за читање“ во Chrome.</translation>
@@ -219,9 +221,11 @@
 
 За повеќе поставки што ги користат податоците за подобрување на вашето доживување на Chrome, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Избришете ги податоците од прелистување во Chrome.</translation>
+<translation id="6924922227983877439">Отворајте ги линковите во Chrome стандардно</translation>
 <translation id="6975725306479268850">Избирање Chrome за „Автоматско пополнување“</translation>
 <translation id="7056826488869329999">Отвора и врши безбедносна проверка во Chrome.</translation>
 <translation id="7061455974939528301">Притиснете и задржете ја иконата за Chrome, па кликнете „Изменете го почетниот екран“</translation>
+<translation id="7065813315247345131">Преместете го Chrome на докот</translation>
 <translation id="7124339256045485976">Одржувајте го Chrome ажурен</translation>
 <translation id="7161390184744336561">Google Chrome е застарен</translation>
 <translation id="7165736900384873061">Започнете со користење на QR-скенерот на Google Chrome</translation>

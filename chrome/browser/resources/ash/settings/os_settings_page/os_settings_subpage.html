@@ -4,31 +4,16 @@
     display: block;
   }
 
-  :host-context(body:not(.revamp-wayfinding-enabled)):host {
-    background-color: var(--cros-sys-app_base);
-    box-shadow: var(--cr-card-shadow);
-    min-height: calc(100vh - var(--settings-toolbar-height));
-    padding-bottom: 60px;
-  }
-
   #subpageHeader {
     min-height: 40px;
-    padding-bottom: 24px;
-    padding-top: 8px;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #subpageHeader {
-    padding-top: 16px;
     padding-bottom: 16px;
+    padding-top: 16px;
   }
 
   #subpageTitle {
+    color: var(--cros-sys-primary);
     flex: 1;  /* Push other items to the end. */
     font: var(--cros-button-1-font);
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #subpageTitle {
-    color: var(--cros-sys-primary);
   }
 
   #titleIcon {
@@ -39,13 +24,11 @@
   }
 
   #backButton {
+    --cr-icon-button-fill-color: var(--cros-sys-primary);
+
     /* Centers the ripple on the icon with appropriate margin on right. */
     margin-inline-end: 10px;
     margin-inline-start: -10px;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #backButton {
-    --cr-icon-button-fill-color: var(--cros-sys-primary);
   }
 
   #cardBody {
@@ -64,8 +47,7 @@
   }
 
   /* Use ID to increase specificity over cros-color-overrides. */
-  :host-context(body.revamp-wayfinding-enabled)
-      #searchField::part(searchInput) {
+  #searchField::part(searchInput) {
     /* Add contrast between the search input and the subpage backdrop. */
     --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
   }
@@ -101,14 +83,9 @@
 </div>
 
 <template is="dom-if" if="[[!multiCard]]">
-  <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-    <settings-card id="cardBody">
-      <slot></slot>
-    </settings-card>
-  </template>
-  <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+  <settings-card id="cardBody">
     <slot></slot>
-  </template>
+  </settings-card>
 </template>
 <template is="dom-if" if="[[multiCard]]">
   <slot></slot>

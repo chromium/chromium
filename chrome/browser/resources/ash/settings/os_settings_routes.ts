@@ -156,7 +156,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   ANDROID_APPS_DETAILS: Route;
   ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES: Route;
   AUDIO: Route;
-  CROSTINI: Route;
   CROSTINI_ANDROID_ADB: Route;
   CROSTINI_DETAILS: Route;
   CROSTINI_DISK_RESIZE: Route;
@@ -217,9 +216,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_LANGUAGES_INPUT: Route;
   OS_LANGUAGES_INPUT_METHOD_OPTIONS: Route;
   OS_LANGUAGES_LANGUAGES: Route;
-  OS_PRINTING: Route;
   OS_PRIVACY: Route;
-  OS_SEARCH: Route;
   OS_SYNC: Route;
   OS_PEOPLE: Route;
   PASSPOINT_DETAIL: Route;
@@ -703,34 +700,6 @@ export function createRoutes(): OsSettingsRoutes {
       r.OS_LANGUAGES_APP_LANGUAGES = createSubpage(
           r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
           Subpage.kAppLanguages);
-    }
-
-    // Search and Assistant section.
-    r.OS_SEARCH = createSection(
-        r.BASIC, routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH,
-        Section.kSearchAndAssistant);
-    r.SEARCH_SUBPAGE = createSubpage(
-        r.OS_SEARCH, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
-    r.GOOGLE_ASSISTANT = createSubpage(
-        r.OS_SEARCH, routesMojom.ASSISTANT_SUBPAGE_PATH, Subpage.kAssistant);
-
-    // Printing section.
-    r.OS_PRINTING = createSection(
-        r.ADVANCED, routesMojom.PRINTING_SECTION_PATH, Section.kPrinting);
-    r.CUPS_PRINTERS = createSubpage(
-        r.OS_PRINTING, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
-        Subpage.kPrintingDetails);
-
-    // Crostini section.
-    r.CROSTINI = createSection(
-        r.ADVANCED, routesMojom.CROSTINI_SECTION_PATH, Section.kCrostini);
-    if (isCrostiniSupported()) {
-      r.CROSTINI_DETAILS = createSubpage(
-          r.CROSTINI, routesMojom.CROSTINI_DETAILS_SUBPAGE_PATH,
-          Subpage.kCrostiniDetails);
-      r.BRUSCHETTA_DETAILS = createSubpage(
-          r.CROSTINI, routesMojom.BRUSCHETTA_DETAILS_SUBPAGE_PATH,
-          Subpage.kBruschettaDetails);
     }
   }
 

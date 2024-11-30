@@ -1,0 +1,6 @@
+[wrap-file]
+directory = anstyle-1.0.10
+source_url = https://static.crates.io/crates/anstyle/1.0.10/download
+source_filename = anstyle-1.0.10.tar.gz
+source_hash = 55cc3b69f167a1ef2e161439aa98aed94e6028e5f9a59be9a6ffb47aef1651f9
+patch_directory = anstyle

@@ -1425,7 +1425,9 @@ CSSValue* ComputedStyleUtils::ValueForFontFeatureSettings(
   for (wtf_size_t i = 0; i < feature_settings->size(); ++i) {
     const FontFeature& feature = feature_settings->at(i);
     auto* feature_value = MakeGarbageCollected<cssvalue::CSSFontFeatureValue>(
-        feature.TagString(), feature.Value());
+        feature.TagString(),
+        CSSNumericLiteralValue::Create(feature.Value(),
+                                       CSSPrimitiveValue::UnitType::kNumber));
     list->Append(*feature_value);
   }
   return list;
@@ -3385,6 +3387,13 @@ const CSSValue* GetGapDecorationPropertyValue(const StyleColor& value,
                                                       value_phase);
 }
 
+template <>
+const CSSValue* GetGapDecorationPropertyValue(const int& value,
+                                              const ComputedStyle& style,
+                                              CSSValuePhase value_phase) {
+  return ZoomAdjustedPixelValue(value, style);
+}
+
 template <typename T>
 void PopulateNonRepeaterGapData(CSSValueList* list,
                                 const GapData<T>& gap_data,
@@ -3448,7 +3457,6 @@ const CSSValue* ValueForGapDecorationPropertyDataList(
   }
   return list;
 }
-
 }  // namespace
 
 const CSSValue* ComputedStyleUtils::ValueForGapDecorationColorDataList(
@@ -3456,6 +3464,14 @@ const CSSValue* ComputedStyleUtils::ValueForGapDecorationColorDataList(
     const ComputedStyle& style,
     CSSValuePhase value_phase) {
   return ValueForGapDecorationPropertyDataList(gap_color_list, style,
+                                               value_phase);
+}
+
+const CSSValue* ComputedStyleUtils::ValueForGapDecorationWidthDataList(
+    const GapDataList<int>& gap_width_list,
+    const ComputedStyle& style,
+    CSSValuePhase value_phase) {
+  return ValueForGapDecorationPropertyDataList(gap_width_list, style,
                                                value_phase);
 }
 
@@ -4387,17 +4403,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionTryFallbacks(
   CSSValueList* fallback_list = CSSValueList::CreateCommaSeparated();
   for (const PositionTryFallback& fallback : fallbacks.GetFallbacks()) {
     if (!fallback.GetPositionArea().IsNone()) {
-      if (RuntimeEnabledFeatures::CSSPositionAreaValueEnabled()) {
-        // <position-area>
-        fallback_list->Append(
-            *ValueForPositionArea(fallback.GetPositionArea()));
-      } else {
-        // position-area( <position-area> )
-        auto* function =
-            MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPositionArea);
-        function->Append(*ValueForPositionArea(fallback.GetPositionArea()));
-        fallback_list->Append(*function);
-      }
+      // <position-area>
+      fallback_list->Append(*ValueForPositionArea(fallback.GetPositionArea()));
       continue;
     }
     // [<dashed-ident> || <try-tactic>]

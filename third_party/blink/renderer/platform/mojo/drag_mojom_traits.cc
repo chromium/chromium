@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/mojo/drag_mojom_traits.h"
 
 #include <algorithm>
@@ -29,6 +24,7 @@
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace mojo {
@@ -135,11 +131,8 @@ mojo_base::BigBuffer StructTraits<blink::mojom::DragItemBinaryDataView,
                                   blink::WebDragData::BinaryDataItem>::
     data(const blink::WebDragData::BinaryDataItem& item) {
   mojo_base::BigBuffer buffer(item.data.size());
-  item.data.ForEachSegment([&buffer](const char* segment, size_t segment_size,
-                                     size_t segment_offset) {
-    std::copy(segment, segment + segment_size, buffer.data() + segment_offset);
-    return true;
-  });
+  const SharedBuffer& item_buffer = item.data;
+  CHECK(item_buffer.GetBytes(base::span(buffer)));
   return buffer;
 }
 

@@ -59,12 +59,13 @@ void UrlIndex::Add(BookmarkNode* parent,
   AddImpl(parent->Add(std::move(node), index));
 }
 
-std::unique_ptr<BookmarkNode> UrlIndex::Remove(BookmarkNode* node,
-                                               std::set<GURL>* removed_urls) {
+std::unique_ptr<BookmarkNode> UrlIndex::RemoveChildAt(
+    BookmarkNode* parent,
+    size_t index,
+    std::set<GURL>* removed_urls) {
   base::AutoLock url_lock(url_lock_);
-  RemoveImpl(node, removed_urls);
-  BookmarkNode* parent = node->parent();
-  return parent->Remove(parent->GetIndexOf(node).value());
+  RemoveImpl(parent->children()[index].get(), removed_urls);
+  return parent->Remove(index);
 }
 
 void UrlIndex::SetUrl(BookmarkNode* node, const GURL& url) {

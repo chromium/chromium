@@ -23,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_split.h"
@@ -105,12 +106,11 @@ struct AssignIfSameElseCrashFnImpl<R (*)(Args...), T2> {
       *out = in;
     } else if constexpr (std::is_same_v<R, void>) {
       *out = [](Args... args) {
-        CHECK(false) << "Invalid call to deprecated function.";
+        NOTREACHED() << "Invalid call to deprecated function.";
       };
     } else {
       *out = [](Args... args) -> R {
-        CHECK(false) << "Invalid call to deprecated function.";
-        return {};
+        NOTREACHED() << "Invalid call to deprecated function.";
       };
     }
   }
@@ -1166,10 +1166,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
 
   DawnProcTable wire_procs = dawn::native::GetProcs();
   wire_procs.createInstance =
-      [](const WGPUInstanceDescriptor*) -> WGPUInstance {
-    CHECK(false);
-    return nullptr;
-  };
+      [](const WGPUInstanceDescriptor*) -> WGPUInstance { NOTREACHED(); };
   wire_procs.instanceRequestAdapter2 = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->RequestAdapterImpl(
@@ -1282,8 +1279,6 @@ ContextResult WebGPUDecoderImpl::Initialize(
 bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
   switch (feature) {
     case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
-    case wgpu::FeatureName::ChromiumExperimentalSubgroups:
-    case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
     case wgpu::FeatureName::MultiDrawIndirect:
     case wgpu::FeatureName::Unorm16TextureFormats:
     case wgpu::FeatureName::Snorm16TextureFormats:

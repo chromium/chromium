@@ -19,23 +19,20 @@
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
 
-namespace autofill::autofill_metrics {
+namespace autofill {
+class AutofillClient;
+class AutofillDriver;
+class BrowserAutofillManager;
+}  // namespace autofill
 
-enum class FilledFieldTypeMetric {
-  kClassifiedWithRecognizedAutocomplete = 0,
-  kClassifiedWithUnrecognizedAutocomplete = 1,
-  kUnclassified = 2,
-  kMaxValue = kUnclassified
-};
+namespace autofill::autofill_metrics {
 
 // Utility to log autofill form events in the relevant histograms depending on
 // the presence of server and/or local data.
 class FormEventLoggerBase {
  public:
-  FormEventLoggerBase(
-      const std::string& form_type_name,
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      AutofillClient* client);
+  FormEventLoggerBase(std::string form_type_name,
+                      BrowserAutofillManager* owner);
 
   void OnDidInteractWithAutofillableForm(const FormStructure& form);
 
@@ -47,14 +44,6 @@ class FormEventLoggerBase {
                                     const AutofillField& field,
                                     base::TimeTicks form_parsed_timestamp,
                                     bool off_the_record);
-
-  // This is different from OnDidFillSuggestion because it does not require to
-  // provide data models or other parameters. It is needed to be used in field
-  // by field filling.
-  void RecordFillingOperation(
-      FormGlobalId form_id,
-      base::span<const FormFieldData* const> filled_fields,
-      base::span<const AutofillField* const> filled_autofill_fields);
 
   void OnDidRefill(const FormStructure& form);
 
@@ -105,6 +94,9 @@ class FormEventLoggerBase {
  protected:
   virtual ~FormEventLoggerBase();
 
+  AutofillClient& client();
+  AutofillDriver& driver();
+
   virtual void RecordPollSuggestions() = 0;
   virtual void RecordParseForm() = 0;
   virtual void RecordShowSuggestions() = 0;
@@ -129,7 +121,7 @@ class FormEventLoggerBase {
                      const FormStructure& form) const {}
 
   // Records UMA metrics on the funnel and writes logs to autofill-internals.
-  void RecordFunnelMetrics() const;
+  void RecordFunnelMetrics();
 
   // For each funnel metric, a separate function is defined below.
   // `RecordFunnelMetrics()` checks the necessary pre-conditions for metrics to
@@ -142,7 +134,7 @@ class FormEventLoggerBase {
   // Records UMA metrics on key metrics and writes logs to autofill-internals.
   // Similar to the funnel metrics, a separate function for each key metric is
   // defined below.
-  void RecordKeyMetrics() const;
+  void RecordKeyMetrics();
 
   // Whether for a submitted form, Chrome had data stored that could be
   // filled.
@@ -217,14 +209,9 @@ class FormEventLoggerBase {
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
   std::optional<base::TimeDelta> time_from_interaction_to_submission_;
 
-  // Logs the total number of filling operations performed by the user
-  // (Excluding Undo operations). This is not related to
-  // `has_logged_form_filling_suggestion_filled_` since the latter doesn't
-  // include field by field filling operations.
-  size_t filling_operation_count_ = 0;
-  std::map<FieldGlobalId, FilledFieldTypeMetric> filled_fields_types_;
-
   // The last field that was polled for suggestions.
+  // TODO(crbug.com/40100455): Make this a `FieldGlobalId` when
+  // kAutofillUseFewerFormAndFieldComparison is removed.
   FormFieldData last_polled_field_;
 
   // Used to count consecutive modifications on the same field as one change.
@@ -252,12 +239,9 @@ class FormEventLoggerBase {
       form_events_set_;
 
   // Weak reference.
-  raw_ptr<autofill_metrics::FormInteractionsUkmLogger>
-      form_interactions_ukm_logger_;
-
-  // Weak reference.
-  const raw_ref<AutofillClient> client_;
+  const raw_ref<BrowserAutofillManager> owner_;
 };
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_FORM_EVENT_LOGGER_BASE_H_

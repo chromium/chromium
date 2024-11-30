@@ -23,15 +23,16 @@ import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServi
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
 import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.InstantMessageDelegate;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
@@ -42,7 +43,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -78,14 +78,19 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     private final DataSharingUIDelegate mDataSharingUiDelegate;
 
     /**
+     * TODO(ssid): Pass in the necessary dependencies rather than profile and fetching the services
+     * to avoid depending on the factory.
+     *
      * @param profile The current profile to get dependencies with.
+     * @param dataSharingService Data sharing service for the profile.
      */
-    /* package */ InstantMessageDelegateImpl(Profile profile) {
+    /* package */ InstantMessageDelegateImpl(
+            Profile profile, DataSharingService dataSharingService) {
         profile = profile.getOriginalProfile();
         MessagingBackendService messagingBackendService =
                 MessagingBackendServiceFactory.getForProfile(profile);
         messagingBackendService.setInstantMessageDelegate(this);
-        mDataSharingUiDelegate = DataSharingServiceFactory.getForProfile(profile).getUiDelegate();
+        mDataSharingUiDelegate = dataSharingService.getUiDelegate();
     }
 
     /**
@@ -262,14 +267,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private void doOpenTab(Token tabGroupId, String url, TabGroupModelFilter tabGroupModelFilter) {
         url = TextUtils.isEmpty(url) ? UrlConstants.NTP_URL : url;
-        // TODO(https://crbug.com/379134324): Refactor to be a call into TabUiUtils.
         int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);
-        List<Tab> relatedTabs = tabGroupModelFilter.getRelatedTabListForRootId(rootId);
-        if (relatedTabs.isEmpty()) return;
-        Tab lastTab = relatedTabs.get(relatedTabs.size() - 1);
-        TabCreator tabCreator = tabGroupModelFilter.getTabModel().getTabCreator();
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-        tabCreator.createNewTab(loadUrlParams, TabLaunchType.FROM_TAB_GROUP_UI, lastTab);
+        TabGroupUtils.openUrlInGroup(
+                tabGroupModelFilter, url, rootId, TabLaunchType.FROM_TAB_GROUP_UI);
     }
 
     private void showTabChange(

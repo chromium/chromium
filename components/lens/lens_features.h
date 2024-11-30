@@ -34,19 +34,6 @@ BASE_DECLARE_FEATURE(kEnableRegionSearchKeyboardShortcut);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableImageTranslate);
 
-// Enables the image search side panel experience for third party default search
-// engines
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kEnableImageSearchSidePanelFor3PDse);
-
-// Enables launching the region search experience in a new tab with WebUI.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
-
-// Enables the context menu in the Lens side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(EnableContextMenuInLensSidePanel);
-
 // Enables the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlay);
@@ -70,6 +57,10 @@ BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
 // Enables the Lens overlay optimizations.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayLatencyOptimizations);
+
+// Enables the Lens overlay routing info optimizations.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayRoutingInfo);
 
 // Enables the Lens overlay HaTS survey.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -121,11 +112,6 @@ extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableLatencyLogging();
 
-// Returns whether the image search side panel is supported for third party
-// default search engines
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetEnableImageSearchUnifiedSidePanelFor3PDse();
-
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetHomepageURLForLens();
@@ -134,56 +120,10 @@ extern std::string GetHomepageURLForLens();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableLensHtmlRedirectFix();
 
-// Returns whether to remove the Lens side panel loading state in the
-// OnDocumentOnLoadCompletedInPrimaryMainFrame web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame();
-
-// Returns whether to remove the Lens side panel loading state in the
-// DOMContentLoaded web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnDomContentLoaded();
-
-// Returns whether to remove the Lens side panel loading state in the
-// DidFinishNavigation web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnDidFinishNavigation();
-
-// Returns whether to remove the Lens side panel loading state in the
-// NavigationEntryCommitted web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnNavigationEntryCommitted();
-
-// Returns whether to remove the Lens side panel loading state in the
-// DidFinishLoad web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnDidFinishLoad();
-
-// Returns whether to remove the Lens side panel loading state in the
-// PrimaryPageChanged web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnPrimaryPageChanged();
-
-// Returns whether Lens fullscreen search is enabled.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensFullscreenSearchEnabled();
-
-// Returns whether the Lens side panel is enabled for image search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensSidePanelEnabled();
-
 // Returns whether the Search Image button in the Chrome Screenshot Sharing
 // feature is enabled
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensInScreenshotSharingEnabled();
-
-// Returns whether we should use a WebUI static page for region search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensRegionSearchStaticPageEnabled();
-
-// Returns whether to enable the context menu in the Lens side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetEnableContextMenuInLensSidePanel();
 
 // The URL for the Lens ping.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -357,15 +297,6 @@ extern bool UseVideoContextForTextOnlyLensOverlayRequests();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseVideoContextForMultimodalLensOverlayRequests();
 
-// Returns whether to use the new optimized request flow which makes a request
-// to get the cluster info prior to uploading any image or page content bytes.
-// This also decouples sending the images and page content bytes in the same
-// request.
-// TODO(crbug.com/373878302): Move this flag to LensOverlayLatencyOptimizations
-// feature.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseOptimizedRequestFlow();
-
 // Returns the finch configured endpoint URL for the cluster info request.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayClusterInfoEndpointUrl();
@@ -483,10 +414,6 @@ extern bool UseLensOverlayForImageSearch();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseLensOverlayForVideoFrameSearch();
 
-// Returns whether to enable the find-in-page entry point.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsFindInPageEntryPointEnabled();
-
 // Returns whether to enable the omnibox entry point.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsOmniboxEntryPointEnabled();
@@ -593,10 +520,6 @@ extern bool GetLensOverlayEnableInFullscreen();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlaySegmentationMaskCornerRadius();
 
-// Number identifying variant sets of strings to use in the find bar.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetLensOverlayFindBarStringsVariant();
-
 // Whether to show the translate button in the Lens Overlay to allow translation
 // of the screenshot of the page.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -619,12 +542,26 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayContextualSearchboxEnabled();
 
+// Returns whether to use the new optimized request flow which makes a request
+// to get the cluster info prior to uploading any image or page content bytes.
+// This also decouples sending the images and page content bytes in the same
+// request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayClusterInfoOptimizationEnabled();
+
 // Whether to enable the early interaction optimization for the Lens Overlay.
 // This optimization allows the interaction request to be sent before the full
 // image response is received, if the cluster info is already available. This
 // optimization will do nothing if the cluster info optimization is disabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayEarlyInteractionOptimizationEnabled();
+
+// Whether to enable the early StartQueryFlow optimization for the Lens Overlay.
+// This optimization allows the full image request to be sent as soon as the
+// screenshotted image is ready instead of waiting for all client-side
+// initialization has completed.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayEarlyStartQueryFlowOptimizationEnabled();
 
 // Time delay for the results trigger of the Lens Overlay HaTS survey.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -665,6 +602,9 @@ extern bool ShowContextualSearchboxSearchSuggest();
 // The amount of recent languages to show in the language pickers.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayTranslateRecentLanguagesAmount();
+
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayRoutingInfoEnabled();
 
 }  // namespace lens::features
 

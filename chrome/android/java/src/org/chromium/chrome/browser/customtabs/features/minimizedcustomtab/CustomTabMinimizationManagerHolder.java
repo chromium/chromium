@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,25 +15,17 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-
 /** Class that holds the {@link CustomTabMinimizationManager}. */
-@ActivityScope
 public class CustomTabMinimizationManagerHolder implements DestroyObserver {
-
     private final AppCompatActivity mActivity;
-    private final Provider<CustomTabActivityNavigationController> mNavigationController;
+    private final Supplier<CustomTabActivityNavigationController> mNavigationController;
     private final ActivityTabProvider mActivityTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -45,19 +35,20 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     private @Nullable MinimizedCustomTabIphController mIphController;
     private @Nullable CustomTabMinimizationManager mMinimizationManager;
 
-    @Inject
     public CustomTabMinimizationManagerHolder(
-            BaseCustomTabActivity activity,
-            Provider<CustomTabActivityNavigationController> navigationController,
+            AppCompatActivity activity,
+            Supplier<CustomTabActivityNavigationController> navigationController,
             ActivityTabProvider activityTabProvider,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            Supplier<Bundle> savedInstanceStateSupplier,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
             CustomTabFeatureOverridesManager featureOverridesManager) {
         mActivity = activity;
         mNavigationController = navigationController;
         mActivityTabProvider = activityTabProvider;
-        mIntentDataProvider = activity.getIntentDataProvider();
+        mIntentDataProvider = intentDataProvider;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
-        mLifecycleDispatcher = activity.getLifecycleDispatcher();
+        mLifecycleDispatcher = lifecycleDispatcher;
         mFeatureOverridesManager = featureOverridesManager;
 
         mLifecycleDispatcher.register(this);

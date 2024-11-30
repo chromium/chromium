@@ -53,6 +53,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -341,7 +342,7 @@ void LockStateController::StartLockAnimation() {
     views::Widget* owner = active_menu_controller->owner();
     SCOPED_CRASH_KEY_STRING256("LockStateController", "StartLockAnimation",
                                owner ? owner->GetName() : "ownerless");
-    CHECK(false);
+    NOTREACHED();
   }
 
   animating_lock_ = true;

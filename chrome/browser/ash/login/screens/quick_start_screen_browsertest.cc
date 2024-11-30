@@ -153,8 +153,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
     // TODO: b/320870274 - Clean up GaiaInfoScreen flag upon
     // completion of the Gaia Info screen experiment.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOobeQuickStart,
-                              features::kOobeGaiaInfoScreen},
+        /*enabled_features=*/{features::kOobeGaiaInfoScreen},
         /*disabled_features=*/{});
   }
   ~QuickStartBrowserTest() override = default;
@@ -428,7 +427,7 @@ class QuickStartNotDeterminedBrowserTest : public QuickStartBrowserTest {
 class QuickStartBrowserTestWithBluetoothDisabled
     : public QuickStartBrowserTest {
  public:
-  QuickStartBrowserTestWithBluetoothDisabled() {}
+  QuickStartBrowserTestWithBluetoothDisabled() = default;
   ~QuickStartBrowserTestWithBluetoothDisabled() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {

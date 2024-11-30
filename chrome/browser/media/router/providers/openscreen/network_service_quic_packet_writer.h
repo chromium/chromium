@@ -33,7 +33,7 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Called when we received an async reply from the socket that a write
     // error occurred.

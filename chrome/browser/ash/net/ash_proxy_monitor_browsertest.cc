@@ -118,7 +118,7 @@ class TestPrefObserver : public crosapi::mojom::PrefObserver {
   TestPrefObserver() = default;
   TestPrefObserver(const TestPrefObserver&) = delete;
   TestPrefObserver& operator=(const TestPrefObserver&) = delete;
-  ~TestPrefObserver() override {}
+  ~TestPrefObserver() override = default;
 
   // crosapi::mojom::PrefObserver:
   void OnPrefChanged(base::Value value) override {

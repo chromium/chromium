@@ -56,14 +56,16 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
      *
      * @param intent The {@link Intent} to launch the Auth Tab.
      * @param context The {@link Context}.
+     * @param colorScheme The color scheme the Auth Tab should use.
      */
-    public AuthTabIntentDataProvider(Intent intent, Context context) {
+    public AuthTabIntentDataProvider(
+            Intent intent, Context context, @CustomTabsIntent.ColorScheme int colorScheme) {
         assert intent != null;
         mIntent = intent;
         mClientPackageName =
                 IntentUtils.safeGetStringExtra(
                         intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
-        mColorProvider = new AuthTabColorProvider(context);
+        mColorProvider = new AuthTabColorProvider(intent, context, colorScheme);
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
         // TODO(crbug.com/353586171): We should disallow http/https and other known schemes such as
         // content://, file://, chrome:// etc. Can be handled using methods in UrlUtilities, but we
@@ -89,7 +91,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
                         ? CustomTabProfileType.EPHEMERAL
                         : CustomTabProfileType.REGULAR;
 
-        logFeatureUsage();
+        logFeatureUsage(intent, colorScheme);
     }
 
     @Override
@@ -180,11 +182,23 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
      * Logs the usage of Auth Tab features to a large enum histogram in order to track usage by
      * apps.
      */
-    private void logFeatureUsage() {
+    private void logFeatureUsage(Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
         if (!CustomTabsFeatureUsage.isEnabled()) return;
         CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
 
         // Ordering: Log all the features ordered by enum, when they apply.
+        if (colorScheme == CustomTabsIntent.COLOR_SCHEME_DARK) {
+            featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.CTF_DARK);
+        }
+        if (colorScheme == CustomTabsIntent.COLOR_SCHEME_LIGHT) {
+            featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.CTF_LIGHT);
+        }
+        if (IntentUtils.safeHasExtra(intent, CustomTabsIntent.EXTRA_COLOR_SCHEME)) {
+            featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_COLOR_SCHEME);
+        }
+        if (colorScheme == CustomTabsIntent.COLOR_SCHEME_SYSTEM) {
+            featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.CTF_SYSTEM);
+        }
         if (mCustomTabMode == CustomTabProfileType.EPHEMERAL) {
             featureUsage.log(
                     CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_ENABLE_EPHEMERAL_BROWSING);

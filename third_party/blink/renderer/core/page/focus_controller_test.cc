@@ -486,8 +486,8 @@ TEST_F(FocusControllerTest, ScrollButtonsAreFocusable) {
         overflow: scroll;
         width: 200px;
         height: 200px;
-        &::scroll-next-button, &::scroll-prev-button { content: "-" }
-        &::scroll-next-button:focus,&::scroll-prev-button:focus { opacity: 0.5 }
+        &::scroll-button(inline-start), &::scroll-button(inline-end) { content: "-" }
+        &::scroll-button(inline-start):focus,&::scroll-button(inline-end):focus { opacity: 0.5 }
       }
       #spacer { width: 400px; height: 400px; }
     </style>
@@ -502,43 +502,43 @@ TEST_F(FocusControllerTest, ScrollButtonsAreFocusable) {
   Element* pre_input = GetElementById("pre-input");
   Element* post_input = GetElementById("post-input");
 
-  PseudoElement* scroll_button_next =
-      scroller->GetPseudoElement(kPseudoIdScrollNextButton);
-  ASSERT_TRUE(scroll_button_next);
-  PseudoElement* scroll_button_prev =
-      scroller->GetPseudoElement(kPseudoIdScrollPrevButton);
-  ASSERT_TRUE(scroll_button_prev);
+  PseudoElement* scroll_left_button =
+      scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
+  ASSERT_TRUE(scroll_left_button);
+  PseudoElement* scroll_right_button =
+      scroller->GetPseudoElement(kPseudoIdScrollRightButton);
+  ASSERT_TRUE(scroll_right_button);
 
   EXPECT_EQ(scroller, GetFocusController().FindFocusableElementAfter(
                           *pre_input, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(scroll_button_prev,
+  EXPECT_EQ(scroll_left_button,
             GetFocusController().FindFocusableElementAfter(
                 *scroller, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(scroll_button_next,
+  EXPECT_EQ(scroll_right_button,
             GetFocusController().FindFocusableElementAfter(
-                *scroll_button_prev, mojom::blink::FocusType::kForward));
+                *scroll_left_button, mojom::blink::FocusType::kForward));
   EXPECT_EQ(post_input,
             GetFocusController().FindFocusableElementAfter(
-                *scroll_button_next, mojom::blink::FocusType::kForward));
+                *scroll_right_button, mojom::blink::FocusType::kForward));
 
   EXPECT_EQ(pre_input, GetFocusController().FindFocusableElementAfter(
                            *scroller, mojom::blink::FocusType::kBackward));
   EXPECT_EQ(scroller,
             GetFocusController().FindFocusableElementAfter(
-                *scroll_button_prev, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(scroll_button_prev,
+                *scroll_left_button, mojom::blink::FocusType::kBackward));
+  EXPECT_EQ(scroll_left_button,
             GetFocusController().FindFocusableElementAfter(
-                *scroll_button_next, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(scroll_button_next,
+                *scroll_right_button, mojom::blink::FocusType::kBackward));
+  EXPECT_EQ(scroll_right_button,
             GetFocusController().FindFocusableElementAfter(
                 *post_input, mojom::blink::FocusType::kBackward));
 
-  scroll_button_prev->Focus();
+  scroll_right_button->Focus();
   GetFocusController().SetActive(true);
   GetFocusController().SetFocused(true);
 
-  const ComputedStyle* style = scroll_button_prev->GetComputedStyle();
-  EXPECT_TRUE(scroll_button_prev->IsFocused());
+  const ComputedStyle* style = scroll_right_button->GetComputedStyle();
+  EXPECT_TRUE(scroll_right_button->IsFocused());
   EXPECT_EQ(0.5, style->Opacity());
 }
 

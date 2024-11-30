@@ -5,16 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_RESULT_PAGE_MUTATOR_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_RESULT_PAGE_MUTATOR_H_
 
-#import <UIKit/UIKit.h>
-
 /// Mutator for the result page.
 @protocol LensResultPageMutator
 
 /// Sets the user interface style mode.
 - (void)setIsDarkMode:(BOOL)isDarkMode;
-
-/// Sets the content size category.
-- (void)setContentSizeCategory:(UIContentSizeCategory)category;
 
 @end
 

@@ -38,7 +38,7 @@ QuickAnswersState::Error ToQuickAnswersStateError(
       return QuickAnswersState::Error::kUninitialized;
   }
 
-  CHECK(false) << "Unknown MagicBoostState::Error enum class value provided.";
+  NOTREACHED() << "Unknown MagicBoostState::Error enum class value provided.";
 }
 
 quick_answers::prefs::ConsentStatus ToQuickAnswersPrefsConsentStatus(
@@ -57,7 +57,7 @@ quick_answers::prefs::ConsentStatus ToQuickAnswersPrefsConsentStatus(
       return quick_answers::prefs::ConsentStatus::kRejected;
   }
 
-  CHECK(false) << "Unknown HMRConsentStatus enum class value provided.";
+  NOTREACHED() << "Unknown HMRConsentStatus enum class value provided.";
 }
 
 base::expected<bool, QuickAnswersState::Error> ToQuickAnswersStateIsEnabled(
@@ -373,7 +373,7 @@ QuickAnswersState::IsIntentEligibleExpectedAs(
           return quick_answers_unit_conversion_eligible_;
       }
 
-      CHECK(false) << "Invalid IntentType enum class value provided.";
+      NOTREACHED() << "Invalid IntentType enum class value provided.";
   }
 }
 
@@ -405,7 +405,7 @@ void QuickAnswersState::SetIntentEligibilityAsQuickAnswers(
       return;
   }
 
-  CHECK(false) << "Invalid Intent enum class value provided.";
+  NOTREACHED() << "Invalid Intent enum class value provided.";
 }
 
 void QuickAnswersState::InitializeObserver(

@@ -86,7 +86,7 @@ class AccessTokenFetcherTest
     token_service_.RemoveAccessTokenDiagnosticsObserver(this);
   }
 
-  CoreAccountId SetPrimaryAccount(const std::string& gaia_id,
+  CoreAccountId SetPrimaryAccount(const GaiaId& gaia_id,
                                   const std::string& email,
                                   ConsentLevel consent_level) {
     CoreAccountInfo account_info = AddAccount(gaia_id, email);
@@ -97,8 +97,7 @@ class AccessTokenFetcherTest
     return account_info.account_id;
   }
 
-  CoreAccountInfo AddAccount(const std::string& gaia_id,
-                             const std::string& email) {
+  CoreAccountInfo AddAccount(const GaiaId& gaia_id, const std::string& email) {
     account_tracker()->SeedAccountInfo(gaia_id, email);
     return account_tracker()->FindAccountInfoByGaiaId(gaia_id);
   }

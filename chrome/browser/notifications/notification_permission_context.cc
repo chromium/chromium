@@ -68,7 +68,7 @@ NotificationPermissionContext::NotificationPermissionContext(
                             blink::mojom::PermissionsPolicyFeature::kNotFound) {
 }
 
-NotificationPermissionContext::~NotificationPermissionContext() {}
+NotificationPermissionContext::~NotificationPermissionContext() = default;
 
 ContentSetting NotificationPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,

@@ -140,7 +140,7 @@ public class InstantMessageDelegateImplUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
-        mDelegate = new InstantMessageDelegateImpl(mProfile);
+        mDelegate = new InstantMessageDelegateImpl(mProfile, mDataSharingService);
         mDelegate.attachWindow(
                 mWindowAndroid,
                 mTabGroupModelFilter,
@@ -200,7 +200,7 @@ public class InstantMessageDelegateImplUnitTest {
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);
 
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(anyInt()))
+        when(mTabGroupModelFilter.getRelatedTabList(anyInt()))
                 .thenReturn(Arrays.asList(mTab1, mTab2));
         assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
         ArgumentMatcher<LoadUrlParams> matcher =
@@ -220,7 +220,7 @@ public class InstantMessageDelegateImplUnitTest {
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
 
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(anyInt()))
+        when(mTabGroupModelFilter.getRelatedTabList(anyInt()))
                 .thenReturn(Arrays.asList(mTab1, mTab2));
         assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
         ArgumentMatcher<LoadUrlParams> matcher =

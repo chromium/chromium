@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
+#include "chrome/browser/password_manager/password_change_controller.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "url/gurl.h"
@@ -28,10 +29,20 @@ void ChromePasswordChangeService::StartPasswordChange(
     const std::u16string& username,
     const std::u16string& password,
     content::WebContents* web_contents) {
-  NOTIMPLEMENTED();
+  GURL change_pwd_url = affiliation_service_->GetChangePasswordURL(url);
+  CHECK(change_pwd_url.is_valid());
+
+  auto controller = std::make_unique<PasswordChangeController>(
+      std::move(change_pwd_url), username, password, web_contents);
+  password_change_controllers_.push_back(std::move(controller));
 }
+
 bool ChromePasswordChangeService::IsPasswordChangeOngoing(
     content::WebContents* web_contents) {
-  NOTIMPLEMENTED();
-  return false;
+  return base::ranges::any_of(
+      password_change_controllers_,
+      [web_contents](
+          const std::unique_ptr<PasswordChangeController>& controller) {
+        return controller->IsPasswordChangeOngoing(web_contents);
+      });
 }

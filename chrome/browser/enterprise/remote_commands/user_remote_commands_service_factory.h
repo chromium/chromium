@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REMOTE_COMMANDS_USER_REMOTE_COMMANDS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ENTERPRISE_REMOTE_COMMANDS_USER_REMOTE_COMMANDS_SERVICE_FACTORY_H_
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace enterprise_commands {
+
+// Controls whether user remote command is enabled.
+BASE_DECLARE_FEATURE(kUserRemoteCommands);
 
 class UserRemoteCommandsService;
 

@@ -81,7 +81,7 @@ class BrowserEncodingTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<EncodingTestData> {
  protected:
-  BrowserEncodingTest() {}
+  BrowserEncodingTest() = default;
 
   // Saves the current page and verifies that the output matches the expected
   // result.

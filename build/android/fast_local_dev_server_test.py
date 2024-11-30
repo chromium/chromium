@@ -9,6 +9,7 @@ import json
 import pathlib
 import unittest
 import os
+import signal
 import socket
 import subprocess
 import sys
@@ -35,36 +36,49 @@ def sendMessage(message_dict):
     server_utils.SendMessage(sock, json.dumps(message_dict).encode('utf-8'))
 
 
+def pollServer():
+  try:
+    sendMessage({'message_type': server_utils.POLL_HEARTBEAT})
+    return True
+  except ConnectionRefusedError:
+    return False
+
+
+def callServer(args, stdout=subprocess.DEVNULL):
+  return subprocess.check_call([server_utils.SERVER_SCRIPT.absolute()] + args,
+                               cwd=pathlib.Path(__file__).parent,
+                               stdout=stdout)
+
+
 class TasksTest(unittest.TestCase):
 
   def setUp(self):
     self._TTY_FILE = '/tmp/fast_local_dev_server_test_tty'
-    try:
-      sendMessage({'message_type': server_utils.POLL_HEARTBEAT})
+    if pollServer():
       # TODO(mheikal): Support overriding the standard named pipe for
       # communicating with the server so that we can run an instance just for
       # this test even if a real one is running.
       self.skipTest("Cannot run test when server already running.")
-    except ConnectionRefusedError:
-      pass
     self._process = subprocess.Popen(
         [server_utils.SERVER_SCRIPT.absolute(), '--exit-on-idle', '--quiet'],
         start_new_session=True,
-        cwd=pathlib.Path(__file__).parent)
+        cwd=pathlib.Path(__file__).parent,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True)
     # pylint: disable=unused-variable
     for attempt in range(5):
-      try:
-        sendMessage({'message_type': server_utils.POLL_HEARTBEAT})
+      if pollServer():
         break
-      except ConnectionRefusedError:
-        # Wait for server init.
-        time.sleep(0.05)
+      time.sleep(0.05)
 
   def tearDown(self):
     if os.path.exists(self._TTY_FILE):
       os.unlink(self._TTY_FILE)
     self._process.terminate()
-    self._process.wait()
+    stdout, _ = self._process.communicate()
+    if stdout != '':
+      self.fail(f'build server should be silent but it output:\n{stdout}')
 
   def sendTask(self, cmd):
     _stamp_file = pathlib.Path('/tmp/.test.stamp')
@@ -118,6 +132,35 @@ class TasksTest(unittest.TestCase):
     self.waitForTasksDone()
     tty_contents = self.getTtyContents()
     self.assertIn('some_output', tty_contents)
+
+  def testRegisterBuilderMessage(self):
+    sendMessage({
+        'message_type': server_utils.REGISTER_BUILDER,
+        'build_id': self.id(),
+        'builder_pid': os.getpid(),
+    })
+    pollServer()
+    self.assertEqual(self.getTtyContents(), '')
+
+  def testRegisterBuilderServerCall(self):
+    self.assertEqual(
+        callServer(
+            ['--register-build',
+             self.id(), '--builder-pid',
+             str(os.getpid())]), 0)
+    self.assertEqual(self.getTtyContents(), '')
+
+  def testWaitForBuildServerCall(self):
+    self.assertEqual(callServer(['--wait-for-build', self.id()]), 0)
+    self.assertEqual(self.getTtyContents(), '')
+
+  def testCancelBuildServerCall(self):
+    self.assertEqual(callServer(['--cancel-build', self.id()]), 0)
+    self.assertEqual(self.getTtyContents(), '')
+
+  def testKeyboardInterrupt(self):
+    os.kill(self._process.pid, signal.SIGINT)
+    self._process.wait(timeout=1)
 
 
 if __name__ == '__main__':

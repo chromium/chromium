@@ -100,6 +100,8 @@ class CC_PAINT_EXPORT CorePaintFlags {
   // "high" in log-luminance space (which is equivalent to a geometric mean in
   // linear luminance).
   struct DynamicRangeLimitMixture {
+    // The default constructor is equivalent to DynamicRangeLimit::kHigh.
+    DynamicRangeLimitMixture() = default;
     explicit DynamicRangeLimitMixture(DynamicRangeLimit limit) {
       switch (limit) {
         case DynamicRangeLimit::kStandard:

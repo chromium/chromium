@@ -92,7 +92,7 @@ class ChromeOriginTrialsTest : public InProcessBrowserTest {
   ChromeOriginTrialsTest& operator=(const ChromeOriginTrialsTest&) = delete;
 
  protected:
-  ChromeOriginTrialsTest() {}
+  ChromeOriginTrialsTest() = default;
 
   std::string GetCommandLineSwitch(std::string_view switch_name) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

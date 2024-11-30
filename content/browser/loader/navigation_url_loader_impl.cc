@@ -242,6 +242,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+    mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+        device_bound_session_observer,
     mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
         accept_ch_frame_observer) {
   auto new_request = std::make_unique<network::ResourceRequest>();
@@ -261,6 +263,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->trusted_params->url_loader_network_observer =
       std::move(url_loader_network_observer);
   new_request->trusted_params->devtools_observer = std::move(devtools_observer);
+  new_request->trusted_params->device_bound_session_observer =
+      std::move(device_bound_session_observer);
   new_request->trusted_params->client_security_state =
       request_info.client_security_state.Clone();
   new_request->trusted_params->accept_ch_frame_observer =
@@ -1482,6 +1486,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+    mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+        device_bound_session_observer,
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
         initial_interceptors)
     : delegate_(delegate),
@@ -1531,6 +1537,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       *request_info_, frame_tree_node, std::move(cookie_observer),
       std::move(trust_token_observer), std::move(shared_dictionary_observer),
       std::move(url_loader_network_observer), std::move(devtools_observer),
+      std::move(device_bound_session_observer),
       std::move(accept_ch_frame_observer));
 
   network_loader_factory_ = CreateNetworkLoaderFactory(
@@ -1646,7 +1653,6 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
            /*is_download=*/false, factory_builder,
            /*factory_override=*/nullptr);
 
-  scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory;
   if (header_client) {
     return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
         CreateURLLoaderFactoryWithHeaderClient(std::move(header_client),

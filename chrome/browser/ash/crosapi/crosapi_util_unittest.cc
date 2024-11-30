@@ -328,34 +328,6 @@ TEST_F(CrosapiUtilTest, SerialNumber) {
   EXPECT_EQ(serial_number.value(), expected_serial_number);
 }
 
-TEST_F(CrosapiUtilTest, BrowserInitParamsContainsUserPolicy) {
-  IdleServiceAsh::DisableForTesting();
-  AddRegularUser(TestingProfile::kDefaultProfileUserName);
-
-  enterprise_management::CloudPolicySettings user_policies;
-  user_policies.mutable_userprintersallowed()->set_value(false);
-  auto user_policy_data = std::make_unique<enterprise_management::PolicyData>();
-  user_policies.SerializeToString(user_policy_data->mutable_policy_value());
-  GetCloudPolicyStore()->set_policy_data_for_testing(
-      std::move(user_policy_data));
-  std::string expected_policy_blob;
-  GetCloudPolicyStore()->policy_fetch_response()->SerializeToString(
-      &expected_policy_blob);
-  std::vector<uint8_t> expected_policy_bytes = std::vector<uint8_t>(
-      expected_policy_blob.begin(), expected_policy_blob.end());
-
-  task_environment_.RunUntilIdle();
-
-  std::string actual_user_policy_blob;
-  mojom::BrowserInitParamsPtr browser_init_params =
-      browser_util::GetBrowserInitParams(
-          browser_util::InitialBrowserAction(
-              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, std::nullopt);
-
-  EXPECT_EQ(expected_policy_bytes, browser_init_params->device_account_policy);
-}
-
 TEST_F(CrosapiUtilTest, DeviceExtensionsSystemLogEnabledFalse) {
   testing_profile_->ScopedCrosSettingsTestHelper()
       ->ReplaceDeviceSettingsProviderWithStub();

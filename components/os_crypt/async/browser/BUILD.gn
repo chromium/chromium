@@ -71,6 +71,7 @@ if (is_linux && use_dbus) {
       "//components/dbus/properties",
       "//components/dbus/thread_linux",
       "//components/dbus/utils",
+      "//components/dbus/xdg",
       "//components/os_crypt/async/common",
       "//components/os_crypt/sync",
       "//components/prefs",

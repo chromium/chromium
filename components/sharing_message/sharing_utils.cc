@@ -97,12 +97,8 @@ GetFCMChannel(const syncer::DeviceInfo& device_info) {
   }
 
   components_sharing_message::FCMChannelConfiguration fcm_configuration;
-  auto& vapid_target_info = device_info.sharing_info()->vapid_target_info;
-  auto& sender_id_target_info =
+  const syncer::DeviceInfo::SharingTargetInfo& sender_id_target_info =
       device_info.sharing_info()->sender_id_target_info;
-  fcm_configuration.set_vapid_fcm_token(vapid_target_info.fcm_token);
-  fcm_configuration.set_vapid_p256dh(vapid_target_info.p256dh);
-  fcm_configuration.set_vapid_auth_secret(vapid_target_info.auth_secret);
   fcm_configuration.set_sender_id_fcm_token(sender_id_target_info.fcm_token);
   fcm_configuration.set_sender_id_p256dh(sender_id_target_info.p256dh);
   fcm_configuration.set_sender_id_auth_secret(

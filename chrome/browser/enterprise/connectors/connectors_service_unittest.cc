@@ -311,6 +311,9 @@ TEST_F(ConnectorsServiceTest, RealtimeURLCheck) {
 
   maybe_dm_token = ConnectorsServiceFactory::GetForBrowserContext(profile_)
                        ->GetDMTokenForRealTimeUrlCheck();
+  ASSERT_EQ(
+      maybe_dm_token.error(),
+      ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::kNoDmToken);
   EXPECT_FALSE(maybe_dm_token.has_value());
 
 #if !BUILDFLAG(IS_CHROMEOS)

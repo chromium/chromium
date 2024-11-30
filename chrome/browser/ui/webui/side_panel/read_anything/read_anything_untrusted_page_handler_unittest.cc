@@ -252,6 +252,24 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
 }
 
 TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnLanguagePrefChange_SameLang_StoresOnce) {
+  const char kLang[] = "bn";
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+  PrefService* prefs = profile()->GetPrefs();
+
+  OnLanguagePrefChange(kLang, true);
+  ASSERT_EQ(
+      prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled).size(),
+      1u);
+
+  OnLanguagePrefChange(kLang, true);
+  ASSERT_EQ(
+      prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled).size(),
+      1u);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
        OnHandlerConstructed_WithReadAloud_SendsStoredReadAloudInfo) {
   // Build the voice and lang info.
   const char kLang1[] = "en";

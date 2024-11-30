@@ -44,27 +44,60 @@ constexpr V8FileSystemChangeType::Enum ToChangeTypeEnum(
   }
 }
 
+// Returns the `changed_handle` passed in except for "disappeared", "errored",
+// and "unknown" who do not have a changed handle.
+FileSystemHandle* GetChangedHandleForType(FileSystemHandle* changed_handle,
+                                          const V8FileSystemChangeType& type) {
+  switch (type.AsEnum()) {
+    case V8FileSystemChangeType::Enum::kAppeared:
+    case V8FileSystemChangeType::Enum::kModified:
+    case V8FileSystemChangeType::Enum::kMoved:
+      return changed_handle;
+    case V8FileSystemChangeType::Enum::kDisappeared:
+    case V8FileSystemChangeType::Enum::kErrored:
+    case V8FileSystemChangeType::Enum::kUnknown:
+      return nullptr;
+  }
+}
+
 }  // namespace
+
+// static
+FileSystemChangeRecord* FileSystemChangeRecord::Create(
+    FileSystemHandle* root,
+    FileSystemHandle* changed_handle,
+    Vector<String> relative_path_components,
+    V8FileSystemChangeType type,
+    std::optional<Vector<String>> relative_path_moved_from) {
+  return MakeGarbageCollected<FileSystemChangeRecord>(
+      root, changed_handle, std::move(relative_path_components),
+      std::move(type), std::move(relative_path_moved_from));
+}
 
 FileSystemChangeRecord::FileSystemChangeRecord(
     FileSystemHandle* root,
     FileSystemHandle* changed_handle,
-    const Vector<String>& relative_path,
-    mojom::blink::FileSystemAccessChangeTypePtr type)
-    : root_(root),
-      changed_handle_(changed_handle),
-      relative_path_components_(relative_path),
-      type_(std::move(type)) {}
+    Vector<String> relative_path_components,
+    V8FileSystemChangeType type,
+    std::optional<Vector<String>> relative_path_moved_from)
+    : type_(std::move(type)),
+      root_(root),
+      changed_handle_(GetChangedHandleForType(changed_handle, type_)),
+      relative_path_components_(std::move(relative_path_components)),
+      relative_path_moved_from_(std::move(relative_path_moved_from)) {}
 
-V8FileSystemChangeType FileSystemChangeRecord::type() const {
-  return V8FileSystemChangeType(ToChangeTypeEnum(type_->which()));
-}
-
-std::optional<Vector<String>> FileSystemChangeRecord::relativePathMovedFrom()
-    const {
-  return type_->is_moved() ? type_->get_moved()->former_relative_path
-                           : std::nullopt;
-}
+FileSystemChangeRecord::FileSystemChangeRecord(
+    FileSystemHandle* root,
+    FileSystemHandle* changed_handle,
+    const Vector<String>& relative_path_components,
+    mojom::blink::FileSystemAccessChangeTypePtr mojo_type)
+    : type_(V8FileSystemChangeType(ToChangeTypeEnum(mojo_type->which()))),
+      root_(root),
+      changed_handle_(GetChangedHandleForType(changed_handle, type_)),
+      relative_path_components_(relative_path_components),
+      relative_path_moved_from_(
+          mojo_type->is_moved() ? mojo_type->get_moved()->former_relative_path
+                                : std::nullopt) {}
 
 void FileSystemChangeRecord::Trace(Visitor* visitor) const {
   visitor->Trace(root_);

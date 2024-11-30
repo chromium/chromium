@@ -48,7 +48,7 @@ class ChromeAshMessageCenterClientTest : public testing::Test,
  protected:
   ChromeAshMessageCenterClientTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-  ~ChromeAshMessageCenterClientTest() override {}
+  ~ChromeAshMessageCenterClientTest() override = default;
 
   // testing::Test:
   void SetUp() override {

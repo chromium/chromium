@@ -9,6 +9,12 @@ import os
 import re
 
 
+# Rules instances need a back reference in order to evaluate
+# new_usages_require_review, but cannot hold a direct one because we
+# deepcopy them. Use this list to enable indirect references.
+deps_builders = []
+
+
 class Rule(object):
   """Specifies a single rule for an include, which can be one of
   ALLOW, DISALLOW and TEMP_ALLOW.
@@ -95,7 +101,7 @@ class Rules(object):
   set of rules per unique regular expression.
   """
 
-  def __init__(self):
+  def __init__(self, deps_builder_index):
     """Initializes the current rules with an empty rule list for all
     files.
     """
@@ -109,6 +115,9 @@ class Rules(object):
     # their internal order is arbitrary.
     self._specific_rules = {}
 
+    # Index of the DepsBuilder associated with this instance.
+    self._deps_builder_index = deps_builder_index
+
   def __str__(self):
     result = ['Rules = {\n    (apply to all files): [\n%s\n    ],' % '\n'.join(
         '      %s' % x for x in self._general_rules)]
@@ -117,6 +126,10 @@ class Rules(object):
           regexp, '\n'.join('      %s' % x for x in rules)))
     result.append('  }')
     return '\n'.join(result)
+
+  def _FindFirstAncestorThatRequiresReview(self, include_path):
+    deps_builder = deps_builders[self._deps_builder_index]
+    return deps_builder.FindFirstAncestorThatRequiresReview(include_path)
 
   def AsDependencyTuples(self, include_general_rules, include_specific_rules):
     """Returns a list of tuples (allow, dependent dir, dependee dir) for the
@@ -159,10 +172,6 @@ class Rules(object):
       else:
         rules_to_update = []
 
-    # Remove any existing rules or sub-rules that apply. For example, if we're
-    # passed "foo", we should remove "foo", "foo/bar", but not "foobar".
-    rules_to_update = [x for x in rules_to_update
-                       if not x.ParentOrMatch(rule_dir)]
     rules_to_update.insert(0, Rule(rule_type, rule_dir, dependent_dir, source))
 
     if not dependee_regexp:
@@ -174,13 +183,27 @@ class Rules(object):
     """Returns the rule that applies to |include_path| for a dependee
     file located at |dependee_path|.
     """
+    review_parent = self._FindFirstAncestorThatRequiresReview(include_path)
+    almost_match = None
+
     dependee_filename = os.path.basename(dependee_path)
     for regexp, specific_rules in list(self._specific_rules.items()):
       if re.match(regexp, dependee_filename):
         for rule in specific_rules:
           if rule.ChildOrMatch(include_path):
-            return rule
+            if review_parent is None:
+              return rule
+            if rule.ParentOrMatch(review_parent):
+              return rule
+            almost_match = rule
     for rule in self._general_rules:
       if rule.ChildOrMatch(include_path):
-        return rule
+        if review_parent is None:
+          return rule
+        if rule.ParentOrMatch(review_parent):
+          return rule
+        almost_match = rule
+    if almost_match:
+      return MessageRule(f'no rule applying for directory "{review_parent}", '
+                         'which is marked as new_usages_require_review=True.')
     return MessageRule('no rule applying.')

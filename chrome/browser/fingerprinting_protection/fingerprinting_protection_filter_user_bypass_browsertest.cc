@@ -40,6 +40,7 @@ void AllowlistViaContentSettings(HostContentSettingsMap* settings_map,
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        ActiveFilter_AllowsOnUserBypassException) {
+  ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
@@ -170,6 +171,12 @@ class FingerprintingProtectionFilterEnabled3PCookiesBlockedBrowserTest
           {{"activation_level", "enabled"},
            {"enable_only_if_3pc_blocked", "true"}}}},
         /*disabled_features=*/{});
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
  private:

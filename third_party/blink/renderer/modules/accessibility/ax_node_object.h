@@ -77,6 +77,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // The ARIA role, not taking the native role into account.
   ax::mojom::blink::Role aria_role_ = ax::mojom::blink::Role::kUnknown;
 
+  bool ShouldIncludeCustomElement() const;
   AXObjectInclusion ShouldIncludeBasedOnSemantics(
       IgnoredReasons* = nullptr) const;
   bool ComputeIsIgnored(IgnoredReasons* = nullptr) const override;

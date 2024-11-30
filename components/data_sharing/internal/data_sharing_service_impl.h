@@ -80,6 +80,9 @@ class DataSharingServiceImpl : public DataSharingService,
   void ReadGroup(const GroupId& group_id,
                  base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
                      callback) override;
+  void ReadNewGroup(const GroupToken& token,
+                    base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
+                        callback) override;
   void CreateGroup(const std::string& group_name,
                    base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
                        callback) override;

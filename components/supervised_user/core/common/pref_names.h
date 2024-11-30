@@ -150,16 +150,8 @@ inline constexpr char kSupervisedUserLocallyParentApprovedExtensions[] =
 // A string pref that stores the family member role of the primary account
 // as per kids_management::FamilyRole or
 // `supervised_user::kDefaultEmptyFamilyMemberRole` if not in a Family group.
-// TODO(crbug.com/372607761): Remove string-based pref in favor of an enum state
-// definition (see `prefs::kFamilyLinkUserState`).
 inline constexpr char kFamilyLinkUserMemberRole[] =
     "profile.family_member_role";
-
-// An integer pref that stores the enum value
-// supervised_user::FamilyLinkUserState of the primary account's Family
-// Link state as determined by capabilities and the result of querying
-// KidsManagementApi ListMembers API.
-inline constexpr char kFamilyLinkUserState[] = "profile.family_link_user_state";
 
 }  // namespace prefs
 

@@ -70,6 +70,10 @@ bool ProxyChain::InitFromPickle(base::PickleIterator* pickle_iter) {
     proxy_server_list.push_back(ProxyServer::CreateFromPickle(pickle_iter));
   }
   proxy_server_list_ = std::move(proxy_server_list);
+  if (!IsValidInternal()) {
+    proxy_server_list_ = std::nullopt;
+    return false;
+  }
   return true;
 }
 

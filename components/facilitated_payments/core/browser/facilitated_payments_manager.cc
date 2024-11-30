@@ -35,8 +35,6 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
               FacilitatedPaymentsInitiatePaymentRequestDetails>()) {
   DCHECK(optimization_guide_decider_);
   RegisterPixAllowlist();
-  client_->SetUiEventListener(base::BindRepeating(
-      &FacilitatedPaymentsManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
 }
 
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() {
@@ -61,6 +59,9 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
     return;
   }
   has_payflow_started_ = true;
+  client_->SetUiEventListener(base::BindRepeating(
+      &FacilitatedPaymentsManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
+  pix_code_copied_timestamp_ = base::TimeTicks::Now();
   ukm_source_id_ = ukm_source_id;
   trigger_source_ = TriggerSource::kCopyEvent;
   // Check whether the domain for the render_frame_host_url is allowlisted.
@@ -68,7 +69,7 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
     // The merchant is not part of the allowlist, ignore the copy event.
     return;
   }
-  LogPixCodeCopied();
+  LogPixCodeCopied(ukm_source_id_);
   initiate_payment_request_details_->merchant_payment_page_hostname_ =
       render_frame_host_url.host();
   // Trigger Pix code validation.
@@ -189,12 +190,10 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     bool is_prompt_accepted,
     int64_t selected_instrument_id) {
   if (!is_prompt_accepted) {
-    LogTransactionResult(TransactionResult::kAbandoned, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
     return;
   }
   LogFopSelected();
+  LogFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_);
   ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
@@ -283,6 +282,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     ShowErrorScreen();
     return;
   }
+  LogInitiatePurchaseActionAttempt();
   purchase_action_start_time_ = base::TimeTicks::Now();
   GetApiClient()->InvokePurchaseAction(
       account_info.value(), response_details->action_token_,
@@ -291,32 +291,16 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
 }
 
 void FacilitatedPaymentsManager::OnPurchaseActionResult(
-    FacilitatedPaymentsApiClient::PurchaseActionResult result) {
+    PurchaseActionResult result) {
   // When server responds to the purchase action, Google Play Services takes
   // over, and the progress screen gets dismissed. Calling `DismissPrompt`
   // clears the associated Java objects.
   DismissPrompt();
-  LogInitiatePurchaseActionResult(
-      /*result=*/result ==
-          FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk,
-      base::TimeTicks::Now() - purchase_action_start_time_);
-  // Map the result received from the purchase action to overall transaction
-  // result.
-  TransactionResult transaction_result = TransactionResult::kFailed;
-  switch (result) {
-    case FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk:
-      transaction_result = TransactionResult::kSuccess;
-      break;
-    case FacilitatedPaymentsApiClient::PurchaseActionResult::kCouldNotInvoke:
-      transaction_result = TransactionResult::kFailed;
-      break;
-    case FacilitatedPaymentsApiClient::PurchaseActionResult::kResultCanceled:
-      transaction_result = TransactionResult::kAbandoned;
-      break;
-  }
-  LogTransactionResult(transaction_result, trigger_source_,
-                       base::TimeTicks::Now() - fop_selector_shown_time_,
-                       ukm_source_id_);
+  // Logs the general histograms.
+  std::string result_string = GetInitiatePurchaseActionResultString(result);
+  LogInitiatePurchaseActionResultAndLatency(
+      result_string, base::TimeTicks::Now() - purchase_action_start_time_);
+  LogInitiatePurchaseActionResultUkm(result_string, ukm_source_id_);
 }
 
 void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
@@ -324,16 +308,26 @@ void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
     case UiEvent::kNewScreenShown: {
       CHECK_NE(ui_state_, UiState::kHidden);
       LogUiScreenShown(ui_state_);
-      // TODO: crbug.com/375089558 - Log latency metrics.
+      if (ui_state_ == UiState::kFopSelector) {
+        LogPixFopSelectorShownLatency(base::TimeTicks::Now() -
+                                      pix_code_copied_timestamp_);
+        LogFopSelectorShownUkm(ukm_source_id_);
+      }
       break;
     }
     case UiEvent::kScreenClosedNotByUser: {
-      // TODO(crbug.com/375089558): Based on the `ui_state_`, log metrics.
+      if (ui_state_ == UiState::kFopSelector) {
+        LogPayflowExitedReason(
+            PayflowExitedReason::kFopSelectorClosedNotByUser);
+      }
       ui_state_ = UiState::kHidden;
       break;
     }
     case UiEvent::kScreenClosedByUser: {
-      // TODO(crbug.com/375089558): Based on the `ui_state_`, log metrics.
+      if (ui_state_ == UiState::kFopSelector) {
+        LogPayflowExitedReason(PayflowExitedReason::kFopSelectorClosedByUser);
+        LogFopSelectorResultUkm(/*accepted=*/false, ukm_source_id_);
+      }
       ui_state_ = UiState::kHidden;
       break;
     }
@@ -361,6 +355,18 @@ void FacilitatedPaymentsManager::ShowProgressScreen() {
 void FacilitatedPaymentsManager::ShowErrorScreen() {
   ui_state_ = UiState::kErrorScreen;
   client_->ShowErrorScreen();
+}
+
+std::string FacilitatedPaymentsManager::GetInitiatePurchaseActionResultString(
+    PurchaseActionResult result) {
+  switch (result) {
+    case PurchaseActionResult::kResultOk:
+      return std::string("Succeeded");
+    case PurchaseActionResult::kCouldNotInvoke:
+      return std::string("Failed");
+    case PurchaseActionResult::kResultCanceled:
+      return std::string("Abandoned");
+  }
 }
 
 }  // namespace payments::facilitated

@@ -516,15 +516,7 @@ void SocketPosix::ReadCompleted() {
 }
 
 int SocketPosix::DoWrite(IOBuffer* buf, int buf_len) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Disable SIGPIPE for this write. Although Chromium globally disables
-  // SIGPIPE, the net stack may be used in other consumers which do not do
-  // this. MSG_NOSIGNAL is a Linux-only API. On OS X, this is a setsockopt on
-  // socket creation.
   int rv = HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, MSG_NOSIGNAL));
-#else
-  int rv = HANDLE_EINTR(write(socket_fd_, buf->data(), buf_len));
-#endif
   if (rv >= 0) {
     CHECK_LE(rv, buf_len);
   }

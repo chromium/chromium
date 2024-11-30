@@ -8,20 +8,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.hardware.biometrics.BiometricManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
@@ -173,25 +169,18 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         getPreferenceScreen().addPreference(autofillSwitch);
 
         if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS)) {
-            Pair<Integer, String> otherFinancialAccountTypes =
-                    getOtherFinancialAccountsTypes(personalDataManager);
-            if (otherFinancialAccountTypes.first != 0) {
+                        ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS)) {
+            boolean hasPixAccounts = personalDataManager.getMaskedBankAccounts().length != 0;
+            boolean hasEwallets = personalDataManager.getEwallets().length != 0;
+            if (hasEwallets || hasPixAccounts) {
                 Preference otherFinancialAccountsPref = new Preference(getStyledContext());
                 otherFinancialAccountsPref.setKey(PREF_FINANCIAL_ACCOUNTS_MANAGEMENT);
                 otherFinancialAccountsPref.setSingleLineTitle(false);
                 otherFinancialAccountsPref.setTitle(
-                        getResources()
-                                .getString(
-                                        R.string.settings_manage_other_financial_accounts_title,
-                                        otherFinancialAccountTypes.second));
+                        getFacilitatedPaymentsTitleString(hasEwallets, hasPixAccounts));
                 otherFinancialAccountsPref.setSummary(
-                        getResources()
-                                .getQuantityString(
-                                        R.plurals
-                                                .settings_manage_other_financial_accounts_description,
-                                        otherFinancialAccountTypes.first,
-                                        otherFinancialAccountTypes.second));
+                        getFacilitatedPaymentsSummaryString(hasEwallets, hasPixAccounts));
                 getPreferenceScreen().addPreference(otherFinancialAccountsPref);
                 otherFinancialAccountsPref.setOnPreferenceClickListener(
                         this::showOtherFinancialAccountsFragment);
@@ -237,9 +226,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             // depend on the value of the "Save and fill payment methods" toggle, since we would
             // like to allow the user to delete saved CVCs even when the toggle is disabled.
             // Conditionally show the deletion button based on whether there are any CVCs stored.
-            if (personalDataManager.getCreditCardsForSettings().stream()
-                    .anyMatch(card -> !card.getCvc().isEmpty())) {
-                createDeleteSavedCvcsButton();
+            for (CreditCard card : personalDataManager.getCreditCardsForSettings()) {
+                if (!card.getCvc().isEmpty()) {
+                    createDeleteSavedCvcsButton();
+                    break;
+                }
             }
         }
 
@@ -489,29 +480,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         }
     }
 
-    private boolean isBiometricAvailable() {
-        // Only Android versions 9 and above are supported.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            return false;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            BiometricManager biometricManager =
-                    getStyledContext().getSystemService(BiometricManager.class);
-            return biometricManager != null
-                    && biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS;
-        } else {
-            // For API level < Q, we will use FingerprintManagerCompat to check enrolled
-            // fingerprints. Note that for API level lower than 23, FingerprintManagerCompat behaves
-            // like no fingerprint hardware and no enrolled fingerprints.
-            FingerprintManagerCompat fingerprintManager =
-                    FingerprintManagerCompat.from(getStyledContext());
-            return fingerprintManager != null
-                    && fingerprintManager.isHardwareDetected()
-                    && fingerprintManager.hasEnrolledFingerprints();
-        }
-    }
-
     /** Handle preference changes from mandatory reauth toggle */
     private boolean onMandatoryReauthSwitchToggled(Preference preference, Object newValue) {
         assert preference.getKey().equals(PREF_MANDATORY_REAUTH);
@@ -613,8 +581,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     }
 
     /**
-     * Create a clickable "Delete saved cvcs" button and add it to the preference screen.
-     * No divider line above this preference.
+     * Create a clickable "Delete saved cvcs" button and add it to the preference screen. No divider
+     * line above this preference.
      */
     private void createDeleteSavedCvcsButton() {
         ChromeBasePreference deleteSavedCvcs = new ChromeBasePreference(getStyledContext());
@@ -656,18 +624,25 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         dialog.show();
     }
 
-    /**
-     * Returns a pair of the number of types of financial accounts and the string to be displayed in
-     * the settings page.
-     */
-    private Pair<Integer, String> getOtherFinancialAccountsTypes(
-            PersonalDataManager personalDataManager) {
-        return personalDataManager.getMaskedBankAccounts().length == 0
-                ? new Pair<>(0, "")
-                : new Pair<>(
-                        1,
-                        getResources()
-                                .getString(R.string.settings_manage_other_financial_accounts_pix));
+    private String getFacilitatedPaymentsTitleString(boolean hasEwallets, boolean hasPixAccounts) {
+        if (hasEwallets && hasPixAccounts) {
+            return getResources().getString(R.string.settings_manage_ewallet_and_pix_title);
+        }
+        if (hasEwallets) {
+            return getResources().getString(R.string.settings_manage_ewallet_title);
+        }
+        return getResources().getString(R.string.settings_manage_pix_title);
+    }
+
+    private String getFacilitatedPaymentsSummaryString(
+            boolean hasEwallets, boolean hasPixAccounts) {
+        if (hasEwallets && hasPixAccounts) {
+            return getResources().getString(R.string.settings_manage_ewallet_and_pix_description);
+        }
+        if (hasEwallets) {
+            return getResources().getString(R.string.settings_manage_ewallet_description);
+        }
+        return getResources().getString(R.string.settings_manage_pix_description);
     }
 
     /** Show the page for managing other finiancial accounts. */

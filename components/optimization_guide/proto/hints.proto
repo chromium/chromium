@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66, 72;
+  reserved 11, 12, 16, 29, 32, 66, 72, 75;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -294,6 +294,11 @@ enum OptimizationType {
   // This optimization provides information about whether a page is eligible for
   // text classifier entity detection. This feature is iOS only.
   TEXT_CLASSIFIER_ENTITY_DETECTION = 74;
+  // Provides information for what to show in the debug icon view.
+  OPTIMIZATION_GUIDE_ICON_VIEW = 76;
+  // This optimization provides information about whether a merchant is
+  // opted-out of Visa virtual cards for a URL.
+  MERCHANT_TRUST_SIGNALS_V3 = 77;
 }
 
 // Presents semantics for how page load URLs should be matched.

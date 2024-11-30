@@ -54,7 +54,7 @@
             "pool": "chrome.tests"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -119,7 +119,7 @@
             "pool": "chrome.tests"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -176,7 +176,7 @@
             "pool": "chrome.tests"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -221,7 +221,7 @@
             "pool": "chrome.tests.perf-fyi"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -267,7 +267,7 @@
             "synthetic_product_name": "HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
@@ -313,7 +313,7 @@
             "synthetic_product_name": "Inspiron 14 Plus 7441 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
@@ -358,7 +358,7 @@
             "synthetic_product_name": "Inspiron 14 Plus 7441 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1

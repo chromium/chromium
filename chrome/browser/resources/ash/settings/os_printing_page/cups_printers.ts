@@ -49,7 +49,6 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resource
 
 import type {DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {Constructor} from '../common/types.js';
@@ -234,13 +233,6 @@ export class SettingsCupsPrintersElement extends
         computed: 'computeNearbyPrintersEmpty_(nearbyPrinterCount_)',
         reflectToAttribute: true,
       },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
     };
   }
 
@@ -258,7 +250,6 @@ export class SettingsCupsPrintersElement extends
   private enterprisePrinters_: PrinterListEntry[];
   private entryManager_: CupsPrintersEntryManager;
   private hasActiveNetworkConnection: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private nearbyPrinterCount_: number;
   private nearbyPrintersAriaLabel_: string;
   private networkConfig_: CrosNetworkConfigInterface;

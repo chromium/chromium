@@ -284,7 +284,8 @@ void FedCmMetrics::RecordRequestTokenStatus(
     const std::vector<GURL>& requested_providers,
     int num_idps_mismatch,
     const std::optional<GURL>& selected_idp_config_url,
-    const RpMode& rp_mode) {
+    const RpMode& rp_mode,
+    std::optional<FedCmUseOtherAccountResult> use_other_account_result) {
   // The following check is to avoid double recording in the following scenario:
   // 1. The request has failed but we have not yet rejected the promise, e.g.
   // when the API is disabled. We record a metric immediately but only post a
@@ -311,6 +312,10 @@ void FedCmMetrics::RecordRequestTokenStatus(
     ukm_builder.SetNumIdpsRequested(num_idps_requested);
     ukm_builder.SetNumIdpsMismatch(num_idps_mismatch);
     ukm_builder.SetRpMode(static_cast<int>(rp_mode));
+    if (use_other_account_result.has_value()) {
+      ukm_builder.SetUseOtherAccountResult(
+          static_cast<int>(*use_other_account_result));
+    }
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
@@ -339,6 +344,10 @@ void FedCmMetrics::RecordRequestTokenStatus(
   base::UmaHistogramEnumeration("Blink.FedCm.Status.MediationRequirement",
                                 requirement);
   base::UmaHistogramEnumeration("Blink.FedCm.RpMode", rp_mode);
+  if (use_other_account_result.has_value()) {
+    base::UmaHistogramEnumeration("Blink.FedCm.UseOtherAccountResult",
+                                  *use_other_account_result);
+  }
   // Reset the `session_id_`. We expect no more metrics from this API call.
   session_id_ = -1;
 }

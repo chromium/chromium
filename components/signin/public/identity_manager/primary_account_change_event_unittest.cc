@@ -46,7 +46,7 @@ class PrimaryAccountChangeEventTest : public testing::Test {
  private:
   CoreAccountInfo GetCoreAccountInfoFrom(const char* gaia_id) {
     CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId::FromGaiaId(gaia_id);
+    account_info.account_id = CoreAccountId::FromGaiaId(GaiaId(gaia_id));
     account_info.gaia = gaia_id;
     account_info.email = std::string(gaia_id) + "@gmail.com";
     return account_info;

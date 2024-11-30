@@ -8,6 +8,7 @@
 #import "base/containers/contains.h"
 #import "base/json/values_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/threading/thread_restrictions.h"
 #import "base/time/time.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
@@ -101,6 +102,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -113,7 +115,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_prefs.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
@@ -784,6 +785,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(
       prefs::kProminenceNotificationAlertImpressionCount, 0);
+
+  registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1141,10 +1144,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 11/2024
   registry->RegisterBooleanPref(kEnableDoNotTrackIos, false);
+
+  registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
+  // This function is not allowed to block.
+  base::ScopedDisallowBlocking disallow_blocking;
 
   // Added 01/2024.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -1193,8 +1200,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 }
 
 // This method should be periodically pruned of year+ old migrations.
-void MigrateObsoleteProfilePrefs(const base::FilePath& state_path,
-                                 PrefService* prefs) {
+void MigrateObsoleteProfilePrefs(PrefService* prefs) {
+  // This function is not allowed to block.
+  base::ScopedDisallowBlocking disallow_blocking;
+
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
@@ -1386,12 +1395,6 @@ void MigrateObsoleteProfilePrefs(const base::FilePath& state_path,
   MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kIncognitoInterstitialEnabled, prefs);
 
-  // Updated 09/2024. DO NOT REMOVE after the usual year!
-  // TODO(crbug.com/369296278): Remove ~one year after full launch of
-  // kForceMigrateSyncingUserToSignedIn. Also remove the
-  // signinAndEnableLegacySyncFeature test helper and corresponding tests.
-  browser_sync::MaybeMigrateSyncingUserToSignedIn(state_path, prefs);
-
   // Added 09/2024.
   MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kAddressBarSettingsNewBadgeShownCount, prefs);
@@ -1426,4 +1429,7 @@ void MigrateObsoleteUserDefault() {
 
   // Added 08/2024.
   [defaults removeObjectForKey:@"userHasInteractedWithWhatsNew"];
+
+  // Added 11/2024.
+  [defaults removeObjectForKey:@"DisplaySwitchProfile"];
 }

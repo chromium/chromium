@@ -47,8 +47,9 @@ enum class TabGridOpeningMode {
 // modals are dismissed (animations done).
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion;
 
-// Shows the Password Checkup page for `referrer`.
-- (void)showPasswordCheckupPageForReferrer:
+// Dismisses all modal dialogs (if any) before showing the Password Checkup page
+// for `referrer`.
+- (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
     (password_manager::PasswordCheckReferrer)referrer;
 
 // Opens the Password Issues list displaying compromised, weak or reused

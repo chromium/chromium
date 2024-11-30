@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">यसले Chrome लाई डिफल्ट ब्राउजरका रूपमा सेट गर्न Chrome को सेटिङ खोल्छ।</translation>
 <translation id="1670609221633730681">Chrome सम्बन्धी सुझाव: आफ्नो एड्रेस बार कहाँ राख्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">आफ्ना पासवर्डहरू Chrome मा सेभ गर्नुहोस्</translation>
 <translation id="1790080846677398234">यसले इनपुट गरिएका URL हरू Chrome मा भएका तपाईंका बुकमार्कमा हाल्छ।</translation>
 <translation id="1799920918471566157">Chrome को प्रयोगसम्बन्धी सुझावहरू</translation>
 <translation id="1830634592642484976">यो ठेगाना हाल Chrome मा सेभ गरिएको छ। तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="USER_EMAIL" />) मा सेभ गर्नुहोस्।</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">यसको अर्थ Chrome ले हरेक पटक साइटको मोबाइल संस्करण प्रयोग गर्न अनुरोध गर्ने छ।</translation>
 <translation id="3740397331642243698">प्रविष्टि गरिएका URL हरू Google Chrome को इन्कोग्निटो मोडमा खोलिन्छ।</translation>
 <translation id="3741995255368156336">Chrome मा पछि पढ्न सेभ गरिएका वेबपेजको सूची खोल्छ।</translation>
+<translation id="3808570423967020928">आफ्नो होम स्क्रिन डकबाट Chrome अझ छिटो एक्सेस गर्नुहोस्।</translation>
 <translation id="3827545470516145620">तपाईं यो डिभाइसमा सामान्य सुरक्षा प्राप्त गरिरहनुभएको छ</translation>
 <translation id="384394811301901750">Google Chrome ले अहिले तपाईँको क्यामेरा प्रयोग गर्न सक्दैन</translation>
 <translation id="3863841106411295595">यसले इनपुट गरिएका URL हरू Chrome मा भएको तपाईंको रिडिङ लिस्टमा हाल्छ।</translation>
@@ -219,9 +221,11 @@
 
 Chrome मा तपाईंलाई अझ राम्रो ब्राउजिङ सुविधा दिने प्रयोजनका लागि जानकारी प्रयोग गर्ने अन्य सेटिङ मिलाउन <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="6922332667202044570">Chrome को ब्राउजिङ डेटा मेटाउनुहोस्।</translation>
+<translation id="6924922227983877439">लिंकहरू डिफल्ट रूपमा Chrome मा खोल्नुहोस्</translation>
 <translation id="6975725306479268850">अटोफिल सुविधा प्रयोग गर्न Chrome छनौट गर्नुहोस्</translation>
 <translation id="7056826488869329999">Chrome मा सुरक्षा जाँच गर्ने सुविधा खोलेर रन गर्छ।</translation>
 <translation id="7061455974939528301">Chrome आइकन थिचिराख्नुहोस् र "होम स्क्रिनमा परिवर्तनहरू गर्नुहोस्" मा क्लिक गर्नुहोस्</translation>
+<translation id="7065813315247345131">Move Chrome लाई सारेर डकमा लैजानुहोस्</translation>
 <translation id="7124339256045485976">Chrome अपडेट राख्नुहोस्</translation>
 <translation id="7161390184744336561">Google Chrome पुरानो भइसकेको छ</translation>
 <translation id="7165736900384873061">Google Chrome QR स्क्यानरको प्रयोग गर्न थाल्नुहोस्</translation>

@@ -1867,8 +1867,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
             false);
   EXPECT_EQ(ukm_entries[0].metrics.at("IsCurrentInteraction"), 1);
   EXPECT_EQ(ukm_entries[0].metrics.at("InteractionType"),
-            static_cast<int32_t>(
-                RedirectHeuristicTabHelper::InteractionType::UserActivation));
+            static_cast<int32_t>(DIPSInteractionType::UserActivation));
 
   // The second cookie access was from a tracking site with an authentication
   // within the last hour, on a site with 3PC access allowed.
@@ -1890,8 +1889,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
             false);
   EXPECT_EQ(ukm_entries[1].metrics.at("IsCurrentInteraction"), 1);
   EXPECT_EQ(ukm_entries[1].metrics.at("InteractionType"),
-            static_cast<int32_t>(
-                RedirectHeuristicTabHelper::InteractionType::Authentication));
+            static_cast<int32_t>(DIPSInteractionType::Authentication));
 
   // The third cookie access was from a tracking site in an iframe of the
   // target, on a site with 3PC access blocked.
@@ -1914,8 +1912,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
   EXPECT_EQ(ukm_entries[2].metrics.at("DoesFirstPartyPrecedeThirdParty"), true);
   EXPECT_EQ(ukm_entries[2].metrics.at("IsCurrentInteraction"), 0);
   EXPECT_EQ(ukm_entries[2].metrics.at("InteractionType"),
-            static_cast<int32_t>(
-                RedirectHeuristicTabHelper::InteractionType::NoInteraction));
+            static_cast<int32_t>(DIPSInteractionType::NoInteraction));
 
   // Verify there are 3 corresponding CookieAccessThirdParty entries with
   // matching access IDs.

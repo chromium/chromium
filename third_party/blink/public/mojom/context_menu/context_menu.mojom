@@ -221,13 +221,14 @@ struct UntrustworthyContextMenuParams {
   FormRendererId form_renderer_id;
 };
 
-// Defines methods for Context menu to commnicate from the renderer to the
-// browser.
+// Defines methods for Context menu to commnicate from the browser to the
+// renderer.
 interface ContextMenuClient {
   // Executes custom context menu action that was provided from Blink.
   CustomContextMenuAction(uint32 action);
 
   // Called in response to a blink.mojom.ShowContextMenu to let the renderer
-  // know that the menu has been closed.
-  ContextMenuClosed(url.mojom.Url link_followed);
+  // know that the menu has been closed. Must be called with the impression,
+  // if any, that was present on the UntrustworthyContextMenuParams.
+  ContextMenuClosed(url.mojom.Url link_followed, Impression? impression);
 };

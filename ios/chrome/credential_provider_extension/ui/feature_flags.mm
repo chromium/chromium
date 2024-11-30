@@ -14,3 +14,16 @@ BOOL IsPasswordCreationUserEnabled() {
           AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()]
       boolValue];
 }
+
+BOOL IsPasswordCreationManaged() {
+  return [[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged()]
+      boolValue];
+}
+
+BOOL IsPasswordSyncEnabled() {
+  return [[app_group::GetGroupUserDefaults()
+      objectForKey:AppGroupUserDefaultsCredentialProviderPasswordSyncSetting()]
+      boolValue];
+}

@@ -45,6 +45,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/gfx/image/image.h"
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
@@ -240,7 +241,7 @@ AccountInfo AccountTrackerService::GetAccountInfo(
 }
 
 AccountInfo AccountTrackerService::FindAccountInfoByGaiaId(
-    const std::string& gaia_id) const {
+    const GaiaId& gaia_id) const {
   if (!gaia_id.empty()) {
     const auto iterator = base::ranges::find(
         accounts_, gaia_id, [](const auto& pair) { return pair.second.gaia; });
@@ -664,7 +665,10 @@ void AccountTrackerService::LoadFromPrefs() {
     StartTrackingAccount(account_id);
     AccountInfo& account_info = accounts_[account_id];
 
-    GetString(*dict, kAccountGaiaKey, account_info.gaia);
+    std::string gaia_id_string;
+    GetString(*dict, kAccountGaiaKey, gaia_id_string);
+    account_info.gaia = GaiaId(gaia_id_string);
+
     GetString(*dict, kAccountEmailKey, account_info.email);
     GetString(*dict, kAccountHostedDomainKey, account_info.hosted_domain);
     GetString(*dict, kAccountFullNameKey, account_info.full_name);
@@ -704,17 +708,18 @@ void AccountTrackerService::LoadFromPrefs() {
           kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath);
     }
 
-    for (const std::string& name :
+    for (std::string_view name :
          AccountCapabilities::GetSupportedAccountCapabilityNames()) {
       switch (FindAccountCapabilityState(*dict, name)) {
         case signin::Tribool::kUnknown:
           account_info.capabilities.capabilities_map_.erase(name);
           break;
         case signin::Tribool::kTrue:
-          account_info.capabilities.capabilities_map_[name] = true;
+          account_info.capabilities.capabilities_map_[std::string(name)] = true;
           break;
         case signin::Tribool::kFalse:
-          account_info.capabilities.capabilities_map_[name] = false;
+          account_info.capabilities.capabilities_map_[std::string(name)] =
+              false;
           break;
       }
     }
@@ -780,7 +785,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   }
 
   dict->Set(kAccountEmailKey, account_info.email);
-  dict->Set(kAccountGaiaKey, account_info.gaia);
+  dict->Set(kAccountGaiaKey, account_info.gaia.ToString());
   dict->Set(kAccountHostedDomainKey, account_info.hosted_domain);
   dict->Set(kAccountFullNameKey, account_info.full_name);
   dict->Set(kAccountGivenNameKey, account_info.given_name);
@@ -794,7 +799,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   // |kLastDownloadedImageURLWithSizeKey| should only be set after the GAIA
   // picture is successufly saved to disk. Otherwise, there is no guarantee that
   // |kLastDownloadedImageURLWithSizeKey| matches the picture on disk.
-  for (const std::string& name :
+  for (std::string_view name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {
     signin::Tribool capability_state =
         account_info.capabilities.GetCapabilityByName(name);
@@ -817,7 +822,7 @@ void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {
 }
 
 CoreAccountId AccountTrackerService::PickAccountIdForAccount(
-    const std::string& gaia,
+    const GaiaId& gaia,
     const std::string& email) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!email.empty());
@@ -838,7 +843,7 @@ CoreAccountId AccountTrackerService::PickAccountIdForAccount(
 }
 
 CoreAccountId AccountTrackerService::SeedAccountInfo(
-    const std::string& gaia,
+    const GaiaId& gaia,
     const std::string& email,
     signin_metrics::AccessPoint access_point) {
   AccountInfo account_info;

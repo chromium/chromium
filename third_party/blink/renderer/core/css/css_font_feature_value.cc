@@ -30,7 +30,8 @@
 namespace blink {
 namespace cssvalue {
 
-CSSFontFeatureValue::CSSFontFeatureValue(const AtomicString& tag, int value)
+CSSFontFeatureValue::CSSFontFeatureValue(const AtomicString& tag,
+                                         const CSSPrimitiveValue* value)
     : CSSValue(kFontFeatureClass), tag_(tag), value_(value) {}
 
 String CSSFontFeatureValue::CustomCSSText() const {
@@ -39,9 +40,9 @@ String CSSFontFeatureValue::CustomCSSText() const {
   builder.Append(tag_);
   builder.Append('"');
   // Omit the value if it's 1 as 1 is implied by default.
-  if (value_ != 1) {
+  if (!value_->IsNumericLiteralValue() || value_->GetIntValue() != 1) {
     builder.Append(' ');
-    builder.AppendNumber(value_);
+    builder.Append(value_->CustomCSSText());
   }
   return builder.ReleaseString();
 }

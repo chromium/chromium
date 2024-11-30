@@ -23,5 +23,7 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int4 for output, must be one of [float32, float16, int32, int8, uint8]."
 [FAIL] dequantizeLinear int4 1D tensor with odd size
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int4 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] per-tensor dequantizeLinear for int4 4D constant
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int4 for output, must be one of [float32, float16, int32, int8, uint8]."
 Harness: the test ran to completion.
 

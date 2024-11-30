@@ -110,10 +110,10 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
-TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
+TEST(DecoderBufferTest, FromPlatformSharedMemoryRegionUnaligned) {
   const uint8_t kData[] = "XXXhello";
   const size_t kDataSize = std::size(kData);
-  const off_t kDataOffset = 3;
+  const size_t kDataOffset = 3;
 
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
@@ -129,7 +129,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
-TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_ZeroSize) {
+TEST(DecoderBufferTest, FromPlatformSharedMemoryRegionZeroSize) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
 
@@ -160,10 +160,10 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion) {
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
-TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
+TEST(DecoderBufferTest, FromSharedMemoryRegionUnaligned) {
   const uint8_t kData[] = "XXXhello";
   const size_t kDataSize = std::size(kData);
-  const off_t kDataOffset = 3;
+  const size_t kDataOffset = 3;
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
   ASSERT_TRUE(mapping_region.IsValid());
@@ -179,7 +179,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
-TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
+TEST(DecoderBufferTest, FromSharedMemoryRegionZeroSize) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
 

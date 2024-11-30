@@ -84,7 +84,7 @@ class TestTetherService : public TetherService {
                       secure_channel_client,
                       multidevice_setup_client,
                       session_manager) {}
-  ~TestTetherService() override {}
+  ~TestTetherService() override = default;
 
   int updated_technology_state_count() {
     return updated_technology_state_count_;
@@ -117,7 +117,7 @@ class FakeTetherComponentWithDestructorCallback : public FakeTetherComponent {
 
 class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
  public:
-  TestTetherComponentFactory() {}
+  TestTetherComponentFactory() = default;
 
   // Returns nullptr if no TetherComponent has been created or if the last one
   // that was created has already been deleted.
@@ -272,7 +272,7 @@ class TetherServiceTest : public testing::Test {
  protected:
   TetherServiceTest()
       : test_device_(multidevice::CreateRemoteDeviceRefForTest()) {}
-  ~TetherServiceTest() override {}
+  ~TetherServiceTest() override = default;
 
   void SetUp() override {
     fake_notification_presenter_ = nullptr;

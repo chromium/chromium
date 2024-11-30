@@ -36,7 +36,7 @@ enum KeyboardPassThroughState {
   PENDING_SHORTCUT_KEYUPS = 'pending_shortcut_keyups',
 }
 
-class InternalKeyEvent extends KeyboardEvent {
+export class InternalKeyEvent extends KeyboardEvent {
   stickyMode?: boolean;
 }
 

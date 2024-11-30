@@ -84,8 +84,6 @@ class OmniboxChipButton : public views::MdTextButton {
 
   int GetIconSize() const;
 
-  int GetCornerRadius() const;
-
   // An animation used for expanding and collapsing the chip.
   std::unique_ptr<gfx::SlideAnimation> animation_;
 

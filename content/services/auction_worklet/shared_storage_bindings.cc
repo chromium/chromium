@@ -117,11 +117,13 @@ void SharedStorageBindings::Set(
   args_converter.ConvertArg(1, "value", arg1_value);
 
   std::optional<bool> ignore_if_present;
+  std::optional<std::string> with_lock;
   if (args_converter.is_success() && args.Length() > 2) {
     DictConverter options_dict_converter(
         v8_helper, time_limit_scope, "sharedStorage.set 'options' argument ",
         args[2]);
     options_dict_converter.GetOptional("ignoreIfPresent", ignore_if_present);
+    options_dict_converter.GetOptional("withLock", with_lock);
     args_converter.SetStatus(options_dict_converter.TakeStatus());
   }
 
@@ -147,8 +149,13 @@ void SharedStorageBindings::Set(
       network::mojom::SharedStorageSetMethod::New(
           arg0_key, arg1_value, ignore_if_present.value_or(false)));
 
+  auto method_with_options =
+      network::mojom::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   bindings->shared_storage_host_->SharedStorageUpdate(
-      std::move(method), bindings->source_auction_worklet_function_);
+      std::move(method_with_options),
+      bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -172,8 +179,19 @@ void SharedStorageBindings::Append(
 
   std::u16string arg0_key;
   std::u16string arg1_value;
-  if (!args_converter.ConvertArg(0, "key", arg0_key) ||
-      !args_converter.ConvertArg(1, "value", arg1_value)) {
+  args_converter.ConvertArg(0, "key", arg0_key);
+  args_converter.ConvertArg(1, "value", arg1_value);
+
+  std::optional<std::string> with_lock;
+  if (args_converter.is_success() && args.Length() > 2) {
+    DictConverter options_dict_converter(
+        v8_helper, time_limit_scope, "sharedStorage.append 'options' argument ",
+        args[2]);
+    options_dict_converter.GetOptional("withLock", with_lock);
+    args_converter.SetStatus(options_dict_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
     args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
     return;
   }
@@ -194,8 +212,13 @@ void SharedStorageBindings::Append(
   auto method = network::mojom::SharedStorageModifierMethod::NewAppendMethod(
       network::mojom::SharedStorageAppendMethod::New(arg0_key, arg1_value));
 
+  auto method_with_options =
+      network::mojom::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   bindings->shared_storage_host_->SharedStorageUpdate(
-      std::move(method), bindings->source_auction_worklet_function_);
+      std::move(method_with_options),
+      bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -218,7 +241,18 @@ void SharedStorageBindings::Delete(
                                /*min_required_args=*/1);
 
   std::u16string arg0_key;
-  if (!args_converter.ConvertArg(0, "key", arg0_key)) {
+  args_converter.ConvertArg(0, "key", arg0_key);
+
+  std::optional<std::string> with_lock;
+  if (args_converter.is_success() && args.Length() > 1) {
+    DictConverter options_dict_converter(
+        v8_helper, time_limit_scope, "sharedStorage.delete 'options' argument ",
+        args[1]);
+    options_dict_converter.GetOptional("withLock", with_lock);
+    args_converter.SetStatus(options_dict_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
     args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
     return;
   }
@@ -233,8 +267,13 @@ void SharedStorageBindings::Delete(
   auto method = network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
       network::mojom::SharedStorageDeleteMethod::New(arg0_key));
 
+  auto method_with_options =
+      network::mojom::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   bindings->shared_storage_host_->SharedStorageUpdate(
-      std::move(method), bindings->source_auction_worklet_function_);
+      std::move(method_with_options),
+      bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -251,10 +290,34 @@ void SharedStorageBindings::Clear(
     return;
   }
 
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(v8_helper, time_limit_scope,
+                               "sharedStorage.clear(): ", &args,
+                               /*min_required_args=*/0);
+
+  std::optional<std::string> with_lock;
+  if (args_converter.is_success() && args.Length() > 0) {
+    DictConverter options_dict_converter(
+        v8_helper, time_limit_scope, "sharedStorage.clear 'options' argument ",
+        args[0]);
+    options_dict_converter.GetOptional("withLock", with_lock);
+    args_converter.SetStatus(options_dict_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
+    return;
+  }
+
   auto method = network::mojom::SharedStorageModifierMethod::NewClearMethod(
       network::mojom::SharedStorageClearMethod::New());
 
+  auto method_with_options =
+      network::mojom::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   bindings->shared_storage_host_->SharedStorageUpdate(
-      std::move(method), bindings->source_auction_worklet_function_);
+      std::move(method_with_options),
+      bindings->source_auction_worklet_function_);
 }
 }  // namespace auction_worklet

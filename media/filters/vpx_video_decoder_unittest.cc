@@ -178,18 +178,18 @@ class VpxVideoDecoderTest : public testing::Test {
   OutputFrames output_frames_;
 };
 
-TEST_F(VpxVideoDecoderTest, Initialize_Normal) {
+TEST_F(VpxVideoDecoderTest, InitializeNormal) {
   Initialize();
 }
 
-TEST_F(VpxVideoDecoderTest, Reinitialize_AfterReset) {
+TEST_F(VpxVideoDecoderTest, ReinitializeAfterReset) {
   Initialize();
   ExpectDecodingState();
   Reset();
   Reinitialize();
 }
 
-TEST_F(VpxVideoDecoderTest, DecodeFrame_Normal) {
+TEST_F(VpxVideoDecoderTest, DecodeFrameNormal) {
   Initialize();
 
   // Simulate decoding a single frame.
@@ -197,7 +197,7 @@ TEST_F(VpxVideoDecoderTest, DecodeFrame_Normal) {
   ASSERT_EQ(1U, output_frames_.size());
 }
 
-TEST_F(VpxVideoDecoderTest, DecodeFrame_OOM) {
+TEST_F(VpxVideoDecoderTest, DecodeFrameOOM) {
   Initialize();
   static_cast<VpxVideoDecoder*>(decoder_.get())
       ->force_allocation_error_for_testing();
@@ -207,32 +207,32 @@ TEST_F(VpxVideoDecoderTest, DecodeFrame_OOM) {
 
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
-TEST_F(VpxVideoDecoderTest, DecodeFrame_LargerWidth) {
+TEST_F(VpxVideoDecoderTest, DecodeFrameLargerWidth) {
   DecodeIFrameThenTestFile("vp9-I-frame-1280x720", gfx::Size(1280, 720));
 }
 
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
-TEST_F(VpxVideoDecoderTest, Offloaded_DecodeFrame_LargerWidth) {
+TEST_F(VpxVideoDecoderTest, OffloadedDecodeFrameLargerWidth) {
   decoder_ = std::make_unique<OffloadingVpxVideoDecoder>();
   DecodeIFrameThenTestFile("vp9-I-frame-1280x720", gfx::Size(1280, 720));
 }
 
 // Test resetting when decoder has initialized but not decoded.
-TEST_F(VpxVideoDecoderTest, Reset_Initialized) {
+TEST_F(VpxVideoDecoderTest, ResetInitialized) {
   Initialize();
   Reset();
 }
 
 // Test resetting when decoder has decoded single frame.
-TEST_F(VpxVideoDecoderTest, Reset_Decoding) {
+TEST_F(VpxVideoDecoderTest, ResetDecoding) {
   Initialize();
   ExpectDecodingState();
   Reset();
 }
 
 // Test resetting when decoder has hit end of stream.
-TEST_F(VpxVideoDecoderTest, Reset_EndOfStream) {
+TEST_F(VpxVideoDecoderTest, ResetEndOfStream) {
   Initialize();
   ExpectDecodingState();
   ExpectEndOfStreamState();
@@ -240,20 +240,20 @@ TEST_F(VpxVideoDecoderTest, Reset_EndOfStream) {
 }
 
 // Test destruction when decoder has initialized but not decoded.
-TEST_F(VpxVideoDecoderTest, Destroy_Initialized) {
+TEST_F(VpxVideoDecoderTest, DestroyInitialized) {
   Initialize();
   Destroy();
 }
 
 // Test destruction when decoder has decoded single frame.
-TEST_F(VpxVideoDecoderTest, Destroy_Decoding) {
+TEST_F(VpxVideoDecoderTest, DestroyDecoding) {
   Initialize();
   ExpectDecodingState();
   Destroy();
 }
 
 // Test destruction when decoder has hit end of stream.
-TEST_F(VpxVideoDecoderTest, Destroy_EndOfStream) {
+TEST_F(VpxVideoDecoderTest, DestroyEndOfStream) {
   Initialize();
   ExpectDecodingState();
   ExpectEndOfStreamState();

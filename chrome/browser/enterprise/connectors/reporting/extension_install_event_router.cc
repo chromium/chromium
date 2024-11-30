@@ -126,9 +126,10 @@ bool ExtensionInstallEventRouterFactory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
-KeyedService* ExtensionInstallEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ExtensionInstallEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ExtensionInstallEventRouter(context);
+  return std::make_unique<ExtensionInstallEventRouter>(context);
 }
 
 content::BrowserContext*

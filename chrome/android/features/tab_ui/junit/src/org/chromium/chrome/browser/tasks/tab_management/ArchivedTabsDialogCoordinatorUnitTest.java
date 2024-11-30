@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -40,9 +45,12 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -52,8 +60,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -86,10 +96,13 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private TabArchiveSettings mTabArchiveSettings;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private RecyclerView mRecyclerView;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
 
     private Activity mActivity;
     private ArchivedTabsDialogCoordinator mCoordinator;
     private ObservableSupplierImpl<Integer> mTabCountSupplier = new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -127,7 +140,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mBackPressManager,
                         mTabArchiveSettings,
                         mModalDialogManager,
-                        /* desktopWindowStateManager= */ null);
+                        /* desktopWindowStateManager= */ null,
+                        mEdgeToEdgeSupplier);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
         recyclerView = new TabListRecyclerView(mActivity, null);
         recyclerView.setId(R.id.tab_list_recycler_view);
@@ -212,6 +226,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     public void testLifecycleObserverHidesDialog() {
         mCoordinator.show(mOnTabSelectingListener);
         mCoordinator.getTabListEditorLifecycleObserver().willHide();
+
+        ShadowLooper.runUiThreadTasks();
         verify(mRootView).removeView(any());
 
         mCoordinator.getTabListEditorLifecycleObserver().didHide();
@@ -228,8 +244,43 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         // Allow animations to finish.
         ShadowLooper.runUiThreadTasks();
 
-        verify(mRootView).removeView(any());
+        verify(mRootView, atLeastOnce()).removeView(any());
         verify(mTabListEditorController).setLifecycleObserver(null);
         verify(mBackPressManager).removeHandler(any());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgePadAdjuster() {
+        EdgeToEdgePadAdjuster padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
+        assertNotNull("Pad adjuster should be created when feature enabled.", padAdjuster);
+
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(eq(padAdjuster));
+
+        FrameLayout buttonContainer = mCoordinator.getCloseAllTabsButtonContainer();
+
+        int bottomInset = 100;
+        padAdjuster.overrideBottomInset(bottomInset);
+        assertEquals(bottomInset, buttonContainer.getPaddingBottom());
+        assertTrue("clipToPadding should not change.", buttonContainer.getClipToPadding());
+
+        padAdjuster.overrideBottomInset(0);
+        assertEquals(0, buttonContainer.getPaddingBottom());
+        assertTrue("clipToPadding should not change.", buttonContainer.getClipToPadding());
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgePadAdjuster_FeatureDisabled() {
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+        var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
+        assertNull("Pad adjuster should be created when feature enabled.", padAdjuster);
     }
 }

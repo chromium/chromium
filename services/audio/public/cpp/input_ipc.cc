@@ -48,9 +48,6 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
       base::BindOnce(&InputIPC::OnError, base::Unretained(this),
                      media::mojom::InputStreamErrorCode::kUnknown));
 
-  // For now we don't care about key presses, so we pass a invalid buffer.
-  base::ReadOnlySharedMemoryRegion invalid_key_press_count_buffer;
-
   mojo::PendingRemote<media::mojom::AudioLog> log;
   if (log_)
     log = log_.Unbind();
@@ -58,7 +55,7 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
   stream_factory_->CreateInputStream(
       stream_.BindNewPipeAndPassReceiver(), std::move(client), {},
       std::move(log), device_id_, params, total_segments,
-      automatic_gain_control, std::move(invalid_key_press_count_buffer),
+      automatic_gain_control,
       /*processing_config=*/nullptr,
       base::BindOnce(&InputIPC::StreamCreated, weak_factory_.GetWeakPtr()));
 }

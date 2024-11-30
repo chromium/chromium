@@ -8,6 +8,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.autofill.CreditCardScanner.Delegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.FieldType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -173,11 +175,21 @@ public class AutofillLocalCardEditorTest {
     private AutofillTestHelper mAutofillTestHelper;
     private UserActionTester mActionTester;
     @Mock private CreditCardScanner mScanner;
+    @Mock private CreditCardScannerManager mScannerManager;
 
     @Before
     public void setUp() {
         mAutofillTestHelper = new AutofillTestHelper();
         mActionTester = new UserActionTester();
+
+        CreditCardScanner.setFactory(
+                new CreditCardScanner.Factory() {
+                    @Override
+                    public CreditCardScanner create(Delegate delegate) {
+                        return mScanner;
+                    }
+                });
+        when(mScanner.canScan()).thenReturn(true);
     }
 
     @After
@@ -1091,6 +1103,18 @@ public class AutofillLocalCardEditorTest {
                 });
     }
 
+    private void setCardNameOnEditor(
+            AutofillLocalCardEditor autofillLocalCardEditorFragment, String cardName) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.mNameText.setText(cardName);
+                    } catch (Exception e) {
+                        throw new AssertionError("Failed to set the card name", e);
+                    }
+                });
+    }
+
     private void performButtonClickOnEditor(Button button) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1116,8 +1140,7 @@ public class AutofillLocalCardEditorTest {
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
-    public void paymentSettingsCardScannerFeatureDisabled_scanButtonIsHidden() {
-        setUpCreditCardScanner();
+    public void scannerFeatureDisabled_scanButtonIsHidden() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
@@ -1128,8 +1151,7 @@ public class AutofillLocalCardEditorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
-    public void paymentSettingsCardScannerFeatureEnabled_scanButtonIsVisible() {
-        setUpCreditCardScanner();
+    public void scannerFeatureEnabled_scanButtonIsVisible() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
@@ -1140,16 +1162,8 @@ public class AutofillLocalCardEditorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
-    public void paymentSettingsCardScannerCannotScan_scanButtonIsHidden() {
-        CreditCardScanner.setFactory(
-                new CreditCardScanner.Factory() {
-                    @Override
-                    public CreditCardScanner create(Delegate delegate) {
-                        return mScanner;
-                    }
-                });
+    public void scannerCannotScan_scanButtonIsHidden() {
         when(mScanner.canScan()).thenReturn(false);
-
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
@@ -1160,8 +1174,7 @@ public class AutofillLocalCardEditorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
-    public void paymentSettingsCardScannerButtonClicked_scanIsCalled() {
-        setUpCreditCardScanner();
+    public void scannerButtonClicked_scanIsCalled() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
@@ -1172,12 +1185,16 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void paymentSettingsOnScanCompleted_cardDataIsAdded() throws Exception {
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE
+    }) // Enabled for the expiration date to be used.
+    public void onScanCompleted_cardDataIsAdded() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
         CreditCard card = SAMPLE_LOCAL_CARD;
+        // Explicitly set the month to single digit to test padding.
+        card.setMonth("5");
 
         assertTrue(autofillLocalCardEditorFragment.mNameText.getText().toString().isEmpty());
         assertTrue(autofillLocalCardEditorFragment.mNumberText.getText().toString().isEmpty());
@@ -1206,17 +1223,122 @@ public class AutofillLocalCardEditorTest {
                                 .replaceAll(" ", ""))
                 .isEqualTo(card.getNumber());
         assertThat(autofillLocalCardEditorFragment.mExpirationDate.getText().toString())
+                .isEqualTo(String.format("0%s/%s", card.getMonth(), card.getYear().substring(2)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void paymentSettingsOnScanCompleted_twoDigitMonth() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        CreditCard card = SAMPLE_LOCAL_CARD;
+        // Ensure a two-digit month is formatted as-is.
+        card.setMonth("10");
+
+        assertTrue(autofillLocalCardEditorFragment.mExpirationDate.getText().toString().isEmpty());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.onScanCompleted(
+                                card.getName(),
+                                card.getNumber(),
+                                Integer.parseInt(card.getMonth()),
+                                Integer.parseInt(card.getYear()));
+                    } catch (Exception e) {
+                        throw new AssertionError("Failed to run on scan completed", e);
+                    }
+                });
+
+        assertThat(autofillLocalCardEditorFragment.mExpirationDate.getText().toString())
                 .isEqualTo(String.format("%s/%s", card.getMonth(), card.getYear().substring(2)));
     }
 
-    private void setUpCreditCardScanner() {
-        CreditCardScanner.setFactory(
-                new CreditCardScanner.Factory() {
-                    @Override
-                    public CreditCardScanner create(Delegate delegate) {
-                        return mScanner;
-                    }
-                });
-        when(mScanner.canScan()).thenReturn(true);
+    @Test
+    @MediumTest
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE
+    }) // Disabled so cards without expiration dates can be saved.
+    public void onCardSave_scannerManagerLogScanResultIsCalled() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        autofillLocalCardEditorFragment.setCreditCardScannerManagerForTesting(mScannerManager);
+
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, SAMPLE_LOCAL_CARD.getNumber());
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        verify(mScannerManager).logScanResult();
+    }
+
+    @Test
+    @MediumTest
+    public void onFinishPage_scannerManagerFormClosedIsCalled() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        autofillLocalCardEditorFragment.setCreditCardScannerManagerForTesting(mScannerManager);
+
+        autofillLocalCardEditorFragment.finishPage();
+
+        verify(mScannerManager).formClosed();
+    }
+
+    @Test
+    @MediumTest
+    public void nameFieldEdited_scannerManagerFieldEditedIsCalledWithName() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        autofillLocalCardEditorFragment.setCreditCardScannerManagerForTesting(mScannerManager);
+
+        setCardNameOnEditor(autofillLocalCardEditorFragment, "Okarun");
+
+        verify(mScannerManager).fieldEdited(FieldType.NAME);
+    }
+
+    @Test
+    @MediumTest
+    public void numberFieldEdited_scannerManagerFieldEditedIsCalledWithNumber() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        autofillLocalCardEditorFragment.setCreditCardScannerManagerForTesting(mScannerManager);
+
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
+
+        // Field edit may be called more than once because there are other listeners for the number
+        // field that format the number as it's entered into the text field.
+        verify(mScannerManager, atLeastOnce()).fieldEdited(FieldType.NUMBER);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void expirationDateFieldEdited_scannerManagerFieldEditedIsCalledWithMonthAndYear() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        autofillLocalCardEditorFragment.setCreditCardScannerManagerForTesting(mScannerManager);
+
+        setExpirationDateOnEditor(autofillLocalCardEditorFragment, "10/95");
+
+        verify(mScannerManager).fieldEdited(FieldType.MONTH);
+        verify(mScannerManager).fieldEdited(FieldType.YEAR);
+    }
+
+    @Test
+    @MediumTest
+    public void cvcFieldEdited_scannerManagerFieldEditedIsCalledWithUnknown() {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        autofillLocalCardEditorFragment.setCreditCardScannerManagerForTesting(mScannerManager);
+
+        setSecurityCodeOnEditor(autofillLocalCardEditorFragment, "101");
+
+        verify(mScannerManager).fieldEdited(FieldType.UNKNOWN);
     }
 }

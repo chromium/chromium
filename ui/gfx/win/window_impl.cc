@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
@@ -246,7 +247,7 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
     bool procs_match = got_class && class_info.lpfnWndProc ==
         base::win::WrappedWindowProc<&WindowImpl::WndProc>;
     base::debug::Alias(&procs_match);
-    CHECK(false);
+    NOTREACHED();
   }
 
   CheckWindowCreated(hwnd_, create_window_error);

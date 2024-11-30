@@ -60,10 +60,6 @@ bool NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kNearbySharing)) {
-    return false;
-  }
-
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
     return false;

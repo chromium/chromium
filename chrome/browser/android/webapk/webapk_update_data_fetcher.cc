@@ -87,7 +87,7 @@ WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(JNIEnv* env,
   java_ref_.Reset(env, obj);
 }
 
-WebApkUpdateDataFetcher::~WebApkUpdateDataFetcher() {}
+WebApkUpdateDataFetcher::~WebApkUpdateDataFetcher() = default;
 
 void WebApkUpdateDataFetcher::ReplaceWebContents(
     JNIEnv* env,

@@ -24,11 +24,11 @@ public class SplitCompatService extends Service {
     }
 
     @Override
-    protected void attachBaseContext(Context context) {
-        context = SplitCompatApplication.createChromeContext(context);
-        mImpl = (Impl) BundleUtils.newInstance(context, mServiceClassName);
+    protected void attachBaseContext(Context unused) {
+        Context splitContext = SplitCompatApplication.createChromeContext();
+        mImpl = (Impl) BundleUtils.newInstance(splitContext, mServiceClassName);
         mImpl.setService(this);
-        super.attachBaseContext(context);
+        super.attachBaseContext(splitContext);
     }
 
     @Override

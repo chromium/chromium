@@ -38,7 +38,6 @@ source_set("browser_tests") {
   sources = [
     "app_browser_controller_browsertest.cc",
     "app_browser_document_picture_in_picture_browsertest.cc",
-    "create_shortcut_browsertest.cc",
     "pwa_mixed_content_browsertest.cc",
     "status_bar_browsertest.cc",
     "sub_apps_permissions_policy_browsertest.cc",
@@ -62,6 +61,7 @@ source_set("browser_tests") {
   if (is_chromeos) {
     sources += [
       "app_browser_controller_browsertest_chromeos.cc",
+      "create_shortcut_browsertest.cc",
       "sub_apps_admin_policy_browsertest.cc",
       "sub_apps_install_dialog_controller_browsertest.cc",
       "web_app_guest_session_browsertest_chromeos.cc",
@@ -128,7 +128,6 @@ source_set("app_service_browser_tests") {
     "web_app_badging_browsertest.cc",
     "web_app_protocol_handling_browsertest.cc",
     "web_app_tab_restore_browsertest.cc",
-    "web_app_url_handling_browsertest.cc",
     "web_app_window_controls_overlay_browsertest.cc",
   ]
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/threading/platform_thread.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
@@ -50,9 +51,16 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
 
   const std::vector<quiche::BlindSignToken>& tokens() const { return tokens_; }
 
+  // True if the last GetTokens call ran in a different thread from the
+  // current thread.
+  bool GetTokensCalledInDifferentThread();
+
  private:
   // True if `GetTokens()` was called.
   bool get_tokens_called_ = false;
+
+  // The thread ID on which the last GetTokens call ran.
+  base::PlatformThreadId last_thread_id_;
 
   // The token with which `GetTokens()` was called.
   std::string oauth_token_ = "";

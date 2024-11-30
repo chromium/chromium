@@ -199,13 +199,12 @@ void CreateTestTextureDrawQuad(ResourceId resource_id,
   const bool needs_blending = true;
   const gfx::PointF uv_top_left(0.0f, 0.0f);
   const gfx::PointF uv_bottom_right(1.0f, 1.0f);
-  const bool flipped = false;
   const bool nearest_neighbor = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
                premultiplied_alpha, uv_top_left, uv_bottom_right,
-               background_color, flipped, nearest_neighbor,
+               background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
@@ -369,28 +368,27 @@ class RendererPerfTest : public VizPerfTest {
     base::flat_map<ResourceId, ResourceId> resource_map;
     for (auto& render_pass : *render_pass_list) {
       for (auto* quad : render_pass->quad_list) {
-        if (quad->resources.count == 0)
+        if (quad->resource_id == kInvalidResourceId) {
           continue;
+        }
         switch (quad->material) {
           case DrawQuad::Material::kTiledContent: {
             TileDrawQuad* tile_quad = reinterpret_cast<TileDrawQuad*>(quad);
-            ResourceId recorded_id = tile_quad->resource_id();
+            ResourceId recorded_id = tile_quad->resource_id;
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, tile_quad->texture_size,
                 SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, tile_quad->is_premultiplied);
-            tile_quad->resources.ids[TileDrawQuad::kResourceIdIndex] =
-                actual_id;
+            tile_quad->resource_id = actual_id;
           } break;
           case DrawQuad::Material::kTextureContent: {
             TextureDrawQuad* texture_quad =
                 reinterpret_cast<TextureDrawQuad*>(quad);
-            ResourceId recorded_id = texture_quad->resource_id();
+            ResourceId recorded_id = texture_quad->resource_id;
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, texture_quad->rect.size(),
                 SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
                 texture_quad->premultiplied_alpha);
-            texture_quad->resources.ids[TextureDrawQuad::kResourceIdIndex] =
-                actual_id;
+            texture_quad->resource_id = actual_id;
           } break;
           default:
             ASSERT_TRUE(false);

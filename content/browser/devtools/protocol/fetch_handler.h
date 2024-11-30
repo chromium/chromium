@@ -55,8 +55,8 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
   Response Disable() override;
 
   // Protocol methods.
-  void Enable(Maybe<Array<Fetch::RequestPattern>> patterns,
-              Maybe<bool> handleAuth,
+  void Enable(std::unique_ptr<Array<Fetch::RequestPattern>> patterns,
+              std::optional<bool> handleAuth,
               std::unique_ptr<EnableCallback> callback) override;
 
   void FailRequest(const String& fetchId,
@@ -65,18 +65,18 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
   void FulfillRequest(
       const String& fetchId,
       int responseCode,
-      Maybe<Array<Fetch::HeaderEntry>> responseHeaders,
-      Maybe<Binary> binaryResponseHeaders,
-      Maybe<Binary> body,
-      Maybe<String> responsePhrase,
+      std::unique_ptr<Array<Fetch::HeaderEntry>> responseHeaders,
+      std::optional<Binary> binaryResponseHeaders,
+      std::optional<Binary> body,
+      std::optional<String> responsePhrase,
       std::unique_ptr<FulfillRequestCallback> callback) override;
   void ContinueRequest(
       const String& fetchId,
-      Maybe<String> url,
-      Maybe<String> method,
-      Maybe<protocol::Binary> postData,
-      Maybe<Array<Fetch::HeaderEntry>> headers,
-      Maybe<bool> interceptResponse,
+      std::optional<String> url,
+      std::optional<String> method,
+      std::optional<protocol::Binary> postData,
+      std::unique_ptr<Array<Fetch::HeaderEntry>> headers,
+      std::optional<bool> interceptResponse,
       std::unique_ptr<ContinueRequestCallback> callback) override;
   void ContinueWithAuth(
       const String& fetchId,
@@ -85,10 +85,10 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
       std::unique_ptr<ContinueWithAuthCallback> callback) override;
   void ContinueResponse(
       const String& fetchId,
-      Maybe<int> responseCode,
-      Maybe<String> responsePhrase,
-      Maybe<Array<Fetch::HeaderEntry>> responseHeaders,
-      Maybe<Binary> binaryResponseHeaders,
+      std::optional<int> responseCode,
+      std::optional<String> responsePhrase,
+      std::unique_ptr<Array<Fetch::HeaderEntry>> responseHeaders,
+      std::optional<Binary> binaryResponseHeaders,
       std::unique_ptr<ContinueResponseCallback> callback) override;
   void GetResponseBody(
       const String& fetchId,

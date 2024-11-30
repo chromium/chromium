@@ -31,7 +31,13 @@ BASE_DECLARE_FEATURE(kPageInfoHistoryDesktop);
 // Hides site settings row.
 BASE_DECLARE_FEATURE(kPageInfoHideSiteSettings);
 
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Enables the merchant trust section for Page Info.
+BASE_DECLARE_FEATURE(kMerchantTrust);
+
+extern const char kMerchantTrustEnabledWithSampleDataName[];
+extern const base::FeatureParam<bool> kMerchantTrustEnabledWithSampleData;
 
 }  // namespace page_info
 

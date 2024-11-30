@@ -576,7 +576,6 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
-crbug.com/356565289 [ win nvidia-0x2783 angle-vulkan ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
 
 ## Win / Adreno 690 / D3D11
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
@@ -696,7 +695,8 @@ crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/render
 
 ## Misc failures ##
 
-
+## DrDc being re-enabled ##
+crbug.com/380250262 [ android android-pixel-4 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 
 ## Samsung failures ##

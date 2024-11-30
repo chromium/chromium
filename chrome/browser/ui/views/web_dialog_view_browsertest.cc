@@ -67,7 +67,7 @@ class WidgetResizeWaiter : public views::WidgetObserver {
 
 class WebDialogBrowserTest : public InProcessBrowserTest {
  public:
-  WebDialogBrowserTest() {}
+  WebDialogBrowserTest() = default;
 
   WebDialogBrowserTest(const WebDialogBrowserTest&) = delete;
   WebDialogBrowserTest& operator=(const WebDialogBrowserTest&) = delete;

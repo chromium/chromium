@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -36,7 +37,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
@@ -81,6 +81,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final ModalDialogManager mModalDialogManager;
     private final ObservableSupplierImpl<Token> mCurrentTabGroupId = new ObservableSupplierImpl<>();
     private final ThemeColorProvider mThemeColorProvider;
+    private final ObservableSupplierImpl<Integer> mBackgroundColorSupplier =
+            new ObservableSupplierImpl<>(Color.TRANSPARENT);
 
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
@@ -137,10 +139,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
     private ActionConfirmationManager createActionConfirmationManager() {
         Profile profile = mTabModelSelector.getModel(false).getProfile();
-        TabGroupModelFilter regularFilter =
-                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
-        return new ActionConfirmationManager(
-                profile, mActivity, regularFilter, mModalDialogManager);
+        return new ActionConfirmationManager(profile, mActivity, mModalDialogManager);
     }
 
     private TabGridDialogMediator.DialogController initTabGridDialogCoordinator() {
@@ -159,7 +158,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         mDataSharingTabManager,
                         currentTabGroupModelFilterSupplier,
                         mTabContentManager,
-                        mTabCreatorManager,
                         mActivity.findViewById(R.id.coordinator),
                         null,
                         null,
@@ -208,6 +206,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             /* emptyHeadingStringResId= */ Resources.ID_NULL,
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,
                             /* onTabGroupCreation= */ null,
+                            mBackgroundColorSupplier,
                             /* allowDragAndDrop= */ false);
             mTabStripCoordinator.initWithNative(mTabModelSelector.getModel(false).getProfile());
 
@@ -236,7 +235,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         new SharedImageTilesCoordinator(
                                 activity,
                                 SharedImageTilesType.DEFAULT,
-                                SharedImageTilesColor.DYNAMIC,
+                                new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
                                 dataSharingService);
                 FrameLayout container =
                         mToolbarView.findViewById(R.id.toolbar_image_tiles_container);
@@ -258,7 +257,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mTabGridDialogControllerSupplier,
                             mOmniboxFocusStateSupplier,
                             sharedImageTilesCoordinator,
-                            mThemeColorProvider);
+                            mThemeColorProvider,
+                            mBackgroundColorSupplier);
 
             Profile profile = mTabModelSelector.getModel(false).getProfile();
             CollaborationService collaborationService =

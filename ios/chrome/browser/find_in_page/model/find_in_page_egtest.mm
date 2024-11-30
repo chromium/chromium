@@ -314,4 +314,9 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
   [_helper helperTestFindInPageExitFullscreen];
 }
 
+// Tests that FIP works properly with bottom omnibox.
+- (void)testWithBottomOmnibox {
+  [_helper helperTestFindInPageWithBottomOmnibox];
+}
+
 @end

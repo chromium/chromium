@@ -10,7 +10,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -53,10 +52,9 @@ const char WasInProgressData::kKey[] =
 
 }  // anonymous namespace
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 DownloadStatusUpdater::DownloadStatusUpdater() = default;
+
 DownloadStatusUpdater::~DownloadStatusUpdater() = default;
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool DownloadStatusUpdater::GetProgress(float* progress,
                                         int* download_count) const {

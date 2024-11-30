@@ -63,6 +63,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",
     "//chrome/browser/sync",
+    "//chrome/browser/task_manager",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/safety_hub",
@@ -266,7 +267,6 @@ source_set("impl") {
       "//chrome/browser/search/background",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
-      "//chrome/browser/task_manager",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -309,6 +309,10 @@ source_set("impl") {
 
   if (is_mac) {
     deps += [ "//chrome/browser/web_applications" ]
+  }
+
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/glic/launcher" ]
   }
 }
 

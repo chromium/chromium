@@ -89,7 +89,7 @@ class MockControllerObserver : public CastDialogController::Observer {
 
 class PresentationRequestCallbacks {
  public:
-  PresentationRequestCallbacks() {}
+  PresentationRequestCallbacks() = default;
 
   explicit PresentationRequestCallbacks(
       const blink::mojom::PresentationError& expected_error)
@@ -112,7 +112,7 @@ class TestWebContentsDisplayObserver : public WebContentsDisplayObserver {
  public:
   explicit TestWebContentsDisplayObserver(const display::Display& display)
       : display_(display) {}
-  ~TestWebContentsDisplayObserver() override {}
+  ~TestWebContentsDisplayObserver() override = default;
 
   const display::Display& GetCurrentDisplay() const override {
     return display_;

@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Povolit webu ukládat data do zařízení</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
+<translation id="1396327438254055134">Povolit webu používat optimalizátor V8.</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
 <translation id="1448064542941920355">Snížit přiblížení</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web}few{<ph name="SITE_COUNT" /> weby}many{<ph name="SITE_COUNT" /> webu}other{<ph name="SITE_COUNT" /> webů}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Dekodér obrázků</translation>
 <translation id="1785415724048343560">Doporučeno pro nejlepší zážitek</translation>
 <translation id="1799920918471566157">Tipy Chrome</translation>
+<translation id="1816835383954230954">Když je tento přepínač zapnutý, běží Chrome rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy. Když je vypnutý, je Chrome pomalejší, ale V8 je odolnější proti útokům.</translation>
 <translation id="1818308510395330587">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit používání rozšířené reality, zapněte také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> fotoaparát.</translation>
 <translation id="1887786770086287077">Přístup k poloze je v tomto zařízení vypnut. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Když je tato možnost zapnutá, weby mohou žádat o použití kamery. Když je vypnutá, weby kameru používat nemohou.</translation>
 <translation id="3521663503435878242">Weby pod doménou <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Nepovolovat webům sledovat vaše ruce</translation>
+<translation id="3532312529397438268">Weby nemohou používat optimalizátor V8</translation>
 <translation id="3536227077203206203">Tentokrát povolit</translation>
 <translation id="3538390592868664640">Bránit webům ve vytváření 3D mapy okolí a ve sledování polohy kamery</translation>
 <translation id="3544058026430919413">Společnost může definovat skupinu webů, které mohou pomocí souborů cookie sdílet vaši aktivitu ve skupině. Tato možnost je v anonymním režimu vypnutá.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4807122856660838973">Zapnout Bezpečné prohlížení</translation>
 <translation id="4811450222531576619">Informace o zdroji a tématu</translation>
+<translation id="481168145262973879">Weby mohou používat optimalizátor V8</translation>
 <translation id="4816495437032298535">Uložené přiblížení pro weby</translation>
 <translation id="4836046166855586901">Zeptat se, když chce web zjistit, kdy aktivně používáte toto zařízení</translation>
 <translation id="483914009762354899">Zahrnout všechny weby v této doméně</translation>
@@ -337,10 +341,8 @@
 <translation id="6071501408666570960">Můžete být odhlášeni z tohoto webu</translation>
 <translation id="6085954183010297841">Smazat udělené oprávnění k úpravám souboru? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Když je tato možnost zapnutá, weby mohou žádat o informace o tom, zda své zařízení aktivně používáte. Když je vypnutá, weby se nemohou dozvědět, zda zařízení aktivně používáte.</translation>
-<translation id="6140839633433422817">Opravdu chcete resetovat oprávnění a vymazat soubory cookie a data tohoto webu?</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6171020522141473435">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení Bluetooth. Když je vypnutá, weby nemohou používat zařízení Bluetooth.</translation>
-<translation id="6177111841848151710">Pro aktuální vyhledávač blokováno</translation>
 <translation id="6177128806592000436">Spojení s tímto webem není bezpečné</translation>
 <translation id="6181444274883918285">Přidat výjimku pro konkrétní web</translation>
 <translation id="6192792657125177640">Výjimky</translation>
@@ -405,8 +407,8 @@
 <translation id="6980861169612950611">Vymazat data webu? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Usnadnění</translation>
 <translation id="6992289844737586249">Pokud web bude chtít použít váš mikrofon, zobrazit dotaz (doporučeno)</translation>
+<translation id="6999131147875565462">Chrome běží rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy</translation>
 <translation id="7000754031042624318">Vypnuto v nastavení systému Android</translation>
-<translation id="7016516562562142042">Pro aktuální vyhledávač povoleno</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Vybráno: 1}few{Vybráno: #}many{Vybráno: #}other{Vybráno: #}}</translation>
@@ -425,7 +427,6 @@
 <translation id="7250468141469952378">Vybráno: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou povolena</translation>
 <translation id="7276071417425470385">Když je tato možnost zapnutá, mohou weby žádat o použití zařízení pro virtuální realitu. Když je vypnutá, weby zařízení pro virtuální realitu používat nemohou.</translation>
-<translation id="7302486331832100261">Obvykle oznámení blokujete. Chcete-li je povolit, klepněte na Podrobnosti.</translation>
 <translation id="7366415735885268578">Přidání webu</translation>
 <translation id="7368695150573390554">Všechna offline data budou smazána</translation>
 <translation id="7383715096023715447">Nastavení zařízení <ph name="DOMAIN" /></translation>
@@ -542,7 +543,6 @@
 <translation id="8928445016601307354">Bránit webům v zobrazení a změně informací na zařízeních NFC</translation>
 <translation id="8944485226638699751">Omezeno</translation>
 <translation id="8959122750345127698">Navigace není dosažitelná: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Odstranit</translation>
 <translation id="8990043154272859344">Budete odhlášeni ze všech webů</translation>
 <translation id="8993853206419610596">Rozbalit všechny žádosti</translation>
 <translation id="9002538116239926534">Když je tato možnost zapnutá, weby mohou ukládat data do vašeho zařízení. Když je vypnutá, weby nemohou ukládat data do vašeho zařízení.</translation>
@@ -555,8 +555,8 @@
 <translation id="913657688200966289">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Aktuální přiblížení je <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Tato stránka je nebezpečná</translation>
-<translation id="930525582205581608">Zapomenout tento web?</translation>
 <translation id="947156494302904893">Weby, které navštěvujete, mohou ověřit, že jste člověk, a ne robot</translation>
 <translation id="959682366969460160">Uspořádejte si položky</translation>
 <translation id="967624055006145463">Uložená data</translation>
+<translation id="969975166333045662">Zakázat webu používat optimalizátor V8.</translation>
 </translationbundle>

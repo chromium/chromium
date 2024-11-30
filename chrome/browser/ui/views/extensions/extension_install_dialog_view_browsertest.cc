@@ -141,7 +141,7 @@ class ScrollbarTest : public ExtensionInstallDialogViewTestBase {
   ScrollbarTest& operator=(const ScrollbarTest&) = delete;
 
  protected:
-  ScrollbarTest() {}
+  ScrollbarTest() = default;
 
   bool IsScrollbarVisible(
       std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt);
@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
 class ExtensionInstallDialogRatingsSectionTest
     : public ExtensionInstallDialogViewTest {
  public:
-  ExtensionInstallDialogRatingsSectionTest() {}
+  ExtensionInstallDialogRatingsSectionTest() = default;
 
   ExtensionInstallDialogRatingsSectionTest(
       const ExtensionInstallDialogRatingsSectionTest&) = delete;

@@ -193,7 +193,6 @@ GURL ExtractUrl(const base::Value::Dict& response, const char* key) {
     return GURL();
   }
   GURL url = GURL(*response_url);
-  // TODO(crbug.com/40280145): Allow localhost URLs
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return GURL();
   }
@@ -335,7 +334,8 @@ std::optional<SkColor> ParseCssColor(const std::string* value) {
 
 GURL FindBestMatchingIconUrl(const base::Value::List* icons_value,
                              int brand_icon_ideal_size,
-                             int brand_icon_minimum_size) {
+                             int brand_icon_minimum_size,
+                             const GURL& config_url) {
   std::vector<blink::Manifest::ImageResource> icons;
   for (const base::Value& icon_value : *icons_value) {
     const base::Value::Dict* icon_value_dict = icon_value.GetIfDict();
@@ -349,7 +349,13 @@ GURL FindBestMatchingIconUrl(const base::Value::List* icons_value,
     }
 
     blink::Manifest::ImageResource icon;
-    icon.src = GURL(*icon_src);
+
+    if (!config_url.is_empty()) {
+      icon.src = config_url.Resolve(*icon_src);
+    } else {
+      icon.src = GURL(*icon_src);
+    }
+
     if (!icon.src.is_valid() || !icon.src.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
@@ -385,8 +391,9 @@ void ParseIdentityProviderMetadata(const base::Value::Dict& idp_metadata_value,
     return;
   }
 
-  idp_metadata.brand_icon_url = FindBestMatchingIconUrl(
-      icons_value, brand_icon_ideal_size, brand_icon_minimum_size);
+  idp_metadata.brand_icon_url =
+      FindBestMatchingIconUrl(icons_value, brand_icon_ideal_size,
+                              brand_icon_minimum_size, idp_metadata.config_url);
 }
 
 // This method follows https://mimesniff.spec.whatwg.org/#json-mime-type.
@@ -627,8 +634,9 @@ void OnClientMetadataParsed(
 
   const base::Value::List* icons_value = response.FindList(kBrandingIconsKey);
   if (icons_value) {
-    data.brand_icon_url = FindBestMatchingIconUrl(
-        icons_value, rp_brand_icon_ideal_size, rp_brand_icon_minimum_size);
+    data.brand_icon_url =
+        FindBestMatchingIconUrl(icons_value, rp_brand_icon_ideal_size,
+                                rp_brand_icon_minimum_size, GURL());
   }
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
@@ -1052,10 +1060,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
     RecordErrorMetricsCallback record_error_metrics_callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
-          token_url,
-          base::FeatureList::IsEnabled(features::kFedCmIdAssertionCORS)
-              ? CredentialedResourceRequestType::kOriginWithCORS
-              : CredentialedResourceRequestType::kOriginWithoutCORS);
+          token_url, CredentialedResourceRequestType::kOriginWithCORS);
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnTokenRequestParsed, std::move(callback),
@@ -1315,20 +1320,9 @@ IdpNetworkRequestManager::CreateCredentialedResourceRequest(
   auto target_origin = url::Origin::Create(target_url);
   auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
 
-  if (IsFedCmSameSiteNoneEnabled()) {
-    // Setting the initiator to relying_party_origin_ ensures that we don't send
-    // SameSite=Strict cookies.
-    resource_request->request_initiator = relying_party_origin_;
-  } else {
-    // We set the initiator to nullopt to denote browser-initiated so that this
-    // request is considered first-party. We want to send first-party cookies
-    // because this is not a real third-party request as it is mediated by the
-    // browser, and third-party cookies will be going away with 3pc deprecation,
-    // but we still need to send cookies in these requests.
-    // We use nullopt instead of target_origin because we want to send a
-    // `Sec-Fetch-Site: none` header instead of `Sec-Fetch-Site: same-origin`.
-    resource_request->request_initiator = std::nullopt;
-  }
+  // Setting the initiator to relying_party_origin_ ensures that we don't send
+  // SameSite=Strict cookies.
+  resource_request->request_initiator = relying_party_origin_;
 
   resource_request->destination =
       network::mojom::RequestDestination::kWebIdentity;

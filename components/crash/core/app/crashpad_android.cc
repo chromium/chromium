@@ -435,7 +435,7 @@ void BuildHandlerArgs(CrashReporterClient* crash_reporter_client,
   // TODO(jperaza): Set URL for Android when Crashpad takes over report upload.
   *url = std::string();
 
-  CrashReporterClient::ProductInfo product_info;
+  ProductInfo product_info;
   crash_reporter_client->GetProductInfo(&product_info);
   (*process_annotations)["prod"] = product_info.product_name;
   (*process_annotations)["ver"] = product_info.version;

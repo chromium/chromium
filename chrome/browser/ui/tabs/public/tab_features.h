@@ -55,9 +55,18 @@ namespace sync_sessions {
 class SyncSessionsRouterTabHelper;
 }  // namespace sync_sessions
 
+namespace tab_groups {
+class SavedTabGroupWebContentsListener;
+}  // namespace tab_groups
+
+namespace page_actions {
+class PageActionController;
+}  // namespace page_actions
+
 namespace tabs {
 
 class TabInterface;
+class TabDialogManager;
 
 // This class owns the core controllers for features that are scoped to a given
 // tab. It can be subclassed by tests to perform dependency injection.
@@ -120,6 +129,17 @@ class TabFeatures {
 
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
     return extension_side_panel_manager_.get();
+  }
+
+  tab_groups::SavedTabGroupWebContentsListener*
+  saved_tab_group_web_contents_listener() {
+    return saved_tab_group_web_contents_listener_.get();
+  }
+
+  TabDialogManager* tab_dialog_manager() { return tab_dialog_manager_.get(); }
+
+  page_actions::PageActionController* page_action_controller() {
+    return page_action_controller_.get();
   }
 
   // Called exactly once to initialize features.
@@ -191,8 +211,19 @@ class TabFeatures {
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
 
+  // Responsible for keeping a tab within a tab group in sync with its remote
+  // tab counterpart from sync.
+  std::unique_ptr<tab_groups::SavedTabGroupWebContentsListener>
+      saved_tab_group_web_contents_listener_;
+
+  // Manages various tab modal dialogs.
+  std::unique_ptr<TabDialogManager> tab_dialog_manager_;
+
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  // Responsible for managing page actions of a tab.
+  std::unique_ptr<page_actions::PageActionController> page_action_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

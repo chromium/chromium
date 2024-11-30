@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 
 #include "base/trace_event/traced_value.h"
@@ -38,7 +33,7 @@ bool AggregatedRenderPassDrawQuad::Equals(
          backdrop_filter_quality == other.backdrop_filter_quality &&
          force_anti_aliasing_off == other.force_anti_aliasing_off &&
          intersects_damage_under == other.intersects_damage_under &&
-         // DrawQuad. Skip resources.ids[kMaskResourceIdIndex].
+         // DrawQuad. Skip `resource_id`.
          material == other.material && rect == other.rect &&
          visible_rect == other.visible_rect &&
          needs_blending == other.needs_blending &&
@@ -76,9 +71,7 @@ void AggregatedRenderPassDrawQuad::SetAll(
   DrawQuad::SetAll(other.shared_quad_state,
                    DrawQuad::Material::kAggregatedRenderPass, other.rect,
                    other.visible_rect, other.needs_blending);
-  resources.ids[kMaskResourceIdIndex] =
-      other.resources.ids[kMaskResourceIdIndex];
-  resources.count = other.resources.count;
+  resource_id = other.resource_id;
 
   // RenderPassDrawQuadInternal
   mask_uv_rect = other.mask_uv_rect;
@@ -111,8 +104,7 @@ void AggregatedRenderPassDrawQuad::SetAll(
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kAggregatedRenderPass,
                    rect, visible_rect, needs_blending);
   render_pass_id = render_pass;
-  resources.ids[kMaskResourceIdIndex] = mask_resource_id;
-  resources.count = mask_resource_id ? 1 : 0;
+  resource_id = mask_resource_id;
   this->mask_uv_rect = mask_uv_rect;
   this->mask_texture_size = mask_texture_size;
   this->filters_scale = filters_scale;

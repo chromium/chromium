@@ -70,13 +70,8 @@ const char kNearbySharingNextVisibilityReminderTimePrefName[] =
 void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
   // These prefs are not synced across devices on purpose.
 
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    registry->RegisterBooleanPref(prefs::kNearbySharingEnabledPrefName,
-                                  /*default_value=*/true);
-  } else {
-    registry->RegisterBooleanPref(prefs::kNearbySharingEnabledPrefName,
-                                  /*default_value=*/false);
-  }
+  registry->RegisterBooleanPref(prefs::kNearbySharingEnabledPrefName,
+                                /*default_value=*/false);
 
   registry->RegisterIntegerPref(
       prefs::kNearbySharingFastInitiationNotificationStatePrefName,
@@ -86,10 +81,9 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/false);
   registry->RegisterBooleanPref(prefs::kNearbySharingOnboardingCompletePrefName,
                                 /*default_value=*/false);
-  registry->RegisterIntegerPref(
-      prefs::kNearbySharingBackgroundVisibilityName,
-      /*default_value=*/static_cast<int>(
-          nearby_share::mojom::Visibility::kYourDevices));
+  registry->RegisterIntegerPref(prefs::kNearbySharingBackgroundVisibilityName,
+                                /*default_value=*/static_cast<int>(
+                                    nearby_share::mojom::Visibility::kUnknown));
   registry->RegisterIntegerPref(prefs::kNearbySharingDataUsageName,
                                 /*default_value=*/static_cast<int>(
                                     nearby_share::mojom::DataUsage::kWifiOnly));

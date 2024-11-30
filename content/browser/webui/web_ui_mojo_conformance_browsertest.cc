@@ -103,9 +103,6 @@ class ConformanceTestWebUIController : public WebUIController,
  public:
   explicit ConformanceTestWebUIController(WebUI* web_ui)
       : WebUIController(web_ui) {
-    const base::span<const webui::ResourcePath> kMojoWebUiResources =
-        base::make_span(kWebUiMojoTestResources);
-
     web_ui->SetBindings(
         {BindingsPolicyValue::kMojoWebUi, BindingsPolicyValue::kWebUi});
     WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
@@ -114,7 +111,7 @@ class ConformanceTestWebUIController : public WebUIController,
     data_source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ScriptSrc,
         "script-src chrome://resources 'self';");
-    data_source->AddResourcePaths(kMojoWebUiResources);
+    data_source->AddResourcePaths(kWebUiMojoTestResources);
     data_source->AddResourcePath("", IDR_WEB_UI_TS_TEST_CONFORMANCE_HTML);
   }
 

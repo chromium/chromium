@@ -231,36 +231,12 @@ TEST_F(NearbyShareFeaturePodControllerTest,
 }
 
 TEST_F(NearbyShareFeaturePodControllerTest,
-       QuickShareV2_ButtonToggledOffHiddenVisibility) {
+       QuickShareV2_ButtonToggledOnHiddenVisibility) {
   EnableQuickShareV2();
   CreateUserSessions(1);
   test_delegate_->set_visibility(::nearby_share::mojom::Visibility::kNoOne);
   SetUpButton();
-  EXPECT_FALSE(IsButtonToggled());
-}
-
-TEST_F(NearbyShareFeaturePodControllerTest,
-       QuickShareV2_ButtonToggledOn_VisibilityChanged) {
-  EnableQuickShareV2();
-  CreateUserSessions(1);
-  test_delegate_->set_visibility(::nearby_share::mojom::Visibility::kNoOne);
-  SetUpButton();
-  EXPECT_FALSE(IsButtonToggled());
-
-  UpdateVisibilityAndNotify(::nearby_share::mojom::Visibility::kYourDevices);
   EXPECT_TRUE(IsButtonToggled());
-}
-
-TEST_F(NearbyShareFeaturePodControllerTest,
-       QuickShareV2_ButtonToggledOff_VisibilityChanged) {
-  EnableQuickShareV2();
-  CreateUserSessions(1);
-  // Default visibility is Your devices.
-  SetUpButton();
-  EXPECT_TRUE(IsButtonToggled());
-
-  UpdateVisibilityAndNotify(::nearby_share::mojom::Visibility::kNoOne);
-  EXPECT_FALSE(IsButtonToggled());
 }
 
 TEST_F(NearbyShareFeaturePodControllerTest,
@@ -268,12 +244,52 @@ TEST_F(NearbyShareFeaturePodControllerTest,
   EnableQuickShareV2();
   CreateUserSessions(1);
   test_delegate_->set_is_high_visibility_on(true);
-
-  // Setting visibility to kNoOne which alone toggles the button off.
-  // If the button is toggled on, it's because high visibility is enabled.
-  test_delegate_->set_visibility(::nearby_share::mojom::Visibility::kNoOne);
   SetUpButton();
   EXPECT_TRUE(IsButtonToggled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggledOn_QuickShareEnabled) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  test_delegate_->SetEnabled(true);
+  SetUpButton();
+  EXPECT_TRUE(IsButtonToggled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggledOff_QuickShareDisabled) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  test_delegate_->SetEnabled(false);
+  SetUpButton();
+  EXPECT_FALSE(IsButtonToggled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_IconTogglesButtonOn_QuickShareOn_OnPress) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  test_delegate_->SetEnabled(false);
+  SetUpButton();
+  EXPECT_FALSE(IsButtonToggled());
+
+  PressIcon();
+  EXPECT_TRUE(IsButtonToggled());
+  EXPECT_TRUE(test_delegate_->IsEnabled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_IconTogglesButtonOff_QuickShareOff_OnPress) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  test_delegate_->SetEnabled(true);
+  SetUpButton();
+  EXPECT_TRUE(IsButtonToggled());
+
+  PressIcon();
+  EXPECT_FALSE(IsButtonToggled());
+  EXPECT_FALSE(test_delegate_->IsEnabled());
 }
 
 }  // namespace ash

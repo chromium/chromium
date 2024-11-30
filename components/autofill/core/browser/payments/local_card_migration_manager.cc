@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -206,7 +206,7 @@ void LocalCardMigrationManager::OnUserAcceptedMainMigrationDialog(
 
 void LocalCardMigrationManager::OnUserDeletedLocalCardViaMigrationDialog(
     const std::string& deleted_card_guid) {
-  client_->GetPersonalDataManager()->RemoveByGUID(deleted_card_guid);
+  client_->GetPersonalDataManager().RemoveByGUID(deleted_card_guid);
 }
 
 bool LocalCardMigrationManager::IsCreditCardMigrationEnabled() {
@@ -474,7 +474,7 @@ PaymentsDataManager& LocalCardMigrationManager::payments_data_manager() {
 
 const PaymentsDataManager& LocalCardMigrationManager::payments_data_manager()
     const {
-  return client_->GetPersonalDataManager()->payments_data_manager();
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 }  // namespace autofill

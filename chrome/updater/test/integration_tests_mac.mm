@@ -337,7 +337,7 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
 
   // Keystone should not be migrated.
   EXPECT_FALSE(
-      persisted_data->GetProductVersion("com.google.keystone").IsValid());
+      persisted_data->GetProductVersion(LEGACY_GOOGLE_UPDATE_APPID).IsValid());
 
   // Uninstalled app should be migrated.
   EXPECT_TRUE(
@@ -410,7 +410,7 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
 }
 
 void SetPlatformPolicies(const base::Value::Dict& values) {
-  const CFStringRef domain = CFSTR("com.google.Keystone");
+  const CFStringRef domain = CFSTR(LEGACY_GOOGLE_UPDATE_APPID);
 
   // Synchronize just to be safe. Ignore spurious errors if the domain
   // does not yet exist.
@@ -436,7 +436,7 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
     NSURL* const managed_preferences_url = base::apple::FilePathToNSURL(
         GetLibraryFolderPath(UpdaterScope::kSystem)
             ->AppendASCII("Managed Preferences")
-            .AppendASCII("com.google.Keystone.plist"));
+            .AppendASCII(LEGACY_GOOGLE_UPDATE_APPID ".plist"));
     ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
                                              forKey:@"updatePolicies"]
         writeToURL:managed_preferences_url

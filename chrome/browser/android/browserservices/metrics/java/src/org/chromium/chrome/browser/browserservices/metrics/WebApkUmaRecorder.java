@@ -224,11 +224,6 @@ public class WebApkUmaRecorder {
         RecordHistogram.recordCount100Histogram("WebApk.WebappRegistry.NumberOfOrigins", count);
     }
 
-    private static int roundByteToMb(long bytes) {
-        int mbs = (int) (bytes / (long) ConversionUtils.BYTES_PER_MEGABYTE / 10L * 10L);
-        return Math.min(1000, Math.max(-1000, mbs));
-    }
-
     private static long getDirectorySizeInByte(File dir) {
         if (dir == null) return 0;
         if (!dir.isDirectory()) return dir.length();

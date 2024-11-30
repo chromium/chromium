@@ -41,12 +41,12 @@ MediaGalleryPrefInfo MakePrefInfoForTesting(MediaGalleryPrefId id) {
 
 class MediaGalleriesDialogTest : public ChromeViewsTestBase {
  public:
-  MediaGalleriesDialogTest() {}
+  MediaGalleriesDialogTest() = default;
 
   MediaGalleriesDialogTest(const MediaGalleriesDialogTest&) = delete;
   MediaGalleriesDialogTest& operator=(const MediaGalleriesDialogTest&) = delete;
 
-  ~MediaGalleriesDialogTest() override {}
+  ~MediaGalleriesDialogTest() override = default;
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     std::vector<std::u16string> headers;

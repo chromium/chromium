@@ -43,8 +43,9 @@ SVGPropertyBase* SVGNumberInterpolationType::AppliedSVGValue(
   // Note: using default CSSToLengthConversionData here as it's
   // guaranteed to be a double.
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
-  float value = ClampTo<float>(To<InterpolableNumber>(interpolable_value)
-                                   .Value(CSSToLengthConversionData()));
+  float value = ClampTo<float>(
+      To<InterpolableNumber>(interpolable_value)
+          .Value(CSSToLengthConversionData(/*element=*/nullptr)));
   return MakeGarbageCollected<SVGNumber>(is_non_negative_ && value < 0 ? 0
                                                                        : value);
 }

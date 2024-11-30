@@ -2,17 +2,34 @@
 <grit-part>
 
 <if expr="is_android">
-  <!--Payment methods settings pages-->
-  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_TITLE" desc="Title for the preference that allows the user to manage financial accounts other than credit cards like Pix related Bank Accounts, e-Wallets etc." formatter_data="android_java">
-    Pay with <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix and e-Wallets</ex></ph>
+  <!--Ewallet and Pix payment method settings pages-->
+  <message name="IDS_SETTINGS_MANAGE_EWALLET_TITLE" desc="Title for the preference that allows the user to manage eWallet accounts when user has only eWallet accounts available to be used." formatter_data="android_java">
+    Pay with eWallet
   </message>
-  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_DESCRIPTION" desc="Description for the preference that allows the user to manage financial accounts other than credit cards like Pix related bank accounts, e-wallets etc." formatter_data="android_java">
-    {FINANCIAL_ACCOUNT, plural, =1 {When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix</ex></ph> as an option}
-    other {When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix and e-Wallets</ex></ph> as options}}
+  <message name="IDS_SETTINGS_MANAGE_PIX_TITLE" desc="Title for the preference that allows the user to manage Pix accounts when user has only Pix accounts available to be used. 'Pix' is a Brazilian payment system that should not be translated." formatter_data="android_java">
+    Pay with Pix
   </message>
-  <!-- Pix related strings -->
-  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_PIX" desc="Pix is an instant payment platform used in Brazil. This is the string added to the summary for the 'Manage other financial accounts' preference when user has accounts available to be used with the Pix platform." formatter_data="android_java" translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_EWALLET_AND_PIX_TITLE" desc="Title for the preference that allows the user to manage both eWallet and Pix when user has both eWallet and Pix accounts available to be used. 'Pix' is a Brazilian payment system that should not be translated." formatter_data="android_java">
+    Pay with eWallet and Pix
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_EWALLET_DESCRIPTION" desc="Description for the preference that allows the user to manage eWallet accounts." formatter_data="android_java">
+    When you make purchases in Chrome, see eWallet as an option
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_PIX_DESCRIPTION" desc="Description for the preference that allows the user to manage Pix accounts. 'Pix' is a Brazilian payment system that should not be translated." formatter_data="android_java">
+    When you make purchases in Chrome, see Pix as an option
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_EWALLET_AND_PIX_DESCRIPTION" desc="Description for the preference that allows the user to manage eWallet and Pix accounts. 'Pix' is a Brazilian payment system that should not be translated." formatter_data="android_java">
+    When you make purchases in Chrome, see eWallet and Pix as options
+  </message>
+  <!-- Ewallet and Pix related strings -->
+  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_EWALLET" desc="This is the string added to the summary for the 'Manage other financial accounts' preference when user has eWallets accounts available to be used." formatter_data="android_java" translateable="false">
+    eWallet
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_PIX" desc="Pix is an instant payment platform used in Brazil. This is the toggle preference when user has Pix accounts available to be used with the Pix platform." formatter_data="android_java" translateable="false">
     Pix
+  </message>
+  <message name="IDS_SETTINGS_EWALLET_ACCOUNT_IDENTIFER" desc="Identifier for eWallet account that can be used for the eWallet payment." formatter_data="android_java" translateable="false">
+    eWallet  •  <ph name="ACCOUNT_DISPLAY_VALUE">%1$s<ex>nikit••••@hotmail.com</ex></ph>
   </message>
   <!--TODO(b/339939404): Fix typo and make PIX related strings to generic names shared between bottom sheet and settings page. -->
   <message name="IDS_SETTINGS_PIX_BANK_ACCOUNT_IDENTIFER" desc="Identifier for bank account that can be used for the Pix payment platform." formatter_data="android_java" translateable="false">

@@ -33,6 +33,7 @@
 #include "components/input/input_router.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/switches.h"
+#include "components/input/utils.h"
 #include "components/input/web_input_event_builders_android.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -666,6 +667,11 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
     GetTextInputManager()->AddObserver(this);
 
   host()->render_frame_metadata_provider()->AddObserver(this);
+
+  if (input::IsTransferInputToVizSupported()) {
+    input_transfer_handler_ =
+        std::make_unique<InputTransferHandlerAndroid>(this);
+  }
 }
 
 RenderWidgetHostViewAndroid::~RenderWidgetHostViewAndroid() {
@@ -1304,6 +1310,14 @@ void RenderWidgetHostViewAndroid::OnTextSelectionChanged(
       base::UTF16ToUTF8(selection.selected_text()));
 }
 
+gpu::SurfaceHandle RenderWidgetHostViewAndroid::GetRootSurfaceHandle() {
+  CHECK(!sync_compositor_);
+  if (view_.GetWindowAndroid() && view_.GetWindowAndroid()->GetCompositor()) {
+    return view_.GetWindowAndroid()->GetCompositor()->GetSurfaceHandle();
+  }
+  return gpu::kNullSurfaceHandle;
+}
+
 viz::FrameSinkId RenderWidgetHostViewAndroid::GetRootFrameSinkId() {
   if (sync_compositor_)
     return sync_compositor_->GetFrameSinkId();
@@ -1423,6 +1437,14 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
       false /* hovering */);
   if (web_event.GetType() == blink::WebInputEvent::Type::kUndefined)
     return false;
+
+  // In case input transfer to Viz is supported, let `input_transfer_handler_`
+  // request the transfer on touch down, we are not expecting to receive the
+  // entire sequence until the touch cancel. Any events that might end up on
+  // Browser after transfer will be consumed by it.
+  if (input_transfer_handler_ && input_transfer_handler_->OnTouchEvent(event)) {
+    return true;
+  }
 
   ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);

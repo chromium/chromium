@@ -124,7 +124,7 @@ ChromeRenderThreadObserver::ChromeOSListener::ChromeOSListener()
           GetCallbackGroupTaskRunner())),
       merge_session_running_(true) {}
 
-ChromeRenderThreadObserver::ChromeOSListener::~ChromeOSListener() {}
+ChromeRenderThreadObserver::ChromeOSListener::~ChromeOSListener() = default;
 
 void ChromeRenderThreadObserver::ChromeOSListener::BindOnIOThread(
     mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
@@ -140,7 +140,7 @@ ChromeRenderThreadObserver::ChromeRenderThreadObserver()
   media::SetLocalizedStringProvider(ChromeMediaLocalizedStringProvider);
 }
 
-ChromeRenderThreadObserver::~ChromeRenderThreadObserver() {}
+ChromeRenderThreadObserver::~ChromeRenderThreadObserver() = default;
 
 chrome::mojom::DynamicParamsPtr ChromeRenderThreadObserver::GetDynamicParams()
     const {

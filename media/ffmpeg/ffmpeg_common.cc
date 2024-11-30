@@ -11,6 +11,7 @@
 
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -38,6 +39,11 @@ namespace media {
 
 namespace {
 
+// TODO(crbug.com/379418979): Remove after M133 is stable.
+BASE_FEATURE(kStrictFFmpegCodecs,
+             "StrictFFmpegCodecs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 EncryptionScheme GetEncryptionScheme(const AVStream* stream) {
   AVDictionaryEntry* key =
       av_dict_get(stream->metadata, "enc_key_id", nullptr, 0);
@@ -56,6 +62,33 @@ VideoColorSpace GetGuessedColorSpace(const VideoColorSpace& color_space) {
   return VideoColorSpace::FromGfxColorSpace(
       // convert to gfx color space and make a guess.
       color_space.GuessGfxColorSpace());
+}
+
+const char* GetAllowedVideoDecoders() {
+  // This should match the configured lists in //third_party/ffmpeg.
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  return "h264";
+#else
+  return "";
+#endif
+}
+
+void ApplyCodecContextSecuritySettings(AVCodecContext* codec_context) {
+  // Future versions of ffmpeg may copy the allow list from the format
+  // context.
+  if (!codec_context->codec_whitelist) {
+    // Note: FFmpeg will try to free this string, so we must duplicate it.
+    codec_context->codec_whitelist =
+        av_strdup(codec_context->codec_type == AVMEDIA_TYPE_AUDIO
+                      ? GetAllowedAudioDecoders()
+                      : GetAllowedVideoDecoders());
+  }
+
+  // Note: This is security sensitive. FFmpeg may not always continue safely
+  // in the presence of errors. See https://crbug.com/379418979
+  if (base::FeatureList::IsEnabled(kStrictFFmpegCodecs)) {
+    codec_context->err_recognition |= AV_EF_EXPLODE;
+  }
 }
 
 }  // namespace
@@ -373,10 +406,10 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
   // AVStream occasionally has invalid extra data. See http://crbug.com/517163
   if ((codec_context->extradata_size == 0) !=
       (codec_context->extradata == nullptr)) {
-    LOG(ERROR) << __func__
-               << (codec_context->extradata == nullptr ? " NULL" : " Non-NULL")
-               << " extra data cannot have size of "
-               << codec_context->extradata_size << ".";
+    DLOG(ERROR) << __func__
+                << (codec_context->extradata == nullptr ? " NULL" : " Non-NULL")
+                << " extra data cannot have size of "
+                << codec_context->extradata_size << ".";
     return false;
   }
 
@@ -437,6 +470,7 @@ AVStreamToAVCodecContext(const AVStream* stream) {
     return nullptr;
   }
 
+  ApplyCodecContextSecuritySettings(codec_context.get());
   return codec_context;
 }
 
@@ -476,6 +510,7 @@ void AudioDecoderConfigToAVCodecContext(const AudioDecoderConfig& config,
     memset(codec_context->extradata + config.extra_data().size(), '\0',
            AV_INPUT_BUFFER_PADDING_SIZE);
   }
+  ApplyCodecContextSecuritySettings(codec_context);
 }
 
 bool AVStreamToVideoDecoderConfig(const AVStream* stream,
@@ -847,6 +882,7 @@ void VideoDecoderConfigToAVCodecContext(
     memset(codec_context->extradata + config.extra_data().size(), '\0',
            AV_INPUT_BUFFER_PADDING_SIZE);
   }
+  ApplyCodecContextSecuritySettings(codec_context);
 }
 
 ChannelLayout ChannelLayoutToChromeChannelLayout(int64_t layout, int channels) {
@@ -967,7 +1003,7 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
 
     default:
       // FFmpeg knows more pixel formats than Chromium cares about.
-      LOG(ERROR) << "Unsupported pixel format: " << pixel_format;
+      DVLOG(1) << "Unsupported pixel format: " << pixel_format;
       return PIXEL_FORMAT_UNKNOWN;
   }
 }
@@ -983,6 +1019,20 @@ int32_t HashCodecName(const char* codec_name) {
   int32_t hash;
   memcpy(&hash, base::SHA1HashString(codec_name).substr(0, 4).c_str(), 4);
   return hash;
+}
+
+const char* GetAllowedAudioDecoders() {
+  static const base::NoDestructor<std::string> kAllowedAudioCodecs([]() {
+    // This should match the configured lists in //third_party/ffmpeg.
+    std::string allowed_decoders(
+        "vorbis,libopus,flac,pcm_u8,pcm_s16le,pcm_s24le,pcm_s32le,pcm_f32le,"
+        "mp3,pcm_s16be,pcm_s24be,pcm_mulaw,pcm_alaw");
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    allowed_decoders += ",aac";
+#endif
+    return allowed_decoders;
+  }());
+  return kAllowedAudioCodecs->c_str();
 }
 
 }  // namespace media

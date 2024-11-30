@@ -37,7 +37,8 @@ class IwaKeyDistributionComponentInstallerPolicy
 
   using ComponentReadyCallback =
       base::RepeatingCallback<void(const base::Version&,
-                                   const base::FilePath& installed_file_path)>;
+                                   const base::FilePath& installed_file_path,
+                                   bool is_preloaded)>;
 
   explicit IwaKeyDistributionComponentInstallerPolicy(ComponentReadyCallback);
   ~IwaKeyDistributionComponentInstallerPolicy() override;

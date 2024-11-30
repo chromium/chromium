@@ -116,7 +116,7 @@ AllDownloadObserver::AllDownloadObserver(
     DownloadOfflineContentProvider* provider)
     : provider_(provider) {}
 
-AllDownloadObserver::~AllDownloadObserver() {}
+AllDownloadObserver::~AllDownloadObserver() = default;
 
 void AllDownloadObserver::OnDownloadUpdated(
     SimpleDownloadManagerCoordinator* manager,

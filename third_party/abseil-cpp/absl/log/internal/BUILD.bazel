@@ -179,6 +179,7 @@ cc_library(
         "//absl/base:core_headers",
         "//absl/base:errno_saver",
         "//absl/base:log_severity",
+        "//absl/base:nullability",
         "//absl/base:raw_logging_internal",
         "//absl/base:strerror",
         "//absl/container:inlined_vector",
@@ -280,6 +281,7 @@ cc_library(
     deps = [
         ":log_message",
         "//absl/base:config",
+        "//absl/base:core_headers",
         "//absl/strings",
     ],
 )

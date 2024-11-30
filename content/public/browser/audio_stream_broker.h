@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
@@ -116,6 +117,7 @@ class CONTENT_EXPORT AudioStreamBrokerFactory {
   virtual std::unique_ptr<AudioStreamBroker> CreateAudioOutputStreamBroker(
       int render_process_id,
       int render_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       int stream_id,
       const std::string& output_device_id,
       const media::AudioParameters& params,

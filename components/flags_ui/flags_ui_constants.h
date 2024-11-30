@@ -16,9 +16,6 @@ extern const char kRequestExperimentalFeatures[];
 extern const char kSetOriginListFlag[];
 extern const char kSetStringFlag[];
 extern const char kResetAllFlags[];
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kCrosUrlFlagsRedirect[];
-#endif
 extern const char kRestartBrowser[];
 
 // Other values.
@@ -32,7 +29,6 @@ extern const char kShowOwnerWarning[];
 extern const char kSupportedFeatures[];
 extern const char kUnsupportedFeatures[];
 extern const char kVersion[];
-extern const char kShowSystemFlagsLink[];
 
 }  // namespace flags_ui
 

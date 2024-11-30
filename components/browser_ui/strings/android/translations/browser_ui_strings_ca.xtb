@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Permet que un lloc web desi dades al dispositiu</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384959399684842514">La baixada s'ha posat en pausa</translation>
+<translation id="1396327438254055134">Permet que el lloc web utilitzi l'optimitzador de V8.</translation>
 <translation id="1415402041810619267">L'URL s'ha truncat</translation>
 <translation id="1448064542941920355">Redueix el zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> lloc web}other{<ph name="SITE_COUNT" /> llocs web}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Descodificador d'imatges</translation>
 <translation id="1785415724048343560">Opció recomanada per gaudir de la millor experiència</translation>
 <translation id="1799920918471566157">Consells per a Chrome</translation>
+<translation id="1816835383954230954">Quan està activat, Chrome s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar. Quan està desactivat, es redueix el rendiment, però fa que V8 sigui més resistent als atacs.</translation>
 <translation id="1818308510395330587">Per permetre que <ph name="APP_NAME" /> utilitzi RA, activa també la càmera a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">L'accés a la ubicació està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Penja</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar la càmera. Quan aquesta opció està desactivada, els llocs web no poden utilitzar la càmera.</translation>
 <translation id="3521663503435878242">Llocs web a <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">No permetis que els llocs web facin un seguiment de les teves mans</translation>
+<translation id="3532312529397438268">Els llocs web no poden utilitzar l'optimitzador de V8</translation>
 <translation id="3536227077203206203">S'ha permès aquesta vegada</translation>
 <translation id="3538390592868664640">Impedeix que els llocs web creïn un mapa en 3D del teu entorn o que facin un seguiment de la posició de la càmera</translation>
 <translation id="3544058026430919413">Una empresa pot definir un grup de llocs web que poden utilitzar galetes per compartir la teva activitat al grup. Aquesta opció està desactivada en mode d'incògnit.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Activa la funció Navegació segura</translation>
 <translation id="4811450222531576619">Més informació sobre la font i el tema</translation>
+<translation id="481168145262973879">Els llocs web poden utilitzar l'optimitzador de V8</translation>
 <translation id="4816495437032298535">Zoom desat per als llocs web</translation>
 <translation id="4836046166855586901">Pregunta'm quan un lloc web vulgui saber quan estic utilitzant aquest dispositiu de manera activa</translation>
 <translation id="483914009762354899">Inclou tots els llocs web d'aquest domini</translation>
@@ -337,10 +341,8 @@
 <translation id="6071501408666570960">És possible que se't tanqui la sessió d'aquest lloc web</translation>
 <translation id="6085954183010297841">Vols suprimir el permís per editar fitxers? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Quan aquesta opció està activada, els llocs web poden demanar permís per saber si estàs utilitzant el teu dispositiu de manera activa. Quan aquesta opció està desactivada, els llocs web no poden saber si estàs utilitzant el teu dispositiu de manera activa.</translation>
-<translation id="6140839633433422817">Confirmes que vols restablir els permisos i suprimir les galetes i les dades del lloc web?</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6171020522141473435">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius Bluetooth. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius Bluetooth.</translation>
-<translation id="6177111841848151710">S'ha bloquejat per al motor de cerca actual</translation>
 <translation id="6177128806592000436">La connexió amb aquest lloc web no és segura</translation>
 <translation id="6181444274883918285">Afegeix excepció de lloc web</translation>
 <translation id="6192792657125177640">Excepcions</translation>
@@ -405,8 +407,8 @@
 <translation id="6980861169612950611">Vols suprimir les dades del lloc web? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="6992289844737586249">Pregunta abans de permetre que els llocs web utilitzin el micròfon (opció recomanada)</translation>
+<translation id="6999131147875565462">Chrome s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar</translation>
 <translation id="7000754031042624318">Desactivat a la configuració d'Android</translation>
-<translation id="7016516562562142042">Es permet al motor de cerca actual</translation>
 <translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants.</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 de seleccionat}other{# de seleccionats}}</translation>
@@ -425,7 +427,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elements seleccionats</translation>
 <translation id="7260727271532453612">S'han permès <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius de realitat virtual. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius de realitat virtual.</translation>
-<translation id="7302486331832100261">Normalment bloqueges les notificacions. Per permetre-les, toca Detalls.</translation>
 <translation id="7366415735885268578">Afegeix un lloc</translation>
 <translation id="7368695150573390554">Se suprimiran totes les dades fora de línia</translation>
 <translation id="7383715096023715447">Configuració de <ph name="DOMAIN" /></translation>
@@ -542,7 +543,6 @@
 <translation id="8928445016601307354">Bloqueja els llocs web perquè no vegin ni canviïn la informació que hi ha als dispositius amb NFC</translation>
 <translation id="8944485226638699751">Amb limitacions</translation>
 <translation id="8959122750345127698">No es pot accedir a la navegació: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Oblida</translation>
 <translation id="8990043154272859344">Se't tancarà la sessió de tots els llocs web</translation>
 <translation id="8993853206419610596">Desplega totes les sol·licituds</translation>
 <translation id="9002538116239926534">Quan aquesta opció està activada, els llocs web poden desar dades al teu dispositiu. Quan aquesta opció està desactivada, els llocs web no poden desar dades al teu dispositiu.</translation>
@@ -555,8 +555,8 @@
 <translation id="913657688200966289">Activa els permisos per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">El zoom actual és <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>
-<translation id="930525582205581608">Vols oblidar aquest lloc web?</translation>
 <translation id="947156494302904893">Els llocs web que visites poden verificar que ets una persona real i no un bot</translation>
 <translation id="959682366969460160">Organitza el contingut</translation>
 <translation id="967624055006145463">Dades emmagatzemades</translation>
+<translation id="969975166333045662">Impedeix que el lloc web utilitzi l'optimitzador de V8.</translation>
 </translationbundle>

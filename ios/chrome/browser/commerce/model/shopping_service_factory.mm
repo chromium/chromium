@@ -81,16 +81,18 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       GetApplicationContext()->GetApplicationLocale(),
       ios::BookmarkModelFactory::GetForProfile(profile),
-      OptimizationGuideServiceFactory::GetForProfile(profile),
-      pref_service, IdentityManagerFactory::GetForProfile(profile),
+      OptimizationGuideServiceFactory::GetForProfile(profile), pref_service,
+      IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(),
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
           ->GetForProfile(profile),
       PowerBookmarkServiceFactory::GetForProfile(profile), nullptr,
-      nullptr, /**ProductSpecificationsService not currently used on iOS
-                  b/329431295 */
+      /**ProductSpecificationsService not currently used on iOS
+         crbug.com/329431295 */
+      nullptr,
+      nullptr, /** Cart and discount features are not available on iOS. */
       SessionProtoDBFactory<
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()
           ->GetForProfile(profile),

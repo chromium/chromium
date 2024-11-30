@@ -429,9 +429,7 @@ void ChromeShellDelegate::OpenFeedbackDialog(
 }
 
 void ChromeShellDelegate::OpenProfileManager() {
-  if (crosapi::BrowserManager::Get()->IsRunning()) {
-    crosapi::BrowserManager::Get()->OpenProfileManager();
-  }
+  NOTREACHED();
 }
 
 // static

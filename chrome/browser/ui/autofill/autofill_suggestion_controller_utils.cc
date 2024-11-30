@@ -46,8 +46,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kDeleteAddressProfile:
-    case SuggestionType::kEditAddressProfile:
     case SuggestionType::kPasswordAccountStorageEmpty:
     case SuggestionType::kPasswordAccountStorageOptIn:
     case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
@@ -60,10 +58,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kEditPredictionImprovementsInformation:
       return true;
-    case SuggestionType::kFillEverythingFromAddressProfile:
-      return features::
-          kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
-              .Get();
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
@@ -77,16 +71,11 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kCreditCardEntry:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kFillExistingPlusAddress:
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullEmail:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kIbanEntry:
@@ -96,6 +85,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kVirtualCreditCardEntry:
@@ -176,6 +166,9 @@ void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
          IphEventPair{
              &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
              "autofill_virtual_card_suggestion_accepted"},
+         IphEventPair{&feature_engagement::
+                          kIPHAutofillCardInfoRetrievalSuggestionFeature,
+                      "autofill_card_info_retrieval_suggestion_accepted"},
          IphEventPair{&feature_engagement::
                           kIPHAutofillDisabledVirtualCardSuggestionFeature,
                       "autofill_disabled_virtual_card_suggestion_accepted"},

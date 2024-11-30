@@ -100,7 +100,7 @@ void ProtocolCommand::OnSocketClosed() {
   delete this;
 }
 
-ProtocolCommand::~ProtocolCommand() {}
+ProtocolCommand::~ProtocolCommand() = default;
 
 // AgentHostDelegate ----------------------------------------------------------
 
@@ -556,7 +556,7 @@ DevToolsDeviceDiscovery::RemotePage::RemotePage(
       browser_version_(browser_version),
       dict_(std::move(dict)) {}
 
-DevToolsDeviceDiscovery::RemotePage::~RemotePage() {}
+DevToolsDeviceDiscovery::RemotePage::~RemotePage() = default;
 
 scoped_refptr<content::DevToolsAgentHost>
 DevToolsDeviceDiscovery::RemotePage::CreateTarget() {
@@ -606,7 +606,7 @@ DevToolsDeviceDiscovery::RemoteBrowser::GetParsedVersion() {
   return result;
 }
 
-DevToolsDeviceDiscovery::RemoteBrowser::~RemoteBrowser() {}
+DevToolsDeviceDiscovery::RemoteBrowser::~RemoteBrowser() = default;
 
 // DevToolsDeviceDiscovery::RemoteDevice --------------------------------------
 
@@ -623,7 +623,7 @@ DevToolsDeviceDiscovery::RemoteDevice::RemoteDevice(
   }
 }
 
-DevToolsDeviceDiscovery::RemoteDevice::~RemoteDevice() {}
+DevToolsDeviceDiscovery::RemoteDevice::~RemoteDevice() = default;
 
 // DevToolsDeviceDiscovery ----------------------------------------------------
 

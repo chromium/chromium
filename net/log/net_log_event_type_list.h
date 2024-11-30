@@ -1461,6 +1461,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
 // StreamAttempt.
 // The event parameters are:
 //   {
+//     "net_error": <Net error code integer>,
 //     "num_jobs": <The number of active jobs>,
 //     "num_notified_jobs": <The number of jobs that are notified results but
 //                           are still not destroyed yet>,
@@ -1469,7 +1470,8 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
 //     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
 //                           treated as slow>,
 //     "quic_task_alive": <True when a QuicTask is alive>,
-//     "quic_task_result": <The result of a QuicTask, if it is already finished>
+//     "quic_task_result": <The result of a QuicTask, if it is already
+//                          finished>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
 

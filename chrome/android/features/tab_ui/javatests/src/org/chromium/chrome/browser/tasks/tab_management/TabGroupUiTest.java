@@ -45,7 +45,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -95,6 +96,8 @@ public class TabGroupUiTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -106,7 +109,6 @@ public class TabGroupUiTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         TabUiTestHelper.verifyTabSwitcherLayoutType(sActivityTestRule.getActivity());
         CriteriaHelper.pollUiThread(

@@ -162,6 +162,7 @@ public class NavigateTest {
     @Restriction(DeviceFormFactor.TABLET)
     @MediumTest
     @Feature({"Navigation"})
+    @DisabledTest(message = "Flaky. See crbug.com/380238040")
     public void testNavigateMany() throws Exception {
         final String[] urls =
                 mTestServer.getURLs(

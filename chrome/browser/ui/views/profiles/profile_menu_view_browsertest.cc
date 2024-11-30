@@ -1882,8 +1882,23 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_GuestProfile[] =
      // this array triggers the same action as the first one.
      ProfileMenuViewBase::ActionableItem::kExitProfileButton};
 
-PROFILE_MENU_CLICK_TEST(kActionableItems_GuestProfile,
-                        ProfileMenuClickTest_GuestProfile) {
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_GuestProfile,
+    ProfileMenuClickTest_GuestProfile_UnoEnabled,
+    /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
+    /*disabled_features=*/{}) {
+  SetTargetBrowser(CreateGuestBrowser());
+
+  RunTest();
+}
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_GuestProfile,
+    ProfileMenuClickTest_GuestProfile,
+    std::vector<base::test::FeatureRef>(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop}),
+    /*disabled_features=*/{}) {
   SetTargetBrowser(CreateGuestBrowser());
 
   RunTest();

@@ -23,7 +23,7 @@ class MockGeoLocation : public device::mojom::Geolocation {
   ~MockGeoLocation() override;
 
   // device::mojom::Geolocation implementation:
-  void SetHighAccuracy(bool high_accuracy) override;
+  void SetHighAccuracyHint(bool high_accuracy) override;
   void QueryNextPosition(QueryNextPositionCallback callback) override;
 
   void BindGeoLocation(

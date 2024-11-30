@@ -72,7 +72,7 @@ public class WebappActivity extends BaseCustomTabActivity {
             return true;
         }
         if (id == R.id.open_in_browser_id) {
-            mNavigationController.openCurrentUrlInBrowser();
+            getCustomTabActivityNavigationController().openCurrentUrlInBrowser();
             if (fromMenu) {
                 RecordUserAction.record("WebappMenuOpenInChrome");
             } else {
@@ -92,8 +92,8 @@ public class WebappActivity extends BaseCustomTabActivity {
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
         return new WebappLaunchCauseMetrics(
                 this,
-                mWebappActivityCoordinator == null
+                getWebappActivityCoordinator() == null
                         ? null
-                        : mWebappActivityCoordinator.getWebappInfo());
+                        : getWebappActivityCoordinator().getWebappInfo());
     }
 }

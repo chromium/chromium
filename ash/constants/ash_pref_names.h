@@ -1466,15 +1466,8 @@ inline constexpr char kUserWallpaperInfo[] = "user_wallpaper_info";
 inline constexpr char kRecentDailyGooglePhotosWallpapers[] =
     "recent_daily_google_photos_wallpapers";
 
-// A dictionary pref that maps usernames to versioned wallpaper info.
-// This is for wallpapers that are syncable across devices.
-inline constexpr char kSyncableVersionedWallpaperInfo[] =
-    "syncable_versioned_wallpaper_info";
-
 // A dictionary pref that maps usernames to wallpaper info.
-// This is for wallpapers that are syncable across devices. It is being replaced
-// by `kSyncableVersionedWallpaperInfo`. Data from this pref will be migrated to
-// the new pref.
+// This is for wallpapers that are syncable across devices.
 inline constexpr char kSyncableWallpaperInfo[] = "syncable_wallpaper_info";
 
 // A dictionary pref that maps wallpaper file paths to their prominent colors.
@@ -2325,6 +2318,12 @@ inline constexpr char kDemoModeConfig[] = "demo_mode.config";
 // A string pref holding the value of the current country for demo sessions.
 inline constexpr char kDemoModeCountry[] = "demo_mode.country";
 
+// A string pref holding the value of the demo account session identifier for
+// current session. If will be used for demo account clean up at the beginning
+// of next session.
+inline constexpr char kDemoModeSessionIdentifier[] =
+    "demo_mode.session_identifier";
+
 // A string pref holding the value of the retailer name input for demo sessions.
 // This is now mostly called "retailer_name" in code other than in this pref and
 // in Omaha request attributes
@@ -2568,6 +2567,16 @@ inline constexpr char kGraduationNudgeShownCount[] =
 // default value is the default NULL time, base::Time().
 inline constexpr char kGraduationNudgeLastShownTime[] =
     "ash.graduation.nudge_last_shown_time";
+
+// An integer pref that counts the number of times we have shown the Sunfish
+// launcher nudge.
+inline constexpr char kSunfishLauncherNudgeShownCount[] =
+    "ash.capture_mode.sunfish_launcher_nudge_shown_count";
+
+// A time pref that tracks the most recent instance when we have shown the
+// Sunfish launcher nudge.
+inline constexpr char kSunfishLauncherNudgeLastShown[] =
+    "ash.capture_mode.sunfish_launcher_nudge_last_shown";
 
 //-----------------------------------------------------------------------------
 // Language related Prefs

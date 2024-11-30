@@ -115,7 +115,7 @@ export const FacialGesturesToMediapipeGestures = new Map([
  * not be present in order to confidently trigger the supported gesture, so as
  * to reduce triggering gestures with involuntary facial movement like blinking.
  */
-export const FacialGesturesToExcludedMediapipeGestures = new Map([
+const FacialGesturesToExcludedMediapipeGestures = new Map([
   [
     FacialGesture.EYE_SQUINT_LEFT,
     [
@@ -131,6 +131,17 @@ export const FacialGesturesToExcludedMediapipeGestures = new Map([
     ]
   ],
 ]);
+
+/**
+ * The confidence level at which a detected gesture B should disqualify a
+ * different gesture A from being triggered if A relies on B not being
+ * present. For example, if EYE_SQUINT_LEFT is detected but EYE_SQUINT_RIGHT
+ * is also detected at confidence > EXCLUDED_GESTURE_THRESHOLD, then the
+ * gesture was likely involuntary blinking and EYE_SQUINT_LEFT should not be
+ * triggered. A confidence level of 0.5 seems to be the approximate confidence
+ * that occurs for most involuntary blinking.
+ */
+const EXCLUDED_GESTURE_THRESHOLD = 0.5;
 
 export class GestureDetector {
   private static mediapipeFacialGestureSet_ =
@@ -206,7 +217,7 @@ export class GestureDetector {
         for (const excludedGesture of excludedGestures) {
           if (recognizedGestures.has(excludedGesture) &&
               recognizedGestures.get(excludedGesture) >
-                  GestureDetector.EXCLUDED_GESTURE_THRESHOLD) {
+                  EXCLUDED_GESTURE_THRESHOLD) {
             hasExcludedGesture = true;
           }
         }
@@ -239,19 +250,6 @@ export class GestureDetector {
 
     return gestures;
   }
-}
-
-export namespace GestureDetector {
-  /**
-   * The confidence level at which a detected gesture B should disqualify a
-   * different gesture A from being triggered if A relies on B not being
-   * present. For example, if EYE_SQUINT_LEFT is detected but EYE_SQUINT_RIGHT
-   * is also detected at confidence > EXCLUDED_GESTURE_THRESHOLD, then the
-   * gesture was likely involuntary blinking and EYE_SQUINT_LEFT should not be
-   * triggered. A confidence level of 0.5 seems to be the approximate confidence
-   * that occurs for most involuntary blinking.
-   */
-  export const EXCLUDED_GESTURE_THRESHOLD = 0.5;
 }
 
 TestImportManager.exportForTesting(

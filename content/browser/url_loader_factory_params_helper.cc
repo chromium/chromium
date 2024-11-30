@@ -25,6 +25,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
@@ -78,6 +79,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+    mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+        device_bound_session_observer,
     network::mojom::TrustTokenOperationPolicyVerdict
         trust_token_issuance_policy,
     network::mojom::TrustTokenOperationPolicyVerdict
@@ -136,6 +139,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->shared_dictionary_observer = std::move(shared_dictionary_observer);
   params->url_loader_network_observer = std::move(url_loader_network_observer);
   params->devtools_observer = std::move(devtools_observer);
+  params->device_bound_session_observer =
+      std::move(device_bound_session_observer);
 
   params->cookie_setting_overrides = cookie_setting_overrides;
 
@@ -179,8 +184,8 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       frame->CreateSharedDictionaryAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
-      trust_token_issuance_policy, trust_token_redemption_policy,
-      cookie_setting_overrides, debug_tag,
+      frame->CreateDeviceBoundSessionObserver(), trust_token_issuance_policy,
+      trust_token_redemption_policy, cookie_setting_overrides, debug_tag,
       /*require_cross_site_request_for_cookies=*/false);
 }
 
@@ -212,8 +217,9 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       frame->CreateSharedDictionaryAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
-      trust_token_issuance_policy, trust_token_redemption_policy,
-      cookie_setting_overrides, "ParamHelper::CreateForIsolatedWorld",
+      frame->CreateDeviceBoundSessionObserver(), trust_token_issuance_policy,
+      trust_token_redemption_policy, cookie_setting_overrides,
+      "ParamHelper::CreateForIsolatedWorld",
       /*require_cross_site_request_for_cookies=*/false);
 }
 
@@ -242,6 +248,7 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       frame->CreateSharedDictionaryAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
+      frame->CreateDeviceBoundSessionObserver(),
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       cookie_setting_overrides, "ParamHelper::CreateForPrefetch",
@@ -283,6 +290,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       static_cast<StoragePartitionImpl*>(process->GetStoragePartition())
           ->CreateSharedDictionaryAccessObserverForServiceWorker(),
       std::move(url_loader_network_observer), std::move(devtools_observer),
+      static_cast<StoragePartitionImpl*>(process->GetStoragePartition())
+          ->CreateDeviceBoundSessionObserverForServiceWorker(),
       // Trust Token redemption and signing operations require the Permissions
       // Policy. It seems Permissions Policy in worker contexts
       // is currently an open issue (as of 06/21/2022):
@@ -306,7 +315,9 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
     mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
         trust_token_observer,
     mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>
-        shared_dictionary_observer) {
+        shared_dictionary_observer,
+    mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+        device_bound_session_observer) {
   // TODO(crbug.com/40188470): Consider not using the speculative
   // RenderFrameHostImpl to create URLLoaderNetworkServiceObserver.
   // In general we should avoid using speculative RenderFrameHostImpl
@@ -346,6 +357,7 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       std::move(trust_token_observer), std::move(shared_dictionary_observer),
       std::move(url_loader_network_observer),
       /*devtools_observer=*/mojo::NullRemote(),
+      std::move(device_bound_session_observer),
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload",

@@ -18,7 +18,6 @@ import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("//build/config/ui.gni")
 import("//build/config/unwind.gni")
-import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/cros/cros_config.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
@@ -1994,10 +1993,8 @@ config("default_warnings") {
         # TODO(crbug.com/356172342): Fix and re-enable.
         cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
 
-        if (llvm_force_head_revision) {
-          # TODO(crbug.com/376641662): Fix and re-enable.
-          cflags += [ "-Wno-nontrivial-memaccess" ]
-        }
+        # TODO(crbug.com/376641662): Fix and re-enable.
+        cflags += [ "-Wno-nontrivial-memaccess" ]
       }
     }
 
@@ -2435,7 +2432,6 @@ if (is_win) {
 
   if (is_official_build) {
     common_optimize_on_ldflags += [ "/OPT:REF" ]  # Remove unreferenced data.
-    # TODO(thakis): Add LTO/PGO clang flags eventually, https://crbug.com/598772
   }
 
   if (is_clang) {

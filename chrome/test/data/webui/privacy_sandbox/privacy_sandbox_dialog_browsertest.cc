@@ -95,3 +95,12 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, CombinedAdsApiUxEnhancement) {
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeEEAAdsApiUxEnhancement) {
   RunTestSuite("NoticeEEAAdsApiUxEnhancement");
 }
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeROWAdsApiUxEnhancement) {
+  RunTestSuite("NoticeROWAdsApiUxEnhancement");
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest,
+                       NoticeROWAdsApiUxEnhancementDisabled) {
+  RunTestSuite("NoticeROWAdsApiUxEnhancementDisabled");
+}

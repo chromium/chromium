@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.AppLauncher.AppURLHasChromeLaunchScheme" enum="Boolean"
     expires_after="2025-12-08">
-  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     This histogram counts the frequency of app launch attempts where the target
@@ -201,12 +201,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundRefresh.InitStage"
-    enum="InitStageDuringBackgroundRefreshType" expires_after="2025-03-23">
+    enum="InitStageDuringBackgroundRefreshType" expires_after="2025-05-25">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
     Logged when a background refresh is triggered. Logs the initState of the
     AppState during background refresh.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundRefresh.LaunchType"
+    enum="LaunchTypeForBackgroundRefreshType" expires_after="2025-03-23">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when a background refresh is triggered. Logs the launch type (warm
+    vs. cold) for the background refresh.
   </summary>
 </histogram>
 
@@ -333,8 +343,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.CaptivePortal.SecureConnectionFailed"
     enum="CaptivePortalStatus" expires_after="2023-09-07">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     The result of a captive portal check triggered by a failed secure
     connection. Logged once per failed secure connection.
@@ -343,8 +353,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.ClosedTabIsAboutBlank" enum="Boolean"
     expires_after="2025-09-07">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     This metric is logged whenever a tab is closed and whether or not the tab is
     currently displaying the about:blank page. Collecting this data may help to
@@ -355,8 +365,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
     expires_after="2025-09-07">
-  <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     When a navigation is committed, it should have a non-null NavigationContext.
     This histogram counts the frequency of this invariant holding at the time
@@ -369,8 +379,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.CommittedURLMatchesCurrentItem" enum="Boolean"
     expires_after="2025-09-07">
-  <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     When a navigation is committed, the web view URL is expected to match that
     of the current back-forward item. WKWebView seems to break this assumption
@@ -678,16 +688,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.CredentialExtension.FaviconsFetched" units="count"
-    expires_after="2024-12-01">
-  <owner>sebsg@chromium.org</owner>
-  <owner>bling-transactions-eng@google.com</owner>
-  <summary>
-    Recorded when credentials are saved in the CredentialExtension database.
-    Records the number of favicons that have been fetched.
-  </summary>
-</histogram>
-
 <histogram name="IOS.CredentialExtension.FetchPasswordFailure" units="count"
     expires_after="2024-12-01">
   <owner>tmartino@chromium.org</owner>
@@ -748,6 +748,16 @@ chromium-metrics-reviews@google.com.
     Chrome is put in the foreground.
 
     Note: this was expired from 2023-06 to 2023-12. Data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.NumberFaviconsFetched" units="count"
+    expires_after="2025-07-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-transactions-eng@google.com</owner>
+  <summary>
+    Recorded when credentials are saved in the CredentialExtension database.
+    Records the number of favicons that have been fetched.
   </summary>
 </histogram>
 
@@ -882,7 +892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SyncedStore" enum="Boolean"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -1096,7 +1106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.{PromoAction}.{PromoStat}"
-    units="count" expires_after="2025-02-05">
+    units="count" expires_after="2025-05-18">
   <owner>gayane@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -1104,28 +1114,25 @@ chromium-metrics-reviews@google.com.
     default browser promo.
   </summary>
   <token key="PromoAction">
-    <variant name="Accepted"/>
     <variant name="Appear"/>
     <variant name="Cancel"/>
     <variant name="Dismiss"/>
+    <variant name="PrimaryAction"/>
   </token>
   <token key="PromoStat">
-    <variant name="ActiveDayCount"
-        summary="Represents number days user has been active within last
-                 valid period"/>
-    <variant name="AutofillUseCount"
+    <variant name="AutofllUseCount"
         summary="Represents number of times user used autofill suggestions."/>
     <variant name="BookmarkUseCount"
         summary="Represents number of times user used bookmarks or bookmark
                  manager."/>
     <variant name="ChromeColdStartCount"
         summary="Represents number of time Chrome cold starts"/>
-    <variant name="ChromeOpenIndirectlyCount"
+    <variant name="ChromeIndirectStartCount"
         summary="Represents number of time Chrome indirect (by widget or
                  external url) starts"/>
     <variant name="ChromeWarmStartCount"
         summary="Represents number of time Chrome warm starts"/>
-    <variant name="LastPromoNumDays"
+    <variant name="LastPromoInteractionNumDays"
         summary="Represents number of days since last default browser promo
                  was displayed"/>
     <variant name="OmniboxClipboardUseCount"
@@ -1562,8 +1569,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.FinishedURLMatchesCurrentItem" enum="Boolean"
     expires_after="2025-06-19">
-  <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     When a navigation is finished, the web view URL is expected to match that of
     the current back-forward item. WKWebView seems to break this assumption at
@@ -1574,9 +1581,9 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Frame.FirstContentfulPaint.MainFrame" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Many features include JavaScript injected logic that run in the WebKit
     renderer process. One Web Vitals metric that evaluates user experience is
@@ -1592,7 +1599,7 @@ the generic promo launch. -->
 <histogram name="IOS.Frame.FirstContentfulPaint.SubFrame" units="ms"
     expires_after="2025-11-30">
   <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Many features include JavaScript injected logic that run in the WebKit
     renderer process. One Web Vitals metric that evaluates user experience is
@@ -1611,7 +1618,7 @@ the generic promo launch. -->
     name="IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore2"
     units="ms" expires_after="2025-01-19">
   <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Many features include JavaScript injected logic that run in the WebKit
     renderer process. One Web Vitals metric that evaluates user experience is
@@ -1628,7 +1635,7 @@ the generic promo launch. -->
 <histogram name="IOS.Frame.FirstInputDelay.MainFrame2" units="ms"
     expires_after="2025-12-08">
   <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Many features include JavaScript injected logic that run in the WebKit
     renderer process. One Web Vitals metric that evaluates user experience is
@@ -1646,7 +1653,7 @@ the generic promo launch. -->
     name="IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore2"
     units="ms" expires_after="2025-01-19">
   <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Many features include JavaScript injected logic that run in the WebKit
     renderer process. One Web Vitals metric that evaluates user experience is
@@ -1663,7 +1670,7 @@ the generic promo launch. -->
 <histogram name="IOS.Frame.FirstInputDelay.SubFrame2" units="ms"
     expires_after="2025-01-19">
   <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Many features include JavaScript injected logic that run in the WebKit
     renderer process. One Web Vitals metric that evaluates user experience is
@@ -1678,9 +1685,9 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Fullscreen.State" enum="CrFullscreenState"
-    expires_after="2025-03-09">
+    expires_after="2025-05-18">
   <owner>joemerramos@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Logs when a user triggers a fullscreen state change for Chrome on iOS. The
     enumeration indicates the fullscreen state. This is for the web-exposed
@@ -1829,6 +1836,14 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.IncognitoLockImpression"
+    enum="IncognitoLockImpressionType" expires_after="2025-03-31">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>Logged when the Incognito lock overlay is displayed.</summary>
+</histogram>
+
 <histogram name="IOS.IncognitoLockOverlayInteraction"
     enum="IncognitoLockOverlayInteractionType" expires_after="2025-03-31">
   <owner>rubindl@chromium.org</owner>
@@ -1846,6 +1861,18 @@ the generic promo launch. -->
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Logged when the user changes settings for Hide Incognito tabs.
+  </summary>
+</histogram>
+
+<histogram name="IOS.IncognitoLockSettingStartupState"
+    enum="IncognitoLockSettingStartupState" expires_after="2025-03-31">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Logged once per app launch. Logs incognito lock setting state. This metric
+    is designed to measure % of users who have the setting enabled by using
+    &quot;group by users&quot; in UMA.
   </summary>
 </histogram>
 
@@ -1935,8 +1962,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.JavaScript.ErrorHasFilename" enum="Boolean"
     expires_after="2025-05-31">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records when a JavaScript error is reported through the
     `WindowErrorResultHandler` message handler and whether the error has an
@@ -1947,8 +1974,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Authorized"
     enum="GeolocationAPI" expires_after="2025-05-31">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records when a webpage attempts to access geolocation APIs and the user has
     authorized the API at the application level. NOTE: This is only logged if
@@ -1960,8 +1987,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Denied"
     enum="GeolocationAPI" expires_after="2025-05-31">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records when a webpage attempts to access geolocation APIs, but the user has
     denied the API at the application level. NOTE: This is only logged if the
@@ -1973,8 +2000,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.NotDetermined"
     enum="GeolocationAPI" expires_after="2025-05-31">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records when a webpage attempts to access geolocation APIs and the API
     access at the application level has not yet been determined. NOTE: This is
@@ -1986,8 +2013,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Restricted"
     enum="GeolocationAPI" expires_after="2025-05-31">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records when a webpage attempts to access geolocation APIs, but the API
     access at the application level is restricted. NOTE: This is only logged if
@@ -1999,8 +2026,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.JavaScript.Permissions.Media.Denied" enum="MediaAPIParams"
     expires_after="2025-05-31">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records when a webpage attempts to access media APIs, but the user has
     denied the API at the application level. NOTE: This is only logged if the
@@ -2012,8 +2039,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.JavaScript.Permissions.Media.Granted"
     enum="MediaAPIParams" expires_after="2025-05-31">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records when a webpage attempts to access media APIs and the user has
     granted the API at the application level. NOTE: This is only logged if the
@@ -2025,8 +2052,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.JavaScript.Permissions.Media.Undetermined"
     enum="MediaAPIParams" expires_after="2025-05-31">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records when a webpage attempts to access media APIs, but the application
     level access to the API has not yet been determined. NOTE: This is only
@@ -2038,8 +2065,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.JavaScript.ScriptExecutionFailed" enum="Boolean"
     expires_after="2025-05-31">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records when a JavaScript error occurs as a result of executing a JavaScript
     string.
@@ -2162,6 +2189,15 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.Module.Click.SendTabPromo" units="index"
+    expires_after="2025-05-20">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the rank index of the Send Tab Promo module when a user taps on it.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MagicStack.Module.Click.Shortcuts" units="index"
     expires_after="2025-05-11">
   <owner>thegreenfrog@chromium.org</owner>
@@ -2262,7 +2298,6 @@ the generic promo launch. -->
 <histogram name="IOS.MainFrameNavigationIsInBrowserLockdownMode" enum="Boolean"
     expires_after="2025-11-03">
   <owner>joemerramos@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records whether Browser Lockdown Mode is enabled for a main-frame navigation
@@ -2273,7 +2308,7 @@ the generic promo launch. -->
 
 <histogram name="IOS.MainFrameNavigationIsInLockdownMode" enum="Boolean"
     expires_after="2025-10-06">
-  <owner>ajuma@chromium.org</owner>
+  <owner>joemerramos@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records whether Lockdown Mode is enabled for a main-frame navigation action.
@@ -2283,7 +2318,7 @@ the generic promo launch. -->
 
 <histogram name="IOS.MemoryExperimenter.AllocationTime" units="ms"
     expires_after="2025-08-14">
-  <owner>ajuma@google.com</owner>
+  <owner>rohitrao@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     The time take to allocate memory and fill it with random bytes during memory
@@ -2441,7 +2476,7 @@ the generic promo launch. -->
 
 <histogram name="IOS.MetricKit.{MXVersion}CPUTimePerDay" units="s"
     expires_after="2025-04-20">
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     The total amout of CPU time used by the app over a 24 hour period. This is
@@ -2465,7 +2500,6 @@ the generic promo launch. -->
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
-  <owner>ajuma@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -2563,8 +2597,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.MetricKit.{MXVersion}OptimizedTimeToFirstDraw" units="ms"
     expires_after="2025-05-11">
-  <owner>ajuma@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     The amount of time taken to launch the app in cases where the launch is
     pre-warmed. This is identical to IOS.MetricKit.{MXVersion}TimeToFirstDraw
@@ -2849,7 +2883,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.NTP.Click" enum="IOSHomeActionType"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -3276,7 +3310,7 @@ the generic promo launch. -->
 <histogram name="IOS.PageLoad.DefaultModeMobile" enum="Boolean"
     expires_after="2025-01-28">
   <owner>gambard@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Tracks the default mode used by the webview when a page is loaded. True when
     the default mode is Mobile (vs Default).
@@ -3293,7 +3327,6 @@ the generic promo launch. -->
 <histogram name="IOS.PageLoadCount.LoadingStarted" units="units"
     expires_after="2025-10-30">
   <owner>gambard@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     The &quot;true&quot; value of this boolean histogram counts the number of
@@ -3302,9 +3335,10 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PageLoadedSnapshotResult" enum="PageLoadedSnapshotResult"
-    expires_after="2024-07-07">
+    expires_after="2025-05-22">
   <owner>edchin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <summary>
     Tracks the result of snapshotting when the page has been loaded.
   </summary>
@@ -3312,8 +3346,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.PageLoadTiming.OmnibarToPageLoaded" units="ms"
     expires_after="2025-03-09">
-  <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Measures the time from the end of user input in the omnibox to when the page
     is fully loaded. Only measures page loads initiated by user typing a URL or
@@ -3651,8 +3685,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.PushNotification.APNSDeviceRegistration"
     enum="BooleanSuccess" expires_after="2025-04-27">
-  <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs whether the user's device was or was not able to successfully register
     with APNS and retrieve an APNS device token. An APNS device token is needed
@@ -3664,8 +3698,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.PushNotification.ChimeDeviceRegistration"
     enum="BooleanSuccess" expires_after="2025-04-20">
-  <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs whether the user's device was or was not able to successfully register
     with Chime. The device is registered with Chime on the application's
@@ -3677,8 +3711,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.PushNotification.ChimePreferenceRegistration"
     enum="BooleanSuccess" expires_after="2025-04-21">
-  <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs whether the user's push notification permissions for each push
     notification enable feature in Chrome were successfully applied to the Chime
@@ -3706,8 +3740,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.PushNotification.EnabledPermisisons"
     enum="PushNotificationPermissionPromptStatus" expires_after="2025-04-20">
-  <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs whether the user decided to allow/disallow push notification
     permissions for the current device or an error occured. This is logged each
@@ -3717,8 +3751,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.PushNotification.IncomingNotificationProcessingTime"
     units="ms" expires_after="2025-05-24">
-  <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs the amount of time it takes for Chrome to process an incoming
     notification. iOS allows applications to process notifications and fetch any
@@ -3734,8 +3768,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.PushNotification.LifecyleEvents"
     enum="PushNotificationLifecycleEvent" expires_after="2025-04-13">
-  <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs various lifecycle stages a push notification can observe on the device.
     This histogram is logged each time a push notification is received on the
@@ -3753,7 +3787,7 @@ the generic promo launch. -->
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2025-04-20">
   <owner>danieltwhite@google.com</owner>
-  <owner>ajuma@google.com</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs the push notification iOS settings permission status the user's device
     was previously in before the user updated their push notifications
@@ -3768,7 +3802,7 @@ the generic promo launch. -->
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2025-04-13">
   <owner>danieltwhite@google.com</owner>
-  <owner>ajuma@google.com</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs the push notification iOS settings permission status the user's device
     was previously in before the user updated their push notifications
@@ -3796,7 +3830,7 @@ the generic promo launch. -->
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2025-04-20">
   <owner>danieltwhite@google.com</owner>
-  <owner>ajuma@google.com</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs the permission status, stored in iOS settings, the user has given for
     whether Chrome can receive push notifications on the device. This histogram
@@ -3962,8 +3996,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.SadTab.FileIsPDF" enum="Boolean"
     expires_after="2025-07-21">
-  <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     This histgram counts the frequency of sad tabs that occur while loading a
     PDF file. This is logged once per sad tab shown.
@@ -3972,8 +4006,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.SadTab.URLIsChromeExternalFile" enum="Boolean"
     expires_after="2025-02-12">
-  <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     This histgram counts the frequency of sad tabs that occur while loading a
     chrome://external-file URL. This is logged once per sad tab shown.
@@ -3984,7 +4018,7 @@ the generic promo launch. -->
     enum="IOSEnhancedSafeBrowseringInfobarInteraction"
     expires_after="2025-06-26">
   <owner>danieltwhite@google.com</owner>
-  <owner>ajuma@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     This histogram tracks the Enhanced Safe Browsing Infobar promo's conversion
     rate by comparing how many times the infobar is surfaced to users and how
@@ -3994,7 +4028,7 @@ the generic promo launch. -->
 
 <histogram name="IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch"
     enum="BooleanMatched" expires_after="2025-06-19">
-  <owner>ajuma@chromium.org</owner>
+  <owner>danieltwhite@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     The URL in a navigation request should have the same host as the URL in the
@@ -4017,7 +4051,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SafetyCheck.MagicStack.HiddenReason"
-    enum="IOSSafetyCheckHiddenReason" expires_after="2025-03-23">
+    enum="IOSSafetyCheckHiddenReason" expires_after="2025-05-25">
   <owner>bwwilliams@google.com</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>
@@ -4039,7 +4073,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.AverageColorSnapshotSize" units="KB"
-    expires_after="2025-02-10">
+    expires_after="2025-05-25">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4590,17 +4624,38 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Snapshots.CacheSize" units="KB" expires_after="2025-08-04">
-  <owner>ajuma@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <summary>
     The overall size of snapshots cache. Recorded when new snapshot is cached.
   </summary>
 </histogram>
 
+<histogram name="IOS.Snapshots.RetrieveColorSnapshotTime" units="ms"
+    expires_after="2025-05-22">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>bling-kiwi-pod@google.com</owner>
+  <summary>Records the time to retrieve a color snapshot.</summary>
+</histogram>
+
+<histogram name="IOS.Snapshots.RetrieveGreySnapshotTime" units="ms"
+    expires_after="2025-05-22">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>bling-kiwi-pod@google.com</owner>
+  <summary>Records the time to retrieve a grey snapshot.</summary>
+</histogram>
+
+<histogram name="IOS.Snapshots.UpdateSnapshotTime" units="ms"
+    expires_after="2025-05-22">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>bling-kiwi-pod@google.com</owner>
+  <summary>Records the time to update a snapshot.</summary>
+</histogram>
+
 <histogram name="IOS.SpeechInput.CountryCodeNotDetected" enum="BooleanHit"
     expires_after="2025-01-16">
-  <owner>ajuma@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     A boolean that is used to indicate that neither the device's current locale
     nor the locale corresponding to the device's preferred language has a valid
@@ -4726,7 +4781,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Start.Click" enum="IOSHomeActionType"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -4744,7 +4799,7 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.Start.TimeSpent" units="ms" expires_after="2025-03-23">
+<histogram name="IOS.Start.TimeSpent" units="ms" expires_after="2025-05-25">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <summary>
@@ -4955,7 +5010,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.Idle.RegularTabGridPage" enum="Boolean"
-    expires_after="2025-01-03">
+    expires_after="2026-01-03">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -5033,7 +5088,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpentScrolling" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>lpromero@chromium.org</owner>
   <owner>alionadangla@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -5200,8 +5255,8 @@ the generic promo launch. -->
 
 <histogram name="IOS.Web.ErrorPagePresentationFailed"
     enum="IOSErrorPagePresentationFailed" expires_after="2025-03-30">
-  <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Logged when the error page fails to load. Sometimes, for example, when the
     web view no longer exists, this error may be expected. Other times, it will
@@ -5266,7 +5321,7 @@ the generic promo launch. -->
 
 <histogram name="IOS.WebInspector.Enabled" enum="BooleanEnabled"
     expires_after="2025-03-30">
-  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records whether Web Inspector support has been enabled by the user. Logged
@@ -5275,7 +5330,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -5312,7 +5367,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.Shown" enum="WhatsNewType"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -5394,7 +5449,7 @@ the generic promo launch. -->
 <histogram name="IOS.WKWebViewFinishBeforeCommit" enum="Boolean"
     expires_after="2025-10-30">
   <owner>gambard@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     WKWebView should notify navigation commit before navigation finish, but

@@ -415,9 +415,7 @@ void AppSearchDataSource::Refresh() {
       ->AppRegistryCache()
       .ForEachApp([this](const apps::AppUpdate& update) {
         if (!apps_util::IsInstalled(update.Readiness()) ||
-            (!update.ShowInSearch().value_or(false) &&
-             !(update.Recommendable().value_or(false) &&
-               update.AppType() == apps::AppType::kBuiltIn))) {
+            !update.ShowInSearch().value_or(false)) {
           return;
         }
 

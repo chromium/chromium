@@ -199,7 +199,7 @@ bool TimelineOffset::IsStyleDependent(const CSSValue* value) {
 
 /* static */
 Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+  if (auto* primitive_value = DynamicTo<CSSNumericLiteralValue>(value)) {
     if (primitive_value->IsPercentage()) {
       return Length::Percent(primitive_value->GetDoubleValue());
     }
@@ -223,7 +223,7 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
       CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
       CSSToLengthConversionData::ContainerSizes(element),
       CSSToLengthConversionData::AnchorData(),
-      element->GetComputedStyle()->EffectiveZoom(), ignored_flags);
+      element->GetComputedStyle()->EffectiveZoom(), ignored_flags, element);
 
   return DynamicTo<CSSPrimitiveValue>(value)->ConvertToLength(
       length_conversion_data);

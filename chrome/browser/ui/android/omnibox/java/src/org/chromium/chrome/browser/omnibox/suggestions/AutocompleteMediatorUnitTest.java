@@ -25,8 +25,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.Window;
 
@@ -146,7 +146,7 @@ public class AutocompleteMediatorUnitTest {
             mVisualStateObserver;
     private @Mock DeferredIMEWindowInsetApplicationCallback mDeferredImeCallback;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
-    private @Captor ArgumentCaptor<SuggestionsListAnimationDriver> mDriverCaptor;
+    private @Captor ArgumentCaptor<ImeSyncedSuggestionsListAnimationDriver> mDriverCaptor;
 
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
@@ -269,25 +269,6 @@ public class AutocompleteMediatorUnitTest {
         }
 
         return list;
-    }
-
-    /**
-     * Build a fake group headers map with elements named 'Header #', where '#' is the group header
-     * index (1-based) and 'Header' is the supplied prefix. Each header has a corresponding key
-     * computed as baseKey + #.
-     *
-     * @param count Number of group headers to build.
-     * @param baseKey Key of the first group header.
-     * @param prefix Name prefix for each group.
-     * @return Map of group headers (populated in random order).
-     */
-    private SparseArray<String> buildSampleGroupHeaders(int count, int baseKey, String prefix) {
-        SparseArray<String> headers = new SparseArray<>(count);
-        for (int index = 0; index < count; index++) {
-            headers.put(baseKey + index, prefix + " " + (index + 1));
-        }
-
-        return headers;
     }
 
     /**
@@ -433,10 +414,12 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
+    @Config(sdk = VERSION_CODES.R)
     public void onOmniboxSessionStateChange_startsAnimationDriver() {
         mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
-        SuggestionsListAnimationDriver animationDriver =
-                mMediator.initializeAnimationDriver(mWindow);
+        ImeSyncedSuggestionsListAnimationDriver animationDriver =
+                (ImeSyncedSuggestionsListAnimationDriver)
+                        mMediator.initializeAnimationDriver(mWindow);
         mMediator.onNativeInitialized();
 
         // Animation shouldn't run if IME insets are not yet controllable.
@@ -714,6 +697,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onSuggestionClicked_deferLoadingUntilNativeLibrariesLoaded() {
+        clearInvocations(mAutocompleteDelegate);
         var url = new GURL("http://test");
         var match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)

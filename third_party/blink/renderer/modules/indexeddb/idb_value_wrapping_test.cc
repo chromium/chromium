@@ -480,7 +480,7 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
   ASSERT_LT(3U, wrapped_marker_bytes.size());
   for (wtf_size_t i = 0; i < 3; ++i) {
     auto mutant_value = std::make_unique<IDBValue>(
-        Vector<char>(base::span(wrapped_marker_bytes).subspan(0, i)),
+        Vector<char>(base::span(wrapped_marker_bytes).first(i)),
         std::move(blob_infos));
     mutant_value->SetIsolate(scope.GetIsolate());
 

@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
+#include "base/values.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h"
@@ -126,6 +127,13 @@ void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
                           weak_ptr_factory_.GetWeakPtr(), std::move(qr_url)),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnFinished,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DigitalIdentityProviderDesktop::Create(content::WebContents* web_contents,
+                                            const url::Origin& rp_origin,
+                                            base::ValueView request,
+                                            DigitalIdentityCallback callback) {
+  // TODO(crbug.com/378330032): implement this method.
 }
 
 void DigitalIdentityProviderDesktop::OnEvent(const std::string& qr_url,

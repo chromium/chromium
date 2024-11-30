@@ -50,12 +50,9 @@ namespace WTF {
 
 class CodePointIterator;
 
-#define DISPATCH_CASE_OP(caseSensitivity, op, args)     \
-  ((caseSensitivity == kTextCaseSensitive)              \
-       ? op args                                        \
-       : (caseSensitivity == kTextCaseASCIIInsensitive) \
-             ? op##IgnoringASCIICase args               \
-             : op##IgnoringCase args)
+#define DISPATCH_CASE_OP(case_sensitivity, op, args)  \
+  ((case_sensitivity == kTextCaseSensitive) ? op args \
+                                            : op##IgnoringASCIICase args)
 
 // You can find documentation about this class in README.md in this directory.
 class WTF_EXPORT String {
@@ -233,10 +230,12 @@ class WTF_EXPORT String {
                   wtf_size_t index = 0) const;
 
   // Find substrings.
-  wtf_size_t Find(
-      const StringView& value,
-      wtf_size_t start = 0,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  wtf_size_t Find(const StringView& value, wtf_size_t start = 0) const {
+    return impl_ ? impl_->Find(value, start) : kNotFound;
+  }
+  wtf_size_t Find(const StringView& value,
+                  wtf_size_t start,
+                  TextCaseSensitivity case_sensitivity) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->Find, (value, start))
                : kNotFound;
@@ -244,10 +243,10 @@ class WTF_EXPORT String {
 
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
-  // platform features.
-  wtf_size_t FindIgnoringCase(const StringView& value,
-                              unsigned start = 0) const {
-    return impl_ ? impl_->FindIgnoringCase(value, start) : kNotFound;
+  // platform features.  See crbug.com/40476285.
+  wtf_size_t DeprecatedFindIgnoringCase(const StringView& value,
+                                        unsigned start = 0) const {
+    return impl_ ? impl_->DeprecatedFindIgnoringCase(value, start) : kNotFound;
   }
 
   // ASCII case insensitive string matching.
@@ -277,15 +276,21 @@ class WTF_EXPORT String {
   // 0.
   UChar32 CharacterStartingAt(unsigned) const;
 
-  bool StartsWith(
-      const StringView& prefix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  bool StartsWith(const StringView& prefix) const {
+    return impl_ ? impl_->StartsWith(prefix) : prefix.empty();
+  }
+  bool StartsWith(const StringView& prefix,
+                  TextCaseSensitivity case_sensitivity) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->StartsWith, (prefix))
                : prefix.empty();
   }
-  bool StartsWithIgnoringCase(const StringView& prefix) const {
-    return impl_ ? impl_->StartsWithIgnoringCase(prefix) : prefix.empty();
+  // Unicode aware case insensitive string matching. Non-ASCII characters might
+  // match to ASCII characters. This function is rarely used to implement web
+  // platform features.  See crbug.com/40476285.
+  bool DeprecatedStartsWithIgnoringCase(const StringView& prefix) const {
+    return impl_ ? impl_->DeprecatedStartsWithIgnoringCase(prefix)
+                 : prefix.empty();
   }
   bool StartsWithIgnoringCaseAndAccents(const StringView& prefix) const {
     return impl_ ? impl_->StartsWithIgnoringCaseAndAccents(prefix)
@@ -298,14 +303,20 @@ class WTF_EXPORT String {
     return impl_ ? impl_->StartsWith(character) : false;
   }
 
-  bool EndsWith(
-      const StringView& suffix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  bool EndsWith(const StringView& suffix) const {
+    return impl_ ? impl_->EndsWith(suffix) : suffix.empty();
+  }
+  bool EndsWith(const StringView& suffix,
+                TextCaseSensitivity case_sensitivity) const {
     return impl_ ? DISPATCH_CASE_OP(case_sensitivity, impl_->EndsWith, (suffix))
                  : suffix.empty();
   }
-  bool EndsWithIgnoringCase(const StringView& prefix) const {
-    return impl_ ? impl_->EndsWithIgnoringCase(prefix) : prefix.empty();
+  // Unicode aware case insensitive string matching. Non-ASCII characters might
+  // match to ASCII characters. This function is rarely used to implement web
+  // platform features.  See crbug.com/40476285.
+  bool DeprecatedEndsWithIgnoringCase(const StringView& prefix) const {
+    return impl_ ? impl_->DeprecatedEndsWithIgnoringCase(prefix)
+                 : prefix.empty();
   }
   bool EndsWithIgnoringASCIICase(const StringView& prefix) const {
     return impl_ ? impl_->EndsWithIgnoringASCIICase(prefix) : prefix.empty();

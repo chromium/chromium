@@ -143,9 +143,7 @@ bool CheckPrivateAggregationConfig(
     out_aggregation_coordinator_origin = parsed_coordinator;
   }
 
-  if (options.privateAggregationConfig()->hasFilteringIdMaxBytes() &&
-      base::FeatureList::IsEnabled(
-          features::kPrivateAggregationApiFilteringIds)) {
+  if (options.privateAggregationConfig()->hasFilteringIdMaxBytes()) {
     if (options.privateAggregationConfig()->filteringIdMaxBytes() < 1) {
       resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state.GetIsolate(), DOMExceptionCode::kDataError,

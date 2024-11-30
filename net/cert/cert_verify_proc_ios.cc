@@ -479,8 +479,8 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
 #else
       // It should be impossible to reach this code, but if somehow it is
       // reached it would allow any certificate as valid since no errors would
-      // be added to cert_status. Therefore, add a CHECK as a fail safe.
-      CHECK(false);
+      // be added to cert_status. Therefore, add a NOTREACHED() as a fail safe.
+      NOTREACHED();
 #endif
     }
   }

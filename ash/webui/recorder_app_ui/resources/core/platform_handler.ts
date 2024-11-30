@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventsSender} from './events_sender.js';
+import {
+  createTranscriptionModelDownloadPerf,
+  EventsSender,
+} from './events_sender.js';
 import {NoArgStringName} from './i18n.js';
 import {InternalMicInfo} from './microphone_manager.js';
 import {ModelLoader, ModelState} from './on_device_model/types.js';
 import {PerfLogger} from './perf.js';
-import {ReadonlySignal, Signal} from './reactive/signal.js';
+import {effect, ReadonlySignal, Signal} from './reactive/signal.js';
 import {LangPackInfo, LanguageCode} from './soda/language_info.js';
 import {SodaSession} from './soda/types.js';
 import {settings} from './state/settings.js';
+import {assert} from './utils/assert.js';
 
 export abstract class PlatformHandler {
   /**
@@ -56,14 +60,51 @@ export abstract class PlatformHandler {
   abstract getLangPackInfo(language: LanguageCode): LangPackInfo;
 
   /**
+   * Returns the currently selected language.
+   *
+   * Returns null when there are multiple available languages, and no language
+   * is selected.
+   */
+  getSelectedLanguage(): LanguageCode|null {
+    let selectedLanguage = settings.value.transcriptionLanguage;
+    if (selectedLanguage !== null &&
+        this.getSodaState(selectedLanguage).value.kind === 'unavailable') {
+      // Unselect the language if the selected language pack is unavailable.
+      selectedLanguage = null;
+    }
+    if (selectedLanguage === null && !this.isMultipleLanguageAvailable()) {
+      // Use the default language (en-us) when there's no multiple language
+      // pack available.
+      selectedLanguage = LanguageCode.EN_US;
+    }
+    assert(
+        selectedLanguage === null ||
+            this.getSodaState(selectedLanguage).value.kind !== 'unavailable',
+    );
+    return selectedLanguage;
+  }
+
+  /**
    * Returns information of the selected language.
    *
    * Returns null when no language is selected.
    */
   getSelectedLangPackInfo(): LangPackInfo|null {
-    const selectedLanguage = settings.value.transcriptionLanguage;
+    const selectedLanguage = this.getSelectedLanguage();
     return selectedLanguage === null ? null :
                                        this.getLangPackInfo(selectedLanguage);
+  }
+
+  /**
+   * Returns the SODA installation state of the selected language.
+   *
+   * Returns null when there are multiple languages available, and no language
+   * is selected.
+   */
+  getSelectedLanguageState(): ReadonlySignal<ModelState>|null {
+    const selectedLanguage = this.getSelectedLanguage();
+    return selectedLanguage === null ? null :
+                                       this.getSodaState(selectedLanguage);
   }
 
   /**
@@ -87,13 +128,6 @@ export abstract class PlatformHandler {
    * Returns the SODA installation state of given language.
    */
   abstract getSodaState(language: LanguageCode): ReadonlySignal<ModelState>;
-
-  /**
-   * Returns the SODA installation state of the selected language.
-   *
-   * Returns null when no language is selected.
-   */
-  abstract getSelectedLanguageState(): ReadonlySignal<ModelState>|null;
 
   /**
    * Creates a new soda session for transcription using given language.
@@ -191,4 +225,33 @@ export abstract class PlatformHandler {
    * Performance logger to measure performance.
    */
   abstract readonly perfLogger: PerfLogger;
+
+  /**
+   * Adds model state watchers for perf events.
+   */
+  initPerfEventWatchers(): void {
+    // Watcher for summarization model download.
+    effect(() => {
+      const state = this.summaryModelLoader.state.value;
+      const summaryEventType = 'summaryModelDownload';
+      if (state.kind === 'installed') {
+        // Records perf event only if the download has been initiated from UI.
+        this.perfLogger.tryFinish(summaryEventType);
+      }
+    });
+
+    // Watchers for transcription model download.
+    const languageList = this.getLangPackList();
+    for (const language of languageList) {
+      effect(() => {
+        const state = this.getSodaState(language.languageCode).value;
+        if (state.kind === 'installed') {
+          // Records perf event only if the download has been initiated from UI.
+          this.perfLogger.tryFinish(
+            createTranscriptionModelDownloadPerf(language.languageCode).kind,
+          );
+        }
+      });
+    }
+  }
 }

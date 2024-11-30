@@ -674,9 +674,9 @@ void CheckDanglingRawPtrBufferEmpty() {
       LOG(ERROR) << debug::StackTrace(
                         // This call truncates the `nullptr` tail of the stack
                         // trace (see the `is_partitioned` CHECK above).
-                        make_span(raw_stack_trace.begin(),
-                                  ranges::partition_point(
-                                      raw_stack_trace, is_frame_ptr_not_null)))
+                        span(raw_stack_trace.begin(),
+                             ranges::partition_point(raw_stack_trace,
+                                                     is_frame_ptr_not_null)))
                  << "\n";
     }
 #else

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
 #import "base/auto_reset.h"
+#import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
@@ -30,6 +31,8 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
@@ -41,6 +44,15 @@
 #import "ios/chrome/browser/signin/model/system_identity_util.h"
 
 namespace {
+
+// Name of NSUserDefault key containing info about registered profiles to be
+// passed to widgets.
+NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_devices";
+
+// Names of keys in dictionary saved in kAccountsOnDevice.
+NSString* const kHostedDomain = @"hosted_domain";
+NSString* const kPictureUrl = @"picture_url";
+NSString* const kEmail = @"email";
 
 // Enum for Signin.IOSDeviceRestoreSignedInState histogram.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -61,6 +73,28 @@ CoreAccountId SystemIdentityToAccountID(
   std::string gaia_id = base::SysNSStringToUTF8([identity gaiaID]);
   std::string email = base::SysNSStringToUTF8([identity userEmail]);
   return identity_manager->PickAccountIdForAccount(gaia_id, email);
+}
+
+// Updates list of loaded profiles used in widgets.
+void UpdateLoadedAccounts(std::vector<AccountInfo> accounts_on_device) {
+  NSMutableDictionary* accounts = [[NSMutableDictionary alloc] init];
+  for (const AccountInfo& account_info : accounts_on_device) {
+    NSMutableDictionary* account = [[NSMutableDictionary alloc] init];
+    [account setObject:base::SysUTF8ToNSString(account_info.hosted_domain)
+                forKey:kHostedDomain];
+    [account setObject:base::SysUTF8ToNSString(account_info.email)
+                forKey:kEmail];
+    // TODO(crbug.com/380847504): Find an alternative solution in case
+    // picture_url is empty.
+    [account setObject:base::SysUTF8ToNSString(account_info.picture_url)
+                forKey:kPictureUrl];
+
+    // Add the account to the dictionary of accounts.
+    [accounts setObject:account
+                 forKey:base::SysUTF8ToNSString(account_info.gaia)];
+  }
+  NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
+  [user_defaults setObject:accounts forKey:kAccountsOnDevice];
 }
 
 }  // namespace
@@ -164,6 +198,40 @@ void AuthenticationService::Initialize(
     base::UmaHistogramEnumeration("Signin.IOSDeviceRestoreSignedInState",
                                   signed_in_state);
   }
+  // If opening the managed identity profile, the user needs to be signed in
+  // automatically.
+  // TODO(crbug.com/375605572): Need to create an onboarding screen for a
+  // new profile.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Skip if the feature is not enabled.
+    return;
+  }
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+  if (!profile_manager) {
+    // Skip if there is no profile manager, but this is possible only for test.
+    CHECK_IS_TEST();
+    return;
+  }
+  std::string default_profile_name =
+      profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
+  std::string profile_name = account_manager_service_->GetProfileName();
+  if (profile_name == default_profile_name) {
+    // Skip if the current profile is the default profile.
+    return;
+  }
+  NSArray<id<SystemIdentity>>* identities_for_profile =
+      account_manager_service_->GetAllIdentities();
+  // TODO(crbug.com/375605572): Evaluate if there is no race condition with
+  // this CHECK.
+  CHECK_EQ(identities_for_profile.count, 1ul);
+  if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    // Skip if the profile is already signed in.
+    return;
+  }
+  // TODO(crbug.com/375605572): Need to set the right access point.
+  SignIn(identities_for_profile[0],
+         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 }
 
 void AuthenticationService::Shutdown() {
@@ -694,6 +762,8 @@ void AuthenticationService::ReloadCredentialsFromIdentities() {
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(
           identity_manager_->GetPrimaryAccountId(
               signin::ConsentLevel::kSignin));
+
+  UpdateLoadedAccounts(identity_manager_->GetAccountsOnDevice());
 }
 
 void AuthenticationService::FirePrimaryAccountRestricted() {

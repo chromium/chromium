@@ -202,7 +202,7 @@ bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->GetIbanUploadDetails(
-          client_->GetPersonalDataManager()->app_locale(),
+          client_->GetPersonalDataManager().app_locale(),
           payments::GetBillingCustomerId(&payments_data_manager()),
           import_candidate.GetCountryCode(),
           base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
@@ -378,7 +378,7 @@ void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
     observer_for_testing_->OnSentUploadRequest();
   }
   upload_request_details_.app_locale =
-      client_->GetPersonalDataManager()->app_locale();
+      client_->GetPersonalDataManager().app_locale();
   upload_request_details_.billing_customer_number =
       payments::GetBillingCustomerId(&payments_data_manager());
   upload_request_details_.context_token = context_token_;
@@ -440,7 +440,7 @@ PaymentsDataManager& IbanSaveManager::payments_data_manager() {
 }
 
 const PaymentsDataManager& IbanSaveManager::payments_data_manager() const {
-  return client_->GetPersonalDataManager()->payments_data_manager();
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 }  // namespace autofill

@@ -72,6 +72,7 @@ class LayoutShift;
 class MemoryInfo;
 class MemoryMeasurement;
 class Node;
+struct PaintTimingInfo;
 class PerformanceElementTiming;
 class PerformanceEventTiming;
 class PerformanceMark;
@@ -210,10 +211,10 @@ class CORE_EXPORT Performance : public EventTarget {
 
   void NotifyNavigationTimingToObservers();
 
-  void AddFirstPaintTiming(base::TimeTicks start_time,
+  void AddFirstPaintTiming(const PaintTimingInfo& paint_timing_info,
                            bool is_triggered_by_soft_navigation);
 
-  void AddFirstContentfulPaintTiming(base::TimeTicks start_time,
+  void AddFirstContentfulPaintTiming(const PaintTimingInfo& paint_timing_info,
                                      bool is_triggered_by_soft_navigation);
 
   bool IsElementTimingBufferFull() const;
@@ -333,13 +334,17 @@ class CORE_EXPORT Performance : public EventTarget {
                            const base::TickClock* tick_clock);
   void ResetTimeOriginForTesting(base::TimeTicks time_origin);
 
+  void SetCrossOriginIsolatedCapabilityForTesting(bool is_isolated) {
+    cross_origin_isolated_capability_ = is_isolated;
+  }
+
   // TODO(https://crbug.com/1457049): remove this once visited links are
   // partitioned.
   bool softNavPaintMetricsSupported() const;
 
  private:
   void AddPaintTiming(PerformancePaintTiming::PaintType,
-                      base::TimeTicks start_time,
+                      const PaintTimingInfo& paint_timing_info,
                       bool is_triggered_by_soft_navigation);
 
   PerformanceMeasure* MeasureInternal(

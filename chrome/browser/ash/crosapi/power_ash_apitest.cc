@@ -22,7 +22,7 @@ constexpr char kExtensionId[] = "dibbenaepdnglcjpgjmnefmjccpinang";
 
 }  // namespace
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class PowerApiTest : public ExtensionApiTest,
                      public testing::WithParamInterface<ContextType> {

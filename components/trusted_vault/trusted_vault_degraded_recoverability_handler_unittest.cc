@@ -14,7 +14,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/securebox.h"
@@ -29,7 +28,7 @@ namespace {
 using testing::_;
 using testing::Eq;
 
-CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
+CoreAccountInfo MakeAccountInfoWithGaiaId(const GaiaId& gaia_id) {
   CoreAccountInfo account_info;
   account_info.gaia = gaia_id;
   return account_info;
@@ -65,6 +64,16 @@ class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
 
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
+  }
+
+  base::TimeDelta short_refresh_period() const {
+    return TrustedVaultDegradedRecoverabilityHandler::
+        kShortDegradedRecoverabilityRefreshPeriod;
+  }
+
+  base::TimeDelta long_refresh_period() const{
+    return TrustedVaultDegradedRecoverabilityHandler::
+        kLongDegradedRecoverabilityRefreshPeriod;
   }
 
  protected:
@@ -209,7 +218,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      short_refresh_period() +
       base::Milliseconds(1));
 }
 
@@ -233,14 +242,13 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded).Times(0);
   task_environment().FastForwardBy(
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      short_refresh_period() +
       base::Milliseconds(1));
   testing::Mock::VerifyAndClearExpectations(&connection);
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(
-      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get() -
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get());
+      long_refresh_period() - short_refresh_period());
 }
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
@@ -273,7 +281,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   // Verify that handler switches to short polling period.
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      short_refresh_period() +
       base::Milliseconds(1));
 }
 
@@ -306,7 +314,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
       });
   EXPECT_CALL(delegate, OnDegradedRecoverabilityChanged);
   task_environment().FastForwardBy(
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      short_refresh_period() +
       base::Milliseconds(1));
   testing::Mock::VerifyAndClearExpectations(&connection);
 
@@ -314,14 +322,14 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded).Times(0);
   task_environment().FastForwardBy(
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      short_refresh_period() +
       base::Milliseconds(1));
   testing::Mock::VerifyAndClearExpectations(&connection);
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(
-      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get() -
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get());
+      long_refresh_period() -
+      short_refresh_period());
 }
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
@@ -444,7 +452,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   // Start the scheduler.
   scheduler->GetIsRecoverabilityDegraded(base::DoNothing());
   task_environment().FastForwardBy(
-      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get() -
+      long_refresh_period() -
       base::Minutes(1) + base::Milliseconds(1));
 }
 

@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -683,7 +684,7 @@ cdm::Status ClearKeyCdm::DecryptAndDecodeSamples(
   // that the session is properly closed.
   if (!last_session_id_.empty() &&
       key_system_ == kExternalClearKeyCrashKeySystem) {
-    CHECK(false) << "Crash in decrypt-and-decode with crash key system.";
+    NOTREACHED() << "Crash in decrypt-and-decode with crash key system.";
   }
 
   scoped_refptr<DecoderBuffer> buffer;
@@ -866,8 +867,7 @@ void ClearKeyCdm::OnSessionKeysChange(const std::string& session_id,
   // Crash if the special key ID "crash" is present.
   const std::vector<uint8_t> kCrashKeyId{'c', 'r', 'a', 's', 'h'};
   for (const auto& key_info : keys_info) {
-    if (key_info->key_id == kCrashKeyId)
-      CHECK(false) << "Crash on special crash key ID.";
+    CHECK(key_info->key_id != kCrashKeyId) << "Crash on special crash key ID.";
   }
 
   std::vector<cdm::KeyInformation> keys_vector;

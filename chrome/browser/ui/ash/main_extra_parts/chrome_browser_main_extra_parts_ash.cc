@@ -100,9 +100,11 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/heatmap/heatmap_palm_detector_impl.h"
+#include "chromeos/ash/components/login/readahead/login_readahead_performer.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
@@ -359,6 +361,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   read_write_cards_manager_ =
       std::make_unique<chromeos::ReadWriteCardsManagerImpl>();
+
+  if (base::FeatureList::IsEnabled(ash::features::kReadaheadForLogin)) {
+    login_readahead_performer_.emplace(ash::SessionManagerClient::Get());
+  }
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
@@ -447,8 +453,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
   mobile_data_notifications_ = std::make_unique<MobileDataNotifications>();
 
-  if (chromeos::features::IsMahiEnabled() &&
-      !chromeos::features::IsSparkyEnabled()) {
+  if (chromeos::features::IsMahiEnabled()) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             chromeos::switches::kUseFakeMahiManager)) {
       mahi_manager_ = std::make_unique<ash::FakeMahiManager>();
@@ -531,6 +536,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   app_access_notifier_.reset();
 
   // Initialized in PreProfileInit (which may not get called in some tests).
+  login_readahead_performer_.reset();
   device::GeolocationSystemPermissionManager::SetInstance(nullptr);
   system_tray_client_.reset();
   session_controller_client_.reset();

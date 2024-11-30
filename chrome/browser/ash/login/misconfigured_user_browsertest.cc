@@ -40,6 +40,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -115,7 +116,8 @@ class MisconfiguredOwnerUserTest : public LoginManagerTest {
                             const std::string& password) {
     OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 
-    fake_gaia_mixin_.fake_gaia()->MapEmailToGaiaId(email, kNewUserGaiaId);
+    fake_gaia_mixin_.fake_gaia()->MapEmailToGaiaId(email,
+                                                   GaiaId(kNewUserGaiaId));
 
     auto* context =
         LoginDisplayHost::default_host()->GetWizardContextForTesting();

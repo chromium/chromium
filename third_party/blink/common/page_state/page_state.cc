@@ -86,8 +86,8 @@ PageState PageState::CreateForTesting(
     if (optional_body_data) {
       std::string body_data(optional_body_data);
       state.top.http_body.request_body = new network::ResourceRequestBody();
-      state.top.http_body.request_body->AppendBytes(body_data.data(),
-                                                    body_data.size());
+      state.top.http_body.request_body->AppendCopyOfBytes(
+          base::as_byte_span(body_data));
     }
     if (optional_body_file_path) {
       state.top.http_body.request_body = new network::ResourceRequestBody();

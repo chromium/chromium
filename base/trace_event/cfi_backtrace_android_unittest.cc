@@ -88,7 +88,7 @@ TEST(CFIBacktraceAndroidTest, DISABLED_TestFindCFIRow) {
                       0xdc, 0x40, 0x1, 0x4, 0x2e};
   FilePath temp_path;
   CreateTemporaryFile(&temp_path);
-  EXPECT_TRUE(WriteFile(temp_path, base::as_bytes(base::make_span(input))));
+  EXPECT_TRUE(WriteFile(temp_path, as_byte_span(input)));
 
   unwinder->cfi_mmap_.reset(new MemoryMappedFile());
   ASSERT_TRUE(unwinder->cfi_mmap_->Initialize(temp_path));

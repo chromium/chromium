@@ -8,12 +8,13 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 import '../tab_search_item.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {normalizeURL, TabData, TabItemType} from '../tab_data.js';
-import type {Tab} from '../tab_search.mojom-webui.js';
+import type {Tab, UnusedTabInfo} from '../tab_search.mojom-webui.js';
 import {DeclutterCTREvent} from '../tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
@@ -35,7 +36,7 @@ export class DeclutterPageElement extends CrLitElement {
       availableHeight: {type: Number},
       showBackButton: {type: Boolean},
       staleTabDatas_: {type: Array},
-      duplicateTabDatas_: {type: Object},
+      duplicateTabDatas_: {type: Array},
       dedupeEnabled_: {type: Boolean},
     };
   }
@@ -44,7 +45,7 @@ export class DeclutterPageElement extends CrLitElement {
   showBackButton: boolean = false;
 
   protected staleTabDatas_: TabData[] = [];
-  protected duplicateTabDatas_: Map<string, TabData[]> = new Map();
+  protected duplicateTabDatas_: TabData[] = [];
   protected dedupeEnabled_: boolean = loadTimeData.getBoolean('dedupeEnabled');
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -59,8 +60,8 @@ export class DeclutterPageElement extends CrLitElement {
 
     this.visibilityChangedListener_ = () => {
       if (document.visibilityState === 'visible') {
-        this.apiProxy_.getStaleTabs().then(
-            ({tabs}) => this.setStaleTabs_(tabs));
+        this.apiProxy_.getUnusedTabs().then(
+            ({tabs}) => this.setUnusedTabs_(tabs));
       }
     };
   }
@@ -71,10 +72,10 @@ export class DeclutterPageElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.apiProxy_.getStaleTabs().then(({tabs}) => this.setStaleTabs_(tabs));
+    this.apiProxy_.getUnusedTabs().then(({tabs}) => this.setUnusedTabs_(tabs));
     const callbackRouter = this.apiProxy_.getCallbackRouter();
-    this.listenerIds_.push(callbackRouter.staleTabsChanged.addListener(
-        this.setStaleTabs_.bind(this)));
+    this.listenerIds_.push(callbackRouter.unusedTabsChanged.addListener(
+        this.setUnusedTabs_.bind(this)));
     document.addEventListener(
         'visibilitychange', this.visibilityChangedListener_);
   }
@@ -178,7 +179,8 @@ export class DeclutterPageElement extends CrLitElement {
 
   protected onCloseTabsClick_() {
     const tabIds = this.staleTabDatas_.map((tabData) => tabData.tab.tabId);
-    this.apiProxy_.declutterTabs(tabIds);
+    const urls = this.duplicateTabDatas_.map((tabData) => tabData.tab.url);
+    this.apiProxy_.declutterTabs(tabIds, urls);
     this.logCtrValue(DeclutterCTREvent.kCloseTabsClicked);
   }
 
@@ -233,35 +235,42 @@ export class DeclutterPageElement extends CrLitElement {
     e.stopPropagation();
   }
 
-  protected onStaleTabRemove_(e: Event) {
+  protected onStaleTabExclude_(e: Event) {
     const tabData = (e.currentTarget as TabSearchItemElement).data;
     this.apiProxy_.excludeFromStaleTabs(tabData.tab.tabId);
+    this.announceTabExcluded_();
   }
 
-  protected onDuplicateTabRemove_(_e: Event) {
-    // TODO(crbug.com/376739583): Implement this along with api proxy call
+  protected onDuplicateTabExclude_(e: Event) {
+    const tabData = (e.currentTarget as TabSearchItemElement).data;
+    this.apiProxy_.excludeFromDuplicateTabs(tabData.tab.url);
+    this.announceTabExcluded_();
   }
 
-  protected getDuplicateTabDataList_(this: DeclutterPageElement) {
-    const tabDatas: TabData[] = [];
-    this.duplicateTabDatas_.forEach((value: TabData[], key: string, _map) => {
-      const primaryTabData = structuredClone(value[0])!;
-      primaryTabData.tab.title = key;
-      primaryTabData.tab.lastActiveElapsedText = value.length.toString();
-      tabDatas.push(primaryTabData);
-    });
-    return tabDatas;
+  private announceTabExcluded_() {
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('a11yTabExcludedFromList'));
+  }
+
+  private setUnusedTabs_(tabs: UnusedTabInfo) {
+    this.setStaleTabs_(tabs.staleTabs);
+    this.setDuplicateTabs_(tabs.duplicateTabs);
   }
 
   private setStaleTabs_(tabs: Tab[]): void {
     this.staleTabDatas_ = tabs.map((tab) => this.tabDataFromTab_(tab));
-    // TODO(crbug.com/376739583): Placeholder, replace with api proxy calls
-    if (this.dedupeEnabled_) {
-      this.duplicateTabDatas_ = new Map();
-      tabs.forEach((tab) => {
-        this.duplicateTabDatas_.set(
-            tab.url.url.toString(), [this.tabDataFromTab_(tab)]);
-      });
+  }
+
+  private setDuplicateTabs_(tabs: {[key: string]: Tab[]}): void {
+    this.duplicateTabDatas_ = [];
+    for (const url in tabs) {
+      const urlTabs = tabs[url]!;
+      if (urlTabs.length > 0) {
+        const tabData: TabData = this.tabDataFromTab_(urlTabs[0]!);
+        tabData.tab.title = url;
+        tabData.tab.lastActiveElapsedText = urlTabs.length.toString();
+        this.duplicateTabDatas_.push(tabData);
+      }
     }
   }
 

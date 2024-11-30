@@ -23,7 +23,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isAssistantAllowed, isLobsterSettingsToggleVisible, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isRevampWayfindingEnabled, isSunfishSettingsToggleVisible} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isLobsterSettingsToggleVisible, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isSunfishSettingsToggleVisible} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -110,50 +110,11 @@ export class SearchAndAssistantSettingsCardElement extends
           Setting.kSunfishOnOff,
         ]),
       },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              searchEngine: 'os-settings:explore',
-              assistant: 'os-settings:assistant',
-              contentRecommendations: 'os-settings:content-recommend',
-              mahi: 'os-settings:mahi',
-              magicBoost: 'os-settings:magic-boost',
-              helpMeRead: 'os-settings:help-me-read',
-              helpMeWrite: 'os-settings:help-me-write',
-              lobster: 'ash-internal:lobster',
-            };
-          }
-
-          return {
-            searchEngine: '',
-            assistant: '',
-            contentRecommendations: '',
-            mahi: '',
-            magicBoost: '',
-            helpMeRead: '',
-            helpMeWrite: '',
-            lobster: '',
-          };
-        },
-      },
     };
   }
 
   prefs: PrefsState;
   private isAssistantAllowed_: boolean;
-  private readonly isRevampWayfindingEnabled_: boolean;
-  private rowIcons_: Record<string, string>;
   private isQuickAnswersSupported_: boolean;
   private isMagicBoostFeatureEnabled_: boolean;
   private readonly isSunfishSettingsToggleVisible_: boolean;
@@ -162,8 +123,7 @@ export class SearchAndAssistantSettingsCardElement extends
     super();
 
     /** RouteOriginMixin overrde */
-    this.route = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
-                                                   routes.OS_SEARCH;
+    this.route = routes.SYSTEM_PREFERENCES;
   }
 
   override ready(): void {

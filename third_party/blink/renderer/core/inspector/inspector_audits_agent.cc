@@ -28,8 +28,6 @@
 
 namespace blink {
 
-using protocol::Maybe;
-
 namespace encoding_enum = protocol::Audits::GetEncodedResponse::EncodingEnum;
 
 namespace {
@@ -136,9 +134,9 @@ InspectorAuditsAgent::~InspectorAuditsAgent() = default;
 protocol::Response InspectorAuditsAgent::getEncodedResponse(
     const String& request_id,
     const String& encoding,
-    Maybe<double> quality,
-    Maybe<bool> size_only,
-    Maybe<protocol::Binary>* out_body,
+    std::optional<double> quality,
+    std::optional<bool> size_only,
+    std::optional<protocol::Binary>* out_body,
     int* out_original_size,
     int* out_encoded_size) {
   DCHECK(encoding == encoding_enum::Jpeg || encoding == encoding_enum::Png ||
@@ -186,7 +184,7 @@ void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
 }
 
 protocol::Response InspectorAuditsAgent::checkContrast(
-    protocol::Maybe<bool> report_aaa) {
+    std::optional<bool> report_aaa) {
   if (!inspected_frames_) {
     return protocol::Response::ServerError(
         "Inspected frames are not available");

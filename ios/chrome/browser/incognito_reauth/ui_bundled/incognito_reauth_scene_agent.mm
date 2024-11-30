@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -231,12 +232,17 @@
     // backgrounded to avoid freezes.
     [self closeMediaPresentations];
   }
+
+  if (IsIOSSoftLockEnabled()) {
+    [self recordIncognitoLockImpressionForSceneState:sceneState];
+  }
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   [self logEnabledHistogramOnce];
   if (IsIOSSoftLockEnabled()) {
     [self setUpPrefObservers];
+    [self logIncognitoLockStateHistogramOnce];
   }
 }
 
@@ -250,6 +256,13 @@
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   [self notifyObservers];
+}
+
+- (void)sceneState:(SceneState*)sceneState
+    isDisplayingIncognitoContent:(BOOL)level {
+  if (IsIOSSoftLockEnabled()) {
+    [self recordIncognitoLockImpressionForSceneState:sceneState];
+  }
 }
 
 #pragma mark - private
@@ -269,6 +282,31 @@
         self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
     base::UmaHistogramBoolean("IOS.Incognito.BiometricAuthEnabled",
                               settingEnabled);
+  });
+}
+
+// Log Incognito lock setting state histogram to determine the feature usage.
+// This is done once per app launch.
+// Since this agent is created per-scene, guard it with dispatch_once.
+- (void)logIncognitoLockStateHistogramOnce {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    DCHECK(self.localState)
+        << "Local state is not yet available when trying to log "
+           "IOS.IncognitoLockSettingStartupState This code is called too soon.";
+    if ([self isReauthFeatureEnabled]) {
+      base::UmaHistogramEnumeration(
+          kIncognitoLockSettingStartupStateHistogram,
+          IncognitoLockSettingStartupState::kHideWithReauth);
+    } else if ([self isSoftLockFeatureEnabled]) {
+      base::UmaHistogramEnumeration(
+          kIncognitoLockSettingStartupStateHistogram,
+          IncognitoLockSettingStartupState::kHideWithSoftLock);
+    } else {
+      base::UmaHistogramEnumeration(
+          kIncognitoLockSettingStartupStateHistogram,
+          IncognitoLockSettingStartupState::kDoNotHide);
+    }
   });
 }
 
@@ -448,6 +486,32 @@
   if (_prefObserverBridge) {
     _prefChangeRegistrar.RemoveAll();
     _prefObserverBridge.reset();
+  }
+}
+
+// Records impressions of the Incognito lock for reauth and soft lock states.
+- (void)recordIncognitoLockImpressionForSceneState:(SceneState*)sceneState {
+  if (sceneState.incognitoContentVisible &&
+      sceneState.activationLevel == SceneActivationLevelForegroundActive) {
+    switch ([self incognitoLockState]) {
+      case IncognitoLockState::kNone:
+        // No impression metrics to be recorded when the lock is disabled.
+        break;
+      case IncognitoLockState::kReauth:
+        base::UmaHistogramEnumeration(
+            kIncognitoLockImpressionHistogram,
+            sceneState.controller.isTabGridVisible
+                ? IncognitoLockImpression::kReauthLockTabGrid
+                : IncognitoLockImpression::kReauthLockSingleTab);
+        break;
+      case IncognitoLockState::kSoftLock:
+        base::UmaHistogramEnumeration(
+            kIncognitoLockImpressionHistogram,
+            sceneState.controller.isTabGridVisible
+                ? IncognitoLockImpression::kSoftLockTabGrid
+                : IncognitoLockImpression::kSoftLockSingleTab);
+        break;
+    }
   }
 }
 

@@ -43,7 +43,7 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
   ImmersiveModeControllerChromeosTest& operator=(
       const ImmersiveModeControllerChromeosTest&) = delete;
 
-  ~ImmersiveModeControllerChromeosTest() override {}
+  ~ImmersiveModeControllerChromeosTest() override = default;
 
   // TestWithBrowserView override:
   void SetUp() override {

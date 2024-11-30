@@ -59,7 +59,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
  public:
   using FeatureEnabledForProfileCheck =
       base::RepeatingCallback<bool(const base::Feature&)>;
-  using LaunchHatsSurvey = base::RepeatingCallback<void(hats::SurveyType)>;
 
   PlusAddressServiceImpl(
       PrefService* pref_service,
@@ -68,8 +67,7 @@ class PlusAddressServiceImpl : public PlusAddressService,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
       scoped_refptr<PlusAddressWebDataService> webdata_service,
       affiliations::AffiliationService* affiliation_service,
-      FeatureEnabledForProfileCheck feature_enabled_for_profile_check,
-      LaunchHatsSurvey launch_hats_survey);
+      FeatureEnabledForProfileCheck feature_enabled_for_profile_check);
   ~PlusAddressServiceImpl() override;
 
   // autofill::AutofillPlusAddressDelegate:
@@ -98,9 +96,8 @@ class PlusAddressServiceImpl : public PlusAddressService,
       SuggestionContext suggestion_context,
       autofill::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type) override;
-  void DidFillPlusAddress(bool did_show_email_suggestion,
-                          bool is_manual_fallback) override;
-  void DidChooseEmailOverPlusAddress() override;
+  void DidFillPlusAddress() override;
+  size_t GetPlusAddressesCount() override;
   void OnClickedRefreshInlineSuggestion(
       const url::Origin& last_committed_primary_main_frame_origin,
       base::span<const autofill::Suggestion> current_suggestions,
@@ -114,13 +111,13 @@ class PlusAddressServiceImpl : public PlusAddressService,
       const url::Origin& primary_main_frame_origin,
       base::span<const autofill::Suggestion> current_suggestions,
       size_t current_suggestion_index,
-      bool is_manual_fallback,
       UpdateSuggestionsCallback update_suggestions_callback,
       HideSuggestionsCallback hide_suggestions_callback,
       PlusAddressCallback fill_field_callback,
       ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
       ShowErrorDialogCallback show_error_dialog,
       base::OnceClosure reshow_suggestions) override;
+  std::map<std::string, std::string> GetPlusAddressHatsData() const override;
 
   // PlusAddressWebDataService::Observer:
   void OnWebDataChangedBySync(
@@ -145,7 +142,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,
                           const PlusAddress& plus_address,
-                          bool is_manual_fallback,
                           PlusAddressRequestCallback on_completed) override;
   bool IsRefreshingSupported(const url::Origin& origin) override;
   std::optional<PlusAddress> GetPlusAddress(
@@ -157,7 +153,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
                                 bool is_off_the_record) const override;
   void SavePlusProfile(const PlusProfile& profile) override;
   bool IsEnabled() const override;
-  void TriggerUserPerceptionSurvey(hats::SurveyType survey_type) override;
 
  private:
   // signin::IdentityManager::Observer:
@@ -174,17 +169,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
   // Analyzes `maybe_profile` and saves it if it is a confirmed plus profile.
   // Returns `maybe_profile` to make for easier chaining of callbacks.
   const PlusProfileOrError& HandleCreateOrConfirmResponse(
-      const PlusProfileOrError& maybe_profile);
-
-  // Analyzes `maybe_profile` and triggers a HaTS survey if
-  // * plus address was confirmed successfully.
-  // * it's identical to the `requested_address` (it might be different if there
-  //   is an affiliation error).
-  // * the user has created the plus address using a manual fallback or has
-  //   created 3 or more plus addresses.
-  const PlusProfileOrError& MaybeTriggerUserPerceptionSurvey(
-      const PlusAddress& requested_address,
-      bool is_manual_fallback,
       const PlusProfileOrError& maybe_profile);
 
   // Checks whether the `origin` supports plus address.
@@ -238,9 +222,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
   // Allows checking whether a group-controlled feature is enabled for the
   // profile associated with this `KeyedService`.
   const FeatureEnabledForProfileCheck feature_enabled_for_profile_check_;
-
-  // Allows launching feature perception surveys.
-  const LaunchHatsSurvey launch_hats_survey_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

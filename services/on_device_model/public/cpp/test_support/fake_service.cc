@@ -36,15 +36,15 @@ std::string OnDeviceInputToString(const mojom::Input& input) {
 std::string CtxToString(const mojom::InputOptions& input) {
   std::string suffix;
   std::string context = OnDeviceInputToString(*input.input);
-  if (input.token_offset) {
-    context.erase(context.begin(), context.begin() + *input.token_offset);
-    suffix += " off:" + base::NumberToString(*input.token_offset);
+  if (input.token_offset > 0) {
+    context.erase(context.begin(), context.begin() + input.token_offset);
   }
-  if (input.max_tokens) {
+  suffix += " off:" + base::NumberToString(input.token_offset);
+  if (input.max_tokens > 0) {
     if (input.max_tokens < context.size()) {
-      context.resize(*input.max_tokens);
+      context.resize(input.max_tokens);
     }
-    suffix += " max:" + base::NumberToString(*input.max_tokens);
+    suffix += " max:" + base::NumberToString(input.max_tokens);
   }
   return context + suffix;
 }
@@ -56,10 +56,8 @@ FakeOnDeviceServiceSettings::~FakeOnDeviceServiceSettings() = default;
 
 FakeOnDeviceSession::FakeOnDeviceSession(
     FakeOnDeviceServiceSettings* settings,
-    const std::string& adaptation_model_weight,
     FakeOnDeviceModel* model)
     : settings_(settings),
-      adaptation_model_weight_(adaptation_model_weight),
       model_(model) {}
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
@@ -88,12 +86,6 @@ void FakeOnDeviceSession::Execute(
       settings_->execute_delay);
 }
 
-void FakeOnDeviceSession::GetSizeInTokensDeprecated(
-    const std::string& text,
-    GetSizeInTokensCallback callback) {
-  std::move(callback).Run(0);
-}
-
 void FakeOnDeviceSession::GetSizeInTokens(mojom::InputPtr input,
                                           GetSizeInTokensCallback callback) {
   std::move(callback).Run(0);
@@ -106,8 +98,7 @@ void FakeOnDeviceSession::Score(const std::string& text,
 
 void FakeOnDeviceSession::Clone(
     mojo::PendingReceiver<on_device_model::mojom::Session> session) {
-  auto new_session = std::make_unique<FakeOnDeviceSession>(
-      settings_, adaptation_model_weight_, model_);
+  auto new_session = std::make_unique<FakeOnDeviceSession>(settings_, model_);
   for (const auto& c : context_) {
     new_session->context_.push_back(c->Clone());
   }
@@ -118,14 +109,20 @@ void FakeOnDeviceSession::ExecuteImpl(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::StreamingResponder> response) {
   mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
+  if (model_->data().base_weight != "0") {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "Base model: " + model_->data().base_weight + "\n";
+    remote->OnResponse(std::move(chunk));
+  }
+  if (!model_->data().adaptation_model_weight.empty()) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text =
+        "Adaptation model: " + model_->data().adaptation_model_weight + "\n";
+    remote->OnResponse(std::move(chunk));
+  }
   for (const auto& context : context_) {
     auto chunk = mojom::ResponseChunk::New();
     chunk->text = "Context: " + CtxToString(*context) + "\n";
-    remote->OnResponse(std::move(chunk));
-  }
-  if (!adaptation_model_weight_.empty()) {
-    auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Adaptation model: " + adaptation_model_weight_ + "\n";
     remote->OnResponse(std::move(chunk));
   }
 
@@ -154,8 +151,9 @@ void FakeOnDeviceSession::AddContextInternal(
     mojo::PendingRemote<mojom::ContextClient> client) {
   uint32_t input_tokens =
       static_cast<uint32_t>(OnDeviceInputToString(*input->input).size());
-  uint32_t max_tokens = input->max_tokens.value_or(input_tokens);
-  uint32_t token_offset = input->token_offset.value_or(0);
+  uint32_t max_tokens =
+      input->max_tokens > 0 ? input->max_tokens : input_tokens;
+  uint32_t token_offset = input->token_offset;
   uint32_t tokens_processed = std::min(input_tokens - token_offset, max_tokens);
   context_.emplace_back(std::move(input));
   if (client) {
@@ -173,8 +171,7 @@ FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 void FakeOnDeviceModel::StartSession(
     mojo::PendingReceiver<mojom::Session> session) {
   AddSession(std::move(session),
-             std::make_unique<FakeOnDeviceSession>(
-                 settings_, data_.adaptation_model_weight, this));
+             std::make_unique<FakeOnDeviceSession>(settings_, this));
 }
 
 void FakeOnDeviceModel::AddSession(
@@ -277,8 +274,10 @@ void FakeOnDeviceModelService::LoadModel(
     std::move(callback).Run(mojom::LoadModelResult::kSuccess);
     return;
   }
+  FakeOnDeviceModel::Data data;
+  data.base_weight = ReadFile(params->assets.weights);
   auto test_model =
-      std::make_unique<FakeOnDeviceModel>(settings_, FakeOnDeviceModel::Data{});
+      std::make_unique<FakeOnDeviceModel>(settings_, std::move(data));
   model_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }

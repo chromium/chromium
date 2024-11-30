@@ -141,7 +141,8 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onManagingAdPrivacyClicked() {
-        openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+        getCustomTabLauncher()
+                .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 
     private void onFledgeSettingsLinkClicked() {

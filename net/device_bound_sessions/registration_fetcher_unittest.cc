@@ -495,7 +495,7 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
   EXPECT_EQ(callback.outcome(), std::nullopt);
 }
 
-TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
+TEST_F(RegistrationTest, TwoTypesCookieNotCookie) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -532,7 +532,7 @@ TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
 
-TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
+TEST_F(RegistrationTest, TwoTypesNotCookieCookie) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",

@@ -26,7 +26,7 @@ class TestStackView : public views::View {
     bool view_deleted_;
   };
 
-  TestStackView() {}
+  TestStackView() = default;
 
   TestStackView(const TestStackView&) = delete;
   TestStackView& operator=(const TestStackView&) = delete;

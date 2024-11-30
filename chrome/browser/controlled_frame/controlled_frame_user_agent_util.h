@@ -13,8 +13,8 @@ struct UserAgentOverride;
 
 namespace controlled_frame {
 
-blink::UserAgentOverride GetDefaultControlledFrameUserAgentOverride();
-
+blink::UserAgentOverride GetDefaultControlledFrameUserAgentOverride(
+    bool brand_enabled);
 }
 
 #endif  // CHROME_BROWSER_CONTROLLED_FRAME_CONTROLLED_FRAME_USER_AGENT_UTIL_H_

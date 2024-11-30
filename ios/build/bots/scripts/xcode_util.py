@@ -429,13 +429,6 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
         'Runtime is already built-in, no need to install from mac_toolchain')
     return
 
-  # try to delete some simulator runtimes first, to free some disk space,
-  # if needed.
-  if not os.environ.get('LUCI_CONTEXT'):
-    logging.warning('Sim runtimes will not be cleaned up running locally')
-  else:
-    iossim_util.delete_least_recently_used_simulator_runtimes()
-
   runtime_build_to_install = get_latest_runtime_build_cipd(
       xcode_build_version, ios_version)
   if runtime_build_to_install is None:
@@ -444,6 +437,10 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
   # check if the desired runtime build already exists on disk
   if iossim_util.get_simulator_runtime_info_by_build(
       runtime_build_to_install) is None:
+
+    # clean up least used runtime first to free up disk space if possible.
+    iossim_util.delete_least_recently_used_simulator_runtimes()
+
     _install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
                          xcode_build_version)
     runtime_dmg_name = get_runtime_dmg_name(runtime_cache_folder)

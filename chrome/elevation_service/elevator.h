@@ -8,12 +8,10 @@
 #include <windows.h>
 
 #include <wrl/implements.h>
-#include <wrl/module.h>
 
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/win/windows_types.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 
 namespace elevation_service {

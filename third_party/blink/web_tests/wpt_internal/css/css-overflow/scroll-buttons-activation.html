@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>CSS Test: ::scroll-next-button and ::scroll-prev-button box creation</title>
+<title>CSS Test: ::scroll-button(inline-end) activation</title>
 <link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-button">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -40,16 +40,12 @@
     width: 40px;
   }
 
-  #scroller::scroll-next-button {
+  #scroller::scroll-button(inline-end) {
     content: ">";
     background: blue;
     display: flex;
     height: 20px;
     width: 20px;
-    top: 0px;
-    left: 0px;
-    position: absolute;
-    z-index: 99;
   }
 
   #scroller div::scroll-marker {
@@ -66,12 +62,15 @@
   <div></div>
 </div>
 <script>
-  scroller.scrollLeft = 1;
-  document.documentElement.offsetTop;
-
+  /*
+    Double click as recommended scroll amount is 85% of the page, so
+    to make sure all browsers reach the end.
+  */
   promise_test(async t => {
     actions_promise = new test_driver.Actions()
     .pointerMove(5, 5)
+    .pointerDown()
+    .pointerUp()
     .pointerDown()
     .pointerUp()
     .send();

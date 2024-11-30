@@ -17,7 +17,7 @@ namespace ui {
 class Compositor;
 class LayerAnimator;
 
-// Reports cc::FrameSequenceMetrics::ThroughputData of layer animations.
+// Reports cc::FrameSequenceMetrics::CustomReportData of layer animations.
 //
 // Throughput is defined as the ratio between number frames presented (actual
 // screen updates) for the animations and the number frames expected.
@@ -26,7 +26,7 @@ class LayerAnimator;
 //
 // See also docs/speed/graphics_metrics_definitions.md.
 //
-// cc::FrameSequenceMetrics::ThroughputData contains the numbers of produced
+// cc::FrameSequenceMetrics::CustomReportData contains the numbers of produced
 // frames and expected frames and could be used to calculate the two metrics.
 //
 // All layer animation sequences created after its construction are consider

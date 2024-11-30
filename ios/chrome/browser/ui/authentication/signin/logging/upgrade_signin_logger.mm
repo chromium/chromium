@@ -44,14 +44,8 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
   [standardDefaults setInteger:promoSeenCount
                         forKey:kDisplayedSSORecallPromoCountKey];
 
-  NSArray* identitiesOnDevice;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    identitiesOnDevice =
-        accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(
-            identityManager->GetAccountsOnDevice());
-  } else {
-    identitiesOnDevice = accountManagerService->GetAllIdentities();
-  }
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      signin::GetIdentitiesOnDevice(identityManager, accountManagerService);
   UMA_HISTOGRAM_COUNTS_100(kUMASSORecallAccountsAvailable,
                            [identitiesOnDevice count]);
   UMA_HISTOGRAM_COUNTS_100(kUMASSORecallPromoSeenCount, promoSeenCount);
@@ -74,6 +68,7 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
       break;
     }
     case SigninCoordinatorResultDisabled:
+    case SigninCoordinatorUINotAvailable:
     case SigninCoordinatorResultInterrupted: {
       // TODO(crbug.com/40622384): Add metric for when the sign-in has been
       // interrupted.

@@ -66,20 +66,24 @@ class CloneLanguageModelClient
       return;
     }
 
-    if (info) {
-      AILanguageModel* cloned_language_model =
-          MakeGarbageCollected<AILanguageModel>(
-              language_model_->GetExecutionContext(),
-              std::move(language_model_remote),
-              language_model_->GetTaskRunner(), std::move(info),
-              language_model_->GetCurrentTokens());
-      GetResolver()->Resolve(cloned_language_model);
-    } else {
-      GetResolver()->RejectWithDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          kExceptionMessageUnableToCloneSession);
+    CHECK(info);
+    AILanguageModel* cloned_language_model =
+        MakeGarbageCollected<AILanguageModel>(
+            language_model_->GetExecutionContext(),
+            std::move(language_model_remote), language_model_->GetTaskRunner(),
+            std::move(info), language_model_->GetCurrentTokens());
+    GetResolver()->Resolve(cloned_language_model);
+    Cleanup();
+  }
+
+  void OnError(mojom::blink::AIManagerCreateLanguageModelError error) override {
+    if (!GetResolver()) {
+      return;
     }
 
+    GetResolver()->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        kExceptionMessageUnableToCloneSession);
     Cleanup();
   }
 

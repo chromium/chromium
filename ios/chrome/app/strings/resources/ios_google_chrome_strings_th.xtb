@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">เปิดการตั้งค่า Chrome เพื่อตั้งค่า Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="1670609221633730681">เคล็ดลับสำหรับ Chrome: เลือกตำแหน่งของแถบที่อยู่</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">บันทึกรหัสผ่านใน Chrome</translation>
 <translation id="1790080846677398234">เพิ่ม URL ที่ป้อนไปยังบุ๊กมาร์กใน Chrome</translation>
 <translation id="1799920918471566157">เคล็ดลับในการใช้ Chrome</translation>
 <translation id="1830634592642484976">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">ซึ่งหมายความว่า Chrome จะขอเว็บไซต์ในอุปกรณ์เคลื่อนที่ทุกครั้ง</translation>
 <translation id="3740397331642243698">เปิด URL ที่ป้อนใน Google Chrome ในโหมดไม่ระบุตัวตน</translation>
 <translation id="3741995255368156336">เปิดเรื่องรออ่านใน Chrome</translation>
+<translation id="3808570423967020928">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอปในหน้าจอหลัก</translation>
 <translation id="3827545470516145620">คุณกำลังได้รับการรักษาความปลอดภัยแบบมาตรฐานในอุปกรณ์นี้</translation>
 <translation id="384394811301901750">Google Chrome ไม่สามารถใช้กล้องถ่ายรูปได้ในขณะนี้</translation>
 <translation id="3863841106411295595">เพิ่ม URL ที่ป้อนลงในเรื่องรออ่านใน Chrome</translation>
@@ -219,9 +221,11 @@
 
 หากต้องการการตั้งค่าเพิ่มเติมที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chrome ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="6922332667202044570">ลบข้อมูลการท่องเว็บใน Chrome</translation>
+<translation id="6924922227983877439">เปิดลิงก์ใน Chrome โดยค่าเริ่มต้น</translation>
 <translation id="6975725306479268850">เลือก Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="7056826488869329999">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chrome</translation>
 <translation id="7061455974939528301">กดไอคอน Chrome ค้างไว้แล้วคลิก "แก้ไขหน้าจอหลัก"</translation>
+<translation id="7065813315247345131">ย้าย Chrome ไปที่แถบแอป</translation>
 <translation id="7124339256045485976">อัปเดต Chrome อยู่เสมอ</translation>
 <translation id="7161390184744336561">Google Chrome เป็นเวอร์ชันเก่า</translation>
 <translation id="7165736900384873061">เริ่มใช้โปรแกรมสแกนโค้ด QR ของ Google Chrome</translation>

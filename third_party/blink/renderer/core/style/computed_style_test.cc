@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -68,6 +67,10 @@ class ComputedStyleTest : public testing::Test {
   ComputedStyleBuilder CreateComputedStyleBuilderFrom(
       const ComputedStyle& style) {
     return ComputedStyleBuilder(style);
+  }
+
+  const ComputedStyle& StyleForElement(const char* id) {
+    return GetDocument().getElementById(AtomicString(id))->ComputedStyleRef();
   }
 
  private:
@@ -2205,6 +2208,40 @@ TEST_F(ComputedStyleTest, ColorSchemeFlagsIsNormal_WithMeta) {
                    .getElementById(AtomicString("dark"))
                    ->ComputedStyleRef()
                    .ColorSchemeFlagsIsNormal());
+}
+
+TEST_F(ComputedStyleTest, BottomRelativeToSafeAreaInset) {
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <div id="f1" style="bottom: 5px"></div>
+    <div id="f2" style="bottom: calc(5px + 5px)"></div>
+    <div id="f3" style="bottom: env(safe-area-inset-top)"></div>
+    <div id="f4" style="bottom: calc(env(safe-area-inset-top))"></div>
+    <div id="f5" style="bottom: calc(env(safe-area-inset-bottom) * 2)"></div>
+    <div id="f6" style="bottom: calc(-env(safe-area-inset-bottom))"></div>
+
+    <div id="t1" style="bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t2" style="bottom:   env(  safe-area-inset-bottom, 0px)"></div>
+    <div id="t3" style="bottom: calc(env(safe-area-inset-bottom))"></div>
+    <div id="t4" style="bottom: calc( env( safe-area-inset-bottom , 0px) )"></div>
+    <div id="t5" style="bottom: calc(env(safe-area-inset-bottom, 0px)+999px)"></div>
+    <div id="t6" style="--foo:1px; bottom: calc(env(safe-area-inset-bottom, 0px)-var(--foo))"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(StyleForElement("f1").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f2").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f3").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f4").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f5").IsBottomRelativeToSafeAreaInset());
+  EXPECT_FALSE(StyleForElement("f6").IsBottomRelativeToSafeAreaInset());
+
+  EXPECT_TRUE(StyleForElement("t1").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t2").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t3").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t4").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t5").IsBottomRelativeToSafeAreaInset());
+  EXPECT_TRUE(StyleForElement("t6").IsBottomRelativeToSafeAreaInset());
 }
 
 }  // namespace blink

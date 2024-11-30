@@ -10,6 +10,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "credential_manager_type_converters.cc": [
+    "+third_party/boringssl/src/include",
+  ],
   ".*test\.cc": [
     "+components/ukm/test_ukm_recorder.h",
   ],

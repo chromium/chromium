@@ -156,11 +156,17 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
   if (component_installer_registered_) {
     return OnDeviceModelStatus::kInstallNotComplete;
   }
-  if (registration_criteria_->should_install()) {
-    // This may happen before the first registration.
-    return OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
+  if (!registration_criteria_->is_model_allowed()) {
+    return OnDeviceModelStatus::kNotEligible;
   }
-  return OnDeviceModelStatus::kNotEligible;
+  if (!registration_criteria_->disk_space_available) {
+    return OnDeviceModelStatus::kInsufficientDiskSpace;
+  }
+  if (!registration_criteria_->on_device_feature_recently_used) {
+    return OnDeviceModelStatus::kNoOnDeviceFeatureUsed;
+  }
+  // This may happen before the first registration.
+  return OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
 }
 
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
@@ -175,9 +181,7 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
                                   GetWeakPtr(), feature));
   }
 
-  local_state_->SetTime(
-      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature),
-      base::Time::Now());
+  model_execution::prefs::RecordFeatureUsage(local_state_, feature);
 
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",
@@ -211,6 +215,7 @@ bool OnDeviceModelComponentStateManager::NeedsPerformanceClassUpdate() {
 
 void OnDeviceModelComponentStateManager::OnStartup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  model_execution::prefs::PruneOldUsagePrefs(local_state_);
   if (auto model_path_override_switch =
           switches::GetOnDeviceModelExecutionOverride()) {
     is_model_allowed_ = true;
@@ -262,6 +267,13 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     local_state_->SetTime(model_execution::prefs::localstate::
                               kLastTimeEligibleForOnDeviceModelDownload,
                           base::Time::Now());
+  }
+
+  if (!criteria.disk_space_available) {
+    base::UmaHistogramCounts100(
+        "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+        "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+        disk_space_free_bytes / (1024 * 1024 * 1024));
   }
 
   bool was_allowed = is_model_allowed_;

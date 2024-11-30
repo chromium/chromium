@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -28,10 +29,11 @@ class PLATFORM_EXPORT WebGraphicsContext3DProviderWrapper {
     virtual void OnContextDestroyed() = 0;
   };
 
+  // NOTE: `provider` must be non-null.
   WebGraphicsContext3DProviderWrapper(
       std::unique_ptr<WebGraphicsContext3DProvider> provider)
       : context_provider_(std::move(provider)) {
-    DCHECK(context_provider_);
+    CHECK(context_provider_);
     utils_ = base::WrapUnique(new GraphicsContext3DUtils(GetWeakPtr()));
   }
   ~WebGraphicsContext3DProviderWrapper();
@@ -39,8 +41,8 @@ class PLATFORM_EXPORT WebGraphicsContext3DProviderWrapper {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
-  WebGraphicsContext3DProvider* ContextProvider() {
-    return context_provider_.get();
+  WebGraphicsContext3DProvider& ContextProvider() {
+    return CHECK_DEREF(context_provider_.get());
   }
 
   GraphicsContext3DUtils* Utils() { return utils_.get(); }

@@ -148,14 +148,20 @@ bool FakeScrollbar::UsesNinePatchTrackAndButtonsResource() const {
   return uses_nine_patch_track_and_buttons_resource_;
 }
 
-gfx::Size FakeScrollbar::NinePatchTrackAndButtonsCanvasSize() const {
+gfx::Size FakeScrollbar::NinePatchTrackAndButtonsCanvasSize(float scale) const {
   return uses_nine_patch_track_and_buttons_resource_ ? gfx::Size(5, 5)
                                                      : gfx::Size();
 }
 
-gfx::Rect FakeScrollbar::NinePatchTrackAndButtonsAperture() const {
-  return uses_nine_patch_track_and_buttons_resource_ ? gfx::Rect(0, 0, 5, 5)
-                                                     : gfx::Rect();
+gfx::Rect FakeScrollbar::NinePatchTrackAndButtonsAperture(float scale) const {
+  if (uses_nine_patch_track_and_buttons_resource_) {
+    const gfx::Size canvas_size = NinePatchTrackAndButtonsCanvasSize(scale);
+    if (Orientation() == ScrollbarOrientation::kHorizontal) {
+      return gfx::Rect(canvas_size.width() / 2, 0, 1, canvas_size.height());
+    }
+    return gfx::Rect(0, canvas_size.height() / 2, canvas_size.width(), 1);
+  }
+  return gfx::Rect();
 }
 
 bool FakeScrollbar::IsOpaque() const {

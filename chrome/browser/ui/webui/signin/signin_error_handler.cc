@@ -91,17 +91,11 @@ void SigninErrorHandler::HandleInitializedWithSize(
 }
 
 void SigninErrorHandler::CloseDialog() {
-  if (from_profile_picker_) {
-    CloseProfilePickerDialog();
-  } else if (browser_) {
+  if (browser_) {
     CloseBrowserModalSigninDialog();
   }
 }
 
 void SigninErrorHandler::CloseBrowserModalSigninDialog() {
   browser_->signin_view_controller()->CloseModalSignin();
-}
-
-void SigninErrorHandler::CloseProfilePickerDialog() {
-  ProfilePicker::HideDialog();
 }

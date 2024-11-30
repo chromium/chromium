@@ -133,6 +133,13 @@ class ToolbarButton : public views::LabelButton,
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
+  // When IPH is showing we suppress the tooltip text. This means that we must
+  // provide an alternative accessible name, when this is the case. This is
+  // because `Button::AdjustAccessibleName` will use the tooltip text when the
+  // accessible name is empty, and if the tooltip text is also empty then the
+  // button will have no accessible name.
+  std::u16string GetAlternativeAccessibleName() const override;
+
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
       View* source,
@@ -353,6 +360,9 @@ class ToolbarButton : public views::LabelButton,
   // Class responsible for animating highlight color (calling a callback on
   // |this| to refresh UI).
   HighlightColorAnimation highlight_color_animation_;
+
+  // Suppress tooltip when IPH is showing.
+  std::u16string suppressed_tooltip_text_;
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

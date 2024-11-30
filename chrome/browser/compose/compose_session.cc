@@ -923,6 +923,16 @@ void ComposeSession::OpenBugReportingLink() {
 }
 
 void ComposeSession::OpenComposeLearnMorePage() {
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::features::kAiSettingsPageRefresh) &&
+      base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeProactiveNudge)) {
+    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+    CHECK(browser);
+
+    chrome::ShowSettingsSubPage(browser, chrome::kAiHelpMeWriteSubpage);
+    return;
+  }
   web_contents_->OpenURL(
       content::OpenURLParams(
           GURL(kComposeLearnMorePageURL), content::Referrer(),
@@ -1022,7 +1032,8 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
       // Open the Feedback Page for a thumbs down using current request log.
       std::string feedback_id = last_response_state->modeling_log_entry()
                                     ->log_ai_data_request()
-                                    ->model_execution_info()
+                                    ->compose()
+                                    .model_execution_info()
                                     .execution_id();
       OpenFeedbackPage(feedback_id);
     }

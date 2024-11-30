@@ -217,6 +217,25 @@ void IncognitoSessionTracker::OnProfileLoaded(ProfileManagerIOS* manager,
   DCHECK(inserted);
 }
 
+void IncognitoSessionTracker::OnProfileUnloaded(ProfileManagerIOS* manager,
+                                                ProfileIOS* profile) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto iterator = observers_.find(profile);
+  DCHECK(iterator != observers_.end());
+  observers_.erase(iterator);
+
+  // The removed profile does not have any tabs, thus no incognito tabs.
+  OnIncognitoSessionStateChanged(false);
+}
+
+void IncognitoSessionTracker::OnProfileMarkedForPermanentDeletion(
+    ProfileManagerIOS* manager,
+    ProfileIOS* profile) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Nothing to do, OnProfileUnloaded(...) will take care of removing the
+  // observer when it is called.
+}
+
 void IncognitoSessionTracker::OnIncognitoSessionStateChanged(
     bool has_incognito_tabs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

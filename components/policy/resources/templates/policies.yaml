@@ -932,7 +932,7 @@ policies:
   931: OnPrintEnterpriseConnector
   932: UserAgentReduction
   933: OriginAgentClusterDefaultEnabled
-  934: DeviceLoginScreenWebUILazyLoading
+  934: ''
   935: ProjectorEnabled
   936: PhoneHubCameraRollAllowed
   937: EcheAllowed
@@ -1316,6 +1316,7 @@ policies:
   1315: GenAiLensOverlaySettings
   1316: PasswordManagerPasskeysEnabled
   1317: FilePickerChooseFromDriveSettings
+  1318: LiveTranslateEnabled
 
 atomic_groups:
   1: Homepage

@@ -437,7 +437,7 @@ TEST(CreateChild, MultiLevel) {
       std::make_unique<DevToolsClientImpl>("id", "");
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl level1(client_ptr->GetId(), true, nullptr, &browser_info,
+  WebViewImpl level1(client_ptr->GetId(), true, nullptr, nullptr, &browser_info,
                      std::move(client_uptr), std::nullopt,
                      PageLoadStrategy::kEager, true);
   EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
@@ -464,8 +464,8 @@ TEST(CreateChild, IsNonBlocking_NoErrors) {
       std::make_unique<DevToolsClientImpl>("id", "");
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                          std::move(client_uptr), std::nullopt,
+  WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, nullptr,
+                          &browser_info, std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kEager, true);
   EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
@@ -487,8 +487,8 @@ TEST(CreateChild, Load_NoErrors) {
       std::make_unique<DevToolsClientImpl>("id", "");
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                          std::move(client_uptr), std::nullopt,
+  WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, nullptr,
+                          &browser_info, std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kNone, true);
   EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
@@ -509,8 +509,8 @@ TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
       std::make_unique<DevToolsClientImpl>("id", "");
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                          std::move(client_uptr), std::nullopt,
+  WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, nullptr,
+                          &browser_info, std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kNone, true);
   EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
@@ -525,19 +525,77 @@ TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
       "1234", Timeout(base::Milliseconds(10)), true));
 }
 
+TEST(TabTargets, TabWaitForActivePageAndPendingNavigations_NoErrors) {
+  std::unique_ptr<MockSyncWebSocket> socket_uptr =
+      std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
+  MockSyncWebSocket* socket = socket_uptr.get();
+  // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
+  BrowserInfo browser_info;
+  std::unique_ptr<DevToolsClientImpl> tab_client_uptr =
+      std::make_unique<DevToolsClientImpl>("id1", "", /*is_tab=*/true);
+  DevToolsClientImpl* tab_client_ptr = tab_client_uptr.get();
+  WebViewImpl tab_view(tab_client_ptr->GetId(), true, &browser_info,
+                       std::move(tab_client_uptr), /*is_tab=*/true,
+                       std::nullopt, PageLoadStrategy::kNone, true, nullptr);
+  std::unique_ptr<DevToolsClientImpl> client_uptr =
+      std::make_unique<DevToolsClientImpl>("id2", "");
+  DevToolsClientImpl* client_ptr = client_uptr.get();
+  WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &tab_view,
+                          &browser_info, std::move(client_uptr), std::nullopt,
+                          PageLoadStrategy::kNone, true);
+  EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
+  std::string sessionid = "2";
+  std::unique_ptr<WebViewImpl> child_view =
+      std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
+  child_view->AttachTo(client_ptr);
+
+  // child_view gets no socket...
+  socket->SetNexStatusCode(SyncWebSocket::StatusCode::kTimeout);
+
+  ASSERT_NO_FATAL_FAILURE(
+      tab_view.WaitForPendingActivePage(Timeout(base::Milliseconds(10))));
+
+  ASSERT_NO_FATAL_FAILURE(child_view->WaitForPendingNavigations(
+      "1234", Timeout(base::Milliseconds(10)), true));
+}
+
+TEST(TabTargets, TabNoPageAcquiredInitially) {
+  std::unique_ptr<MockSyncWebSocket> socket_uptr =
+      std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
+  // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
+  BrowserInfo browser_info;
+  std::unique_ptr<DevToolsClientImpl> tab_client_uptr =
+      std::make_unique<DevToolsClientImpl>("id1", "", /*is_tab=*/true);
+  DevToolsClientImpl* tab_client_ptr = tab_client_uptr.get();
+  WebViewImpl tab_view(tab_client_ptr->GetId(), true, &browser_info,
+                       std::move(tab_client_uptr), /*is_tab=*/true,
+                       std::nullopt, PageLoadStrategy::kNone, true, nullptr);
+  EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(tab_client_ptr->SetSocket(std::move(socket_uptr))));
+  tab_view.AttachTo(tab_client_ptr);
+  WebView* page;
+  ASSERT_EQ(kNoActivePage, tab_view.GetActivePage(&page).code());
+}
+
 TEST(CreateChild, IsPendingNavigation_NoErrors) {
   std::unique_ptr<MockSyncWebSocket> socket_uptr =
       std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
+  std::unique_ptr<DevToolsClientImpl> tab_client_uptr =
+      std::make_unique<DevToolsClientImpl>("id", "");
   std::unique_ptr<DevToolsClientImpl> client_uptr =
       std::make_unique<DevToolsClientImpl>("id", "");
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
+  std::string tab_id = tab_client_uptr->GetId();
+  WebViewImpl tab_view(tab_id, true, &browser_info, std::move(tab_client_uptr),
+                       /*is_tab=*/true, std::nullopt, PageLoadStrategy::kNormal,
+                       true, nullptr);
+  std::string parent_id = client_ptr->GetId();
+  WebViewImpl parent_view(parent_id, true, nullptr, &tab_view, &browser_info,
                           std::move(client_uptr), std::nullopt,
                           PageLoadStrategy::kNormal, true);
-  EXPECT_TRUE(socket_uptr->Connect(kDefaultUrl));
-  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
       std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
@@ -553,7 +611,7 @@ TEST(ManageCookies, AddCookie_SameSiteTrue) {
       std::make_unique<FakeDevToolsClient>();
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
   std::string samesite = "Strict";
@@ -570,7 +628,7 @@ TEST(GetBackendNodeId, ElementW3C) {
       std::make_unique<FakeDevToolsClient>("root");
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
@@ -624,7 +682,7 @@ TEST(GetBackendNodeId, ShadowRootW3C) {
       std::make_unique<FakeDevToolsClient>("root");
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
@@ -675,7 +733,7 @@ TEST(GetBackendNodeId, NonW3C) {
       std::make_unique<FakeDevToolsClient>("root");
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view(client_ptr->GetId(), false, nullptr, &browser_info,
+  WebViewImpl view(client_ptr->GetId(), false, nullptr, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
   {
@@ -714,8 +772,9 @@ TEST_P(ParentToChildRouting, ElementIdAsResultRootFrame) {
   std::unique_ptr<FakeDevToolsClient> client_uptr =
       std::make_unique<FakeDevToolsClient>("root");
   client_uptr->SetResult(GenerateResponse(4321, TargetLoader()));
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
 
@@ -752,8 +811,9 @@ TEST_P(ChildToParentRouting, ElementIdAsResultChildFrame) {
   std::unique_ptr<FakeDevToolsClient> client_uptr =
       std::make_unique<FakeDevToolsClient>("good");
   client_uptr->SetResult(GenerateResponse(4321, TargetLoader()));
-  WebViewImpl view("good", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("good", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
 
@@ -779,8 +839,9 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
   std::unique_ptr<FakeDevToolsClient> client_uptr =
       std::make_unique<FakeDevToolsClient>("root");
   FakeDevToolsClient* client_ptr = client_uptr.get();
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("bad", "irrelevant");
@@ -870,7 +931,7 @@ TEST(GetFedCmTracker, OK) {
       std::make_unique<FakeDevToolsClient>();
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
   FedCmTracker* tracker = nullptr;
@@ -887,8 +948,8 @@ class CallUserSyncScriptArgs
         std::make_unique<FakeDevToolsClient>("root");
     client_ptr = client_uptr.get();
     view = std::make_unique<WebViewImpl>(
-        "root", IsW3C(), nullptr, &browser_info, std::move(client_uptr),
-        std::nullopt, PageLoadStrategy::kEager, true);
+        "root", IsW3C(), nullptr, nullptr, &browser_info,
+        std::move(client_uptr), std::nullopt, PageLoadStrategy::kEager, true);
     view->GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
     view->GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
     view->GetFrameTracker()->SetContextIdForFrame("bad", "irrelevant");
@@ -1085,8 +1146,9 @@ TEST(CallUserSyncScript, WeakReference) {
   client_uptr->SetResult(response);
 
   BrowserInfo browser_info;
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;
@@ -1126,8 +1188,9 @@ TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
   client_uptr->SetResult(response);
 
   BrowserInfo browser_info;
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;
@@ -1164,8 +1227,9 @@ TEST(CallUserSyncScript, WeakReferenceNotResolved) {
   client_uptr->SetResult(response);
 
   BrowserInfo browser_info;
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;
@@ -1205,7 +1269,7 @@ TEST_P(WaitForPendingNavigations, NavigationDetection) {
       std::make_unique<DevToolsClientImpl>("", "");
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kNormal, true);
   EXPECT_TRUE(socket->Connect(kDefaultUrl));
@@ -1314,8 +1378,9 @@ TEST(SendBidiCommandTest, Success) {
       std::make_unique<BidiDevToolsClient>("id");
   BidiDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
 
   base::Value::Dict param;
   param.Set("ping", 123);
@@ -1341,8 +1406,9 @@ TEST(SendBidiCommandTest, MaxJsUintId) {
       std::make_unique<BidiDevToolsClient>("id");
   BidiDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
 
   base::Value::Dict param;
   param.Set("ping", 123);
@@ -1369,8 +1435,9 @@ TEST(SendBidiCommandTest, NoId) {
       std::make_unique<BidiDevToolsClient>("id");
   BidiDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
 
   base::Value::Dict param;
   param.Set("ping", 123);
@@ -1401,8 +1468,9 @@ TEST_P(SendBidiCommandBadChannelTest, BadChannel) {
       std::make_unique<BidiDevToolsClient>("id");
   BidiDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
 
   base::Value::Dict param;
   param.Set("ping", 123);
@@ -1443,8 +1511,9 @@ TEST_P(SendBidiCommandSpecialChannelTest, ChannelValues) {
       std::make_unique<BidiDevToolsClient>("id");
   BidiDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
 
   base::Value::Dict param;
   param.Set("ping", 123);
@@ -1489,8 +1558,9 @@ TEST(SendBidiCommandTest, NoResponse) {
       std::make_unique<NeverReturningBidiDevToolsClient>("id");
   NeverReturningBidiDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
-  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager, true);
+  WebViewImpl view("root", true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
 
   base::Value::Dict param;
   param.Set("ping", 123);

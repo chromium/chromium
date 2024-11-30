@@ -2124,6 +2124,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8142699993796781067">Privates Netzwerk</translation>
 <translation id="8144760705599030999">Speichere <ph name="NAME" /> unter <ph name="EMAIL" />, um das Gerät schneller mit anderen Geräten koppeln zu können</translation>
 <translation id="8144914663975476336">Aufnahmeformat auswählen</translation>
+<translation id="8145272500474066209">Generative KI kann fehlerhafte Aussagen liefern, zum Beispiel über Personen. Überprüfe daher die Antworten. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Bluetooth-Einstellungen anzeigen. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Drücke zum Schließen Strg + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatische Vervollständigung</translation>

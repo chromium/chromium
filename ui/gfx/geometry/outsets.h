@@ -6,7 +6,6 @@
 #define UI_GFX_GEOMETRY_OUTSETS_H_
 
 #include "base/numerics/clamped_math.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 

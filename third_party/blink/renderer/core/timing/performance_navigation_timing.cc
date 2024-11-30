@@ -68,7 +68,9 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
                                 time_origin,
                                 window.CrossOriginIsolatedCapability(),
                                 &window),
-      ExecutionContextClient(&window) {}
+      ExecutionContextClient(&window),
+      document_timing_values_(
+          window.document()->GetTiming().GetDocumentTimingValues()) {}
 
 PerformanceNavigationTiming::~PerformanceNavigationTiming() = default;
 
@@ -81,6 +83,7 @@ PerformanceEntryType PerformanceNavigationTiming::EntryTypeEnum() const {
 }
 
 void PerformanceNavigationTiming::Trace(Visitor* visitor) const {
+  visitor->Trace(document_timing_values_);
   ExecutionContextClient::Trace(visitor);
   PerformanceResourceTiming::Trace(visitor);
 }
@@ -107,10 +110,6 @@ bool PerformanceNavigationTiming::AllowRedirectDetails() const {
 
 DocumentLoader* PerformanceNavigationTiming::GetDocumentLoader() const {
   return DomWindow() ? DomWindow()->document()->Loader() : nullptr;
-}
-
-const DocumentTiming* PerformanceNavigationTiming::GetDocumentTiming() const {
-  return DomWindow() ? &DomWindow()->document()->GetTiming() : nullptr;
 }
 
 V8NavigationTimingType::Enum
@@ -155,45 +154,29 @@ DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventEnd() const {
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domInteractive() const {
-  const DocumentTiming* timing = GetDocumentTiming();
-  if (!timing) {
-    return 0.0;
-  }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomInteractive(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_timing_values_->dom_interactive,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domContentLoadedEventStart()
     const {
-  const DocumentTiming* timing = GetDocumentTiming();
-  if (!timing) {
-    return 0.0;
-  }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomContentLoadedEventStart(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_timing_values_->dom_content_loaded_event_start,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domContentLoadedEventEnd()
     const {
-  const DocumentTiming* timing = GetDocumentTiming();
-  if (!timing) {
-    return 0.0;
-  }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomContentLoadedEventEnd(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_timing_values_->dom_content_loaded_event_end,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domComplete() const {
-  const DocumentTiming* timing = GetDocumentTiming();
-  if (!timing) {
-    return 0.0;
-  }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomComplete(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_timing_values_->dom_complete,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::loadEventStart() const {

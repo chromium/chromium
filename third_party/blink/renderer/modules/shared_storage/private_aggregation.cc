@@ -13,10 +13,8 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -99,9 +97,7 @@ void PrivateAggregation::contributeToHistogram(
   }
 
   std::optional<uint64_t> filtering_id;
-  if (contribution->hasFilteringId() &&
-      base::FeatureList::IsEnabled(
-          features::kPrivateAggregationApiFilteringIds)) {
+  if (contribution->hasFilteringId()) {
     EnsureFilteringIdUseCounterIsRecorded();
     std::optional<absl::uint128> filtering_id_128 =
         contribution->filteringId().ToUInt128();
@@ -128,7 +124,6 @@ void PrivateAggregation::contributeToHistogram(
     }
   }
 
-  // TODO(crbug.com/330744610): Allow filtering ID to be set.
   Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
       mojom_contribution_vector;
   mojom_contribution_vector.push_back(

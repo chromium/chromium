@@ -1636,7 +1636,7 @@ TEST_F(SchedulerTest,
   EXPECT_SCOPED(CheckMainFrameNotSkippedAfterLateCommit());
 }
 
-TEST_F(SchedulerTest, MainFrameNotSkippedAfterLateCommit_DrawEstimateTooLong) {
+TEST_F(SchedulerTest, MainFrameNotSkippedAfterLateCommitDrawEstimateTooLong) {
   SetUpScheduler(EXTERNAL_BFS);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
   fake_compositor_timing_history_->SetDrawDurationEstimate(kSlowDuration);
@@ -1824,7 +1824,7 @@ TEST_F(SchedulerTest,
   EXPECT_SCOPED(ImplFrameNotSkippedAfterLateAck());
 }
 
-TEST_F(SchedulerTest, ImplFrameNotSkippedAfterLateAck_CommitEstimateTooLong) {
+TEST_F(SchedulerTest, ImplFrameNotSkippedAfterLateAckCommitEstimateTooLong) {
   SetUpScheduler(EXTERNAL_BFS);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
   fake_compositor_timing_history_
@@ -1841,14 +1841,14 @@ TEST_F(SchedulerTest,
   EXPECT_SCOPED(ImplFrameNotSkippedAfterLateAck());
 }
 
-TEST_F(SchedulerTest, ImplFrameNotSkippedAfterLateAck_ActivateEstimateTooLong) {
+TEST_F(SchedulerTest, ImplFrameNotSkippedAfterLateAckActivateEstimateTooLong) {
   SetUpScheduler(EXTERNAL_BFS);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
   fake_compositor_timing_history_->SetActivateDurationEstimate(kSlowDuration);
   EXPECT_SCOPED(ImplFrameNotSkippedAfterLateAck());
 }
 
-TEST_F(SchedulerTest, ImplFrameNotSkippedAfterLateAck_DrawEstimateTooLong) {
+TEST_F(SchedulerTest, ImplFrameNotSkippedAfterLateAckDrawEstimateTooLong) {
   SetUpScheduler(EXTERNAL_BFS);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
   fake_compositor_timing_history_->SetDrawDurationEstimate(kSlowDuration);
@@ -1995,11 +1995,11 @@ void SchedulerTest::BeginFramesNotFromClient_IsDrawThrottled(
   client_->Reset();
 }
 
-TEST_F(SchedulerTest, SyntheticBeginFrames_IsDrawThrottled) {
+TEST_F(SchedulerTest, SyntheticBeginFramesIsDrawThrottled) {
   BeginFramesNotFromClient_IsDrawThrottled(THROTTLED_BFS);
 }
 
-TEST_F(SchedulerTest, UnthrottledBeginFrames_IsDrawThrottled) {
+TEST_F(SchedulerTest, UnthrottledBeginFramesIsDrawThrottled) {
   BeginFramesNotFromClient_IsDrawThrottled(UNTHROTTLED_BFS);
 }
 
@@ -2521,7 +2521,7 @@ TEST_F(SchedulerTest,
 }
 
 // Tests to ensure that we send a BeginMainFrameNotExpectedSoon when expected.
-TEST_F(SchedulerTest, SendBeginMainFrameNotExpectedSoon_Requested) {
+TEST_F(SchedulerTest, SendBeginMainFrameNotExpectedSoonRequested) {
   SetUpScheduler(EXTERNAL_BFS);
 
   // SetNeedsBeginMainFrame should begin the frame on the next BeginImplFrame.
@@ -2558,7 +2558,7 @@ TEST_F(SchedulerTest, SendBeginMainFrameNotExpectedSoon_Requested) {
 
 // Tests to ensure that we dont't send a BeginMainFrameNotExpectedSoon when
 // possible but not requested.
-TEST_F(SchedulerTest, SendBeginMainFrameNotExpectedSoon_Unrequested) {
+TEST_F(SchedulerTest, SendBeginMainFrameNotExpectedSoonUnrequested) {
   SetUpScheduler(EXTERNAL_BFS);
 
   // SetNeedsBeginMainFrame should begin the frame on the next BeginImplFrame.
@@ -2639,7 +2639,7 @@ TEST_F(SchedulerTest, SendBeginMainFrameNotExpectedSoonOnlyOncePerFrame) {
 // Tests to ensure that we send a BeginMainFrameNotExpectedSoon in situations
 // where the client doesn't want messages when we first stopped observing
 // BeginFrames but later does.
-TEST_F(SchedulerTest, SendBeginMainFrameNotExpectedSoon_AlreadyIdle) {
+TEST_F(SchedulerTest, SendBeginMainFrameNotExpectedSoonAlreadyIdle) {
   SetUpScheduler(EXTERNAL_BFS);
 
   // SetNeedsBeginMainFrame should begin the frame on the next BeginImplFrame.
@@ -3438,53 +3438,53 @@ bool SchedulerTest::BeginMainFrameOnCriticalPath(
   return client_->last_begin_main_frame_args().on_critical_path;
 }
 
-TEST_F(SchedulerTest, BeginMainFrameOnCriticalPath_BNF) {
+TEST_F(SchedulerTest, BeginMainFrameOnCriticalPathBNF) {
   EXPECT_TRUE(BeginMainFrameOnCriticalPath(
       SAME_PRIORITY_FOR_BOTH_TREES,
       ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER,
       kFastDuration));
 }
 
-TEST_F(SchedulerTest, BeginMainFrameOnCriticalPath_BNS) {
+TEST_F(SchedulerTest, BeginMainFrameOnCriticalPathBNS) {
   EXPECT_TRUE(BeginMainFrameOnCriticalPath(
       SAME_PRIORITY_FOR_BOTH_TREES,
       ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER,
       kSlowDuration));
 }
 
-TEST_F(SchedulerTest, BeginMainFrameOnCriticalPath_BHF) {
+TEST_F(SchedulerTest, BeginMainFrameOnCriticalPathBHF) {
   EXPECT_TRUE(BeginMainFrameOnCriticalPath(
       SAME_PRIORITY_FOR_BOTH_TREES,
       ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, kFastDuration));
 }
 
-TEST_F(SchedulerTest, BeginMainFrameOnCriticalPath_BHS) {
+TEST_F(SchedulerTest, BeginMainFrameOnCriticalPathBHS) {
   EXPECT_TRUE(BeginMainFrameOnCriticalPath(
       SAME_PRIORITY_FOR_BOTH_TREES,
       ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, kSlowDuration));
 }
 
-TEST_F(SchedulerTest, BeginMainFrameOnCriticalPath_ANF) {
+TEST_F(SchedulerTest, BeginMainFrameOnCriticalPathANF) {
   EXPECT_FALSE(BeginMainFrameOnCriticalPath(
       SMOOTHNESS_TAKES_PRIORITY,
       ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER,
       kFastDuration));
 }
 
-TEST_F(SchedulerTest, BeginMainFrameOnCriticalPath_ANS) {
+TEST_F(SchedulerTest, BeginMainFrameOnCriticalPathANS) {
   EXPECT_FALSE(BeginMainFrameOnCriticalPath(
       SMOOTHNESS_TAKES_PRIORITY,
       ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER,
       kSlowDuration));
 }
 
-TEST_F(SchedulerTest, BeginMainFrameOnCriticalPath_AHF) {
+TEST_F(SchedulerTest, BeginMainFrameOnCriticalPathAHF) {
   EXPECT_TRUE(BeginMainFrameOnCriticalPath(
       SMOOTHNESS_TAKES_PRIORITY,
       ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, kFastDuration));
 }
 
-TEST_F(SchedulerTest, BeginMainFrameOnCriticalPath_AHS) {
+TEST_F(SchedulerTest, BeginMainFrameOnCriticalPathAHS) {
   EXPECT_FALSE(BeginMainFrameOnCriticalPath(
       SMOOTHNESS_TAKES_PRIORITY,
       ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, kSlowDuration));
@@ -3817,7 +3817,7 @@ TEST_F(SchedulerTest, WaitForAllPipelineStagesAlwaysObservesBeginFrames) {
   client_->Reset();
 }
 
-TEST_F(SchedulerTest, CriticalBeginMainFrameIsFast_CommitEstimateSlow) {
+TEST_F(SchedulerTest, CriticalBeginMainFrameIsFastCommitEstimateSlow) {
   SetUpScheduler(EXTERNAL_BFS);
   scheduler_->SetNeedsBeginMainFrame();
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
@@ -3827,7 +3827,7 @@ TEST_F(SchedulerTest, CriticalBeginMainFrameIsFast_CommitEstimateSlow) {
                    .critical_begin_main_frame_to_activate_is_fast());
 }
 
-TEST_F(SchedulerTest, CriticalBeginMainFrameIsFast_CommitEstimateFast) {
+TEST_F(SchedulerTest, CriticalBeginMainFrameIsFastCommitEstimateFast) {
   SetUpScheduler(EXTERNAL_BFS);
   scheduler_->SetNeedsBeginMainFrame();
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
@@ -3836,7 +3836,7 @@ TEST_F(SchedulerTest, CriticalBeginMainFrameIsFast_CommitEstimateFast) {
                   .critical_begin_main_frame_to_activate_is_fast());
 }
 
-TEST_F(SchedulerTest, ShouldDeferInvalidation_AllEstimatesFast) {
+TEST_F(SchedulerTest, ShouldDeferInvalidationAllEstimatesFast) {
   SetUpScheduler(EXTERNAL_BFS);
   scheduler_->SetNeedsBeginMainFrame();
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
@@ -3845,7 +3845,7 @@ TEST_F(SchedulerTest, ShouldDeferInvalidation_AllEstimatesFast) {
                   .should_defer_invalidation_for_fast_main_frame());
 }
 
-TEST_F(SchedulerTest, ShouldDeferInvalidation_BMFStartToReadyToCommitSlow) {
+TEST_F(SchedulerTest, ShouldDeferInvalidationBMFStartToReadyToCommitSlow) {
   SetUpScheduler(EXTERNAL_BFS);
   scheduler_->SetNeedsBeginMainFrame();
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
@@ -3856,7 +3856,7 @@ TEST_F(SchedulerTest, ShouldDeferInvalidation_BMFStartToReadyToCommitSlow) {
                    .should_defer_invalidation_for_fast_main_frame());
 }
 
-TEST_F(SchedulerTest, ShouldDeferInvalidation_BMFQueueDurationCriticalSlow) {
+TEST_F(SchedulerTest, ShouldDeferInvalidationBMFQueueDurationCriticalSlow) {
   SetUpScheduler(EXTERNAL_BFS);
   scheduler_->SetNeedsBeginMainFrame();
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
@@ -3867,7 +3867,7 @@ TEST_F(SchedulerTest, ShouldDeferInvalidation_BMFQueueDurationCriticalSlow) {
                    .should_defer_invalidation_for_fast_main_frame());
 }
 
-TEST_F(SchedulerTest, ShouldDeferInvalidation_BMFQueueDurationNotCriticalSlow) {
+TEST_F(SchedulerTest, ShouldDeferInvalidationBMFQueueDurationNotCriticalSlow) {
   SetUpScheduler(EXTERNAL_BFS);
   scheduler_->SetNeedsBeginMainFrame();
   scheduler_->SetTreePrioritiesAndScrollState(

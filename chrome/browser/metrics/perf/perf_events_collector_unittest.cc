@@ -1269,7 +1269,7 @@ TEST_F(PerfCollectorTest, CommandEventType) {
 
 class PerfCollectorCollectionParamsTest : public testing::Test {
  public:
-  PerfCollectorCollectionParamsTest() {}
+  PerfCollectorCollectionParamsTest() = default;
 
   PerfCollectorCollectionParamsTest(const PerfCollectorCollectionParamsTest&) =
       delete;

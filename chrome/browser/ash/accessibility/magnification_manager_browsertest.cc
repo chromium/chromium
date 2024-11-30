@@ -129,7 +129,7 @@ class MockMagnificationObserver {
   MockMagnificationObserver& operator=(const MockMagnificationObserver&) =
       delete;
 
-  virtual ~MockMagnificationObserver() {}
+  virtual ~MockMagnificationObserver() = default;
 
   bool observed() const { return observed_; }
   bool observed_enabled() const { return observed_enabled_; }
@@ -154,12 +154,12 @@ class MockMagnificationObserver {
 
 class MagnificationManagerTest : public InProcessBrowserTest {
  protected:
-  MagnificationManagerTest() {}
+  MagnificationManagerTest() = default;
 
   MagnificationManagerTest(const MagnificationManagerTest&) = delete;
   MagnificationManagerTest& operator=(const MagnificationManagerTest&) = delete;
 
-  ~MagnificationManagerTest() override {}
+  ~MagnificationManagerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kLoginManager);

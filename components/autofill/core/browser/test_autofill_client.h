@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_autofill_ai_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
@@ -41,7 +42,6 @@
 #include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_address_normalizer.h"
-#include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -93,13 +93,6 @@ class TestAutofillClientTemplate : public T {
       delete;
   ~TestAutofillClientTemplate() override = default;
 
-  // Initializes UKM source from form_origin_. This needs to be called
-  // in unittests after calling Purge for ukm recorder to re-initialize
-  // sources.
-  void InitializeUKMSources() {
-    test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
-  }
-
   base::WeakPtr<AutofillClient> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -121,11 +114,11 @@ class TestAutofillClientTemplate : public T {
     return test_shared_loader_factory_;
   }
 
-  TestPersonalDataManager* GetPersonalDataManager() override {
+  TestPersonalDataManager& GetPersonalDataManager() override {
     if (!test_personal_data_manager_) {
       test_personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
     }
-    return test_personal_data_manager_.get();
+    return *test_personal_data_manager_.get();
   }
 
   MockAutofillOptimizationGuide* GetAutofillOptimizationGuide() const override {
@@ -182,9 +175,9 @@ class TestAutofillClientTemplate : public T {
 
   FormDataImporter* GetFormDataImporter() override {
     if (!form_data_importer_) {
-      set_test_form_data_importer(std::make_unique<FormDataImporter>(
+      form_data_importer_ = std::make_unique<FormDataImporter>(
           /*client=*/this,
-          /*history_service=*/nullptr));
+          /*history_service=*/nullptr);
     }
     return form_data_importer_.get();
   }
@@ -203,14 +196,6 @@ class TestAutofillClientTemplate : public T {
 
   ukm::TestAutoSetUkmRecorder* GetUkmRecorder() override {
     return &test_ukm_recorder_;
-  }
-
-  ukm::SourceId GetUkmSourceId() override {
-    if (source_id_ == -1) {
-      source_id_ = ukm::UkmRecorder::GetNewSourceID();
-      test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
-    }
-    return source_id_;
   }
 
   TestAddressNormalizer* GetAddressNormalizer() override {
@@ -274,16 +259,6 @@ class TestAutofillClientTemplate : public T {
       const AutofillProfile* original_profile,
       bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback) override {}
-
-  void ShowEditAddressProfileDialog(
-      const AutofillProfile& profile,
-      AutofillClient::AddressProfileSavePromptCallback
-          on_user_decision_callback) override {}
-
-  void ShowDeleteAddressProfileDialog(
-      const AutofillProfile& profile,
-      AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback)
-      override {}
 
   AutofillClient::SuggestionUiSessionId ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,
@@ -361,11 +336,15 @@ class TestAutofillClientTemplate : public T {
                             bool is_refill) override {}
 
   bool IsContextSecure() const override {
-    // Simplified secure context check for tests.
-    return form_origin_.SchemeIs("https");
+    return last_committed_primary_main_frame_url_.SchemeIs("https");
   }
 
   LogManager* GetLogManager() const override { return log_manager_.get(); }
+
+  autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
+      override {
+    return form_interactions_ukm_logger_;
+  }
 
   const AutofillAblationStudy& GetAblationStudy() const override {
     static const AutofillAblationStudy default_ablation_study("seed");
@@ -431,7 +410,7 @@ class TestAutofillClientTemplate : public T {
     }
     if (!autofill_profile_enabled_) {
       // Profile data is refreshed when this pref is changed.
-      GetPersonalDataManager()->test_address_data_manager().ClearProfiles();
+      GetPersonalDataManager().test_address_data_manager().ClearProfiles();
     }
   }
 
@@ -443,15 +422,8 @@ class TestAutofillClientTemplate : public T {
     }
     if (!autofill_payment_methods_enabled) {
       // Credit card data is refreshed when this pref is changed.
-      GetPersonalDataManager()->test_payments_data_manager().ClearCreditCards();
+      GetPersonalDataManager().test_payments_data_manager().ClearCreditCards();
     }
-  }
-
-  void set_personal_data_manager(std::unique_ptr<TestPersonalDataManager> pdm) {
-    // `FormDataImporter` has a reference to the PDM.
-    CHECK(!form_data_importer_)
-        << "Do not reset PDM after using FormDataImporter.";
-    test_personal_data_manager_ = std::move(pdm);
   }
 
   void set_payments_autofill_client(
@@ -467,18 +439,6 @@ class TestAutofillClientTemplate : public T {
   void set_test_strike_database(
       std::unique_ptr<TestStrikeDatabase> test_strike_database) {
     test_strike_database_ = std::move(test_strike_database);
-  }
-
-  void set_test_form_data_importer(
-      std::unique_ptr<FormDataImporter> form_data_importer) {
-    form_data_importer_ = std::move(form_data_importer);
-  }
-
-  void set_form_origin(const GURL& url) {
-    form_origin_ = url;
-    // Also reset source_id_.
-    source_id_ = ukm::UkmRecorder::GetNewSourceID();
-    test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
   }
 
   void set_sync_service(syncer::SyncService* test_sync_service) {
@@ -497,7 +457,7 @@ class TestAutofillClientTemplate : public T {
       const GeoIpCountryCode& variation_config_country_code) {
     variation_config_country_code_ = variation_config_country_code;
     GetPersonalDataManager()
-        ->test_address_data_manager()
+        .test_address_data_manager()
         .SetVariationCountryCode(variation_config_country_code);
   }
 
@@ -547,10 +507,6 @@ class TestAutofillClientTemplate : public T {
     notify_iph_feature_used_mock_callback_ = std::move(callback);
   }
 
-  GURL form_origin() { return form_origin_; }
-
-  ukm::TestUkmRecorder* GetTestUkmRecorder() { return &test_ukm_recorder_; }
-
   signin::IdentityTestEnvironment& identity_test_environment() {
     return identity_test_env_;
   }
@@ -595,8 +551,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
-  GURL form_origin_{"https://example.test"};
-  ukm::SourceId source_id_ = -1;
   GeoIpCountryCode variation_config_country_code_;
 
   security_state::SecurityLevel security_level_ =
@@ -654,6 +608,8 @@ class TestAutofillClientTemplate : public T {
   } log_to_terminal_{log_router_};
   std::unique_ptr<LogManager> log_manager_ =
       LogManager::Create(&log_router_, base::NullCallback());
+  autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
+      this};
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };

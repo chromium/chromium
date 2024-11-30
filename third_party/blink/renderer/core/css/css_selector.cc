@@ -207,7 +207,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           }
           [[fallthrough]];
         case kPseudoHostContext:
-          DCHECK(SelectorList()->HasOneSelector());
+          DCHECK(SelectorList()->IsSingleComplexSelector());
           return kClassLikeSpecificity + SelectorList()->First()->Specificity();
         case kPseudoNot:
           DCHECK(SelectorList());
@@ -255,7 +255,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
     case kPseudoElement:
       switch (GetPseudoType()) {
         case kPseudoSlotted:
-          DCHECK(SelectorList()->HasOneSelector());
+          DCHECK(SelectorList()->IsSingleComplexSelector());
           return kTagSpecificity + SelectorList()->First()->Specificity();
         case kPseudoViewTransitionGroup:
         case kPseudoViewTransitionImagePair:
@@ -331,8 +331,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdFirstLetter;
     case kPseudoSelection:
       return kPseudoIdSelection;
-    case kPseudoCheck:
-      return kPseudoIdCheck;
+    case kPseudoCheckMark:
+      return kPseudoIdCheckMark;
     case kPseudoBefore:
       return kPseudoIdBefore;
     case kPseudoAfter:
@@ -349,10 +349,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdScrollMarker;
     case kPseudoScrollMarkerGroup:
       return kPseudoIdScrollMarkerGroup;
-    case kPseudoScrollNextButton:
-      return kPseudoIdScrollNextButton;
-    case kPseudoScrollPrevButton:
-      return kPseudoIdScrollPrevButton;
+    case kPseudoScrollButton:
+      return kPseudoIdScrollButton;
     case kPseudoColumn:
       return kPseudoIdColumn;
     case kPseudoScrollbarButton:
@@ -494,6 +492,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoState:
     case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
+    case kPseudoTargetCurrent:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoUserInvalid:
@@ -573,8 +572,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"autofill", CSSSelector::kPseudoAutofill},
     {"backdrop", CSSSelector::kPseudoBackdrop},
     {"before", CSSSelector::kPseudoBefore},
-    {"check", CSSSelector::kPseudoCheck},
     {"checked", CSSSelector::kPseudoChecked},
+    {"checkmark", CSSSelector::kPseudoCheckMark},
     {"closed", CSSSelector::kPseudoClosed},
     {"column", CSSSelector::kPseudoColumn},
     {"corner-present", CSSSelector::kPseudoCornerPresent},
@@ -639,8 +638,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scope", CSSSelector::kPseudoScope},
     {"scroll-marker", CSSSelector::kPseudoScrollMarker},
     {"scroll-marker-group", CSSSelector::kPseudoScrollMarkerGroup},
-    {"scroll-next-button", CSSSelector::kPseudoScrollNextButton},
-    {"scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
     {"search-text", CSSSelector::kPseudoSearchText},
     {"select-arrow", CSSSelector::kPseudoSelectArrow},
     {"selection", CSSSelector::kPseudoSelection},
@@ -648,6 +645,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"spelling-error", CSSSelector::kPseudoSpellingError},
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
+    {"target-current", CSSSelector::kPseudoTargetCurrent},
     {"target-text", CSSSelector::kPseudoTargetText},
     {"user-invalid", CSSSelector::kPseudoUserInvalid},
     {"user-valid", CSSSelector::kPseudoUserValid},
@@ -678,6 +676,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
     {"picker", CSSSelector::kPseudoPicker},
+    {"scroll-button", CSSSelector::kPseudoScrollButton},
     {"slotted", CSSSelector::kPseudoSlotted},
     {"state", CSSSelector::kPseudoState},
     {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
@@ -759,14 +758,18 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if (match->type == CSSSelector::kPseudoTargetCurrent &&
+      !RuntimeEnabledFeatures::CSSPseudoScrollMarkersEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   if ((match->type == CSSSelector::kPseudoScrollMarker ||
        match->type == CSSSelector::kPseudoScrollMarkerGroup) &&
       !RuntimeEnabledFeatures::CSSPseudoScrollMarkersEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoScrollNextButton ||
-       match->type == CSSSelector::kPseudoScrollPrevButton) &&
+  if (match->type == CSSSelector::kPseudoScrollButton &&
       !RuntimeEnabledFeatures::CSSPseudoScrollButtonsEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
@@ -873,7 +876,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       [[fallthrough]];
     // For pseudo elements
     case kPseudoSelectArrow:
-    case kPseudoCheck:
+    case kPseudoCheckMark:
     case kPseudoBackdrop:
     case kPseudoCue:
     case kPseudoMarker:
@@ -889,8 +892,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollbarTrackPiece:
     case kPseudoScrollMarker:
     case kPseudoScrollMarkerGroup:
-    case kPseudoScrollNextButton:
-    case kPseudoScrollPrevButton:
+    case kPseudoScrollButton:
     case kPseudoColumn:
     case kPseudoPicker:
     case kPseudoSelection:
@@ -1013,6 +1015,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoState:
     case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
+    case kPseudoTargetCurrent:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoUserInvalid:
@@ -1576,8 +1579,8 @@ bool CSSSelector::IsAllowedInParentPseudo() const {
 
 bool CSSSelector::IsTreeAbidingPseudoElement() const {
   return Match() == CSSSelector::kPseudoElement &&
-         (GetPseudoType() == kPseudoCheck || GetPseudoType() == kPseudoBefore ||
-          GetPseudoType() == kPseudoAfter ||
+         (GetPseudoType() == kPseudoCheckMark ||
+          GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
           GetPseudoType() == kPseudoSelectArrow ||
           GetPseudoType() == kPseudoMarker ||
           GetPseudoType() == kPseudoPlaceholder ||
@@ -1611,7 +1614,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     //
     // All pseudo-elements other than ::part() should be allowed after
     // ::part().
-    case kPseudoCheck:
+    case kPseudoCheckMark:
     case kPseudoBefore:
     case kPseudoAfter:
     case kPseudoSelectArrow:
@@ -1626,8 +1629,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
-      return true;
-
     case kPseudoBackdrop:
     case kPseudoCue:
     case kPseudoMarker:
@@ -1640,9 +1641,8 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoScrollbarTrackPiece:
     case kPseudoScrollMarker:
     case kPseudoScrollMarkerGroup:
-    case kPseudoScrollNextButton:
+    case kPseudoScrollButton:
     case kPseudoColumn:
-    case kPseudoScrollPrevButton:
     case kPseudoWebKitCustomElement:
     case kPseudoBlinkInternalElement:
     case kPseudoDetailsContent:
@@ -1651,7 +1651,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionNew:
     case kPseudoViewTransitionOld:
-      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+      return true;
 
     // It's possible that we should support ::slotted() after ::part().
     // (WebKit accepts it at parse time but it doesn't appear to work;
@@ -1665,15 +1665,12 @@ bool CSSSelector::IsAllowedAfterPart() const {
 
     // Pseudo-classes
     //
-    // TODO(https://crbug.com/40623497): Eventually all non-structural
-    // pseudo-classes should be allowed, and structural pseudo-classes should
-    // be forbidden.
+    // All non-structural pseudo-classes should be allowed, and structural
+    // pseudo-classes should be forbidden.
     case kPseudoAutofill:
     case kPseudoAutofillPreviewed:
     case kPseudoAutofillSelected:
     case kPseudoWebKitAutofill:
-      return true;
-
     case kPseudoActive:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
@@ -1735,9 +1732,10 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoPopoverOpen:
     case kPseudoRelativeAnchor:
     case kPseudoSpatialNavigationFocus:
+    case kPseudoTargetCurrent:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
-      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+      return true;
 
     // IsSimpleSelectorValidAfterPseudoElement allows these selectors after
     // ::part() regardless of what we do here.  However, since they are in
@@ -1745,7 +1743,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoIs:
     case kPseudoNot:
     case kPseudoWhere:
-      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+      return true;
 
     // :-webkit-any() should in theory be allowed too like :is() and :where(),
     // but it's a legacy feature so just leave it disallowed.
@@ -1842,14 +1840,6 @@ static bool ForAnyInComplexSelector(const Functor& functor,
   }
 
   return false;
-}
-
-bool CSSSelector::FollowsPart() const {
-  const CSSSelector* previous = NextSimpleSelector();
-  if (!previous) {
-    return false;
-  }
-  return previous->GetPseudoType() == kPseudoPart;
 }
 
 bool CSSSelector::FollowsSlotted() const {

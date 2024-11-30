@@ -7,9 +7,10 @@
 
 #include <optional>
 #include <string>
-#include <vector>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -132,7 +133,8 @@ class AccountCapabilities {
       const base::Value::Dict& account_capabilities);
   friend class AccountCapabilitiesFetcherGaia;
 #if BUILDFLAG(IS_IOS)
-  friend const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch();
+  friend base::span<const std::string_view>
+  GetAccountCapabilityNamesForPrefetch();
   friend class ios::AccountCapabilitiesFetcherIOS;
 #endif
   friend class AccountCapabilitiesTestMutator;
@@ -140,10 +142,11 @@ class AccountCapabilities {
   friend class supervised_user::FamilyLinkUserCapabilitiesObserver;
 
   // Returns the capability state using the service name.
-  signin::Tribool GetCapabilityByName(const std::string& name) const;
+  signin::Tribool GetCapabilityByName(std::string_view name) const;
 
   // Returns the list of account capability service names supported in Chrome.
-  static const std::vector<std::string>& GetSupportedAccountCapabilityNames();
+  static base::span<const std::string_view>
+  GetSupportedAccountCapabilityNames();
 
   base::flat_map<std::string, bool> capabilities_map_;
 };

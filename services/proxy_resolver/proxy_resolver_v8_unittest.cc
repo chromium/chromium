@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -77,8 +78,7 @@ class MockJSBindings : public ProxyResolverV8::JSBindings {
       return !dns_resolve_ex_result.empty();
     }
 
-    CHECK(false);
-    return false;
+    NOTREACHED();
   }
 
   void OnError(int line_number, const std::u16string& message) override {
@@ -557,6 +557,20 @@ TEST_F(ProxyResolverV8Test, Terminate) {
   EXPECT_THAT(result, IsOk());
   EXPECT_EQ(0u, bindings()->errors.size());
   EXPECT_EQ("[kittens:88]", proxy_info.proxy_chain().ToDebugString());
+}
+
+TEST_F(ProxyResolverV8Test, NoWebAssembly) {
+  ASSERT_THAT(CreateResolver("no_webassembly.js"), IsOk());
+
+  net::ProxyInfo proxy_info;
+  int result = resolver().GetProxyForURL(GURL("http://www.google.com"),
+                                         &proxy_info, bindings());
+
+  EXPECT_THAT(result, IsOk());
+  EXPECT_TRUE(proxy_info.is_direct());
+
+  EXPECT_EQ(0U, bindings()->alerts.size());
+  EXPECT_EQ(0U, bindings()->errors.size());
 }
 
 }  // namespace

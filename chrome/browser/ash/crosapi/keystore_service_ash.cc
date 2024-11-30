@@ -44,6 +44,7 @@ namespace crosapi {
 namespace {
 
 using mojom::KeystoreAlgorithmName;
+using mojom::KeystoreKeyAttributeType;
 using SigningScheme = mojom::KeystoreSigningScheme;
 using ::ash::platform_keys::KeyPermissionsService;
 using ::ash::platform_keys::PlatformKeysService;
@@ -150,6 +151,17 @@ bool UnpackSigningScheme(
       return true;
   }
   NOTREACHED();
+}
+
+std::optional<chromeos::platform_keys::KeyAttributeType>
+UnpackKeystoreKeyAttributeType(KeystoreKeyAttributeType keystore_type) {
+  using chromeos::platform_keys::KeyAttributeType;
+  switch (keystore_type) {
+    case KeystoreKeyAttributeType::kUnknown:
+      return std::nullopt;
+    case KeystoreKeyAttributeType::kPlatformKeysTag:
+      return KeyAttributeType::kPlatformKeysTag;
+  }
 }
 
 }  // namespace
@@ -912,4 +924,50 @@ void KeystoreServiceAsh::CanUserGrantPermissionForKey(
                                                     std::move(callback));
 }
 
+//------------------------------------------------------------------------------
+
+void KeystoreServiceAsh::SetAttributeForKey(
+    KeystoreType keystore,
+    const std::vector<uint8_t>& public_key,
+    KeystoreKeyAttributeType keystore_attribute_type,
+    const std::vector<uint8_t>& attribute_value,
+    SetAttributeForKeyCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::optional<TokenId> token_id = KeystoreToToken(keystore);
+  if (!token_id) {
+    std::move(callback).Run(/*is_error=*/true,
+                            mojom::KeystoreError::kUnsupportedKeystoreType);
+    return;
+  }
+
+  auto attribute_type = UnpackKeystoreKeyAttributeType(keystore_attribute_type);
+  if (!attribute_type.has_value()) {
+    std::move(callback).Run(/*is_error=*/true,
+                            mojom::KeystoreError::kKeyAttributeSettingFailed);
+    return;
+  }
+
+  PlatformKeysService* service = GetPlatformKeys();
+  auto cb = base::BindOnce(&KeystoreServiceAsh::DidSetAttributeForKey,
+                           std::move(callback));
+
+  service->SetAttributeForKey(token_id.value(), public_key,
+                              attribute_type.value(), attribute_value,
+                              std::move(cb));
+}
+
+// static
+void KeystoreServiceAsh::DidSetAttributeForKey(
+    SetAttributeForKeyCallback callback,
+    chromeos::platform_keys::Status status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (status == chromeos::platform_keys::Status::kSuccess) {
+    std::move(callback).Run(/*is_error=*/false, mojom::KeystoreError::kUnknown);
+  } else {
+    std::move(callback).Run(
+        /*is_error=*/true,
+        chromeos::platform_keys::StatusToKeystoreError(status));
+  }
+}
 }  // namespace crosapi

@@ -9,5 +9,10 @@
         ],
         "persistent": true
     },
-    "description": "The Google Text to Speech Engine."
+    "description": "The Google Text to Speech Engine.",
+    "permissions": [
+      "https://dl.google.com/*"
+    ],
+    "content_security_policy": "script-src 'self' 'wasm-eval' 'unsafe-eval' 'unsafe-inline' 'sha256-9MsFvjZ7+etYzZsucUvPyUjmyt2KoDteUpeQ8/VrTQI'; object-src 'self'; connect-src *"
+
 }

@@ -43,7 +43,13 @@ enum class PayflowExitedReason {
   kActionTokenNotAvailable = 9,
   // The user has logged out after selecting a payment method.
   kUserLoggedOut = 10,
-  kMaxValue = kUserLoggedOut
+  // The FOP selector either wasn't shown, or was dismissed not as a result of a
+  // user action.
+  kFopSelectorClosedNotByUser = 11,
+  // The FOP selector was dismissed by a user action e.g., swiping down, tapping
+  // on the webpage behind the FOP selector, or tapping on the omnibox.
+  kFopSelectorClosedByUser = 12,
+  kMaxValue = kFopSelectorClosedByUser
 };
 
 // TODO(crbug.com/367751320): Remove after new PayflowExited histogram is
@@ -78,7 +84,15 @@ enum class TriggerSource {
 
 // Log when a Pix code is copied to the clippboard on an allowlisted merchant
 // website.
-void LogPixCodeCopied();
+void LogPixCodeCopied(ukm::SourceId ukm_source_id);
+
+// Log when the FOP selector UI is shown.
+void LogFopSelectorShownUkm(ukm::SourceId ukm_source_id);
+
+// Log after user accepts / rejects the FOP UI. The `accepted` will be false
+// if the user rejects the UI, and it will be true if the user accepts the
+// selector UI and selects a FoP to use.
+void LogFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id);
 
 // Log when user selects a FOP to pay with.
 void LogFopSelected();
@@ -121,15 +135,32 @@ void LogInitiatePaymentAttempt();
 // Log the result and latency for the InitiatePayment backend endpoint.
 void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration);
 
+// Log the attempt to send the call to the InitiatePurchaseAction backend
+// endpoint.
+void LogInitiatePurchaseActionAttempt();
+
 // Log the result and latency for the InitiatePurchaseAction call made to the
 // payments platform (client).
-void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration);
+// TODO(crbug.com/379723883): Move the `PurchaseActionResult` and have this
+// function take in an enum instead of a string.
+void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
+                                               base::TimeDelta duration);
+
+// Log the UKM for the InitiatePurchaseAction result.
+void LogInitiatePurchaseActionResultUkm(const std::string& result,
+                                        ukm::SourceId ukm_source_id);
+
+// TODO(crbug.com/379723883): If the above function takes in an enum instead of
+// a string, remove this temporary conversion function.
+uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result);
 
 // Log whether the request to show the FOP(form of payment) selector is
 // successful or not.
 // TODO(crbug.com/377126728): Deprecate this method.
 void LogFopSelectorShown(bool shown);
 
+// TODO(crbug.com/377126728): Remove this method after 11-24-2024, when all
+// metrics have been merged into M-132 milestone branch.
 // Log the overall transaction result. The transactions is considered to have
 // started from the time payment was offered to the user.
 void LogTransactionResult(TransactionResult result,
@@ -139,6 +170,10 @@ void LogTransactionResult(TransactionResult result,
 
 // Logs showing a new UI screen.
 void LogUiScreenShown(UiState ui_screen);
+
+// Logs the latency for seeing the Pix FOP selector after a user has copied the
+// Pix payment code on the browser.
+void LogPixFopSelectorShownLatency(base::TimeDelta latency);
 
 }  // namespace payments::facilitated
 

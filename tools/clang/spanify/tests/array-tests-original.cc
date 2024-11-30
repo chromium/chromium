@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
+#include <cstdint>
+#include <tuple>
 
 // No rewrite expected.
 extern const int kPropertyVisitedIDs[];
@@ -70,4 +71,21 @@ void fct() {
   buf10[index] = nullptr;
 
   index = kPropertyVisitedIDs[index];
+}
+
+void sizeof_array_expr() {
+  // Expected rewrite:
+  // auto buf = std::to_array<int>({1});
+  int buf[]{1};
+  std::ignore = buf[0];
+
+  // Expected rewrite:
+  // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
+  std::ignore = sizeof buf;
+  // Expected rewrite:
+  // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
+  std::ignore = sizeof(buf);
+  // The following won't be rewritten.
+  std::ignore = sizeof *buf;
+  std::ignore = sizeof buf[0];
 }

@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/arc_playstore_shortcut_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
@@ -61,13 +60,6 @@ ChromeShelfItemFactory::CreateShelfItemDelegateForAppId(
   auto* proxy =
       apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile_);
   auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
-
-  // Note: In addition to other kinds of web apps, standalone browser hosted
-  // apps are also handled by browser app shelf item controller.
-  if (BrowserAppShelfControllerShouldHandleApp(app_id, profile_)) {
-    return std::make_unique<BrowserAppShelfItemController>(ash::ShelfID(app_id),
-                                                           profile_);
-  }
 
   // Standalone browser platform apps are handled by standalone browser
   // extension app shelf item controller.

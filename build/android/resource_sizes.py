@@ -397,7 +397,7 @@ def _AnalyzeInternal(apk_path,
   # E.g. with obfuscation, the 4.04 changes to 4.46.
   speed_profile_dex_multiplier = 1.17
   orig_filename = apks_path or apk_path
-  is_webview = 'WebView' in orig_filename
+  is_webview = 'WebView' in orig_filename or 'Webview' in orig_filename
   is_monochrome = 'Monochrome' in orig_filename
   is_library = 'Library' in orig_filename
   is_trichrome = 'TrichromeChrome' in orig_filename

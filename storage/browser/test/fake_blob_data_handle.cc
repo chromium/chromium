@@ -29,7 +29,7 @@ void FakeBlobDataHandle::Read(mojo::ScopedDataPipeProducerHandle producer,
   }
 
   base::span<const uint8_t> bytes = base::as_byte_span(body_data_);
-  bytes = bytes.subspan(src_offset);
+  bytes = bytes.subspan(static_cast<size_t>(src_offset));
   bytes = bytes.first(base::checked_cast<size_t>(bytes_to_read));
   MojoResult result = producer->WriteAllData(bytes);
 

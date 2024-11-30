@@ -12,11 +12,14 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h"
@@ -117,6 +120,10 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
       resolver->RejectWithTypeError(
           "Digital identity API needs at least one provider.");
       return;
+    case RequestDigitalIdentityStatus::kErrorInvalidJson:
+      resolver->RejectWithTypeError(
+          "Digital identity API requires valid JSON in the request.");
+      return;
 
     case RequestDigitalIdentityStatus::kErrorNoTransientUserActivation:
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -148,10 +155,14 @@ bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
   return options.hasDigital();
 }
 
+bool IsDigitalIdentityCredentialType(const CredentialCreationOptions& options) {
+  return options.hasDigital();
+}
+
 void DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    ExceptionState& exception_state,
-    const CredentialRequestOptions& options) {
+    const CredentialRequestOptions& options,
+    ExceptionState& exception_state) {
   CHECK(IsDigitalIdentityCredentialType(options));
   CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
       resolver->GetExecutionContext()));
@@ -211,6 +222,48 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
   request->Request(std::move(providers),
                    WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
                                  std::move(scoped_abort_state)));
+}
+
+void CreateDigitalIdentityCredentialInExternalSource(
+    ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
+    const CredentialCreationOptions& options,
+    ExceptionState& exception_state) {
+  CHECK(IsDigitalIdentityCredentialType(options));
+  CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsCreationEnabled(
+      resolver->GetExecutionContext()));
+
+  if (!CheckGenericSecurityRequirementsForCredentialsContainerRequest(
+          resolver)) {
+    return;
+  }
+
+  DigitalCredentialCreationOptions* request = options.digital();
+  blink::mojom::blink::DigitalCredentialRequestPtr digital_credential_request =
+      blink::mojom::blink::DigitalCredentialRequest::New();
+  digital_credential_request->protocol = request->protocol();
+  String stringified_request_data =
+      ValidateAndStringifyObject(resolver, request->data());
+  if (stringified_request_data.IsNull()) {
+    return;
+  }
+  digital_credential_request->data = stringified_request_data;
+
+  UseCounter::Count(resolver->GetExecutionContext(),
+                    WebFeature::kIdentityDigitalCredentials);
+
+  ScriptState* script_state = resolver->GetScriptState();
+  std::unique_ptr<ScopedAbortState> scoped_abort_state;
+  if (auto* signal = options.getSignalOr(nullptr)) {
+    auto callback = WTF::BindOnce(&AbortRequest, WrapPersistent(script_state));
+    auto* handle = signal->AddAlgorithm(std::move(callback));
+    scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
+  }
+
+  CredentialManagerProxy::From(script_state)
+      ->DigitalIdentityRequest()
+      ->Create(std::move(digital_credential_request),
+               WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
+                             std::move(scoped_abort_state)));
 }
 
 }  // namespace blink

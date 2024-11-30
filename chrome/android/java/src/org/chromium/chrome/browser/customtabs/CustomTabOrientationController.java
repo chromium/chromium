@@ -6,30 +6,26 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.os.Build;
 
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashscreenObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
-import javax.inject.Inject;
-
 /**
- * Manages setting the initial screen orientation for the custom tab.
- * Delays all screen orientation requests till the activity translucency is removed.
+ * Manages setting the initial screen orientation for the custom tab. Delays all screen orientation
+ * requests till the activity translucency is removed.
  */
-@ActivityScope
 public class CustomTabOrientationController {
     private final ActivityWindowAndroid mActivityWindowAndroid;
     private int mLockScreenOrientation;
 
-    @Inject
     public CustomTabOrientationController(
-            ActivityWindowAndroid activityWindowAndroid, BaseCustomTabActivity activity) {
-        mActivityWindowAndroid = activityWindowAndroid;
-
-        mLockScreenOrientation = activity.getIntentDataProvider().getDefaultOrientation();
+            ActivityWindowAndroid windowAndroid,
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        mActivityWindowAndroid = windowAndroid;
+        mLockScreenOrientation = intentDataProvider.getDefaultOrientation();
     }
 
     /**

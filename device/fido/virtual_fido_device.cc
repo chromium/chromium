@@ -254,10 +254,7 @@ class InvalidForTestingPrivateKey : public VirtualFidoDevice::PrivateKey {
     return {'s', 'i', 'g'};
   }
 
-  std::vector<uint8_t> GetPKCS8PrivateKey() const override {
-    CHECK(false);
-    return {};
-  }
+  std::vector<uint8_t> GetPKCS8PrivateKey() const override { NOTREACHED(); }
 
   std::unique_ptr<PublicKey> GetPublicKey() const override {
     cbor::Value::MapValue map;
@@ -285,8 +282,7 @@ VirtualFidoDevice::PrivateKey::~PrivateKey() = default;
 std::vector<uint8_t> VirtualFidoDevice::PrivateKey::GetX962PublicKey() const {
   // Not generally possible to encode in X9.62 format. Elliptic-specific
   // subclasses can override.
-  CHECK(false);
-  return std::vector<uint8_t>();
+  NOTREACHED();
 }
 
 // static

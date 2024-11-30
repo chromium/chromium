@@ -25,6 +25,14 @@ NSString* AppGroupUserDefaultsCredentialProviderNewCredentials();
 // currently enabled.
 NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled();
 
+// Key for the app group user defaults containing whether saving passwords is
+// currently managed by an enterprise policy.
+NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged();
+
+// Key for the app group user defaults containing whether syncing passwords is
+// currently enabled.
+NSString* AppGroupUserDefaultsCredentialProviderPasswordSyncSetting();
+
 // Key for the app group user defaults indicating if the credentials have been
 // synced with iOS via AuthenticationServices.
 extern NSString* const

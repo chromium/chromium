@@ -196,9 +196,8 @@ class TestProfileIOS final : public ProfileIOS {
     //      }});
     Builder& AddTestingFactories(TestingFactories testing_factories);
 
-    // Sets the name of the ProfileIOS. If not set, then will be
-    // derived from the path passed to `SetPath()` or use an arbitrary
-    // value if `SetPath()` is not called.
+    // Sets the name of the ProfileIOS. If not set, the profile will use an
+    // arbitrary name.
     Builder& SetName(const std::string& name);
 
     // Sets the PrefService to be used by the ProfileIOS.
@@ -212,6 +211,10 @@ class TestProfileIOS final : public ProfileIOS {
     Builder& SetUserCloudPolicyManager(
         std::unique_ptr<policy::UserCloudPolicyManager>
             user_cloud_policy_manager);
+
+    // Returns the name passed to `SetName()`, or if that was not called, an
+    // arbitrary fallback value.
+    std::string GetEffectiveName() const;
 
     // Creates the TestProfileIOS using previously-set settings.
     std::unique_ptr<TestProfileIOS> Build() &&;

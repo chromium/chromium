@@ -467,9 +467,7 @@ TEST(AggregatableAttributionUtilsTest,
 
   EXPECT_EQ(request->shared_info().api_version, "1.0");
 
-  auto max_bytes = request->payload_contents().filtering_id_max_bytes;
-  ASSERT_TRUE(max_bytes.has_value());
-  EXPECT_EQ(max_bytes.value(), 2u);
+  EXPECT_EQ(request->payload_contents().filtering_id_max_bytes, 2u);
 }
 
 }  // namespace content

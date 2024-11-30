@@ -10,7 +10,7 @@
 ] interface GPUDevice : EventTarget {
     [SameObject] readonly attribute GPUSupportedFeatures features;
     [SameObject] readonly attribute GPUSupportedLimits limits;
-    [RuntimeEnabled=WebGPUDeviceAdapterInfo, SameObject] readonly attribute GPUAdapterInfo adapterInfo;
+    [SameObject] readonly attribute GPUAdapterInfo adapterInfo;
 
     [CallWith=ScriptState] readonly attribute Promise<GPUDeviceLostInfo> lost;
 
@@ -25,7 +25,7 @@
 
     [RaisesException] GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);
     [RaisesException] GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);
-    GPUPipelineLayout createPipelineLayout(GPUPipelineLayoutDescriptor descriptor);
+    [CallWith=ScriptState] GPUPipelineLayout createPipelineLayout(GPUPipelineLayoutDescriptor descriptor);
 
     GPUShaderModule createShaderModule(GPUShaderModuleDescriptor descriptor);
     [CallWith=ScriptState] GPURenderPipeline createRenderPipeline(GPURenderPipelineDescriptor descriptor);

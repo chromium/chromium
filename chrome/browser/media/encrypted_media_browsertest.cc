@@ -1649,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
 
   // DolbyVision Profile 5
   TestMediaFoundationPlayback(
-      "color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4");
+      "color_pattern_24_dvhe_05_1920x1080-3sec-frag-cenc.mp4");
 }
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
@@ -1664,8 +1664,7 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
 
   // DolbyVision Profile 8.1
   TestMediaFoundationPlayback(
-      "color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-"
-      "cenc.mp4");
+      "color_pattern_24_dvhe_081_1920x1080-3sec-frag-cenc.mp4");
 }
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
@@ -1680,8 +1679,7 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
 
   // DolbyVision Profile 5
   TestMediaFoundationPlayback(
-      "color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-"
-      "2sec.mp4");
+      "color_pattern_24_dvhe_05_1920x1080-3sec-frag-cenc-clearlead-2sec.mp4");
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1697,8 +1695,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // DolbyVision Profile 8.1
   TestMediaFoundationPlayback(
-      "color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-"
-      "cenc-clearlead-2sec.mp4");
+      "color_pattern_24_dvhe_081_1920x1080-3sec-frag-cenc-clearlead-2sec.mp4");
 }
 
 #endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)

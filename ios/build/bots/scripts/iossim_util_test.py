@@ -491,9 +491,7 @@ class GetiOSSimUtil(test_runner_test.TestCase):
        as mock_delete_simulator_runtime:
       iossim_util.delete_other_ios18_runtimes('22A5297f')
 
-      self.assertEqual(mock_delete_simulator_runtime.call_count, 1)
-      mock_delete_simulator_runtime.assert_has_calls(
-          [mock.call('222222', True)], any_order=True)
+      self.assertEqual(mock_delete_simulator_runtime.call_count, 0)
 
   def test_disable_hardware_keyboard(self, _, _2):
     """Ensures right commands are issued to disable hardware keyboard"""

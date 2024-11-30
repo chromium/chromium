@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_message_handler.h"
 
 #include <inttypes.h>
+
 #include <cstdio>
 #include <sstream>
 #include <string>
@@ -16,6 +17,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
@@ -29,6 +33,14 @@ struct CpuInfo {
   int user;
   int idle;
   int total;
+};
+
+struct GpuInfo {
+  base::TimeDelta busy_time;
+};
+
+struct NpuInfo {
+  base::TimeDelta busy_time;
 };
 
 // When counter overflow, it will restart from zero. base::Value do not
@@ -83,8 +95,9 @@ bool GetCpuInfo(std::vector<CpuInfo>* infos) {
   //   cpu3 2033 32 1075 1400 52 0 1 0 0 0
   const char kProcStat[] = "/proc/stat";
   std::string contents;
-  if (!base::ReadFileToString(base::FilePath(kProcStat), &contents))
+  if (!base::ReadFileToString(base::FilePath(kProcStat), &contents)) {
     return false;
+  }
 
   std::istringstream iss(contents);
   std::string line;
@@ -93,10 +106,12 @@ bool GetCpuInfo(std::vector<CpuInfo>* infos) {
   // all cpuN lines.
   std::getline(iss, line);
   while (std::getline(iss, line)) {
-    if (line.compare(0, 3, "cpu") != 0)
+    if (line.compare(0, 3, "cpu") != 0) {
       continue;
-    if (!ParseProcStatLine(line, infos))
+    }
+    if (!ParseProcStatLine(line, infos)) {
       return false;
+    }
   }
 
   return true;
@@ -168,6 +183,137 @@ void SetZramValue(const base::SwapInfo& info, base::Value::Dict* result) {
   result->Set("zram", std::move(zram_result));
 }
 
+constexpr char kI915EngineInfoPath[] = "/run/debugfs_gpu/i915_engine_info";
+
+std::optional<GpuInfo> GetGpuInfoFromI915EngineInfo() {
+  // Cumulative runtime information has been available on ChromeOS since Kernel
+  // v5.10. In earlier versions, the engine info file may exist, but it will not
+  // include the "Runtime:" stat.
+  //
+  // The implementation can be found in intel_engine_dump() at
+  // drivers/gpu/drm/i915/gt/intel_engine_cs.c.
+  std::string content;
+  if (!base::ReadFileToStringNonBlocking(base::FilePath(kI915EngineInfoPath),
+                                         &content)) {
+    return std::nullopt;
+  }
+
+  base::TimeDelta busy_time;
+  bool found_runtime = false;
+  for (auto line : base::SplitStringPiece(content, "\n", base::KEEP_WHITESPACE,
+                                          base::SPLIT_WANT_NONEMPTY)) {
+    if (!line.starts_with("\tRuntime: ")) {
+      continue;
+    }
+
+    // Multiple engines can run concurrently, causing the busy time to increase
+    // faster than wall-clock time. For simplicity, we aggregate them and clamp
+    // the usage percentage to 100% in the frontend. If needed, we can consider
+    // exposing the per-engine breakdown.
+    int64_t engine_runtime_ms = 0;
+    if (sscanf(line.data(), "\tRuntime: %" PRId64 "ms", &engine_runtime_ms) !=
+        1) {
+      continue;
+    }
+
+    busy_time += base::Milliseconds(engine_runtime_ms);
+    found_runtime = true;
+  }
+
+  if (!found_runtime) {
+    return std::nullopt;
+  }
+
+  return GpuInfo{.busy_time = busy_time};
+}
+
+// Checks if GPU information is available and cache the result for future calls.
+bool IsGpuInfoAvailable() {
+  static bool avail = [&] {
+    std::optional<GpuInfo> avail = GetGpuInfoFromI915EngineInfo();
+    // Assuming zero busy time means the info is unavailable as an educated
+    // heuristic. It's unlikely that gpu is never used before.
+    if (!avail.has_value() || avail->busy_time.is_zero()) {
+      VLOG(1) << "GPU info is not available";
+      return false;
+    }
+    return true;
+  }();
+  return avail;
+}
+
+std::optional<GpuInfo> GetGpuInfo() {
+  if (!IsGpuInfoAvailable()) {
+    return std::nullopt;
+  }
+
+  // TODO: b/380808338 - Support Mali and AMD GPU drivers.
+  return GetGpuInfoFromI915EngineInfo();
+}
+
+void SetGpuValue(const std::optional<GpuInfo>& info,
+                 base::Value::Dict* result) {
+  if (!info.has_value()) {
+    result->Set("gpu", base::Value(base::Value::Type::NONE));
+    return;
+  }
+
+  int busy = ToCounter(info->busy_time.InMilliseconds());
+  result->Set("gpu", base::Value::Dict().Set("busy", busy));
+}
+
+// TODO: b/380808338 - Resolve this dynamically from driver or udev instead of
+// hard-coding it statically.
+static constexpr char kIntelNpuBusyTimePath[] =
+    "/sys/devices/pci0000:00/0000:00:0b.0/npu_busy_time_us";
+
+bool IsNpuInfoAvailable() {
+  static bool avail = [] {
+    if (!base::PathIsReadable(base::FilePath(kIntelNpuBusyTimePath))) {
+      VLOG(1) << "NPU info is not available";
+      return false;
+    }
+    return true;
+  }();
+  return avail;
+}
+
+// TODO: b/380808338 - Support MediaTek NPU as well.
+std::optional<NpuInfo> GetNpuInfo() {
+  if (!IsNpuInfoAvailable()) {
+    // Perform a quick IsAvailable() check for optional metrics that may not be
+    // supported on all devices. This avoids unnecessary attempts to read values
+    // and reduces the excessive DLOG warnings.
+    return std::nullopt;
+  }
+
+  std::string content;
+  if (!base::ReadFileToStringNonBlocking(base::FilePath(kIntelNpuBusyTimePath),
+                                         &content)) {
+    DLOG(WARNING) << "Failed to read Intel NPU busy time";
+    return std::nullopt;
+  }
+
+  int64_t busy_time_us = 0;
+  if (base::StringToInt64(content, &busy_time_us)) {
+    DLOG(WARNING) << "Failed to parse busy time as int64";
+    return std::nullopt;
+  }
+
+  return NpuInfo{.busy_time = base::Microseconds(busy_time_us)};
+}
+
+void SetNpuValue(const std::optional<NpuInfo>& info,
+                 base::Value::Dict* result) {
+  if (!info.has_value()) {
+    result->Set("npu", base::Value(base::Value::Type::NONE));
+    return;
+  }
+
+  int busy = ToCounter(info->busy_time.InMilliseconds());
+  result->Set("npu", base::Value::Dict().Set("busy", busy));
+}
+
 base::Value::Dict GetSysInfo() {
   std::vector<CpuInfo> cpu_infos(base::SysInfo::NumberOfProcessors());
   if (!GetCpuInfo(&cpu_infos)) {
@@ -184,23 +330,27 @@ base::Value::Dict GetSysInfo() {
   }
   base::SwapInfo swap_info;
   if (!GetSwapInfo(&swap_info)) {
-    DLOG(WARNING) << ("Failed to get system zram info.");
+    DLOG(WARNING) << "Failed to get system zram info.";
   }
+  std::optional<GpuInfo> gpu_info = GetGpuInfo();
+  std::optional<NpuInfo> npu_info = GetNpuInfo();
 
   base::Value::Dict result;
   SetConstValue(&result);
   SetCpusValue(cpu_infos, &result);
   SetMemValue(mem_info, vmstat_info, &result);
   SetZramValue(swap_info, &result);
+  SetGpuValue(gpu_info, &result);
+  SetNpuValue(npu_info, &result);
 
   return result;
 }
 
 }  // namespace
 
-SysInternalsMessageHandler::SysInternalsMessageHandler() {}
+SysInternalsMessageHandler::SysInternalsMessageHandler() = default;
 
-SysInternalsMessageHandler::~SysInternalsMessageHandler() {}
+SysInternalsMessageHandler::~SysInternalsMessageHandler() = default;
 
 void SysInternalsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

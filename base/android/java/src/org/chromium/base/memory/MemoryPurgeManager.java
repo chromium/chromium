@@ -23,7 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
  * side. It triggers a critical memory pressure notification once the application has been in the
  * background for more than a few minutes.
  *
- * UI thread only.
+ * <p>UI thread only.
  */
 public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateListener {
     private boolean mStarted;
@@ -36,6 +36,11 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
     // TODO(crbug.com/40860286): Should ideally be tuned according to the distribution of background
     // time residency.
     @VisibleForTesting static final long PURGE_DELAY_MS = 4 * 60 * 1000;
+    // Arbitrary delay for compacting our process memory. This should be longer
+    // than |PURGE_DELAY_MS|, so that we don't touch memory again right after
+    // compacting it. It should also be longer than 70s, so that we can avoid
+    // compacting memory if App Freezer does it for us (on Android 14+).
+    @VisibleForTesting static final long SELF_FREEZE_DELAY_MS = 5 * 60 * 1000;
     private static final long NEVER = -1;
 
     @VisibleForTesting
@@ -85,6 +90,7 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
                 if (mLastBackgroundPeriodStart == NEVER) {
                     mLastBackgroundPeriodStart = TimeUtils.elapsedRealtimeMillis();
                     maybePostDelayedPurgingTask(PURGE_DELAY_MS);
+                    maybePostDelayedSelfFreezeTask();
                 }
                 break;
             case ApplicationState.HAS_DESTROYED_ACTIVITIES:
@@ -120,6 +126,12 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         MemoryPressureListener.notifyMemoryPressure(MemoryPressureLevel.CRITICAL);
     }
 
+    protected void notifySelfFreeze() {
+        if (MemoryPurgeManagerJni.get() == null) return;
+
+        MemoryPressureListener.notifySelfFreeze();
+    }
+
     protected int getApplicationState() {
         return ApplicationStatus.getStateForApplication();
     }
@@ -140,9 +152,34 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         mDelayedPurgeTaskPending = true;
     }
 
+    private void maybePostDelayedSelfFreezeTask() {
+        ThreadUtils.assertOnUiThread();
+
+        if (!shouldSelfFreeze()) return;
+
+        ThreadUtils.postOnUiThreadDelayed(
+                () -> {
+                    doSelfFreeze();
+                },
+                SELF_FREEZE_DELAY_MS);
+    }
+
     private void delayedPurgeTask(boolean mustPurgeNow) {
         mDelayedPurgeTaskPending = false;
         delayedPurge(mustPurgeNow);
+    }
+
+    private void doSelfFreeze() {
+        // We are in foreground now, so do not run this task.
+        if (mLastBackgroundPeriodStart == NEVER) return;
+
+        assert mLastBackgroundPeriodStart < TimeUtils.elapsedRealtimeMillis();
+        long inBackgroundFor = TimeUtils.elapsedRealtimeMillis() - mLastBackgroundPeriodStart;
+        if (inBackgroundFor < SELF_FREEZE_DELAY_MS) {
+            return;
+        }
+
+        notifySelfFreeze();
     }
 
     private boolean shouldTrimMemoryOnPreFreeze() {
@@ -152,10 +189,19 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         return MemoryPurgeManagerJni.get().isOnPreFreezeMemoryTrimEnabled();
     }
 
+    protected boolean shouldSelfFreeze() {
+        if (!LibraryLoader.getInstance().isInitialized()) return false;
+        if (MemoryPurgeManagerJni.get() == null) return false;
+
+        return MemoryPurgeManagerJni.get().isSelfFreezeEnabled();
+    }
+
     @NativeMethods
     interface Natives {
         void postDelayedPurgeTaskOnUiThread(long delayMillis);
 
         boolean isOnPreFreezeMemoryTrimEnabled();
+
+        boolean isSelfFreezeEnabled();
     }
 }

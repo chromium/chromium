@@ -69,15 +69,11 @@ ChromeTailoredSecurityService::ChromeTailoredSecurityService(Profile* profile)
                               profile->GetPrefs()),
       profile_(profile) {
   AddObserver(this);
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    if (HistorySyncEnabledForUser() &&
-        !SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
-            prefs())) {
-      retry_timer_.Start(
-          FROM_HERE, kRetryAttemptStartupDelay, this,
-          &ChromeTailoredSecurityService::MaybeRetryForSyncUsers);
-    }
+  if (HistorySyncEnabledForUser() &&
+      !SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
+          prefs())) {
+    retry_timer_.Start(FROM_HERE, kRetryAttemptStartupDelay, this,
+                       &ChromeTailoredSecurityService::MaybeRetryForSyncUsers);
   }
 }
 
@@ -254,11 +250,8 @@ ChromeTailoredSecurityService::GetURLLoaderFactory() {
 
 void ChromeTailoredSecurityService::SaveRetryState(
     TailoredSecurityRetryState state) {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    profile_->GetPrefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
-                                     state);
-  }
+  profile_->GetPrefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                                   state);
 }
 
 void ChromeTailoredSecurityService::MaybeRetryForSyncUsers() {

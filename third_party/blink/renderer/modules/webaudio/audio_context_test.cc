@@ -133,6 +133,9 @@ class MockMediaDevicesDispatcherHost final
   void SetCaptureHandleConfig(
       mojom::blink::CaptureHandleConfigPtr config) override {}
 
+  void SetPreferredSinkId(const String& sink_id,
+                          SetPreferredSinkIdCallback callback) override {}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {}
 

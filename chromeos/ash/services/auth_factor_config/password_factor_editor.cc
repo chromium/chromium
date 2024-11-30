@@ -336,6 +336,7 @@ void PasswordFactorEditor::RemovePasswordWithContext(
   if (!password_factor) {
     // The user doesn't have a password yet (neither Gaia nor local).
     LOG(ERROR) << "No existing password, will not remove password.";
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
     return;
   }
 
@@ -346,10 +347,12 @@ void PasswordFactorEditor::RemovePasswordWithContext(
   if (!pin_factor) {
     // The user doesn't have a password to remove.
     LOG(ERROR) << "No existing pin, will not remove password.";
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
     return;
   } else if (pin_factor->GetCommonMetadata().lockout_policy() !=
              cryptohome::LockoutPolicy::kTimeLimited) {
     LOG(ERROR) << "Cannot remove password, pin is not modern pin";
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
     return;
   }
 

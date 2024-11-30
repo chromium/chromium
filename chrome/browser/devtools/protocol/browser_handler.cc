@@ -27,7 +27,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_png_rep.h"
 
-using protocol::Maybe;
 using protocol::Response;
 
 namespace {
@@ -77,7 +76,7 @@ BrowserHandler::BrowserHandler(protocol::UberDispatcher* dispatcher,
 BrowserHandler::~BrowserHandler() = default;
 
 Response BrowserHandler::GetWindowForTarget(
-    protocol::Maybe<std::string> target_id,
+    std::optional<std::string> target_id,
     int* out_window_id,
     std::unique_ptr<protocol::Browser::Bounds>* out_bounds) {
   auto host =
@@ -181,8 +180,8 @@ Response BrowserHandler::SetWindowBounds(
 }
 
 protocol::Response BrowserHandler::SetDockTile(
-    protocol::Maybe<std::string> label,
-    protocol::Maybe<protocol::Binary> image) {
+    std::optional<std::string> label,
+    std::optional<protocol::Binary> image) {
   std::vector<gfx::ImagePNGRep> reps;
   if (image.has_value()) {
     reps.emplace_back(image.value().bytes(), 1);

@@ -1,0 +1,6 @@
+Tests screen rotation on a secondary screen.
+1st screen: 0,0 800x600
+2nd screen: 800,0 600x800
+Rotating Page2 screen: 2nd screen
+1st screen: 0,0 800x600
+2nd screen: 800,0 800x600

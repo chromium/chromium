@@ -5,10 +5,28 @@
 source_set("protocols") {
   sources = [
     "lens_overlay_bottom_sheet_presentation_delegate.h",
+    "lens_overlay_error_handler.h",
     "lens_overlay_result_consumer.h",
     "lens_result_page_mutator.h",
     "lens_toolbar_consumer.h",
     "lens_toolbar_mutator.h",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("results_page_presenter") {
+  sources = [
+    "lens_overlay_results_page_presenter.h",
+    "lens_overlay_results_page_presenter.mm",
+    "lens_overlay_results_page_presenter_delegate.h",
+  ]
+  deps = [
+    ":protocols",
+    ":view_controller",
+    "//base",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -32,13 +50,13 @@ source_set("view_controller") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/lens_overlay/ui/resources:animation_files",
+    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
-    "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
@@ -86,6 +104,20 @@ source_set("lens_overlay_accessibility_identifier_constants") {
   sources = [
     "lens_overlay_accessibility_identifier_constants.h",
     "lens_overlay_accessibility_identifier_constants.mm",
+  ]
+}
+
+source_set("network_issue_alert_presenter") {
+  sources = [
+    "lens_overlay_network_issue_alert_presenter.h",
+    "lens_overlay_network_issue_alert_presenter.mm",
+  ]
+  deps = [
+    ":protocols",
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ui/base",
+    "//url",
   ]
 }
 

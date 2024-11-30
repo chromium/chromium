@@ -61,6 +61,15 @@ class Task {
     LACROS, /* A task from lacros-chrome */
   };
 
+  // Additional Type Information about a Task.
+  enum class SubType {
+    kNoSubType = 0,
+
+    /* Renderer Processes may also be marked as a specific renderer subtype. */
+    kSpareRenderer,
+    kUnknownRenderer,
+  };
+
   // Create a task with the given |title| and the given favicon |icon|. This
   // task runs on a process whose handle is |handle|.
   // If |process_id| is not supplied, it will be determined by |handle|.
@@ -111,6 +120,9 @@ class Task {
 
   // Returns the task type.
   virtual Type GetType() const = 0;
+
+  // Returns the task subtype.
+  virtual SubType GetSubType() const;
 
   // This is the unique ID of the BrowserChildProcessHost/RenderProcessHost. It
   // is not the PID nor the handle of the process.

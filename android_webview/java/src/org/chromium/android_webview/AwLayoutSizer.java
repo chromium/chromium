@@ -51,7 +51,7 @@ public class AwLayoutSizer {
     }
 
     /**
-     * Default constructor. Note: both setDelegate and setDIPScale must be called before the class
+     * Default constructor. Note: both setDelegate and setDipScale must be called before the class
      * is ready for use.
      */
     public AwLayoutSizer() {}
@@ -60,7 +60,7 @@ public class AwLayoutSizer {
         mDelegate = delegate;
     }
 
-    public void setDIPScale(double dipScale) {
+    public void setDipScale(double dipScale) {
         mDIPScale = dipScale;
     }
 

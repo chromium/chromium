@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_screen_provider.h"
 
-#import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
-#import "ios/chrome/browser/ui/screen/screen_type.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 
 @implementation SigninScreenProvider
 

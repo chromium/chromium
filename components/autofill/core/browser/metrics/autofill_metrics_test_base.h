@@ -181,9 +181,6 @@ class AutofillMetricsBaseTest {
                                       AutofillTriggerSource trigger_source,
                                       const std::u16string& real_pan,
                                       bool is_virtual_card = false);
-  void OnCreditCardFetchingFailed(const FormData& form,
-                                  const FormFieldData& field,
-                                  AutofillTriggerSource trigger_source);
 
   FormData GetAndAddSeenForm(const test::FormDescription& form_description) {
     FormData form = test::GetFormData(form_description);
@@ -211,7 +208,7 @@ class AutofillMetricsBaseTest {
         mojom::ActionPersistence::kFill, form,
         form.fields().front().global_id(),
         *personal_data().address_data_manager().GetProfileByGUID(profile_guid),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
   }
 
   void UndoAutofill(const FormData& form) {
@@ -221,13 +218,12 @@ class AutofillMetricsBaseTest {
 
   [[nodiscard]] FormData CreateEmptyForm() {
     FormData form;
-    form.set_host_frame(test::MakeLocalFrameToken());
+    form.set_host_frame(autofill_driver_->GetFrameToken());
     form.set_renderer_id(test::MakeFormRendererId());
     form.set_name(u"TestForm");
     form.set_url(GURL("https://example.com/form.html"));
     form.set_action(GURL("https://example.com/submit.html"));
-    form.set_main_frame_origin(
-        url::Origin::Create(autofill_client_->form_origin()));
+    form.set_main_frame_origin(url::Origin::Create(autofill_driver_->url()));
     return form;
   }
 
@@ -247,11 +243,11 @@ class AutofillMetricsBaseTest {
   }
 
   TestPersonalDataManager& personal_data() {
-    return *autofill_client_->GetPersonalDataManager();
+    return autofill_client_->GetPersonalDataManager();
   }
 
   ukm::TestUkmRecorder& test_ukm_recorder() {
-    return *autofill_client_->GetTestUkmRecorder();
+    return *autofill_client_->GetUkmRecorder();
   }
 
   MockPaymentsAutofillClient& payments_autofill_client() {

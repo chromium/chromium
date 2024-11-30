@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Відкриває налаштування, де можна зробити Chrome вебпереглядачем за умовчанням.</translation>
 <translation id="1670609221633730681">Порада щодо Chrome: виберіть розташування адресного рядка</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Зберігайте паролі в Chrome</translation>
 <translation id="1790080846677398234">Додає введені URL-адреси до закладок у Chrome.</translation>
 <translation id="1799920918471566157">Поради щодо Chrome</translation>
 <translation id="1830634592642484976">Ця адреса зараз зберігається в Chrome. Збережіть її у своєму обліковому записі Google (<ph name="USER_EMAIL" />), щоб використовувати в усіх продуктах Google.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">Це означає, що Chrome щоразу буде запитувати мобільний сайт.</translation>
 <translation id="3740397331642243698">Відкриває введені URL-адреси в Google Chrome в анонімному режимі.</translation>
 <translation id="3741995255368156336">Відкриває список читання в Chrome.</translation>
+<translation id="3808570423967020928">Відкривайте Chrome швидше з панелі Dock головного екрана.</translation>
 <translation id="3827545470516145620">Ви ввімкнули стандартний режим безпеки на цьому пристрої</translation>
 <translation id="384394811301901750">Зараз Google Chrome не може використовувати камеру</translation>
 <translation id="3863841106411295595">Додає введені URL-адреси до списку читання в Chrome.</translation>
@@ -219,9 +221,11 @@
 
 Щоб дізнатися про інші налаштування, які використовують дані для покращення роботи Chrome, перейдіть на <ph name="BEGIN_LINK" />сторінку сервісів Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Ви можете видалити дані вебперегляду в Chrome.</translation>
+<translation id="6924922227983877439">Відкривайте посилання в Chrome за умовчанням</translation>
 <translation id="6975725306479268850">Виберіть значення Chrome для параметра "Автозаповнення"</translation>
 <translation id="7056826488869329999">Відкриває і запускає перевірку безпеки в Chrome.</translation>
 <translation id="7061455974939528301">Утримуйте значок Chrome і натисніть "Редагувати головний екран"</translation>
+<translation id="7065813315247345131">Перемістіть Chrome на панель Dock</translation>
 <translation id="7124339256045485976">Користуйтеся найновішою версією Chrome</translation>
 <translation id="7161390184744336561">Версія Google Chrome застаріла</translation>
 <translation id="7165736900384873061">Використовувати сканер QR-кодів у Google Chrome</translation>

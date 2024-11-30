@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/chrome_features.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -199,8 +200,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     // a different tab strip owns `TabDragController`. `EndDrag()` exits early
     // if `drag_controller_` is null, so we use this dedicated method to notify
     // `TabDragController`.
-    if (TabDragController::IsSystemDragAndDropSessionRunning()) {
-      TabDragController::OnSystemDragAndDropEnded();
+    if (TabDragController::IsSystemDnDSessionRunning()) {
+      TabDragController::OnSystemDnDEnded();
     } else {
       EndDrag(END_DRAG_COMPLETE);
     }
@@ -1393,6 +1394,11 @@ void TabStrip::SetTabNeedsAttention(int model_index, bool attention) {
   tab_at(model_index)->SetTabNeedsAttention(attention);
 }
 
+void TabStrip::SetTabGroupNeedsAttention(const tab_groups::TabGroupId& id,
+                                         bool attention) {
+  group_header(id)->SetTabGroupNeedsAttention(attention);
+}
+
 std::optional<int> TabStrip::GetModelIndexOf(const TabSlotView* view) const {
   const std::optional<int> viewmodel_index =
       tab_container_->GetModelIndexOf(view);
@@ -1741,7 +1747,8 @@ bool TabStrip::IsFocusInTabs() const {
 }
 
 bool TabStrip::ShouldCompactLeadingEdge() const {
-  return controller_->IsFrameButtonsRightAligned() &&
+  return !features::IsTabstripComboButtonEnabled() &&
+         controller_->IsFrameButtonsRightAligned() &&
          tabs::GetTabSearchTrailingTabstrip(controller_->GetProfile());
 }
 

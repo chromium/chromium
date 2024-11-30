@@ -861,6 +861,25 @@ static inline bool MatchesLiteral(const UChar* a, const char (&b)[N]) {
   return true;
 }
 
+template <int N>
+static inline bool ConsumeMatchingLiteral(const LChar** a,
+                                          const LChar* end,
+                                          const char (&b)[N]) {
+  if (end - *a < N - 1) {
+    return false;
+  }
+  if (!MatchesLiteral(*a, b)) {
+    return false;
+  }
+  *a += N - 1;
+
+  // Skip trailing whitespace.
+  while (*a != end && IsHTMLSpace(**a)) {
+    (*a)++;
+  }
+  return true;
+}
+
 // Right-hand side must already be lowercase.
 static inline bool MatchesCaseInsensitiveLiteral4(const LChar* a,
                                                   const char (&b)[5]) {
@@ -1234,10 +1253,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kNone;
     case CSSPropertyID::kForcedColorAdjust:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
-             (value_id == CSSValueID::kPreserveParentColor &&
-              (RuntimeEnabledFeatures::
-                   ForcedColorsPreserveParentColorEnabled() ||
-               parser_mode == kUASheetMode));
+             value_id == CSSValueID::kPreserveParentColor;
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||
@@ -1921,8 +1937,8 @@ static bool ParseTransformTranslateArguments(
     unsigned expected_count,
     CSSFunctionValue* transform_value) {
   while (expected_count) {
-    wtf_size_t delimiter = WTF::Find(pos, static_cast<wtf_size_t>(end - pos),
-                                     expected_count == 1 ? ')' : ',');
+    wtf_size_t delimiter =
+        WTF::Find(base::span(pos, end), expected_count == 1 ? ')' : ',');
     if (delimiter == kNotFound) {
       return false;
     }
@@ -1947,8 +1963,7 @@ static bool ParseTransformTranslateArguments(
 static bool ParseTransformRotateArgument(const LChar*& pos,
                                          const LChar* end,
                                          CSSFunctionValue* transform_value) {
-  wtf_size_t delimiter =
-      WTF::Find(pos, static_cast<wtf_size_t>(end - pos), ')');
+  wtf_size_t delimiter = WTF::Find(base::span(pos, end), ')');
   if (delimiter == kNotFound) {
     return false;
   }
@@ -1976,8 +1991,8 @@ static bool ParseTransformNumberArguments(const LChar*& pos,
                                           unsigned expected_count,
                                           CSSFunctionValue* transform_value) {
   while (expected_count) {
-    wtf_size_t delimiter = WTF::Find(pos, static_cast<wtf_size_t>(end - pos),
-                                     expected_count == 1 ? ')' : ',');
+    wtf_size_t delimiter =
+        WTF::Find(base::span(pos, end), expected_count == 1 ? ')' : ',');
     if (delimiter == kNotFound) {
       return false;
     }
@@ -2130,7 +2145,7 @@ static bool TransformCanLikelyUseFastPath(const LChar* chars, unsigned length) {
         // All other things, ex. skew.
         return false;
     }
-    wtf_size_t arguments_end = WTF::Find(chars, length, ')', i);
+    wtf_size_t arguments_end = WTF::Find(base::span(chars, length), ')', i);
     if (arguments_end == kNotFound) {
       return false;
     }
@@ -2174,6 +2189,11 @@ static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
   return transform_list;
 }
 
+static bool IsCustomIdentChar(char c) {
+  return c == '-' || c == '_' || (c >= '0' && c <= '9') ||
+         (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+}
+
 CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
                                               StringView string,
                                               const CSSParserContext* context) {
@@ -2208,6 +2228,84 @@ CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
     return transform;
   }
   return nullptr;
+}
+
+bool CSSParserFastPaths::IsSafeAreaInsetBottom(StringView string) {
+  if (!string.Is8Bit()) {
+    return false;
+  }
+  const LChar* pos = string.Characters8();
+  const LChar* end = pos + string.length();
+
+  // We can be env(SAIB) or calc(env(SAIB) +/- ...).
+  // If calc(), env(SAIB) must be the first operand.
+  // Also allow simple fallback value in the env(), like env(SAIB, 10px).
+
+  if (ConsumeMatchingLiteral(&pos, end, "env(")) {
+    return ConsumeMatchingLiteral(&pos, end, "safe-area-inset-bottom");
+  }
+  if (ConsumeMatchingLiteral(&pos, end, "calc(")) {
+    if (!ConsumeMatchingLiteral(&pos, end, "env(")) {
+      return false;
+    }
+    if (!ConsumeMatchingLiteral(&pos, end, "safe-area-inset-bottom")) {
+      return false;
+    }
+    // Look for the end of the env(...)
+    while (true) {
+      if (pos == end) {
+        return false;
+      }
+      char ch = *pos;
+      if (ch == ')') {
+        ConsumeMatchingLiteral(&pos, end, ")");
+        break;
+      }
+      // Tolerate simple fallback values like ", 0px".
+      if (!(IsHTMLSpace(ch) || ch == ',' || ch == '-' || ch == '.' ||
+            (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))) {
+        return false;
+      }
+      pos++;
+    }
+    // Operator must be + or -
+    if (ConsumeMatchingLiteral(&pos, end, "+") ||
+        ConsumeMatchingLiteral(&pos, end, "-")) {
+      // Second operand can be var(--foo) or simple length like "10px".
+      if (ConsumeMatchingLiteral(&pos, end, "var(")) {
+        // TODO(crbug.com/373980016): Verify that the var actually exists.
+        while (pos != end && IsCustomIdentChar(*pos)) {
+          pos++;
+        }
+        while (pos != end && IsHTMLSpace(*pos)) {
+          pos++;
+        }
+        if (!ConsumeMatchingLiteral(&pos, end, ")")) {
+          return false;
+        }
+      } else {
+        // Look for simple length value.
+        const LChar* tok_end = pos;
+        while (tok_end != end && *tok_end != ')' && !IsHTMLSpace(*tok_end)) {
+          tok_end++;
+        }
+        double number;
+        CSSPrimitiveValue::UnitType unit;
+        if (!ParseSimpleLength(pos, tok_end - pos, unit, number)) {
+          return false;
+        }
+        pos = tok_end;
+        while (pos != end && IsHTMLSpace(*pos)) {
+          pos++;
+        }
+      }
+    }
+    // End of the calc() expression.
+    if (ConsumeMatchingLiteral(&pos, end, ")")) {
+      return pos == end;
+    }
+  }
+  return false;
 }
 
 }  // namespace blink

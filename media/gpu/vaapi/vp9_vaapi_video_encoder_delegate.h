@@ -100,7 +100,6 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void set_rate_ctrl_for_testing(
       std::unique_ptr<VP9RateControlWrapper> rate_ctrl);
 
-  bool RecreateSVCLayersIfNeeded(VideoBitrateAllocation& bitrate_allocation);
   bool ApplyPendingUpdateRates();
 
   PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;

@@ -206,14 +206,14 @@ std::unordered_map<std::string, ExpectedHeaderInfo> GetExpectedHeaderInfo() {
                            ExpectedHeaderInfo({}, true));
   expected_headers.emplace(
       "content-type", ExpectedHeaderInfo({"text/html; charset=UTF-8"}, false));
-  expected_headers.emplace(
-      "date", ExpectedHeaderInfo({"Wed, 09 Oct 2024 18:56:06 GMT"}, true));
   expected_headers.emplace("expires", ExpectedHeaderInfo({"-1"}, false));
   expected_headers.emplace("permissions-policy",
                            ExpectedHeaderInfo({"unload=()"}, false));
   expected_headers.emplace("server", ExpectedHeaderInfo({"gws"}, false));
+  // We apply `max-age=31536000` for all cases when the navigation commit is
+  // started with the synthetic response.
   expected_headers.emplace("strict-transport-security",
-                           ExpectedHeaderInfo({"max-age=31536000"}, false));
+                           ExpectedHeaderInfo({"max-age=31536000"}, true));
   expected_headers.emplace("x-frame-options",
                            ExpectedHeaderInfo({"SAMEORIGIN"}, false));
   expected_headers.emplace("x-xss-protection",
@@ -239,6 +239,20 @@ std::unordered_map<std::string, ExpectedHeaderInfo> GetExpectedHeaderInfo() {
 #endif  // BUDILDFLAG(IS_ANDROID)
 
   return expected_headers;
+}
+
+// Headers that are not handled by the browser, or not used at all for the
+// navigation commit.
+std::unordered_set<std::string> GetIgnorableHeaderInfo() {
+  std::unordered_set<std::string> ignorable_headers;
+  ignorable_headers.emplace("date");
+  ignorable_headers.emplace("p3p");
+  // TODO(crbug.com/379764811): Consider moving this header to <meta> HTML tag.
+  // Even though the impact is very limited, the existence of this header will
+  // change the behavior.
+  ignorable_headers.emplace("X-DNS-Prefetch-Control");
+
+  return ignorable_headers;
 }
 
 // Check the Content-Security-Policy header is expected, except for the `nonce`.
@@ -302,12 +316,17 @@ struct HeaderInfo {
 
 using ReportedHeaders = std::vector<HeaderInfo>;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(HeaderMismatchType)
 enum class HeaderMismatchType {
   kHeaderNotExpected = 1 << 0,
   kValueMismatched = 1 << 1,
   kHeaderNotActuallyExist = 1 << 2,
   kMaxValue = kHeaderNotActuallyExist,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:HeaderMismatchType)
 
 void SetHeaderCrashKeys(const ReportedHeaders& reported_headers,
                         HeaderMismatchType mismatch_type) {
@@ -785,10 +804,15 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
 
   std::unordered_map<std::string, ExpectedHeaderInfo> expected_headers =
       GetExpectedHeaderInfo();
+  const static std::unordered_set<std::string> ignorable_headers =
+      GetIgnorableHeaderInfo();
 
   size_t iter = 0;
   std::string name, value;
   while (response_headers->EnumerateHeaderLines(&iter, &name, &value)) {
+    if (ignorable_headers.contains(name)) {
+      continue;
+    }
     if (!expected_headers.contains(name)) {
       // GWSHeaderNotExpected: The header is not in the expected header list.
       not_expected_headers.emplace_back(name, value);

@@ -204,7 +204,7 @@ SyncFileSystemGetFileStatusesFunction::SyncFileSystemGetFileStatusesFunction() {
 }
 
 SyncFileSystemGetFileStatusesFunction::
-    ~SyncFileSystemGetFileStatusesFunction() {}
+    ~SyncFileSystemGetFileStatusesFunction() = default;
 
 ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
   if (base::FeatureList::IsEnabled(features::kDeprecateSyncFileSystemApis)) {

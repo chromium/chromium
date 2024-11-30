@@ -110,7 +110,7 @@ TEST_F(LimitingAudioQueueTest, FlushClearFlush) {
 
 // Makes sure inputs and outputs are bit-wise identical when the limiter isn't
 // adjusting gain.
-TEST_F(LimitingAudioQueueTest, NoLimiting_IsPassthrough) {
+TEST_F(LimitingAudioQueueTest, NoLimitingIsPassthrough) {
   FillWithSine(input_bus_.get());
 
   scoped_refptr<AudioBuffer> result;
@@ -128,7 +128,7 @@ TEST_F(LimitingAudioQueueTest, NoLimiting_IsPassthrough) {
 
 // Makes sure that calling Clear() drops both pending output callbacks, and does
 // not include past data in the following buffers.
-TEST_F(LimitingAudioQueueTest, Clear_DropsPendingInputs) {
+TEST_F(LimitingAudioQueueTest, ClearDropsPendingInputs) {
   constexpr float kGuardValue = 0.5f;
 
   // Fill the first channel with kGuardValue.
@@ -174,7 +174,7 @@ TEST_F(LimitingAudioQueueTest, Clear_DropsPendingInputs) {
 
 // Makes sure inputs and outputs are bit-wise identical when the limiter isn't
 // adjusting gain.
-TEST_F(LimitingAudioQueueTest, NoLimiting_PartialBuffer_IsPassthrough) {
+TEST_F(LimitingAudioQueueTest, NoLimitingPartialBufferIsPassthrough) {
   FillWithSine(input_bus_.get());
 
   constexpr int kPartialBuffer = kBufferSize / 4;
@@ -195,7 +195,7 @@ TEST_F(LimitingAudioQueueTest, NoLimiting_PartialBuffer_IsPassthrough) {
   EXPECT_TRUE(result);
 }
 
-TEST_F(LimitingAudioQueueTest, Limiting_CompressesGain) {
+TEST_F(LimitingAudioQueueTest, LimitingCompressesGain) {
   FillWithSine(input_bus_.get(), 2.0f);
 
   bool has_out_of_range_value = false;

@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -685,29 +684,50 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
 
     if (!(keyboard_event->GetModifiers() & ignore_modifiers)) {
       if (key == keywords::kArrowUp && select) {
-        HTMLOptionElement* previous_option = nullptr;
-        OptionListIterator option_list = select->GetOptionList().begin();
-        while (*option_list && *option_list != this) {
-          previous_option = *option_list;
-          ++option_list;
+        OptionListIterator option_list_iterator =
+            select->GetOptionList().begin();
+        while (*option_list_iterator && *option_list_iterator != this) {
+          ++option_list_iterator;
         }
-        if (previous_option) {
-          previous_option->Focus(FocusParams(FocusTrigger::kUserGesture));
+
+        if (*option_list_iterator) {
+          CHECK_EQ(*option_list_iterator, this);
+
+          HTMLOptionElement* previous_option = nullptr;
+          do {
+            --option_list_iterator;
+            previous_option = *option_list_iterator;
+
+            if (previous_option && previous_option->IsFocusable()) {
+              previous_option->Focus(FocusParams(FocusTrigger::kUserGesture));
+              break;
+            }
+          } while (previous_option);
+
+          event.SetDefaultHandled();
+          return;
         }
-        event.SetDefaultHandled();
-        return;
       } else if (key == keywords::kArrowDown && select) {
-        OptionListIterator option_list = select->GetOptionList().begin();
-        while (*option_list && *option_list != this) {
-          ++option_list;
+        OptionListIterator option_list_iterator =
+            select->GetOptionList().begin();
+        while (*option_list_iterator && *option_list_iterator != this) {
+          ++option_list_iterator;
         }
-        if (*option_list) {
-          CHECK_EQ(*option_list, this);
-          ++option_list;
-          auto* next_option = *option_list;
-          if (next_option) {
-            next_option->Focus(FocusParams(FocusTrigger::kUserGesture));
-          }
+
+        if (*option_list_iterator) {
+          CHECK_EQ(*option_list_iterator, this);
+
+          HTMLOptionElement* next_option = nullptr;
+          do {
+            ++option_list_iterator;
+            next_option = *option_list_iterator;
+
+            if (next_option && next_option->IsFocusable()) {
+              next_option->Focus(FocusParams(FocusTrigger::kUserGesture));
+              break;
+            }
+          } while (next_option);
+
           event.SetDefaultHandled();
           return;
         }

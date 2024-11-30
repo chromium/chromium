@@ -480,7 +480,6 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kSharedStorageAPI,
-                            blink::features::kSharedStorageAPIM118,
                             blink::features::kFencedFrames},
       /*disabled_features=*/{});
 
@@ -780,7 +779,7 @@ TEST_F(NavigationRequestTest, RuntimeFeatureStateStorageKey) {
 
     if (disable_sp) {
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
+          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
     }
 
     navigation->ReadyToCommit();

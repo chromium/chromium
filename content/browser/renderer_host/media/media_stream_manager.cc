@@ -44,6 +44,7 @@
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/browser/renderer_host/media/media_stream_metrics.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
+#include "content/browser/renderer_host/media/preferred_audio_output_device_manager.h"
 #include "content/browser/renderer_host/media/service_video_capture_provider.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
@@ -1668,6 +1669,11 @@ media::AudioSystem* MediaStreamManager::audio_system() {
   return audio_system_;
 }
 
+PreferredAudioOutputDeviceManager*
+MediaStreamManager::preferred_audio_output_device_manager() {
+  return preferred_audio_output_device_manager_.get();
+}
+
 void MediaStreamManager::AddVideoCaptureObserver(
     media::VideoCaptureObserver* capture_observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -3283,6 +3289,11 @@ void MediaStreamManager::InitializeMaybeAsync(
                           base::Unretained(this)),
       base::BindRepeating(&MediaStreamManager::NotifyDevicesChanged,
                           base::Unretained(this)));
+
+  if (base::FeatureList::IsEnabled(features::kPreferredAudioOutputDevices)) {
+    preferred_audio_output_device_manager_ =
+        std::make_unique<PreferredAudioOutputDeviceManagerImpl>();
+  }
 }
 
 void MediaStreamManager::Opened(
@@ -3831,6 +3842,7 @@ void MediaStreamManager::WillDestroyCurrentMessageLoop() {
   video_capture_manager_ = nullptr;
   media_devices_manager_ = nullptr;
   media_stream_manager = nullptr;
+  preferred_audio_output_device_manager_ = nullptr;
   requests_.clear();
   dispatcher_hosts_.Clear();
   video_capture_hosts_.Clear();
@@ -3981,6 +3993,18 @@ bool MediaStreamManager::IsOriginAllowed(int render_process_id,
   return true;
 }
 
+// static.
+PreferredAudioOutputDeviceManager*
+MediaStreamManager::GetPreferredOutputManagerInstance() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (!MediaStreamManager::GetInstance()) {
+    return nullptr;
+  }
+
+  return MediaStreamManager::GetInstance()
+      ->preferred_audio_output_device_manager();
+}
+
 void MediaStreamManager::SetCapturingLinkSecured(
     int render_process_id,
     const base::UnguessableToken& session_id,
@@ -4035,6 +4059,11 @@ void MediaStreamManager::SetCapturedSurfaceControllerFactoryForTesting(
 void MediaStreamManager::SetGenerateStreamsCallbackForTesting(
     GenerateStreamTestCallback test_callback) {
   generate_stream_test_callback_ = std::move(test_callback);
+}
+
+void MediaStreamManager::SetPreferredAudioOutputDeviceManagerForTesting(
+    std::unique_ptr<PreferredAudioOutputDeviceManager> manager) {
+  preferred_audio_output_device_manager_ = std::move(manager);
 }
 
 MediaStreamDevices MediaStreamManager::ConvertToMediaStreamDevices(

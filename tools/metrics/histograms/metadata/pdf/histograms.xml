@@ -68,13 +68,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2025-03-22">
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2025-05-25">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Measures if PDFs opened in the PDF viewer have attachments. This is logged
     whenever a document is opened in the PDF viewer.
   </summary>
+</histogram>
+
+<histogram name="PDF.Ink2StrokeBrushType" enum="PDFInk2StrokeBrushType"
+    expires_after="2025-12-01">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the brush type used for Ink2 stroke modifications in the PDF viewer.
+    This includes new drawing strokes as well as erasing strokes. Erase strokes
+    that erase pre-existing strokes in a PDF are also included. This is only
+    recorded when drawing or erasing actions are performed by the user, but not
+    if they occur as part of undo or redo operations. Eraser strokes that do not
+    erase any other strokes are ignored.
+  </summary>
+</histogram>
+
+<histogram name="PDF.Ink2Stroke{Brush}Size" enum="PDFInk2StrokeBrushSize"
+    expires_after="2025-12-01">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the brush size used for an Ink2 {Brush} stroke modification in the
+    PDF viewer. This includes new drawing strokes as well as erasing strokes.
+    Erase strokes that erase pre-existing strokes in a PDF are also included.
+    This is only recorded when drawing or erasing actions are performed by the
+    user, but not if they occur as part of undo or redo operations. Eraser
+    strokes that do not erase any other strokes are ignored.
+  </summary>
+  <token key="Brush">
+    <variant name="Eraser"/>
+    <variant name="Highlighter"/>
+    <variant name="Pen"/>
+  </token>
 </histogram>
 
 <histogram name="PDF.LoadStatus2" enum="ChromePDFViewerLoadStatus"

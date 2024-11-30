@@ -23,6 +23,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -793,6 +794,14 @@ void ArcSessionManager::SetUserInfo() {
 void ArcSessionManager::TrimVmMemory(TrimVmMemoryCallback callback,
                                      int page_limit) {
   arc_session_runner_->TrimVmMemory(std::move(callback), page_limit);
+}
+
+std::string ArcSessionManager::GetSerialNumberForKeyMint() {
+  DCHECK(arc::IsArcVmEnabled());
+  if (!arc_salt_on_disk_.has_value()) {
+    arc_salt_on_disk_ = ReadSaltOnDisk(base::FilePath(kArcSaltPath));
+  }
+  return GetSerialNumber();
 }
 
 std::string ArcSessionManager::GetSerialNumber() const {

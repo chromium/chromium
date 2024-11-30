@@ -290,20 +290,22 @@ class BlinkLengthPrinter:
         if ltype == 5:
             return 'Length(MinIntrinsic)'
         if ltype == 6:
-            return 'Length(Stretch)'
+            return 'Length(FillAvailable)'
         if ltype == 7:
-            return 'Length(FitContent)'
+            return 'Length(Stretch)'
         if ltype == 8:
+            return 'Length(FitContent)'
+        if ltype == 9:
             # Would like to print pixelsAndPercent() but can't call member
             # functions - https://sourceware.org/bugzilla/show_bug.cgi?id=13326
             return 'Length(Calculated)'
-        if ltype == 9:
-            return 'Length(ExtendToZoom)'
         if ltype == 10:
-            return 'Length(DeviceWidth)'
+            return 'Length(ExtendToZoom)'
         if ltype == 11:
-            return 'Length(DeviceHeight)'
+            return 'Length(DeviceWidth)'
         if ltype == 12:
+            return 'Length(DeviceHeight)'
+        if ltype == 13:
             return 'Length(MaxSizeNone)'
         return 'Length(unknown type %i)' % ltype
 

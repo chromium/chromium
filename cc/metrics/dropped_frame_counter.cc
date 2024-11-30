@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/metrics/dropped_frame_counter.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iterator>
 
@@ -31,7 +27,7 @@ const base::TimeDelta kDefaultSlidingWindowInterval = base::Seconds(1);
 
 // The start ranges of each bucket, up to but not including the start of the
 // next bucket. The last bucket contains the remaining values.
-constexpr double kBucketBounds[7] = {0, 3, 6, 12, 25, 50, 75};
+constexpr std::array<double, 7> kBucketBounds = {0, 3, 6, 12, 25, 50, 75};
 
 // Search backwards using the bucket bounds defined above.
 size_t DecideSmoothnessBucket(double pdf) {
@@ -214,19 +210,18 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
     }
   }
 
-  std::fill_n(dropped_frame_count_in_window_,
-              SmoothnessStrategy::kStrategyCount, 0);
+  dropped_frame_count_in_window_.fill(0);
   sliding_window_ = {};
   latest_sliding_window_start_ = {};
   latest_sliding_window_interval_ = {};
 }
 
-void DroppedFrameCounter::EnableReporForUI() {
+void DroppedFrameCounter::EnableReportForUI() {
   report_for_ui_ = true;
 }
 
 void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args) {
-  if (fcp_received_) {
+  if (first_contentful_paint_received_) {
     frame_sorter_.AddNewFrame(args);
   }
 }
@@ -239,7 +234,8 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
 
   // Don't measure smoothness for frames that start before FCP is received, or
   // that have already been reported as dropped.
-  if (is_dropped && fcp_received_ && args.frame_time >= time_fcp_received_ &&
+  if (is_dropped && first_contentful_paint_received_ &&
+      args.frame_time >= time_first_contentful_paint_received_ &&
       !frame_sorter_.IsAlreadyReportedDropped(args.frame_id)) {
     ++total_smoothness_dropped_;
 
@@ -248,8 +244,9 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
     }
   }
 
-  if (fcp_received_)
+  if (first_contentful_paint_received_) {
     frame_sorter_.AddFrameResult(args, frame_info);
+  }
 
   // Report frames on every frame for UI. And this needs to happen after
   // `frame_sorter_.AddFrameResult` so that the current ending frame is included
@@ -391,9 +388,8 @@ void DroppedFrameCounter::Reset() {
   sliding_window_max_percent_dropped_After_1_sec_.reset();
   sliding_window_max_percent_dropped_After_2_sec_.reset();
   sliding_window_max_percent_dropped_After_5_sec_.reset();
-  std::fill_n(dropped_frame_count_in_window_,
-              SmoothnessStrategy::kStrategyCount, 0);
-  fcp_received_ = false;
+  dropped_frame_count_in_window_.fill(0);
+  first_contentful_paint_received_ = false;
   sliding_window_ = {};
   latest_sliding_window_start_ = {};
   sliding_window_histogram_[SmoothnessStrategy::kDefaultStrategy].Clear();
@@ -578,10 +574,12 @@ void DroppedFrameCounter::UpdateDroppedFrameCountInWindow(
 
 void DroppedFrameCounter::UpdateMaxPercentDroppedFrame(
     double percent_dropped_frame) {
-  if (!fcp_received_)
+  if (!first_contentful_paint_received_) {
     return;
+  }
 
-  const auto fcp_time_delta = latest_sliding_window_start_ - time_fcp_received_;
+  const auto fcp_time_delta =
+      latest_sliding_window_start_ - time_first_contentful_paint_received_;
 
   if (fcp_time_delta > base::Seconds(1))
     sliding_window_max_percent_dropped_After_1_sec_ =
@@ -597,10 +595,10 @@ void DroppedFrameCounter::UpdateMaxPercentDroppedFrame(
                  percent_dropped_frame);
 }
 
-void DroppedFrameCounter::OnFcpReceived() {
-  DCHECK(!fcp_received_);
-  fcp_received_ = true;
-  time_fcp_received_ = base::TimeTicks::Now();
+void DroppedFrameCounter::OnFirstContentfulPaintReceived() {
+  DCHECK(!first_contentful_paint_received_);
+  first_contentful_paint_received_ = true;
+  time_first_contentful_paint_received_ = base::TimeTicks::Now();
 }
 
 void DroppedFrameCounter::SetSortedFrameCallback(SortedFrameCallback callback) {

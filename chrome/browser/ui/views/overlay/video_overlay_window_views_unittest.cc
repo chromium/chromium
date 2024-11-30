@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/overlay/back_to_tab_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/minimize_button.h"
+#include "chrome/browser/ui/views/overlay/playback_image_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -830,11 +831,31 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, ShowsBackToTabImageButton) {
 }
 
 TEST_F(VideoOverlayWindowViewsWith2024UITest, ProgressBarSeeksVideo) {
+  overlay_window().ShowInactive();
+  overlay_window().SetPlayPauseButtonVisibility(true);
   overlay_window().ForceControlsVisibleForTesting(true);
+
+  // Move time forward to ensure controls layout is completed.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
   global_media_controls::MediaProgressView* progress_view =
       overlay_window().progress_view_for_testing();
   ASSERT_NE(nullptr, progress_view);
   EXPECT_TRUE(progress_view->IsDrawn());
+
+  // Before dragging the progress bar, the center controls should be visible.
+  PlaybackImageButton* play_button =
+      overlay_window().play_pause_controls_view_for_testing();
+  SimpleOverlayWindowImageButton* replay_10_seconds_button =
+      overlay_window().replay_10_seconds_button_for_testing();
+  SimpleOverlayWindowImageButton* forward_10_seconds_button =
+      overlay_window().forward_10_seconds_button_for_testing();
+  ASSERT_NE(nullptr, play_button);
+  ASSERT_NE(nullptr, replay_10_seconds_button);
+  ASSERT_NE(nullptr, forward_10_seconds_button);
+  EXPECT_TRUE(play_button->IsDrawn());
+  EXPECT_TRUE(replay_10_seconds_button->IsDrawn());
+  EXPECT_TRUE(forward_10_seconds_button->IsDrawn());
 
   gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
   ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
@@ -843,10 +864,24 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, ProgressBarSeeksVideo) {
   EXPECT_CALL(pip_window_controller(), SeekTo(_));
   progress_view->OnMousePressed(pressed_event);
 
+  // Move time forward to ensure drag delay timer has fired.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
+  // While dragging, the center controls should not be visible.
+  EXPECT_FALSE(play_button->IsDrawn());
+  EXPECT_FALSE(replay_10_seconds_button->IsDrawn());
+  EXPECT_FALSE(forward_10_seconds_button->IsDrawn());
+
   ui::MouseEvent released_event = ui::MouseEvent(
       ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   progress_view->OnMouseReleased(released_event);
+
+  // Once the drag ends, the center controls should be visible again.
+  EXPECT_TRUE(play_button->IsDrawn());
+  EXPECT_TRUE(replay_10_seconds_button->IsDrawn());
+  EXPECT_TRUE(forward_10_seconds_button->IsDrawn());
 }
 
 TEST_F(VideoOverlayWindowViewsWith2024UITest, TimestampDisplaysCurrentTime) {
@@ -976,4 +1011,44 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysOrigin) {
 
   overlay_window().SetSourceTitle(u"google.com");
   EXPECT_EQ(origin->GetText(), u"google.com");
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest,
+       ControlsNeverHideWhileProgressBarIsDragged) {
+  overlay_window().ShowInactive();
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  overlay_window().ForceControlsVisibleForTesting(true);
+
+  // Move time forward to ensure controls layout is completed.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  global_media_controls::MediaProgressView* progress_view =
+      overlay_window().progress_view_for_testing();
+  ASSERT_NE(nullptr, progress_view);
+  EXPECT_TRUE(progress_view->IsDrawn());
+
+  // Start dragging.
+  gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  progress_view->OnMousePressed(pressed_event);
+
+  // Move time forward to ensure drag delay timer has fired.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // While dragging, the controls should remain visible. We'll need to stop
+  // forcing them visible for testing and then wait for the hide timer to fire.
+  overlay_window().StopForcingControlsVisibleForTesting();
+  task_environment()->FastForwardBy(base::Seconds(7));
+  EXPECT_TRUE(overlay_window().GetControlsContainerView()->IsDrawn());
+
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  progress_view->OnMouseReleased(released_event);
+
+  // Once the drag ends, the controls should be able to hide.
+  task_environment()->FastForwardBy(base::Seconds(7));
+  EXPECT_TRUE(overlay_window().GetControlsContainerView()->IsDrawn());
 }

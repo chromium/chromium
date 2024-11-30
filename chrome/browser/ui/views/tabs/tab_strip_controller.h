@@ -41,7 +41,7 @@ class ListSelectionModel;
 // NOTE: All indices used by this class are in model coordinates.
 class TabStripController {
  public:
-  virtual ~TabStripController() {}
+  virtual ~TabStripController() = default;
 
   // Returns the selection model of the tabstrip.
   virtual const ui::ListSelectionModel& GetSelectionModel() const = 0;

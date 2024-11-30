@@ -54,7 +54,7 @@
 
 using content::WebContents;
 using extensions::ContextMenuMatcher;
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 using extensions::MenuItem;
 using extensions::ResultCatcher;
 using ui::MenuModel;

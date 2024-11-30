@@ -242,6 +242,12 @@ struct TabsRemovedInfo {
   array<RecentlyClosedTab> recently_closed_tabs;
 };
 
+// Information about unused tabs, inclusive of stale and duplicate tabs.
+struct UnusedTabInfo {
+  array<Tab> stale_tabs;
+  map<string, array<Tab>> duplicate_tabs;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -254,8 +260,10 @@ interface PageHandler {
   // Close a specific tab.
   CloseTab(int32 tab_id);
 
-  // Bulk close multiple tabs as part of the declutter workflow.
-  DeclutterTabs(array<int32> tab_ids);
+  // Bulk close multiple tabs as part of the declutter workflow. All tabs with
+  // either an id in tab_ids should be closed. All tabs but the oldest with a
+  // url in urls should be closed.
+  DeclutterTabs(array<int32> tab_ids, array<url.mojom.Url> urls);
 
   // Accept the tab organization, updated with the specified tab list.
   AcceptTabOrganization(int32 session_id,
@@ -273,11 +281,16 @@ interface PageHandler {
   // Exclude the given tab from the stale tabs list.
   ExcludeFromStaleTabs(int32 tab_id);
 
+  // Exclude all tabs with the given URL from the duplicate tabs list.
+  ExcludeFromDuplicateTabs(url.mojom.Url url);
+
   // Get window and tab data for the current profile.
   GetProfileData() => (ProfileData profile_data);
 
-  // Get all tabs that are considered stale based on their last active time.
-  GetStaleTabs() => (array<Tab> tabs);
+  // Get all tabs that are considered stale based on their last active time,
+  // and tabs that are duplicates of other tabs based on partial URL match
+  // (excludes fragments).
+  GetUnusedTabs() => (UnusedTabInfo tabs);
 
   // Get the currently active section of the tab search bubble.
   GetTabSearchSection() => (TabSearchSection section);
@@ -313,10 +326,6 @@ interface PageHandler {
   // list section.
   SaveRecentlyClosedExpandedPref(bool expanded);
 
-  // Set the user preference for which tab the tab search UI should display
-  // when next shown.
-  SetTabSearchSection(TabSearchSection section);
-
   // Set the user preference for which feature the tab organization selector
   // should display when next shown.
   SetOrganizationFeature(TabOrganizationFeature feature);
@@ -335,6 +344,9 @@ interface PageHandler {
 
   // Store the tab organization model strategy supplied by the user.
   SetTabOrganizationModelStrategy(TabOrganizationModelStrategy strategy);
+
+  // Store the user instruction for tab organization model.
+  SetTabOrganizationUserInstruction(string user_instruction);
 
   // Store the user feedback supplied by the user.
   SetUserFeedback(int32 session_id,
@@ -389,6 +401,6 @@ interface Page {
   TabOrganizationEnabledChanged(bool enabled);
 
   // Called when the list of tabs considered stale based on their last active
-  // time has changed.
-  StaleTabsChanged(array<Tab> tabs);
+  // time, or duplicate based on partial URL match, has changed.
+  UnusedTabsChanged(UnusedTabInfo tabs);
 };

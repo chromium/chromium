@@ -262,13 +262,6 @@ public class OfflinePageBridgeUnitTest {
         verify(callback, times(1)).onResult(any(Integer.class));
     }
 
-    /** Performs a proper cast from Object to a List<OfflinePageItem>. */
-    private static List<OfflinePageItem> convertToListOfOfflinePages(Object o) {
-        @SuppressWarnings("unchecked")
-        List<OfflinePageItem> list = (List<OfflinePageItem>) o;
-        return list;
-    }
-
     private Callback<List<OfflinePageItem>> createMultipleItemCallback(final int itemCount) {
         return spy(
                 new Callback<List<OfflinePageItem>>() {

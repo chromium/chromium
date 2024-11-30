@@ -123,7 +123,7 @@ BrowserFrame::BrowserFrame(BrowserView* browser_view)
   set_focus_on_creation(false);
 }
 
-BrowserFrame::~BrowserFrame() {}
+BrowserFrame::~BrowserFrame() = default;
 
 void BrowserFrame::InitBrowserFrame() {
   native_browser_frame_ =

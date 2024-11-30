@@ -16,29 +16,6 @@ namespace plus_addresses {
 
 class PlusAddressCreationController;
 
-// Possible error types during the plus address creation flow.
-//
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.plus_addresses
-enum class PlusAddressCreationBottomSheetErrorType {
-  // A network request timed out during an attempt to reserve a plus address.
-  kReserveTimeout = 0,
-  // The user hit the plus address reserve quota limit.
-  kReserveQuota = 1,
-  // Some network error occurred during an attempt to reserve a plus address.
-  kReserveGeneric = 2,
-  // A network request to confirm a plus address timed out when the user
-  // attempted to create a plus address.
-  kCreateTimeout = 3,
-  // The user hit the plus address creation quota limit when they attempted to
-  // create a plus address.
-  kCreateQuota = 4,
-  // The user tried to create a new plus address for the domain, but some plus
-  // address already exists for an affiliated
-  kCreateAffiliation = 5,
-  // Some network error occurred during an attempt to create a plus address.
-  kCreateGeneric = 6,
-};
-
 struct PlusAddressCreationErrorStateInfo {
   PlusAddressCreationBottomSheetErrorType error_type;
   std::u16string title;

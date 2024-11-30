@@ -5,21 +5,22 @@
 package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
-import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
-import org.chromium.components.data_sharing.configs.AvatarConfig;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -44,6 +45,8 @@ public class SharedImageTilesCoordinator {
     private int mAvailableMemberCount;
     private int mIconTilesCount;
 
+    private UpdateTracker mTracker;
+
     /**
      * Constructor for {@link SharedImageTilesCoordinator} component.
      *
@@ -55,11 +58,12 @@ public class SharedImageTilesCoordinator {
     public SharedImageTilesCoordinator(
             Context context,
             @SharedImageTilesType int type,
-            @SharedImageTilesColor int color,
+            SharedImageTilesColor color,
             @NonNull DataSharingService dataSharingService) {
         mModel =
                 new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS)
-                        .with(SharedImageTilesProperties.COLOR_THEME, color)
+                        .with(SharedImageTilesProperties.TYPE, type)
+                        .with(SharedImageTilesProperties.COLOR_STYLE, color)
                         .build();
         mContext = context;
         mDataSharingService = dataSharingService;
@@ -73,6 +77,15 @@ public class SharedImageTilesCoordinator {
         new SharedImageTilesMediator(mModel);
     }
 
+    /**
+     * Update the color style of the current view.
+     *
+     * @param color The updated {@link SharedImageTilesColor}.
+     */
+    public void updateColorStyle(SharedImageTilesColor color) {
+        mModel.set(SharedImageTilesProperties.COLOR_STYLE, color);
+    }
+
     /** Cleans up any resources or observers this class used. */
     public void destroy() {}
 
@@ -82,25 +95,7 @@ public class SharedImageTilesCoordinator {
      * @param collaborationId The new collaborationId or null to reset.
      */
     public void updateCollaborationId(@Nullable String collaborationId) {
-        mCollaborationId = collaborationId;
-        if (mCollaborationId == null) {
-            updateMembersCount(0);
-            return;
-        }
-
-        // Fetch group information from DataSharingService.
-        mDataSharingService.readGroup(
-                mCollaborationId,
-                (result) -> {
-                    if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
-                        // Error occurred. Remove all view.
-                        updateMembersCount(0);
-                        return;
-                    }
-
-                    assert result.groupData != null;
-                    extractGroupMemberInfo(result.groupData);
-                });
+        updateCollaborationId(collaborationId, CallbackUtils.emptyCallback());
     }
 
     /**
@@ -111,48 +106,140 @@ public class SharedImageTilesCoordinator {
      */
     public void updateCollaborationId(
             @Nullable String collaborationId, Callback<Boolean> finishedCallback) {
-        updateCollaborationId(collaborationId);
-        // TODO(crbug.com/376329480): Implement face piles using bitmap and run finishedRunnable
-        // only when all views are populated.
-        finishedCallback.onResult(true);
+        mCollaborationId = collaborationId;
+        if (mCollaborationId == null) {
+            updateMembersCount(0);
+            return;
+        }
+
+        if (mTracker != null) {
+            mTracker.reset();
+            mTracker = null;
+        }
+
+        // Fetch group information from DataSharingService.
+        // TODO(crbug.com/381138936): Migrate to cached readGroup.
+        mDataSharingService.readGroup(
+                mCollaborationId,
+                (result) -> {
+                    if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
+                        // Error occurred. Remove all view.
+                        updateMembersCount(0);
+                        finishedCallback.onResult(false);
+                        return;
+                    }
+
+                    assert result.groupData != null;
+                    List<GroupMember> validMembers = new ArrayList<>();
+                    for (GroupMember member : result.groupData.members) {
+                        if (member.email != null && !member.email.isEmpty()) {
+                            validMembers.add(member);
+                        }
+                    }
+                    updateMembersCount(validMembers.size());
+
+                    int sizeInDp =
+                            (mType == SharedImageTilesType.SMALL)
+                                    ? R.dimen.small_shared_image_tiles_icon_height
+                                    : R.dimen.shared_image_tiles_icon_height;
+                    mTracker =
+                            new UpdateTracker(
+                                    mContext,
+                                    validMembers,
+                                    getAllIconViews(),
+                                    getAvatarSizeInPixels(sizeInDp),
+                                    mDataSharingService.getUiDelegate(),
+                                    finishedCallback);
+                });
     }
 
-    private void extractGroupMemberInfo(GroupData groupData) {
-        List<String> emails = new ArrayList<>();
-        for (GroupMember member : groupData.members) {
-            if (member.email != null && !member.email.isEmpty()) {
-                emails.add(member.email);
+    /**
+     * Get the view component of SharedImageTiles. Note: the imageViews inside the
+     * SharedImageTilesView are loaded async and might not be ready yet.
+     */
+    public @NonNull SharedImageTilesView getView() {
+        return mView;
+    }
+
+    /** Get all icon views. */
+    public List<ImageView> getAllIconViews() {
+        assert (mView.getChildCount() >= mIconTilesCount);
+        List<ImageView> list = new ArrayList<>();
+        for (int i = 0; i < mIconTilesCount; i++) {
+            ViewGroup view_group = (ViewGroup) mView.getChildAt(i);
+            assert view_group.getChildCount() == 1;
+            ImageView view = (ImageView) view_group.getChildAt(0);
+            list.add(view);
+        }
+        return list;
+    }
+
+    /** Get the Android context used by the component. */
+    public @NonNull Context getContext() {
+        return mContext;
+    }
+
+    @VisibleForTesting
+    void updateMembersCount(int count) {
+        mAvailableMemberCount = count;
+        mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
+        mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
+        initializeSharedImageTiles();
+    }
+
+    private static class UpdateTracker {
+        private Callback<Boolean> mFinishedCallback;
+        private int mWaitingCount;
+        private boolean mReset;
+
+        UpdateTracker(
+                Context context,
+                List<GroupMember> validMembers,
+                List<ImageView> iconViews,
+                int sizeInPx,
+                @NonNull DataSharingUIDelegate dataSharingUiDelegate,
+                Callback<Boolean> finishedCallback) {
+            mFinishedCallback = finishedCallback;
+            mReset = false;
+
+            mWaitingCount = iconViews.size();
+            assert mWaitingCount <= validMembers.size();
+            for (int i = 0; i < iconViews.size(); i++) {
+                ImageView imageView = iconViews.get(i);
+                GroupMember member = validMembers.get(i);
+                DataSharingAvatarBitmapConfig.DataSharingAvatarCallback avatarCallback =
+                        new DataSharingAvatarBitmapConfig.DataSharingAvatarCallback() {
+                            @Override
+                            public void onAvatarLoaded(Bitmap bitmap) {
+                                if (!mReset) {
+                                    imageView.setImageBitmap(bitmap);
+
+                                    mWaitingCount -= 1;
+                                    if (mWaitingCount == 0) {
+                                        finishedCallback.onResult(true);
+                                    }
+                                }
+                            }
+                        };
+                DataSharingAvatarBitmapConfig config =
+                        new DataSharingAvatarBitmapConfig.Builder()
+                                .setContext(context)
+                                .setGroupMember(member)
+                                .setAvatarSizeInPixels(sizeInPx)
+                                .setDataSharingAvatarCallback(avatarCallback)
+                                .build();
+                dataSharingUiDelegate.getAvatarBitmap(config);
             }
         }
-        updateMembersCount(emails.size());
 
-        // Let the UI delegate draw the icon tiles.
-        DataSharingUIDelegate dataSharingUiDelegate = mDataSharingService.getUiDelegate();
-        assert dataSharingUiDelegate != null;
-
-        Callback<Boolean> successCallback =
-                (success) -> {
-                    if (!success) {
-                        assert false;
-                    }
-                };
-
-        List<ViewGroup> iconViews = getAllIconViews();
-        int sizeInDp =
-                (mType == SharedImageTilesType.SMALL)
-                        ? R.dimen.small_shared_image_tiles_icon_height
-                        : R.dimen.shared_image_tiles_icon_height;
-        AvatarConfig config =
-                new AvatarConfig.Builder()
-                        .setAvatarSizeInPixels(getAvatarSizeInPixels(sizeInDp))
-                        .build();
-
-        dataSharingUiDelegate.showAvatars(
-                mContext,
-                iconViews,
-                emails.subList(0, iconViews.size()),
-                /* success= */ successCallback,
-                config);
+        void reset() {
+            if (mReset) {
+                return;
+            }
+            mReset = true;
+            mFinishedCallback.onResult(false);
+            mFinishedCallback = null;
+        }
     }
 
     private int getAvatarSizeInPixels(int sizeInDp) {
@@ -182,39 +269,5 @@ public class SharedImageTilesCoordinator {
                     SharedImageTilesProperties.REMAINING_TILES,
                     mAvailableMemberCount - maxTilesToShowWithNumberTile);
         }
-
-        // Re-style everything.
-        mModel.set(SharedImageTilesProperties.TYPE, mType);
-    }
-
-    /** Get the view component of SharedImageTiles. */
-    public @NonNull SharedImageTilesView getView() {
-        return mView;
-    }
-
-    /** Get all icon views. */
-    public List<ViewGroup> getAllIconViews() {
-        assert (mView.getChildCount() >= mIconTilesCount);
-        List<ViewGroup> list = new ArrayList<>();
-        for (int i = 0; i < mIconTilesCount; i++) {
-            ViewGroup view_group = (ViewGroup) mView.getChildAt(i);
-            assert view_group.getChildCount() == 1;
-            View view = view_group.getChildAt(0);
-            list.add((ViewGroup) view);
-        }
-        return list;
-    }
-
-    /** Get the Android context used by the component. */
-    public @NonNull Context getContext() {
-        return mContext;
-    }
-
-    @VisibleForTesting
-    void updateMembersCount(int count) {
-        mAvailableMemberCount = count;
-        mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
-        mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
-        initializeSharedImageTiles();
     }
 }

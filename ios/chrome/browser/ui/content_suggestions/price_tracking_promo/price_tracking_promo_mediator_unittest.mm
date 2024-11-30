@@ -151,6 +151,7 @@ TEST_F(PriceTrackingPromoMediatorTest, TestAllowPriceTrackingNotifications) {
   id mockDelegate =
       OCMStrictProtocolMock(@protocol(PriceTrackingPromoMediatorDelegate));
   OCMExpect([mockDelegate removePriceTrackingPromo]);
+  OCMExpect([mockDelegate promoWasTapped]);
   mediator().delegate = mockDelegate;
   [mediator() allowPriceTrackingNotifications];
 }

@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -129,10 +129,9 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
 
 TouchToFillDelegateAndroidImpl::DryRunResult
 TouchToFillDelegateAndroidImpl::DryRunForIban() {
-  PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  CHECK(pdm);
+  PersonalDataManager& pdm = manager_->client().GetPersonalDataManager();
   std::vector<Iban> ibans_to_suggest =
-      pdm->payments_data_manager().GetOrderedIbansToSuggest();
+      pdm.payments_data_manager().GetOrderedIbansToSuggest();
   return ibans_to_suggest.empty() || !base::FeatureList::IsEnabled(
                                          features::kAutofillEnableLocalIban)
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
@@ -202,8 +201,9 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
              .GetPaymentsAutofillClient()
              ->ShowTouchToFillCreditCard(
                  GetWeakPtr(), *cards_to_suggest,
-                 GetCreditCardSuggestionsForTouchToFill(*cards_to_suggest,
-                                                        manager_->client()))) {
+                 GetCreditCardSuggestionsForTouchToFill(
+                     *cards_to_suggest, manager_->client(),
+                     manager_->GetCreditCardFormEventLogger()))) {
       dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
     } else if (std::vector<Iban>* ibans_to_suggest =
                    absl::get_if<std::vector<Iban>>(&dry_run.items_to_suggest);
@@ -293,7 +293,7 @@ void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
   HideTouchToFill();
   manager_->FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
-      card, {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
+      card, AutofillTriggerSource::kScanCreditCard);
 }
 
 void TouchToFillDelegateAndroidImpl::ShowPaymentMethodSettings() {
@@ -305,10 +305,9 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
     bool is_virtual) {
   HideTouchToFill();
 
-  PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  CHECK(pdm);
+  PersonalDataManager& pdm = manager_->client().GetPersonalDataManager();
   const CreditCard* card =
-      pdm->payments_data_manager().GetCreditCardByGUID(unique_id);
+      pdm.payments_data_manager().GetCreditCardByGUID(unique_id);
   // TODO(crbug.com/40071928): Figure out why `card` is sometimes nullptr.
   if (!card) {
     return;
@@ -319,11 +318,11 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
     manager_->AuthenticateThenFillCreditCardForm(
         query_form_, query_field_.global_id(),
         CreditCard::CreateVirtualCard(*card),
-        {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
+        AutofillTriggerSource::kTouchToFillCreditCard);
   } else {
     manager_->AuthenticateThenFillCreditCardForm(
         query_form_, query_field_.global_id(), *card,
-        {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
+        AutofillTriggerSource::kTouchToFillCreditCard);
   }
 }
 

@@ -1382,6 +1382,67 @@
       'chrome-tester-service-account',
     ],
     'machines': {
+      'model_validation-linux': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_gce_matrix_tests',
+        },
+        'os_type': 'linux',
+      },
+      'model_validation-mac-arm64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'mac_default_arm64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_matrix_tests',
+        },
+        'os_type': 'mac',
+      },
+      'model_validation-mac-x64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'mac_default_x64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_matrix_tests',
+        },
+        'os_type': 'mac',
+      },
+      'model_validation-win-arm64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'win-arm64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_matrix_tests',
+        },
+        'os_type': 'win',
+      },
+      'model_validation-win32': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'win10',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_gce_matrix_tests',
+        },
+        'os_type': 'win',
+      },
+      'model_validation-win64': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'win10',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_gce_matrix_tests',
+        },
+        'os_type': 'win',
+      },
       'optimization_guide-android-arm64': {
         'mixins': [
           'android',
@@ -1413,7 +1474,7 @@
           'xcode_16_main',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_ios_device_gtests',
+           'isolated_scripts': 'optimization_guide_ios_device_gtests',
         },
         'os_type': 'ios',
       },
@@ -1427,7 +1488,7 @@
           'xcode_16_main',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_ios_sim_gtests',
+           'isolated_scripts': 'optimization_guide_ios_sim_gtests',
         },
         'os_type': 'ios',
       },
@@ -1499,7 +1560,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'optimization_guide_win_script_tests',
+           'isolated_scripts': 'optimization_guide_win32_script_tests',
         },
         'os_type': 'win',
       },
@@ -1514,7 +1575,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'optimization_guide_win_script_tests',
+           'isolated_scripts': 'optimization_guide_win64_script_tests',
         },
         'os_type': 'win',
       },

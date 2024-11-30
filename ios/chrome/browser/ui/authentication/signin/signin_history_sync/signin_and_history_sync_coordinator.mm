@@ -105,6 +105,11 @@ enum class SignInHistorySyncStep {
 
 #pragma mark - Private
 
+- (void)stopChildCoordinator {
+  [_childCoordinator stop];
+  _childCoordinator = nil;
+}
+
 // Moves to the next step and presents the coordinator of that next step.
 - (void)presentNextStepWithPreviousResult:
     (SigninCoordinatorResult)previousResult {
@@ -118,6 +123,10 @@ enum class SignInHistorySyncStep {
     case SigninCoordinatorResultCanceledByUser:
       _currentStep = SignInHistorySyncStep::kCompleted;
       break;
+    case SigninCoordinatorUINotAvailable:
+      // SigninAndHistorySyncController presents its child coordinators
+      // directly and does not use `ShowSigninCommand`.
+      NOTREACHED();
   }
   if (_currentStep != SignInHistorySyncStep::kCompleted) {
     _childCoordinator = [self createPresentStepChildCoordinator];
@@ -144,9 +153,9 @@ enum class SignInHistorySyncStep {
   } else {
     result = SigninCoordinatorResultCanceledByUser;
   }
-  SigninCompletionInfo* completionInfo =
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
+  id<SystemIdentity> completionIdentity = identity;
+  [self runCompletionWithSigninResult:result
+                   completionIdentity:completionIdentity];
 }
 
 // Creates the current step coordinator according to `_currentStep`.
@@ -160,7 +169,7 @@ enum class SignInHistorySyncStep {
                              accessPoint:self.accessPoint];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
-          ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
             [weakSelf currentStepDidFinishWithResult:result];
           };
       return coordinator;
@@ -174,7 +183,7 @@ enum class SignInHistorySyncStep {
                          promoAction:_promoAction];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
-          ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
             [weakSelf currentStepDidFinishWithResult:result];
           };
       return coordinator;
@@ -203,8 +212,7 @@ enum class SignInHistorySyncStep {
   // TODO(crbug.com/40929259): Turn into CHECK.
   DUMP_WILL_BE_CHECK(_childCoordinator)
       << base::SysNSStringToUTF8([self description]);
-  [_childCoordinator stop];
-  _childCoordinator = nil;
+  [self stopChildCoordinator];
   [self presentNextStepWithPreviousResult:result];
 }
 

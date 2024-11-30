@@ -2,27 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_web_view_internal.h"
-
-#include <memory>
-#include <unordered_map>
-#include <utility>
-
 #import <WebKit/WebKit.h>
 
-#include "base/apple/foundation_util.h"
-#include "base/functional/bind.h"
+#import <memory>
+#import <unordered_map>
+#import <utility>
+
+#import "base/apple/foundation_util.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#include "base/json/json_writer.h"
+#import "base/json/json_writer.h"
 #import "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
-#include "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#include "components/url_formatter/elide_url.h"
-#include "google_apis/google_api_keys.h"
+#import "components/url_formatter/elide_url.h"
+#import "google_apis/google_api_keys.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_helper.h"
@@ -31,14 +29,14 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/navigation/nscoder_util.h"
-#include "ios/web/public/favicon/favicon_url.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/favicon/favicon_url.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/navigation/referrer.h"
-#include "ios/web/public/navigation/reload_type.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
@@ -48,7 +46,7 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_view_only/wk_web_view_configuration_util.h"
-#include "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/cwv_back_forward_list_internal.h"
@@ -58,13 +56,14 @@
 #import "ios/web_view/internal/cwv_navigation_action_internal.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
+#import "ios/web_view/internal/cwv_web_view_internal.h"
 #import "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 #import "ios/web_view/internal/safe_browsing/web_view_safe_browsing_client_factory.h"
 #import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
-#include "ios/web_view/internal/web_view_global_state_util.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
+#import "ios/web_view/internal/web_view_global_state_util.h"
 #import "ios/web_view/internal/web_view_java_script_dialog_presenter.h"
 #import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 #import "ios/web_view/internal/web_view_web_state_policy_decider.h"
@@ -73,8 +72,8 @@
 #import "ios/web_view/public/cwv_ui_delegate.h"
 #import "ios/web_view/public/cwv_web_view_configuration.h"
 #import "net/base/apple/url_conversions.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -1250,7 +1249,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
           respondsToSelector:@selector(webView:handleUnsafeURLWithHandler:)]) {
     SafeBrowsingClient* client =
         ios_web_view::WebViewSafeBrowsingClientFactory::GetForBrowserState(
-            _webState->GetBrowserState());
+            ios_web_view::WebViewBrowserState::FromBrowserState(
+                _webState->GetBrowserState()));
     SafeBrowsingQueryManager::CreateForWebState(_webState.get(), client);
     SafeBrowsingTabHelper::CreateForWebState(_webState.get(), client);
     SafeBrowsingUrlAllowList::CreateForWebState(_webState.get());

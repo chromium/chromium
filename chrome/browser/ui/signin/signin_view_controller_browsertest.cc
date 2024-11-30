@@ -56,7 +56,7 @@ constexpr char kConfirmationUnsyncedHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.Unsynced";
 constexpr char kConfirmationUnsyncedReauthHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.UnsyncedReauth";
-constexpr std::string_view kTestExtensionName = "Test extension";
+constexpr char16_t kTestExtensionName[] = u"Test extension";
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();

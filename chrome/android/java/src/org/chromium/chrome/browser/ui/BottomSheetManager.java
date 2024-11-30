@@ -150,8 +150,16 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                         controller.setBrowserControlsHiddenRatio(
                                 mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio());
                     }
+
+                    @Override
+                    public void onBottomControlsHeightChanged(
+                            int bottomControlsHeight, int bottomControlsMinHeight) {
+                        mSheetController.setBottomControlsHeight(bottomControlsHeight);
+                    }
                 };
         mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);
+        mSheetController.setBottomControlsHeight(
+                controlsVisibilityManager.getBottomControlsHeight());
 
         mOmniboxFocusObserver =
                 new Callback<Boolean>() {

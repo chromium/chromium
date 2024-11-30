@@ -11,6 +11,8 @@ source_set("safe_browsing") {
     "safe_browsing_client.h",
     "safe_browsing_error.h",
     "safe_browsing_error.mm",
+    "safe_browsing_helper.cc",
+    "safe_browsing_helper.h",
     "safe_browsing_query_manager.h",
     "safe_browsing_query_manager.mm",
     "safe_browsing_service.h",
@@ -53,8 +55,8 @@ source_set("safe_browsing") {
 
 source_set("util") {
   sources = [
-    "unsafe_resource_util.h",
-    "unsafe_resource_util.mm",
+    "ios_unsafe_resource_util.h",
+    "ios_unsafe_resource_util.mm",
   ]
 
   deps = [

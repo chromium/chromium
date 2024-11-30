@@ -29,7 +29,9 @@ void FuchsiaDecryptor::Decrypt(StreamType stream_type,
 }
 
 void FuchsiaDecryptor::CancelDecrypt(StreamType stream_type) {
-  NOTREACHED();
+  // There is nothing to cancel because `Decrypt()` is not expected to be
+  // called directly. This method may still be called by
+  // the `DecryptingDemuxerStream` destructor.
 }
 
 void FuchsiaDecryptor::InitializeAudioDecoder(const AudioDecoderConfig& config,

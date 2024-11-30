@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -104,6 +105,8 @@
   ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   drive::DriveService* driveService =
       drive::DriveServiceFactory::GetForProfile(profile);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
@@ -123,6 +126,7 @@
                                         sortingCriteria:_sortingCriteria
                                        sortingDirection:_sortingDirection
                                            driveService:driveService
+                                        identityManager:identityManager
                                   accountManagerService:accountManagerService
                                            imageFetcher:std::move(imageFetcher)
                                           metricsHelper:_metricsHelper];

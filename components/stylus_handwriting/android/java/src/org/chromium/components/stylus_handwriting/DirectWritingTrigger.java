@@ -30,7 +30,7 @@ import org.chromium.content_public.browser.WebContents;
  * {@link StylusWritingHandler} to receive messages about stylus writing events.
  */
 class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
-    private static final String TAG = "DWTrigger";
+    private static final String TAG = "DwTrigger";
 
     private DirectWritingServiceBinder mBinder = new DirectWritingServiceBinder();
     private DirectWritingServiceConfiguration mConfig = new DirectWritingServiceConfiguration();
@@ -71,7 +71,7 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
      */
     @Override
     public void onWebContentsChanged(Context context, WebContents webContents) {
-        updateDWSettings(context);
+        updateDwSettings(context);
         webContents.setStylusWritingHandler(this);
         mStylusWritingImeCallback = webContents.getStylusWritingImeCallback();
         mCallback.setImeCallback(mStylusWritingImeCallback);
@@ -116,7 +116,7 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
             }
         } else {
             // Stop recognition and hide DW toolbar as focused node is not editable.
-            hideDWToolbar();
+            hideDwToolbar();
             onStopRecognition(/* motionEvent= */ null, /* editableBounds= */ null, currentView);
         }
 
@@ -152,9 +152,9 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
         return false;
     }
 
-    private void updateDWServiceStatus(Context context) {
+    private void updateDwServiceStatus(Context context) {
         mDwServiceEnabled = isDirectWritingServiceEnabled(context);
-        Log.i(TAG, "updateDWServiceStatus() : isEnabled = " + mDwServiceEnabled);
+        Log.i(TAG, "updateDwServiceStatus() : isEnabled = " + mDwServiceEnabled);
     }
 
     /**
@@ -163,15 +163,15 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
      * @param context current context
      */
     @VisibleForTesting
-    void updateDWSettings(Context context) {
-        boolean wasDWEnabled = mDwServiceEnabled;
-        updateDWServiceStatus(context);
-        if (!wasDWEnabled && mDwServiceEnabled) {
-            onDWServiceEnabled();
+    void updateDwSettings(Context context) {
+        boolean wasDwEnabled = mDwServiceEnabled;
+        updateDwServiceStatus(context);
+        if (!wasDwEnabled && mDwServiceEnabled) {
+            onDwServiceEnabled();
         }
     }
 
-    private void onDWServiceEnabled() {
+    private void onDwServiceEnabled() {
         // Create IDirectWritingServiceCallbackImpl instance when DW setting is changed to
         // enabled. Platform Crash occurs if it is created when DW setting is not enabled.
         if (mCallback != null) return;
@@ -198,20 +198,20 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     public void onFocusChanged(boolean hasFocus) {
         if (!hasFocus) {
             // Hide DW toolbar and Stop Recognition when View focus is lost.
-            hideDWToolbar();
+            hideDwToolbar();
             onStopRecognition(/* motionEvent= */ null, /* editableBounds= */ null);
         }
     }
 
     @Override
-    public void onWindowFocusChanged(Context context, boolean hasWindowFocus) {
+    public void updateHandlerState(Context context, boolean hasWindowFocus) {
         if (hasWindowFocus) {
-            updateDWSettings(context);
+            updateDwSettings(context);
         } else {
-            hideDWToolbar();
+            hideDwToolbar();
         }
         if (!mDwServiceEnabled) return;
-        mBinder.onWindowFocusChanged(context, hasWindowFocus);
+        mBinder.handleWindowFocusChanged(context, hasWindowFocus);
     }
 
     /**
@@ -315,7 +315,7 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
         } else {
             // Hide the DW toolbar when stylus is not being used.
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                hideDWToolbar();
+                hideDwToolbar();
             }
         }
         return false;
@@ -518,8 +518,8 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
         mStylusUpEvent = null;
     }
 
-    private void hideDWToolbar() {
+    private void hideDwToolbar() {
         if (!mDwServiceEnabled) return;
-        mBinder.hideDWToolbar();
+        mBinder.hideDwToolbar();
     }
 }

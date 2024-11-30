@@ -83,6 +83,7 @@ void ReportLoginThroughputEvent(const std::string& event_name,
   REPORT_IF_MATCH("LoginAnimationEnd");
   REPORT_IF_MATCH("LoginFinished");
   REPORT_IF_MATCH("ArcUiAvailable");
+  REPORT_IF_MATCH("DeferredTasksStarted");
   REPORT_IF_MATCH("Ash.LoginSessionRestore.AllBrowserWindowsCreated");
   REPORT_IF_MATCH("Ash.LoginSessionRestore.AllBrowserWindowsShown");
   REPORT_IF_MATCH("Ash.LoginSessionRestore.AllShelfIconsLoaded");
@@ -325,6 +326,20 @@ void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
   // Note that this event is only reported when OnArcUiReady is called
   // before OnShelfAnimationAndCompositorAnimationDone.
   AddLoginTimeMarker("ArcUiAvailable", ts);
+}
+
+void PostLoginMetricsRecorder::OnDeferredTasksStarted(base::TimeTicks ts) {
+  if (!timestamp_origin_.has_value()) {
+    // Tests could get here when they don't simulate login.
+    CHECK_IS_TEST();
+    return;
+  }
+
+  auto duration = ts - timestamp_origin_.value();
+  uma_login_perf_.ReportOrSchedule(
+      std::make_unique<MetricTime>("DeferredTasksStarted", duration));
+
+  AddLoginTimeMarker("DeferredTasksStarted", ts);
 }
 
 void PostLoginMetricsRecorder::OnShelfIconsLoadedAndSessionRestoreDone(

@@ -44,6 +44,11 @@ chromium-metrics-reviews@google.com.
   <variant name="FirstRecordSlowerThan1s" summary="more than or equal to 1s"/>
 </variants>
 
+<variants name="HostType">
+  <variant name="" summary="non Google Hosts"/>
+  <variant name=".GoogleHost" summary="Google Host"/>
+</variants>
+
 <variants name="NetworkTransactionBlockedHostType">
   <variant name=""/>
   <variant name="GoogleHost"/>
@@ -186,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMOperation.Win.{Operation}{SignatureAlgorithm}.Error"
-    units="win32 error code" expires_after="2025-08-01">
+    enum="Win32TpmErrorCodes" expires_after="2025-08-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
   <owner>src/crypto/OWNERS</owner>
@@ -250,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskDuration{Priority}"
-    units="ms" expires_after="2024-11-17">
+    units="ms" expires_after="2025-03-30">
   <owner>alexilin@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
   <summary>
@@ -324,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskRunDuration{TaskType}"
-    units="ms" expires_after="2025-01-26">
+    units="ms" expires_after="2025-03-30">
   <owner>alexilin@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
   <summary>
@@ -1296,6 +1301,103 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.HostCache.EraseStale.ExpiredBy{HostType}" units="ms"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When erasing a stale (expired or old-network) DNS entry for {HostType} from
+    the host cache, how long past the expiration time it is. This is recorded
+    each time an erase happens, when clearing the host cache or evicting the
+    entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.EraseStale.NetworkChanges{HostType}"
+    units="changes" expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When erasing a stale (expired or old-network) DNS entry for {HostType} from
+    the host cache how many network changes happened between setting and erasing
+    it. This is recorded each time an erase happens, when clearing the host
+    cache or evicting the entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.EraseStale.StaleHits{HostType}" units="hits"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When erasing a stale (expired or old-network) DNS entry for {HostType} from
+    the host cache how many hits it received while stale. This is recorded each
+    time an erase happens, when clearing the host cache or evicting the entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.EraseValid.ValidFor{HostType}" units="ms"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When erasing a valid DNS entry for {HostType} from the host cache, for how
+    much longer it would have remained valid. This is recorded each time an
+    erase happens, when clearing the host cache or evicting the entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.Erase{HostType}" enum="EraseReason"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The reason for erasing a DNS entry for {HostType} from the host cache. This
+    is recorded each time an erase happens, when clearing the host cache or
+    evicting the entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.LookupStale.ExpiredBy{HostType}" units="ms"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When looking up a stale DNS entry for {HostType} in the host cache, how long
+    past the expiration time it is. This is recorded at the end of each DNS
+    entry lookup.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.LookupStale.NetworkChanges{HostType}"
+    units="changes" expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When looking up a stale DNS entry for {HostType} in the host cache, how many
+    network changes happened between setting it and looking it up. This is
+    recorded at the end of each DNS entry lookup.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.Lookup{HostType}" enum="LookupOutcome"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The outcome of looking up a DNS entry for {HostType} in the host cache. This
+    is recorded at the end of each DNS entry lookup.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
 <histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.DnsRcode"
     enum="HttpssvcDnsRcode" expires_after="2025-09-30">
   <owner>bashi@chromium.org</owner>
@@ -1311,8 +1413,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.Parsable"
-    enum="BooleanValid" expires_after="2024-12-08">
-  <owner>horo@chromium.org</owner>
+    enum="BooleanValid" expires_after="2025-11-25">
+  <owner>bashi@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1958,7 +2060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.IpProtection.BytesSent" units="bytes"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>aakallam@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -1992,7 +2094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.IpProtection.PrefilterBytesRead.Net" units="bytes"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>aakallam@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2007,7 +2109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>djmitche@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2123,7 +2225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.TotalTime.TLS13.Google" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>bashi@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -2255,7 +2357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpRequestStsState" enum="HttpRequestStsState"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -2284,6 +2386,31 @@ chromium-metrics-reviews@google.com.
     IANA HTTP Status Code Registry. Ignores unknown response codes. Recorded
     when HttpResponseHeaders are constructed, after parsing.
   </summary>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.StreamAttemptCancelReason"
+    enum="StreamCloseReason" expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The reason why a stream attempt is canceled. Recorded when a stream attempt
+    is destroyed after being canceled.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.StreamAttemptTime.{Result}" units="ms"
+    expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when a stream attempt is created to when the attempt is completed.
+    Recorded for each stream attempt upon destruction of the attempt.
+  </summary>
+  <token key="Result">
+    <variant name="Canceled" summary="Attempt canceled"/>
+    <variant name="Failure" summary="Attempt failed"/>
+    <variant name="Success" summary="Attempt succeeded"/>
+  </token>
 </histogram>
 
 <histogram name="Net.HttpTimeToFirstByte" units="ms" expires_after="never">
@@ -2646,7 +2773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicConnection.ServerAllowsActiveMigrationForMultiPort"
-    enum="BooleanEnabled" expires_after="2024-12-08">
+    enum="BooleanEnabled" expires_after="2025-11-25">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2849,7 +2976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicHandshakeState" enum="QuicHandshakeState"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4101,7 +4228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PathValidationSuccess" enum="BooleanSuccess"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4959,7 +5086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.PartitionedCookiesInScript"
-    units="cookies" expires_after="2025-03-23">
+    units="cookies" expires_after="2025-05-25">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -5014,7 +5141,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult"
-    enum="NetErrorCodes" expires_after="2025-03-02">
+    enum="NetErrorCodes" expires_after="2025-05-18">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5395,7 +5522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AlpsDecoderStatus.Bypassed"
-    enum="AlpsDecoderError" expires_after="2025-03-23">
+    enum="AlpsDecoderError" expires_after="2025-05-25">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -6057,7 +6184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ZstdFilter.MaxMemoryUsage" units="KB"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

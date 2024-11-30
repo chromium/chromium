@@ -49,23 +49,23 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
   // visit_id = 11.
   void AddBasicMockData(SqlDatabase* sql_database) {
     {
-      UrlPassagesEmbeddings url_data_1(1, 10, base::Time::Now());
-      url_data_1.url_passages.passages.add_passages("fake passage 1");
-      url_data_1.url_passages.passages.add_passages("fake passage 2");
-      url_data_1.url_embeddings.embeddings.emplace_back(
+      UrlData url_data_1(1, 10, base::Time::Now());
+      url_data_1.passages.add_passages("fake passage 1");
+      url_data_1.passages.add_passages("fake passage 2");
+      url_data_1.embeddings.emplace_back(
           std::vector<float>(kEmbeddingsSize, 1.0f));
-      url_data_1.url_embeddings.embeddings.emplace_back(
+      url_data_1.embeddings.emplace_back(
           std::vector<float>(kEmbeddingsSize, 1.0f));
       ASSERT_TRUE(sql_database->AddUrlData(url_data_1));
     }
 
     {
-      UrlPassagesEmbeddings url_data_2(2, 11, base::Time::Now());
-      url_data_2.url_passages.passages.add_passages("fake passage 3");
-      url_data_2.url_passages.passages.add_passages("fake passage 4");
-      url_data_2.url_embeddings.embeddings.emplace_back(
+      UrlData url_data_2(2, 11, base::Time::Now());
+      url_data_2.passages.add_passages("fake passage 3");
+      url_data_2.passages.add_passages("fake passage 4");
+      url_data_2.embeddings.emplace_back(
           std::vector<float>(kEmbeddingsSize, 1.0f));
-      url_data_2.url_embeddings.embeddings.emplace_back(
+      url_data_2.embeddings.emplace_back(
           std::vector<float>(kEmbeddingsSize, 1.0f));
       ASSERT_TRUE(sql_database->AddUrlData(url_data_2));
     }
@@ -105,7 +105,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
                                     GetEncryptorInstance());
 
   // Write passages
-  UrlPassages url_passages(1, 1, base::Time::Now());
+  UrlData url_passages(1, 1, base::Time::Now());
   proto::PassagesValue& original_proto = url_passages.passages;
   original_proto.add_passages("fake passage 1");
   original_proto.add_passages("fake passage 2");
@@ -136,16 +136,16 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadUrlData) {
                                     GetEncryptorInstance());
 
   // Write embeddings.
-  UrlPassagesEmbeddings url_datas[] = {
-      UrlPassagesEmbeddings(1, 1, base::Time::Now()),
-      UrlPassagesEmbeddings(2, 2, base::Time::Now()),
+  UrlData url_datas[] = {
+      UrlData(1, 1, base::Time::Now()),
+      UrlData(2, 2, base::Time::Now()),
   };
-  url_datas[0].url_passages.passages.add_passages("data 0 passage 0");
-  url_datas[0].url_embeddings.embeddings.push_back(FakeEmbedding());
-  url_datas[1].url_passages.passages.add_passages("data 1 passage 0");
-  url_datas[1].url_passages.passages.add_passages("data 1 passage 1");
-  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
-  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
+  url_datas[0].passages.add_passages("data 0 passage 0");
+  url_datas[0].embeddings.push_back(FakeEmbedding());
+  url_datas[1].passages.add_passages("data 1 passage 0");
+  url_datas[1].passages.add_passages("data 1 passage 1");
+  url_datas[1].embeddings.push_back(FakeEmbedding());
+  url_datas[1].embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[0]));
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[1]));
 
@@ -161,8 +161,8 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadUrlData) {
     std::unique_ptr<VectorDatabase::UrlDataIterator> iterator =
         sql_database->MakeUrlDataIterator({});
     EXPECT_TRUE(iterator);
-    for (const UrlPassagesEmbeddings& url_data : url_datas) {
-      const UrlPassagesEmbeddings* read_url_data = iterator->Next();
+    for (const UrlData& url_data : url_datas) {
+      const UrlData* read_url_data = iterator->Next();
       EXPECT_TRUE(read_url_data);
       EXPECT_EQ(*read_url_data, url_data);
     }
@@ -183,10 +183,10 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, TimeRangeNarrowsSearchResult) {
   // Write embeddings.
   const base::Time now = base::Time::Now();
   for (size_t i = 0; i < 3; i++) {
-    UrlPassagesEmbeddings url_data(i + 1, i + 1, now + base::Minutes(i));
+    UrlData url_data(i + 1, i + 1, now + base::Minutes(i));
     for (size_t j = 0; j < 3; j++) {
-      url_data.url_passages.passages.add_passages("fake passage");
-      url_data.url_embeddings.embeddings.push_back(FakeEmbedding());
+      url_data.passages.add_passages("fake passage");
+      url_data.embeddings.push_back(FakeEmbedding());
     }
     sql_database->AddUrlData(url_data);
   }
@@ -251,7 +251,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
-  UrlPassages url_passages(1, 1, base::Time::Now());
+  UrlData url_passages(1, 1, base::Time::Now());
   url_passages.passages.add_passages("fake passage 1");
   url_passages.passages.add_passages("fake passage 2");
   EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
@@ -351,10 +351,9 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteAllData) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataWithoutEmbedderMetadata) {
-  UrlPassagesEmbeddings url_data(1, 10, base::Time::Now());
-  url_data.url_passages.passages.add_passages("fake passage 1");
-  url_data.url_embeddings.embeddings.emplace_back(
-      std::vector<float>(kEmbeddingsSize, 1.0f));
+  UrlData url_data(1, 10, base::Time::Now());
+  url_data.passages.add_passages("fake passage 1");
+  url_data.embeddings.emplace_back(std::vector<float>(kEmbeddingsSize, 1.0f));
 
   {
     auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
@@ -404,22 +403,22 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
                                     GetEncryptorInstance());
 
   // Store passages.
-  UrlPassages url_passages(1, 1, base::Time::Now());
+  UrlData url_passages(1, 1, base::Time::Now());
   url_passages.passages.add_passages("fake passage 1");
   url_passages.passages.add_passages("fake passage 2");
   url_passages.passages.add_passages("fake passage 3");
   EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
 
-  UrlPassagesEmbeddings data = sql_database->GetUrlData(1).value();
+  UrlData data = sql_database->GetUrlData(1).value();
 
   // There are passages, but no embeddings stored yet.
-  CHECK_EQ(data.url_passages.url_id, 1);
-  CHECK_EQ(data.url_passages.visit_id, 1);
-  CHECK_EQ(data.url_passages.passages.passages_size(), 3);
-  CHECK_EQ(data.url_embeddings.embeddings.size(), 0u);
+  CHECK_EQ(data.url_id, 1);
+  CHECK_EQ(data.visit_id, 1);
+  CHECK_EQ(data.passages.passages_size(), 3);
+  CHECK_EQ(data.embeddings.size(), 0u);
 
   // Store embeddings.
-  UrlEmbeddings url_embeddings(url_passages);
+  UrlData url_embeddings(url_passages);
   url_embeddings.embeddings.push_back(FakeEmbedding());
   url_embeddings.embeddings.push_back(FakeEmbedding());
   url_embeddings.embeddings.push_back(FakeEmbedding());
@@ -427,15 +426,13 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
 
   // There are passages and embeddings now.
   data = sql_database->GetUrlData(1).value();
-  CHECK_EQ(data.url_passages.url_id, 1);
-  CHECK_EQ(data.url_passages.visit_id, 1);
-  CHECK_EQ(data.url_passages.passages.passages_size(), 3);
-  EXPECT_EQ(data.url_passages.passages.passages(0), "fake passage 1");
-  EXPECT_EQ(data.url_passages.passages.passages(1), "fake passage 2");
-  EXPECT_EQ(data.url_passages.passages.passages(2), "fake passage 3");
-  CHECK_EQ(data.url_embeddings.url_id, 1);
-  CHECK_EQ(data.url_embeddings.visit_id, 1);
-  CHECK_EQ(data.url_embeddings.embeddings.size(), 3u);
+  CHECK_EQ(data.url_id, 1);
+  CHECK_EQ(data.visit_id, 1);
+  CHECK_EQ(data.passages.passages_size(), 3);
+  EXPECT_EQ(data.passages.passages(0), "fake passage 1");
+  EXPECT_EQ(data.passages.passages(1), "fake passage 2");
+  EXPECT_EQ(data.passages.passages(2), "fake passage 3");
+  CHECK_EQ(data.embeddings.size(), 3u);
 
   // Absent `url_id` returns std::nullopt.
   EXPECT_FALSE(sql_database->GetUrlData(2).has_value());
@@ -447,18 +444,18 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, IterationSkipsAndReportsMismatches) {
                                     GetEncryptorInstance());
 
   // Write embeddings.
-  UrlPassagesEmbeddings url_datas[] = {
-      UrlPassagesEmbeddings(1, 1, base::Time::Now()),
-      UrlPassagesEmbeddings(2, 2, base::Time::Now()),
+  UrlData url_datas[] = {
+      UrlData(1, 1, base::Time::Now()),
+      UrlData(2, 2, base::Time::Now()),
   };
-  url_datas[0].url_passages.passages.add_passages("data 0 passage 0");
-  url_datas[0].url_embeddings.embeddings.push_back(FakeEmbedding());
-  url_datas[1].url_passages.passages.add_passages("data 1 passage 0");
-  url_datas[1].url_passages.passages.add_passages("data 1 passage 1");
-  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
-  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
+  url_datas[0].passages.add_passages("data 0 passage 0");
+  url_datas[0].embeddings.push_back(FakeEmbedding());
+  url_datas[1].passages.add_passages("data 1 passage 0");
+  url_datas[1].passages.add_passages("data 1 passage 1");
+  url_datas[1].embeddings.push_back(FakeEmbedding());
+  url_datas[1].embeddings.push_back(FakeEmbedding());
   // Add one too many embeddings to trigger a mismatch.
-  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
+  url_datas[1].embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[0]));
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[1]));
 
@@ -486,15 +483,15 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, OldVisitsAreExpired) {
                                     GetEncryptorInstance());
 
   // Write embeddings; one for an old visit, one for a new visit.
-  UrlPassagesEmbeddings url_datas[] = {
-      UrlPassagesEmbeddings(/*url_id=*/1, /*visit_id=*/1,
-                            base::Time::Now() - base::Days(100)),
-      UrlPassagesEmbeddings(/*url_id=*/2, /*visit_id=*/2, base::Time::Now()),
+  UrlData url_datas[] = {
+      UrlData(/*url_id=*/1, /*visit_id=*/1,
+              base::Time::Now() - base::Days(100)),
+      UrlData(/*url_id=*/2, /*visit_id=*/2, base::Time::Now()),
   };
-  url_datas[0].url_passages.passages.add_passages("data 0 passage 0");
-  url_datas[0].url_embeddings.embeddings.push_back(FakeEmbedding());
-  url_datas[1].url_passages.passages.add_passages("data 1 passage 0");
-  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
+  url_datas[0].passages.add_passages("data 0 passage 0");
+  url_datas[0].embeddings.push_back(FakeEmbedding());
+  url_datas[1].passages.add_passages("data 1 passage 0");
+  url_datas[1].embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[0]));
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[1]));
 

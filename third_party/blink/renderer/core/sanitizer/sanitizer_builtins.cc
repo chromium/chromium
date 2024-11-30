@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
 
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -17,22 +18,23 @@ Sanitizer* BuildEmptyConfig() {
 }
 
 const Sanitizer* SanitizerBuiltins::GetDefaultUnsafe() {
-  DEFINE_STATIC_LOCAL(Sanitizer*, default_unsafe_, (BuildEmptyConfig()));
-  return default_unsafe_;
+  DEFINE_STATIC_LOCAL(Persistent<Sanitizer>, default_unsafe_,
+                      (BuildEmptyConfig()));
+  return default_unsafe_.Get();
 }
 
 const Sanitizer* SanitizerBuiltins::GetDefaultSafe() {
   DEFINE_STATIC_LOCAL(
-      Sanitizer*, default_safe_,
+      Persistent<Sanitizer>, default_safe_,
       (blink::sanitizer_generated_builtins::BuildDefaultConfig()));
-  return default_safe_;
+  return default_safe_.Get();
 }
 
 const Sanitizer* SanitizerBuiltins::GetBaseline() {
   DEFINE_STATIC_LOCAL(
-      Sanitizer*, baseline_,
+      Persistent<Sanitizer>, baseline_,
       (blink::sanitizer_generated_builtins::BuildBaselineConfig()));
-  return baseline_;
+  return baseline_.Get();
 }
 
 }  // namespace blink

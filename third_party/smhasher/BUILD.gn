@@ -14,7 +14,7 @@ static_library("murmurhash2") {
   visibility = [
     "//chrome/browser/android/webapk:webapk_sources",
     "//chrome/browser/apps/app_service",
-    "//components/language_detection/core",
+    "//components/language_detection/core:internals",
     "//components/translate/core/language_detection",
     "//components/webapps/browser",
   ]

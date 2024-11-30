@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
@@ -25,6 +26,8 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
@@ -180,9 +183,12 @@ AILanguageModel::AILanguageModel(
 
   // If the context is not provided, initialize a new context with the default
   // configuration.
-  context_ = std::make_unique<Context>(
-      session_->GetTokenLimits().max_context_tokens, Context::ContextItem(),
-      ParseMetadata(session_->GetOnDeviceFeatureMetadata()).version() >= 1);
+  bool use_prompt_api_proto =
+      ParseMetadata(session_->GetOnDeviceFeatureMetadata()).version() >=
+      kMinVersionUsingProto;
+  context_ =
+      std::make_unique<Context>(session_->GetTokenLimits().max_context_tokens,
+                                Context::ContextItem(), use_prompt_api_proto);
 }
 
 AILanguageModel::~AILanguageModel() = default;
@@ -215,7 +221,10 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
   // handled accordingly.
   if (!size) {
-    std::move(callback).Run(TakePendingRemote(), /*info=*/nullptr);
+    std::move(callback).Run(
+        base::unexpected(blink::mojom::AIManagerCreateLanguageModelError::
+                             kUnableToCalculateTokenSize),
+        /*info=*/nullptr);
     return;
   }
 
@@ -223,7 +232,10 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
   if (size > max_token) {
     // The session cannot be created if the system prompt contains more tokens
     // than the limit.
-    std::move(callback).Run(TakePendingRemote(), /*info=*/nullptr);
+    std::move(callback).Run(
+        base::unexpected(blink::mojom::AIManagerCreateLanguageModelError::
+                             kInitialPromptsTooLarge),
+        /*info=*/nullptr);
     return;
   }
 
@@ -325,9 +337,8 @@ void AILanguageModel::Fork(
   if (!browser_context_) {
     // The `browser_context_` is already destroyed before the renderer owner
     // is gone.
-    client_remote->OnResult(
-        mojo::PendingRemote<blink::mojom::AILanguageModel>(),
-        /*info=*/nullptr);
+    client_remote->OnError(blink::mojom::AIManagerCreateLanguageModelError::
+                               kUnableToCreateSession);
     return;
   }
 

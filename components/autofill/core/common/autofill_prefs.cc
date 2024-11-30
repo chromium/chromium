@@ -115,6 +115,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kFacilitatedPaymentsPix, /*default_value=*/true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kFacilitatedPaymentsEwallet, /*default_value=*/true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -330,6 +333,20 @@ void SetFacilitatedPaymentsPix(PrefService* prefs, bool value) {
 bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs) {
 #if BUILDFLAG(IS_ANDROID)
   return prefs->GetBoolean(kFacilitatedPaymentsPix);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value) {
+#if BUILDFLAG(IS_ANDROID)
+  prefs->SetBoolean(kFacilitatedPaymentsEwallet, value);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs) {
+#if BUILDFLAG(IS_ANDROID)
+  return prefs->GetBoolean(kFacilitatedPaymentsEwallet);
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)

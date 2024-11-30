@@ -511,7 +511,7 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectLabel) {
   EXPECT_EQ(base::ASCIIToUTF16(kNetworkGuidWifi), GetLabelText());
 }
 
-TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Cellular) {
+TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabelCellular) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_SUBLABEL),
             GetSubLabelText());
@@ -577,7 +577,7 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Cellular) {
   }
 }
 
-TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Ethernet) {
+TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabelEthernet) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_SUBLABEL),
             GetSubLabelText());
@@ -609,7 +609,7 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Ethernet) {
       GetSubLabelText());
 }
 
-TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Tether) {
+TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabelTether) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_SUBLABEL),
             GetSubLabelText());
@@ -649,7 +649,7 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Tether) {
       network_state_handler()));
 }
 
-TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_WiFi) {
+TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabelWiFi) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_SUBLABEL),
             GetSubLabelText());

@@ -22,13 +22,27 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/features.h"
 
-struct Params {
-  bool tab_strip_enabled;
+enum CreateShortcutViewParams {
+  kTabStripEnabled = 0,
+  kTabStripDisabled = 1,
+  kCreateShortcutCreatesDiy = 2,
 };
+
+std::string ParamsToString(
+    const testing::TestParamInfo<CreateShortcutViewParams>& test_params) {
+  switch (test_params.param) {
+    case kTabStripEnabled:
+      return "TabStripEnabled";
+    case kTabStripDisabled:
+      return "TabStripDisabled";
+    case kCreateShortcutCreatesDiy:
+      return "CreateShortcutCreatesDiy";
+  }
+}
 
 class CreateShortcutConfirmationViewBrowserTest
     : public DialogBrowserTest,
-      public ::testing::WithParamInterface<Params> {
+      public ::testing::WithParamInterface<CreateShortcutViewParams> {
  public:
   CreateShortcutConfirmationViewBrowserTest() = default;
   CreateShortcutConfirmationViewBrowserTest(
@@ -59,14 +73,28 @@ class CreateShortcutConfirmationViewBrowserTest
 
   void SetUp() override {
     base::flat_map<base::test::FeatureRef, bool> features;
-
-    features.insert(
-        {blink::features::kDesktopPWAsTabStrip, GetParam().tab_strip_enabled});
-    features.insert(
-        {features::kDesktopPWAsTabStripSettings, GetParam().tab_strip_enabled});
+    switch (GetParam()) {
+      case CreateShortcutViewParams::kTabStripEnabled:
+        features.insert({blink::features::kDesktopPWAsTabStrip, true});
+        features.insert({features::kDesktopPWAsTabStripSettings, true});
+        features.insert({features::kDisableShortcutsEnableDiy, false});
+        break;
+      case CreateShortcutViewParams::kTabStripDisabled:
+        features.insert({blink::features::kDesktopPWAsTabStrip, false});
+        features.insert({features::kDesktopPWAsTabStripSettings, false});
+        features.insert({features::kDisableShortcutsEnableDiy, false});
+        break;
+      case CreateShortcutViewParams::kCreateShortcutCreatesDiy:
+        features.insert({features::kDisableShortcutsEnableDiy, true});
+        break;
+    }
 
     feature_list.InitWithFeatureStates(features);
     DialogBrowserTest::SetUp();
+  }
+
+  bool ShouldCreateDiyAppsForShortcutApps() {
+    return GetParam() == CreateShortcutViewParams::kCreateShortcutCreatesDiy;
   }
 
  private:
@@ -104,6 +132,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
 
   EXPECT_EQ(install_info->user_display_mode,
             web_app::mojom::UserDisplayMode::kStandalone);
+  EXPECT_EQ(install_info->is_diy_app, ShouldCreateDiyAppsForShortcutApps());
 }
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
@@ -141,6 +170,45 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
   EXPECT_EQ(install_result.Get<std::unique_ptr<web_app::WebAppInstallInfo>>()
                 ->user_display_mode,
             web_app::mojom::UserDisplayMode::kBrowser);
+  EXPECT_EQ(install_result.Get<std::unique_ptr<web_app::WebAppInstallInfo>>()
+                ->is_diy_app,
+            ShouldCreateDiyAppsForShortcutApps());
+}
+
+IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
+                       DialogCancelNotDiy) {
+  auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com"));
+  app_info->title = u"Test app";
+
+  web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/false,
+                                               /*auto_open_in_window=*/false);
+  base::test::TestFuture<bool, std::unique_ptr<web_app::WebAppInstallInfo>>
+      install_result;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
+          ->RegisterCurrentInstallForWebContents(
+              webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+
+  web_app::ShowCreateShortcutDialog(web_contents, std::move(app_info),
+                                    std::move(install_tracker),
+                                    install_result.GetCallback());
+
+  CreateShortcutConfirmationView* dialog =
+      CreateShortcutConfirmationView::GetDialogForTesting();
+
+  ASSERT_TRUE(dialog);
+  EXPECT_TRUE(dialog->GetVisible());
+
+  dialog->Cancel();
+
+  EXPECT_FALSE(install_result.Get<bool /*is_accepted*/>());
+  EXPECT_FALSE(
+      install_result.Get<std::unique_ptr<web_app::WebAppInstallInfo>>()
+          ->is_diy_app);
 }
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
@@ -191,6 +259,10 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CreateShortcutConfirmationViewBrowserTest,
-                         ::testing::Values(Params{false}, Params{true}));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CreateShortcutConfirmationViewBrowserTest,
+    ::testing::Values(CreateShortcutViewParams::kTabStripDisabled,
+                      CreateShortcutViewParams::kTabStripEnabled,
+                      CreateShortcutViewParams::kCreateShortcutCreatesDiy),
+    ParamsToString);

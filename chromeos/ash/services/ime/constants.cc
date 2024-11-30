@@ -36,7 +36,5 @@ const base::FilePath::CharType kLanguageDataDirName[] =
     FILE_PATH_LITERAL("data");
 #endif
 
-const char kGoogleKeyboardDownloadDomain[] = "dl.google.com";
-
 }  // namespace ime
 }  // namespace ash

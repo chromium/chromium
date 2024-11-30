@@ -6,14 +6,14 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
-#import "ios/chrome/browser/ui/screen/screen_type.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 @implementation FirstRunScreenProvider

@@ -82,6 +82,13 @@ void SavedTabOrGroupExistsChecker::OnTabGroupUpdated(const SavedTabGroup& group,
   CheckExitCondition();
 }
 
+void SavedTabOrGroupExistsChecker::OnTabGroupMigrated(
+    const SavedTabGroup& shared_group,
+    const base::Uuid& old_sync_id,
+    TriggerSource source) {
+  CheckExitCondition();
+}
+
 // ==========================================
 // --- SavedTabOrGroupDoesNotExistChecker ---
 // ==========================================

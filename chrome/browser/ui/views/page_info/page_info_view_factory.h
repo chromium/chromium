@@ -161,6 +161,9 @@ class PageInfoViewFactory {
   // Returns the icon for the related website sets button.
   static const ui::ImageModel GetRwsIcon();
 
+  // Returns the icon for the merchant trust button.
+  static const ui::ImageModel GetMerchantTrustIcon();
+
   // Returns the image model for the vector icon.
   static const ui::ImageModel GetImageModel(const gfx::VectorIcon& icon);
 
@@ -172,6 +175,7 @@ class PageInfoViewFactory {
       content::WebContents* web_contents);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
+  [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustPageView();
 
  private:
   // Creates a subpage header with back button that opens the main page, a

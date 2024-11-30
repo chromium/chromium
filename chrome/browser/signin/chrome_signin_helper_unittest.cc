@@ -95,7 +95,7 @@ class TestResponseAdapter : public signin::ResponseAdapter,
   TestResponseAdapter(const TestResponseAdapter&) = delete;
   TestResponseAdapter& operator=(const TestResponseAdapter&) = delete;
 
-  ~TestResponseAdapter() override {}
+  ~TestResponseAdapter() override = default;
 
   content::WebContents::Getter GetWebContentsGetter() const override {
     return base::BindLambdaForTesting(

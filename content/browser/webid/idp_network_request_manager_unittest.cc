@@ -926,6 +926,56 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingMinSize) {
   }
 }
 
+// Tests various scenarios on resolving branding icon's url for given config
+// url.
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingIconReltivePath) {
+  // branding icon url domain matches with config url domain
+  {
+    const char test_json[] = R"({
+    "branding" : {
+      "icons": [
+        {
+          "url": "/16.png",
+          "size": 16
+        }
+      ]
+    }
+    })";
+
+    FetchStatus fetch_status;
+    IdentityProviderMetadata idp_metadata;
+    std::tie(fetch_status, idp_metadata) =
+        SendConfigRequestAndWaitForResponse(test_json);
+
+    EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+    EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+    EXPECT_EQ("https://idp.test/16.png", idp_metadata.brand_icon_url);
+  }
+
+  // branding icon url domain doesnt match with config url domain
+  {
+    const char test_json[] = R"({
+    "branding" : {
+      "icons": [
+        {
+          "url": "https://example.com/16.png",
+          "size": 16
+        }
+      ]
+    }
+    })";
+
+    FetchStatus fetch_status;
+    IdentityProviderMetadata idp_metadata;
+    std::tie(fetch_status, idp_metadata) =
+        SendConfigRequestAndWaitForResponse(test_json);
+
+    EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+    EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+    EXPECT_EQ("https://example.com/16.png", idp_metadata.brand_icon_url);
+  }
+}
+
 TEST_F(IdpNetworkRequestManagerTest,
        ParseConfigSupportsOtherAccountActiveMode) {
   base::test::ScopedFeatureList list;
@@ -1217,8 +1267,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequest) {
 // Tests the ID assertion request implementation when CORS is enforced on the
 // endpoint.
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestWithCORS) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIdAssertionCORS);
   bool called = false;
   auto interceptor =
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -1415,24 +1463,50 @@ TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingAccounts) {
 
 TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataValidUrls) {
   // Both HTTPS and HTTP URLs are allowed.
-  const std::string privacy_policy_url = "https://privacy.policy";
-  const std::string terms_of_service_url = "http://terms.of.service";
-  const std::string brand_icon_url = "http://rp.brand.icon";
+  {
+    const std::string privacy_policy_url = "https://privacy.policy";
+    const std::string terms_of_service_url = "http://terms.of.service";
+    const std::string brand_icon_url = "http://rp.brand.icon";
 
-  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
-      /*client_id=*/"123", R"({"privacy_policy_url": ")" + privacy_policy_url +
-                               R"(", "terms_of_service_url": ")" +
-                               terms_of_service_url +
-                               R"(", "icons": [
+    IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+        /*client_id=*/"123", R"({"privacy_policy_url": ")" +
+                                 privacy_policy_url +
+                                 R"(", "terms_of_service_url": ")" +
+                                 terms_of_service_url +
+                                 R"(", "icons": [
       {
         "url":  ")" + brand_icon_url +
-                               R"(",
+                                 R"(",
         "size": 40
       }
     ]})");
-  ASSERT_EQ(GURL(privacy_policy_url), data.privacy_policy_url);
-  ASSERT_EQ(GURL(terms_of_service_url), data.terms_of_service_url);
-  ASSERT_EQ(GURL(brand_icon_url), data.brand_icon_url);
+    ASSERT_EQ(GURL(privacy_policy_url), data.privacy_policy_url);
+    ASSERT_EQ(GURL(terms_of_service_url), data.terms_of_service_url);
+    ASSERT_EQ(GURL(brand_icon_url), data.brand_icon_url);
+  }
+
+  // local host URL is allowed.
+  {
+    const std::string privacy_policy_url = "http://localhost";
+    const std::string terms_of_service_url = "http://127.0.0.1";
+    const std::string brand_icon_url = "http://localhost";
+
+    IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+        /*client_id=*/"123", R"({"privacy_policy_url": ")" +
+                                 privacy_policy_url +
+                                 R"(", "terms_of_service_url": ")" +
+                                 terms_of_service_url +
+                                 R"(", "icons": [
+      {
+        "url":  ")" + brand_icon_url +
+                                 R"(",
+        "size": 40
+      }
+    ]})");
+    ASSERT_EQ(GURL(privacy_policy_url), data.privacy_policy_url);
+    ASSERT_EQ(GURL(terms_of_service_url), data.terms_of_service_url);
+    ASSERT_EQ(GURL(brand_icon_url), data.brand_icon_url);
+  }
 }
 
 TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataInvalidUrls) {

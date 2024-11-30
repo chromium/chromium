@@ -27,10 +27,13 @@ void DataSharingOpenGroupHelper::OpenTabGroupWhenAvailable(
 void DataSharingOpenGroupHelper::OnTabGroupAdded(
     const tab_groups::SavedTabGroup& group,
     tab_groups::TriggerSource source) {
-  std::optional<std::string> collab_id = group.collaboration_id();
+  if (!group.collaboration_id().has_value()) {
+    return;
+  }
+
+  tab_groups::CollaborationId collab_id = group.collaboration_id().value();
   if (source == tab_groups::TriggerSource::REMOTE &&
-      group.is_shared_tab_group() &&
-      std::find(group_ids_.begin(), group_ids_.end(), collab_id) !=
+      std::find(group_ids_.begin(), group_ids_.end(), collab_id.value()) !=
           group_ids_.end()) {
     group_ids_.erase(collab_id.value());
     tab_group_service_->OpenTabGroup(
@@ -45,8 +48,9 @@ bool DataSharingOpenGroupHelper::OpenTabGroupIfSynced(std::string group_id) {
       tab_group_service_->GetAllGroups();
 
   auto exist = [=](tab_groups::SavedTabGroup group) {
-    std::optional<std::string> collab_id = group.collaboration_id();
-    return collab_id && collab_id.value() == group_id;
+    std::optional<tab_groups::CollaborationId> collab_id =
+        group.collaboration_id();
+    return collab_id && collab_id->value() == group_id;
   };
 
   if (auto it = std::find_if(begin(all), end(all), exist);

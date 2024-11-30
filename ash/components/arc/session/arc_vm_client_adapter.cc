@@ -451,9 +451,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
         ShouldUseArcAttestation());
   }
 
-  request.set_enable_broadcast_anr_prenotify(
-      base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR));
-
   request.set_enable_virtio_blk_data(start_params.use_virtio_blk_data);
 
   // Enable block IO scheduler for virtio-blk /data devices.
@@ -1271,7 +1268,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       observer.ArcInstanceStopped(is_system_shutdown);
   }
 
-  void OnStopVmReply(std::optional<vm_tools::concierge::StopVmResponse> reply) {
+  void OnStopVmReply(
+      std::optional<vm_tools::concierge::SuccessFailureResponse> reply) {
     // If the reply indicates the D-Bus call is successfully done, do nothing.
     // Concierge will call OnVmStopped() eventually.
     if (reply.has_value() && reply.value().success())

@@ -161,6 +161,12 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) = 0;
 
+  // Attempt to read a group that the user is not member of. This does not
+  // refresh the cached data. Returns the group data on success.
+  virtual void ReadNewGroup(
+      const GroupToken& token,
+      base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) = 0;
+
   // Attempts to create a new group. Returns a created group on success.
   virtual void CreateGroup(
       const std::string& group_name,

@@ -157,7 +157,10 @@ class SequencedQueue {
   // This method should be used to whenever an unrecoverable failure makes it
   // impossible for any more entries to be pushed into the queue, to ensure that
   // the queue still behaves consistently up to the point of forced termination.
-  void ForceTerminateSequence() {
+  //
+  // Returns the collection of all non-empty elements which were purged from
+  // beyond the last contiguous sequence element.
+  [[nodiscard]] std::vector<T> ForceTerminateSequence() {
     is_final_length_known_ = true;
     const SequenceNumber length = GetCurrentSequenceLength();
     const size_t required_storage_size =
@@ -165,12 +168,19 @@ class SequencedQueue {
     if (required_storage_size == 0) {
       // We're not going to be pushing any more entries into this queue.
       ResetAndReleaseStorage();
-      return;
+      return {};
     }
 
     // Drop entries pushed anywhere beyond the forced termination point.
     const size_t final_storage_size = front_index_ + required_storage_size;
+    std::vector<T> removed_elements;
+    for (size_t i = final_storage_size; i < entries_.size(); ++i) {
+      if (entries_[i]) {
+        removed_elements.push_back(std::move(entries_[i]->element));
+      }
+    }
     entries_.resize(final_storage_size);
+    return removed_elements;
   }
 
   // Indicates whether this queue is still expecting to have more elements

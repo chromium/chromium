@@ -176,4 +176,3 @@ const waitForIntroducePromise = new Promise(
     (resolve: (value: unknown) => void) =>
         chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
             resolve as VoidFunction));
-Background.init();

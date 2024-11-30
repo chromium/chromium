@@ -9,7 +9,7 @@
 
 class GalleryWatchManagerObserver {
  public:
-  virtual ~GalleryWatchManagerObserver() {}
+  virtual ~GalleryWatchManagerObserver() = default;
 
   // Called when the gallery contents change.
   virtual void OnGalleryChanged(const std::string& extension_id,

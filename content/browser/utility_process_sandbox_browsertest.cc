@@ -23,7 +23,6 @@
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -49,12 +48,10 @@ std::vector<Sandbox> GetSandboxTypesToTest() {
   for (Sandbox t = Sandbox::kNoSandbox; t <= Sandbox::kMaxValue;
        t = static_cast<Sandbox>(static_cast<int>(t) + 1)) {
     // These sandbox types can't be spawned in a utility process.
-    if (t == Sandbox::kRenderer || t == Sandbox::kGpu)
+    if (t == Sandbox::kRenderer || t == Sandbox::kGpu ||
+        t == Sandbox::kZygoteIntermediateSandbox) {
       continue;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    if (t == Sandbox::kZygoteIntermediateSandbox)
-      continue;
-#endif
+    }
     types.push_back(t);
   }
   return types;
@@ -127,9 +124,6 @@ class UtilityProcessSandboxBrowserTest
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
       case Sandbox::kHardwareVideoDecoding:
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-      case Sandbox::kHardwareVideoEncoding:
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case Sandbox::kIme:
       case Sandbox::kTts:
@@ -138,17 +132,14 @@ class UtilityProcessSandboxBrowserTest
       case Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      case Sandbox::kNetwork:
-#if BUILDFLAG(ENABLE_PRINTING)
-      case Sandbox::kPrintBackend:
-#endif
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      case Sandbox::kScreenAI:
-#endif
 #if BUILDFLAG(IS_LINUX)
       case Sandbox::kVideoEffects:
       case Sandbox::kOnDeviceTranslation:
 #endif
+      case Sandbox::kHardwareVideoEncoding:
+      case Sandbox::kNetwork:
+      case Sandbox::kPrintBackend:
+      case Sandbox::kScreenAI:
       case Sandbox::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |

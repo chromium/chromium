@@ -381,7 +381,6 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(1u, pm->background_hosts().size());
   EXPECT_EQ(1u, pm->GetAllFrames().size());
   EXPECT_TRUE(pm->GetBackgroundHostForExtension(extension->id()));
-  EXPECT_TRUE(pm->GetSiteInstanceForURL(extension->url()));
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
   EXPECT_FALSE(pm->IsBackgroundHostClosing(extension->id()));
 
@@ -392,7 +391,6 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->background_hosts().size());
   EXPECT_EQ(0u, pm->GetAllFrames().size());
   EXPECT_FALSE(pm->GetBackgroundHostForExtension(extension->id()));
-  EXPECT_TRUE(pm->GetSiteInstanceForURL(extension->url()));
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
   EXPECT_FALSE(pm->IsBackgroundHostClosing(extension->id()));
   EXPECT_EQ(-1, pm->GetLazyKeepaliveCount(extension.get()));
@@ -422,7 +420,6 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, PopupHostCreation) {
   EXPECT_EQ(0u, pm->GetAllFrames().size());
   EXPECT_FALSE(pm->GetBackgroundHostForExtension(popup->id()));
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(popup->id()).size());
-  EXPECT_TRUE(pm->GetSiteInstanceForURL(popup->url()));
   EXPECT_FALSE(pm->IsBackgroundHostClosing(popup->id()));
 
   // Simulate clicking on the action to open a popup.
@@ -438,7 +435,6 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, PopupHostCreation) {
   EXPECT_EQ(1u, pm->GetAllFrames().size());
   EXPECT_FALSE(pm->GetBackgroundHostForExtension(popup->id()));
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(popup->id()).size());
-  EXPECT_TRUE(pm->GetSiteInstanceForURL(popup->url()));
   EXPECT_FALSE(pm->IsBackgroundHostClosing(popup->id()));
   EXPECT_EQ(-1, pm->GetLazyKeepaliveCount(popup.get()));
   EXPECT_TRUE(pm->GetLazyKeepaliveActivities(popup.get()).empty());
@@ -481,13 +477,15 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HttpHostMatchingExtensionId) {
   EXPECT_EQ(url, tab_web_contents->GetVisibleURL());
   EXPECT_FALSE(pm->GetExtensionForWebContents(tab_web_contents))
       << "Non-extension content must not have an associated extension";
-  ASSERT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
+  ProcessManager::FrameSet rfh_set =
+      pm->GetRenderFrameHostsForExtension(extension->id());
+  ASSERT_EQ(1u, rfh_set.size());
+  content::RenderFrameHost* extension_rfh = *rfh_set.begin();
   content::WebContents* extension_web_contents =
-      content::WebContents::FromRenderFrameHost(
-          *pm->GetRenderFrameHostsForExtension(extension->id()).begin());
+      content::WebContents::FromRenderFrameHost(extension_rfh);
   EXPECT_TRUE(extension_web_contents->GetSiteInstance() !=
               tab_web_contents->GetSiteInstance());
-  EXPECT_TRUE(pm->GetSiteInstanceForURL(extension->url()) !=
+  EXPECT_TRUE(extension_rfh->GetSiteInstance() !=
               tab_web_contents->GetSiteInstance());
   EXPECT_TRUE(pm->GetBackgroundHostForExtension(extension->id()));
 }

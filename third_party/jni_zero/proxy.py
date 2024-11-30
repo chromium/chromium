@@ -4,17 +4,52 @@
 """Logic related to proxying calls through GEN_JNI.java."""
 
 import base64
+import collections
 import hashlib
 
 import common
 import java_types
 
-# 'Proxy' native methods are declared in an @NativeMethods interface without
-# a native qualifier and indicate that the JNI annotation processor should
-# generate code to link between the equivalent native method as if it were
-# declared statically.
 
 _MAX_CHARS_FOR_HASHED_NATIVE_METHODS = 8
+
+
+_MULTIPLEXED_CHAR_BY_TYPE = {
+    'byte': 'B',
+    'char': 'C',
+    'double': 'D',
+    'float': 'F',
+    'int': 'I',
+    'long': 'J',
+    'Object': 'O',
+    'short': 'S',
+    'void': 'V',
+    'boolean': 'Z',
+}
+
+
+def _muxed_type_char(java_type):
+  return _MULTIPLEXED_CHAR_BY_TYPE[java_type.to_java()]
+
+
+def muxed_name(muxed_signature):
+  # Proxy signatures for methods are named after their return type and
+  # parameters to ensure uniqueness, even for the same return types.
+  params_list = [_muxed_type_char(t) for t in muxed_signature.param_types]
+  params_part = ''
+  if params_list:
+    params_part = '_' + ''.join(p for p in params_list)
+
+  return_value_part = _muxed_type_char(muxed_signature.return_type)
+  return '_' + return_value_part + params_part
+
+
+def muxed_signature(proxy_signature):
+  sorted_params = sorted(proxy_signature.param_list,
+                         key=lambda x: _muxed_type_char(x.java_type))
+  param_list = java_types.JavaParamList(sorted_params)
+  return java_types.JavaSignature.from_params(proxy_signature.return_type,
+                                              param_list)
 
 
 def get_gen_jni_class(*,
@@ -35,7 +70,7 @@ def get_gen_jni_class(*,
   return gen_jni_class
 
 
-def create_hashed_method_name(non_hashed_name, is_test_only):
+def hashed_name(non_hashed_name, is_test_only):
   md5 = hashlib.md5(non_hashed_name.encode('utf8')).digest()
   hash_b64 = base64.b64encode(md5, altchars=b'$_').decode('utf-8')
 
@@ -55,20 +90,27 @@ def create_hashed_method_name(non_hashed_name, is_test_only):
   return hashed_name
 
 
-def create_method_names(java_class, method_name, is_test_only):
-  """Returns the method name used in GEN_JNI (both hashed an non-hashed)."""
-  proxy_name = common.escape_class_name(
-      f'{java_class.full_name_with_slashes}/{method_name}')
-  hashed_proxy_name = create_hashed_method_name(proxy_name, is_test_only)
-  return proxy_name, hashed_proxy_name
-
-
 def needs_implicit_array_element_class_param(return_type):
   return (return_type.is_object_array() and return_type.converted_type
           and not return_type.java_class.is_system_class())
 
 
 def add_implicit_array_element_class_param(signature):
-  param = java_types.JavaParam(java_types.CLASS, '__arrayClazz')
+  param = java_types.JavaParam(java_types.OBJECT, '__arrayClazz')
   param_list = java_types.JavaParamList(signature.param_list + (param, ))
   return java_types.JavaSignature.from_params(signature.return_type, param_list)
+
+
+def populate_muxed_switch_num(jni_objs, never_omit_switch_num=False):
+  muxed_aliases_by_sig = collections.defaultdict(list)
+  for jni_obj in jni_objs:
+    for native in jni_obj.proxy_natives:
+      aliases = muxed_aliases_by_sig[native.muxed_signature]
+      native.muxed_switch_num = len(aliases)
+      aliases.append(native)
+  # Omit switch_num for unique signatures.
+  if not never_omit_switch_num:
+    for aliases in muxed_aliases_by_sig.values():
+      if len(aliases) == 1:
+        aliases[0].muxed_switch_num = -1
+  return muxed_aliases_by_sig

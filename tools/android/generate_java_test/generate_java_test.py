@@ -52,15 +52,31 @@ _INST_TEST_FILE = '''// Copyright %s The Chromium Authors
 
 package %s;
 
+import android.app.Activity;
+
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Instrumentation tests for {@link %s}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class %sInstrumentationTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class %sInstrumentationTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    private static Activity sActivity;
+
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 }
 '''
 

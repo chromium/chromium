@@ -101,9 +101,12 @@ namespace translate {
 TranslateAgent::TranslateAgent(content::RenderFrame* render_frame, int world_id)
     : content::RenderFrameObserver(render_frame),
       world_id_(world_id),
+      translate_language_detection_model_(GetLanguageDetectionModel()),
       language_detection_agent_(
           IsTFLiteLanguageDetectionEnabled()
-              ? new language_detection::LanguageDetectionAgent(render_frame)
+              ? new language_detection::LanguageDetectionAgent(
+                    render_frame,
+                    translate_language_detection_model_->tflite_model())
               : nullptr) {
   translate_task_runner_ = this->render_frame()->GetTaskRunner(
       blink::TaskType::kInternalTranslation);
@@ -113,7 +116,7 @@ TranslateAgent::~TranslateAgent() = default;
 
 void TranslateAgent::SeedLanguageDetectionModelForTesting(
     base::File model_file) {
-  language_detection_agent_->UpdateLanguageDetectionModel(
+  translate_language_detection_model_->tflite_model().UpdateWithFile(
       std::move(model_file));
 }
 
@@ -192,12 +195,10 @@ void TranslateAgent::PageCaptured(
         translate::LanguageVerificationType::kNoPageContent);
   } else if (translate::IsTFLiteLanguageDetectionEnabled()) {
     // Use TFLite and page contents to assist with language detection.
-    translate::LanguageDetectionModel& language_detection_model =
-        GetLanguageDetectionModel();
-    bool is_available = language_detection_model.IsAvailable();
+    bool is_available = translate_language_detection_model_->IsAvailable();
     language =
         is_available
-            ? language_detection_model.DeterminePageLanguage(
+            ? translate_language_detection_model_->DeterminePageLanguage(
                   content_language, html_lang, contents->as_string(),
                   &model_detected_language, &is_model_reliable,
                   model_reliability_score)
@@ -213,7 +214,8 @@ void TranslateAgent::PageCaptured(
         "LanguageDetection.TFLiteModel.WasModelUnavailableDueToDeferredLoad",
         !is_available &&
             language_detection_agent_->waiting_for_first_foreground());
-    detection_model_version = language_detection_model.GetModelVersion();
+    detection_model_version =
+        translate_language_detection_model_->GetModelVersion();
     details.has_run_lang_detection = true;
   } else {
     // Use CLD3 and page contents to assist with language detection.
@@ -370,12 +372,13 @@ std::string TranslateAgent::ExecuteScriptAndGetStringResult(
   }
 
   v8::Local<v8::String> v8_str = result.As<v8::String>();
-  int length = v8_str->Utf8Length(isolate);
-  if (length <= 0)
+  size_t length = v8_str->Utf8LengthV2(isolate);
+  if (length == 0) {
     return std::string();
+  }
 
-  std::string str(static_cast<size_t>(length), '\0');
-  v8_str->WriteUtf8(isolate, &str[0], length);
+  std::string str(length, '\0');
+  v8_str->WriteUtf8V2(isolate, str.data(), length);
   return str;
 }
 

@@ -372,11 +372,8 @@ void PrefetchMatchResolver2::OnDeterminedHead(
   CHECK(candidates_.contains(prefetch_container.key()));
   CHECK(!prefetch_container.is_in_dtor());
 
-  if (prefetch_container.CreateReader().HaveDefaultContextCookiesChanged()) {
-    UnblockForCookiesChanged();
-    return;
-  }
-
+  // Note that `OnDeterimnedHead()` is called even if `PrefetchContainer` is in
+  // failure `PrefetchState`. See, for example, https://crbug.com/375333786.
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
       // All callsites of `PrefetchContainer::OnDeterminedHead2()` are
@@ -397,6 +394,11 @@ void PrefetchMatchResolver2::OnDeterminedHead(
     case PrefetchContainer::ServableState::kServable:
       // Proceed.
       break;
+  }
+
+  if (prefetch_container.CreateReader().HaveDefaultContextCookiesChanged()) {
+    UnblockForCookiesChanged();
+    return;
   }
 
   // Non-redirect header is received and now the value of

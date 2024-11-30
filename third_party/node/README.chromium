@@ -557,3 +557,20 @@ Linting for JS and TS.
 
 Local Modifications:
 (none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Microsoft Authentication Library for JavaScript (MSAL.js) for Browser-Based Single-Page Applications
+Short Name: msal-browser
+URL: https://www.npmjs.com/package/@azure/msal-browser
+Version: 3.27.0
+License: MIT
+License File: MSAL_LICENSE
+Security Critical: yes
+Shipped: yes
+
+Description:
+Authentication for Microsoft integrations within client-side JS.
+
+Local Modifications:
+(none)

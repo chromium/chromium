@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -93,6 +92,10 @@ bool CanAssignToSelectSlot(const Node& node) {
 }
 
 bool CanAssignToCustomizableSelectSlot(const Node& node) {
+  if (RuntimeEnabledFeatures::SelectListBoxSlotAnythingEnabled()) {
+    DCHECK(RuntimeEnabledFeatures::SelectParserRelaxationEnabled());
+    return IsA<Element>(node) && !IsA<HTMLFormControlElement>(node);
+  }
   // Elements which are valid in <select>'s new content model as proposed for
   // customizable select.
   return IsA<HTMLOptionElement>(node) || IsA<HTMLOptGroupElement>(node) ||
@@ -299,12 +302,14 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
   // some element to none which will cause a layout tree detach.
   select_->GetDocument().UpdateStyleAndLayoutTree();
 
+  // TODO(crbug.com/379241451): This can be removed once new behavior ships.
   // The purpose of this method is to handle events on the in-page part of the
   // select and determining whether they should toggle the picker. However, it
   // will also pick up events on the base appearance picker popover, and we
   // don't want to do anything about those events, so the following code will
   // return early in the case that the events are targeting nodes in the picker.
-  if (IsAppearanceBasePicker() && event.HasEventPath()) {
+  if (!RuntimeEnabledFeatures::PopoverButtonNestingBehaviorEnabled() &&
+      IsAppearanceBasePicker() && event.HasEventPath()) {
     bool target_is_button =
         event.target() == select_ || event.target() == &InnerElement();
     auto* button = SlottedButton();
@@ -439,7 +444,9 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     if (select_->GetLayoutObject() && !will_be_destroyed_ &&
         !select_->IsDisabledFormControl()) {
       if (PopupIsVisible()) {
-        HidePopup();
+        if (!IsAppearanceBasePicker()) {
+          HidePopup();
+        }
       } else {
         // Save the selection so it can be compared to the new selection
         // when we call onChange during selectOption, which gets called
@@ -450,9 +457,10 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
         // InputDeviceCapabilities here when select menu list gets
         // focus, see https://crbug.com/476530.
         if (IsAppearanceBasePicker()) {
-          // When the user clicks the select to open the popover, it will
-          // activate popover light dismiss and immediately close the popover
-          // unless we disable it by doing this.
+          // Because we're activating the <select> on mousedown, not mouseup
+          // or click, this code will immediately show the popover, and the
+          // following mouseup will activate popover light dismiss, which will
+          // immediately close the popover unless we disable it by doing this.
           select_->GetDocument().SetPopoverPointerdownTarget(popover_);
         }
         ShowPopup(mouse_event->FromTouch() ? PopupMenu::kTouch
@@ -1821,7 +1829,7 @@ void ListBoxSelectType::ManuallyAssignSlots() {
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
     if (child.IsSlotable() &&
         (CanAssignToSelectSlot(child) ||
-         (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+         (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
           CanAssignToCustomizableSelectSlot(child)))) {
       option_nodes.push_back(child);
     }

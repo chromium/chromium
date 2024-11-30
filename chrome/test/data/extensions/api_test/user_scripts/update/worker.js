@@ -197,6 +197,50 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Tests updating a user script world ID from a non-default world back to
+  // the default world.
+  async function updateUserScriptToDefaultWorldId() {
+    await chrome.userScripts.unregister();
+
+    // Register a user script with a given world ID.
+    const scriptToRegister = [
+      {
+        id: 'us1',
+        matches: ['*://*/*'],
+        js: [{file: 'user_script.js'}],
+        worldId: 'some world',
+      },
+    ];
+    await chrome.userScripts.register(scriptToRegister);
+
+    // Update it to the default world by specifying `worldId: ''`.
+    const scriptUpdate = [
+      {
+        id: 'us1',
+        matches: ['*://*/*'],
+        js: [{file: 'user_script.js'}],
+        worldId: '',
+      }
+    ];
+
+    await chrome.userScripts.update(scriptUpdate);
+
+    // The updated script should now use the default world ID, which is
+    // represented by not having a specified world ID.
+    const expectedScripts = [{
+      id: 'us1',
+      matches: ['*://*/*'],
+      js: [{file: 'user_script.js'}],
+      runAt: 'document_idle',
+      allFrames: false,
+      world: 'USER_SCRIPT',
+    }];
+    const registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(expectedScripts, registeredScripts);
+
+    chrome.test.succeed();
+  },
+
   // Tests that calling userScripts.update with a specific ID updates such
   // script and does not inject them into a (former) matching frame.
   async function scriptUpdated() {

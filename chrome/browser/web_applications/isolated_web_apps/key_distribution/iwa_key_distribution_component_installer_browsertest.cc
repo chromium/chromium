@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
@@ -57,6 +58,14 @@ class IwaKeyDistributionComponentInstallBrowserTest
 IN_PROC_BROWSER_TEST_F(
     IwaKeyDistributionComponentInstallBrowserTest,
     CallComponentReadyWhenRegistrationFindsExistingComponent) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Override the pre-install component directory and its alternative directory
+  // so that the component update will not find the pre-loaded component.
+  base::ScopedPathOverride preinstalled_dir_override(
+      component_updater::DIR_COMPONENT_PREINSTALLED);
+  base::ScopedPathOverride preinstalled_alt_dir_override(
+      component_updater::DIR_COMPONENT_PREINSTALLED_ALT);
+
   EXPECT_THAT(test::InstallIwaKeyDistributionComponent(base::Version("2.0.0"),
                                                        CreateValidData()),
               HasValue());
@@ -67,6 +76,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(test::InstallIwaKeyDistributionComponent(base::Version("2.1.0"),
                                                        CreateValidData()),
               HasValue());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
+                       PreloadedComponent) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Override the user-wide component directory to make sure there is no
+  // downloaded component.
+  base::ScopedPathOverride user_dir_override(
+      component_updater::DIR_COMPONENT_USER);
+
+  EXPECT_THAT(test::RegisterPreloadedIwaKeyDistributionComponent(), HasValue());
 }
 
 }  // namespace web_app

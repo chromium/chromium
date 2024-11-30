@@ -65,7 +65,7 @@ TEST(ClipboardUtilitiesTest, PNGToImageMarkup) {
   Vector<uint8_t> png_data;
   EXPECT_TRUE(ImageEncoder::Encode(&png_data, pixmap, options));
 
-  mojo_base::BigBuffer png = base::as_bytes(base::make_span(png_data));
+  mojo_base::BigBuffer png = base::as_byte_span(png_data);
   EXPECT_EQ(
       R"HTML(<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAADElEQVQYGWNgGEYAAADNAAGVVebMAAAAAElFTkSuQmCC" alt=""/>)HTML",
       PNGToImageMarkup(png));

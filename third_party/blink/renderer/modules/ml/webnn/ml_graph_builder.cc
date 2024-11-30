@@ -22,6 +22,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
@@ -1157,6 +1158,279 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
                         std::move(output_constraints));
 }
 
+Vector<uint64_t> GetInputs(const blink_mojom::Operation& operation) {
+  switch (operation.which()) {
+    case blink_mojom::Operation::Tag::kArgMinMax:
+      return {operation.get_arg_min_max()->input_operand_id};
+    case blink_mojom::Operation::Tag::kBatchNormalization: {
+      const auto& batch_normalization = *operation.get_batch_normalization();
+      Vector<uint64_t> inputs;
+      inputs.reserve(3 + batch_normalization.bias_operand_id.has_value() +
+                     batch_normalization.scale_operand_id.has_value());
+
+      inputs.push_back(batch_normalization.input_operand_id);
+      inputs.push_back(batch_normalization.mean_operand_id);
+      inputs.push_back(batch_normalization.variance_operand_id);
+
+      if (batch_normalization.bias_operand_id.has_value()) {
+        inputs.push_back(*batch_normalization.bias_operand_id);
+      }
+      if (batch_normalization.scale_operand_id.has_value()) {
+        inputs.push_back(*batch_normalization.scale_operand_id);
+      }
+      return inputs;
+    }
+    case blink_mojom::Operation::Tag::kClamp:
+      return {operation.get_clamp()->input_operand_id};
+    case blink_mojom::Operation::Tag::kConcat:
+      return operation.get_concat()->input_operand_ids;
+    case blink_mojom::Operation::Tag::kConv2d: {
+      const auto& conv2d = *operation.get_conv2d();
+      Vector<uint64_t> inputs;
+      inputs.reserve(2 + conv2d.bias_operand_id.has_value());
+
+      inputs.push_back(conv2d.input_operand_id);
+      inputs.push_back(conv2d.filter_operand_id);
+
+      if (conv2d.bias_operand_id.has_value()) {
+        inputs.push_back(*conv2d.bias_operand_id);
+      }
+      return inputs;
+    }
+    case blink_mojom::Operation::Tag::kCumulativeSum:
+      return {operation.get_cumulative_sum()->input_operand_id};
+    case blink_mojom::Operation::Tag::kDequantizeLinear:
+      return {operation.get_dequantize_linear()->input_operand_id,
+              operation.get_dequantize_linear()->scale_operand_id,
+              operation.get_dequantize_linear()->zero_point_operand_id};
+    case blink_mojom::Operation::Tag::kElementWiseBinary:
+      return {operation.get_element_wise_binary()->lhs_operand_id,
+              operation.get_element_wise_binary()->rhs_operand_id};
+    case blink_mojom::Operation::Tag::kElu:
+      return {operation.get_elu()->input_operand_id};
+    case blink_mojom::Operation::Tag::kElementWiseUnary:
+      return {operation.get_element_wise_unary()->input_operand_id};
+    case blink_mojom::Operation::Tag::kExpand:
+      return {operation.get_expand()->input_operand_id};
+    case blink_mojom::Operation::Tag::kGather:
+      return {operation.get_gather()->input_operand_id,
+              operation.get_gather()->indices_operand_id};
+    case blink_mojom::Operation::Tag::kGatherElements:
+      return {operation.get_gather_elements()->input_operand_id,
+              operation.get_gather_elements()->indices_operand_id};
+    case blink_mojom::Operation::Tag::kGatherNd:
+      return {operation.get_gather_nd()->input_operand_id,
+              operation.get_gather_nd()->indices_operand_id};
+    case blink_mojom::Operation::Tag::kGelu:
+      return {operation.get_gelu()->input_operand_id};
+    case blink_mojom::Operation::Tag::kGemm: {
+      const auto& gemm = *operation.get_gemm();
+      Vector<uint64_t> inputs;
+      inputs.reserve(2 + gemm.c_operand_id.has_value());
+
+      inputs.push_back(gemm.a_operand_id);
+      inputs.push_back(gemm.b_operand_id);
+
+      if (gemm.c_operand_id.has_value()) {
+        inputs.push_back(*gemm.c_operand_id);
+      }
+      return inputs;
+    }
+    case blink_mojom::Operation::Tag::kGru: {
+      const auto& gru = *operation.get_gru();
+      Vector<uint64_t> inputs;
+      inputs.reserve(3 + gru.bias_operand_id.has_value() +
+                     gru.recurrent_bias_operand_id.has_value() +
+                     gru.initial_hidden_state_operand_id.has_value());
+
+      inputs.push_back(gru.input_operand_id);
+      inputs.push_back(gru.weight_operand_id);
+      inputs.push_back(gru.recurrent_weight_operand_id);
+
+      if (gru.bias_operand_id.has_value()) {
+        inputs.push_back(*gru.bias_operand_id);
+      }
+      if (gru.recurrent_bias_operand_id.has_value()) {
+        inputs.push_back(*gru.recurrent_bias_operand_id);
+      }
+      if (gru.initial_hidden_state_operand_id.has_value()) {
+        inputs.push_back(*gru.initial_hidden_state_operand_id);
+      }
+      return inputs;
+    }
+    case blink_mojom::Operation::Tag::kGruCell: {
+      const auto& gru_cell = *operation.get_gru_cell();
+      Vector<uint64_t> inputs;
+      inputs.reserve(4 + gru_cell.bias_operand_id.has_value() +
+                     gru_cell.recurrent_bias_operand_id.has_value());
+
+      inputs.push_back(gru_cell.input_operand_id);
+      inputs.push_back(gru_cell.weight_operand_id);
+      inputs.push_back(gru_cell.recurrent_weight_operand_id);
+      inputs.push_back(gru_cell.hidden_state_operand_id);
+
+      if (gru_cell.bias_operand_id.has_value()) {
+        inputs.push_back(*gru_cell.bias_operand_id);
+      }
+      if (gru_cell.recurrent_bias_operand_id.has_value()) {
+        inputs.push_back(*gru_cell.recurrent_bias_operand_id);
+      }
+      return inputs;
+    }
+    case blink_mojom::Operation::Tag::kHardSigmoid:
+      return {operation.get_hard_sigmoid()->input_operand_id};
+    case blink_mojom::Operation::Tag::kHardSwish:
+      return {operation.get_hard_swish()->input_operand_id};
+    case blink_mojom::Operation::Tag::kLayerNormalization: {
+      const auto& layer_normalization = *operation.get_layer_normalization();
+      Vector<uint64_t> inputs;
+      inputs.reserve(1 + layer_normalization.bias_operand_id.has_value() +
+                     layer_normalization.scale_operand_id.has_value());
+
+      inputs.push_back(layer_normalization.input_operand_id);
+
+      if (layer_normalization.bias_operand_id.has_value()) {
+        inputs.push_back(*layer_normalization.bias_operand_id);
+      }
+      if (layer_normalization.scale_operand_id.has_value()) {
+        inputs.push_back(*layer_normalization.scale_operand_id);
+      }
+      return inputs;
+    }
+    case blink_mojom::Operation::Tag::kInstanceNormalization: {
+      const auto& instance_normalization =
+          *operation.get_instance_normalization();
+      Vector<uint64_t> inputs;
+      inputs.reserve(1 + instance_normalization.bias_operand_id.has_value() +
+                     instance_normalization.scale_operand_id.has_value());
+
+      inputs.push_back(instance_normalization.input_operand_id);
+
+      if (instance_normalization.bias_operand_id.has_value()) {
+        inputs.push_back(*instance_normalization.bias_operand_id);
+      }
+      if (instance_normalization.scale_operand_id.has_value()) {
+        inputs.push_back(*instance_normalization.scale_operand_id);
+      }
+      return inputs;
+    }
+    case blink_mojom::Operation::Tag::kLeakyRelu:
+      return {operation.get_leaky_relu()->input_operand_id};
+    case blink_mojom::Operation::Tag::kLinear:
+      return {operation.get_linear()->input_operand_id};
+    case blink_mojom::Operation::Tag::kLstm: {
+      const auto& lstm = *operation.get_lstm();
+      Vector<uint64_t> inputs;
+      inputs.reserve(3 + lstm.bias_operand_id.has_value() +
+                     lstm.recurrent_bias_operand_id.has_value() +
+                     lstm.peephole_weight_operand_id.has_value() +
+                     lstm.initial_hidden_state_operand_id.has_value() +
+                     lstm.initial_cell_state_operand_id.has_value());
+
+      inputs.push_back(lstm.input_operand_id);
+      inputs.push_back(lstm.weight_operand_id);
+      inputs.push_back(lstm.recurrent_weight_operand_id);
+
+      if (lstm.bias_operand_id.has_value()) {
+        inputs.push_back(*lstm.bias_operand_id);
+      }
+      if (lstm.recurrent_bias_operand_id.has_value()) {
+        inputs.push_back(*lstm.recurrent_bias_operand_id);
+      }
+      if (lstm.peephole_weight_operand_id.has_value()) {
+        inputs.push_back(*lstm.peephole_weight_operand_id);
+      }
+      if (lstm.initial_hidden_state_operand_id.has_value()) {
+        inputs.push_back(*lstm.initial_hidden_state_operand_id);
+      }
+      if (lstm.initial_cell_state_operand_id.has_value()) {
+        inputs.push_back(*lstm.initial_cell_state_operand_id);
+      }
+      return inputs;
+    }
+    case blink_mojom::Operation::Tag::kLstmCell: {
+      const auto& lstm_cell = *operation.get_lstm_cell();
+      Vector<uint64_t> inputs;
+      inputs.reserve(5 + lstm_cell.bias_operand_id.has_value() +
+                     lstm_cell.recurrent_bias_operand_id.has_value() +
+                     lstm_cell.peephole_weight_operand_id.has_value());
+
+      inputs.push_back(lstm_cell.input_operand_id);
+      inputs.push_back(lstm_cell.weight_operand_id);
+      inputs.push_back(lstm_cell.recurrent_weight_operand_id);
+      inputs.push_back(lstm_cell.hidden_state_operand_id);
+      inputs.push_back(lstm_cell.cell_state_operand_id);
+
+      if (lstm_cell.bias_operand_id.has_value()) {
+        inputs.push_back(*lstm_cell.bias_operand_id);
+      }
+      if (lstm_cell.recurrent_bias_operand_id.has_value()) {
+        inputs.push_back(*lstm_cell.recurrent_bias_operand_id);
+      }
+      if (lstm_cell.peephole_weight_operand_id.has_value()) {
+        inputs.push_back(*lstm_cell.peephole_weight_operand_id);
+      }
+      return inputs;
+    }
+    case blink_mojom::Operation::Tag::kMatmul:
+      return {operation.get_matmul()->a_operand_id,
+              operation.get_matmul()->b_operand_id};
+    case blink_mojom::Operation::Tag::kPad:
+      return {operation.get_pad()->input_operand_id};
+    case blink_mojom::Operation::Tag::kPool2d:
+      return {operation.get_pool2d()->input_operand_id};
+    case blink_mojom::Operation::Tag::kPrelu:
+      return {operation.get_prelu()->input_operand_id,
+              operation.get_prelu()->slope_operand_id};
+    case blink_mojom::Operation::Tag::kQuantizeLinear:
+      return {operation.get_quantize_linear()->input_operand_id,
+              operation.get_quantize_linear()->scale_operand_id,
+              operation.get_quantize_linear()->zero_point_operand_id};
+    case blink_mojom::Operation::Tag::kReduce:
+      return {operation.get_reduce()->input_operand_id};
+    case blink_mojom::Operation::Tag::kRelu:
+      return {operation.get_relu()->input_operand_id};
+    case blink_mojom::Operation::Tag::kResample2d:
+      return {operation.get_resample2d()->input_operand_id};
+    case blink_mojom::Operation::Tag::kReshape:
+      return {operation.get_reshape()->input_operand_id};
+    case blink_mojom::Operation::Tag::kReverse:
+      return {operation.get_reverse()->input_operand_id};
+    case blink_mojom::Operation::Tag::kScatterElements:
+      return {operation.get_scatter_elements()->input_operand_id,
+              operation.get_scatter_elements()->indices_operand_id,
+              operation.get_scatter_elements()->updates_operand_id};
+    case blink_mojom::Operation::Tag::kScatterNd:
+      return {operation.get_scatter_nd()->input_operand_id,
+              operation.get_scatter_nd()->indices_operand_id,
+              operation.get_scatter_nd()->updates_operand_id};
+    case blink_mojom::Operation::Tag::kSigmoid:
+      return {operation.get_sigmoid()->input_operand_id};
+    case blink_mojom::Operation::Tag::kSlice:
+      return {operation.get_slice()->input_operand_id};
+    case blink_mojom::Operation::Tag::kSoftmax:
+      return {operation.get_softmax()->input_operand_id};
+    case blink_mojom::Operation::Tag::kSoftplus:
+      return {operation.get_softplus()->input_operand_id};
+    case blink_mojom::Operation::Tag::kSoftsign:
+      return {operation.get_softsign()->input_operand_id};
+    case blink_mojom::Operation::Tag::kSplit:
+      return {operation.get_split()->input_operand_id};
+    case blink_mojom::Operation::Tag::kTanh:
+      return {operation.get_tanh()->input_operand_id};
+    case blink_mojom::Operation::Tag::kTile:
+      return {operation.get_tile()->input_operand_id};
+    case blink_mojom::Operation::Tag::kTranspose:
+      return {operation.get_transpose()->input_operand_id};
+    case blink_mojom::Operation::Tag::kTriangular:
+      return {operation.get_triangular()->input_operand_id};
+    case blink_mojom::Operation::Tag::kWhere:
+      return {operation.get_where()->condition_operand_id,
+              operation.get_where()->true_value_operand_id,
+              operation.get_where()->false_value_operand_id};
+  }
+}
+
 base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs,
     const webnn::ContextProperties& context_properties) {
@@ -1178,53 +1452,9 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
   HeapVector<Member<const MLOperator>>* topologically_sorted_operators =
       GetOperatorsInTopologicalOrder(named_outputs);
 
-  // Optimize away redundant constant reshapes by removing the reshape operator
-  // and change constant operand's descriptor to the reshape output operand's
-  // descriptor.
-  // The algorithm walks down all constants and its dependent operators to
-  // identify redundant reshapes, skips serialization for reshape operator and
-  // points the reshape output operand in `operand_to_id_map` to constant's id.
-  HeapHashSet<Member<const MLOperand>> constant_operands;
-  for (const auto& current_operator : *topologically_sorted_operators) {
-    for (const auto& operand : current_operator->Inputs()) {
-      if (operand->Kind() == blink_mojom::Operand::Kind::kConstant) {
-        constant_operands.insert(operand);
-      }
-    }
-  }
-  // Hash map of redundant reshape output operand from constant that can be
-  // removed from the graph.
-  HeapHashMap<Member<const MLOperand>, Member<const MLOperand>>
-      reshaped_to_constant_mapping;
-  HeapHashMap<Member<const MLOperand>, Member<const MLOperand>>
-      constant_to_reshaped_mapping;
-
-  for (const auto& constant_operand : constant_operands) {
-    Member<const MLOperand> next_operand = constant_operand;
-    // For each constant operand, keep walking down the dependencies until no
-    // reshape is found.
-    while (true) {
-      auto dependent_operators = next_operand->DependentOperators();
-      // If reshape is the only dependent of the constant, then this reshape
-      // operation can be removed from the graph.
-      if (dependent_operators.size() != 1) {
-        break;
-      }
-      auto dependent_operator = *dependent_operators.begin();
-      if (dependent_operator->Kind() != blink_mojom::Operation::Tag::kReshape) {
-        break;
-      }
-      Member<const MLOperand> reshape_output = dependent_operator->Outputs()[0];
-      reshaped_to_constant_mapping.Set(reshape_output, constant_operand);
-      constant_to_reshaped_mapping.Set(constant_operand, reshape_output);
-      next_operand = reshape_output;
-    }
-  }
   // Visit the operators in topological order. For each operator,
   // 1, Create `mojo::Operand` for its input and output operands if needed.
   // 2, Create `mojo::Operator` with the id of input and output operands.
-  //
-  // Skips the redundant constant reshapes.
   for (const auto& current_operator : *topologically_sorted_operators) {
     for (const auto& operand : current_operator->Inputs()) {
       if (operand_to_id_map.Contains(operand.Get())) {
@@ -1246,21 +1476,12 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
         case blink_mojom::Operand::Kind::kConstant: {
           // Convert `mojo::Operand` for constant operand.
           uint64_t operand_id = NextOperandId(*graph_info);
-          auto mojo_operand =
-              mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get());
-          // Set constant's descriptor to the redundant reshape's output's
-          // descriptor.
-          if (constant_to_reshaped_mapping.Contains(operand)) {
-            mojo_operand->descriptor =
-                mojo::ConvertTo<blink_mojom::OperandPtr>(
-                    constant_to_reshaped_mapping.at(operand))
-                    ->descriptor;
-          }
-          graph_info->id_to_operand_map.insert(operand_id,
-                                               std::move(mojo_operand));
+          graph_info->id_to_operand_map.insert(
+              operand_id,
+              mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
           // Build the map of constant operands for this graph with the id.
-          graph_info->constant_id_to_buffer_map.insert(
-              operand_id, operand->AsConstantOperand()->Bytes());
+          graph_info->constant_operand_ids_to_handles.insert(
+              operand_id, operand->AsConstantOperand()->handle());
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
@@ -1271,22 +1492,12 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
           NOTREACHED();
       }
     }
-    bool is_redundant_reshape = false;
     for (const auto& operand : current_operator->Outputs()) {
       if (operand_to_id_map.Contains(operand.Get())) {
         // The `mojo::Operand` is already converted with the MLOperand, skip it.
         continue;
       }
 
-      if (reshaped_to_constant_mapping.Contains(operand)) {
-        is_redundant_reshape = true;
-        // Point redundant reshape's output operand to its corresponding
-        // constant operand.
-        operand_to_id_map.insert(
-            operand,
-            operand_to_id_map.at(reshaped_to_constant_mapping.at(operand)));
-        continue;
-      }
       // Because the graph's output operands are already converted before, this
       // operand should be an intermediate operand that connects with two
       // operators. Create `mojo::Operand` for this operand.
@@ -1294,9 +1505,6 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
       graph_info->id_to_operand_map.insert(
           operand_id, mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
       operand_to_id_map.insert(operand, operand_id);
-    }
-    if (is_redundant_reshape) {
-      continue;
     }
     // Create `mojo::Operation` with the id of the input and output operands.
     std::optional<String> error =
@@ -1309,6 +1517,88 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
   }
 
   return graph_info;
+}
+
+// Manually reshape constant operands if the constant operand is only used in
+// its reshaped form.
+void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
+  // Keep track of new IDs for constant operands.
+  HashMap<uint64_t, uint64_t> constant_id_remappings;
+
+  for (const auto& [initial_constant_id, handle] :
+       graph_info.constant_operand_ids_to_handles) {
+    uint64_t constant_operand_id = initial_constant_id;
+
+    // For each constant operand, keep walking down the dependencies until no
+    // reshape is found.
+    while (true) {
+      auto reshape_operation_it = base::ranges::find_if(
+          graph_info.operations,
+          [&constant_operand_id](const blink_mojom::OperationPtr& operation) {
+            return operation->is_reshape() &&
+                   operation->get_reshape()->input_operand_id ==
+                       constant_operand_id;
+          });
+
+      // No reshapes depend on this constant. Nothing to do here.
+      if (reshape_operation_it == graph_info.operations.end()) {
+        break;
+      }
+
+      // If the constant is depended on by other operators, we can't fold it.
+      // Note the queried range includes `reshape_operation_it`.
+      //
+      // TODO(crbug.com/364348897): Consider handling the case where a constant
+      // operand is reshaped by multiple identical reshape operators.
+      if (base::ranges::count_if(
+              graph_info.operations,
+              [&constant_operand_id](
+                  const blink_mojom::OperationPtr& operation) {
+                return base::Contains(GetInputs(*operation),
+                                      constant_operand_id);
+              }) > 1) {
+        break;
+      }
+
+      // The reshape is the only operator dependent on the constant. Do constant
+      // folding and update the graph accordingly.
+
+      // Remove the constant and reshape operators, respectively.
+      auto constant_operand =
+          graph_info.id_to_operand_map.Take(constant_operand_id);
+
+      uint64_t reshape_output_id =
+          (*reshape_operation_it)->get_reshape()->output_operand_id;
+      auto reshape_operand =
+          graph_info.id_to_operand_map.Take(reshape_output_id);
+
+      // Manually reshape the constant and let the list of operations reflect
+      // this.
+      CHECK_EQ(reshape_operand->descriptor.data_type(),
+               constant_operand->descriptor.data_type());
+      constant_operand->descriptor = reshape_operand->descriptor;
+
+      graph_info.operations.erase(reshape_operation_it);
+
+      // Update the constant's ID to effectively point all operations which
+      // depend on the output of the reshape operator to the constant instead.
+      graph_info.id_to_operand_map.insert(reshape_output_id,
+                                          std::move(constant_operand));
+      constant_id_remappings.Set(initial_constant_id, reshape_output_id);
+
+      // Prepare for the next iteration of this loop.
+      constant_operand_id = reshape_output_id;
+    }
+  }
+
+  // Update `graph_info.constant_id_to_buffer_map` to reflect the new constant
+  // IDs. This is done after the above loop to avoid mutating this map while
+  // iterating over it.
+  for (const auto& [former_id, new_id] : constant_id_remappings) {
+    auto handle = graph_info.constant_operand_ids_to_handles.Take(former_id);
+    graph_info.constant_operand_ids_to_handles.insert(new_id,
+                                                      std::move(handle));
+  }
 }
 
 }  // namespace
@@ -1346,7 +1636,6 @@ MLGraphBuilder::~MLGraphBuilder() = default;
 void MLGraphBuilder::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   visitor->Trace(remote_);
-  visitor->Trace(constant_operands_);
   visitor->Trace(pending_resolver_);
   ScriptWrappable::Trace(visitor);
 }
@@ -1415,10 +1704,12 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
     return nullptr;
   }
 
-  auto* constant_operand = MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor),
-                                                 buffer_view->ByteSpan());
-  constant_operands_.push_back(constant_operand);
-  return constant_operand;
+  auto* constant =
+      MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor));
+
+  remote_->CreatePendingConstant(constant->handle(), descriptor.data_type(),
+                                 mojo_base::BigBuffer(buffer_view->ByteSpan()));
+  return constant;
 }
 
 MLOperand* MLGraphBuilder::argMin(MLOperand* input,
@@ -3005,11 +3296,9 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   // Set `has_built_` after all inputs have been validated.
   has_built_ = true;
 
-  RecordOperatorsUsed(**graph_info);
+  FoldReshapableConstants(**graph_info);
 
-  // Release constant data held by the renderer now that it has been copied to
-  // the remote graph.
-  ReleaseConstantData();
+  RecordOperatorsUsed(**graph_info);
 
   pending_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
       script_state, exception_state.GetContext());
@@ -3058,8 +3347,6 @@ void MLGraphBuilder::DidCreateWebNNGraph(
 void MLGraphBuilder::OnConnectionError() {
   remote_.reset();
 
-  ReleaseConstantData();
-
   if (pending_resolver_) {
     pending_resolver_->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError, "Context is lost.");
@@ -3093,13 +3380,6 @@ base::expected<void, String> MLGraphBuilder::ValidateInputs(
     RETURN_IF_ERROR(ValidateInput(input_to_validate));
   }
   return base::ok();
-}
-
-void MLGraphBuilder::ReleaseConstantData() {
-  base::ranges::for_each(constant_operands_, [](auto& constant_operand) {
-    constant_operand->ReleaseBytes();
-  });
-  constant_operands_.clear();
 }
 
 }  // namespace blink

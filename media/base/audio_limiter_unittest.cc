@@ -116,7 +116,7 @@ TEST_F(LimiterTest, EmptyFlush) {
 
 // Makes sure inputs and outputs are bit-wise identical when the limiter isn't
 // adjusting gain.
-TEST_F(LimiterTest, NoLimiting_IsPassthrough) {
+TEST_F(LimiterTest, NoLimitingIsPassthrough) {
   FillWithSine(source_bus_.get());
 
   bool callback_signaled = false;
@@ -137,7 +137,7 @@ TEST_F(LimiterTest, NoLimiting_IsPassthrough) {
 
 // Makes sure inputs and outputs are bit-wise identical when the limiter isn't
 // adjusting gain.
-TEST_F(LimiterTest, NoLimiting_PartialBuffer_IsPassthrough) {
+TEST_F(LimiterTest, NoLimitingPartialBufferIsPassthrough) {
   FillWithSine(source_bus_.get());
 
   constexpr int kPartialSize = kBufferSize - 256;
@@ -164,7 +164,7 @@ TEST_F(LimiterTest, NoLimiting_PartialBuffer_IsPassthrough) {
 }
 
 // Makes sure the limiter adjust the signal appropriately.
-TEST_F(LimiterTest, WithLimiting_CompressesSignal) {
+TEST_F(LimiterTest, WithLimitingCompressesSignal) {
   const int longer_frame_size =
       AudioTimestampHelper::TimeToFrames(base::Milliseconds(500), kSampleRate);
 
@@ -257,7 +257,7 @@ TEST_F(LimiterTest, MultipleCalls) {
 
 // Makes sure the limiter writes to outputs in FIFO order, and handles partial
 // inputs.
-TEST_F(LimiterTest, MultipleCalls_PartialBuffer) {
+TEST_F(LimiterTest, MultipleCallsPartialBuffer) {
   constexpr int kIterations = 5;
 
   // Choose an arbitrary data size which isn't a multiple of 2.
@@ -303,7 +303,7 @@ TEST_F(LimiterTest, MultipleCalls_PartialBuffer) {
 
 // Makes sure the limiter eventual returns to bit-wise identical passthrough of
 // audio data, after limiting outputs.
-TEST_F(LimiterTest, WithLimitingThenNoLimiting_ReturnsToPassthrough) {
+TEST_F(LimiterTest, WithLimitingThenNoLimitingReturnsToPassthrough) {
   const int kMaxIterations =
       base::Milliseconds(600) /
       AudioTimestampHelper::FramesToTime(kBufferSize, kSampleRate);

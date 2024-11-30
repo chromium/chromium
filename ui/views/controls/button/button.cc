@@ -197,23 +197,22 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
 Button::~Button() = default;
 
 void Button::SetTooltipText(const std::u16string& tooltip_text) {
-  if (tooltip_text == tooltip_text_) {
+  std::u16string current_tooltip_text = GetCachedTooltipText();
+  if (tooltip_text == current_tooltip_text) {
     return;
   }
 
   if (GetViewAccessibility().GetCachedName().empty() ||
-      GetViewAccessibility().GetCachedName() == tooltip_text_) {
+      GetViewAccessibility().GetCachedName() == current_tooltip_text) {
     GetViewAccessibility().SetName(tooltip_text);
   }
 
-  tooltip_text_ = tooltip_text;
+  SetCachedTooltipText(tooltip_text);
   OnSetTooltipText(tooltip_text);
-  TooltipTextChanged();
-  OnPropertyChanged(&tooltip_text_, kPropertyEffectsNone);
 }
 
 const std::u16string& Button::GetTooltipText() const {
-  return tooltip_text_;
+  return GetCachedTooltipText();
 }
 
 void Button::SetCallback(PressedCallback callback) {
@@ -223,8 +222,12 @@ void Button::SetCallback(PressedCallback callback) {
 void Button::AdjustAccessibleName(std::u16string& new_name,
                                   ax::mojom::NameFrom& name_from) {
   if (new_name.empty()) {
-    new_name = tooltip_text_;
+    new_name = GetAlternativeAccessibleName();
   }
+}
+
+std::u16string Button::GetAlternativeAccessibleName() const {
+  return GetCachedTooltipText();
 }
 
 Button::ButtonState Button::GetState() const {
@@ -574,7 +577,7 @@ bool Button::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 }
 
 std::u16string Button::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_text_;
+  return GetCachedTooltipText();
 }
 
 void Button::ShowContextMenu(const gfx::Point& p,

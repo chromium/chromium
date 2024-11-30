@@ -41,7 +41,7 @@ constexpr char kExpectedFailureMessage[] = "Failed 1 of 1 tests";
 
 }  // namespace
 
-using ContextType = ExtensionApiTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class TestAPITest : public ExtensionApiTest {
  protected:
@@ -73,15 +73,13 @@ class TestAPITestWithContextType
     : public TestAPITest,
       public testing::WithParamInterface<ContextType> {};
 
-INSTANTIATE_TEST_SUITE_P(
-    PersistentBackground,
-    TestAPITestWithContextType,
-    ::testing::Values(ExtensionApiTest::ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         TestAPITestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
 
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    TestAPITestWithContextType,
-    ::testing::Values(ExtensionApiTest::ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         TestAPITestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 // TODO(devlin): This test name should be more descriptive.
 IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ApiTest) {

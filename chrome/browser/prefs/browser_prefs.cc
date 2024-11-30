@@ -268,7 +268,6 @@
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/webapps/browser/android/install_prompt_prefs.h"
 #else  // BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
@@ -297,6 +296,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_prefs.h"
+#include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
@@ -543,6 +543,10 @@
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 #include "components/enterprise/data_controls/core/browser/prefs.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/glic/launcher/glic_configuration.h"
 #endif
 
 namespace {
@@ -1112,11 +1116,67 @@ constexpr char kNoteTakingAppsLockScreenToastShown[] =
 constexpr char kRestoreLastLockScreenNote[] =
     "settings.restore_last_lock_screen_note";
 constexpr char kLockScreenDataPrefKey[] = "lockScreenDataItems";
+
+// Deprecated 11/2024
+inline constexpr char kSyncableVersionedWallpaperInfo[] =
+    "syncable_versioned_wallpaper_info";
 #endif
 
 // Deprecated 11/2024
-inline constexpr char kPrefixedVideoFullscreenApiAvailability[] =
+constexpr char kPrefixedVideoFullscreenApiAvailability[] =
     "media.prefixed_fullscreen_video_api_availability";
+
+// Deprecated 11/2024
+constexpr char kOnDeviceModelTimeoutCount[] =
+    "optimization_guide.on_device.timeout_count";
+
+#if !BUILDFLAG(IS_ANDROID)
+// Deprecated 11/2024
+inline constexpr char kCartModuleHidden[] = "cart_module_hidden";
+inline constexpr char kCartModuleWelcomeSurfaceShownTimes[] =
+    "cart_module_welcome_surface_shown_times";
+inline constexpr char kCartDiscountAcknowledged[] =
+    "cart_discount_acknowledged";
+inline constexpr char kCartDiscountEnabled[] = "cart_discount_enabled";
+inline constexpr char kCartUsedDiscounts[] = "cart_used_discounts";
+inline constexpr char kCartDiscountLastFetchedTime[] =
+    "cart_discount_last_fetched_time";
+inline constexpr char kCartDiscountConsentShown[] =
+    "cart_discount_consent_shown";
+inline constexpr char kDiscountConsentDecisionMadeIn[] =
+    "discount_consent_decision_made_in";
+inline constexpr char kDiscountConsentDismissedIn[] =
+    "discount_consent_dismissed_in";
+inline constexpr char kDiscountConsentLastDimissedTime[] =
+    "discount_consent_last_dimissed_time";
+inline constexpr char kDiscountConsentLastShownInVariation[] =
+    "discount_consent_last_shown_in";
+inline constexpr char kDiscountConsentPastDismissedCount[] =
+    "discount_consent_dismissed_count";
+inline constexpr char kDiscountConsentShowInterest[] =
+    "discount_consent_show_interest";
+inline constexpr char kDiscountConsentShowInterestIn[] =
+    "discount_consent_show_interest_in";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Deprecated 11/2024
+constexpr char kQuietNotificationPermissionPromoWasShown[] =
+    "profile.content_settings.quiet_permission_ui_promo.was_shown."
+    "notifications";
+constexpr char kQuietNotificationPermissionShouldShowPromo[] =
+    "profile.content_settings.quiet_permission_ui_promo.should_show."
+    "notifications";
+inline constexpr char kQuietNotificationPermissionUiEnablingMethod[] =
+    "profile.content_settings.enable_quiet_permission_ui_enabling_method."
+    "notifications";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 11/2024
+inline constexpr char kHatsPrivacyHubPostLaunchIsSelected[] =
+    "hats_privacy_hub_postlaunch_is_selected";
+inline constexpr char kHatsPrivacyHubPostLaunchCycleEndTs[] =
+    "hats_privacy_hub_postlaunch_end_timestamp";
+#endif
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1232,6 +1292,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 11/2024.
   registry->RegisterDictionaryPref(kLockScreenDataPrefKey);
 #endif
+
+  // Deprecated 11/2024.
+  registry->RegisterIntegerPref(kOnDeviceModelTimeoutCount, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1568,10 +1631,49 @@ void RegisterProfilePrefsForMigration(
                              base::Value::List());
   registry->RegisterDictionaryPref(kNoteTakingAppsLockScreenToastShown);
   registry->RegisterBooleanPref(kRestoreLastLockScreenNote, false);
+
+  // Deprecated 11/2024
+  registry->RegisterDictionaryPref(kSyncableVersionedWallpaperInfo);
 #endif
 
   // Deprecated 11/2024
   registry->RegisterStringPref(kPrefixedVideoFullscreenApiAvailability, "");
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 11/2024
+  registry->RegisterBooleanPref(kCartModuleHidden, false);
+  registry->RegisterIntegerPref(kCartModuleWelcomeSurfaceShownTimes, 0);
+  registry->RegisterBooleanPref(kCartDiscountAcknowledged, false);
+  registry->RegisterBooleanPref(kCartDiscountEnabled, false);
+  registry->RegisterDictionaryPref(kCartUsedDiscounts);
+  registry->RegisterTimePref(kCartDiscountLastFetchedTime, base::Time());
+  registry->RegisterBooleanPref(kCartDiscountConsentShown, false);
+  registry->RegisterTimePref(kDiscountConsentLastDimissedTime, base::Time());
+  registry->RegisterIntegerPref(kDiscountConsentPastDismissedCount, 0);
+  registry->RegisterIntegerPref(kDiscountConsentDecisionMadeIn, 0);
+  registry->RegisterIntegerPref(kDiscountConsentDismissedIn, 0);
+  registry->RegisterIntegerPref(kDiscountConsentLastShownInVariation, 0);
+  registry->RegisterBooleanPref(kDiscountConsentShowInterest, false);
+  registry->RegisterIntegerPref(kDiscountConsentShowInterestIn, 0);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 11/2024
+  optimization_guide::model_execution::prefs::
+      RegisterLegacyUsagePrefsForMigration(registry);
+
+  // Deprecated 11/2024
+  registry->RegisterBooleanPref(kQuietNotificationPermissionPromoWasShown,
+                                true);
+  registry->RegisterBooleanPref(kQuietNotificationPermissionShouldShowPromo,
+                                true);
+  registry->RegisterIntegerPref(kQuietNotificationPermissionUiEnablingMethod,
+                                0);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 11/2024
+  registry->RegisterBooleanPref(kHatsPrivacyHubPostLaunchIsSelected, false);
+  registry->RegisterInt64Pref(kHatsPrivacyHubPostLaunchCycleEndTs, 0);
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -1683,6 +1785,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   registry->RegisterBooleanPref(prefs::kFeatureNotificationsEnabled, true);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  registry->RegisterBooleanPref(prefs::kInternalOnlyUisEnabled, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(policy::policy_prefs::kBackForwardCacheEnabled,
                                 true);
@@ -1904,8 +2007,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kQRCodeGeneratorEnabled, true);
 
-#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  GlicConfiguration::RegisterPrefs(registry);
 #endif
 
   // This is intentionally last.
@@ -2079,7 +2184,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   BrowserUserEducationStorageService::RegisterProfilePrefs(registry);
   captions::LiveTranslateController::RegisterProfilePrefs(registry);
-  CartService::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
   commerce::CommerceUiTabHelper::RegisterProfilePrefs(registry);
   DeviceServiceImpl::RegisterProfilePrefs(registry);
@@ -2298,6 +2402,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   side_panel_prefs::RegisterProfilePrefs(registry);
 
   tabs::RegisterProfilePrefs(registry);
+
+  CertificateManagerPageHandler::RegisterProfilePrefs(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   registry->RegisterBooleanPref(webauthn::pref_names::kAllowWithBrokenCerts,
@@ -2339,9 +2445,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterDictionaryPref(prefs::kProactiveNudgeDisabledSitesWithTime);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
-#endif
 
   registry->RegisterIntegerPref(prefs::kLensOverlayStartCount, 0);
 
@@ -2501,6 +2605,13 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kLockScreenDataPrefKey);
 #endif
 
+  // Added 11/2024
+  local_state->ClearPref(kOnDeviceModelTimeoutCount);
+
+  // Added 11/2024
+  optimization_guide::model_execution::prefs::MigrateLegacyUsagePrefs(
+      local_state);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2555,12 +2666,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   password_manager_android_util::SetUsesSplitStoresAndUPMForLocal(profile_prefs,
                                                                   profile_path);
 #endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 12/2023.
-  password_manager::features_util::MigrateDeclinedSaveOptInToExplicitOptOut(
-      profile_prefs);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 12/2023.
@@ -2902,10 +3007,42 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNoteTakingAppsLockScreenAllowlist);
   profile_prefs->ClearPref(kNoteTakingAppsLockScreenToastShown);
   profile_prefs->ClearPref(kRestoreLastLockScreenNote);
+
+  // Deprecated 11/2024
+  profile_prefs->ClearPref(kSyncableVersionedWallpaperInfo);
 #endif
 
   // Added 11/2024
   profile_prefs->ClearPref(kPrefixedVideoFullscreenApiAvailability);
+
+// Added 11/2024
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kCartModuleHidden);
+  profile_prefs->ClearPref(kCartModuleWelcomeSurfaceShownTimes);
+  profile_prefs->ClearPref(kCartDiscountAcknowledged);
+  profile_prefs->ClearPref(kCartDiscountEnabled);
+  profile_prefs->ClearPref(kCartUsedDiscounts);
+  profile_prefs->ClearPref(kCartDiscountLastFetchedTime);
+  profile_prefs->ClearPref(kCartDiscountConsentShown);
+  profile_prefs->ClearPref(kDiscountConsentDecisionMadeIn);
+  profile_prefs->ClearPref(kDiscountConsentDismissedIn);
+  profile_prefs->ClearPref(kDiscountConsentLastDimissedTime);
+  profile_prefs->ClearPref(kDiscountConsentLastShownInVariation);
+  profile_prefs->ClearPref(kDiscountConsentPastDismissedCount);
+  profile_prefs->ClearPref(kDiscountConsentShowInterest);
+  profile_prefs->ClearPref(kDiscountConsentShowInterestIn);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Added 11/2024
+  profile_prefs->ClearPref(kQuietNotificationPermissionPromoWasShown);
+  profile_prefs->ClearPref(kQuietNotificationPermissionShouldShowPromo);
+  profile_prefs->ClearPref(kQuietNotificationPermissionUiEnablingMethod);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 11/2024
+  profile_prefs->ClearPref(kHatsPrivacyHubPostLaunchIsSelected);
+  profile_prefs->ClearPref(kHatsPrivacyHubPostLaunchCycleEndTs);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

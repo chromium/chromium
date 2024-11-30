@@ -324,8 +324,8 @@ std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory(int32_t, int32_t) {
 
 class ArCoreDeviceTest : public testing::Test {
  public:
-  ArCoreDeviceTest() {}
-  ~ArCoreDeviceTest() override {}
+  ArCoreDeviceTest() = default;
+  ~ArCoreDeviceTest() override = default;
 
   void OnSessionCreated(mojom::XRRuntimeSessionResultPtr session_result) {
     DVLOG(1) << __func__;

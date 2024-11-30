@@ -179,6 +179,7 @@ src/webgpu/api/operation/command_buffer/render/state_tracking.spec.ts
 src/webgpu/api/operation/compute/basic.spec.ts
 src/webgpu/api/operation/compute_pipeline/entry_point_name.spec.ts
 src/webgpu/api/operation/compute_pipeline/overrides.spec.ts
+src/webgpu/api/operation/device/all_limits_and_features.spec.ts
 src/webgpu/api/operation/device/lost.spec.ts
 src/webgpu/api/operation/memory_sync/operation_context_helper.ts
 src/webgpu/api/operation/memory_sync/buffer/buffer_sync_test.ts
@@ -220,6 +221,7 @@ src/webgpu/api/operation/resource_init/texture_zero.spec.ts
 src/webgpu/api/operation/sampling/anisotropy.spec.ts
 src/webgpu/api/operation/sampling/filter_mode.spec.ts
 src/webgpu/api/operation/sampling/lod_clamp.spec.ts
+src/webgpu/api/operation/sampling/sampler_texture.spec.ts
 src/webgpu/api/operation/shader_module/compilation_info.spec.ts
 src/webgpu/api/operation/storage_texture/read_only.spec.ts
 src/webgpu/api/operation/storage_texture/read_write.spec.ts
@@ -304,6 +306,7 @@ src/webgpu/api/validation/encoding/cmds/render/draw.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/dynamic_state.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/render.ts
 src/webgpu/api/validation/encoding/cmds/render/indirect_draw.spec.ts
+src/webgpu/api/validation/encoding/cmds/render/indirect_multi_draw.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/setIndexBuffer.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/setPipeline.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/setVertexBuffer.spec.ts
@@ -357,6 +360,9 @@ src/webgpu/api/validation/texture/rg11b10ufloat_renderable.spec.ts
 src/webgpu/compat/compatibility_test.ts
 src/webgpu/compat/api/validation/createBindGroup.spec.ts
 src/webgpu/compat/api/validation/createBindGroupLayout.spec.ts
+src/webgpu/shader/types.ts
+src/webgpu/shader/validation/decl/util.ts
+src/webgpu/compat/api/validation/pipeline_creation.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToBuffer.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToTexture.spec.ts
 src/webgpu/compat/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
@@ -370,7 +376,6 @@ src/webgpu/idl/idl_test.ts
 src/webgpu/idl/constructable.spec.ts
 src/webgpu/idl/exposed.html.ts
 src/webgpu/idl/constants/flags.spec.ts
-src/webgpu/shader/types.ts
 src/webgpu/shader/values.ts
 src/webgpu/shader/execution/float_parse.spec.ts
 src/webgpu/shader/execution/limits.spec.ts
@@ -616,11 +621,11 @@ src/webgpu/shader/execution/expression/call/builtin/subgroupBallot.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBitwise.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBroadcast.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupMul.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroupShuffle.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.spec.ts
-src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/shader/execution/expression/call/builtin/textureDimensions.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGather.spec.ts

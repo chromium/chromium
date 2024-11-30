@@ -30,11 +30,15 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
+import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
 
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -48,6 +52,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.core.app.ApplicationProvider;
@@ -70,12 +76,14 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -84,6 +92,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -96,17 +105,32 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
-import org.chromium.chrome.browser.tabmodel.PassthroughTabRemover;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterInternal;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.SharedGroupTestHelper;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -115,6 +139,7 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -125,6 +150,7 @@ import java.util.stream.IntStream;
         qualifiers = "sw600dp",
         shadows = {ShadowAppCompatResources.class})
 @LooperMode(Mode.LEGACY)
+@DisableFeatures(ChromeFeatureList.DATA_SHARING)
 public class StripLayoutHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -134,6 +160,7 @@ public class StripLayoutHelperTest {
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private CompositorButton mModelSelectorBtn;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGroupModelFilterInternal mTabGroupModelFilterInternal;
     @Mock private View mToolbarContainerView;
     @Mock private StripTabHoverCardView mTabHoverCardView;
     @Mock private Profile mProfile;
@@ -146,14 +173,24 @@ public class StripLayoutHelperTest {
     @Mock private PrefService mPrefService;
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private DataSharingTabManager mDataSharingTabManager;
+    @Mock private TabCreator mTabCreator;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private ServiceStatus mServiceStatus;
+    @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
+    @Mock private Bitmap mAvatarBitmap;
     @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCaptor;
+    @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mSharedImageTilesCaptor;
 
     private Activity mActivity;
     private Context mContext;
+    private SharedGroupTestHelper mSharedGroupTestHelper;
 
     // TODO(crbug.com/369736293): Verify usages and remove duplicate implementations of
     // `TestTabModel` for tab model.
-    private TestTabModel mModel = new TestTabModel();
+    private TestTabModel mModel = spy(new TestTabModel());
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
@@ -183,19 +220,38 @@ public class StripLayoutHelperTest {
     private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
     private static final float EPSILON = 0.001f;
+    private static final Token TAB_GROUP_TOKEN = Token.createRandom();
 
     /** Reset the environment before each test. */
     @Before
     public void beforeTest() {
         when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        doCallback(
-                        (TabClosureParams tabClosureParams) -> {
-                            mModel.closeTabs(tabClosureParams);
-                        })
-                .when(mTabGroupModelFilter)
-                .closeTabs(any());
-        mModel.setTabRemover(new PassthroughTabRemover(() -> mTabGroupModelFilter));
+
+        TabRemover tabRemover =
+                new TabRemover() {
+                    @Override
+                    public void closeTabs(
+                            @NonNull TabClosureParams tabClosureParams,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener) {
+                        forceCloseTabs(tabClosureParams);
+                    }
+
+                    @Override
+                    public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
+                        mModel.closeTabs(tabClosureParams);
+                    }
+
+                    @Override
+                    public void removeTab(
+                            @NonNull Tab tab,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener) {
+                        assert false : "Not reached.";
+                    }
+                };
+        mModel.setTabRemover(tabRemover);
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -208,6 +264,14 @@ public class StripLayoutHelperTest {
         CompositorAnimationHandler mHandler =
                 new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
         when(mUpdateHost.getAnimationHandler()).thenReturn(mHandler);
+        when(mModel.getProfile()).thenReturn(mProfile);
+        DataSharingServiceFactory.setForTesting(mDataSharingService);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+        when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
     }
 
     @After
@@ -552,7 +616,8 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length == TEST_TAB_TITLES.length);
 
         // Close all tabs
-        mModel.closeTabs(TabClosureParams.closeAllTabs().build());
+        mModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
 
         // Notify strip of tab closure
         mStripLayoutHelper.willCloseAllTabs();
@@ -1672,10 +1737,7 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertEquals(
-                "Second tab should be interacting tab.",
-                tabs[1],
-                mStripLayoutHelper.getInteractingTabForTesting());
+        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getInitialMouseClickedView());
         assertFalse(
                 "Should not start reorder mode when pressing down on tab without mouse.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1722,16 +1784,13 @@ public class StripLayoutHelperTest {
         // Press down on second tab's close button.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, 0);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, MotionEvent.BUTTON_PRIMARY);
 
         // Verify.
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertEquals(
-                "Second tab should be interacting tab.",
-                tabs[1],
-                mStripLayoutHelper.getInteractingTabForTesting());
+        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getInitialMouseClickedView());
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1748,16 +1807,13 @@ public class StripLayoutHelperTest {
         // Press down on second tab's close button with mouse.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, true, 0);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, true, MotionEvent.BUTTON_PRIMARY);
 
         // Verify.
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertEquals(
-                "Second tab should be interacting tab.",
-                tabs[1],
-                mStripLayoutHelper.getInteractingTabForTesting());
+        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getInitialMouseClickedView());
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1823,7 +1879,7 @@ public class StripLayoutHelperTest {
         // Set up tabModel and menu coordinator.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
         tabModel.setActive(true);
         mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
                 mTabGroupContextMenuCoordinator);
@@ -2162,7 +2218,6 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutTab thirdTab = tabs[2];
-        StripLayoutTab fourthTab = tabs[3];
 
         // Start reorder on third tab. Drag right to trigger swap with fourth tab.
         // 100 > tabWidth * flipThreshold = (190-24) * 0.53 = 88
@@ -2171,9 +2226,8 @@ public class StripLayoutHelperTest {
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
-        // Assert the tabs swapped.
-        assertEquals("Third and fourth tabs should have swapped.", thirdTab, tabs[3]);
-        assertEquals("Third and fourth tabs should have swapped.", fourthTab, tabs[2]);
+        // Verify the TabModel was updated.
+        verify(mModel).moveTab(thirdTab.getTabId(), 4);
     }
 
     @Test
@@ -2264,7 +2318,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId));
+        verify(mTabGroupModelFilter)
+                .mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId), eq(true));
     }
 
     @Test
@@ -2294,7 +2349,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was moved past the collapsed group and is now the second tab.
-        assertEquals("Dragged tab should now be second tab.", draggedTab, views[1]);
+        verify(mModel).moveTab(mStripLayoutHelper.getInteractingTabForTesting().getTabId(), 1);
     }
 
     @Test
@@ -2332,7 +2387,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId));
+        verify(mTabGroupModelFilter)
+                .mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId), eq(true));
     }
 
     @Test
@@ -2670,7 +2726,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(firstTabId), eq(secondTabId));
+        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(firstTabId), eq(secondTabId), eq(true));
     }
 
     @Test
@@ -2935,6 +2991,223 @@ public class StripLayoutHelperTest {
         when(mPrefService.getBoolean(any())).thenReturn(skipDialog);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateDuringStripBuild_OnlyOneCollaborator_AvatarNotShow() {
+        // Initialize shared tab group with only one collaborator during strip build.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ false, /* duringStripBuild= */ true);
+
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateDuringStripBuild_MultipleCollaborators_AvatarShow() {
+        // Initialize shared tab group with multiple collaborators during strip build.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ true, /* duringStripBuild= */ true);
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle, true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateOnGroupAdded_OnlyOneCollaborator_AvatarNotShow() {
+        // Group shared but no other collaborator joined yet.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ false, /* duringStripBuild= */ false);
+
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateOnGroupChanged_OnlyOneCollaborator_AvatarNotShow() {
+        // Group shared with multiple collaborators.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ true, /* duringStripBuild= */ false);
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle, true);
+
+        // Group changed that only one collaborator remains.
+        mSharingObserverCaptor
+                .getValue()
+                .onGroupChanged(
+                        SharedGroupTestHelper.newGroupData(
+                                COLLABORATION_ID1, SharedGroupTestHelper.GROUP_MEMBER1));
+
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateOnGroupChanged_MultipleCollaborators_AvatarShow() {
+        // Group shared but no other collaborator joined yet.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ false, /* duringStripBuild= */ false);
+
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
+
+        // Group changed that shared with multiple collaborators.
+        mSharingObserverCaptor
+                .getValue()
+                .onGroupChanged(
+                        SharedGroupTestHelper.newGroupData(
+                                COLLABORATION_ID1,
+                                SharedGroupTestHelper.GROUP_MEMBER1,
+                                SharedGroupTestHelper.GROUP_MEMBER2));
+
+        // Populate face pile during SharedImageTilesCoordinator#updateCollaborationId.
+        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        loadAvatarBitmap();
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle, true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateOnGroupRemoved_AvatarNotShow() {
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ true, /* duringStripBuild= */ false);
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle, true);
+
+        // Group removed.
+        mSharingObserverCaptor.getValue().onGroupRemoved(COLLABORATION_ID1);
+
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
+    }
+
+    private SavedTabGroup setupTabGroupSync() {
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = new LocalTabGroupId(TAB_GROUP_TOKEN);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        SavedTabGroupTab savedTab2 = new SavedTabGroupTab();
+        savedTabGroup.savedTabs = Arrays.asList(new SavedTabGroupTab[] {savedTab, savedTab2});
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.getGroup(savedTabGroup.localId)).thenReturn(savedTabGroup);
+        return savedTabGroup;
+    }
+
+    private StripLayoutGroupTitle createCollaborationGroup(
+            boolean multipleCollaborators, boolean duringStripBuild) {
+        // Mock 5 tabs.
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        initializeTest(false, false, 3, 5);
+        verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+
+        // Setup sync.
+        SavedTabGroup savedTabGroup = setupTabGroupSync();
+        if (duringStripBuild) {
+            savedTabGroup.collaborationId = COLLABORATION_ID1;
+        }
+
+        // Group the first and second tabs.
+        when(mModel.getTabAt(0).getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
+        groupTabs(0, 1);
+
+        // Verify group title is present.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
+        int color =
+                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mContext, TabGroupColorId.GREY, mIncognito);
+        groupTitle.updateTint(color);
+
+        if (multipleCollaborators) {
+            if (!duringStripBuild) {
+                // Collaboration group added through Data sharing observer.
+                savedTabGroup.collaborationId = COLLABORATION_ID1;
+                mSharingObserverCaptor
+                        .getValue()
+                        .onGroupAdded(
+                                SharedGroupTestHelper.newGroupData(
+                                        COLLABORATION_ID1,
+                                        SharedGroupTestHelper.GROUP_MEMBER1,
+                                        SharedGroupTestHelper.GROUP_MEMBER2));
+            } else {
+                // Collaboration group already exists. Read group during #createGroupTitle to
+                // confirm multiple collaborators.
+                mSharedGroupTestHelper.respondToReadGroup(
+                        COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+            }
+            // Populate face pile during SharedImageTilesCoordinator#updateCollaborationId.
+            mSharedGroupTestHelper.respondToReadGroup(
+                    COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+            loadAvatarBitmap();
+        } else {
+            if (!duringStripBuild) {
+                // Collaboration group added through Data sharing observer.
+                savedTabGroup.collaborationId = COLLABORATION_ID1;
+                mSharingObserverCaptor
+                        .getValue()
+                        .onGroupAdded(
+                                SharedGroupTestHelper.newGroupData(
+                                        COLLABORATION_ID1, SharedGroupTestHelper.GROUP_MEMBER1));
+            } else {
+                // Read group during #createGroupTitle to confirm single collaborator.
+                mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
+            }
+        }
+        return groupTitle;
+    }
+
+    private void loadAvatarBitmap() {
+        ArgumentCaptor<DataSharingAvatarBitmapConfig> configCaptor =
+                ArgumentCaptor.forClass(DataSharingAvatarBitmapConfig.class);
+        verify(mDataSharingUiDelegate, times(2)).getAvatarBitmap(configCaptor.capture());
+        configCaptor
+                .getAllValues()
+                .get(0)
+                .getDataSharingAvatarCallback()
+                .onAvatarLoaded(mAvatarBitmap);
+        configCaptor
+                .getAllValues()
+                .get(1)
+                .getDataSharingAvatarCallback()
+                .onAvatarLoaded(mAvatarBitmap);
+    }
+
+    private void verifySharedGroupState(StripLayoutGroupTitle groupTitle, boolean shouldShare) {
+        if (shouldShare) {
+            assertTrue("Group should be shared.", groupTitle.isGroupSharedForTesting());
+            assertNotNull(
+                    "SharedImageTilesCoordinator for shared group should be initialized",
+                    groupTitle.getSharedImageTilesCoordinatorForTesting());
+            assertNotNull(
+                    "Avatar resource for shared group should be initialized",
+                    groupTitle.getAvatarResourceForTesting());
+        } else {
+            assertFalse("Group should be unshared.", groupTitle.isGroupSharedForTesting());
+            assertNull(
+                    "SharedImageTilesCoordinator for shared group should be cleared",
+                    groupTitle.getSharedImageTilesCoordinatorForTesting());
+            assertNull(
+                    "Avatar resource for shared group should be cleared",
+                    groupTitle.getAvatarResourceForTesting());
+        }
+    }
+
     private void startDraggingTab(
             StripLayoutTab[] tabs, boolean draggingTabOffStrip, int tabIndexToDrag) {
         // Start drag tab out of group or drag off strip.
@@ -2966,7 +3239,10 @@ public class StripLayoutHelperTest {
         // Remove tab from model and verify that the tab strip has not yet updated.
         int closedTabId = 1;
         int expectedNumTabs = tabCount;
-        mModel.closeTabs(TabClosureParams.closeTab(mModel.getTabAt(closedTabId)).build());
+        mModel.getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(mModel.getTabAt(closedTabId)).build(),
+                        /* allowDialog= */ false);
         assertEquals(
                 "Tab strip should not yet have changed.",
                 expectedNumTabs,
@@ -3229,7 +3505,7 @@ public class StripLayoutHelperTest {
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Verify that the real and placeholder strip tabs were generated in the correct indices.
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -3254,7 +3530,7 @@ public class StripLayoutHelperTest {
         tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
         mStripLayoutHelper = createStripLayoutHelper(false, false);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Verify that there are no placeholders yet.
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -3291,7 +3567,7 @@ public class StripLayoutHelperTest {
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Mark that a tab was restored.
         int expectedRestoredTabId = 1;
@@ -3332,7 +3608,7 @@ public class StripLayoutHelperTest {
         // Mock a tab model and set it in the StripLayoutHelper.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Verify there are placeholders.
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -3404,7 +3680,7 @@ public class StripLayoutHelperTest {
         // Mock a tab model and set it in the StripLayoutHelper.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
         assertEquals("Offset should be 0.", 0, mStripLayoutHelper.getScrollOffset(), EPSILON);
 
         // Set size.
@@ -3427,7 +3703,7 @@ public class StripLayoutHelperTest {
         tabModel.addTab(expectedCreatedTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Verify that the fifth (tab created from "intent") is real.
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -3492,7 +3768,7 @@ public class StripLayoutHelperTest {
             }
         }
         mModel.setIndex(tabIndex);
-        mStripLayoutHelper.setTabModel(mModel, null, true);
+        mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
         mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0);
@@ -3620,7 +3896,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(groupRootId)))
                 .thenReturn(relatedTabs);
 
-        mStripLayoutHelper.updateGroupTitleText(groupRootId);
+        mStripLayoutHelper.updateGroupTitleTextOrAvatar(groupRootId);
         mStripLayoutHelper.rebuildStripViews();
         if (mStripLayoutHelper.getRunningAnimatorForTesting() != null) {
             mStripLayoutHelper.getRunningAnimatorForTesting().end();
@@ -3715,6 +3991,7 @@ public class StripLayoutHelperTest {
 
         // Drag tab back onto strip.
         float expectedOffsetX = 123.45f;
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         mStripLayoutHelper.setLastOffsetXForTesting(expectedOffsetX);
         mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true, false);
 
@@ -3741,6 +4018,7 @@ public class StripLayoutHelperTest {
 
         // Drag tab out of strip.
         float expectedOffsetX = 123.45f;
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true, false);
         StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
         draggedTab.setOffsetX(expectedOffsetX);
@@ -4290,12 +4568,10 @@ public class StripLayoutHelperTest {
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
 
         // Click to collapse the first tab group.
-        TabCreator tabCreator = mock(TabCreator.class);
-        mStripLayoutHelper.setTabModel(spy(mModel), tabCreator, true);
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
 
         // Verify: Ntp opened since there is no expanded tab on strip.
-        verify(tabCreator).launchNtp();
+        verify(mTabCreator).launchNtp();
     }
 
     @Test
@@ -4416,9 +4692,7 @@ public class StripLayoutHelperTest {
         // Prepare iph and required objects.
         TabGroupSyncIphController controller = mock(TabGroupSyncIphController.class);
         mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
-        TestTabModel tabModel = spy(mModel);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(mModel, mTabCreator, false);
         mStripLayoutHelper.setLastSyncedGroupIdForTesting(tabs[tabs.length - 1].getTabId());
         mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
 

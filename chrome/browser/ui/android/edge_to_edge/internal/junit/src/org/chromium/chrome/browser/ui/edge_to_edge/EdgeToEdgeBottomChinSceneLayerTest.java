@@ -21,7 +21,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.cc.input.OffsetTag;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -60,6 +62,8 @@ public class EdgeToEdgeBottomChinSceneLayerTest {
         mSceneLayer.setHeight(30);
         mSceneLayer.setColor(Color.RED);
         mSceneLayer.setDividerColor(Color.BLACK);
+        OffsetTag offsetTag = new OffsetTag(new Token(0, 0));
+        mSceneLayer.setOffsetTag(offsetTag);
 
         RectF viewport = new RectF(0, 0, 100, 400);
         mSceneLayer.getUpdatedSceneOverlayTree(viewport, viewport, null, 0);
@@ -70,6 +74,7 @@ public class EdgeToEdgeBottomChinSceneLayerTest {
                         30,
                         Color.RED,
                         Color.BLACK,
-                        viewport.height() + 12);
+                        viewport.height() + 12,
+                        offsetTag);
     }
 }

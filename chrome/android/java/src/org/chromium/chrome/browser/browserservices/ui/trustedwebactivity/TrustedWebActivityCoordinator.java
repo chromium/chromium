@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
-import dagger.Lazy;
+import android.app.Activity;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
@@ -13,56 +14,38 @@ import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
-import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityDisclosureController;
-import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityOpenTimeRecorder;
+import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.components.embedder_support.util.Origin;
-
-import javax.inject.Inject;
 
 /**
  * Coordinator for the Trusted Web Activity component. Add methods here if other components need to
  * communicate with Trusted Web Activity component.
  */
-@ActivityScope
 public class TrustedWebActivityCoordinator {
     private final SharedActivityCoordinator mSharedActivityCoordinator;
     private final CurrentPageVerifier mCurrentPageVerifier;
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
-    @Inject
     public TrustedWebActivityCoordinator(
+            Activity activity,
             SharedActivityCoordinator sharedActivityCoordinator,
-            TrustedWebActivityDisclosureController unused_disclosureController,
-            DisclosureUiPicker unused_disclosureUiPicker,
-            TrustedWebActivityOpenTimeRecorder unused_openTimeRecorder,
             CurrentPageVerifier currentPageVerifier,
-            Lazy<TwaSplashController> splashController,
-            BaseCustomTabActivity activity) {
-        // We don't need to do anything with the unused_ classes above, we just need to resolve them
-        // so they start working.
+            ClientPackageNameProvider clientPackageNameProvider,
+            Supplier<SplashController> splashControllerSupplier,
+            BrowserServicesIntentDataProvider intentDataProvider) {
         mSharedActivityCoordinator = sharedActivityCoordinator;
         mCurrentPageVerifier = currentPageVerifier;
-        mClientPackageNameProvider = activity.getClientPackageNameProvider();
+        mClientPackageNameProvider = clientPackageNameProvider;
 
-        initSplashScreen(splashController, activity.getIntentDataProvider());
-
-        currentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
-    }
-
-    private void initSplashScreen(
-            Lazy<TwaSplashController> splashController,
-            BrowserServicesIntentDataProvider intentDataProvider) {
         boolean showSplashScreen =
                 TwaSplashController.intentIsForTwaWithSplashScreen(intentDataProvider.getIntent());
-
         if (showSplashScreen) {
-            splashController.get();
+            new TwaSplashController(activity, splashControllerSupplier, intentDataProvider);
         }
-
         TrustedWebActivityUmaRecorder.recordSplashScreenUsage(showSplashScreen);
+
+        mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
     }
 
     private void onVerificationUpdate() {

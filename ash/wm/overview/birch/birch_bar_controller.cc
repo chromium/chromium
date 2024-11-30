@@ -233,59 +233,23 @@ void BirchBarController::ToggleTemperatureUnits() {
   MaybeFetchDataFromModel();
 }
 
-void BirchBarController::OnCoralGroupRemoved(const base::Token& group_id) {
-  auto iter =
-      std::find_if(items_.begin(), items_.end(), [&group_id](const auto& item) {
-        if (item->GetType() != BirchItemType::kCoral) {
-          return false;
-        }
-        return static_cast<BirchCoralItem*>(item.get())->group_id() == group_id;
-      });
-  if (iter == items_.end()) {
-    return;
-  }
-
-  RemoveItemChips(iter->get());
-  items_.erase(iter);
-}
-
-void BirchBarController::OnCoralGroupUpdated(const base::Token& group_id) {
-  auto iter =
-      std::find_if(items_.begin(), items_.end(), [&group_id](const auto& item) {
-        if (item->GetType() != BirchItemType::kCoral) {
-          return false;
-        }
-        return static_cast<BirchCoralItem*>(item.get())->group_id() == group_id;
-      });
-  if (iter == items_.end()) {
-    return;
-  }
-
-  for (auto bar_view : bar_views_) {
-    bar_view->UpdateChipTitle(iter->get());
-  }
-}
-
-void BirchBarController::OnCoralEntityRemoved(const base::Token& group_id,
-                                              std::string_view identifier) {
-  for (auto& bar_view : bar_views_) {
-    for (const auto& chip : bar_view->chips()) {
-      auto* coral_chip = views::AsViewClass<BirchChipButton>(chip);
-      if (!coral_chip) {
-        continue;
-      }
-      const auto* item = chip->GetItem();
-      if (item->GetType() == BirchItemType::kCoral &&
-          static_cast<const BirchCoralItem*>(item)->group_id() == group_id) {
-        if (auto* tab_app_selector_widget =
-                coral_chip->tab_app_selection_widget()) {
-          tab_app_selector_widget->RemoveItem(identifier);
-        } else {
-          coral_chip->ReloadIcon();
-        }
-      }
+void BirchBarController::ProvideFeedbackForCoral() {
+  base::Value::List root;
+  for (auto& item : items_) {
+    if (item->GetType() == BirchItemType::kCoral) {
+      root.Append(
+          static_cast<BirchCoralItem*>(item.get())->ToCoralItemDetails());
     }
   }
+  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+      ShellDelegate::FeedbackSource::kOverview,
+      /*description_template=*/
+      base::StrCat({kUserFeedbackPrompt, kMarkdownBackticks, "json\n",
+                    base::WriteJsonWithOptions(
+                        root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
+                        .value_or(std::string()),
+                    "\n", kMarkdownBackticks}),
+      /*category_tag=*/"Coral");
 }
 
 void BirchBarController::ExecuteMenuCommand(int command_id, bool from_chip) {
@@ -356,23 +320,59 @@ void BirchBarController::ExecuteCommand(int command_id, int event_flags) {
   ExecuteMenuCommand(command_id, /*from_chip=*/false);
 }
 
-void BirchBarController::ProvideFeedbackForCoral() {
-  base::Value::List root;
-  for (auto& item : items_) {
-    if (item->GetType() == BirchItemType::kCoral) {
-      root.Append(
-          static_cast<BirchCoralItem*>(item.get())->ToCoralItemDetails());
+void BirchBarController::OnCoralGroupRemoved(const base::Token& group_id) {
+  auto iter =
+      std::find_if(items_.begin(), items_.end(), [&group_id](const auto& item) {
+        if (item->GetType() != BirchItemType::kCoral) {
+          return false;
+        }
+        return static_cast<BirchCoralItem*>(item.get())->group_id() == group_id;
+      });
+  if (iter == items_.end()) {
+    return;
+  }
+
+  RemoveItemChips(iter->get());
+  items_.erase(iter);
+}
+
+void BirchBarController::OnCoralEntityRemoved(const base::Token& group_id,
+                                              std::string_view identifier) {
+  for (auto& bar_view : bar_views_) {
+    for (const auto& chip : bar_view->chips()) {
+      auto* coral_chip = views::AsViewClass<BirchChipButton>(chip);
+      if (!coral_chip) {
+        continue;
+      }
+      const auto* item = chip->GetItem();
+      if (item->GetType() == BirchItemType::kCoral &&
+          static_cast<const BirchCoralItem*>(item)->group_id() == group_id) {
+        if (auto* tab_app_selector_widget =
+                coral_chip->tab_app_selection_widget()) {
+          tab_app_selector_widget->RemoveItem(identifier);
+        } else {
+          coral_chip->ReloadIcon();
+        }
+      }
     }
   }
-  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-      ShellDelegate::FeedbackSource::kOverview,
-      /*description_template=*/
-      base::StrCat({kUserFeedbackPrompt, kMarkdownBackticks, "json\n",
-                    base::WriteJsonWithOptions(
-                        root, base::JSONWriter::OPTIONS_PRETTY_PRINT)
-                        .value_or(std::string()),
-                    "\n", kMarkdownBackticks}),
-      /*category_tag=*/"Coral");
+}
+
+void BirchBarController::OnCoralGroupTitleUpdated(const base::Token& group_id) {
+  auto iter =
+      std::find_if(items_.begin(), items_.end(), [&group_id](const auto& item) {
+        if (item->GetType() != BirchItemType::kCoral) {
+          return false;
+        }
+        return static_cast<BirchCoralItem*>(item.get())->group_id() == group_id;
+      });
+  if (iter == items_.end()) {
+    return;
+  }
+
+  for (auto bar_view : bar_views_) {
+    bar_view->UpdateChipTitle(iter->get());
+  }
 }
 
 void BirchBarController::MaybeFetchDataFromModel() {

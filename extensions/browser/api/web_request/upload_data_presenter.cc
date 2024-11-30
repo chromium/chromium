@@ -77,7 +77,7 @@ std::optional<base::Value> RawDataPresenter::TakeResult() {
 void RawDataPresenter::FeedNextBytes(const char* bytes, size_t size) {
   subtle::AppendKeyValuePair(
       keys::kRequestBodyRawBytesKey,
-      base::Value(base::as_bytes(base::make_span(bytes, size))), list_);
+      base::Value(base::as_bytes(base::span(bytes, size))), list_);
 }
 
 void RawDataPresenter::FeedNextFile(const std::string& filename) {

@@ -486,7 +486,7 @@ void ExtensionsMenuViewController::OnDismissExtensionClicked(
   CHECK(permissions_manager);
   content::WebContents* web_contents = GetActiveWebContents();
   int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  permissions_manager->UserDismissedSiteAccessRequest(web_contents, tab_id,
+  permissions_manager->UserDismissedHostAccessRequest(web_contents, tab_id,
                                                       extension_id);
 
   base::RecordAction(base::UserMetricsAction(
@@ -642,7 +642,7 @@ void ExtensionsMenuViewController::UpdateMainPage(
         SortExtensionsByName(*toolbar_model_);
 
     for (const auto& extension_id : extension_ids) {
-      if (permissions_manager->HasActiveSiteAccessRequest(tab_id,
+      if (permissions_manager->HasActiveHostAccessRequest(tab_id,
                                                           extension_id)) {
         AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
                                              web_contents);
@@ -831,7 +831,7 @@ void ExtensionsMenuViewController::OnShowAccessRequestsInToolbarChanged(
   }
 }
 
-void ExtensionsMenuViewController::OnSiteAccessRequestDismissedByUser(
+void ExtensionsMenuViewController::OnHostAccessRequestDismissedByUser(
     const extensions::ExtensionId& extension_id,
     const url::Origin& origin) {
   DCHECK(current_page_);
@@ -850,7 +850,7 @@ void ExtensionsMenuViewController::OnSiteAccessRequestDismissedByUser(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
+void ExtensionsMenuViewController::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   DCHECK(current_page_);
@@ -871,7 +871,7 @@ void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
   // Add the request iff it's an active one.
   auto* permissions_manager =
       extensions::PermissionsManager::Get(browser_->profile());
-  if (permissions_manager->HasActiveSiteAccessRequest(tab_id, extension_id)) {
+  if (permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
     // TODO(crbug.com/330588494): Add to correct index based on alphabetic
     // order.
     int index = 0;
@@ -881,7 +881,7 @@ void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
   }
 }
 
-void ExtensionsMenuViewController::OnSiteAccessRequestUpdated(
+void ExtensionsMenuViewController::OnHostAccessRequestUpdated(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   DCHECK(current_page_);
@@ -902,7 +902,7 @@ void ExtensionsMenuViewController::OnSiteAccessRequestUpdated(
   // Update the request iff it's an active one.
   auto* permissions_manager =
       extensions::PermissionsManager::Get(browser_->profile());
-  if (permissions_manager->HasActiveSiteAccessRequest(tab_id, extension_id)) {
+  if (permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
     // TODO(crbug.com/330588494): Add to correct index based on alphabetic
     // order.
     int index = 0;
@@ -917,7 +917,7 @@ void ExtensionsMenuViewController::OnSiteAccessRequestUpdated(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewController::OnSiteAccessRequestRemoved(
+void ExtensionsMenuViewController::OnHostAccessRequestRemoved(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   DCHECK(current_page_);
@@ -939,7 +939,7 @@ void ExtensionsMenuViewController::OnSiteAccessRequestRemoved(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewController::OnSiteAccessRequestsCleared(int tab_id) {
+void ExtensionsMenuViewController::OnHostAccessRequestsCleared(int tab_id) {
   DCHECK(current_page_);
 
   // Ignore requests for other tabs.

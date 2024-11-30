@@ -120,8 +120,7 @@ IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types lit-html-desktop;");
   source->UseStringsJs();
-  source->AddResourcePaths(
-      base::make_span(kIndexedDbResources, kIndexedDbResourcesSize));
+  source->AddResourcePaths(kIndexedDbResources);
   source->AddResourcePath("", IDR_INDEXED_DB_INDEXEDDB_INTERNALS_HTML);
 }
 

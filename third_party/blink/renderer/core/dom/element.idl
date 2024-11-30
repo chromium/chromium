@@ -111,11 +111,6 @@ dictionary SetHTMLOptions {
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString html, SetHTMLOptions options);
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
 
-    // Declarative Shadow DOM getInnerHTML() function. This version should be
-    // considered deprecated, as we work to standardize the version below,
-    // getHTML().
-    [Affects=Nothing, MeasureAs=ElementGetInnerHTML, RuntimeEnabled=ElementGetInnerHTML] DOMString getInnerHTML(optional GetInnerHTMLOptions options = {});
-
     // Declarative Shadow DOM getHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] DOMString getHTML(optional GetHTMLOptions options = {});
 

@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
@@ -34,7 +35,6 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -2440,6 +2440,30 @@ TEST_F(FormStructureTestImpl,
     EXPECT_EQ(EMAIL_ADDRESS, form_structure.field(0)->heuristic_type());
     EXPECT_TRUE(form_structure.IsAutofillable());
   }
+}
+
+// Tests that password manager classifier predictions are returned correctly.
+TEST_F(FormStructureTestImpl, GetHeuristicPredictions) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = USERNAME}, {.role = PASSWORD}}});
+
+  FormStructure form_structure(form);
+  form_structure.fields()[0]->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, USERNAME);
+  form_structure.fields()[1]->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, PASSWORD);
+
+  // Fetch model predictions for one field from the form and one field not
+  // present in the form.
+  FormFieldData mystery_field = test::CreateTestFormField(
+      /*label=*/"mystery", /*name=*/"secret",
+      /*value=*/"unknown", FormControlType::kInputText);
+  EXPECT_THAT(form_structure.GetHeuristicPredictions(
+                  HeuristicSource::kPasswordManagerMachineLearning,
+                  {form.fields()[1].global_id(), mystery_field.global_id()}),
+              UnorderedElementsAre(
+                  testing::Pair(form.fields()[1].global_id(), PASSWORD),
+                  testing::Pair(mystery_field.global_id(), NO_SERVER_DATA)));
 }
 
 }  // namespace

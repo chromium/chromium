@@ -1089,7 +1089,8 @@ void VideoTrackRecorderImpl::InitializeEncoder(
       GetMediaVideoCodecProfile(codec_profile, input_size, allow_vea_encoder);
   if (!profile) {
     if (auto* callback = callback_interface()->Get()) {
-      callback->OnVideoEncodingError();
+      callback->OnVideoEncodingError(
+          media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
     }
     return;
   }
@@ -1142,8 +1143,10 @@ void VideoTrackRecorderImpl::InitializeEncoder(
   }
 }
 
-void VideoTrackRecorderImpl::OnHardwareEncoderError() {
-  DVLOG(3) << __func__;
+void VideoTrackRecorderImpl::OnHardwareEncoderError(
+    const media::EncoderStatus& error_status) {
+  DVLOG(3) << __func__ << ", error_status: "
+           << media::EncoderStatusCodeToString(error_status);
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // Try without VEA.
   DisconnectFromTrack();

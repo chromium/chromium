@@ -28,8 +28,6 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
   EXPECT_FALSE(settings.echo_cancellation);
   EXPECT_FALSE(settings.noise_suppression);
   EXPECT_FALSE(settings.automatic_gain_control);
-  EXPECT_FALSE(settings.high_pass_filter);
-  EXPECT_FALSE(settings.stereo_mirroring);
 
   EXPECT_EQ(
       properties.voice_isolation,
@@ -41,18 +39,14 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
   const AudioProcessingProperties properties{
       .echo_cancellation_type = AudioProcessingProperties::
           EchoCancellationType::kEchoCancellationAec3,
-      .goog_audio_mirroring = true,
       .auto_gain_control = true,
-      .noise_suppression = true,
-      .goog_highpass_filter = true};
+      .noise_suppression = true};
   const media::AudioProcessingSettings settings =
       properties.ToAudioProcessingSettings(
           /*multi_channel_capture_processing=*/true);
   EXPECT_TRUE(settings.echo_cancellation);
   EXPECT_TRUE(settings.noise_suppression);
   EXPECT_TRUE(settings.automatic_gain_control);
-  EXPECT_TRUE(settings.high_pass_filter);
-  EXPECT_TRUE(settings.stereo_mirroring);
 }
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,

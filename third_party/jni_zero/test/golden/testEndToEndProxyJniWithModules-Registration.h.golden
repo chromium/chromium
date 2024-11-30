@@ -10,27 +10,27 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
-
-// Forward declarations (methods).
-
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
+// Forward Declarations.
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
     JNIEnv* env,
     jclass jcaller,
     jboolean a);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(
-    JNIEnv* env,
-    jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(JNIEnv* env, jclass jcaller);
 
 // Helper Methods.
-
 namespace {
 
 bool RegisterNative_J_module_1N(JNIEnv* env) {
-  static const JNINativeMethod kMethods[] = {
-    { "MejItBT4", "(Z)Z", reinterpret_cast<void*>(Java_J_module_1N_MejItBT4) },
-    { "MqDgXQiH", "()V", reinterpret_cast<void*>(Java_J_module_1N_MqDgXQiH) },
-
-  };
+  static const JNINativeMethod kMethods[] = {{
+        "MejItBT4",
+        "(Z)Z",
+        reinterpret_cast<void*>(Java_J_module_1N_MejItBT4)
+    }, {
+        "MqDgXQiH",
+        "()V",
+        reinterpret_cast<void*>(Java_J_module_1N_MqDgXQiH)
+    },
+};
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       jni_zero::GetClass(env, "J/module_N");
@@ -45,7 +45,6 @@ bool RegisterNative_J_module_1N(JNIEnv* env) {
 }  // namespace
 
 // Main Register Function.
-
 namespace {
 
 bool RegisterNatives(JNIEnv* env) {
@@ -58,5 +57,6 @@ bool RegisterNatives(JNIEnv* env) {
 }
 
 }  // namespace
+
 
 #endif  // TEMP_DIR_HEADER_

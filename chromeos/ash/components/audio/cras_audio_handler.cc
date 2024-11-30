@@ -688,6 +688,12 @@ void CrasAudioHandler::RefreshVoiceIsolationState() {
   CrasAudioClient::Get()->SetVoiceIsolationUIEnabled(GetVoiceIsolationState());
 }
 
+void CrasAudioHandler::RecordVoiceIsolationEnabledChangeSource(
+    AudioSettingsChangeSource source) {
+  base::UmaHistogramEnumeration(kVoiceIsolationEnabledChangeSourceHistogramName,
+                                source);
+}
+
 uint32_t CrasAudioHandler::GetVoiceIsolationPreferredEffect() const {
   return audio_pref_handler_->GetVoiceIsolationPreferredEffect();
 }
@@ -695,6 +701,12 @@ uint32_t CrasAudioHandler::GetVoiceIsolationPreferredEffect() const {
 void CrasAudioHandler::RefreshVoiceIsolationPreferredEffect() {
   CrasAudioClient::Get()->SetVoiceIsolationUIPreferredEffect(
       GetVoiceIsolationPreferredEffect());
+}
+
+void CrasAudioHandler::RecordVoiceIsolationPreferredEffectChange(
+    audio_config::mojom::AudioEffectType preferred_effect) {
+  base::UmaHistogramEnumeration(
+      kVoiceIsolationPreferredEffectChangeHistogramName, preferred_effect);
 }
 
 bool CrasAudioHandler::IsNoiseCancellationSupportedForDevice(

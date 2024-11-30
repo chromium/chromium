@@ -50,6 +50,14 @@ export class VoiceNotificationManager {
         listener => listener.notify(language, notification));
   }
 
+  onCancelDownload(language: string) {
+    if (this.downloadingLanguages_.has(language)) {
+      this.downloadingLanguages_.delete(language);
+      this.listeners_.forEach(
+          listener => listener.notify(language, NotificationType.NONE));
+    }
+  }
+
   static getInstance(): VoiceNotificationManager {
     return instance || (instance = new VoiceNotificationManager());
   }

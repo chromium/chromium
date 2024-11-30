@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/sparky/sparky_manager_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
@@ -187,9 +186,6 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
     InitializePrimaryProfileServices(profile, user);
 
     FamilyUserMetricsServiceFactory::GetForBrowserContext(profile);
-    if (chromeos::features::IsSparkyEnabled()) {
-      ash::SparkyManagerServiceFactory::GetForProfile(profile);
-    }
     if (features::IsCrosSafetyServiceEnabled()) {
       cros_safety_service_ = std::make_unique<CrosSafetyService>(
           manta::MantaServiceFactory::GetForProfile(profile));
@@ -285,8 +281,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   if (crostini_manager)
     crostini_manager->MaybeUpdateCrostini();
 
-  if (::captions::IsLiveCaptionFeatureSupported() &&
-      features::IsSystemLiveCaptionEnabled()) {
+  if (::captions::IsLiveCaptionFeatureSupported()) {
     SystemLiveCaptionServiceFactory::GetInstance()->GetForProfile(profile);
   }
 

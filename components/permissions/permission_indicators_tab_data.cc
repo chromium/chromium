@@ -29,45 +29,31 @@ void PermissionIndicatorsTabData::SetVerboseIndicatorDisplayed(
   displayed_indicators_.insert(type);
 }
 
-void PermissionIndicatorsTabData::RecordStartGeolocationService() {
-  if (!geolocation_last_usage_time_.has_value()) {
+void PermissionIndicatorsTabData::RecordActivity(
+    RequestTypeForUma request_type) {
+  if (request_type != RequestTypeForUma::PERMISSION_GEOLOCATION &&
+      request_type != RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA &&
+      request_type != RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC) {
+    return;
+  }
+  if (!last_usage_time_[request_type].has_value()) {
     return;
   }
 
-  base::TimeDelta time_delta =
-      base::TimeTicks::Now() - geolocation_last_usage_time_.value();
+  PermissionUmaUtil::RecordPermissionIndicatorElapsedTimeSinceLastUsage(
+      request_type,
+      base::TimeTicks::Now() - last_usage_time_[request_type].value());
+  last_usage_time_[request_type] = base::TimeTicks::Now();
+}
 
-  if (time_delta <= base::Seconds(4)) {
-    base::UmaHistogramEnumeration(
-        "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-        Duration::kFourSeconds);
-  } else if (time_delta <= base::Seconds(10)) {
-    base::UmaHistogramEnumeration(
-        "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-        Duration::kTenSeconds);
-  } else if (time_delta <= base::Minutes(1)) {
-    base::UmaHistogramEnumeration(
-        "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-        Duration::kOneMinute);
-  } else if (time_delta <= base::Minutes(5)) {
-    base::UmaHistogramEnumeration(
-        "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-        Duration::kFiveMinutes);
-  } else if (time_delta <= base::Minutes(10)) {
-    base::UmaHistogramEnumeration(
-        "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-        Duration::kTenMinutes);
-  } else if (time_delta <= base::Hours(1)) {
-    base::UmaHistogramEnumeration(
-        "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-        Duration::kOneHour);
+void PermissionIndicatorsTabData::OnMediaCaptureChanged(
+    RequestTypeForUma request_type,
+    bool used) {
+  if (used) {
+    RecordActivity(request_type);
   } else {
-    base::UmaHistogramEnumeration(
-        "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-        Duration::kMoreThanOneHour);
+    last_usage_time_[request_type] = base::TimeTicks::Now();
   }
-
-  geolocation_last_usage_time_ = base::TimeTicks::Now();
 }
 
 void PermissionIndicatorsTabData::OnCapabilityTypesChanged(
@@ -75,15 +61,18 @@ void PermissionIndicatorsTabData::OnCapabilityTypesChanged(
     bool used) {
   if (connection_type == content::WebContents::CapabilityType::kGeolocation) {
     if (used) {
-      RecordStartGeolocationService();
+      RecordActivity(RequestTypeForUma::PERMISSION_GEOLOCATION);
     } else {
-      geolocation_last_usage_time_ = base::TimeTicks::Now();
+      last_usage_time_[RequestTypeForUma::PERMISSION_GEOLOCATION] =
+          base::TimeTicks::Now();
     }
   }
 }
 
 void PermissionIndicatorsTabData::ClearData() {
-  geolocation_last_usage_time_.reset();
+  last_usage_time_[RequestTypeForUma::PERMISSION_GEOLOCATION].reset();
+  last_usage_time_[RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC].reset();
+  last_usage_time_[RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA].reset();
   displayed_indicators_.clear();
 }
 
@@ -97,4 +86,5 @@ void PermissionIndicatorsTabData::PrimaryPageChanged(content::Page& page) {
     ClearData();
   }
 }
+
 }  // namespace permissions

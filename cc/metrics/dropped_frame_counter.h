@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_METRICS_DROPPED_FRAME_COUNTER_H_
 #define CC_METRICS_DROPPED_FRAME_COUNTER_H_
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <optional>
 #include <queue>
@@ -61,8 +57,8 @@ class CC_EXPORT DroppedFrameCounter {
     uint32_t total_count() const { return total_count_; }
 
    private:
-    uint32_t histogram_bins_[101] = {0};
-    uint32_t smoothness_buckets_[7] = {0};
+    std::array<uint32_t, 101> histogram_bins_ = {0};
+    std::array<uint32_t, 7> smoothness_buckets_ = {0};
     uint32_t total_count_ = 0;
   };
 
@@ -97,9 +93,10 @@ class CC_EXPORT DroppedFrameCounter {
   void ReportFramesOnEveryFrameForUI();
 
   void OnBeginFrame(const viz::BeginFrameArgs& args);
-  void OnEndFrame(const viz::BeginFrameArgs& args, const FrameInfo& frame_info);
+  virtual void OnEndFrame(const viz::BeginFrameArgs& args,
+                          const FrameInfo& frame_info);
   void SetUkmSmoothnessDestination(UkmSmoothnessDataShared* smoothness_data);
-  void OnFcpReceived();
+  void OnFirstContentfulPaintReceived();
 
   // Reset is used on navigation, which resets frame statistics as well as
   // frame sorter.
@@ -112,15 +109,16 @@ class CC_EXPORT DroppedFrameCounter {
   void ResetPendingFrames(base::TimeTicks timestamp);
 
   // Enable dropped frame report for ui::Compositor..
-  void EnableReporForUI();
+  void EnableReportForUI();
 
   void set_total_counter(TotalFrameCounter* total_counter) {
     total_counter_ = total_counter;
   }
 
-  void SetTimeFcpReceivedForTesting(base::TimeTicks time_fcp_received) {
-    DCHECK(fcp_received_);
-    time_fcp_received_ = time_fcp_received;
+  void SetTimeFirstContentfulPaintReceivedForTesting(
+      base::TimeTicks time_fcp_received) {
+    DCHECK(first_contentful_paint_received_);
+    time_first_contentful_paint_received_ = time_fcp_received;
   }
 
   double sliding_window_max_percent_dropped() const {
@@ -181,11 +179,11 @@ class CC_EXPORT DroppedFrameCounter {
   void UpdateDroppedFrameCountInWindow(const FrameInfo& frame_info, int count);
 
   std::queue<std::pair<const viz::BeginFrameArgs, FrameInfo>> sliding_window_;
-  uint32_t dropped_frame_count_in_window_[SmoothnessStrategy::kStrategyCount] =
-      {0};
+  std::array<uint32_t, SmoothnessStrategy::kStrategyCount>
+      dropped_frame_count_in_window_ = {0};
   double total_frames_in_window_ = 60.0;
-  SlidingWindowHistogram
-      sliding_window_histogram_[SmoothnessStrategy::kStrategyCount];
+  std::array<SlidingWindowHistogram, SmoothnessStrategy::kStrategyCount>
+      sliding_window_histogram_;
 
   base::TimeTicks latest_sliding_window_start_;
   base::TimeDelta latest_sliding_window_interval_;
@@ -195,12 +193,12 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_partial_ = 0;
   size_t total_dropped_ = 0;
   size_t total_smoothness_dropped_ = 0;
-  bool fcp_received_ = false;
+  bool first_contentful_paint_received_ = false;
   double sliding_window_max_percent_dropped_ = 0;
   std::optional<double> sliding_window_max_percent_dropped_After_1_sec_;
   std::optional<double> sliding_window_max_percent_dropped_After_2_sec_;
   std::optional<double> sliding_window_max_percent_dropped_After_5_sec_;
-  base::TimeTicks time_fcp_received_;
+  base::TimeTicks time_first_contentful_paint_received_;
   raw_ptr<UkmSmoothnessDataShared> ukm_smoothness_data_ = nullptr;
   FrameSorter frame_sorter_;
   raw_ptr<TotalFrameCounter> total_counter_ = nullptr;

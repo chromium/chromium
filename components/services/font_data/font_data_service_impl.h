@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sequence_checker.h"
 #include "components/services/font_data/public/mojom/font_data_service.mojom.h"
@@ -59,6 +60,12 @@ class FontDataServiceImpl : public mojom::FontDataService {
   void MatchFamilyName(const std::string& family_name,
                        mojom::TypefaceStylePtr style,
                        MatchFamilyNameCallback callback) override;
+
+ protected:
+  // Returns a file handle based on the SkTypeface. The file handle may be empty
+  // if there is no file associated with the typeface or if the typeface is
+  // null. This is a helper method that can be overridden for testing purposes.
+  virtual base::File GetFileHandle(SkTypeface& typeface);
 
  private:
   // Checks the shared memory region cache and returns an index if found. On

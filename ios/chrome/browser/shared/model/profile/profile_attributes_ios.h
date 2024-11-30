@@ -25,8 +25,13 @@ class ProfileAttributesIOS {
   // Represents a set of gaia ids.
   using GaiaIdSet = std::set<std::string, std::less<>>;
 
-  ProfileAttributesIOS(std::string_view profile_name,
-                       const base::Value::Dict* attrs);
+  // Creates a ProfileAttributesIOS for a new profile named `profile_name`.
+  static ProfileAttributesIOS CreateNew(std::string_view profile_name);
+
+  // Creates a ProfileAttributesIOS for an existing profile name `profile_name`
+  // with attributes from `storage`.
+  static ProfileAttributesIOS WithAttrs(std::string_view profile_name,
+                                        const base::Value::Dict& storage);
 
   ProfileAttributesIOS(ProfileAttributesIOS&&);
   ProfileAttributesIOS& operator=(ProfileAttributesIOS&&);
@@ -37,6 +42,7 @@ class ProfileAttributesIOS {
   const std::string& GetProfileName() const;
 
   // Gets information related to the profile.
+  bool IsNewProfile() const;
   const std::string& GetGaiaId() const;
   const std::string& GetUserName() const;
   bool HasAuthenticationError() const;
@@ -45,6 +51,7 @@ class ProfileAttributesIOS {
   bool IsAuthenticated() const;
 
   // Sets information related to the profile.
+  void ClearIsNewProfile();
   void SetAuthenticationInfo(std::string_view gaia_id,
                              std::string_view user_name);
   void SetHasAuthenticationError(bool value);
@@ -55,6 +62,10 @@ class ProfileAttributesIOS {
   base::Value::Dict GetStorage() &&;
 
  private:
+  // Private constructor, use the static factory methods instead.
+  ProfileAttributesIOS(std::string_view profile_name,
+                       base::Value::Dict storage);
+
   std::string profile_name_;
   base::Value::Dict storage_;
 };

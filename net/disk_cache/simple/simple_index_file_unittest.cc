@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/simple/simple_index_file.h"
 
 #include <memory>
@@ -206,9 +201,9 @@ class SimpleIndexFileTest : public net::TestWithTaskEnvironment {
 
 TEST_F(SimpleIndexFileTest, Serialize) {
   SimpleIndex::EntrySet entries;
-  static const uint64_t kHashes[] = {11, 22, 33};
-  static const size_t kNumHashes = std::size(kHashes);
-  EntryMetadata metadata_entries[kNumHashes];
+  static const size_t kNumHashes = 3u;
+  const std::array<uint64_t, kNumHashes> kHashes = {11, 22, 33};
+  std::array<EntryMetadata, kNumHashes> metadata_entries;
 
   SimpleIndexFile::IndexMetadata index_metadata(
       SimpleIndex::INDEX_WRITE_REASON_SHUTDOWN,
@@ -229,9 +224,9 @@ TEST_F(SimpleIndexFileTest, Serialize) {
   WrappedSimpleIndexFile::SerializeFinalData(now, pickle.get());
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
-  WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, pickle->data_as_char(), pickle->size(),
-      &when_index_last_saw_cache, &deserialize_result);
+  WrappedSimpleIndexFile::Deserialize(net::DISK_CACHE, *pickle,
+                                      &when_index_last_saw_cache,
+                                      &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
   const SimpleIndex::EntrySet& new_entries = deserialize_result.entries;
@@ -246,10 +241,11 @@ TEST_F(SimpleIndexFileTest, Serialize) {
 
 TEST_F(SimpleIndexFileTest, SerializeAppCache) {
   SimpleIndex::EntrySet entries;
-  static const uint64_t kHashes[] = {11, 22, 33};
-  static const size_t kNumHashes = std::size(kHashes);
-  static const int32_t kTrailerPrefetches[] = {123, -1, 987};
-  EntryMetadata metadata_entries[kNumHashes];
+
+  static const size_t kNumHashes = 3u;
+  const std::array<uint64_t, kNumHashes> kHashes = {11, 22, 33};
+  const std::array<int32_t, kNumHashes> kTrailerPrefetches = {123, -1, 987};
+  std::array<EntryMetadata, kNumHashes> metadata_entries;
 
   SimpleIndexFile::IndexMetadata index_metadata(
       SimpleIndex::INDEX_WRITE_REASON_SHUTDOWN,
@@ -270,8 +266,7 @@ TEST_F(SimpleIndexFileTest, SerializeAppCache) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::APP_CACHE, pickle->data_as_char(), pickle->size(),
-      &when_index_last_saw_cache, &deserialize_result);
+      net::APP_CACHE, *pickle, &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
   const SimpleIndex::EntrySet& new_entries = deserialize_result.entries;
@@ -286,11 +281,9 @@ TEST_F(SimpleIndexFileTest, SerializeAppCache) {
 }
 
 TEST_F(SimpleIndexFileTest, ReadV7Format) {
-  static const uint64_t kHashes[] = {11, 22, 33};
-  static const uint32_t kSizes[] = {394, 594, 495940};
-  static_assert(std::size(kHashes) == std::size(kSizes),
-                "Need same number of hashes and sizes");
-  static const size_t kNumHashes = std::size(kHashes);
+  static const size_t kNumHashes = 3u;
+  const std::array<uint64_t, kNumHashes> kHashes = {11, 22, 33};
+  const std::array<uint32_t, kNumHashes> kSizes = {394, 594, 495940};
 
   V7IndexMetadataForTest v7_metadata(kNumHashes, 100 * 1024 * 1024);
 
@@ -313,9 +306,9 @@ TEST_F(SimpleIndexFileTest, ReadV7Format) {
   // Now read it back. We should get the sizes rounded, and 0 for mem entries.
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
-  WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, pickle->data_as_char(), pickle->size(),
-      &when_index_last_saw_cache, &deserialize_result);
+  WrappedSimpleIndexFile::Deserialize(net::DISK_CACHE, *pickle,
+                                      &when_index_last_saw_cache,
+                                      &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
   const SimpleIndex::EntrySet& new_entries = deserialize_result.entries;
@@ -329,17 +322,14 @@ TEST_F(SimpleIndexFileTest, ReadV7Format) {
 }
 
 TEST_F(SimpleIndexFileTest, ReadV8Format) {
-  static const uint64_t kHashes[] = {11, 22, 33};
-  static const uint32_t kSizes[] = {394, 594, 495940};
-  static_assert(std::size(kHashes) == std::size(kSizes),
-                "Need same number of hashes and sizes");
-  static const size_t kNumHashes = std::size(kHashes);
+  static const size_t kNumHashes = 3u;
+  const std::array<uint64_t, kNumHashes> kHashes = {11, 22, 33};
+  std::array<EntryMetadata, kNumHashes> metadata_entries;
 
   // V8 to V9 should not make any modifications for non-APP_CACHE modes.
   // Verify that the data is preserved through the migration.
   V8IndexMetadataForTest v8_metadata(kNumHashes, 100 * 1024 * 1024);
 
-  EntryMetadata metadata_entries[kNumHashes];
   SimpleIndex::EntrySet entries;
   for (size_t i = 0; i < kNumHashes; ++i) {
     metadata_entries[i] =
@@ -355,9 +345,9 @@ TEST_F(SimpleIndexFileTest, ReadV8Format) {
 
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
-  WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, pickle->data_as_char(), pickle->size(),
-      &when_index_last_saw_cache, &deserialize_result);
+  WrappedSimpleIndexFile::Deserialize(net::DISK_CACHE, *pickle,
+                                      &when_index_last_saw_cache,
+                                      &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
   const SimpleIndex::EntrySet& new_entries = deserialize_result.entries;
@@ -370,11 +360,9 @@ TEST_F(SimpleIndexFileTest, ReadV8Format) {
 }
 
 TEST_F(SimpleIndexFileTest, ReadV8FormatAppCache) {
-  static const uint64_t kHashes[] = {11, 22, 33};
-  static const uint32_t kSizes[] = {394, 594, 495940};
-  static_assert(std::size(kHashes) == std::size(kSizes),
-                "Need same number of hashes and sizes");
-  static const size_t kNumHashes = std::size(kHashes);
+  static const size_t kNumHashes = 3u;
+  const std::array<uint64_t, kNumHashes> kHashes = {11, 22, 33};
+  std::array<EntryMetadata, kNumHashes> metadata_entries;
 
   // To simulate an upgrade from v8 to v9 write out the v8 schema
   // using DISK_CACHE mode.  The read it back in in APP_CACHE mode.
@@ -382,7 +370,6 @@ TEST_F(SimpleIndexFileTest, ReadV8FormatAppCache) {
   // new trailer prefetch size.
   V8IndexMetadataForTest v8_metadata(kNumHashes, 100 * 1024 * 1024);
 
-  EntryMetadata metadata_entries[kNumHashes];
   SimpleIndex::EntrySet entries;
   for (size_t i = 0; i < kNumHashes; ++i) {
     metadata_entries[i] =
@@ -402,8 +389,7 @@ TEST_F(SimpleIndexFileTest, ReadV8FormatAppCache) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::APP_CACHE, pickle->data_as_char(), pickle->size(),
-      &when_index_last_saw_cache, &deserialize_result);
+      net::APP_CACHE, *pickle, &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
   const SimpleIndex::EntrySet& new_entries = deserialize_result.entries;
@@ -461,9 +447,10 @@ TEST_F(SimpleIndexFileTest, WriteThenLoadIndex) {
   ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
 
   SimpleIndex::EntrySet entries;
-  static const uint64_t kHashes[] = {11, 22, 33};
-  static const size_t kNumHashes = std::size(kHashes);
-  EntryMetadata metadata_entries[kNumHashes];
+
+  static const size_t kNumHashes = 3u;
+  const std::array<uint64_t, kNumHashes> kHashes = {11, 22, 33};
+  std::array<EntryMetadata, kNumHashes> metadata_entries;
   for (size_t i = 0; i < kNumHashes; ++i) {
     uint64_t hash = kHashes[i];
     metadata_entries[i] = EntryMetadata(Time(), static_cast<uint32_t>(hash));
@@ -568,9 +555,8 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
   disk_cache::FakeIndexData file_contents;
   file_contents.initial_magic_number = disk_cache::kSimpleInitialMagicNumber;
   file_contents.version = 5;
-  int bytes_written = file.Write(0, reinterpret_cast<char*>(&file_contents),
-                                 sizeof(file_contents));
-  ASSERT_EQ((int)sizeof(file_contents), bytes_written);
+  auto bytes_written = file.Write(0, base::byte_span_from_ref(file_contents));
+  ASSERT_EQ(sizeof(file_contents), bytes_written);
   file.Close();
 
   // Write the index file. The format is incorrect, but for transitioning from
@@ -622,8 +608,8 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, contents.data(), contents.size(),
-      &when_index_last_saw_cache, &deserialize_result);
+      net::DISK_CACHE, base::as_byte_span(contents), &when_index_last_saw_cache,
+      &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
 }
 

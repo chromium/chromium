@@ -2489,7 +2489,7 @@ Called by update_extension_histograms.py.-->
   <int value="1638" label="TERMINALPRIVATE_SETPREFS"/>
   <int value="1639" label="DELETED_AUTOTESTPRIVATE_GETCRYPTOHOMERECOVERYDATA"/>
   <int value="1640" label="TERMINALPRIVATE_OPENSETTINGSSUBPAGE"/>
-  <int value="1641" label="AUTOTESTPRIVATE_GETLACROSINFO"/>
+  <int value="1641" label="DELETED_AUTOTESTPRIVATE_GETLACROSINFO"/>
   <int value="1642" label="LOGIN_LAUNCHSAMLUSERSESSION"/>
   <int value="1643" label="LOGIN_LOCKCURRENTSESSION"/>
   <int value="1644" label="LOGIN_UNLOCKCURRENTSESSION"/>
@@ -2754,8 +2754,8 @@ Called by update_extension_histograms.py.-->
   <int value="1887" label="PASSWORDSPRIVATE_DISCONNECTCLOUDAUTHENTICATOR"/>
   <int value="1888" label="PASSWORDSPRIVATE_ISCONNECTEDTOCLOUDAUTHENTICATOR"/>
   <int value="1889" label="WEBSTOREPRIVATE_GETMV2DEPRECATIONSTATUS"/>
-  <int value="1890" label="PERMISSIONS_ADDSITEACCESSREQUEST"/>
-  <int value="1891" label="PERMISSIONS_REMOVESITEACCESSREQUEST"/>
+  <int value="1890" label="PERMISSIONS_ADDHOSTACCESSREQUEST"/>
+  <int value="1891" label="PERMISSIONS_REMOVEHOSTACCESSREQUEST"/>
   <int value="1892" label="ACCESSIBILITY_PRIVATE_SETCHROMEVOXFOCUS"/>
   <int value="1893" label="PASSWORDSPRIVATE_DELETEALLPASSWORDMANAGERDATA"/>
   <int value="1894"
@@ -2782,6 +2782,7 @@ Called by update_extension_histograms.py.-->
   <int value="1912" label="TTSENGINE_UPDATELANGUAGE"/>
   <int value="1913" label="ODFSCONFIGPRIVATE_OPENINOFFICEAPP"/>
   <int value="1914" label="COOKIES_GETPARTITIONKEY"/>
+  <int value="1915" label="CONTROLLEDFRAMEINTERNAL_SETCLIENTHINTSENABLED"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
@@ -3165,6 +3166,7 @@ Called by update_extension_permission.py.-->
   <int value="258" label="kChromeOSDiagnosticsNetworkInfoForMlab"/>
   <int value="259" label="kAILanguageModelOriginTrial"/>
   <int value="260" label="kExperimentalAiData"/>
+  <int value="261" label="kOmniboxDirectInput"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">
@@ -3285,6 +3287,7 @@ Called by update_extension_permission.py.-->
   <int value="2" label="mime handler view"/>
   <int value="3" label="extension options"/>
   <int value="4" label="app view"/>
+  <int value="5" label="controlled frame"/>
 </enum>
 
 <enum name="HostPermissionsAccess">
@@ -3371,9 +3374,18 @@ Called by update_extension_permission.py.-->
 
 <enum name="OpenChannelMessagePipelineResult">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Opened"/>
-  <int value="2" label="Hung"/>
-  <int value="3" label="No Receivers"/>
+  <int value="1" label="Channel opened"/>
+  <int value="2" label="Channel not opened (hung)"/>
+  <int value="3" label="Channel not opened (no receivers)"/>
+  <int value="4" label="Channel not opened (no enabled extension)"/>
+  <int value="5" label="Channel not opened (not externally connectable)"/>
+  <int value="6" label="Worker started for channel open"/>
+  <int value="7"
+      label="Channel not opened (source channel invalid, opener port invaid,
+             no receiver port, or receiver port invalid)"/>
+  <int value="8" label="Channel not opened (receiver port isn't valid)"/>
+  <int value="9"
+      label="Channel not opened (dispatched connect, but no port created)"/>
 </enum>
 
 <enum name="ReadDynamicRulesJSONStatus">

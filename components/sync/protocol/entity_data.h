@@ -14,6 +14,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 
 namespace syncer {
 
@@ -86,9 +87,8 @@ struct EntityData {
   // true. Relevant only for bookmarks.
   bool is_bookmark_unique_position_in_specifics_preprocessed = false;
 
-  // Collaboration with which the current entity is associated. Empty for
-  // non-shared types.
-  std::string collaboration_id;
+  // Collaboration metadata for the entity. Present only for shared entities.
+  std::optional<CollaborationMetadata> collaboration_metadata;
 
   // True if EntityData represents deleted entity; otherwise false.
   // Note that EntityData would be considered to represent a deletion if its

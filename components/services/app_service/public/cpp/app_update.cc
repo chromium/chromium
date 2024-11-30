@@ -114,9 +114,8 @@ bool MergeWithoutIconKey(App* state, const App* delta) {
 
   if ((delta->app_type != state->app_type) ||
       (delta->app_id != state->app_id)) {
-    LOG(ERROR) << "inconsistent (app_type, app_id): ("
-               << EnumToString(delta->app_type) << ", " << delta->app_id
-               << ") vs (" << EnumToString(state->app_type) << ", "
+    LOG(ERROR) << "inconsistent (app_type, app_id): (" << delta->app_type
+               << ", " << delta->app_id << ") vs (" << state->app_type << ", "
                << state->app_id << ") ";
     return false;
   }
@@ -635,9 +634,9 @@ bool AppUpdate::ExtraChanged() const {
 }
 
 std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
-  out << "AppType: " << EnumToString(app.AppType()) << std::endl;
+  out << "AppType: " << app.AppType() << std::endl;
   out << "AppId: " << app.AppId() << std::endl;
-  out << "Readiness: " << EnumToString(app.Readiness()) << std::endl;
+  out << "Readiness: " << app.Readiness() << std::endl;
   out << "Name: " << app.Name() << std::endl;
   out << "ShortName: " << app.ShortName() << std::endl;
   out << "PublisherId: " << app.PublisherId() << std::endl;
@@ -660,8 +659,8 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
     out << permission->ToString() << std::endl;
   }
 
-  out << "InstallReason: " << EnumToString(app.InstallReason()) << std::endl;
-  out << "InstallSource: " << EnumToString(app.InstallSource()) << std::endl;
+  out << "InstallReason: " << app.InstallReason() << std::endl;
+  out << "InstallSource: " << app.InstallSource() << std::endl;
 
   out << "PolicyId: " << base::JoinString(app.PolicyIds(), ", ") << std::endl;
 
@@ -694,7 +693,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
       << std::endl;
   out << "AllowWindowModeSelection: "
       << PRINT_OPTIONAL_BOOL(app.AllowWindowModeSelection()) << std::endl;
-  out << "WindowMode: " << EnumToString(app.WindowMode()) << std::endl;
+  out << "WindowMode: " << app.WindowMode() << std::endl;
   if (app.RunOnOsLogin().has_value()) {
     out << "RunOnOsLoginMode: "
         << EnumToString(app.RunOnOsLogin().value().login_mode) << std::endl;

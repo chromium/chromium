@@ -15,6 +15,7 @@ source_set("coordinator") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ai_prototyping/ui",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

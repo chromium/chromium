@@ -8,6 +8,7 @@ import("//content/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//services/video_effects/args.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
 
@@ -559,7 +560,7 @@ source_set("browser_sources") {
     "//services/tracing/public/cpp",
     "//services/tracing/public/mojom",
     "//services/video_capture/public/mojom",
-    "//services/video_effects/public/mojom:mojom",
+    "//services/video_effects/buildflags",
     "//services/viz/public/mojom",
 
     # We expose skia headers in the public API.
@@ -742,6 +743,10 @@ source_set("browser_sources") {
 
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/startup" ]
+  }
+
+  if (enable_video_effects) {
+    public_deps += [ "//services/video_effects/public/mojom:mojom" ]
   }
 }
 

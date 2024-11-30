@@ -36,7 +36,8 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     [command_dispatcher_
         startDispatchingToTarget:application_commands_mock_
                      forProtocol:@protocol(ApplicationCommands)];
-    share_kit_service_ = std::make_unique<TestShareKitService>();
+    share_kit_service_ =
+        std::make_unique<TestShareKitService>(nullptr, nullptr);
     base_view_controller_ = [[FakeUIViewController alloc] init];
   }
 
@@ -72,14 +73,15 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
   InitShareFlowDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
-  EXPECT_CALL(completion_callback,
-              Run(CollaborationControllerDelegate::Outcome::kSuccess));
   delegate_->ShowShareDialog(completion_callback.Get());
   EXPECT_TRUE(base_view_controller_.presentedViewController);
+  // The callback is not expected to be called, as it is called when the
+  // given ShareKit flow returns, i.e. when the presented view controller is
+  // dismissed. Here, it's not dismissed.
 }
 
 // Tests `ShowShareDialog` with an invalid tabGroup.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInValid) {
+TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
   InitShareFlowDelegate();
 
   // Delete the tabGroup.
@@ -98,10 +100,12 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialog) {
   InitJoinFlowDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
-  EXPECT_CALL(completion_callback,
-              Run(CollaborationControllerDelegate::Outcome::kSuccess));
-  delegate_->ShowJoinDialog(completion_callback.Get());
+  data_sharing::SharedDataPreview preview_data;
+  delegate_->ShowJoinDialog(preview_data, completion_callback.Get());
   EXPECT_TRUE(base_view_controller_.presentedViewController);
+  // The callback is not expected to be called, as it is called when the
+  // given ShareKit flow returns, i.e. when the presented view controller is
+  // dismissed. Here, it's not dismissed.
 }
 
 // Tests `ShowAuthenticationUi` from a share flow.

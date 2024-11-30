@@ -123,12 +123,18 @@ void AddCustomItemsToMenu(
           }
         }
         break;
-      case blink::mojom::CustomContextMenuItemType::kCheckableOption:
+      case blink::mojom::CustomContextMenuItemType::kCheckableOption: {
         menu_model->AddCheckItem(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 item->action),
             item->label);
+        if (item->is_experimental_feature) {
+          menu_model->SetMinorIcon(
+              menu_model->GetItemCount() - 1,
+              ui::ImageModel::FromVectorIcon(vector_icons::kScienceIcon));
+        }
         break;
+      }
       case blink::mojom::CustomContextMenuItemType::kGroup:
         // TODO(viettrungluu): I don't know what this is supposed to do.
         NOTREACHED();
@@ -443,7 +449,8 @@ void RenderViewContextMenuBase::MenuClosed(ui::SimpleMenuModel* source) {
     return;
 
   source_web_contents_->SetShowingContextMenu(false);
-  source_web_contents_->NotifyContextMenuClosed(params_.link_followed);
+  source_web_contents_->NotifyContextMenuClosed(params_.link_followed,
+                                                params_.impression);
   for (auto& observer : observers_) {
     observer.OnMenuClosed();
   }

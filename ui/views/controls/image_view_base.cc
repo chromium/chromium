@@ -22,7 +22,8 @@ ImageViewBase::ImageViewBase() {
   // information, set it to ignored. This will result in the same tree
   // inclusion/exclusion behavior without unexpected platform-specific
   // side effects related to the role changing.
-  if (GetViewAccessibility().GetCachedName().empty() && tooltip_text_.empty()) {
+  if (GetViewAccessibility().GetCachedName().empty() &&
+      GetCachedTooltipText().empty()) {
     GetViewAccessibility().SetIsIgnored(true);
   }
 }
@@ -68,37 +69,34 @@ ImageViewBase::Alignment ImageViewBase::GetVerticalAlignment() const {
 }
 
 void ImageViewBase::SetTooltipText(const std::u16string& tooltip) {
-  if (tooltip_text_ == tooltip) {
+  if (GetCachedTooltipText() == tooltip) {
     return;
   }
 
-  std::u16string current_tooltip = tooltip_text_;
-  tooltip_text_ = tooltip;
+  std::u16string current_tooltip = GetCachedTooltipText();
+  SetCachedTooltipText(tooltip);
 
   if (GetViewAccessibility().GetCachedName().empty() ||
       GetViewAccessibility().GetCachedName() == current_tooltip) {
     GetViewAccessibility().SetName(tooltip);
   }
-
-  TooltipTextChanged();
-  OnPropertyChanged(&tooltip_text_, kPropertyEffectsNone);
 }
 
 const std::u16string& ImageViewBase::GetTooltipText() const {
-  return tooltip_text_;
+  return GetCachedTooltipText();
 }
 
 void ImageViewBase::AdjustAccessibleName(std::u16string& new_name,
                                          ax::mojom::NameFrom& name_from) {
   if (new_name.empty()) {
-    new_name = tooltip_text_;
+    new_name = GetCachedTooltipText();
   }
 
   GetViewAccessibility().SetIsIgnored(new_name.empty());
 }
 
 std::u16string ImageViewBase::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_text_;
+  return GetCachedTooltipText();
 }
 
 gfx::Size ImageViewBase::CalculatePreferredSize(

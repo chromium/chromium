@@ -37,9 +37,6 @@ class OnDeviceModelAccessController {
   // Called if using the gpu is blocked.
   void OnGpuBlocked();
 
-  // Called if the session times out.
-  void OnSessionTimedOut();
-
   bool ShouldValidateModel(std::string_view model_version);
   void OnValidationFinished(OnDeviceModelValidationResult result);
 
@@ -56,7 +53,6 @@ class OnDeviceModelAccessController {
   raw_ref<PrefService> pref_service_;
   bool is_gpu_blocked_ = false;
   base::Time next_attempt_time_after_crash_ = base::Time::Now();
-  base::Time next_attempt_time_after_timeout_ = base::Time::Now();
 };
 
 }  // namespace optimization_guide

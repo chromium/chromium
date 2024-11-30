@@ -23,9 +23,14 @@ class ProfileInternalsHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
+  friend class ProfileInternalsHandlerTest;
+
   void HandleGetProfilesList(const base::Value::List& args);
 
   void PushProfilesList();
+
+  static base::Value::Dict CreateProfileEntry(
+      const ProfileAttributesEntry* entry);
 
   // Returns the list of profiles ordered by the local profile name.
   base::Value::List GetProfilesList();

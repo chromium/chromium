@@ -63,8 +63,6 @@ class FirstRunService : public KeyedService {
     kFinishedFlow = 1,
     kProfileAlreadySetUp = 2,
     kSkippedByPolicies = 3,
-    // This is currently only used when the feature
-    // `kForceSigninFlowInProfilePicker` is enabled.
     kForceSignin = 4,
 
     kMaxValue = kForceSignin,

@@ -67,8 +67,6 @@ import java.util.List;
      * @param descriptionText A text that describes what a virtual card does, e.g., "A virtual card
      *     hides your actual card..." and so on. This text includes a "learn more" link text.
      * @param learnMoreLinkText The text of the "learn more" link in descriptionText.
-     * @param cardContainerAccessibilityDescription The accessibility description for the UI element
-     *     that contains the issuer icon, card label, and card description.
      * @param issuerIconBitmap The icon for the card. For example, could be an American Express
      *     logo. Not used when
      *     AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER is enabled.
@@ -77,12 +75,10 @@ import java.util.List;
      * @param issuerIconUrl The url for the card icon. For example, could be a custom card art for a
      *     credit card. This takes precedence over the issuerIconResource.
      * @param cardLabel The label for the card, e.g., "Amex ****1234".
-     * @param cardDescription The description of the card, e.g., "Virtual Card".
      * @param googleLegalMessages Legal messages from Google Pay.
      * @param issuerLegalMessages Legal messages from the issuer bank.
      * @param acceptButtonLabel The label for the button that enrolls a virtual card.
      * @param cancelButtonLabel The label for the button that cancels enrollment.
-     * @param loadingDescription The description for the loading view.
      * @return True if shown.
      */
     @CalledByNative
@@ -93,17 +89,14 @@ import java.util.List;
             @JniType("std::u16string") String messageText,
             @JniType("std::u16string") String descriptionText,
             @JniType("std::u16string") String learnMoreLinkText,
-            @JniType("std::u16string") String cardContainerAccessibilityDescription,
             Bitmap issuerIconBitmap,
             @DrawableRes int networkIconResource,
             @JniType("GURL") GURL issuerIconUrl,
             @JniType("std::u16string") String cardLabel,
-            @JniType("std::u16string") String cardDescription,
             @JniType("std::vector") List<LegalMessageLine> googleLegalMessages,
             @JniType("std::vector") List<LegalMessageLine> issuerLegalMessages,
             @JniType("std::u16string") String acceptButtonLabel,
-            @JniType("std::u16string") String cancelButtonLabel,
-            @JniType("std::u16string") String loadingDescription) {
+            @JniType("std::u16string") String cancelButtonLabel) {
         if (webContents == null || webContents.isDestroyed()) return false;
 
         WindowAndroid window = webContents.getTopLevelNativeWindow();
@@ -132,10 +125,6 @@ import java.util.List;
                                                 .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
                                         /* linkOpener= */ this))
                         .with(
-                                AutofillVcnEnrollBottomSheetProperties
-                                        .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
-                                cardContainerAccessibilityDescription)
-                        .with(
                                 AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
                                 ChromeFeatureList.isEnabled(
                                                 AutofillFeatures
@@ -146,9 +135,6 @@ import java.util.List;
                                                 cardIconSpecs.getWidth(),
                                                 cardIconSpecs.getHeight()))
                         .with(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL, cardLabel)
-                        .with(
-                                AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION,
-                                cardDescription)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES,
                                 new LegalMessages(
@@ -169,10 +155,7 @@ import java.util.List;
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL,
                                 cancelButtonLabel)
-                        .with(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false)
-                        .with(
-                                AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION,
-                                loadingDescription);
+                        .with(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false);
 
         mCoordinator =
                 new AutofillVcnEnrollBottomSheetCoordinator(

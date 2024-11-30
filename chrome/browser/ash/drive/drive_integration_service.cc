@@ -31,7 +31,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
@@ -511,7 +510,6 @@ class DriveIntegrationService::DriveFsHolder
     if (pending_connect_to_extension_request_) {
       std::move(pending_connect_to_extension_request_).Run();
     }
-    native_message_keep_alive_.reset();
   }
 
  private:
@@ -600,12 +598,6 @@ class DriveIntegrationService::DriveFsHolder
       override {
     if (crosapi::browser_util::IsLacrosEnabled()) {
       if (!native_message_host_bridge_) {
-        auto* browser_manager = crosapi::BrowserManager::Get();
-        if (!native_message_keep_alive_ && browser_manager) {
-          native_message_keep_alive_ = browser_manager->KeepAlive(
-              crosapi::BrowserManager::Feature::kDriveFsNativeMessaging);
-        }
-
         // DriveFS only sends one ConnectToExtension request at a time, so if
         // there is already an existing request, it means that DriveFS has
         // restarted and we can just drop the previous request.
@@ -685,8 +677,6 @@ class DriveIntegrationService::DriveFsHolder
 
   std::string profile_salt_;
 
-  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive>
-      native_message_keep_alive_;
   mojo::Remote<crosapi::mojom::DriveFsNativeMessageHostBridge>
       native_message_host_bridge_;
   base::OnceClosure pending_connect_to_extension_request_;

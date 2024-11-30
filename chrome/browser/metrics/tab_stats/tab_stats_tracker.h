@@ -100,7 +100,7 @@ class TabStatsTracker : public TabStripModelObserver,
     TabStatsDailyObserver(const TabStatsDailyObserver&) = delete;
     TabStatsDailyObserver& operator=(const TabStatsDailyObserver&) = delete;
 
-    ~TabStatsDailyObserver() override {}
+    ~TabStatsDailyObserver() override = default;
 
     // Callback called when the daily event happen.
     void OnDailyEvent(DailyEvent::IntervalType type) override;

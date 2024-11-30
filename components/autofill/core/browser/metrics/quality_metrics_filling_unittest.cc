@@ -230,6 +230,11 @@ TEST_F(QualityMetricsFillingTest,
       (NAME_FIRST << 6) | 0, 1);
   histogram_tester_.ExpectTotalCount(
       "Autofill.DataUtilization.HadPrediction.ByPossibleType", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.GarbageNoPrediction.ByPossibleType",
+      (NAME_FIRST << 6) | 0, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.DataUtilization.GarbageHadPrediction.ByPossibleType", 0);
 
   EXPECT_TRUE(
       histogram_tester_
@@ -250,6 +255,31 @@ TEST_F(QualityMetricsFillingTest,
                   .GetAllSamples("Autofill.DataUtilization.SelectedFieldTypes."
                                  "GarbageHadPrediction")
                   .empty());
+}
+
+// Tests that
+// "Autofill.DataUtilization.AutocompleteOffNoPrediction.ByPossibleType" is
+// emitted when the field has autocomplete="off".
+TEST_F(QualityMetricsFillingTest,
+       DataUtilizationEmittedWithVariantsAutocompleteOffAndNoPrediction) {
+  std::unique_ptr<FormStructure> form_structure =
+      GetFormStructure({.fields = {{.autocomplete_attribute = "off"}}});
+  form_structure->field(0)->set_possible_types({NAME_FIRST});
+  form_structure->field(0)->set_initial_value_changed(true);
+
+  LogFillingQualityMetrics(*form_structure);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.NoPrediction.ByPossibleType",
+      (NAME_FIRST << 6) | 0, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.DataUtilization.HadPrediction.ByPossibleType", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AutocompleteOffNoPrediction.ByPossibleType",
+      (NAME_FIRST << 6) | 0, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.DataUtilization.AutocompleteOffHadPrediction.ByPossibleType",
+      0);
 }
 
 // Tests that metrics "Autofill.DataUtilization.*.{Aggregate, HadPrediction}"

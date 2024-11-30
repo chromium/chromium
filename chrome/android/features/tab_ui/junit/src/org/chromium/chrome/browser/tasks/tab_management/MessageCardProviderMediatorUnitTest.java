@@ -16,10 +16,12 @@ import android.content.res.Resources;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,8 +35,9 @@ import java.util.List;
 /** Unit tests for {@link MessageCardProviderMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MessageCardProviderMediatorUnitTest {
-    private static final int SUGGESTED_TAB_COUNT = 2;
     private static final int TESTING_ACTION = -1;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private MessageCardProviderMediator mMediator;
 
@@ -59,7 +62,6 @@ public class MessageCardProviderMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         doReturn(true).when(mIncognitoProfileMock).isOffTheRecord();
         doReturn(mProfileMock).when(mProfileSupplier).get();

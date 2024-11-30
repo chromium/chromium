@@ -12,11 +12,9 @@ import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {LanguageCode} from '../core/soda/language_info.js';
 import {
   disableTranscription,
-  enableTranscription,
-  setTranscriptionLanguage,
+  enableTranscriptionSkipConsentCheck,
 } from '../core/state/transcription.js';
 
 import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
@@ -79,9 +77,8 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
   }
 
   private enableTranscription() {
-    enableTranscription();
+    enableTranscriptionSkipConsentCheck();
     if (!this.shouldShowSelector) {
-      setTranscriptionLanguage(LanguageCode.EN_US);
       if (this.platformHandler.canUseSpeakerLabel.value) {
         this.speakerLabelConsentDialog.value?.show();
       }
@@ -110,9 +107,7 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
         illustrationName="onboarding_transcription"
         header=${header}
       >
-        <div slot="content">
-          ${description}
-        </div>
+        <div slot="content">${description}</div>
         <div slot="actions">
           <cra-button
             .label=${i18n.onboardingDialogTranscriptionDeferButton}

@@ -312,7 +312,7 @@ public class FeedSurfaceMediator
         if (sTestPrefChangeRegistar != null) {
             mPrefChangeRegistrar = sTestPrefChangeRegistar;
         } else {
-            mPrefChangeRegistrar = new PrefChangeRegistrar();
+            mPrefChangeRegistrar = new PrefChangeRegistrar(profile);
         }
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS, this::updateContent);
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS_BY_DSE, this::updateContent);
@@ -1293,13 +1293,6 @@ public class FeedSurfaceMediator
         } else {
             callback.onResult(false);
         }
-    }
-
-    private FeedScrollState getScrollStateForAutoScrollToTop() {
-        FeedScrollState state = new FeedScrollState();
-        state.position = 1;
-        state.lastPosition = 5;
-        return state;
     }
 
     // Detects animation finishes in RecyclerView.

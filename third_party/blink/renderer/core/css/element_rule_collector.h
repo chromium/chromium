@@ -45,7 +45,6 @@ namespace blink {
 class Element;
 class ElementResolveContext;
 class ElementRuleCollector;
-class HTMLSlotElement;
 class RuleData;
 class SelectorFilter;
 class StyleRuleUsageTracker;
@@ -155,9 +154,7 @@ class CORE_EXPORT ElementRuleCollector {
   void CollectMatchingRules(const MatchRequest&, PartNames* part_names);
   void CollectMatchingShadowHostRules(const MatchRequest&);
   void CollectMatchingSlottedRules(const MatchRequest&);
-  void CollectMatchingPartPseudoRules(const MatchRequest&,
-                                      PartNames*,
-                                      bool for_shadow_pseudo);
+  void CollectMatchingPartPseudoRules(const MatchRequest&, PartNames*);
   void SortAndTransferMatchedRules(CascadeOrigin origin,
                                    bool is_vtt_embedded_style,
                                    StyleRuleUsageTracker* tracker);
@@ -208,46 +205,7 @@ class CORE_EXPORT ElementRuleCollector {
     return matched_rules_;
   }
 
-  // Temporarily swap the StyleRecalcContext with one which points to the
-  // closest query container for matching ::slotted rules for a given slot.
-  class SlottedRulesScope {
-    STACK_ALLOCATED();
-
-   public:
-    SlottedRulesScope(ElementRuleCollector& collector, HTMLSlotElement& slot)
-        : context_(&collector.style_recalc_context_,
-                   collector.style_recalc_context_.ForSlottedRules(slot)) {}
-
-   private:
-    base::AutoReset<StyleRecalcContext> context_;
-  };
-
-  // Temporarily swap the StyleRecalcContext with one which points to the
-  // closest query container for matching ::part rules for a given host.
-  class PartRulesScope {
-    STACK_ALLOCATED();
-
-   public:
-    PartRulesScope(ElementRuleCollector& collector, Element& host)
-        : context_(&collector.style_recalc_context_,
-                   collector.style_recalc_context_.ForPartRules(host)) {}
-
-   private:
-    base::AutoReset<StyleRecalcContext> context_;
-  };
-
  private:
-  // TODO(https://crbug.com/40280846): Remove PartRequest when removing the
-  // CSSCascadeCorrectScope flag.
-  struct PartRequest {
-    STACK_ALLOCATED();
-
-   public:
-    // If this is true, we're matching for a pseudo-element of the part, such as
-    // ::placeholder.
-    bool for_shadow_pseudo = false;
-  };
-
   // If stop_at_first_match = true, CollectMatchingRules*() will stop
   // whenever any rule matches, return true, and not store the result
   // anywhere nor update the match counters. Otherwise, these functions
@@ -270,8 +228,7 @@ class CORE_EXPORT ElementRuleCollector {
       const RuleSet*,
       int,
       const SelectorChecker&,
-      SelectorChecker::SelectorCheckingContext&,
-      PartRequest* = nullptr);
+      SelectorChecker::SelectorCheckingContext&);
 
   template <bool stop_at_first_match>
   bool CollectMatchingRulesForList(base::span<const RuleData>,
@@ -279,8 +236,7 @@ class CORE_EXPORT ElementRuleCollector {
                                    const RuleSet*,
                                    int,
                                    const SelectorChecker&,
-                                   SelectorChecker::SelectorCheckingContext&,
-                                   PartRequest* = nullptr);
+                                   SelectorChecker::SelectorCheckingContext&);
 
   bool Match(SelectorChecker&,
              const SelectorChecker::SelectorCheckingContext&,

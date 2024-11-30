@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/signin/core/browser/account_reconcilor.h"
 
 #include <cstring>
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -54,6 +50,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -256,7 +253,7 @@ MockAccountReconcilor::MockAccountReconcilor(
 }
 
 struct Cookie {
-  std::string gaia_id;
+  GaiaId gaia_id;
   bool is_valid;
 
   bool operator==(const Cookie& other) const = default;
@@ -324,7 +321,7 @@ class AccountReconcilorTest : public ::testing::Test {
 
   AccountInfo ConnectProfileToAccount(const std::string& email);
 
-  CoreAccountId PickAccountIdForAccount(const std::string& gaia_id,
+  CoreAccountId PickAccountIdForAccount(const GaiaId& gaia_id,
                                         const std::string& username);
 
   void SimulateSetAccountsInCookieCompleted(
@@ -460,7 +457,7 @@ AccountInfo AccountReconcilorTest::ConnectProfileToAccount(
 }
 
 CoreAccountId AccountReconcilorTest::PickAccountIdForAccount(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& username) {
   return identity_test_env()->identity_manager()->PickAccountIdForAccount(
       gaia_id, username);
@@ -504,12 +501,12 @@ enum class IsFirstReconcile {
 };
 
 struct AccountReconcilorTestTableParam {
-  const char* tokens;
-  const char* cookies;
+  const std::string tokens;
+  const std::string cookies;
   IsFirstReconcile is_first_reconcile;
-  const char* gaia_api_calls;
-  const char* tokens_after_reconcile;
-  const char* cookies_after_reconcile;
+  const std::string gaia_api_calls;
+  const std::string tokens_after_reconcile;
+  const std::string cookies_after_reconcile;
 };
 
 std::vector<AccountReconcilorTestTableParam> GenerateTestCasesFromParams(
@@ -551,11 +548,11 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
 
   struct Account {
     std::string email;
-    std::string gaia_id;
+    GaiaId gaia_id;
   };
 
   struct Token {
-    std::string gaia_id;
+    GaiaId gaia_id;
     std::string email;
     bool is_authenticated;
     bool has_error;
@@ -564,12 +561,11 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
   virtual void CreateReconclior() { GetMockReconcilor(); }
 
   // Build Tokens from string.
-  std::vector<Token> ParseTokenString(const char* token_string) {
+  std::vector<Token> ParseTokenString(std::string_view token_string) {
     std::vector<Token> parsed_tokens;
     bool is_authenticated = false;
     bool has_error = false;
-    for (int i = 0; token_string[i] != '\0'; ++i) {
-      char token_code = token_string[i];
+    for (char token_code : token_string) {
       if (token_code == '*') {
         is_authenticated = true;
         continue;
@@ -588,11 +584,10 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
   }
 
   // Build Cookies from string.
-  std::vector<Cookie> ParseCookieString(const char* cookie_string) {
+  std::vector<Cookie> ParseCookieString(std::string_view cookie_string) {
     std::vector<Cookie> parsed_cookies;
     bool valid = true;
-    for (int i = 0; cookie_string[i] != '\0'; ++i) {
-      char cookie_code = cookie_string[i];
+    for (char cookie_code : cookie_string) {
       if (cookie_code == 'x') {
         valid = false;
         continue;
@@ -631,7 +626,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       EXPECT_EQ(CoreAccountId(), primary_account_id);
   }
 
-  void SetupTokens(const char* tokens_string) {
+  void SetupTokens(std::string_view tokens_string) {
     std::vector<Token> tokens = ParseTokenString(tokens_string);
     Token primary_account;
     for (const Token& token : tokens) {
@@ -655,7 +650,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
   void ConfigureCookieManagerService(const std::vector<Cookie>& cookies) {
     std::vector<signin::CookieParams> cookie_params;
     for (const auto& cookie : cookies) {
-      std::string gaia_id = cookie.gaia_id;
+      GaiaId gaia_id = cookie.gaia_id;
 
       // Figure the account token of this specific account id,
       // ie 'A', 'B', or 'C'.
@@ -698,7 +693,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
             {GetAccount(account_id).gaia_id, true});
       }
     } else {
-      std::vector<std::string> gaia_ids;
+      std::vector<GaiaId> gaia_ids;
       for (const auto& account_id : parameters.accounts_to_send)
         gaia_ids.push_back(GetAccount(account_id).gaia_id);
       cookies_after_reconcile = cookies_before_reconcile;
@@ -710,8 +705,9 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
           DCHECK(!cookie.is_valid);
         }
       }
-      for (const std::string& gaia_id : gaia_ids)
-        cookies_after_reconcile.push_back({gaia_id, true});
+      for (const GaiaId& gaia_id : gaia_ids) {
+        cookies_after_reconcile.emplace_back(gaia_id, true);
+      }
     }
     return cookies_after_reconcile;
   }
@@ -827,12 +823,12 @@ class AccountReconcilorTestTable
       if (row.is_first_reconcile == IsFirstReconcile::kFirst)
         continue;
 
-      if (!(strcmp(row.tokens, param.tokens_after_reconcile) == 0 &&
-            strcmp(row.cookies, param.cookies_after_reconcile) == 0)) {
+      if (!(row.tokens == param.tokens_after_reconcile &&
+            row.cookies == param.cookies_after_reconcile)) {
         continue;
       }
-      EXPECT_STREQ(row.tokens, row.tokens_after_reconcile);
-      EXPECT_STREQ(row.cookies, row.cookies_after_reconcile);
+      EXPECT_EQ(row.tokens, row.tokens_after_reconcile);
+      EXPECT_EQ(row.cookies, row.cookies_after_reconcile);
       return;
     }
 
@@ -2640,7 +2636,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookieTwice) {
   const CoreAccountId account_id2 = account_info2.account_id;
 
   const std::string email3 = "third@gmail.com";
-  const std::string gaia_id3 = signin::GetTestGaiaIdForEmail(email3);
+  const GaiaId gaia_id3 = signin::GetTestGaiaIdForEmail(email3);
   const CoreAccountId account_id3 = PickAccountIdForAccount(gaia_id3, email3);
 
   signin::SetListAccountsResponseOneAccount(

@@ -144,7 +144,7 @@
       on-see-all-click="seeAllSets_">
   </product-specifications-header>
 
-  <div id="summaryContainer">
+  <div id="summaryContainer" hidden="[[isAppStateNoContent_(appState_)]]">
     <div id="tableDataUnavailable"
         hidden="[[!showTableDataUnavailableContainer_]]">
       <picture>
@@ -212,7 +212,9 @@
         </product-specifications-table>
     </horizontal-carousel>
   </div>
-  <div id="footer" hidden="[[showTableDataUnavailableContainer_]]">
+  <div id="footer"
+      hidden="[[!canShowFooter_(showTableDataUnavailableContainer_,
+          appState_)]]">
     <div id="disclaimer">[[getDisclaimerText_()]]
       <a id="learnMoreLink" href="$i18n{compareLearnMoreUrl}"
           target="_blank" aria-label="$i18n{learnMoreA11yLabel}">

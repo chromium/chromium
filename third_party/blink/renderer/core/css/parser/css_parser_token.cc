@@ -137,31 +137,19 @@ CSSParserToken CSSParserToken::CopyWithUpdatedString(
 }
 
 bool CSSParserToken::ValueDataCharRawEqual(const CSSParserToken& other) const {
-  if (value_length_ != other.value_length_) {
-    return false;
-  }
-
   if (ValueDataCharRaw() == other.ValueDataCharRaw() &&
       value_is_8bit_ == other.value_is_8bit_) {
-    return true;
+    return value_length_ == other.value_length_;
   }
 
   if (value_is_8bit_) {
-    return other.value_is_8bit_
-               ? Equal(static_cast<const LChar*>(ValueDataCharRaw()),
-                       static_cast<const LChar*>(other.ValueDataCharRaw()),
-                       value_length_)
-               : Equal(static_cast<const LChar*>(ValueDataCharRaw()),
-                       static_cast<const UChar*>(other.ValueDataCharRaw()),
-                       value_length_);
+    const auto span = Span8();
+    return other.value_is_8bit_ ? span == other.Span8()
+                                : span == other.Span16();
   } else {
-    return other.value_is_8bit_
-               ? Equal(static_cast<const UChar*>(ValueDataCharRaw()),
-                       static_cast<const LChar*>(other.ValueDataCharRaw()),
-                       value_length_)
-               : Equal(static_cast<const UChar*>(ValueDataCharRaw()),
-                       static_cast<const UChar*>(other.ValueDataCharRaw()),
-                       value_length_);
+    const auto span = Span16();
+    return other.value_is_8bit_ ? span == other.Span8()
+                                : span == other.Span16();
   }
 }
 

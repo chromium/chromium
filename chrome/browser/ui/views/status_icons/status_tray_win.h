@@ -19,7 +19,7 @@ class StatusIconWin;
 // a task to a worker thread each time EnqueueChange is called.
 class StatusTrayStateChangerProxy {
  public:
-  virtual ~StatusTrayStateChangerProxy() {}
+  virtual ~StatusTrayStateChangerProxy() = default;
 
   // Called by StatusTrayWin to request upgraded visibility on the icon
   // represented by the |icon_id|, |window| pair.

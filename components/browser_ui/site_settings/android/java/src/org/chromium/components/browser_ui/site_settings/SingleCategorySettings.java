@@ -13,10 +13,8 @@ import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_V
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Browser;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -36,7 +34,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.Preference.OnPreferenceClickListener;
@@ -46,14 +43,12 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -180,7 +175,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private TriStatePermissionPreference mLocationTriStatePref;
     // The "desktop_site_window" preference to allow hiding/showing it.
     private ChromeBaseCheckBoxPreference mDesktopSiteWindowPref;
-    private CardPreference mCardPreference;
 
     @Nullable private Set<String> mSelectedDomains;
 
@@ -1624,23 +1618,5 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return false;
             }
         };
-    }
-
-    private void onOffboardingCardCloseClick() {
-        mCardPreference.setVisible(false);
-    }
-
-    private void openUrlInCct(String url) {
-        var customTabHelper = getCustomTabIntentHelper();
-        assert (customTabHelper != null) : "CCT helpers must be set before opening a link";
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                customTabHelper.createCustomTabActivityIntent(getContext(), customTabIntent.intent);
-        intent.setPackage(getContext().getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(getContext(), intent);
     }
 }

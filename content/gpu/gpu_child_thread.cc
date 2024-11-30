@@ -97,6 +97,8 @@ viz::VizMainImpl::ExternalDependencies CreateVizMainDependencies() {
     deps.scheduler = GetContentClient()->gpu()->GetScheduler();
     deps.viz_compositor_thread_runner =
         GetContentClient()->gpu()->GetVizCompositorThreadRunner();
+    deps.gr_context_options_provider =
+        GetContentClient()->gpu()->GetGrContextOptionsProvider();
   }
 #endif
 

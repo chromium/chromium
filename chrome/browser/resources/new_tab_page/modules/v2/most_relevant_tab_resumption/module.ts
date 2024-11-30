@@ -234,10 +234,7 @@ export class ModuleElement extends I18nMixinLit
   }
 
   protected computeDeviceName_(urlVisit: URLVisit): string|null {
-    return loadTimeData.getBoolean('modulesRedesignedEnabled') ?
-        urlVisit.sessionName :
-        this.i18n('modulesTabResumptionDevicePrefix') +
-            ` ${urlVisit.sessionName}`;
+    return urlVisit.sessionName;
   }
 
   protected computeShouldShowDeviceName_(urlVisit: URLVisit): boolean {

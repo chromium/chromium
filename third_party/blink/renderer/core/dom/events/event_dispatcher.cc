@@ -193,7 +193,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
     // path.
     return DispatchEventResult::kNotCanceled;
   }
-  std::unique_ptr<EventTiming> eventTiming;
+  std::optional<EventTiming> eventTiming;
   auto& document = node_->GetDocument();
   LocalFrame* frame = document.GetFrame();
   LocalDOMWindow* window = nullptr;
@@ -202,7 +202,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
   }
 
   if (frame && window) {
-    eventTiming = EventTiming::Create(window, *event_, event_->target());
+    eventTiming = EventTiming::TryCreate(window, *event_, event_->target());
   }
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&

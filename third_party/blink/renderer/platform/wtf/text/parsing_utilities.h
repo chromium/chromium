@@ -36,6 +36,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_PARSING_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_PARSING_UTILITIES_H_
 
+#include "base/containers/span.h"
+
 namespace WTF {
 
 template <typename CharType>
@@ -94,6 +96,14 @@ template <typename CharType, bool characterPredicate(CharType)>
 void SkipWhile(const CharType*& position, const CharType* end) {
   while (position < end && characterPredicate(*position))
     ++position;
+}
+
+template <typename CharType, bool predicate(CharType)>
+size_t SkipWhile(base::span<const CharType> chars, size_t position) {
+  while (position < chars.size() && predicate(chars[position])) {
+    ++position;
+  }
+  return position;
 }
 
 template <typename CharType, bool characterPredicate(CharType)>

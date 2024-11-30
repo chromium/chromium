@@ -81,8 +81,8 @@ Blob* PushMessageData::blob() const {
       BlobDataHandle::Create(std::move(blob_data), byte_length));
 }
 
-DOMUint8Array* PushMessageData::bytes() const {
-  return DOMUint8Array::Create(data_);
+NotShared<DOMUint8Array> PushMessageData::bytes() const {
+  return NotShared(DOMUint8Array::Create(data_));
 }
 
 ScriptValue PushMessageData::json(ScriptState* script_state) const {

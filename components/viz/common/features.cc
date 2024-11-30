@@ -13,7 +13,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -34,6 +33,7 @@ BASE_FEATURE(kAndroidBrowserControlsInViz,
              "AndroidBrowserControlsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If this flag is enabled, AndroidBrowserControlsInViz must also be enabled.
 BASE_FEATURE(kAndroidBcivBottomControls,
              "AndroidBcivBottomControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -58,7 +58,7 @@ BASE_FEATURE(kBackdropFilterMirrorEdgeMode,
 
 BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
              "UseDrmBlackFullscreenOptimization",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -75,7 +75,7 @@ BASE_FEATURE(kTemporalSkipOverlaysWithRootCopyOutputRequests,
 
 BASE_FEATURE(kUseMultipleOverlays,
              "UseMultipleOverlays",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -185,6 +185,13 @@ BASE_FEATURE(kWebViewEnableADPF,
 // this is a no-op.
 BASE_FEATURE(kWebViewEnableADPFRendererMain,
              "WebViewEnableADPFRendererMain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the GPU Main thread is included in the set of threads reported
+// to the HWUI. This feature works only when WebViewEnableADPF is enabled,
+// otherwise this is a no-op.
+BASE_FEATURE(kWebViewEnableADPFGpuMain,
+             "WebViewEnableADPFGpuMain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable WebView providing frame rate hints to View system.
@@ -469,13 +476,13 @@ BASE_FEATURE(kUse90HzSwapChainCountFor72fps,
              "Use90HzSwapChainCountFor72fps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Allows the display to seamlessly adjust the refresh rate in order to match
 // content preferences. ChromeOS only.
 BASE_FEATURE(kCrosContentAdjustedRefreshRate,
              "CrosContentAdjustedRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 int DrawQuadSplitLimit() {
   constexpr int kDefaultDrawQuadSplitLimit = 5;
@@ -627,7 +634,7 @@ int NumPendingFrameSupported() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsCrosContentAdjustedRefreshRateEnabled() {
   if (base::FeatureList::IsEnabled(kCrosContentAdjustedRefreshRate)) {
     if (base::FeatureList::IsEnabled(kUseFrameIntervalDecider)) {
@@ -640,7 +647,7 @@ bool IsCrosContentAdjustedRefreshRateEnabled() {
 
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 bool ShouldUseDCompSurfacesForDelegatedInk() {
@@ -658,6 +665,10 @@ bool ShouldUseDCompSurfacesForDelegatedInk() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+bool IsBcivBottomControlsEnabled() {
+  return base::FeatureList::IsEnabled(features::kAndroidBcivBottomControls);
+}
+
 bool IsBrowserControlsInVizEnabled() {
   return base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz);
 }

@@ -17,7 +17,7 @@ RelaunchRequiredTimer::RelaunchRequiredTimer(base::Time deadline,
   ScheduleNextTitleRefresh();
 }
 
-RelaunchRequiredTimer::~RelaunchRequiredTimer() {}
+RelaunchRequiredTimer::~RelaunchRequiredTimer() = default;
 
 void RelaunchRequiredTimer::ScheduleNextTitleRefresh() {
   // Refresh at the next second, minute, hour, or day boundary; depending on the

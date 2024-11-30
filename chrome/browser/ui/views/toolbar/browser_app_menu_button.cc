@@ -79,7 +79,7 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
   label()->SetSubpixelRenderingEnabled(false);
 }
 
-BrowserAppMenuButton::~BrowserAppMenuButton() {}
+BrowserAppMenuButton::~BrowserAppMenuButton() = default;
 
 void BrowserAppMenuButton::SetTypeAndSeverity(
     AppMenuIconController::TypeAndSeverity type_and_severity) {

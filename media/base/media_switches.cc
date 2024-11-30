@@ -114,6 +114,13 @@ const char kAudioCapturerWithEchoCancellation[] =
     "audio-capturer-with-echo-cancellation";
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+// Inserts fake background blur state into `VideoFrameMetadata`. The value
+// represents the period in milliseconds. eg. Setting it to 1000ms, will cause
+// the blur state to cycle between reporting ENABLED for 500ms and DISABLED for
+// 500ms.
+const char kFakeBackgroundBlurTogglePeriod[] =
+    "fake-background-blur-toggle-period";
+
 #if BUILDFLAG(USE_CRAS)
 // Use CRAS, the ChromeOS audio server.
 const char kUseCras[] = "use-cras";
@@ -777,7 +784,7 @@ BASE_FEATURE(kVaapiH264TemporalLayerHWEncoding,
 // encoder on ChromeOS.
 BASE_FEATURE(kVaapiH264SWBitrateController,
              "VaapiH264SWBitrateController",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable VP8 temporal layer encoding with HW encoder on ChromeOS.
 BASE_FEATURE(kVaapiVp8TemporalLayerHWEncoding,
              "VaapiVp8TemporalLayerEncoding",
@@ -1597,6 +1604,11 @@ BASE_FEATURE(kCastStreamingExponentialVideoBitrateAlgorithm,
              "CastStreamingExponentialVideoBitrateAlgorithm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/282984511): Remove after M151.
+BASE_FEATURE(kCastStreamingMediaVideoEncoder,
+             "CastStreamingMediaVideoEncoder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCastStreamingPerformanceOverlay,
              "CastStreamingPerformanceOverlay",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1695,11 +1707,6 @@ BASE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64,
              "MediaFoundationAcceleratedEncodeOnArm64",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-
-// Convert SharedBitmap to SharedImage for media resources.
-BASE_FEATURE(kMediaSharedBitmapToSharedImage,
-             "MediaSharedBitmapToSharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kMediaFoundationD3DVideoProcessing,

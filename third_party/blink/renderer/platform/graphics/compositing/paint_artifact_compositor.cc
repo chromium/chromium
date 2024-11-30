@@ -183,7 +183,7 @@ bool PaintArtifactCompositor::NeedsCompositedScrolling(
     const TransformPaintPropertyNode& scroll_translation) const {
   // This function needs painted_scroll_translations_ which is only available
   // during full update.
-  DCHECK(needs_update_);
+  DCHECK_EQ(needs_update_, UpdateType::kFull);
   DCHECK(scroll_translation.ScrollNode());
   if (scroll_translation.HasDirectCompositingReasons()) {
     return true;
@@ -481,11 +481,25 @@ bool NeedsFullUpdateAfterPaintingChunk(
 
 }  // namespace
 
-void PaintArtifactCompositor::SetNeedsFullUpdateAfterPaintIfNeeded(
+void PaintArtifactCompositor::SetNeedsUpdateInternal(UpdateType update_type) {
+  if ((update_type == UpdateType::kRasterInducingScroll &&
+       needs_update_ == UpdateType::kRepaint) ||
+      (update_type == UpdateType::kRepaint &&
+       needs_update_ == UpdateType::kRasterInducingScroll)) {
+    // Upgrade to kFull if we need both raster-inducing-scroll and repaint
+    // updates, which is rare.
+    needs_update_ = UpdateType::kFull;
+  } else {
+    needs_update_ = std::max(needs_update_, update_type);
+  }
+}
+
+void PaintArtifactCompositor::SetNeedsUpdateAfterRepaint(
     const PaintArtifact& previous,
     const PaintArtifact& repainted) {
-  if (needs_update_)
+  if (needs_update_ == UpdateType::kFull) {
     return;
+  }
 
   // Adding or removing chunks requires a full update to add/remove cc::layers.
   if (previous.GetPaintChunks().size() != repainted.GetPaintChunks().size()) {
@@ -502,6 +516,8 @@ void PaintArtifactCompositor::SetNeedsFullUpdateAfterPaintIfNeeded(
       return;
     }
   }
+
+  SetNeedsUpdateInternal(UpdateType::kRepaint);
 }
 
 bool PaintArtifactCompositor::HasComposited(
@@ -509,7 +525,8 @@ bool PaintArtifactCompositor::HasComposited(
   // |Update| creates PropertyTrees on the LayerTreeHost to represent the
   // composited page state. Check if it has created a property tree node for
   // the given |element_id|.
-  DCHECK(!NeedsUpdate()) << "This should only be called after an update";
+  DCHECK_EQ(needs_update_, UpdateType::kNone)
+      << "This should only be called after an update";
   return root_layer_->layer_tree_host()->property_trees()->HasElement(
       element_id);
 }
@@ -943,7 +960,7 @@ void PaintArtifactCompositor::Update(
     const StackScrollTranslationVector& scroll_translation_nodes,
     Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests) {
   // See: |UpdateRepaintedLayers| for repaint updates.
-  DCHECK(needs_update_);
+  DCHECK_EQ(needs_update_, UpdateType::kFull);
   DCHECK(root_layer_);
 
   TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");
@@ -1071,11 +1088,11 @@ void PaintArtifactCompositor::Update(
   // Mark the property trees as having been rebuilt.
   host->property_trees()->set_needs_rebuild(false);
   host->property_trees()->ResetCachedData();
-  previous_update_for_testing_ = PreviousUpdateType::kFull;
+  previous_update_for_testing_ = needs_update_;
 
   UpdateDebugInfo();
   painted_scroll_translations_.clear();
-  needs_update_ = false;
+  needs_update_ = UpdateType::kNone;
 
   g_s_property_tree_sequence_number++;
 
@@ -1096,45 +1113,60 @@ void PaintArtifactCompositor::Update(
                   .Utf8();
 }
 
-void PaintArtifactCompositor::UpdateRepaintedLayers(
+bool PaintArtifactCompositor::TryFastPathUpdate(
     const PaintArtifact& repainted_artifact) {
-  // |Update| should be used for full updates.
-  DCHECK(!needs_update_);
-
 #if DCHECK_IS_ON()
-  // Any property tree state change should have caused a full update.
-  for (const auto& chunk : repainted_artifact.GetPaintChunks()) {
-    // If this fires, a property tree value has changed but we are missing a
-    // call to |PaintArtifactCompositor::SetNeedsUpdate|.
-    DCHECK(!chunk.properties.Unalias().ChangedToRoot(
-        PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
+  if (needs_update_ != UpdateType::kFull) {
+    // Any property tree state change should have caused a full update.
+    for (const auto& chunk : repainted_artifact.GetPaintChunks()) {
+      // If this fires, a property tree value has changed but we are missing a
+      // call to |PaintArtifactCompositor::SetNeedsUpdate|.
+      DCHECK(!chunk.properties.Unalias().ChangedToRoot(
+          PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
+    }
   }
 #endif
 
-  cc::LayerSelection layer_selection;
-  for (auto& pending_layer : pending_layers_) {
-    pending_layer.UpdateCompositedLayerForRepaint(repainted_artifact,
-                                                  layer_selection);
+  switch (needs_update_) {
+    case UpdateType::kNone:
+      return true;
+    case UpdateType::kRasterInducingScroll: {
+      for (auto& pending_layer : pending_layers_) {
+        pending_layer.UpdateForRasterInducingScroll();
+      }
+      break;
+    }
+    case UpdateType::kRepaint: {
+      cc::LayerSelection layer_selection;
+      for (auto& pending_layer : pending_layers_) {
+        pending_layer.UpdateCompositedLayerForRepaint(repainted_artifact,
+                                                      layer_selection);
+      }
+      root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
+      UpdateDebugInfo();
+      break;
+    }
+    case UpdateType::kFull:
+      return false;
   }
-  root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
-  UpdateDebugInfo();
 
-  previous_update_for_testing_ = PreviousUpdateType::kRepaint;
-  needs_update_ = false;
+  previous_update_for_testing_ = needs_update_;
+  needs_update_ = UpdateType::kNone;
 
-  DVLOG(3) << "PaintArtifactCompositor::UpdateRepaintedLayers() done\n"
+  DVLOG(3) << "PaintArtifactCompositor::TryFastPathUpdate() done\n"
            << "Composited layers:\n"
            << GetLayersAsJSON(VLOG_IS_ON(3) ? 0xffffffff : 0)
                   ->ToPrettyJSONString()
                   .Utf8();
+  return true;
 }
 
 bool PaintArtifactCompositor::CanDirectlyUpdateProperties() const {
-  // Don't try to retrieve property trees if we need an update. The full
-  // update will update all of the nodes, so a direct update doesn't need to
-  // do anything.
-  if (needs_update_)
+  // Don't try to retrieve property trees if we need a full update which will
+  // update all of the nodes.
+  if (needs_update_ == UpdateType::kFull) {
     return false;
+  }
 
   return root_layer_ && root_layer_->layer_tree_host();
 }
@@ -1235,11 +1267,21 @@ bool PaintArtifactCompositor::UsesCompositedScrolling(
       *root_layer_->layer_tree_host(), scroll);
 }
 
+bool PaintArtifactCompositor::UsesRasterInducingScroll(
+    const ScrollPaintPropertyNode& scroll) const {
+  CHECK(root_layer_);
+  if (!root_layer_->layer_tree_host()) {
+    return false;
+  }
+  return PropertyTreeManager::UsesRasterInducingScroll(
+      *root_layer_->layer_tree_host(), scroll);
+}
+
 void PaintArtifactCompositor::SetLayerDebugInfoEnabled(bool enabled) {
   if (enabled == layer_debug_info_enabled_)
     return;
 
-  DCHECK(needs_update_);
+  DCHECK_EQ(needs_update_, UpdateType::kFull);
   layer_debug_info_enabled_ = enabled;
 
   if (enabled) {
@@ -1265,9 +1307,9 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
     cc::LayerDebugInfo& debug_info = layer.EnsureDebugInfo();
     debug_info.name = pending_layer.DebugName().Utf8();
     // GetCompositingReasons calls NeedsCompositedScrolling which is only
-    // available during full update. In repaint-only update, the original
+    // available during full update. In a fast-path update, the original
     // compositing reasons in debug_info will be kept.
-    if (needs_update_) {
+    if (needs_update_ == UpdateType::kFull) {
       auto compositing_reasons =
           GetCompositingReasons(pending_layer, previous_layer_state);
       debug_info.compositing_reasons =
@@ -1292,7 +1334,7 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
     const PendingLayer& layer,
     const PropertyTreeState& previous_layer_state) const {
   DCHECK(layer_debug_info_enabled_);
-  DCHECK(needs_update_);
+  DCHECK_EQ(needs_update_, UpdateType::kFull);
 
   if (layer.GetCompositingType() == PendingLayer::kScrollHitTestLayer) {
     return CompositingReason::kOverflowScrolling;

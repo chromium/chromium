@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/drag_and_drop_command.h"
@@ -299,26 +298,41 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
   }
 
   if (OperationForLoad(drag_data, local_root) != DragOperation::kNone) {
-    ResourceRequest resource_request(drag_data->AsURL());
-    resource_request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(
-        document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr));
+    Vector<String> urls;
+    if (base::FeatureList::IsEnabled(
+            blink::features::kOpenAllUrlsOrFilesOnDrop)) {
+      urls = drag_data->AsURLs();
+    } else {
+      urls.push_back(drag_data->AsURL());
+    }
+    bool has_transient_user_activation = LocalFrame::HasTransientUserActivation(
+        document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr);
+    bool should_focus_tab = true;
+    for (const String& url : urls) {
+      ResourceRequest resource_request(url);
+      resource_request.SetHasUserGesture(has_transient_user_activation);
 
-    // Use a unique origin to match other navigations that are initiated
-    // outside of a renderer process (e.g. omnibox navigations).  Here, the
-    // initiator of the navigation is a user dragging files from *outside* of
-    // the current page.  See also https://crbug.com/930049.
-    //
-    // TODO(crbug.com/331733543): Once supported, use the source of the drag as
-    // the initiator of the navigation below.
-    resource_request.SetRequestorOrigin(SecurityOrigin::CreateUniqueOpaque());
+      // Use a unique origin to match other navigations that are initiated
+      // outside of a renderer process (e.g. omnibox navigations).  Here, the
+      // initiator of the navigation is a user dragging files from *outside* of
+      // the current page.  See also https://crbug.com/930049.
+      //
+      // TODO(crbug.com/331733543): Once supported, use the source of the drag
+      // as the initiator of the navigation below.
+      resource_request.SetRequestorOrigin(SecurityOrigin::CreateUniqueOpaque());
 
-    FrameLoadRequest request(nullptr, resource_request);
+      FrameLoadRequest request(nullptr, resource_request);
 
-    // Open the dropped URL in a new tab to avoid potential data-loss in the
-    // current tab. See https://crbug.com/451659.
-    request.SetNavigationPolicy(
-        NavigationPolicy::kNavigationPolicyNewForegroundTab);
-    local_root.Navigate(request, WebFrameLoadType::kStandard);
+      // Open the dropped URL in a new tab to avoid potential data-loss in the
+      // current tab. See https://crbug.com/451659.
+      // First tab should be focused, the rest should be background tabs.
+      request.SetNavigationPolicy(
+          should_focus_tab
+              ? NavigationPolicy::kNavigationPolicyNewForegroundTab
+              : NavigationPolicy::kNavigationPolicyNewBackgroundTab);
+      local_root.Navigate(request, WebFrameLoadType::kStandard);
+      should_focus_tab = false;
+    }
   }
 
   document_under_mouse_ = nullptr;

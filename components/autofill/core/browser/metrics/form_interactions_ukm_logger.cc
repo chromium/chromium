@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -25,58 +26,53 @@ constexpr double kAutofillEventDataBucketSpacing = 2.0;
 
 }  // namespace
 
+bool ShouldRecordUkm() {
+  // We only need to generate this random number once while the current process
+  // is running.
+  static const int random_value_per_session = base::RandInt(0, 99);
+
+  const int kSamplingRate =
+      base::FeatureList::IsEnabled(
+          features::kAutofillLogUKMEventsWithSamplingOnSession)
+          ? features::kAutofillLogUKMEventsWithSamplingOnSessionRate.Get()
+          : 0;
+
+  return random_value_per_session < kSamplingRate;
+}
+
 FormInteractionsUkmLogger::FormInteractionsUkmLogger(
-    AutofillClient* autofill_client,
-    ukm::UkmRecorder* ukm_recorder)
-    : autofill_client_(autofill_client), ukm_recorder_(ukm_recorder) {}
-
-ukm::builders::Autofill_CreditCardFill
-FormInteractionsUkmLogger::CreateCreditCardFillBuilder() {
-  return ukm::builders::Autofill_CreditCardFill(GetSourceId());
-}
-
-void FormInteractionsUkmLogger::Record(
-    ukm::builders::Autofill_CreditCardFill&& builder) {
-  if (CanLog()) {
-    builder.Record(ukm_recorder_);
-  }
-}
-
-void FormInteractionsUkmLogger::OnFormsParsed(const ukm::SourceId source_id) {
-  if (!CanLog()) {
-    return;
-  }
-
-  source_id_ = source_id;
-}
+    AutofillClient* autofill_client)
+    : autofill_client_(CHECK_DEREF(autofill_client)) {}
 
 void FormInteractionsUkmLogger::LogInteractedWithForm(
+    ukm::SourceId ukm_source_id,
     bool is_for_credit_card,
     size_t local_record_type_count,
     size_t server_record_type_count,
     FormSignature form_signature) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
-  ukm::builders::Autofill_InteractedWithForm(GetSourceId())
+  ukm::builders::Autofill_InteractedWithForm(ukm_source_id)
       .SetIsForCreditCard(is_for_credit_card)
       .SetLocalRecordTypeCount(local_record_type_count)
       .SetServerRecordTypeCount(server_record_type_count)
       .SetFormSignature(HashFormSignature(form_signature))
-      .Record(ukm_recorder_);
+      .Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::LogSuggestionsShown(
+    ukm::SourceId ukm_source_id,
     const FormStructure& form,
     const AutofillField& field,
     base::TimeTicks form_parsed_timestamp,
     bool off_the_record) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
-  ukm::builders::Autofill_SuggestionsShown(GetSourceId())
+  ukm::builders::Autofill_SuggestionsShown(ukm_source_id)
       .SetHeuristicType(static_cast<int>(field.heuristic_type()))
       .SetHtmlFieldType(static_cast<int>(field.html_type()))
       .SetServerType(static_cast<int>(field.server_type()))
@@ -84,21 +80,22 @@ void FormInteractionsUkmLogger::LogSuggestionsShown(
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form_parsed_timestamp))
-      .Record(ukm_recorder_);
+      .Record(autofill_client_->GetUkmRecorder());
 
   base::UmaHistogramBoolean("Autofill.SuggestionShown.OffTheRecord",
                             off_the_record);
 }
 
 void FormInteractionsUkmLogger::LogDidFillSuggestion(
+    ukm::SourceId ukm_source_id,
     const FormStructure& form,
     const AutofillField& field,
     std::optional<CreditCard::RecordType> record_type) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
-  auto metric = ukm::builders::Autofill_SuggestionFilled(GetSourceId());
+  auto metric = ukm::builders::Autofill_SuggestionFilled(ukm_source_id);
   if (record_type) {
     metric.SetRecordType(base::to_underlying(*record_type));
   }
@@ -107,31 +104,33 @@ void FormInteractionsUkmLogger::LogDidFillSuggestion(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .Record(ukm_recorder_);
+      .Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::LogEditedAutofilledFieldAtSubmission(
+    ukm::SourceId ukm_source_id,
     const FormStructure& form,
     const AutofillField& field) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
-  ukm::builders::Autofill_EditedAutofilledFieldAtSubmission(GetSourceId())
+  ukm::builders::Autofill_EditedAutofilledFieldAtSubmission(ukm_source_id)
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetOverallType(static_cast<int64_t>(field.Type().GetStorableType()))
-      .Record(ukm_recorder_);
+      .Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::LogTextFieldDidChange(
+    ukm::SourceId ukm_source_id,
     const FormStructure& form,
     const AutofillField& field) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
-  ukm::builders::Autofill_TextFieldDidChange(GetSourceId())
+  ukm::builders::Autofill_TextFieldDidChange(ukm_source_id)
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetFieldTypeGroup(static_cast<int>(field.Type().group()))
@@ -143,18 +142,19 @@ void FormInteractionsUkmLogger::LogTextFieldDidChange(
       .SetIsEmpty(field.value(ValueSemantics::kCurrent).empty())
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
-      .Record(ukm_recorder_);
+      .Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::LogFieldFillStatus(
+    ukm::SourceId ukm_source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
-  ukm::builders::Autofill_FieldFillStatus(GetSourceId())
+  ukm::builders::Autofill_FieldFillStatus(ukm_source_id)
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
@@ -163,12 +163,13 @@ void FormInteractionsUkmLogger::LogFieldFillStatus(
       .SetIsAutofilled(static_cast<int64_t>(field.is_autofilled()))
       .SetWasPreviouslyAutofilled(
           static_cast<int64_t>(field.previously_autofilled()))
-      .Record(ukm_recorder_);
+      .Record(autofill_client_->GetUkmRecorder());
 }
 
 // TODO(szhangcs): Take FormStructure and AutofillField and extract
 // FormSignature and TimeTicks inside the function.
 void FormInteractionsUkmLogger::LogFieldType(
+    ukm::SourceId ukm_source_id,
     base::TimeTicks form_parsed_timestamp,
     FormSignature form_signature,
     FieldSignature field_signature,
@@ -176,11 +177,11 @@ void FormInteractionsUkmLogger::LogFieldType(
     QualityMetricType metric_type,
     FieldType predicted_type,
     FieldType actual_type) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
-  ukm::builders::Autofill_FieldTypeValidation(GetSourceId())
+  ukm::builders::Autofill_FieldTypeValidation(ukm_source_id)
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form_parsed_timestamp))
       .SetFormSignature(HashFormSignature(form_signature))
@@ -189,14 +190,15 @@ void FormInteractionsUkmLogger::LogFieldType(
       .SetPredictionSource(static_cast<int64_t>(prediction_source))
       .SetPredictedType(static_cast<int64_t>(predicted_type))
       .SetActualType(static_cast<int64_t>(actual_type))
-      .Record(ukm_recorder_);
+      .Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
+    ukm::SourceId ukm_source_id,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::AutocompleteState autocomplete_state) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
@@ -373,9 +375,8 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
         case HeuristicSource::kExperimentalRegexes:
           heuristic_experimental_type = event->field_type;
           break;
-        case HeuristicSource::kPredictionImprovementRegexes:
-          // Prediction improvements are currently ignored for Autofill based
-          // UKM logging.
+        case HeuristicSource::kAutofillAiRegexes:
+          // AutofillAi is currently ignored for Autofill based UKM logging.
           break;
 #endif
         case HeuristicSource::kAutofillMachineLearning:
@@ -423,7 +424,7 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
                           has_value_after_typing == OptionalBoolean::kTrue);
   }
 
-  ukm::builders::Autofill2_FieldInfo builder(GetSourceId());
+  ukm::builders::Autofill2_FieldInfo builder(ukm_source_id);
   builder
       .SetFormSessionIdentifier(
           AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id()))
@@ -533,22 +534,23 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
   static_assert(autofill_status_vector.data().size() == 1U);
   builder.SetAutofillStatusVector(autofill_status_vector.data()[0]);
 
-  builder.Record(ukm_recorder_);
+  builder.Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::LogAutofillFormSummaryAtFormRemove(
+    ukm::SourceId ukm_source_id,
     const FormStructure& form_structure,
     FormEventSet form_events,
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks form_submitted_timestamp) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
   static_assert(form_events.data().size() == 2U,
                 "If you add a new form event, you need to create a new "
                 "AutofillFormEvents metric in Autofill2.FormSummary");
-  ukm::builders::Autofill2_FormSummary builder(GetSourceId());
+  ukm::builders::Autofill2_FormSummary builder(ukm_source_id);
   builder
       .SetFormSessionIdentifier(
           AutofillMetrics::FormGlobalIdToHash64Bit(form_structure.global_id()))
@@ -575,13 +577,14 @@ void FormInteractionsUkmLogger::LogAutofillFormSummaryAtFormRemove(
             (form_submitted_timestamp - initial_interaction_timestamp)
                 .InMilliseconds()));
   }
-  builder.Record(ukm_recorder_);
+  builder.Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::
     LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
+        ukm::SourceId ukm_source_id,
         const FormStructure& form_structure) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
@@ -589,19 +592,18 @@ void FormInteractionsUkmLogger::
   std::array<int, 5> num_experimental_fields = {0, 0, 0, 0, 0};
 
   // Build icu::RegexPattern* from experiment parameters.
-  static base::NoDestructor<AutofillRegexCache> regex_cache(ThreadSafe(false));
-  auto compile_pattern =
-      [](const std::string& pattern) -> const icu::RegexPattern* {
-    return pattern.empty()
-               ? nullptr
-               : regex_cache->GetRegexPattern(base::UTF8ToUTF16(pattern));
+  auto compile_regex = [](std::string_view regex) {
+    return regex.empty() ? nullptr : CompileRegex(base::UTF8ToUTF16(regex));
   };
-  std::array<const icu::RegexPattern*, 5> kRegexPatterns = {
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket0.Get()),
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket1.Get()),
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket2.Get()),
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket3.Get()),
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket4.Get())};
+  static base::NoDestructor<
+      std::array<std::unique_ptr<const icu::RegexPattern>, 5>>
+      kRegexPatterns{{
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket0.Get()),
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket1.Get()),
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket2.Get()),
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket3.Get()),
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket4.Get()),
+      }};
 
   // Determine whether `pattern` matches `value`.
   auto matches = [](const std::u16string& value,
@@ -613,8 +615,8 @@ void FormInteractionsUkmLogger::
   // matched.
   auto count_experimental_field = [&](const AutofillField& field) {
     bool found_experimental_fields = false;
-    for (size_t i = 0; i < kRegexPatterns.size(); ++i) {
-      const icu::RegexPattern* pattern = kRegexPatterns[i];
+    for (size_t i = 0; i < kRegexPatterns->size(); ++i) {
+      const icu::RegexPattern* pattern = (*kRegexPatterns)[i].get();
       if (pattern && (matches(field.label(), *pattern) ||
                       matches(field.id_attribute(), *pattern) ||
                       matches(field.name_attribute(), *pattern))) {
@@ -660,7 +662,7 @@ void FormInteractionsUkmLogger::
   // Report the results.
   if (found_experimental_fields) {
     ukm::builders::Autofill2_SubmittedFormWithExperimentalFields builder(
-        GetSourceId());
+        ukm_source_id);
     builder
         .SetFormSessionIdentifier(AutofillMetrics::FormGlobalIdToHash64Bit(
             form_structure.global_id()))
@@ -685,21 +687,22 @@ void FormInteractionsUkmLogger::
       builder.SetNumberOfNonEmptyExperimentalFields4(
           num_experimental_fields[4]);
     }
-    builder.Record(ukm_recorder_);
+    builder.Record(autofill_client_->GetUkmRecorder());
   }
 }
 
 void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
+    ukm::SourceId ukm_source_id,
     const FormStructure& form_structure,
     FormEventSet form_events,
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks form_submitted_timestamp) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
   DenseSet<FormTypeNameForLogging> form_type_names_for_logging =
-      autofill_metrics::GetFormTypesForLogging(form_structure);
+      GetFormTypesForLogging(form_structure);
 
   // To save bandwidth, only forms are reported that are a
   // kPostalAddressForm or a kCreditCardForm.
@@ -809,7 +812,7 @@ void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
     return;
   }
 
-  ukm::builders::Autofill2_FocusedComplexForm builder(GetSourceId());
+  ukm::builders::Autofill2_FocusedComplexForm builder(ukm_source_id);
   builder
       .SetFormSessionIdentifier(
           AutofillMetrics::FormGlobalIdToHash64Bit(form_structure.global_id()))
@@ -846,18 +849,19 @@ void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
         ablation_group_of_conditional_ablation.data()[0]);
   }
 
-  builder.Record(ukm_recorder_);
+  builder.Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::LogHiddenRepresentationalFieldSkipDecision(
+    ukm::SourceId ukm_source_id,
     const FormStructure& form,
     const AutofillField& field,
     bool is_skipped) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
-  ukm::builders::Autofill_HiddenRepresentationalFieldSkipDecision(GetSourceId())
+  ukm::builders::Autofill_HiddenRepresentationalFieldSkipDecision(ukm_source_id)
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetFieldTypeGroup(static_cast<int>(field.Type().group()))
@@ -867,17 +871,11 @@ void FormInteractionsUkmLogger::LogHiddenRepresentationalFieldSkipDecision(
       .SetHtmlFieldType(static_cast<int>(field.html_type()))
       .SetHtmlFieldMode(static_cast<int>(field.html_mode()))
       .SetIsSkipped(is_skipped)
-      .Record(ukm_recorder_);
-}
-
-ukm::SourceId FormInteractionsUkmLogger::GetSourceId() {
-  if (!source_id_.has_value()) {
-    source_id_ = autofill_client_->GetUkmSourceId();
-  }
-  return *source_id_;
+      .Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::LogKeyMetrics(
+    ukm::SourceId ukm_source_id,
     const DenseSet<FormTypeNameForLogging>& form_types,
     bool data_to_fill_available,
     bool suggestions_shown,
@@ -886,11 +884,11 @@ void FormInteractionsUkmLogger::LogKeyMetrics(
     const FormInteractionCounts& form_interaction_counts,
     const FormInteractionsFlowId& flow_id,
     std::optional<int64_t> fast_checkout_run_id) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
-  ukm::builders::Autofill_KeyMetrics builder(GetSourceId());
+  ukm::builders::Autofill_KeyMetrics builder(ukm_source_id);
   builder.SetFillingReadiness(data_to_fill_available)
       .SetFillingAssistance(suggestion_filled)
       .SetFormTypes(AutofillMetrics::FormTypesToBitVector(form_types))
@@ -909,14 +907,15 @@ void FormInteractionsUkmLogger::LogKeyMetrics(
     builder.SetFillingCorrectness(!edited_autofilled_field);
   }
 
-  builder.Record(ukm_recorder_);
+  builder.Record(autofill_client_->GetUkmRecorder());
 }
 
 void FormInteractionsUkmLogger::LogFormEvent(
-    autofill_metrics::FormEvent form_event,
+    ukm::SourceId ukm_source_id,
+    FormEvent form_event,
     const DenseSet<FormTypeNameForLogging>& form_types,
     base::TimeTicks form_parsed_timestamp) {
-  if (!CanLog()) {
+  if (!CanLog(ukm_source_id)) {
     return;
   }
 
@@ -924,16 +923,17 @@ void FormInteractionsUkmLogger::LogFormEvent(
     return;
   }
 
-  ukm::builders::Autofill_FormEvent builder(GetSourceId());
+  ukm::builders::Autofill_FormEvent builder(ukm_source_id);
   builder.SetAutofillFormEvent(static_cast<int>(form_event))
       .SetFormTypes(AutofillMetrics::FormTypesToBitVector(form_types))
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form_parsed_timestamp))
-      .Record(ukm_recorder_);
+      .Record(autofill_client_->GetUkmRecorder());
 }
 
-bool FormInteractionsUkmLogger::CanLog() const {
-  return ukm_recorder_ != nullptr;
+bool FormInteractionsUkmLogger::CanLog(ukm::SourceId ukm_source_id) const {
+  return autofill_client_->GetUkmRecorder() != nullptr &&
+         ukm_source_id != ukm::kInvalidSourceId;
 }
 
 int64_t FormInteractionsUkmLogger::MillisecondsSinceFormParsed(
@@ -948,17 +948,15 @@ int64_t FormInteractionsUkmLogger::MillisecondsSinceFormParsed(
       kAutofillEventDataBucketSpacing);
 }
 
-UkmTimestampPin::UkmTimestampPin(
-    autofill_metrics::FormInteractionsUkmLogger* logger)
-    : logger_(logger) {
-  DCHECK(logger_);
-  DCHECK(!logger_->has_pinned_timestamp());
-  logger_->set_pinned_timestamp(base::TimeTicks::Now());
+UkmTimestampPin::UkmTimestampPin(FormInteractionsUkmLogger* logger)
+    : logger_(*logger) {
+  DCHECK(!logger_->has_pinned_timestamp(/*pass_key=*/{}));
+  logger_->set_pinned_timestamp(base::TimeTicks::Now(), /*pass_key=*/{});
 }
 
 UkmTimestampPin::~UkmTimestampPin() {
-  DCHECK(logger_->has_pinned_timestamp());
-  logger_->set_pinned_timestamp(base::TimeTicks());
+  DCHECK(logger_->has_pinned_timestamp(/*pass_key=*/{}));
+  logger_->set_pinned_timestamp(base::TimeTicks(), /*pass_key=*/{});
 }
 
 int64_t GetSemanticBucketMinForAutofillDurationTiming(int64_t sample) {

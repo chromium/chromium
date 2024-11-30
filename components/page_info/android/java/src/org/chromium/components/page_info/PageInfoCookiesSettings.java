@@ -49,7 +49,13 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private boolean mDataUsed;
     private CharSequence mHostName;
     private RwsCookieInfo mRwsInfo;
+    private boolean mIsModeBUi;
+    private boolean mBlockAll3pc;
+    private boolean mIsIncognito;
     private PageInfoControllerDelegate mPageInfoControllerDelegate;
+    // Sets a constant # of days until expiration to prevent test flakiness.
+    private boolean mFixedExpirationForTesting;
+    private int mDaysUntilExpirationForTesting;
 
     /** Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -64,6 +70,9 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         // Block all third-party cookies when Tracking Protection is on.
         public boolean blockAll3pc;
         public boolean isIncognito;
+        public boolean isModeBUi;
+        public boolean fixedExpirationForTesting;
+        public int daysUntilExpirationForTesting;
     }
 
     @Override
@@ -96,6 +105,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     public void setParams(PageInfoCookiesViewParams params) {
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
+        mFixedExpirationForTesting = params.fixedExpirationForTesting;
+        mBlockAll3pc = params.blockAll3pc;
+        mIsIncognito = params.isIncognito;
+        mIsModeBUi = params.isModeBUi;
+        mDaysUntilExpirationForTesting = params.daysUntilExpirationForTesting;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         ClickableSpan linkSpan =
                 new ClickableSpan() {
@@ -104,9 +118,25 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         mOnCookieSettingsLinkClicked.run();
                     }
                 };
+
+        int summaryString;
+        if (!mIsModeBUi) {
+            // Pre Mode B description: "Cookies and other site data are used to remember you..."
+            summaryString = R.string.page_info_cookies_description;
+        } else if (mIsIncognito) {
+            // Description of chrome blocking sites: "Chrome blocks sites..."
+            summaryString =
+                    R.string.page_info_tracking_protection_incognito_blocked_cookies_description;
+        } else if (mBlockAll3pc) {
+            // Description of user blocking sites: "You blocked sites..."
+            summaryString = R.string.page_info_tracking_protection_blocked_cookies_description;
+        } else {
+            // Description of Chrome limiting cookies: "Chrome limits most sites...""
+            summaryString = R.string.page_info_tracking_protection_description;
+        }
         cookieSummary.setSummary(
                 SpanApplier.applySpans(
-                        getString(R.string.page_info_cookies_description),
+                        getString(summaryString),
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
 
         // TODO(crbug.com/40129299): Set a ManagedPreferenceDelegate?
@@ -233,7 +263,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             getString(resId),
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
-            int days = calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
+            int days =
+                    mFixedExpirationForTesting
+                            ? mDaysUntilExpirationForTesting
+                            : calculateDaysUntilExpiration(
+                                    TimeUtils.currentTimeMillis(), expiration);
             updateThirdPartyCookiesTitleTemporary(days);
             int resId = R.string.page_info_cookies_send_feedback_description;
             mThirdPartyCookiesSummary.setSummary(
@@ -335,13 +369,21 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     private void updateThirdPartyCookiesTitleTemporary(int days) {
-        mThirdPartyCookiesTitle.setTitle(
-                days == 0
-                        ? getString(R.string.page_info_cookies_blocking_restart_today_title)
-                        : getQuantityString(
-                                R.plurals
-                                        .page_info_cookies_blocking_restart_tracking_protection_title,
-                                days));
+        if (mBlockAll3pc || mIsIncognito || !mIsModeBUi) {
+            mThirdPartyCookiesTitle.setTitle(
+                    days == 0
+                            ? getString(R.string.page_info_cookies_blocking_restart_today_title)
+                            : getQuantityString(
+                                    R.plurals
+                                            .page_info_cookies_blocking_restart_tracking_protection_title,
+                                    days));
+        } else {
+            mThirdPartyCookiesTitle.setTitle(
+                    days == 0
+                            ? getString(R.string.page_info_cookies_limiting_restart_today_title)
+                            : getQuantityString(
+                                    R.plurals.page_info_cookies_limiting_restart_title, days));
+        }
     }
 
     private boolean willCreatePermanentException() {

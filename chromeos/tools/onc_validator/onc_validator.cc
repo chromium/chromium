@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/components/onc/onc_validator.h"
+
 #include <stddef.h>
 
 #include <cstdio>
@@ -13,9 +15,9 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
-#include "chromeos/components/onc/onc_validator.h"
 
 // TODO Check why this file do not fail on default trybots
 // http://crbug.com/543919
@@ -167,6 +169,6 @@ int main(int argc, const char* argv[]) {
     case chromeos::onc::Validator::INVALID:
       return kStatusInvalid;
     default:
-      CHECK(false);
+      NOTREACHED();
   }
 }

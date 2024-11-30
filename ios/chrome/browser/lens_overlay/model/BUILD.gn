@@ -32,9 +32,50 @@ source_set("model") {
     "//ui/base",
   ]
   public_deps = [
+    ":configuration_factory",
     ":detent_state_header",
+    ":detents_manager",
+    ":overflow_menu_factory",
     "//base",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+  ]
+}
+
+source_set("overflow_menu_factory") {
+  sources = [
+    "lens_overlay_overflow_menu_factory.h",
+    "lens_overlay_overflow_menu_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/menu/ui_bundled",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+    "//url",
+  ]
+  public_deps = [ ":detent_state_header" ]
+}
+
+source_set("configuration_factory") {
+  sources = [
+    "lens_overlay_configuration_factory.h",
+    "lens_overlay_configuration_factory.mm",
+  ]
+  deps = [
+    ":entrypoint",
+    "//base",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ui/base",
+    "//url",
   ]
 }
 
@@ -99,12 +140,12 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/variations",
     "//components/variations:test_support",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/coordinator:test_support",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/test:test_support",
     "//ios/testing:ocmock_support",
     "//ios/web/public/test",

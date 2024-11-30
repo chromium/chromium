@@ -101,31 +101,6 @@ const AccountId& User::GetAccountId() const {
   return account_id_;
 }
 
-void User::UpdateType(UserType new_type) {
-  // Can only change between regular and child.
-  if ((type_ == user_manager::UserType::kChild ||
-       type_ == user_manager::UserType::kRegular) &&
-      (new_type == user_manager::UserType::kChild ||
-       new_type == user_manager::UserType::kRegular)) {
-    // We want all the other type changes to crash, that is why this check is
-    // not at the top level.
-    if (type_ == new_type) {
-      return;
-    }
-
-    LOG(WARNING) << "User type has changed: " << type_ << " -> " << new_type;
-    type_ = new_type;
-
-    UMAUserTypeChanged(new_type == user_manager::UserType::kChild
-                           ? UserTypeChangeHistogram::REGULAR_TO_CHILD
-                           : UserTypeChangeHistogram::CHILD_TO_REGULAR);
-    return;
-  }
-
-  UMAUserTypeChanged(UserTypeChangeHistogram::UNKNOWN_FATAL);
-  LOG(FATAL) << "Unsupported user type change " << type_ << "=>" << new_type;
-}
-
 bool User::HasGaiaAccount() const {
   return TypeHasGaiaAccount(GetType());
 }
@@ -311,6 +286,31 @@ void User::SetImage(std::unique_ptr<UserImage> user_image, int image_index) {
 
 void User::SetImageURL(const GURL& image_url) {
   user_image_->set_url(image_url);
+}
+
+void User::SetType(UserType new_type) {
+  // Can only change between regular and child.
+  if ((type_ == user_manager::UserType::kChild ||
+       type_ == user_manager::UserType::kRegular) &&
+      (new_type == user_manager::UserType::kChild ||
+       new_type == user_manager::UserType::kRegular)) {
+    // We want all the other type changes to crash, that is why this check is
+    // not at the top level.
+    if (type_ == new_type) {
+      return;
+    }
+
+    LOG(WARNING) << "User type has changed: " << type_ << " -> " << new_type;
+    type_ = new_type;
+
+    UMAUserTypeChanged(new_type == user_manager::UserType::kChild
+                           ? UserTypeChangeHistogram::REGULAR_TO_CHILD
+                           : UserTypeChangeHistogram::CHILD_TO_REGULAR);
+    return;
+  }
+
+  UMAUserTypeChanged(UserTypeChangeHistogram::UNKNOWN_FATAL);
+  LOG(FATAL) << "Unsupported user type change " << type_ << "=>" << new_type;
 }
 
 void User::SetStubImage(std::unique_ptr<UserImage> stub_user_image,

@@ -10,8 +10,7 @@ wtf_size_t ByteBufferQueue::ReadInto(base::span<uint8_t> buffer_out) {
   wtf_size_t read_amount = 0;
   while (!buffer_out.empty() && !deque_of_buffers_.empty()) {
     base::span<const uint8_t> front_buffer =
-        base::make_span(deque_of_buffers_.front())
-            .subspan(front_buffer_offset_);
+        base::span(deque_of_buffers_.front()).subspan(front_buffer_offset_);
     DCHECK_GT(front_buffer.size(), 0u);
     wtf_size_t buffer_read_amount =
         std::min(static_cast<wtf_size_t>(buffer_out.size()),

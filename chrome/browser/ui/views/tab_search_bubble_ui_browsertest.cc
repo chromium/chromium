@@ -109,7 +109,7 @@ class TabSearchBubbleUIBrowserTest : public DialogBrowserTest {
  private:
 #if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kSkiaFontService};
+      features::kFontDataService};
 #endif
 };
 

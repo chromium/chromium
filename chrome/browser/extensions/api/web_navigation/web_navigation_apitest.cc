@@ -260,7 +260,7 @@ class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class WebNavigationApiTestWithContextType
     : public WebNavigationApiTest,

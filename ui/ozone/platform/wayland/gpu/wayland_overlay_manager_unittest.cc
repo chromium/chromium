@@ -25,7 +25,6 @@ namespace ui {
 namespace {
 
 constexpr gfx::AcceleratedWidget kPrimaryWidget = 1;
-constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
 
 OverlaySurfaceCandidate CreateCandidate(const gfx::Rect& rect,
                                         int plane_z_order) {
@@ -59,13 +58,13 @@ class WaylandOverlayManagerTest : public WaylandTest {
     WaylandTest::SetUp();
 
     auto manager_ptr = connection_->buffer_manager_host()->BindInterface();
-    buffer_manager_gpu_->Initialize(
-        std::move(manager_ptr), kSupportedFormatsWithModifiers,
-        /*supports_dma_buf=*/false,
-        /*supports_viewporter=*/true,
-        /*supports_acquire_fence=*/false,
-        /*supports_overlays=*/true, kAugmentedSurfaceNotSupportedVersion,
-        /*supports_single_pixel_buffer=*/true);
+    buffer_manager_gpu_->Initialize(std::move(manager_ptr),
+                                    kSupportedFormatsWithModifiers,
+                                    /*supports_dma_buf=*/false,
+                                    /*supports_viewporter=*/true,
+                                    /*supports_acquire_fence=*/false,
+                                    /*supports_overlays=*/true,
+                                    /*supports_single_pixel_buffer=*/true);
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();
@@ -140,19 +139,6 @@ void NonIntegerDisplayRectTestHelper(WaylandBufferManagerGpu* manager_gpu,
 }  // namespace
 
 TEST_P(WaylandOverlayManagerTest, DoesNotSupportNonIntegerDisplayRect) {
-  constexpr std::array<std::array<bool, 2>, 2> test_data = {
-      {{false, false}, {true, false}}};
-  for (const auto& data : test_data) {
-    NonIntegerDisplayRectTestHelper(buffer_manager_gpu_.get(),
-                                    data[0] /* is_delegated_context */,
-                                    data[1] /* expect_candidates_handled */);
-  }
-}
-
-TEST_P(WaylandOverlayManagerTest, SupportsNonIntegerDisplayRect) {
-  // WaylandBufferManagerGpu manager_gpu;
-  buffer_manager_gpu_->supports_subpixel_accurate_position_ = true;
-
   constexpr std::array<std::array<bool, 2>, 2> test_data = {
       {{false, false}, {true, false}}};
   for (const auto& data : test_data) {

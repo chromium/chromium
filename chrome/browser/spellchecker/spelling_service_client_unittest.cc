@@ -60,7 +60,7 @@ class TestingSpellingServiceClient : public SpellingServiceClient {
                 &test_url_loader_factory_)) {
     SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
   }
-  ~TestingSpellingServiceClient() {}
+  ~TestingSpellingServiceClient() = default;
 
   void SetExpectedTextCheckResult(bool success,
                                   const std::string& sanitized_request_text,

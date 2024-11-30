@@ -481,17 +481,6 @@ CORE_EXPORT ScriptState* ToScriptStateForMainWorld(LocalFrame*);
 // a context, if the window is currently being displayed in a Frame.
 CORE_EXPORT LocalFrame* ToLocalFrameIfNotDetached(v8::Local<v8::Context>);
 
-CORE_EXPORT bool IsValidEnum(const String& value,
-                             const char* const* valid_values,
-                             size_t length,
-                             const String& enum_name,
-                             ExceptionState&);
-CORE_EXPORT bool IsValidEnum(const Vector<String>& values,
-                             const char* const* valid_values,
-                             size_t length,
-                             const String& enum_name,
-                             ExceptionState&);
-
 CORE_EXPORT v8::Local<v8::Value> FromJSONString(ScriptState* script_state,
                                                 const String& stringified_json);
 

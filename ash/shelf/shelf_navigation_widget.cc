@@ -26,13 +26,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -124,8 +124,9 @@ class BoundsAnimationReporter : public gfx::AnimationDelegate {
  public:
   BoundsAnimationReporter(views::View* view,
                           metrics_util::ReportCallback report_callback)
-      : tracker_(
-            view->GetWidget()->GetCompositor()->RequestNewThroughputTracker()) {
+      : tracker_(view->GetWidget()
+                     ->GetCompositor()
+                     ->RequestNewCompositorMetricsTracker()) {
     tracker_.Start(std::move(report_callback));
   }
   BoundsAnimationReporter(const BoundsAnimationReporter& other) = delete;
@@ -258,7 +259,6 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
 
   // views::View:
   FocusTraversable* GetPaneFocusTraversable() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::AccessiblePaneView:
   View* GetDefaultFocusableChild() override;
@@ -275,9 +275,9 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
     default_last_focusable_child_ = default_last_focusable_child;
   }
 
- private:
-  void RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf);
+  void RefreshAccessibilityWidgetNextPreviousFocus(Shelf* shelf);
 
+ private:
   raw_ptr<BackButton> back_button_ = nullptr;
   raw_ptr<HomeButton> home_button_ = nullptr;
   // When true, the default focus of the navigation widget is the last
@@ -319,7 +319,7 @@ ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
-  RefreshAccessibilityWidgetNextPreviousFocus(shelf->shelf_widget());
+  RefreshAccessibilityWidgetNextPreviousFocus(shelf);
 }
 
 ShelfNavigationWidget::Delegate::~Delegate() = default;
@@ -335,21 +335,20 @@ ShelfNavigationWidget::Delegate::GetPaneFocusTraversable() {
   return this;
 }
 
-void ShelfNavigationWidget::Delegate::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  RefreshAccessibilityWidgetNextPreviousFocus(
-      Shelf::ForWindow(GetWidget()->GetNativeWindow())->shelf_widget());
-}
-
 views::View* ShelfNavigationWidget::Delegate::GetDefaultFocusableChild() {
   return default_last_focusable_child_ ? GetLastFocusableChild()
                                        : GetFirstFocusableChild();
 }
 
 void ShelfNavigationWidget::Delegate::
-    RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf) {
-  GetViewAccessibility().SetNextFocus(shelf->hotseat_widget());
-  GetViewAccessibility().SetPreviousFocus(shelf->status_area_widget());
+    RefreshAccessibilityWidgetNextPreviousFocus(Shelf* shelf) {
+  if (!shelf || !shelf->shelf_widget()) {
+    return;
+  }
+
+  GetViewAccessibility().SetNextFocus(shelf->shelf_widget()->hotseat_widget());
+  GetViewAccessibility().SetPreviousFocus(
+      shelf->shelf_widget()->status_area_widget());
 }
 
 ShelfNavigationWidget::TestApi::TestApi(ShelfNavigationWidget* widget)
@@ -607,6 +606,8 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
 
   back_button->SetBoundsRect(GetFirstButtonBounds(
       shelf_->IsHorizontalAlignment(), back_button->GetPreferredSize()));
+
+  delegate_->RefreshAccessibilityWidgetNextPreviousFocus(shelf_);
 }
 
 void ShelfNavigationWidget::UpdateTargetBoundsForGesture(int shelf_position) {

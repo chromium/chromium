@@ -106,6 +106,16 @@ bool GlobalShortcutListener::IsShortcutHandlingSuspended() const {
   return shortcut_handling_suspended_;
 }
 
+bool GlobalShortcutListener::IsRegistrationHandledExternally() const {
+  return false;
+}
+
+void GlobalShortcutListener::OnCommandsChanged(
+    const ExtensionId& extension_id,
+    const std::string& profile_id,
+    const extensions::CommandMap& commands,
+    Observer* observer) {}
+
 void GlobalShortcutListener::NotifyKeyPressed(
     const ui::Accelerator& accelerator) {
   auto iter = accelerator_map_.find(accelerator);

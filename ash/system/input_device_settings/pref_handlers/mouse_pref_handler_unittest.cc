@@ -826,7 +826,7 @@ TEST_F(MousePrefHandlerTest, DefaultNotPersistedUntilUpdated) {
   CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
 }
 
-TEST_F(MousePrefHandlerTest, NewMouse_ManagedEnterprisePolicy_GetsDefaults) {
+TEST_F(MousePrefHandlerTest, NewMouseManagedEnterprisePolicyGetsDefaults) {
   mojom::MousePolicies policies;
   policies.swap_right_policy = mojom::InputDeviceSettingsPolicy::New(
       mojom::PolicyStatus::kManaged, !kDefaultSwapRight);
@@ -844,7 +844,7 @@ TEST_F(MousePrefHandlerTest, NewMouse_ManagedEnterprisePolicy_GetsDefaults) {
   EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingSwapRight));
 }
 
-TEST_F(MousePrefHandlerTest, LoginScreen_ManagedEnterprisePolicy) {
+TEST_F(MousePrefHandlerTest, LoginScreenManagedEnterprisePolicy) {
   mojom::MousePolicies policies;
   policies.swap_right_policy = mojom::InputDeviceSettingsPolicy::New(
       mojom::PolicyStatus::kManaged, !kDefaultSwapRight);

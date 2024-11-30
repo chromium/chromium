@@ -227,6 +227,7 @@ if (!is_android) {
       ":media_router_feature",
       ":router",
       "//chrome/browser:browser_process",
+      "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/webrtc",
       "//components/media_router/common/providers/cast/channel",

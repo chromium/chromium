@@ -38,6 +38,7 @@ De reținut:
 <translation id="1646463005043273333">Deschide setarea Chrome pentru a seta Chrome ca browser prestabilit.</translation>
 <translation id="1670609221633730681">Sfat pentru Chrome: alege poziția barei de adrese</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Salvează parolele în Chrome</translation>
 <translation id="1790080846677398234">Adaugă adresele URL introduse la marcajele din Chrome.</translation>
 <translation id="1799920918471566157">Sfaturi Chrome</translation>
 <translation id="1830634592642484976">Această adresă se salvează momentan în Chrome. Pentru a o folosi în toate produsele Google, salveaz-o în Contul Google, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="3655656110921623717">Aceasta înseamnă că Chrome va solicita de fiecare dată site-ul mobil.</translation>
 <translation id="3740397331642243698">Deschide adresele URL introduse în Google Chrome în modul incognito.</translation>
 <translation id="3741995255368156336">Deschide Lista de lecturi Chrome.</translation>
+<translation id="3808570423967020928">Accesează Chrome mai rapid din bara de andocare de pe ecranul de pornire.</translation>
 <translation id="3827545470516145620">Beneficiezi de protecție de securitate standard pe acest dispozitiv</translation>
 <translation id="384394811301901750">Momentan, Google Chrome nu poate folosi camera foto</translation>
 <translation id="3863841106411295595">Adaugă adresele URL introduse în lista de lecturi din Chrome.</translation>
@@ -219,9 +221,11 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 
 Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experiența în Chrome, accesează <ph name="BEGIN_LINK" />Servicii Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Șterge datele de navigare din Chrome.</translation>
+<translation id="6924922227983877439">Deschide linkurile în Chrome în mod prestabilit</translation>
 <translation id="6975725306479268850">Alege Chrome pentru completarea automată</translation>
 <translation id="7056826488869329999">Deschide și rulează Verificarea de siguranță în Chrome.</translation>
 <translation id="7061455974939528301">Apasă lung pictograma Chrome și dă clic pe Editează ecranul de pornire</translation>
+<translation id="7065813315247345131">Mută Chrome în bara de andocare</translation>
 <translation id="7124339256045485976">Menține browserul Chrome actualizat</translation>
 <translation id="7161390184744336561">Google Chrome este învechit</translation>
 <translation id="7165736900384873061">Începe să folosești scanerul QR din Google Chrome</translation>

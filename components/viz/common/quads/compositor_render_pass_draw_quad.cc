@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 
 #include "base/trace_event/traced_value.h"
@@ -67,8 +62,7 @@ void CompositorRenderPassDrawQuad::SetAll(
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kCompositorRenderPass,
                    rect, visible_rect, needs_blending);
   render_pass_id = render_pass;
-  resources.ids[kMaskResourceIdIndex] = mask_resource_id;
-  resources.count = mask_resource_id ? 1 : 0;
+  resource_id = mask_resource_id;
   this->mask_uv_rect = mask_uv_rect;
   this->mask_texture_size = mask_texture_size;
   this->filters_scale = filters_scale;

@@ -33,7 +33,9 @@
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_coordinator.h"
@@ -106,6 +108,16 @@ const base::Feature* FetchIPHFeatureFromEnum(
     case SuggestionFeatureForIPH::kUnknown:
       NOTREACHED();
   }
+}
+
+// Returns yes if input views can be reloaded.
+bool CanReloadInputViews() {
+  // Do not allow reloading input views in the background when skipping that in
+  // the background is enabled.
+  return !base::FeatureList::IsEnabled(
+             kFormInputAccessorySkipInputViewReloadInBackground) ||
+         UIApplication.sharedApplication.applicationState ==
+             UIApplicationStateActive;
 }
 
 }  // namespace
@@ -229,11 +241,22 @@ const base::Feature* FetchIPHFeatureFromEnum(
       [layoutGuideCenter makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
   [self.baseViewController.view addLayoutGuide:self.layoutGuide];
 
+  auto autofillProviderGetter = base::BindRepeating(
+      [](web::WebState* webState) -> id<FormSuggestionProvider> {
+        if (auto* tabHelper = AutofillTabHelper::FromWebState(webState);
+            tabHelper) {
+          return AutofillTabHelper::FromWebState(webState)
+              ->GetSuggestionProvider();
+        }
+        return nil;
+      });
+
   _injectionHandler = [[ManualFillInjectionHandler alloc]
         initWithWebStateList:self.browser->GetWebStateList()
         securityAlertHandler:securityAlertHandler
       reauthenticationModule:self.reauthenticationModule
-        formSuggestionClient:_formInputAccessoryMediator];
+        formSuggestionClient:_formInputAccessoryMediator
+      autofillProviderGetter:autofillProviderGetter];
 }
 
 - (void)stop {
@@ -246,7 +269,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
     [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
     [self.formInputAccessoryTapRecognizer.view
         removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
-    [GetFirstResponder() reloadInputViews];
+    [self maybeReloadInputViews];
   }
 
   _formInputAccessoryViewController = nil;
@@ -264,7 +287,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
 - (void)reset {
   [self stopChildren];
   [self resetInputViews];
-  [GetFirstResponder() reloadInputViews];
+  [self maybeReloadInputViews];
 }
 
 #pragma mark - Presenting Children
@@ -310,7 +333,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
     [passwordCoordinator presentFromButton:button];
   } else {
     self.formInputViewController = passwordCoordinator.viewController;
-    [GetFirstResponder() reloadInputViews];
+    [self maybeReloadInputViews];
   }
 
   [self.childCoordinators addObject:passwordCoordinator];
@@ -329,7 +352,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
     [cardCoordinator presentFromButton:button];
   } else {
     self.formInputViewController = cardCoordinator.viewController;
-    [GetFirstResponder() reloadInputViews];
+    [self maybeReloadInputViews];
   }
 
   [self.childCoordinators addObject:cardCoordinator];
@@ -348,7 +371,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
     [addressCoordinator presentFromButton:button];
   } else {
     self.formInputViewController = addressCoordinator.viewController;
-    [GetFirstResponder() reloadInputViews];
+    [self maybeReloadInputViews];
   }
 
   [self.childCoordinators addObject:addressCoordinator];
@@ -377,7 +400,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [expandedManualFillCoordinator start];
 
   self.formInputViewController = expandedManualFillCoordinator.viewController;
-  [GetFirstResponder() reloadInputViews];
+  [self maybeReloadInputViews];
 
   [self.childCoordinators addObject:expandedManualFillCoordinator];
 }
@@ -977,6 +1000,12 @@ const base::Feature* FetchIPHFeatureFromEnum(
   id<SettingsCommands> settingsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
   [settingsHandler showPasswordDetailsForCredential:credential inEditMode:YES];
+}
+
+- (void)maybeReloadInputViews {
+  if (CanReloadInputViews()) {
+    [GetFirstResponder() reloadInputViews];
+  }
 }
 
 @end

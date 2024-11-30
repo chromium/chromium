@@ -250,6 +250,17 @@ enum class FedCmRpParameters {
   kMaxValue = kHasParametersAndNonDefaultScope
 };
 
+// This enum tracks the user's result after using a different account. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class FedCmUseOtherAccountResult {
+  kUserSignsInWithNewAccount = 0,
+  kUserSignsInWithExistingAccount = 1,
+  kUserDoesNotSignIn = 2,
+
+  kMaxValue = kUserDoesNotSignIn
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   explicit FedCmMetrics(const ukm::SourceId page_source_id);
@@ -347,7 +358,8 @@ class CONTENT_EXPORT FedCmMetrics {
       const std::vector<GURL>& requested_providers,
       int num_idps_mismatch,
       const std::optional<GURL>& selected_idp_config_url,
-      const RpMode& rp_mode);
+      const RpMode& rp_mode,
+      std::optional<FedCmUseOtherAccountResult> use_other_account_result);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,

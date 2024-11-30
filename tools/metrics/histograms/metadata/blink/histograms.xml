@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Animation.CompositedAnimationFailureReason"
-    enum="CompositorAnimationsFailureReason" expires_after="2025-03-23">
+    enum="CompositorAnimationsFailureReason" expires_after="2025-05-25">
   <owner>smcgruer@chromium.org</owner>
   <owner>animations-dev@chromium.org</owner>
   <summary>
@@ -1007,8 +1007,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DigitalIdentityRequest.InterstitialClosedReason"
-    enum="DigitalIdentityInterstitialClosedReason" expires_after="2024-12-01">
-  <owner>pkotwicz@chromium.org</owner>
+    enum="DigitalIdentityInterstitialClosedReason" expires_after="2025-06-01">
+  <owner>mamir@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the reason that the digital identity interstitial dialog was
@@ -1017,8 +1017,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DigitalIdentityRequest.Status"
-    enum="DigitalIdentityRequestStatus" expires_after="2024-12-01">
-  <owner>pkotwicz@chromium.org</owner>
+    enum="DigitalIdentityRequestStatus" expires_after="2025-06-01">
+  <owner>mamir@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the result of a request to the digital identity API. Recorded when
@@ -1120,6 +1120,16 @@ chromium-metrics-reviews@google.com.
 
     A sample is recorded on the first GetCookiesString, SetCookiesString, or
     CookiesEnabled request sent from the Document owned CookieJar.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Experimental.Cookies.IpcNeeded" enum="BooleanYesNo"
+    expires_after="2025-04-13">
+  <owner>lizeb@google.com</owner>
+  <owner>clank-performance-team@google</owner>
+  <summary>
+    When reading document.cookie, whether an IPC to the network service was
+    required. Recorded at each cookie read access.
   </summary>
 </histogram>
 
@@ -1301,11 +1311,11 @@ chromium-metrics-reviews@google.com.
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the outcome of the account chooser in button flow. Recorded once per
-    user leaving the button flow account chooser. e.g. If the user selects an
-    account on the account chooser, one sample is recorded. If the user clicks
-    on the back button in the next dialog, an account chooser is shown again and
-    leaving records a second sample.
+    Records the outcome of the first account chooser the user sees in a button
+    flow. Recorded at most once per button flow. For example, if the user
+    selects an account on the account chooser, one sample is recorded. If the
+    user clicks on the back button in the next dialog, an account chooser is
+    shown again and leaving would not record a second sample.
   </summary>
 </histogram>
 
@@ -2011,6 +2021,20 @@ chromium-metrics-reviews@google.com.
     histogram because many well-known and config file fetches take too much time
     such that the API call would fail without fetching the rest endpoints. i.e.
     the distribution of the two histograms could be statically different.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.UseOtherAccountResult"
+    enum="FedCmUseOtherAccountResult" expires_after="2025-04-20">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the outcome of the user clicking on the &quot;use other
+    account&quot; button in FedCM. Recorded once per API call when the user
+    attempts to login with a new account via the &quot;use other account&quot;
+    button, when the request is fulfilled (either resolved or rejected). Only
+    considers the last &quot;use other account&quot; button clicked if there are
+    multiple attempts.
   </summary>
 </histogram>
 
@@ -3242,7 +3266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionCount" units="count"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>alexnj@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3657,7 +3681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.CrossDocumentCachedResource2"
-    enum="ResourceType" expires_after="2025-03-23">
+    enum="ResourceType" expires_after="2025-05-25">
   <owner>gjc@chromium.org</owner>
   <owner>blink-network-dev@chromium.org</owner>
   <summary>
@@ -3992,7 +4016,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.PreloadRequestWaitTime" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>cduvall@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <owner>chrome-loading@google.com</owner>
@@ -4111,6 +4135,64 @@ chromium-metrics-reviews@google.com.
     Measures the time from when the renderer starts a resource request to when
     it is actually started on the network. Logged for every resource request if
     the request has never been frozen.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToEventQueueTime"
+    units="ms" expires_after="2025-10-30">
+  <owner>sullivan@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
+    the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
+    which includes at least one Event Timing which is a part of an interaction
+    (as in INP). All subparts are based on Event Timing API measurements (and
+    so, do not include continuous events, like scrolling).
+
+    This subpart represents the duration from the earliest event creation time
+    (timeStamp) to when it was queued on the main thread.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToProcessingStart"
+    units="ms" expires_after="2025-10-30">
+  <owner>sullivan@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
+    the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
+    which includes at least one Event Timing which is a part of an interaction
+    (as in INP). All subparts are based on Event Timing API measurements (and
+    so, do not include continuous events, like scrolling).
+
+    This subpart represents the duration from the earliest event creation time
+    (timeStamp) to when it was processed on the main thread. Traditionally, also
+    referred to as Input Delay.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToProcessingStart"
+    units="ms" expires_after="2025-10-30">
+  <owner>sullivan@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Blink.Responsiveness.PerAnimationFrame.* is a family of metrics representing
+    the sub-parts (aka breakdowns) of Interactions. Reported per Animation Frame
+    which includes at least one Event Timing which is a part of an interaction
+    (as in INP). All subparts are based on Event Timing API measurements (and
+    so, do not include continuous events, like scrolling).
+
+    This subpart represents the duration from the time when the earliest event
+    was queued on the main thread to when it was processed.
   </summary>
 </histogram>
 

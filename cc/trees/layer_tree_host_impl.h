@@ -172,7 +172,8 @@ class LayerTreeHostImplClient {
   virtual void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) = 0;
 
-  virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
+  virtual void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) = 0;
 
   virtual void DidObserveFirstScrollDelay(
       int source_frame_number,
@@ -354,7 +355,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       const viz::BeginFrameArgs& commit_args,
       bool scroll_and_viewport_changes_synced,
       const BeginMainFrameMetrics* begin_main_frame_metrics,
-      bool commit_timeout = false);
+      bool commit_timeout);
   virtual void BeginCommit(int source_frame_number,
                            BeginMainFrameTraceId trace_id);
   virtual void FinishCommit(CommitState& commit_state,
@@ -418,6 +419,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // because each compositor doesn't know its position relative to other
   // compositors. This is specified in device viewport coordinate space.
   void SetVisualDeviceViewportSize(const gfx::Size&);
+
+  void SetMaxSafeAreaInsets(const gfx::Insets& max_safe_area_insets);
+  gfx::Insets MaxSafeAreaInsets() const;
 
   void set_viewport_mobile_optimized(bool viewport_mobile_optimized) {
     is_viewport_mobile_optimized_ = viewport_mobile_optimized;
@@ -1069,7 +1073,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                            const viz::FrameTimingDetails& details);
 
   // Notifies client about the custom tracker results.
-  void NotifyThroughputTrackerResults(const CustomTrackerResults& results);
+  void NotifyCompositorMetricsTrackerResults(
+      const CustomTrackerResults& results);
 
   // Wrapper for checking and updating |contains_srgb_cache_|.
   bool CheckColorSpaceContainsSrgb(const gfx::ColorSpace& color_space) const;
@@ -1251,6 +1256,12 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<Viewport> viewport_;
 
   gfx::Size visual_device_viewport_size_;
+
+  // Used for supporting dynamic safe area insets in the Clank Edge-to-Edge
+  // bottom bar feature(go/cc-dynamic-sai) This is originally passed down from
+  // browser for the display cutout.
+  gfx::Insets max_safe_area_insets_;
+
   // Set to true if viewport is mobile optimized by using meta tag
   // <meta name="viewport" content="width=device-width">
   // or

@@ -62,7 +62,6 @@
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
-#include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #include "chromeos/crosapi/mojom/audio_service.mojom.h"
 #include "chromeos/crosapi/mojom/authentication.mojom.h"
@@ -90,7 +89,6 @@
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
-#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
@@ -113,7 +111,6 @@
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
-#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
@@ -286,19 +283,6 @@ policy::DeviceLocalAccountPolicyBroker* GetDeviceLocalAccountPolicyBroker(
                         : nullptr;
 }
 
-std::optional<std::string> GetDeviceAccountPolicyForUser(
-    const user_manager::User& user) {
-  policy::CloudPolicyCore* core = GetCloudPolicyCoreForUser(user);
-  if (!core) {
-    return std::nullopt;
-  }
-  const policy::CloudPolicyStore* store = core->store();
-  if (!store || !store->policy_fetch_response()) {
-    return std::nullopt;
-  }
-  return store->policy_fetch_response()->SerializeAsString();
-}
-
 std::optional<policy::ComponentPolicyMap>
 GetDeviceAccountComponentPolicyForUser(const user_manager::User& user) {
   policy::ComponentCloudPolicyService* component_policy_service =
@@ -311,23 +295,6 @@ GetDeviceAccountComponentPolicyForUser(const user_manager::User& user) {
   }
   return policy::CopyComponentPolicyMap(
       component_policy_service->component_policy_map());
-}
-
-// Returns the vector containing policy data of the device account. In case of
-// an error, returns nullopt.
-std::optional<std::vector<uint8_t>> GetDeviceAccountPolicy() {
-  if (!user_manager::UserManager::IsInitialized()) {
-    LOG(ERROR) << "User not initialized.";
-    return std::nullopt;
-  }
-  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user) {
-    LOG(ERROR) << "No primary user.";
-    return std::nullopt;
-  }
-  std::string policy_data =
-      GetDeviceAccountPolicyForUser(*primary_user).value_or(std::string());
-  return std::vector<uint8_t>(policy_data.begin(), policy_data.end());
 }
 
 // Returns the map containing component policy for each namespace. The values
@@ -433,10 +400,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Automation>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AutomationFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::AppPublisher>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppServiceProxy>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::AppShortcutPublisher>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::AppWindowTracker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserAppInstanceRegistry>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserServiceHost>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CecPrivate>(),
@@ -463,7 +427,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Dlp>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DocumentScan>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DownloadController>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::DownloadStatusUpdater>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DriveIntegrationService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::EchoPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::EditorPanelManager>(),
@@ -488,7 +451,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::KerberosInBrowser>(),
     MakeInterfaceVersionEntry<crosapi::mojom::KeystoreService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::KioskSessionService>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::LacrosShelfItemTracker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::LocalPrinter>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Login>(),
     MakeInterfaceVersionEntry<crosapi::mojom::LoginScreenStorage>(),
@@ -754,15 +716,6 @@ void InjectBrowserInitParams(
   params->device_properties = GetDeviceProperties();
   params->device_settings = GetDeviceSettings();
 
-  // Syncing the randomization seed ensures that the group membership of the
-  // limited entropy synthetic trial will be the same between Ash Chrome and
-  // Lacros.
-  // TODO(crbug.com/40948861): Remove after completing the trial.
-  variations::LimitedEntropySyntheticTrial limited_entropy_synthetic_trial(
-      local_state, ash::GetChannel());
-  params->limited_entropy_synthetic_trial_seed =
-      limited_entropy_synthetic_trial.GetRandomizationSeed(local_state);
-
   // |metrics_service| could be nullptr in tests.
   if (auto* metrics_service = g_browser_process->metrics_service()) {
     // Send metrics service client id to Lacros if it's present.
@@ -884,8 +837,6 @@ void InjectBrowserInitParams(
   params->is_drivefs_bulk_pinning_available =
       drive::util::IsDriveFsBulkPinningAvailable();
 
-  params->is_sys_ui_downloads_integration_v2_enabled = true;
-
   params->is_cros_battery_saver_available =
       ash::features::IsBatterySaverAvailable();
 
@@ -941,7 +892,6 @@ void InjectBrowserPostLoginParams(mojom::BrowserInitParams* params,
   params->cros_user_id_hash =
       ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(
           ProfileManager::GetPrimaryUserProfile());
-  params->device_account_policy = GetDeviceAccountPolicy();
   params->last_policy_fetch_attempt_timestamp =
       GetLastPolicyFetchAttemptTimestamp().ToTimeT();
 

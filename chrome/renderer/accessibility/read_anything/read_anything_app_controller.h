@@ -221,7 +221,6 @@ class ReadAnythingAppController
   bool IsGoogleDocs() const;
   bool IsReadAloudEnabled() const;
   bool IsChromeOsAsh() const;
-  bool IsAutoVoiceSwitchingEnabled() const;
   bool IsPhraseHighlightingEnabled() const;
   void OnLetterSpacingChange(int value);
   void OnLineSpacingChange(int value);
@@ -259,6 +258,7 @@ class ReadAnythingAppController
   void Distill();
   void Draw(bool recompute_display_nodes);
   void DrawSelection();
+  void DrawEmptyState();
 
   void ExecuteJavaScript(const std::string& script);
 

@@ -332,6 +332,8 @@ static_library("arc_test_support") {
     "test/fake_file_system_instance.h",
     "test/fake_iio_sensor_instance.cc",
     "test/fake_iio_sensor_instance.h",
+    "test/fake_keymint_instance.cc",
+    "test/fake_keymint_instance.h",
     "test/fake_memory_instance.cc",
     "test/fake_memory_instance.h",
     "test/fake_nearby_share_instance.cc",

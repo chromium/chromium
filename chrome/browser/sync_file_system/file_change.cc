@@ -40,9 +40,9 @@ std::string FileChange::DebugString() const {
   return base::StringPrintf("%s:%s", change_string, type_string);
 }
 
-FileChangeList::FileChangeList() {}
+FileChangeList::FileChangeList() = default;
 FileChangeList::FileChangeList(const FileChangeList& other) = default;
-FileChangeList::~FileChangeList() {}
+FileChangeList::~FileChangeList() = default;
 
 void FileChangeList::Update(const FileChange& new_change) {
   if (list_.empty()) {

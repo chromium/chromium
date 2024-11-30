@@ -241,8 +241,7 @@ void StartUserSession(user_manager::UserManager* user_manager,
     AppListClientImpl::GetInstance()->UpdateProfile();
   }
 
-  if (base::FeatureList::IsEnabled(features::kEolWarningNotifications) &&
-      !user_profile->GetProfilePolicyConnector()->IsManaged()) {
+  if (!user_profile->GetProfilePolicyConnector()->IsManaged()) {
     UserSessionManager::GetInstance()->CheckEolInfo(user_profile);
   }
 

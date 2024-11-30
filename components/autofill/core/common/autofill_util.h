@@ -71,11 +71,6 @@ GURL StripAuthAndParams(const GURL& gurl);
 bool IsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source);
 
-// Checks if the user triggered address Autofill on a field manually through the
-// Chrome context menu.
-bool IsAddressAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source);
-
 // Checks if the user triggered payments Autofill on a field manually through
 // the Chrome context menu.
 bool IsPaymentsAutofillManuallyTriggered(

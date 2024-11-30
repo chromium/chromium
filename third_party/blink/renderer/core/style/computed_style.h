@@ -589,10 +589,10 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // column-rule-width
-  uint16_t ColumnRuleWidth() const {
+  GapDataList<int> ColumnRuleWidth() const {
     if (ColumnRuleStyle() == EBorderStyle::kNone ||
         ColumnRuleStyle() == EBorderStyle::kHidden) {
-      return 0;
+      return GapDataList<int>(0);
     }
     return ColumnRuleWidthInternal();
   }
@@ -1008,7 +1008,7 @@ class ComputedStyle final : public ComputedStyleBase {
     if (!SpecifiesColumns()) [[likely]] {
       return false;
     }
-    return ColumnRuleWidth() && !ColumnRuleIsTransparent() &&
+    return ColumnRuleWidth().GetLegacyValue() && !ColumnRuleIsTransparent() &&
            BorderStyleIsVisible(ColumnRuleStyle());
   }
 
@@ -2287,13 +2287,11 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
       return ScrollMarkerGroup() == EScrollMarkerGroup::kBefore &&
-             IsScrollContainer() &&
-             HasPseudoElementStyle(kPseudoIdScrollMarkerGroup);
+             IsScrollContainer();
     }
     if (pseudo == kPseudoIdScrollMarkerGroupAfter) {
       return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter &&
-             IsScrollContainer() &&
-             HasPseudoElementStyle(kPseudoIdScrollMarkerGroup);
+             IsScrollContainer();
     }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
@@ -2304,7 +2302,7 @@ class ComputedStyle final : public ComputedStyleBase {
     // For display: contents elements, we still need to generate ::before and
     // ::after, but the rest of the pseudo-elements should only be used for
     // elements with an actual layout object.
-    return pseudo == kPseudoIdCheck || pseudo == kPseudoIdBefore ||
+    return pseudo == kPseudoIdCheckMark || pseudo == kPseudoIdBefore ||
            pseudo == kPseudoIdAfter || pseudo == kPseudoIdSelectArrow;
   }
 
@@ -2836,7 +2834,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   // column-rule-width
-  void SetColumnRuleWidth(uint16_t w) { SetColumnRuleWidthInternal(w); }
+  void SetColumnRuleWidth(GapDataList<int> w) { SetColumnRuleWidthInternal(w); }
 
   // column-width
   void SetColumnWidth(float f) {

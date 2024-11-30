@@ -5,6 +5,7 @@
 #include "components/page_info/core/features.h"
 
 #include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -30,8 +31,7 @@ extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
 
 BASE_FEATURE(kPageInfoAboutThisSite,
              "PageInfoAboutThisSite",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPageInfoAboutThisSiteMoreLangs,
              "PageInfoAboutThisSiteMoreLangs",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -48,6 +48,16 @@ BASE_FEATURE(kPageInfoHideSiteSettings,
              "PageInfoHideSiteSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kMerchantTrust,
+             "MerchantTrust",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kMerchantTrustEnabledWithSampleDataName[] =
+    "enabled-with-sample-data";
+const base::FeatureParam<bool> kMerchantTrustEnabledWithSampleData{
+    &kMerchantTrust, kMerchantTrustEnabledWithSampleDataName, false};
+
 
 }  // namespace page_info

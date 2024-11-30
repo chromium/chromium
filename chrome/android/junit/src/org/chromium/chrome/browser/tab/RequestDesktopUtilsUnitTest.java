@@ -83,7 +83,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /** Unit tests for {@link RequestDesktopUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -903,21 +902,5 @@ public class RequestDesktopUtilsUnitTest {
 
     private Tab createTab() {
         return mock(Tab.class);
-    }
-
-    private void enableFeature(String featureName, boolean enable) {
-        enableFeatureWithParams(featureName, null, enable);
-    }
-
-    private void enableFeatureWithParams(
-            String featureName, Map<String, String> params, boolean enable) {
-        mTestValues.addFeatureFlagOverride(featureName, enable);
-        if (params != null) {
-            for (Entry<String, String> param : params.entrySet()) {
-                mTestValues.addFieldTrialParamOverride(
-                        featureName, param.getKey(), param.getValue());
-            }
-        }
-        FeatureList.setTestValues(mTestValues);
     }
 }

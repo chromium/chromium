@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Use Chromium on iPad by default</translation>
 <translation id="1471084500615228555">Delete browsing data in Chromium</translation>
 <translation id="1472013873724362412">Your account does not work on Chromium. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
+<translation id="148576268809812097">Save your passwords in Chromium</translation>
 <translation id="1501302548410882220">Use Chromium everywhere</translation>
 <translation id="1503199973012840174">Your Chromium is out of date. Update it to stay safe.</translation>
 <translation id="1515748263297244785">Use Chromium for iPad by default</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Your password will be saved in your Account (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">To get personalisation and other features, include Chromium in <ph name="FEATURE_NAME_1" /> and <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
+<translation id="1839447949248872139">Open links in Chromium by default</translation>
 <translation id="1843424232666537147">Chromium has features that help you manage your Internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps in Chromium</translation>
@@ -160,6 +162,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5048795749726991615">To get your saved passwords in your other apps easily, use Chromium for auto-fill</translation>
 <translation id="5053429694249468757">Deleting Chromium data…</translation>
 <translation id="5071749685031362629">Chromium for iOS</translation>
+<translation id="5088872414922783602">Access Chromium faster from your Home Screen Dock.</translation>
 <translation id="5124429847818367226">You can now use Chromium any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="5131565040785979529">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chromium is used.</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
@@ -273,6 +276,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="800380310260616129">Download Chromium here.</translation>
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
 <translation id="8014091604604659473">Chromium is signed out</translation>
+<translation id="8035379487371146621">Move Chromium to the Dock</translation>
 <translation id="8104697640054703121">Get Chromium's strongest security from dangerous sites</translation>
 <translation id="8119542592987737574">Access Chromium faster from your iPhone's Home Screen Dock.</translation>
 <translation id="8164086860209325020">Go to Chromium settings</translation>

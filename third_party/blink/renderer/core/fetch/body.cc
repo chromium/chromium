@@ -70,17 +70,32 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
   }
 
  private:
+  template <typename T>
+  struct IsNotShared {
+    static constexpr bool value = false;
+  };
+  template <typename T>
+  struct IsNotShared<NotShared<T>> {
+    static constexpr bool value = true;
+  };
+
   template <typename IDLType, typename T>
-    requires(
-        !std::is_same<T, Persistent<DisallowNewWrapper<ScriptValue>>>::value)
+    requires(!std::is_same<IDLType, IDLAny>::value &&
+             !IsNotShared<IDLType>::value)
   void ResolveNow(const T& object) {
     resolver_->DowncastTo<IDLType>()->Resolve(object);
   }
 
   template <typename IDLType, typename T>
-    requires std::is_same<T, Persistent<DisallowNewWrapper<ScriptValue>>>::value
+    requires std::is_same<IDLType, IDLAny>::value
   void ResolveNow(const Persistent<DisallowNewWrapper<ScriptValue>>& object) {
     resolver_->DowncastTo<IDLType>()->Resolve(object->Value());
+  }
+
+  template <typename IDLType, typename T>
+    requires IsNotShared<IDLType>::value
+  void ResolveNow(const T& object) {
+    resolver_->DowncastTo<IDLType>()->Resolve(NotShared<DOMUint8Array>(object));
   }
 
   const Member<ScriptPromiseResolverBase> resolver_;

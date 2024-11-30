@@ -1,0 +1,4 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View text:"Off" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="marquee", roleDescription="marquee"]
+++View text:"Polite" liveRegion:1 actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="marquee", roleDescription="marquee"]
+++View text:"Assertive" liveRegion:2 actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="marquee", roleDescription="marquee"]

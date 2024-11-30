@@ -5,6 +5,7 @@
 #ifndef NET_NQE_NETWORK_QUALITY_ESTIMATOR_PARAMS_H_
 #define NET_NQE_NETWORK_QUALITY_ESTIMATOR_PARAMS_H_
 
+#include <array>
 #include <map>
 #include <optional>
 #include <string>
@@ -24,8 +25,11 @@ NET_EXPORT extern const char kForceEffectiveConnectionType[];
 NET_EXPORT extern const char kEffectiveConnectionTypeSlow2GOnCellular[];
 
 // HTTP RTT thresholds for different effective connection types.
-NET_EXPORT extern const base::TimeDelta
-    kHttpRttEffectiveConnectionTypeThresholds[EFFECTIVE_CONNECTION_TYPE_LAST];
+inline constexpr std::array<base::TimeDelta, EFFECTIVE_CONNECTION_TYPE_LAST>
+    kHttpRttEffectiveConnectionTypeThresholds = {
+        base::Milliseconds(0),    base::Milliseconds(0),
+        base::Milliseconds(2010), base::Milliseconds(1420),
+        base::Milliseconds(272),  base::Milliseconds(0)};
 
 // NetworkQualityEstimatorParams computes the configuration parameters for
 // the network quality estimator.

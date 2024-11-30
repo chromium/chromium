@@ -48,7 +48,7 @@ gfx::Rect StringToRect(const std::string& script_result) {
 AutomationTestUtils::AutomationTestUtils(const std::string& extension_id)
     : extension_id_(extension_id) {}
 
-AutomationTestUtils::~AutomationTestUtils() {}
+AutomationTestUtils::~AutomationTestUtils() = default;
 
 void AutomationTestUtils::SetUpTestSupport() {
   base::ScopedAllowBlockingForTesting allow_blocking;

@@ -185,7 +185,7 @@ QuickStartController::QuickStartController() {
   }
 
   // Main feature flag
-  if (!features::IsOobeQuickStartEnabled()) {
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
     if (should_resume_quick_start_after_update_) {
       ForceEnableQuickStart();
     }

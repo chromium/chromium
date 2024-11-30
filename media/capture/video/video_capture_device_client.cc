@@ -27,6 +27,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
@@ -199,6 +200,23 @@ FourccAndFlip GetFourccAndFlipFromPixelFormat(
   }
 }
 
+uint32_t GetFakeBackgroundBlurTogglePeriodMillis() {
+  static std::optional<uint32_t> toggle_period;
+  if (toggle_period) {
+    return *toggle_period;
+  }
+  toggle_period.emplace(0);
+
+  auto toggle_period_string =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+          switches::kFakeBackgroundBlurTogglePeriod);
+
+  if (!toggle_period_string.empty()) {
+    base::StringToUint(toggle_period_string, &toggle_period.value());
+  }
+  return *toggle_period;
+}
+
 }  // anonymous namespace
 
 namespace media {
@@ -212,6 +230,28 @@ BASE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac,
 #endif
 
 namespace {
+
+mojom::VideoFrameInfoPtr CreateNewVideoFrameInfo(
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp,
+    const VideoCaptureFormat& format,
+    const std::optional<VideoFrameMetadata>& current_metadata,
+    const gfx::Rect& visible_rect,
+    bool is_premapped,
+    const gfx::ColorSpace& color_space) {
+  VideoFrameMetadata metadata = current_metadata.value_or(VideoFrameMetadata{});
+  // Note: we are not setting `metadata.is_webgpu_compatible` here since we
+  // have not verified whether the buffer pool returns frames that are
+  // WebGPU-compatible across all platforms.
+  metadata.frame_rate = format.frame_rate;
+  metadata.reference_time = reference_time;
+  metadata.capture_begin_time = capture_begin_timestamp;
+
+  return mojom::VideoFrameInfo::New(
+      timestamp, metadata, format.pixel_format, format.frame_size, visible_rect,
+      is_premapped, color_space, mojom::PlaneStridesPtr{});
+}
 
 class ScopedAccessPermissionEndWithCallback
     : public VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
@@ -443,18 +483,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
       effects_processor_) {
     auto data_span = base::make_span(data, base::checked_cast<size_t>(length));
 
-    // Note: we are not setting `metadata.is_webgpu_compatible` here since we
-    // have not verified whether the buffer pool returns frames that are
-    // WebGPU-compatible across all platforms.
-    auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
-    mutable_metadata.frame_rate = format.frame_rate;
-    mutable_metadata.reference_time = reference_time;
-    mutable_metadata.capture_begin_time = capture_begin_timestamp;
-
-    mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-        timestamp, mutable_metadata, format.pixel_format, format.frame_size,
-        gfx::Rect(format.frame_size), buffer.is_premapped, data_color_space,
-        mojom::PlaneStridesPtr{});
+    mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
+        reference_time, timestamp, capture_begin_timestamp, format, metadata,
+        gfx::Rect(format.frame_size), buffer.is_premapped, data_color_space);
 
     // Must happen here since we move out of `buffer` in the call below:
     const VideoCaptureBufferType buffer_type =
@@ -659,17 +690,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     // TODO(https://crbug.com/377532863): Skip effects service overhead when
     // having no-op effects config.
 
-    // Note: we are not setting `metadata.is_webgpu_compatible` here since we
-    // have not verified whether the buffer pool returns frames that are
-    // WebGPU-compatible across all platforms.
-    auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
-    mutable_metadata.frame_rate = buffer.format.frame_rate;
-    mutable_metadata.reference_time = reference_time;
-    mutable_metadata.capture_begin_time = capture_begin_timestamp;
-    mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-        timestamp, mutable_metadata, buffer.format.pixel_format,
-        buffer.format.frame_size, visible_rect, /*is_premapped=*/false,
-        buffer.color_space, mojom::PlaneStridesPtr{});
+    mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
+        reference_time, timestamp, capture_begin_timestamp, buffer.format,
+        metadata, visible_rect, /*is_premapped=*/false, buffer.color_space);
 
     // We need to allocate the output buffer since the post-processor cannot
     // operate in-place. This new `out_buffer`, along with original `buffer`,
@@ -798,18 +821,9 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
 
   // Construct the ready frame, to be passed on to the |receiver_| by the caller
   // of this method.
-  // Note: we are not setting `metadata.is_webgpu_compatible` here since we
-  // have not verified whether the external buffer is WebGPU-compatible on all
-  // platforms.
-  auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
-  mutable_metadata.frame_rate = buffer.format.frame_rate;
-  mutable_metadata.reference_time = reference_time;
-  mutable_metadata.capture_begin_time = capture_begin_timestamp;
-
-  mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-      timestamp, mutable_metadata, buffer.format.pixel_format,
-      buffer.format.frame_size, visible_rect, /*is_premapped=*/false,
-      buffer.color_space, mojom::PlaneStridesPtr{});
+  mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
+      reference_time, timestamp, capture_begin_timestamp, buffer.format,
+      metadata, visible_rect, /*is_premapped=*/false, buffer.color_space);
 
   buffer_pool_->HoldForConsumers(buffer_id, 1);
   buffer_pool_->RelinquishProducerReservation(buffer_id);
@@ -923,16 +937,15 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
                "VideoCaptureDeviceClient::OnIncomingCapturedBufferExt");
 
   auto metadata = additional_metadata.value_or(VideoFrameMetadata{});
-  // Note: we are not setting `metadata.is_webgpu_compatible` here since we
-  // have not verified whether the buffer pool returns frames that are
-  // WebGPU-compatible across all platforms.
-  metadata.frame_rate = format.frame_rate;
-  metadata.reference_time = reference_time;
-  metadata.capture_begin_time = capture_begin_timestamp;
+  if (auto fake_toggle_period = GetFakeBackgroundBlurTogglePeriodMillis()) {
+    metadata.background_blur = media::EffectInfo{
+        .enabled = timestamp.InMilliseconds() % fake_toggle_period >=
+                   fake_toggle_period / 2};
+  }
 
-  mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-      timestamp, metadata, format.pixel_format, format.frame_size, visible_rect,
-      buffer.is_premapped, color_space, mojom::PlaneStridesPtr{});
+  mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
+      reference_time, timestamp, capture_begin_timestamp, format, metadata,
+      visible_rect, buffer.is_premapped, color_space);
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&

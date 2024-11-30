@@ -160,3 +160,61 @@ IN_PROC_BROWSER_TEST_P(DisplayMediaAccessHandlerInteractiveUITest,
 INSTANTIATE_TEST_SUITE_P(DisplayMediaAccessHandlerInteractiveUITest,
                          DisplayMediaAccessHandlerInteractiveUITest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerInteractiveUITest,
+                       PickerShowsUpEvenIfOpenerIsHidden) {
+#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_OZONE_WAYLAND)
+  // Wayland doesn't support changing window activation programmatically, so we
+  // can't re-focus the pip window.
+  GTEST_SKIP();
+#endif
+#endif
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an empty page.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  DesktopMediaPickerManager* picker_manager = DesktopMediaPickerManager::Get();
+  picker_manager->AddObserver(this);
+
+  content::WebContents* opener_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  run_loop_ = std::make_unique<base::RunLoop>();
+  // Open a pip window and wait for it to show up.
+  EXPECT_EQ(true, content::EvalJs(opener_web_contents->GetPrimaryMainFrame(),
+                                  R"((async () => {
+    var pip = await documentPictureInPicture.requestWindow();
+    return await new Promise((resolve, reject) => {
+    pip.requestAnimationFrame(()=>{resolve(true);});
+    }
+    );
+  })())"));
+
+  content::WebContents* pip_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+
+  // Open a new tab in the original window. This will put the opener into the
+  // background.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Re-focus the pip window.
+  FocusWidgetAndWait(pip_web_contents);
+
+  // Request media from the opener. This should be allowed despite the fact that
+  // it's in the background since it will show up in the pip window.
+  EXPECT_EQ(true, content::EvalJs(opener_web_contents->GetPrimaryMainFrame(),
+                                  R"((async () => {
+    navigator.mediaDevices.getDisplayMedia({
+        audio: true, systemAudio: 'include'});
+    return true;
+  })())"));
+  run_loop_->Run();
+
+  // Verify that the picker showed up in the pip window.
+  EXPECT_EQ(actual_ui_web_contents_, pip_web_contents);
+}

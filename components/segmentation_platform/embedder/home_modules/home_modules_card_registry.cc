@@ -20,6 +20,7 @@
 #include "components/segmentation_platform/embedder/home_modules/address_bar_position_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/autofill_passwords_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/enhanced_safe_browsing_ephemeral_module.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/lens_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/save_passwords_ephemeral_module.h"
 #endif
@@ -29,6 +30,8 @@ namespace segmentation_platform::home_modules {
 #if BUILDFLAG(IS_ANDROID)
 const char kDefaultBrowserPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.default_browser_promo_counter";
+const char kDefaultBrowserPromoInteractedPref[] =
+    "ephemeral_pref_interacted.default_browser_promo_interacted";
 #endif
 
 namespace {
@@ -164,6 +167,7 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
 
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(kDefaultBrowserPromoImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kDefaultBrowserPromoInteractedPref, false);
 #endif
 }
 
@@ -265,6 +269,12 @@ void HomeModulesCardRegistry::NotifyCardInteracted(const char* card_name) {
         kLensEphemeralModuleTranslateVariationInteractedPref, true);
   }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  if (strcmp(card_name, kDefaultBrowserPromo) == 0) {
+    profile_prefs_->SetBoolean(kDefaultBrowserPromoInteractedPref, true);
+  }
+#endif
 }
 
 void HomeModulesCardRegistry::CreateAllCards() {
@@ -281,17 +291,37 @@ void HomeModulesCardRegistry::CreateAllCards() {
 
   if (base::FeatureList::IsEnabled(
           features::kSegmentationPlatformTipsEphemeralCard)) {
+    std::optional<CardSelectionInfo::ShowResult> forced_result =
+        GetForcedEphemeralModuleShowResult();
+
+    // If a card is forced to be shown, add it immediately.
+    if (forced_result.has_value() &&
+        forced_result.value().position == EphemeralHomeModuleRank::kTop) {
+      TipIdentifier identifier = TipIdentifierForOutputLabel(
+          forced_result.value().result_label.value());
+
+      if (identifier != TipIdentifier::kUnknown) {
+        AddCardForTip(identifier, all_cards_by_priority_, profile_prefs_);
+      }
+    }
+
     std::string enabled_variations = features::TipsExperimentTrainEnabled();
 
     // Iterates the variation labels without extra allocations.
     for (std::string_view variation_label :
          base::SplitString(enabled_variations, ",", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY)) {
-      TipIdentifier identifier = TipIdentifierForOutputLabel(variation_label);
+      // Skip forced card as it will be added by the forcing mechanism.
+      if (forced_result.has_value() &&
+          forced_result.value().result_label.value() == variation_label) {
+        continue;
+      }
 
-      AddCardForTip(identifier, all_cards_by_priority_, profile_prefs_);
+      AddCardForTip(TipIdentifierForOutputLabel(variation_label),
+                    all_cards_by_priority_, profile_prefs_);
     }
   }
+
   if (SendTabNotificationPromo::IsEnabled(send_tab_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<SendTabNotificationPromo>(send_tab_promo_count));
@@ -302,7 +332,8 @@ void HomeModulesCardRegistry::CreateAllCards() {
   int default_browser_promo_count =
       profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
   if (DefaultBrowserPromo::IsEnabled(default_browser_promo_count)) {
-    all_cards_by_priority_.push_back(std::make_unique<DefaultBrowserPromo>());
+    all_cards_by_priority_.push_back(
+        std::make_unique<DefaultBrowserPromo>(profile_prefs_));
   }
 #endif
   InitializeAfterAddingCards();

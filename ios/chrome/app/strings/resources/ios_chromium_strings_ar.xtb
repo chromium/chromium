@@ -19,6 +19,7 @@
 <translation id="146407871188825689">‏استخدام متصفّح Chromium على جهاز iPad تلقائيًا</translation>
 <translation id="1471084500615228555">‏حذف بيانات التصفّح في Chromium</translation>
 <translation id="1472013873724362412">‏لا يعمل حسابك على Chromium. يُرجى الاتصال بمشرف النطاق أو استخدام حساب Google عادي لتسجيل الدخول.</translation>
+<translation id="148576268809812097">‏حفظ كلمات المرور في Chromium</translation>
 <translation id="1501302548410882220">‏استخدام Chromium في كل مكان</translation>
 <translation id="1503199973012840174">‏إصدار Chromium الحالي قديم. يُرجى تحديثه للحفاظ على أمان بياناتك.</translation>
 <translation id="1515748263297244785">‏استخدام Chromium كمتصفّح تلقائي على جهاز iPad</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">سيتم حفظ كلمة المرور في حسابك (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">‏للحصول على خيارات مخصَّصة والاستفادة من ميزات أخرى، يمكنك تضمين متصفّح Chromium في "<ph name="FEATURE_NAME_1" />" و<ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">‏لقد تحقق Chromium من أن <ph name="ISSUER" /> أصدر شهادة الموقع الإلكتروني هذه.</translation>
+<translation id="1839447949248872139">‏فتح الروابط في Chromium تلقائيًا</translation>
 <translation id="1843424232666537147">‏يتمتع Chromium بميزات تساعدك على إدارة بياناتك على الإنترنت ومدى السرعة التي بمقدورك تحميل صفحات الويب من خلالها.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">‏"خرائط Google" في Chromium</translation>
@@ -160,6 +162,7 @@
 <translation id="5048795749726991615">‏للوصول بسهولة إلى كلمات المرور المحفوظة واستخدامها في تطبيقاتك الأخرى، استخدِم Chromium للاستفادة من ميزة "الملء التلقائي".</translation>
 <translation id="5053429694249468757">‏جارٍ حذف بيانات Chromium…</translation>
 <translation id="5071749685031362629">‏‫Chromium لنظام التشغيل iOS</translation>
+<translation id="5088872414922783602">‏يمكنك الوصول إلى Chromium بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية.</translation>
 <translation id="5124429847818367226">‏يمكنك الآن استخدام Chromium في أي وقت تتصفَّح فيه أو تنقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="5131565040785979529">‏يدير نطاق مؤسستك <ph name="DOMAIN" /> الحساب الذي سجَّلت الدخول إليه وطريقة استخدامك لمتصفِّح Chromium.</translation>
 <translation id="5224391634244552924">‏ما مِن كلمات مرور محفوظة. لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
@@ -273,6 +276,7 @@
 <translation id="800380310260616129">‏نزِّل Chromium من هنا.</translation>
 <translation id="8013573822802650211">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chromium، سجِّل الدخول على جميع أجهزتك.</translation>
 <translation id="8014091604604659473">‏تمّ تسجيل الخروج من Chromium</translation>
+<translation id="8035379487371146621">‏نقل Chromium إلى "شريط التطبيقات" (Dock)</translation>
 <translation id="8104697640054703121">‏الحصول على أعلى مستويات الحماية من المواقع الإلكترونية الخطيرة في Chromium</translation>
 <translation id="8119542592987737574">‏يمكنك الوصول إلى Chromium بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية على هاتف iPhone.</translation>
 <translation id="8164086860209325020">‏الانتقال إلى إعدادات Chromium</translation>

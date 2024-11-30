@@ -16,6 +16,7 @@ import("//ios/chrome/app/chrome_app.gni")
 import("//ios/chrome/features.gni")
 import("//ios/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 declare_args() {
   # Controls whether fast_app_terminate_buildflags is enabled
@@ -60,6 +61,7 @@ source_set("app") {
     "//base",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/public/provider/chrome/browser/application_mode_fetcher:application_mode_fetcher_api",
     "//net",
     "//url",
   ]
@@ -100,15 +102,19 @@ source_set("unit_tests") {
     "//components/variations/service",
     "//ios/chrome/app:enterprise_app_agent",
     "//ios/chrome/app/application_delegate",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/application_delegate:metrics_mediator",
+    "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/app/application_delegate:url_opener",
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
@@ -129,7 +135,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",
-    "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/variations/model:fetcher",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
     "//ios/chrome/common/app_group",
@@ -223,7 +228,7 @@ if (ios_enable_credential_provider_extension) {
     deps = [
       "//components/keyed_service/core",
       "//components/webauthn/core/browser:passkey_model",
-      "//ios/chrome/app/application_delegate:app_state_header",
+      "//ios/chrome/app/application_delegate:app_state",
       "//ios/chrome/app/application_delegate:observing_app_state_agent",
       "//ios/chrome/browser/credential_provider/model",
       "//ios/chrome/browser/passwords/model:store_factory",
@@ -247,8 +252,10 @@ source_set("app_metrics_app_state_agent") {
     "//base",
     "//ios/chrome/app",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/application_delegate:metrics_mediator",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
@@ -265,7 +272,7 @@ source_set("safe_mode_app_state_agent") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/safe_mode/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
@@ -284,9 +291,11 @@ source_set("variations_app_state_agent") {
     "//components/prefs",
     "//components/variations",
     "//components/variations/service",
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/browser/first_run/ui_bundled:utils",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/variations/model:fetcher",
     "//ios/chrome/browser/variations/model:store",
@@ -304,9 +313,9 @@ source_set("enterprise_app_agent") {
     ":enterprise_app_agent_ui",
     "//base",
     "//components/policy/core/common",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/first_run/ui_bundled:utils",
     "//ios/chrome/browser/policy/model",
@@ -412,8 +421,11 @@ source_set("app_internal") {
     "//components/sync",
     "//components/web_resource",
     "//ios/chrome/app/application_delegate",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/application_delegate:metrics_mediator",
+    "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/app/application_delegate:tab_opening",
+    "//ios/chrome/app/application_delegate:url_opener",
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/app/background_refresh",
     "//ios/chrome/app/profile",
@@ -446,6 +458,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/memory/model",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
@@ -453,7 +466,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/passwords/model",
-    "//ios/chrome/browser/profile/model:constants",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/push_notification/model:push_notification_util",
@@ -476,13 +488,14 @@ source_set("app_internal") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui",
     "//ios/chrome/browser/tabs/ui_bundled",
+    "//ios/chrome/browser/toolbar/ui_bundled:ui",
     "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui",
-    "//ios/chrome/browser/ui/toolbar:toolbar_ui",
+    "//ios/chrome/browser/ui/device_orientation",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/variations/model:ios_chrome_ui_string_overrider_factory",
@@ -507,6 +520,7 @@ source_set("app_internal") {
     "//ios/web/common:uikit",
     "//ios/web/public/webui",
     "//net",
+    "//rlz/buildflags",
     "//skia",
     "//ui/base",
     "//ui/gfx",
@@ -516,6 +530,13 @@ source_set("app_internal") {
 
   if (ios_enable_credential_provider_extension) {
     deps += [ ":credential_provider_migrator_app_agent" ]
+  }
+
+  if (enable_rlz) {
+    deps += [
+      "//components/rlz",
+      "//ios/chrome/browser/rlz",
+    ]
   }
 
   frameworks = [ "MediaPlayer.framework" ]
@@ -610,7 +631,7 @@ source_set("multitasking_test_app_delegate") {
   deps = [
     ":app_internal",
     "//base",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/third_party/material_components_ios",
   ]

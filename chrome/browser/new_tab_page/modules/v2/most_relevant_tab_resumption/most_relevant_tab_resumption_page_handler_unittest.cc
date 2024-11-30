@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/url_visit_types.mojom.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -276,8 +277,9 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits) {
               url_visit_mojom->url);
   }
 
-  histogram_tester.ExpectBucketCount("NewTabPage.Modules.DataRequest",
-                                     base::PersistentHash("tab_resumption"), 1);
+  histogram_tester.ExpectBucketCount(
+      "NewTabPage.Modules.DataRequest",
+      base::PersistentHash(ntp_modules::kMostRelevantTabResumptionModuleId), 1);
 }
 
 TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreURLVisit) {

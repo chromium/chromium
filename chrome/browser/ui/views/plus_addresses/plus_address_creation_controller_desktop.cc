@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
@@ -98,7 +99,6 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   }
 
   relevant_origin_ = main_frame_origin;
-  is_manual_fallback_ = is_manual_fallback;
   callback_ = std::move(callback);
 
   const bool should_show_notice = ShouldShowNotice();
@@ -147,7 +147,7 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
     // Note: this call may fail if this modal is confirmed on the same
     // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(
-        relevant_origin_, plus_profile_->plus_address, is_manual_fallback_,
+        relevant_origin_, plus_profile_->plus_address,
         base::BindOnce(
             &PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed,
             GetWeakPtr()));
@@ -280,11 +280,10 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
 
 void PlusAddressCreationControllerDesktop::TriggerUserPerceptionSurvey(
     hats::SurveyType survey_type) {
-  PlusAddressService* plus_address_service = GetPlusAddressService();
-  if (!plus_address_service) {
-    return;
+  if (autofill::ContentAutofillClient* autofill_client =
+          autofill::ContentAutofillClient::FromWebContents(&GetWebContents())) {
+    autofill_client->TriggerPlusAddressUserPerceptionSurvey(survey_type);
   }
-  plus_address_service->TriggerUserPerceptionSurvey(survey_type);
 }
 
 bool PlusAddressCreationControllerDesktop::ShouldShowNotice() const {

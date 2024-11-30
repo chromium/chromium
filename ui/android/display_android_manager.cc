@@ -5,6 +5,7 @@
 #include "ui/android/display_android_manager.h"
 
 #include <jni.h>
+
 #include <initializer_list>
 #include <map>
 
@@ -13,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/viz_utils.h"
+#include "skia/ext/skcolorspace_trfn.h"
 #include "ui/android/screen_android.h"
 #include "ui/android/ui_android_features.h"
 #include "ui/android/window_android.h"

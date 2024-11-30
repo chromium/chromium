@@ -89,8 +89,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                int new_group_index) override;
   void OnTabSelected(const LocalTabGroupID& group_id,
                      const LocalTabID& tab_id) override;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SaveGroup(SavedTabGroup group) override;
   void UnsaveGroup(const LocalTabGroupID& local_id) override;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                           std::string_view collaboration_id) override;
@@ -193,6 +195,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                              TriggerSource source);
   void NotifyTabGroupAdded(const base::Uuid& guid, TriggerSource source);
   void NotifyTabGroupUpdated(const base::Uuid& guid, TriggerSource source);
+  void NotifyTabGroupMigrated(const base::Uuid& new_group_guid,
+                              TriggerSource source);
 
   void HandleTabGroupRemoved(
       std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,
@@ -241,6 +245,19 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   bool TransitionSavedToSharedTabGroupIfNeeded(
       const SavedTabGroup& shared_group);
 
+  // Helper method called by NavigateTab() when UrlRestriction is retrieved.
+  void NavigateTabInternal(
+      const LocalTabGroupID& group_id,
+      const LocalTabID& tab_id,
+      const GURL& url,
+      const std::u16string& title,
+      const GURL& previous_tab_url,
+      const std::optional<proto::UrlRestriction>& url_restriction);
+
+  // Updates the list of saved tab groups which were transitioned to shared
+  // groups.
+  void UpdateTransitionedSavedTabGroupsList();
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
@@ -268,6 +285,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // from sync. UI can't handle these groups, hence the service needs to wait
   // before notifying the observers.
   std::set<base::Uuid> empty_groups_;
+
+  // Groups which were transitioned to shared.
+  std::set<base::Uuid> transitioned_saved_tab_groups_;
 
   // Keeps track of shared tab groups that are waiting for their respective
   // people groups to be available in DataSharingService backend. UI can't

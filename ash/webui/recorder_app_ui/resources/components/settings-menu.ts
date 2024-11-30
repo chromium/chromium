@@ -39,7 +39,6 @@ import {
 } from '../core/state/settings.js';
 import {
   enableTranscription,
-  setTranscriptionLanguage,
   toggleTranscriptionEnabled,
 } from '../core/state/transcription.js';
 import {HELP_URL} from '../core/url_constants.js';
@@ -173,8 +172,6 @@ export class SettingsMenu extends ReactiveLitElement {
   private readonly shouldShowLanguagePicker =
     this.platformHandler.isMultipleLanguageAvailable();
 
-  private readonly downloadPerfCollected = signal(false);
-
   private readonly transcriptionLanguageExpanded = signal(false);
 
   private readonly transcriptionConsentDialog =
@@ -182,17 +179,6 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
-
-  override updated(): void {
-    if (this.summaryDownloadRequested.value &&
-        !this.downloadPerfCollected.value &&
-        this.platformHandler.summaryModelLoader.state.value.kind ===
-          'installed') {
-      // TODO: b/367263595 - Collect perf in PlatformHandler instead.
-      this.platformHandler.perfLogger.finish('summaryModelDownload');
-      this.downloadPerfCollected.value = true;
-    }
-  }
 
   show(): void {
     this.dialog.value?.show();
@@ -326,7 +312,7 @@ export class SettingsMenu extends ReactiveLitElement {
       return nothing;
     }
     let description = '';
-    const selectedLanguage = settings.value.transcriptionLanguage;
+    const selectedLanguage = this.platformHandler.getSelectedLanguage();
     if (selectedLanguage !== null) {
       const sodaState = this.platformHandler.getSodaState(selectedLanguage);
       const langPackInfo =
@@ -452,13 +438,10 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private onInstallSodaClick() {
-    if (!toggleTranscriptionEnabled()) {
+    if (!enableTranscription()) {
       this.transcriptionConsentDialog.value?.show();
       return;
     }
-    // Forces transcription to be enabled.
-    enableTranscription();
-    setTranscriptionLanguage(LanguageCode.EN_US);
   }
 
   private get transcriptionEnabled() {

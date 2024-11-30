@@ -128,11 +128,6 @@ if (is_android) {
     sources = [ "proto/merchant_signal_db_content.proto" ]
   }
 } else {
-  proto_library("cart_db_content_proto") {
-    proto_in_dir = "//"
-    sources = [ "proto/cart_db_content.proto" ]
-  }
-
   proto_library("coupon_db_content_proto") {
     proto_in_dir = "//"
     sources = [ "proto/coupon_db_content.proto" ]
@@ -158,6 +153,11 @@ proto_library("commerce_subscription_db_content_proto") {
 proto_library("discounts_db_content_proto") {
   proto_in_dir = "//"
   sources = [ "proto/discounts_db_content.proto" ]
+}
+
+proto_library("cart_db_content_proto") {
+  proto_in_dir = "//"
+  sources = [ "proto/cart_db_content.proto" ]
 }
 
 source_set("commerce_heuristics_data") {
@@ -242,6 +242,7 @@ static_library("shopping_service") {
   ]
 
   deps = [
+    ":cart_db_content_proto",
     ":commerce_constants",
     ":commerce_info_cache",
     ":commerce_subscription_db_content_proto",

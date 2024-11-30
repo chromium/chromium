@@ -157,11 +157,6 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   capabilities_.needs_background_image = ui::OzonePlatform::GetInstance()
                                              ->GetPlatformRuntimeProperties()
                                              .needs_background_image;
-  capabilities_.supports_non_backed_solid_color_overlays =
-      ui::OzonePlatform::GetInstance()
-          ->GetPlatformRuntimeProperties()
-          .supports_non_backed_solid_color_buffers;
-
   capabilities_.supports_single_pixel_buffer =
       ui::OzonePlatform::GetInstance()
           ->GetPlatformRuntimeProperties()
@@ -313,7 +308,7 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
       DCHECK(overlay.color.has_value());
       DCHECK(capabilities_.supports_non_backed_solid_color_overlays ||
         capabilities_.supports_single_pixel_buffer);
-      presenter_->ScheduleOverlayPlane(overlay, nullptr, nullptr);
+      presenter_->ScheduleOverlayPlane(overlay, nullptr);
       continue;
     }
 #endif
@@ -326,39 +321,7 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
       access = overlay_data->scoped_read_access();
       pending_overlay_mailboxes_.emplace_back(mailbox);
     }
-
-    std::unique_ptr<gfx::GpuFence> acquire_fence;
-    if (context_state_->GrContextIsGL() && access &&
-        !overlay_has_been_submitted &&
-        access->representation()->usage().Has(
-            gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
-        gl::GLFence::IsGpuFenceSupported()) {
-      DCHECK(features::IsDelegatedCompositingEnabled());
-      // Create a single fence that will be duplicated and inserted into each
-      // overlay plane data. This avoids unnecessary cost as creating multiple
-      // number of fences at the end of each raster task at the ShareImage
-      // level is costly. Thus, at this point, the gpu tasks have been
-      // dispatched and it's safe to create just a single fence.
-      if (!current_frame_fence) {
-        // The GL fence below needs context to be current.
-        //
-        // SkiaOutputSurfaceImpl::SwapBuffers() - one of the methods in the call
-        // stack of to SkiaOutputDeviceBufferQueue::ScheduleOverlays() - used to
-        // schedule a MakeCurrent call. For power consumption and performance
-        // reasons, we delay the call to MakeCurrent 'till it is known to
-        // be needed.
-        context_state_->MakeCurrent(nullptr);
-
-        current_frame_fence = gl::GLFence::CreateForGpuFence()->GetGpuFence();
-      }
-
-      // Dup the fence - it must be inserted into each shared image before
-      // ScopedReadAccess is created.
-      acquire_fence = std::make_unique<gfx::GpuFence>(
-          current_frame_fence->GetGpuFenceHandle().Clone());
-    }
-
-    presenter_->ScheduleOverlayPlane(overlay, access, std::move(acquire_fence));
+    presenter_->ScheduleOverlayPlane(overlay, access);
   }
 }
 
@@ -494,8 +457,8 @@ void SkiaOutputDeviceBufferQueue::ReleaseOverlays() {
       return false;
     }
 
-    // Right now, only macOS and LaCros needs to return maliboxes of released
-    // overlays, so SkiaRenderer can unlock resources for them.
+    // SkiaRenderer wants to unlock resources for these released overlays as
+    // well, so store their mailboxes here.
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
     // The root render pass buffers are managed by SkiaRenderer so we don't need
     // to explicitly return them via callback.

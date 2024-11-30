@@ -26,6 +26,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -61,17 +62,15 @@ PodsOverflowTray::PodsOverflowTray(Shelf* shelf)
 
   // TODO(b/337925759): Make visible only when pods overflow on the shelf.
   TrayBackgroundView::SetVisiblePreferred(true);
+
+  // TODO(crbug.com/337963043): Update a11y strings.
+  GetViewAccessibility().SetName(u"Pods overflow tray");
 }
 
 PodsOverflowTray::~PodsOverflowTray() {
   if (bubble_) {
     bubble_->bubble_view()->ResetDelegate();
   }
-}
-
-std::u16string PodsOverflowTray::GetAccessibleNameForTray() {
-  // TODO(b/337963043): Update a11y strings.
-  return u"Pods overflow tray";
 }
 
 void PodsOverflowTray::HandleLocaleChange() {

@@ -14,10 +14,9 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
 
-import dagger.Lazy;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -27,7 +26,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
@@ -36,10 +34,7 @@ import org.chromium.url.GURL;
 
 import java.lang.reflect.Method;
 
-import javax.inject.Inject;
-
 /** Shows and hides splash screen for Webapps, WebAPKs and TWAs. */
-@ActivityScope
 public class SplashController extends CustomTabTabObserver
         implements InflationObserver, DestroyObserver {
     private static class SingleShotOnDrawListener implements ViewTreeObserver.OnDrawListener {
@@ -72,7 +67,7 @@ public class SplashController extends CustomTabTabObserver
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final TwaFinishHandler mFinishHandler;
     private final CustomTabActivityTabProvider mTabProvider;
-    private final Lazy<CompositorViewHolder> mCompositorViewHolder;
+    private final Supplier<CompositorViewHolder> mCompositorViewHolder;
 
     private SplashDelegate mDelegate;
 
@@ -85,8 +80,6 @@ public class SplashController extends CustomTabTabObserver
 
     /** The duration of the splash hide animation. */
     private long mSplashHideAnimationDurationMs;
-
-    private boolean mDidPreInflationStartup;
 
     /** Whether the splash hide animation was started. */
     private boolean mWasSplashHideAnimationStarted;
@@ -102,23 +95,27 @@ public class SplashController extends CustomTabTabObserver
 
     private ObserverList<SplashscreenObserver> mObservers;
 
-    @Inject
     public SplashController(
-            BaseCustomTabActivity activity,
-            CustomTabOrientationController orientationController,
-            Lazy<CompositorViewHolder> compositorViewHolder) {
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            TabObserverRegistrar tabObserverRegistrar,
+            TwaFinishHandler finishHandler,
+            CustomTabActivityTabProvider tabProvider,
+            Supplier<CompositorViewHolder> compositorViewHolder,
+            CustomTabOrientationController customTabOrientationController) {
         mActivity = activity;
-        mLifecycleDispatcher = activity.getLifecycleDispatcher();
-        mTabObserverRegistrar = activity.getTabObserverRegistrar();
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mTabObserverRegistrar = tabObserverRegistrar;
         mObservers = new ObserverList<>();
-        mFinishHandler = activity.getTwaFinishHandler();
-        mTabProvider = activity.getCustomTabActivityTabProvider();
+        mFinishHandler = finishHandler;
+        mTabProvider = tabProvider;
         mCompositorViewHolder = compositorViewHolder;
 
         mIsWindowInitiallyTranslucent =
                 BaseCustomTabActivity.isWindowInitiallyTranslucent(activity);
 
-        orientationController.delayOrientationRequestsIfNeeded(this, mIsWindowInitiallyTranslucent);
+        customTabOrientationController.delayOrientationRequestsIfNeeded(
+                this, mIsWindowInitiallyTranslucent);
 
         mLifecycleDispatcher.register(this);
         mTabObserverRegistrar.registerActivityTabObserver(this);
@@ -127,9 +124,7 @@ public class SplashController extends CustomTabTabObserver
     public void setConfig(SplashDelegate delegate, long splashHideAnimationDurationMs) {
         mDelegate = delegate;
         mSplashHideAnimationDurationMs = splashHideAnimationDurationMs;
-        if (mDidPreInflationStartup) {
-            showSplash();
-        }
+        showSplash();
     }
 
     /**
@@ -154,12 +149,7 @@ public class SplashController extends CustomTabTabObserver
     }
 
     @Override
-    public void onPreInflationStartup() {
-        mDidPreInflationStartup = true;
-        if (mDelegate != null) {
-            showSplash();
-        }
-    }
+    public void onPreInflationStartup() {}
 
     @Override
     public void onPostInflationStartup() {

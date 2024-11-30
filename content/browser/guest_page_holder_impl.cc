@@ -113,6 +113,7 @@ void GuestPageHolderImpl::DidStopLoading() {
   if (delegate_) {
     delegate_->GuestDidStopLoading();
   }
+  load_stop_callbacks_for_testing_.Notify();
 }
 
 bool GuestPageHolderImpl::IsHidden() {
@@ -170,7 +171,7 @@ bool GuestPageHolderImpl::ShouldPreserveAbortedURLs() {
 }
 
 void GuestPageHolderImpl::UpdateOverridingUserAgent() {
-  NOTIMPLEMENTED();
+  owner_web_contents_->UpdateOverridingUserAgent();
 }
 
 ForwardingAudioStreamFactory* GuestPageHolderImpl::GetAudioStreamFactory() {
@@ -193,8 +194,9 @@ const blink::RendererPreferences& GuestPageHolderImpl::GetRendererPrefs() {
   // Also disable drag/drop navigations.
   renderer_preferences_.can_accept_load_drops = false;
 
-  // TODO(crbug.com/40202416): Let the delegate make additional modifications.
-  // TODO(crbug.com/376085326): Apply user agent override.
+  if (delegate_) {
+    delegate_->GuestOverrideRendererPreferences(renderer_preferences_);
+  }
 
   return renderer_preferences_;
 }
@@ -225,6 +227,12 @@ GuestPageHolderImpl* GuestPageHolderImpl::FromRenderFrameHost(
   }
 
   return holder;
+}
+
+base::CallbackListSubscription
+GuestPageHolderImpl::RegisterLoadStopCallbackForTesting(
+    base::RepeatingClosure callback) {
+  return load_stop_callbacks_for_testing_.Add(callback);
 }
 
 }  // namespace content

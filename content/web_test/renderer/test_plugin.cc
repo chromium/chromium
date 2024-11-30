@@ -336,29 +336,18 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
       shared_bitmap_ = nullptr;
     }
   } else {
-    if (shared_image_interface_) {
-      const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
-      auto shared_image_mapping = shared_image_interface_->CreateSharedImage(
-          {format, rect_.size(), gfx::ColorSpace(),
-           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "TestPluginSharedBitmap"});
-      shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-          viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
-          std::move(shared_image_mapping.mapping), gfx::Rect(rect_).size(),
-          format);
-      shared_image_ = std::move(shared_image_mapping.shared_image);
-      sync_token_ = shared_image_interface_->GenVerifiedSyncToken();
-    } else {
-      viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-      base::MappedReadOnlyRegion shm =
-          viz::bitmap_allocation::AllocateSharedBitmap(
-              gfx::Rect(rect_).size(), viz::SinglePlaneFormat::kRGBA_8888);
-      shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-          id, std::move(shm.region), std::move(shm.mapping),
-          gfx::Rect(rect_).size(), viz::SinglePlaneFormat::kRGBA_8888);
+    DCHECK(shared_image_interface_);
+    const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
+    auto shared_image_mapping = shared_image_interface_->CreateSharedImage(
+        {format, rect_.size(), gfx::ColorSpace(),
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "TestPluginSharedBitmap"});
+    shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
+        viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
+        std::move(shared_image_mapping.mapping), gfx::Rect(rect_).size(),
+        format);
+    shared_image_ = std::move(shared_image_mapping.shared_image);
+    sync_token_ = shared_image_interface_->GenVerifiedSyncToken();
 
-      // The |shared_bitmap_|'s id will be registered when being given to the
-      // compositor.
-    }
     DrawSceneSoftware(shared_bitmap_->memory());
   }
 
@@ -374,13 +363,6 @@ v8::Local<v8::Object> TestPlugin::V8ScriptableObject(v8::Isolate* isolate) {
 }
 
 // static
-void TestPlugin::ReleaseSharedMemory(
-    scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap,
-    cc::SharedBitmapIdRegistration registration,
-    const gpu::SyncToken& sync_token,
-    bool lost) {}
-
-// static
 void TestPlugin::ReleaseSharedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
@@ -390,7 +372,6 @@ void TestPlugin::ReleaseSharedImage(
 }
 
 bool TestPlugin::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* resource,
     viz::ReleaseCallback* release_callback) {
   if (!content_changed_)
@@ -413,20 +394,8 @@ bool TestPlugin::PrepareTransferableResource(
     *release_callback = base::BindOnce(&ReleaseSharedImage,
                                        std::exchange(shared_image_, nullptr));
     sync_token_ = gpu::SyncToken();
-  } else if (shared_bitmap_) {
-    // The |bitmap_data_| is only used for a single compositor frame, so we
-    // know the SharedBitmapId in it was not registered yet.
-    cc::SharedBitmapIdRegistration registration =
-        bitmap_registrar->RegisterSharedBitmapId(shared_bitmap_->id(),
-                                                 shared_bitmap_);
-
-    *resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
-        shared_bitmap_->id(), gpu::SyncToken(), shared_bitmap_->size(),
-        viz::SinglePlaneFormat::kRGBA_8888);
-    *release_callback =
-        base::BindOnce(&ReleaseSharedMemory, std::move(shared_bitmap_),
-                       std::move(registration));
   }
+  resource->origin = kBottomLeft_GrSurfaceOrigin;
   resource->size = size;
   content_changed_ = false;
   return true;

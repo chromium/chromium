@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
+    style="@style/ListItemContainer">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/recent_activity_avatar_container_size"
+        android:layout_height="@dimen/recent_activity_avatar_container_size"
+        android:layout_marginEnd="@dimen/recent_activity_avatar_margin_end"
+        android:paddingTop="@dimen/recent_activity_padding_top_bottom"
+        android:paddingBottom="@dimen/recent_activity_padding_top_bottom"
+        android:scaleType="center"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no" />
+
+    <!-- Reuse common layout used for title/description of list items. -->
+    <include layout="@layout/title_and_description_layout" />
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/favicon"
+        style="@style/ListItemEndIcon" />
+
+</LinearLayout>

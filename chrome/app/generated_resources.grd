@@ -538,14 +538,14 @@ are declared in tools/grit/grit_rule.gni.
           </message>
         </if>
         <message name="IDS_FOCUS_HELP_BUBBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader users when a general help bubble is shown.">
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this bubble.
+          Press <ph name="ACCELERATOR">$1<ex>F6</ex></ph> to focus this bubble.
         </message>
         <message name="IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader when a help bubble pointing to a specific element is shown.">
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this bubble, then again to focus the element it is pointing to.
+          Press <ph name="ACCELERATOR">$1<ex>F6</ex></ph> to focus this bubble, then again to focus the element it is pointing to.
         </message>
         <message name="IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader when a help bubble that can start a tutorial is shown.">
           A series of tutorial bubbles with instructions will be displayed.
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus a bubble, then again to focus the element it is pointing to.
+          Press <ph name="ACCELERATOR">$1<ex>F6</ex></ph> to focus a bubble, then again to focus the element it is pointing to.
         </message>
       </if>
 
@@ -879,12 +879,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="The name of the Autofill context menu entry that will initiate filling using improved predictions." translateable="false">
             Autocomplete
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
-            Addresses and more
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
-            Payment methods
-          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
             Passwords and passkeys
           </message>
@@ -1215,12 +1209,6 @@ are declared in tools/grit/grit_rule.gni.
           <!-- TODO(359570730): remove non translateable flag  -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu." translateable="false">
             Autocomplete
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="In Title Case: The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
-            Addresses and More
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
-            Payment Methods
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
             Passwords and Passkeys
@@ -3175,10 +3163,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Status text for a download item that was interrupted and could not finish.">
         Couldn&#x2019;t finish download
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_BLOCKED_ORGANIZATION"
-               desc="Status text for a download item that was blocked by the organization.">
-        Blocked by your organization
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION"
                desc="Subpage summary text for a download item that was blocked by the organization.">
         Your organization blocked this file because it didn't meet a security policy
@@ -3891,7 +3875,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- Bluetooth Device Credentials (i.e. PIN/Passkey) dialog -->
-      <if expr="is_win or is_linux">
+      <if expr="is_win or is_linux or is_chromeos">
         <message name="IDS_BLUETOOTH_DEVICE_CREDENTIALS_TITLE" desc="Title of the Bluetooth device credentials prompt dialog.">
           Device Credentials
         </message>
@@ -4137,9 +4121,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are blocked.">
         Third-party cookies blocked
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_TITLE" desc="Title shown for the Tracking Protection bubble.">
-        Tracking Protection
-      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are allowed.">
         Third-party cookies allowed
       </message>
@@ -4185,15 +4166,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" desc="In the feedback text box accessible from the cookie controls bubble, this is the default text the user replaces with their feedback.">
         Tell us why you allowed third-party cookies on this site
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are allowed.">
-        Allowed
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are blocked.">
-        Blocked
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are limited.">
-        Limited
-      </message>
       <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are allowed on the current site.">
         Third-party cookies allowed
       </message>
@@ -4205,9 +4177,6 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL" desc="Label for the Page Action (omnibox) icon that highlights the Tracking Protection bubble entrypoint when cookies are blocked and we have high confidence that this is breaking the current site.">
         Site not working?
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL" desc="Tooltip for the Page Action (omnibox) icon for the Tracking Protection bubble entrypoint.">
-        Tracking Protection
       </message>
       <message name="IDS_COOKIE_CONTROLS_PROMO_TITLE" desc="Title of the in-product-help bubble shown for the cookie controls bubble. Indicates that cookies are blocked on the current site.">
         Third-party cookies blocked
@@ -4879,307 +4848,305 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- Task Manager Window -->
-      <if expr="not is_android">
-        <if expr="not use_titlecase">
-          <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button">
-            End process
-          </message>
-          <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column.">
-            Process ID
-          </message>
-          <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
-            GDI handles
-          </message>
-          <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
-            USER handles
-          </message>
-          <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column">
-            Task
-          </message>
-          <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
-            NaCl debug port
-          </message>
-          <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
-            Network
-          </message>
-          <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column">
-            CPU
-          </message>
-          <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
-            Start Time
-          </message>
-          <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time usage column">
-            CPU Time
-          </message>
-          <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process.">
-            Memory footprint
-          </message>
-          <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
-            Swapped memory
-          </message>
-          <message name="IDS_TASK_MANAGER_PROFILE_NAME_COLUMN" desc="The name of the column with the name of the profile in which the page is running, if any.">
-            Profile
-          </message>
-          <message name="IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN" desc="Task manager idle processor wakeups column">
-            Idle wake ups
-          </message>
-          <message name="IDS_TASK_MANAGER_HARD_FAULTS_COLUMN" desc="Task manager hard fault count column">
-            Hard faults
-          </message>
-          <message name="IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN" desc="Task manager open fds (file descriptors) count column">
-            File descriptors
-          </message>
-          <message name="IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN" desc="Task manager process priority column">
-            Process priority
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN" desc="Task manager WebCore image cache size column.">
-            Image cache
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN" desc="Task manager WebCore scripts cache size column.">
-            Script cache
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
-            CSS cache
-          </message>
-          <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column">
-            GPU memory
-          </message>
-          <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
-            SQLite memory
-          </message>
-          <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
-            JavaScript memory
-          </message>
-          <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
-            Keepalive count
-          </message>
-        </if>
-        <if expr="use_titlecase">
-          <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button">
-            End Process
-          </message>
-          <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column.">
-            Process ID
-          </message>
-          <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
-            GDI Handles
-          </message>
-          <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
-            USER Handles
-          </message>
-          <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
-            NaCl Debug Port
-          </message>
-          <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column">
-            Task
-          </message>
-          <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
-            Network
-          </message>
-          <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column">
-            CPU
-          </message>
-          <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
-            Start Time
-          </message>
-          <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time column. This is the time that this process actually occupies the CPU.">
-            CPU Time
-          </message>
-          <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process.">
-            Memory Footprint
-          </message>
-          <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
-            Swapped Memory
-          </message>
-          <message name="IDS_TASK_MANAGER_PROFILE_NAME_COLUMN" desc="The name of the column with the name of the profile in which the page is running, if any.">
-            Profile
-          </message>
-          <message name="IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN" desc="Task manager idle processor wakeups column">
-            Idle Wake Ups
-          </message>
-          <message name="IDS_TASK_MANAGER_HARD_FAULTS_COLUMN" desc="Task manager hard fault count column">
-            Hard Faults
-          </message>
-          <message name="IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN" desc="Task manager open fds (file descriptors) count column">
-            File Descriptors
-          </message>
-          <message name="IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN" desc="Task manager process priority column">
-            Process Priority
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN" desc="Task manager WebCore image cache size column.">
-            Image Cache
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN" desc="Task manager WebCore scripts cache size column.">
-            Script Cache
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
-            CSS Cache
-          </message>
-          <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column">
-            GPU Memory
-          </message>
-          <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
-            SQLite Memory
-          </message>
-          <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
-            JavaScript Memory
-          </message>
-          <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
-            Keepalive Count
-          </message>
-        </if>
-        <message name="IDS_TASK_MANAGER_MEM_CELL_TEXT" desc="The value displayed in the memory usage cells.">
-          <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K
+      <if expr="not use_titlecase">
+        <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button" formatter_data="android_java">
+          End process
         </message>
-        <message name="IDS_TASK_MANAGER_CACHE_SIZE_CELL_TEXT" desc="The value displayed in the cache size cells.">
-          <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K (<ph name="NUM_KILOBYTES_LIVE">$2<ex>5,000</ex></ph>K live)
+        <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column." formatter_data="android_java">
+          Process ID
         </message>
-        <message name="IDS_TASK_MANAGER_NA_CELL_TEXT" desc="The value displayed for resource usage when the information is not available, or not applicable to the process.">
-          &#8211;
+        <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
+          GDI handles
         </message>
-        <message name="IDS_TASK_MANAGER_BACKGROUNDED_TEXT" desc="The value displayed for a process with backgrounded priority">
-          Low
+        <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
+          USER handles
         </message>
-        <message name="IDS_TASK_MANAGER_FOREGROUNDED_TEXT" desc="The value displayed for a process with foregrounded priority">
-          Normal
+        <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
+          Task
         </message>
-        <message name="IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT" desc="The value displayed for an unknown NaCl debug stub port in the task manager.">
-          Unknown
+        <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
+          NaCl debug port
         </message>
-        <message name="IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT" desc="The value displayed for NaCl debug stub port in the task manager when the flag #enable-nacl-debug is disabled.">
-          Disabled
+        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
+          Network
         </message>
-        <message name="IDS_TASK_MANAGER_HANDLES_CELL_TEXT" desc="The value displayed in the user/gdi cells.">
-          <ph name="NUM_HANDLES">$1<ex>300</ex></ph> (<ph name="NUM_KILOBYTES_LIVE">$2<ex>500</ex></ph> peak)
+        <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
+          CPU
         </message>
-        <message name="IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT" desc="The text of the web browser process row">
-          Browser
+        <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
+          Start Time
         </message>
-        <message name="IDS_TASK_MANAGER_EXTENSION_PREFIX" desc="The prefix for a Task Manager extension row (always visible if the extension has a view)">
-          Extension: <ph name="EXTENSION_NAME">$1<ex>Sample Extension</ex></ph>
+        <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time usage column">
+          CPU Time
         </message>
-        <message name="IDS_TASK_MANAGER_EXTENSION_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito extension row (may not be visible if Incognito is not open)">
-          Incognito Extension: <ph name="EXTENSION_NAME">$1<ex>Sample Extension</ex></ph>
+        <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process." formatter_data="android_java">
+          Memory footprint
         </message>
-        <message name="IDS_TASK_MANAGER_APP_PREFIX" desc="The prefix for a Task Manager app row (always visible if the app has a view)">
-          App: <ph name="APP_NAME">$1<ex>Sample App</ex></ph>
+        <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
+          Swapped memory
         </message>
-        <message name="IDS_TASK_MANAGER_APP_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito app row (may not be visible if the app is not open in Incognito)">
-          Incognito App: <ph name="APP_NAME">$1<ex>Sample App</ex></ph>
+        <message name="IDS_TASK_MANAGER_PROFILE_NAME_COLUMN" desc="The name of the column with the name of the profile in which the page is running, if any.">
+          Profile
         </message>
-        <message name="IDS_TASK_MANAGER_TAB_PREFIX" desc="The prefix for a Task Manager Tab row">
-          Tab: <ph name="TAB_NAME">$1<ex>Google</ex></ph>
+        <message name="IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN" desc="Task manager idle processor wakeups column">
+          Idle wake ups
         </message>
-        <message name="IDS_TASK_MANAGER_TAB_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito Tab row (may not be visible if Incognito is not open)">
-          Incognito Tab: <ph name="TAB_NAME">$1<ex>Google</ex></ph>
+        <message name="IDS_TASK_MANAGER_HARD_FAULTS_COLUMN" desc="Task manager hard fault count column">
+          Hard faults
         </message>
-        <message name="IDS_TASK_MANAGER_BACKGROUND_APP_PREFIX" desc="The prefix for a Task Manager background app task representing a BackgroundContents">
-          Background App: <ph name="BACKGROUND_APP_URL">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN" desc="Task manager open fds (file descriptors) count column">
+          File descriptors
         </message>
-        <message name="IDS_TASK_MANAGER_BACKGROUND_PREFIX" desc="The prefix for a Task Manager background page row">
-          Background Page: <ph name="BACKGROUND_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN" desc="Task manager process priority column">
+          Process priority
         </message>
-        <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX" desc="The prefix for a page stored in the Back/Forward Cache">
-          Back/Forward Cached Page: <ph name="BACK_FORWARD_CACHE_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN" desc="Task manager WebCore image cache size column.">
+          Image cache
         </message>
-        <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_PREFIX" desc="The prefix for an Incognito page stored in the Back/Forward Cache">
-          Incognito Back/Forward Cached Page: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN" desc="Task manager WebCore scripts cache size column.">
+          Script cache
         </message>
-        <message name="IDS_TASK_MANAGER_PLUGIN_PREFIX" desc="The prefix for a Task Manager plugin row">
-          Plugin: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
+        <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
+          CSS cache
         </message>
-        <message name="IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX" desc="Task Manager row for PPAPI plugin broker, which provides additional access for PPAPI plugins">
-          Plugin Broker: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
+        <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column">
+          GPU memory
         </message>
-        <message name="IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI" desc="Task Manager row for the render process that is preloaded with Top Chrome WebUI resources.">
-          Preloaded UI Renderer
+        <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
+          SQLite memory
         </message>
-        <!-- TODO(liuwilliam): crbug/1325318 renaming the rest of existing Prerender to NoStatePrefetch -->
-        <message name="IDS_TASK_MANAGER_NO_STATE_PREFETCH_PREFIX" desc="The prefix for a Task Manager No State Prefetch row">
-          Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
+          JavaScript memory
         </message>
-        <message name="IDS_TASK_MANAGER_PRERENDER_PREFIX" desc="The prefix for a Task Manager Prerender2 row">
-          Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SPARE_RENDERER_PREFIX" desc="Task Manager row for a 'spare' render process. That is a render process that was started in anticipation of it being needed so that when it is needed it is immediately ready for use">
-          Spare Renderer
-        </message>
-        <message name="IDS_TASK_MANAGER_UNKNOWN_RENDERER_PREFIX" desc="Task Manager row for an 'unknown' render process. That is a render process that the Task Manager knows is running, but that the Task Manager doesn't have any other information about, so that it is unable to present it to the user classified more precisely">
-          Renderer
-        </message>
-        <message name="IDS_TASK_MANAGER_DEDICATED_WORKER_PREFIX" desc="The prefix for a Task Manager dedicated worker row">
-          Dedicated Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/dedicated-worker/basic/dedicated-worker.js</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SHARED_WORKER_PREFIX" desc="The prefix for a Task Manager shared worker row">
-          Shared Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/shared-worker/basic/shared-worker.js</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SERVICE_WORKER_PREFIX" desc="The prefix for a Task Manager service worker row">
-          Service Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/service-worker/basic/service-worker.js</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_UNKNOWN_PLUGIN_NAME" desc="The prefix for a Task Manager plugin row">
-          Unknown plugin
-        </message>
-        <message name="IDS_TASK_MANAGER_UTILITY_PREFIX" desc="The prefix for a utility process row">
-          Utility: <ph name="UTILITY_TYPE">$1<ex>Image Decoder</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_NACL_PREFIX" desc="The prefix for a Task Manager Native Client module row">
-          Native Client module: <ph name="NEXE_NAME">$1<ex>Unknown Native Client module</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_NACL_BROKER_PREFIX" desc="Task Manager row for Native Client broker, which acts as the sanbox manager for NaCl processes">
-          Native Client security manager
-        </message>
-        <message name="IDS_TASK_MANAGER_GPU_PREFIX" desc="Task Manager row for the GPU process, which is the process doing all accelerated graphics rendering">
-          GPU Process
-        </message>
-        <message name="IDS_TASK_MANAGER_PRINT_PREFIX" desc="The prefix for a print preview process row in the Task Manager">
-          Print: <ph name="PRINT_NAME">$1<ex>Google Maps</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SUBFRAME_PREFIX" desc="The prefix for a out-of-process-iframe row in the Task Manager (these processes are created when site isolation is enabled)">
-          Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SUBFRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito out-of-process-iframe process row in the Task Manager (these processes are created when site isolation is enabled, in Incognito mode)">
-          Incognito Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_SUBFRAME_PREFIX" desc="The prefix for a out-of-process-iframe row stored in the Back/Forward Cache">
-          Back/Forward Cached Subframe: <ph name="BACK_FORWARD_CACHE_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_SUBFRAME_PREFIX" desc="The prefix for an Incognito out-of-process-iframe row stored in the Back/Forward Cache">
-          Incognito Back/Forward Cached Subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_PORTAL_PREFIX" desc="The prefix for a portal row in the Task Manager (these processes are created when portals is enabled)">
-          Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_PORTAL_INCOGNITO_PREFIX" desc="The prefix for an Incognito portal row in the Task Manager (these processes are created when portals is enabled, in Incognito mode)">
-          Incognito Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_FENCED_FRAME_PREFIX" desc="The prefix for a fenced frame row in the Task Manager">
-          Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_FENCED_FRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito fenced frame row in the Task Manager">
-          Incognito Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_ARC_PREFIX" desc="The prefix for an ARC general process row">
-          App: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_TOOL_PREFIX" desc="The prefix for a tool process row in the Task Manager">
-          Tool: <ph name="PRINT_NAME">$1<ex>Manage People</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_ARC_PREFIX_BACKGROUND_SERVICE" desc="The prefix for an ARC service process row">
-          Service: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_ARC_PREFIX_RECEIVER" desc="The prefix for an ARC receiver process row">
-          Receiver: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_ARC_SYSTEM" desc="The prefix for an ARC system processes row">
-          System: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_LINUX_VM_PREFIX" desc="The prefix for a Linux virtual machine row">
-          Linux Virtual Machine: <ph name="LINUX_VM_NAME">$1<ex>termina</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_PLUGIN_VM_PREFIX" desc="A row in the task manager for a Parallels Desktop Virtual Machine. Parallels Desktop is a 3rd-party product name that should remain in English.">
-          Parallels Desktop: <ph name="PLUGIN_VM_NAME">$1<ex>PvmDefault</ex></ph>
+        <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
+          Keepalive count
         </message>
       </if>
+      <if expr="use_titlecase">
+        <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button" formatter_data="android_java">
+          End Process
+        </message>
+        <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column." formatter_data="android_java">
+          Process ID
+        </message>
+        <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
+          GDI Handles
+        </message>
+        <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
+          USER Handles
+        </message>
+        <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
+          NaCl Debug Port
+        </message>
+        <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
+          Task
+        </message>
+        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
+          Network
+        </message>
+        <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
+          CPU
+        </message>
+        <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
+          Start Time
+        </message>
+        <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time column. This is the time that this process actually occupies the CPU.">
+          CPU Time
+        </message>
+        <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process." formatter_data="android_java">
+          Memory Footprint
+        </message>
+        <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
+          Swapped Memory
+        </message>
+        <message name="IDS_TASK_MANAGER_PROFILE_NAME_COLUMN" desc="The name of the column with the name of the profile in which the page is running, if any.">
+          Profile
+        </message>
+        <message name="IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN" desc="Task manager idle processor wakeups column">
+          Idle Wake Ups
+        </message>
+        <message name="IDS_TASK_MANAGER_HARD_FAULTS_COLUMN" desc="Task manager hard fault count column">
+          Hard Faults
+        </message>
+        <message name="IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN" desc="Task manager open fds (file descriptors) count column">
+          File Descriptors
+        </message>
+        <message name="IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN" desc="Task manager process priority column">
+          Process Priority
+        </message>
+        <message name="IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN" desc="Task manager WebCore image cache size column.">
+          Image Cache
+        </message>
+        <message name="IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN" desc="Task manager WebCore scripts cache size column.">
+          Script Cache
+        </message>
+        <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
+          CSS Cache
+        </message>
+        <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column">
+          GPU Memory
+        </message>
+        <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
+          SQLite Memory
+        </message>
+        <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
+          JavaScript Memory
+        </message>
+        <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
+          Keepalive Count
+        </message>
+      </if>
+      <message name="IDS_TASK_MANAGER_MEM_CELL_TEXT" desc="The value displayed in the memory usage cells.">
+        <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K
+      </message>
+      <message name="IDS_TASK_MANAGER_CACHE_SIZE_CELL_TEXT" desc="The value displayed in the cache size cells.">
+        <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K (<ph name="NUM_KILOBYTES_LIVE">$2<ex>5,000</ex></ph>K live)
+      </message>
+      <message name="IDS_TASK_MANAGER_NA_CELL_TEXT" desc="The value displayed for resource usage when the information is not available, or not applicable to the process.">
+        &#8211;
+      </message>
+      <message name="IDS_TASK_MANAGER_BACKGROUNDED_TEXT" desc="The value displayed for a process with backgrounded priority">
+        Low
+      </message>
+      <message name="IDS_TASK_MANAGER_FOREGROUNDED_TEXT" desc="The value displayed for a process with foregrounded priority">
+        Normal
+      </message>
+      <message name="IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT" desc="The value displayed for an unknown NaCl debug stub port in the task manager.">
+        Unknown
+      </message>
+      <message name="IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT" desc="The value displayed for NaCl debug stub port in the task manager when the flag #enable-nacl-debug is disabled.">
+        Disabled
+      </message>
+      <message name="IDS_TASK_MANAGER_HANDLES_CELL_TEXT" desc="The value displayed in the user/gdi cells.">
+        <ph name="NUM_HANDLES">$1<ex>300</ex></ph> (<ph name="NUM_KILOBYTES_LIVE">$2<ex>500</ex></ph> peak)
+      </message>
+      <message name="IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT" desc="The text of the web browser process row">
+        Browser
+      </message>
+      <message name="IDS_TASK_MANAGER_EXTENSION_PREFIX" desc="The prefix for a Task Manager extension row (always visible if the extension has a view)">
+        Extension: <ph name="EXTENSION_NAME">$1<ex>Sample Extension</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_EXTENSION_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito extension row (may not be visible if Incognito is not open)">
+        Incognito Extension: <ph name="EXTENSION_NAME">$1<ex>Sample Extension</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_APP_PREFIX" desc="The prefix for a Task Manager app row (always visible if the app has a view)">
+        App: <ph name="APP_NAME">$1<ex>Sample App</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_APP_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito app row (may not be visible if the app is not open in Incognito)">
+        Incognito App: <ph name="APP_NAME">$1<ex>Sample App</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_TAB_PREFIX" desc="The prefix for a Task Manager Tab row">
+        Tab: <ph name="TAB_NAME">$1<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_TAB_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito Tab row (may not be visible if Incognito is not open)">
+        Incognito Tab: <ph name="TAB_NAME">$1<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACKGROUND_APP_PREFIX" desc="The prefix for a Task Manager background app task representing a BackgroundContents">
+        Background App: <ph name="BACKGROUND_APP_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACKGROUND_PREFIX" desc="The prefix for a Task Manager background page row">
+        Background Page: <ph name="BACKGROUND_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX" desc="The prefix for a page stored in the Back/Forward Cache">
+        Back/Forward Cached Page: <ph name="BACK_FORWARD_CACHE_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_PREFIX" desc="The prefix for an Incognito page stored in the Back/Forward Cache">
+        Incognito Back/Forward Cached Page: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PLUGIN_PREFIX" desc="The prefix for a Task Manager plugin row">
+        Plugin: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX" desc="Task Manager row for PPAPI plugin broker, which provides additional access for PPAPI plugins">
+        Plugin Broker: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI" desc="Task Manager row for the render process that is preloaded with Top Chrome WebUI resources.">
+        Preloaded UI Renderer
+      </message>
+      <!-- TODO(liuwilliam): crbug/1325318 renaming the rest of existing Prerender to NoStatePrefetch -->
+      <message name="IDS_TASK_MANAGER_NO_STATE_PREFETCH_PREFIX" desc="The prefix for a Task Manager No State Prefetch row">
+        Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PRERENDER_PREFIX" desc="The prefix for a Task Manager Prerender2 row">
+        Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SPARE_RENDERER_PREFIX" desc="Task Manager row for a 'spare' render process. That is a render process that was started in anticipation of it being needed so that when it is needed it is immediately ready for use">
+        Spare Renderer
+      </message>
+      <message name="IDS_TASK_MANAGER_UNKNOWN_RENDERER_PREFIX" desc="Task Manager row for an 'unknown' render process. That is a render process that the Task Manager knows is running, but that the Task Manager doesn't have any other information about, so that it is unable to present it to the user classified more precisely">
+        Renderer
+      </message>
+      <message name="IDS_TASK_MANAGER_DEDICATED_WORKER_PREFIX" desc="The prefix for a Task Manager dedicated worker row">
+        Dedicated Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/dedicated-worker/basic/dedicated-worker.js</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SHARED_WORKER_PREFIX" desc="The prefix for a Task Manager shared worker row">
+        Shared Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/shared-worker/basic/shared-worker.js</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SERVICE_WORKER_PREFIX" desc="The prefix for a Task Manager service worker row">
+        Service Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/service-worker/basic/service-worker.js</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_UNKNOWN_PLUGIN_NAME" desc="The prefix for a Task Manager plugin row">
+        Unknown plugin
+      </message>
+      <message name="IDS_TASK_MANAGER_UTILITY_PREFIX" desc="The prefix for a utility process row">
+        Utility: <ph name="UTILITY_TYPE">$1<ex>Image Decoder</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_NACL_PREFIX" desc="The prefix for a Task Manager Native Client module row">
+        Native Client module: <ph name="NEXE_NAME">$1<ex>Unknown Native Client module</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_NACL_BROKER_PREFIX" desc="Task Manager row for Native Client broker, which acts as the sanbox manager for NaCl processes">
+        Native Client security manager
+      </message>
+      <message name="IDS_TASK_MANAGER_GPU_PREFIX" desc="Task Manager row for the GPU process, which is the process doing all accelerated graphics rendering">
+        GPU Process
+      </message>
+      <message name="IDS_TASK_MANAGER_PRINT_PREFIX" desc="The prefix for a print preview process row in the Task Manager">
+        Print: <ph name="PRINT_NAME">$1<ex>Google Maps</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SUBFRAME_PREFIX" desc="The prefix for a out-of-process-iframe row in the Task Manager (these processes are created when site isolation is enabled)">
+        Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SUBFRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito out-of-process-iframe process row in the Task Manager (these processes are created when site isolation is enabled, in Incognito mode)">
+        Incognito Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_SUBFRAME_PREFIX" desc="The prefix for a out-of-process-iframe row stored in the Back/Forward Cache">
+        Back/Forward Cached Subframe: <ph name="BACK_FORWARD_CACHE_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_SUBFRAME_PREFIX" desc="The prefix for an Incognito out-of-process-iframe row stored in the Back/Forward Cache">
+        Incognito Back/Forward Cached Subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PORTAL_PREFIX" desc="The prefix for a portal row in the Task Manager (these processes are created when portals is enabled)">
+        Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PORTAL_INCOGNITO_PREFIX" desc="The prefix for an Incognito portal row in the Task Manager (these processes are created when portals is enabled, in Incognito mode)">
+        Incognito Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_FENCED_FRAME_PREFIX" desc="The prefix for a fenced frame row in the Task Manager">
+        Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_FENCED_FRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito fenced frame row in the Task Manager">
+        Incognito Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_PREFIX" desc="The prefix for an ARC general process row">
+        App: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_TOOL_PREFIX" desc="The prefix for a tool process row in the Task Manager">
+        Tool: <ph name="PRINT_NAME">$1<ex>Manage People</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_PREFIX_BACKGROUND_SERVICE" desc="The prefix for an ARC service process row">
+        Service: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_PREFIX_RECEIVER" desc="The prefix for an ARC receiver process row">
+        Receiver: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_SYSTEM" desc="The prefix for an ARC system processes row">
+        System: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_LINUX_VM_PREFIX" desc="The prefix for a Linux virtual machine row">
+        Linux Virtual Machine: <ph name="LINUX_VM_NAME">$1<ex>termina</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PLUGIN_VM_PREFIX" desc="A row in the task manager for a Parallels Desktop Virtual Machine. Parallels Desktop is a 3rd-party product name that should remain in English.">
+        Parallels Desktop: <ph name="PLUGIN_VM_NAME">$1<ex>PvmDefault</ex></ph>
+      </message>
 
       <if expr="chromeos_ash">
         <message name="IDS_UTILITY_PROCESS_IPP_PARSER_SERVICE_NAME" desc="The name of the utility process used for parsing IPP requests out-of-process.">
@@ -5804,6 +5771,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_NETWORK_INFORMATION" desc="Permission string for accessing network information.">
             Read ChromeOS network information
           </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_OMNIBOX_DIRECT_INPUT" desc="Permission string for omnibox labs.">
+            Always read keyboard input in the address bar
+        </message>
         </if>
       </if>
 
@@ -8840,6 +8810,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_SIGN_IN_BUTTON_TEXT" desc="Text shown on the Microsoft Authentication module's sign in button.">
        Sign in with Microsoft
       </message>
+      <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION" desc="Text in the side panel describing the Microsoft Authentication module.">
+       If this card is disabled, your Microsoft cards such as Sharepoint and Outlook Calendar will be disabled as well.
+      </message>
 
       <!-- Mobile NTP Middle Slot Promo -->
       <message name="IDS_NTP_MOBILE_PROMO_HEADER" desc="Header for a promo that shows on the Desktop NTP prompting user to scan a QR code with their mobile device">
@@ -9758,6 +9731,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
         Review inactive tabs
       </message>
+      <message name="IDS_TOOLTIP_TAB_DECLUTTER_WITH_DEDUPE" desc="The tooltip for the Tab Declutter button.">
+        Clean up unused tabs?
+      </message>
+      <message name="IDS_TAB_DECLUTTER_WITH_DEDUPE" desc="The text label of the Tab Declutter button.">
+        Clean up unused tabs?
+      </message>
+      <message name="IDS_ACCNAME_TAB_DECLUTTER_WITH_DEDUPE" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
+        Clean up unused tabs
+      </message>
       <message name="IDS_DECLUTTER_TIMESTAMP" desc="The description of when a tab was last accessed, for use in a declutter row.">
         {NUM_DAYS, plural,
           =0 {Visited 0 days ago}
@@ -9784,6 +9766,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_DECLUTTER_CLOSE_TAB_TOOLTIP" desc="The declutter tooltip for the button which excludes a tab from the list">
         Remove tab from list
+      </message>
+      <message name="IDS_DECLUTTER_A11Y_TAB_EXCLUDED" desc="A11y message after user clicks on the close tab button in the declutter list item." is_accessibility_with_no_ui="true">
+        Tab excluded from list
       </message>
       <!-- Strings for tab organization -->
       <message name="IDS_TOOLTIP_TAB_ORGANIZE" desc="The tooltip for the Tab Organization button.">
@@ -10028,6 +10013,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_ACCNAME_EXIT_FULLSCREEN" desc="The accessible name of the exit fullscreen button in the new merged menu">
         Exit full screen
+      </message>
+      <message name="IDS_ACCNAME_FULLSCREEN_DISABLED" desc="The accessible name of the disabled fullscreen button in the new merged menu">
+        Full screen disabled
       </message>
       <message name="IDS_ACCNAME_HOME" desc="The accessible name for the home button">
         Home
@@ -11093,12 +11081,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Error details:
         </message>
       </if>
-      <if expr="is_win or chromeos_ash">
+      <if expr="is_win or is_macosx or chromeos_ash">
         <message name="IDS_UPGRADE_DISABLED_BY_POLICY" desc="Status label: Upgrades disabled by policy">
           Updates are disabled by your administrator.
         </message>
       </if>
-      <if expr="is_win">
+      <if expr="is_win or is_macosx">
         <message name="IDS_UPGRADE_DISABLED_BY_POLICY_MANUAL" desc="Status label: Manual upgrades disabled by policy, automatic upgrades ok">
           Automatic updates are enabled. Manual updates are disabled by your administrator.
         </message>
@@ -11657,6 +11645,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_TAB_ORGANIZATION_BACK_BUTTON_ARIA_LABEL" desc="Accessibility label for the back button within a tab organization subpage." is_accessibility_with_no_ui="true">
         Click to navigate away from <ph name="TITLE">$1<ex>Auto Tab Groups</ex></ph>
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_A11Y_TAB_EXCLUDED" desc="A11y message after user clicks on the close tab button in the tab organization list item." is_accessibility_with_no_ui="true">
+        Tab excluded from suggested group
       </message>
 
       <!-- Strings for Window Titles in Menus -->
@@ -14358,98 +14349,96 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
-      <!-- Android uses native UI to handle Sync settings -->
-      <if expr="not is_android">
-        <!-- Sync options dialog strings -->
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_OVERVIEW" desc="The message that appears in the options dialog when sync has not been set up by the user.">
-            Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.
-          </message>
-        </if>
-        <message name="IDS_SYNC_START_SYNC_BUTTON_LABEL" desc="The label that appears on the sync button in the options dialog when sync has not been set up by the user.">
-          Sign in to <ph name="PRODUCT_NAME">$1<ex>Chrome</ex></ph>
-        </message>
-        <message name="IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY" desc="The message that appears in the settings page indicating that user is signed in, but sync is disabled by enterprise policy.">
-          Sync is disabled by your administrator.
-        </message>
-        <if expr="chromeos_ash">
-          <message name="IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD" desc="The message that appears in the settings page indicating that user is signed in, but sync has been stopped via the Google dashboard.">
-            Sync has been stopped via the Google Dashboard.
-          </message>
-        </if>
-        <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The message that appears in the settings page indicating that user is signed in, but sync hasn't started because the sync settings haven't been confirmed.">
-          Confirm sync settings to start sync.
-        </message>
-        <message name="IDS_SYNC_SETUP_IN_PROGRESS" desc="The message to display in the settings page when the sync setup is underway.">
-          Setup in progress...
-        </message>
-        <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown on the personal options page when there is an unrecoverable error.">
-          Sync isn't working. Try signing in again.
-        </message>
-        <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in ChromeOS as well as for managed accounts.">
-          Sync isn't working. Try signing out and back in again.
-        </message>
-        <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD" desc="Message indicating user must re-enter their sync password.">
-          Enter your passphrase to sync your data
-        </message>
-        <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON" desc="Button indicating user must re-enter their sync password.">
-          Enter passphrase
-        </message>
-        <message name="IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON" desc="Button indicating user must reauthenticate to sync encrypted datatypes.">
-          Verify it's you
-        </message>
-
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign in again to use sync.">
-            Sign in again to resume sync
-          </message>
-        </if>
-        <if expr="chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign out and sign in again to use sync on ChromeOS.">
-            Sign out then sign in again to start sync
-          </message>
-        </if>
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign in again to use sync.">
-            Sign in again
-          </message>
-        </if>
-        <if expr="chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on ChromeOS.">
-            Sign out
-          </message>
-          <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
-            Your account sign-in details are out of date. Please sign out and sign in again.
-          </message>
-          <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_EXPIRED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to change their password.">
-            Your password has expired. Please sign out then sign in again to change it.
-          </message>
-          <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_CHANGED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to update local password to cryptohome.">
-            Your password has been changed on the server. Please sign out then sign in again.
-          </message>
-          <message name="IDS_ACTIVE_DIRECTORY_REFRESH_AUTH_TOKEN" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to get authentication token.">
-            Failed to get authentication token. Please sign out then sign in again to try again.
-          </message>
-        </if>
-        <message name="IDS_SYNC_ADVANCED_OPTIONS" desc="The text in the link that brings up the sync configure screen in the new tab page new data type notification.">
-          Advanced settings
-        </message>
-
-        <if expr="chromeos_ash">
-          <!-- Spinner dialog for waiting sync backend to start up -->
-          <message name="IDS_SYNC_SETUP_SPINNER_TITLE" desc="The title of the sync setup dialog showing spinner.">
-            Please wait...
-          </message>
-        </if>
-
-        <!-- Encryption tab of the configure sync dialog -->
-        <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM" desc="Text of the radio that when selected enables full encryption.">
-          Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.
-        </message>
-        <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
-          Data was encrypted with your sync passphrase on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
+      <!-- Sync options dialog strings -->
+      <message name="IDS_SYNC_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required." translateable="false"></message>
+      <if expr="not chromeos_ash">
+        <message name="IDS_SYNC_OVERVIEW" desc="The message that appears in the options dialog when sync has not been set up by the user.">
+          Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.
         </message>
       </if>
+      <message name="IDS_SYNC_START_SYNC_BUTTON_LABEL" desc="The label that appears on the sync button in the options dialog when sync has not been set up by the user.">
+        Sign in to <ph name="PRODUCT_NAME">$1<ex>Chrome</ex></ph>
+      </message>
+      <message name="IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY" desc="The message that appears in the settings page indicating that user is signed in, but sync is disabled by enterprise policy.">
+        Sync is disabled by your administrator.
+      </message>
+      <if expr="chromeos_ash">
+        <message name="IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD" desc="The message that appears in the settings page indicating that user is signed in, but sync has been stopped via the Google dashboard.">
+          Sync has been stopped via the Google Dashboard.
+        </message>
+      </if>
+      <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The message that appears in the settings page indicating that user is signed in, but sync hasn't started because the sync settings haven't been confirmed.">
+        Confirm sync settings to start sync.
+      </message>
+      <message name="IDS_SYNC_SETUP_IN_PROGRESS" desc="The message to display in the settings page when the sync setup is underway.">
+        Setup in progress...
+      </message>
+      <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown on the personal options page when there is an unrecoverable error.">
+        Sync isn't working. Try signing in again.
+      </message>
+      <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in ChromeOS as well as for managed accounts.">
+        Sync isn't working. Try signing out and back in again.
+      </message>
+      <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD" desc="Message indicating user must re-enter their sync password.">
+        Enter your passphrase to sync your data
+      </message>
+      <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON" desc="Button indicating user must re-enter their sync password.">
+        Enter passphrase
+      </message>
+      <message name="IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON" desc="Button indicating user must reauthenticate to sync encrypted datatypes.">
+        Verify it's you
+      </message>
+
+      <if expr="not chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign in again to use sync.">
+          Sign in again to resume sync
+        </message>
+      </if>
+      <if expr="chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign out and sign in again to use sync on ChromeOS.">
+          Sign out then sign in again to start sync
+        </message>
+      </if>
+      <if expr="not chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign in again to use sync.">
+          Sign in again
+        </message>
+      </if>
+      <if expr="chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on ChromeOS.">
+          Sign out
+        </message>
+        <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
+          Your account sign-in details are out of date. Please sign out and sign in again.
+        </message>
+        <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_EXPIRED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to change their password.">
+          Your password has expired. Please sign out then sign in again to change it.
+        </message>
+        <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_CHANGED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to update local password to cryptohome.">
+          Your password has been changed on the server. Please sign out then sign in again.
+        </message>
+        <message name="IDS_ACTIVE_DIRECTORY_REFRESH_AUTH_TOKEN" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to get authentication token.">
+          Failed to get authentication token. Please sign out then sign in again to try again.
+        </message>
+      </if>
+      <message name="IDS_SYNC_ADVANCED_OPTIONS" desc="The text in the link that brings up the sync configure screen in the new tab page new data type notification.">
+        Advanced settings
+      </message>
+
+      <if expr="chromeos_ash">
+        <!-- Spinner dialog for waiting sync backend to start up -->
+        <message name="IDS_SYNC_SETUP_SPINNER_TITLE" desc="The title of the sync setup dialog showing spinner.">
+          Please wait...
+        </message>
+      </if>
+
+      <!-- Encryption tab of the configure sync dialog -->
+      <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM" desc="Text of the radio that when selected enables full encryption.">
+        Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.
+      </message>
+      <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
+        Data was encrypted with your sync passphrase on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
+      </message>
 
       <!-- Translate Bubble -->
       <if expr="toolkit_views">
@@ -18663,7 +18652,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           =1 {Chrome removed permissions from 1 site}
           other {Chrome removed permissions from {NUM_SITES} sites}}
         </message>
-        <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" translateable="false">
+        <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" desc="Summary for the compromised passwords Safety Check module on the Magic Stack. Shown when Safety Check has identified insecure credentials.">
           {NUM_SITES, plural,
           =1 {Found 1 compromised password}
           other {Found {NUM_SITES} compromised passwords}}
@@ -18694,6 +18683,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_SELECT_AUDIO_OUTPUT_DIALOG_CHOOSE_DEVICE" desc="Text displayed above the list of audio output devices in the selection dialog.">
       Choose an audio output device
+    </message>
+
+    <!-- Internal debug pages disabled interstitial. -->
+    <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING" desc="This is the heading for the page that appears when a user attempts to load an internal developer debugging page when such pages are disabled by a pref.">
+      Internal debugging pages are currently disabled.
     </message>
   </messages>
 </release>

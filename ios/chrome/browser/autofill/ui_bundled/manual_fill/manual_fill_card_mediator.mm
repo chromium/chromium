@@ -23,11 +23,11 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card+CreditCard.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -297,7 +297,7 @@ std::vector<CreditCard> FetchCards(
   if (IsKeyboardAccessoryUpgradeEnabled() && !cardArtURL.is_empty() &&
       cardArtURL.is_valid()) {
     gfx::Image* image = _personalDataManager->payments_data_manager()
-                            .GetCreditCardArtImageForUrl(cardArtURL);
+                            .GetCachedCardArtImageForUrl(cardArtURL);
     if (image) {
       return image->ToUIImage();
     }
@@ -342,10 +342,6 @@ std::vector<CreditCard> FetchCards(
   [self.contentInjector userDidPickContent:fillValue
                              passwordField:NO
                              requiresHTTPS:YES];
-}
-
-- (void)onFullCardRequestFailed {
-  // This is called on user cancelling, so there's nothing to do here.
 }
 
 @end

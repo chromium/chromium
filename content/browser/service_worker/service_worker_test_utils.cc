@@ -194,7 +194,7 @@ class ResourceWriter {
 
   void DidWriteResponseHead(int result) {
     DCHECK_GE(result, 0);
-    mojo_base::BigBuffer buffer(base::as_bytes(base::make_span(body_)));
+    mojo_base::BigBuffer buffer(base::as_byte_span(body_));
     body_writer_->WriteData(
         std::move(buffer),
         base::BindOnce(&ResourceWriter::DidWriteData, base::Unretained(this)));
@@ -202,7 +202,7 @@ class ResourceWriter {
 
   void DidWriteData(int result) {
     DCHECK_EQ(result, static_cast<int>(body_.size()));
-    mojo_base::BigBuffer buffer(base::as_bytes(base::make_span(meta_data_)));
+    mojo_base::BigBuffer buffer(base::as_byte_span(meta_data_));
     metadata_writer_->WriteMetadata(
         std::move(buffer), base::BindOnce(&ResourceWriter::DidWriteMetadata,
                                           base::Unretained(this)));
@@ -814,7 +814,7 @@ ServiceWorkerUpdateCheckTestUtils::CreatePausedCacheWriter(
       base::MakeRefCounted<net::HttpResponseHeaders>(new_headers);
   cache_writer->bytes_compared_ = bytes_compared;
   cache_writer->data_to_write_ =
-      base::MakeRefCounted<net::WrappedIOBuffer>(base::make_span(
+      base::MakeRefCounted<net::WrappedIOBuffer>(base::span(
           pending_network_buffer ? pending_network_buffer->buffer() : nullptr,
           pending_network_buffer ? pending_network_buffer->size() : 0));
   cache_writer->len_to_write_ = consumed_size;

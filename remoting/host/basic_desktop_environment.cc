@@ -9,6 +9,8 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "remoting/host/action_executor.h"
@@ -30,8 +32,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
-
-#include "base/logging.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "remoting/host/win/evaluate_d3d.h"
@@ -75,7 +75,7 @@ class IgnoreXServerGrabsWatchdog : public base::Watchdog::Delegate {
 
   void Alarm() override {
     // Crash the host if IgnoreXServerGrabs() takes too long.
-    CHECK(false) << "IgnoreXServerGrabs() timed out.";
+    NOTREACHED() << "IgnoreXServerGrabs() timed out.";
   }
 
  private:

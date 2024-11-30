@@ -707,8 +707,8 @@ BASE_FEATURE(kDiscardInputEventsToRecentlyMovedFrames,
              "DiscardInputEventsToRecentlyMovedFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial2,
-             "DisableThirdPartyStoragePartitioningDeprecationTrial2",
+BASE_FEATURE(kDisableThirdPartyStoragePartitioning3DeprecationTrial,
+             "DisableThirdPartyStoragePartitioning3DeprecationTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Drop input events before user sees first paint https://crbug.com/1255485
@@ -759,6 +759,25 @@ BASE_FEATURE_PARAM(std::string,
                    &kDeprecateUnloadByAllowList,
                    "allowlist",
                    "");
+
+// Whether to respect loading=lazy attribute for images when they are on
+// invisible pages.
+BASE_FEATURE(kEnableLazyLoadImageForInvisiblePage,
+             "EnableLazyLoadImageForInvisiblePage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<EnableLazyLoadImageForInvisiblePageType>::Option
+    enable_lazy_load_image_for_invisible_page_types[] = {
+        {EnableLazyLoadImageForInvisiblePageType::kAllInvisiblePage,
+         "all_invisible_page"},
+        {EnableLazyLoadImageForInvisiblePageType::kPrerenderPage,
+         "prerender_page"}};
+BASE_FEATURE_ENUM_PARAM(
+    EnableLazyLoadImageForInvisiblePageType,
+    kEnableLazyLoadImageForInvisiblePageTypeParam,
+    &kEnableLazyLoadImageForInvisiblePage,
+    "enabled_page_type",
+    EnableLazyLoadImageForInvisiblePageType::kAllInvisiblePage,
+    &enable_lazy_load_image_for_invisible_page_types);
 
 // Prevents an opener from being returned when a BlobURL is cross-site to the
 // window's top-level site.
@@ -1326,7 +1345,7 @@ BASE_FEATURE_PARAM(int,
                    kLCPCriticalPathPredictorMaxHostsToTrack,
                    &kLCPCriticalPathPredictor,
                    "lcpp_max_hosts_to_track",
-                   100);
+                   1000);
 
 BASE_FEATURE_PARAM(int,
                    kLCPCriticalPathPredictorHistogramSlidingWindowSize,
@@ -1559,7 +1578,7 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kLCPPMultipleKey,
              "LCPPMultipleKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,
                    kLCPPMultipleKeyMaxPathLength,
@@ -1916,6 +1935,10 @@ BASE_FEATURE(kNoThrottlingVisibleAgent,
              "NoThrottlingVisibleAgent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOpenAllUrlsOrFilesOnDrop,
+             "OpenAllUrlsOrFilesOnDrop",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOptimizeLoadingDataUrls,
              "OptimizeLoadingDataUrls",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2025,11 +2048,6 @@ BASE_FEATURE_PARAM(int,
                    &kPreloadingHeuristicsMLModel,
                    "timer_interval",
                    100);
-BASE_FEATURE_PARAM(bool,
-                   kPreloadingModelOneExecutionPerHover,
-                   &kPreloadingHeuristicsMLModel,
-                   "one_execution_per_hover",
-                   true);
 // The default max hover time of 10s covers the 98th percentile of hovering
 // cases that are relevant to the model.
 BASE_FEATURE_PARAM(base::TimeDelta,
@@ -2264,12 +2282,6 @@ BASE_FEATURE_PARAM(bool,
                    "all_except_legacy_windows_platform",
                    true);
 
-// When enabled, Source Location blocking BFCache is captured
-// to send it to the browser.
-BASE_FEATURE(kRegisterJSSourceLocationBlockingBFCache,
-             "RegisterJSSourceLocationBlockingBFCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRemoveAuthroizationOnCrossOriginRedirect,
              "RemoveAutorizationOnCrossOriginRedirect",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2296,6 +2308,10 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
              "RenderSizeInScoreAdBrowserSignals",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReportFirstFrameTimeAsRenderTime,
+             "ReportFirstFrameTimeAsRenderTime",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kResamplingInputEvents,
@@ -2459,22 +2475,6 @@ BASE_FEATURE(kSharedStorageWorkletSharedBackingThreadImplementation,
              "SharedStorageWorkletSharedBackingThreadImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSharedStorageAPIM118,
-             "SharedStorageAPIM118",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSharedStorageAPIM125,
-             "SharedStorageAPIM125",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSharedStorageCrossOriginScript,
-             "SharedStorageCrossOriginScript",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSharedStorageCreateWorkletUseContextOriginByDefault,
-             "SharedStorageCreateWorkletUseContextOriginByDefault",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSharedStorageCreateWorkletCustomDataOrigin,
              "SharedStorageCreateWorkletCustomDataOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2511,7 +2511,7 @@ BASE_FEATURE(kSpeculativeImageDecodes,
 // Enable service worker warming-up feature. (https://crbug.com/1431792)
 BASE_FEATURE(kSpeculativeServiceWorkerWarmUp,
              "SpeculativeServiceWorkerWarmUp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // kSpeculativeServiceWorkerWarmUp warms up service workers up to this max
 // count.
@@ -2526,7 +2526,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kSpeculativeServiceWorkerWarmUpDuration,
                    &kSpeculativeServiceWorkerWarmUp,
                    "sw_warm_up_duration",
-                   base::Minutes(10));
+                   base::Minutes(5));
 
 // Warms up service workers when a pointerover event is triggered on an anchor.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
@@ -2538,7 +2538,7 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
 
 // Warms up service worker after service worker is stopped on idle timeout.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", true};
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", false};
 
 // If enabled, ServiceWorkerStorage suppresses posting tasks when it is
 // possible. This behavior is expected to improve performance by getting rid of
@@ -2764,13 +2764,6 @@ BASE_FEATURE(kWebAppBorderless,
 // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
 BASE_FEATURE(kWebAppEnableScopeExtensions,
              "WebAppEnableScopeExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls URL handling feature in web apps. Controls parsing of "url_handlers"
-// field in web app manifests. See explainer for more information:
-// https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
-BASE_FEATURE(kWebAppEnableUrlHandlers,
-             "WebAppEnableUrlHandlers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls parsing of the "lock_screen" dictionary field and its "start_url"

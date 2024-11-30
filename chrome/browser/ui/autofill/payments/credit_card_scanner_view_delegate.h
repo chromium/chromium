@@ -23,7 +23,7 @@ class CreditCardScannerViewDelegate {
 
  protected:
   // Destroys the delegate.
-  virtual ~CreditCardScannerViewDelegate() {}
+  virtual ~CreditCardScannerViewDelegate() = default;
 };
 
 }  // namespace autofill

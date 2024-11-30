@@ -17,8 +17,8 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -83,7 +83,6 @@ struct Suggestion {
     PredictionImprovementsPayload();
     PredictionImprovementsPayload(
         const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill,
-        const FieldTypeSet& field_types_to_fill,
         const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons);
     PredictionImprovementsPayload(const PredictionImprovementsPayload&);
     PredictionImprovementsPayload(PredictionImprovementsPayload&&);
@@ -97,9 +96,6 @@ struct Suggestion {
 
     // Values to be filled into fields with corresponding ids.
     base::flat_map<FieldGlobalId, std::u16string> values_to_fill;
-    // Field types to be filled. Fields not matching a type in the set will be
-    // skipped during filling.
-    FieldTypeSet field_types_to_fill;
     // Autofill skip reasons that need to be ignored for filling improved
     // predictions.
     DenseSet<FieldFillingSkipReason> ignorable_skip_reasons;

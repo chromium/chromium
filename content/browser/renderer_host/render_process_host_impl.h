@@ -297,7 +297,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::unique_ptr<base::PersistentMemoryAllocator> TakeMetricsAllocator()
       override;
   const base::TimeTicks& GetLastInitTime() override;
-  base::Process::Priority GetPriority() override;
+  base::Process::Priority GetPriority() const override;
   std::string GetKeepAliveDurations() const override;
   size_t GetShutdownDelayRefCount() const override;
   int GetRenderFrameHostCount() const override;
@@ -926,9 +926,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kPdf = 1 << 2,
 
 #if BUILDFLAG(IS_WIN)
-    // Indicates whether this RenderProcessHost should use SkiaFontManager as
+    // Indicates whether this RenderProcessHost should use FontDataManager as
     // the default font manager.
-    kSkiaFontManager = 1 << 3,
+    kFontDataManager = 1 << 3,
 #endif
 
     // Indicates whether v8 optimizations are disabled in this renderer process.

@@ -22,13 +22,19 @@ BASE_FEATURE(kArcOnDemandV2, "ArcOnDemandV2", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether ARC should be activated on any app launches. If set to
 // false, inactive_interval will be checked.
-const base::FeatureParam<bool> kArcOnDemandActivateOnAppLaunch{
-    &kArcOnDemandV2, "activate_on_app_launch", false};
+BASE_FEATURE_PARAM(bool,
+                   kArcOnDemandActivateOnAppLaunch,
+                   &kArcOnDemandV2,
+                   "activate_on_app_launch",
+                   false);
 
 // Controls how long of invactivity are allowed before ARC on Demand is
 // triggered.
-const base::FeatureParam<base::TimeDelta> kArcOnDemandInactiveInterval{
-    &kArcOnDemandV2, "inactive_interval", base::Days(7)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kArcOnDemandInactiveInterval,
+                   &kArcOnDemandV2,
+                   "inactive_interval",
+                   base::Days(7));
 
 // Controls whether to start ARC with the GKI kernel.
 BASE_FEATURE(kArcVmGki,
@@ -41,8 +47,11 @@ BASE_FEATURE(kBlockIoScheduler,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to enable block IO scheduler for virtio-blk /data.
-const base::FeatureParam<bool> kEnableDataBlockIoScheduler{
-    &kBlockIoScheduler, "data_block_io_scheduler", true};
+BASE_FEATURE_PARAM(bool,
+                   kEnableDataBlockIoScheduler,
+                   &kBlockIoScheduler,
+                   "data_block_io_scheduler",
+                   true);
 
 // Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
 // When disabled, third party apps will not receive this broadcast.
@@ -78,16 +87,16 @@ BASE_FEATURE(kDeferArcActivationUntilUserSessionStartUpTaskCompletion,
 // `history_window` sessions, ARC will be launched immediately.
 // Note: if `history_threshold` > `history_window`, as it will never be
 // satisfied, ARC will be always deferred.
-const base::FeatureParam<int> kDeferArcActivationHistoryWindow{
-    &kDeferArcActivationUntilUserSessionStartUpTaskCompletion,
-    "history_window",
-    5,
-};
-const base::FeatureParam<int> kDeferArcActivationHistoryThreshold{
-    &kDeferArcActivationUntilUserSessionStartUpTaskCompletion,
-    "history_threshold",
-    3,
-};
+BASE_FEATURE_PARAM(int,
+                   kDeferArcActivationHistoryWindow,
+                   &kDeferArcActivationUntilUserSessionStartUpTaskCompletion,
+                   "history_window",
+                   5);
+BASE_FEATURE_PARAM(int,
+                   kDeferArcActivationHistoryThreshold,
+                   &kDeferArcActivationUntilUserSessionStartUpTaskCompletion,
+                   "history_threshold",
+                   3);
 
 // Controls whether attestation will be used on ARCVM.
 BASE_FEATURE(kEnableArcAttestation,
@@ -102,14 +111,23 @@ BASE_FEATURE(kEnableArcIdleManager,
 
 // For test purposes, ignore battery status changes, allowing Doze mode to
 // kick in even if we do not receive powerd changes related to battery.
-const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT{
-    &kEnableArcIdleManager, "ignore_battery_for_test", true};
+BASE_FEATURE_PARAM(bool,
+                   kEnableArcIdleManagerIgnoreBatteryForPLT,
+                   &kEnableArcIdleManager,
+                   "ignore_battery_for_test",
+                   true);
 
-const base::FeatureParam<int> kEnableArcIdleManagerDelayMs{
-    &kEnableArcIdleManager, "delay_ms", 360 * 1000};
+BASE_FEATURE_PARAM(int,
+                   kEnableArcIdleManagerDelayMs,
+                   &kEnableArcIdleManager,
+                   "delay_ms",
+                   360 * 1000);
 
-const base::FeatureParam<bool> kEnableArcIdleManagerPendingIdleReactivate{
-    &kEnableArcIdleManager, "pending_idle_reactivate", false};
+BASE_FEATURE_PARAM(bool,
+                   kEnableArcIdleManagerPendingIdleReactivate,
+                   &kEnableArcIdleManager,
+                   "pending_idle_reactivate",
+                   false);
 
 // Controls whether to enable support for s2idle in ARCVM.
 BASE_FEATURE(kEnableArcS2Idle, "ArcS2Idle", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -148,11 +166,6 @@ BASE_FEATURE(kEnablePerVmCoreScheduling,
              "ArcEnablePerVmCoreScheduling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether ARC handles unmanaged->managed account transition.
-BASE_FEATURE(kEnableUnmanagedToManagedTransitionFeature,
-             "ArcEnableUnmanagedToManagedTransitionFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to use virtio-blk for Android /data instead of using
 // virtio-fs.
 BASE_FEATURE(kEnableVirtioBlkForData,
@@ -163,11 +176,6 @@ BASE_FEATURE(kEnableVirtioBlkForData,
 BASE_FEATURE(kEnableVirtioBlkMultipleWorkers,
              "ArcEnableVirtioBlkMultipleWorkers",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether to extend the input event ANR timeout time.
-BASE_FEATURE(kExtendInputAnrTimeout,
-             "ArcExtendInputAnrTimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to extend the broadcast of intent ANR timeout time.
 BASE_FEATURE(kExtendIntentAnrTimeout,
@@ -200,42 +208,51 @@ BASE_FEATURE(kGuestSwap, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the size of the guest swap area by an absolute value. Ignored if
 // "size_percentage" is set.
-const base::FeatureParam<int> kGuestSwapSize{&kGuestSwap, "size", 0};
+BASE_FEATURE_PARAM(int, kGuestSwapSize, &kGuestSwap, "size", 0);
 
 // Controls the size of the guest swap area by a percentage of the VM memory
 // size.
-const base::FeatureParam<int> kGuestZramSizePercentage{&kGuestSwap,
-                                                       "size_percentage", 0};
+BASE_FEATURE_PARAM(int,
+                   kGuestZramSizePercentage,
+                   &kGuestSwap,
+                   "size_percentage",
+                   0);
 
 // Controls swappiness for the ARCVM guest.
-const base::FeatureParam<int> kGuestZramSwappiness{&kGuestSwap, "swappiness",
-                                                   0};
+BASE_FEATURE_PARAM(int, kGuestZramSwappiness, &kGuestSwap, "swappiness", 0);
 
 // Controls whether to do per-process reclaim from the ARCVM guest.
-const base::FeatureParam<bool> kGuestReclaimEnabled{
-    &kGuestSwap, "guest_reclaim_enabled", false};
+BASE_FEATURE_PARAM(bool,
+                   kGuestReclaimEnabled,
+                   &kGuestSwap,
+                   "guest_reclaim_enabled",
+                   false);
 
 // Controls whether only anonymous pages are reclaimed from the ARCVM guest.
 // Ignored when the "guest_reclaim_enabled" param is false.
-const base::FeatureParam<bool> kGuestReclaimOnlyAnonymous{
-    &kGuestSwap, "guest_reclaim_only_anonymous", false};
+BASE_FEATURE_PARAM(bool,
+                   kGuestReclaimOnlyAnonymous,
+                   &kGuestSwap,
+                   "guest_reclaim_only_anonymous",
+                   false);
 
 // Controls whether to enable virtual swap device for ARCVM.
-const base::FeatureParam<bool> kVirtualSwapEnabled{
-    &kGuestSwap, "virtual_swap_enabled", false};
+BASE_FEATURE_PARAM(bool,
+                   kVirtualSwapEnabled,
+                   &kGuestSwap,
+                   "virtual_swap_enabled",
+                   false);
 
 // Controls how often ARCVM's virtual swap device is swapped out in the host.
-const base::FeatureParam<int> kVirtualSwapIntervalMs{
-    &kGuestSwap, "virtual_swap_interval_ms", 1000};
+BASE_FEATURE_PARAM(int,
+                   kVirtualSwapIntervalMs,
+                   &kGuestSwap,
+                   "virtual_swap_interval_ms",
+                   1000);
 
 // Controls whether to enable virtio-pvclock in ARCVM
 BASE_FEATURE(kArcVmPvclock,
              "ArcEnablePvclock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether enable ignoring hover event ANR in input dispatcher.
-BASE_FEATURE(kIgnoreHoverEventAnr,
-             "IgnoreHoverEventAnr",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables/disables mlock() of guest memory for ARCVM.
@@ -343,8 +360,11 @@ BASE_FEATURE(kVmMemoryPSIReports,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls how frequently memory pressure data is logged
-const base::FeatureParam<int> kVmMemoryPSIReportsPeriod{&kVmMemoryPSIReports,
-                                                        "period", 10};
+BASE_FEATURE_PARAM(int,
+                   kVmMemoryPSIReportsPeriod,
+                   &kVmMemoryPSIReports,
+                   "period",
+                   10);
 
 // Controls whether a custom memory size is used when creating ARCVM. When
 // enabled, ARCVM is sized with the following formula:
@@ -357,25 +377,28 @@ BASE_FEATURE(kVmMemorySize,
 
 // Controls the amount to "shift" system RAM when sizing ARCVM. The default
 // value of 0 means that ARCVM's memory will be thr same as the system.
-const base::FeatureParam<int> kVmMemorySizeShiftMiB{&kVmMemorySize, "shift_mib",
-                                                    -500};
+BASE_FEATURE_PARAM(int,
+                   kVmMemorySizeShiftMiB,
+                   &kVmMemorySize,
+                   "shift_mib",
+                   -500);
 
 // Controls the maximum amount of memory to give ARCVM. The default value of
 // INT32_MAX means that ARCVM's memory is not capped.
-const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
-                                                  INT32_MAX};
+BASE_FEATURE_PARAM(int,
+                   kVmMemorySizeMaxMiB,
+                   &kVmMemorySize,
+                   "max_mib",
+                   INT32_MAX);
 
 // Controls the percentage of system RAM for calculation of ARCVM size. The
 // default value of 100 means the whole system RAM will be used in ARCM size
 // calculation.
-const base::FeatureParam<int> kVmMemorySizePercentage{&kVmMemorySize,
-                                                      "ram_percentage", 100};
-
-// Controls experimental key to enable pre-ANR handling for BroadcastQueue in
-// ARCVM.
-BASE_FEATURE(kVmBroadcastPreNotifyANR,
-             "ArcVmBroadcastPreAnrHandling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kVmMemorySizePercentage,
+                   &kVmMemorySize,
+                   "ram_percentage",
+                   100);
 
 // Controls experimental key to enable ghost window when launch app under ARCVM
 // swap out state.
@@ -395,26 +418,41 @@ BASE_FEATURE(kVmmSwapPolicy,
 
 // Controls the time interval between create staging memory and swap out. The
 // default value is 10 seconds.
-const base::FeatureParam<int> kVmmSwapOutDelaySecond{&kVmmSwapPolicy,
-                                                     "delay_sec", 10};
+BASE_FEATURE_PARAM(int,
+                   kVmmSwapOutDelaySecond,
+                   &kVmmSwapPolicy,
+                   "delay_sec",
+                   10);
 
 // Controls the time interval between two swap out. The default value is 12
 // hours.
-const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond{
-    &kVmmSwapPolicy, "swapout_interval_sec", 60 * 60 * 12};
+BASE_FEATURE_PARAM(int,
+                   kVmmSwapOutTimeIntervalSecond,
+                   &kVmmSwapPolicy,
+                   "swapout_interval_sec",
+                   60 * 60 * 12);
 
 // Controls the time interval of ARC silence. The default value is 15 minutes.
-const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond{
-    &kVmmSwapPolicy, "arc_silence_interval_sec", 60 * 15};
+BASE_FEATURE_PARAM(int,
+                   kVmmSwapArcSilenceIntervalSecond,
+                   &kVmmSwapPolicy,
+                   "arc_silence_interval_sec",
+                   60 * 15);
 
 // Controls the interval for swap trimming maintenance.
-const base::FeatureParam<base::TimeDelta> kVmmSwapTrimInterval{
-    &kVmmSwapPolicy, "swap_trim_interval", base::Hours(1)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kVmmSwapTrimInterval,
+                   &kVmmSwapPolicy,
+                   "swap_trim_interval",
+                   base::Hours(1));
 
 // Controls the minimum time interval between attempts to shrink ARCVM memory
 // when swap is enabled or swap trimming is performed.
-const base::FeatureParam<base::TimeDelta> kVmmSwapMinShrinkInterval{
-    &kVmmSwapPolicy, "min_shrink_interval", base::Minutes(10)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kVmmSwapMinShrinkInterval,
+                   &kVmmSwapPolicy,
+                   "min_shrink_interval",
+                   base::Minutes(10));
 
 // Controls the feature to delay low memory kills of high priority apps when the
 // memory pressure is below foreground.
@@ -424,13 +462,19 @@ BASE_FEATURE(kPriorityAppLmkDelay,
 
 // Controls the time to wait for inactivity of a high priority app before
 // considering it to be killed. The default value is 5 minutes.
-const base::FeatureParam<int> kPriorityAppLmkDelaySecond{
-    &kPriorityAppLmkDelay, "priority_app_lmk_delay_sec", 60 * 5};
+BASE_FEATURE_PARAM(int,
+                   kPriorityAppLmkDelaySecond,
+                   &kPriorityAppLmkDelay,
+                   "priority_app_lmk_delay_sec",
+                   60 * 5);
 
 // Controls the list of apps to be considered as high priority that would have a
 // delay before considered to be killed.
-const base::FeatureParam<std::string> kPriorityAppLmkDelayList{
-    &kPriorityAppLmkDelay, "priority_app_lmk_delay_list", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kPriorityAppLmkDelayList,
+                   &kPriorityAppLmkDelay,
+                   "priority_app_lmk_delay_list",
+                   "");
 
 // Controls the feature to update the minimum Android process state to be
 // considered to be killed under perceptible memory pressure. This is to prevent

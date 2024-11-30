@@ -63,7 +63,7 @@ class TokenHandleFetcherShutdownNotifierFactory
             "TokenHandleFetcher") {
     DependsOn(IdentityManagerFactory::GetInstance());
   }
-  ~TokenHandleFetcherShutdownNotifierFactory() override {}
+  ~TokenHandleFetcherShutdownNotifierFactory() override = default;
 };
 
 account_manager::AccountManager* GetAccountManager(Profile* profile) {
@@ -82,7 +82,7 @@ TokenHandleFetcher::TokenHandleFetcher(Profile* profile,
   CHECK(token_handle_util_.get());
 }
 
-TokenHandleFetcher::~TokenHandleFetcher() {}
+TokenHandleFetcher::~TokenHandleFetcher() = default;
 
 void TokenHandleFetcher::BackfillToken(TokenFetchingCallback callback) {
   callback_ = std::move(callback);

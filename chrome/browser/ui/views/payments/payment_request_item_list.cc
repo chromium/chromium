@@ -64,7 +64,7 @@ PaymentRequestItemList::Item::Item(base::WeakPtr<PaymentRequestSpec> spec,
       selected_(selected),
       show_edit_button_(show_edit_button) {}
 
-PaymentRequestItemList::Item::~Item() {}
+PaymentRequestItemList::Item::~Item() = default;
 
 void PaymentRequestItemList::Item::Init() {
   views::BoxLayout* layout =
@@ -175,7 +175,7 @@ PaymentRequestItemList::PaymentRequestItemList(
     base::WeakPtr<PaymentRequestDialogView> dialog)
     : selected_item_(nullptr), dialog_(dialog) {}
 
-PaymentRequestItemList::~PaymentRequestItemList() {}
+PaymentRequestItemList::~PaymentRequestItemList() = default;
 
 void PaymentRequestItemList::AddItem(
     std::unique_ptr<PaymentRequestItemList::Item> item) {

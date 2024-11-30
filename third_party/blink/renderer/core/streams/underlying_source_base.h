@@ -77,9 +77,9 @@ class UnderlyingPullAlgorithm final : public StreamAlgorithm {
   explicit UnderlyingPullAlgorithm(UnderlyingSourceBase* source)
       : source_(source) {}
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) final;
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) final;
   void Trace(Visitor* visitor) const final;
 
  private:
@@ -91,9 +91,9 @@ class UnderlyingCancelAlgorithm final : public StreamAlgorithm {
   explicit UnderlyingCancelAlgorithm(UnderlyingSourceBase* source)
       : source_(source) {}
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) final;
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) final;
   void Trace(Visitor* visitor) const final;
 
  private:

@@ -52,12 +52,12 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -562,8 +562,8 @@ void ChromePasswordProtectionService::ShowInterstitial(
       base::NumberToString(static_cast<std::underlying_type_t<PasswordType>>(
           ConvertReusedPasswordAccountTypeToPasswordType(password_type)));
 
-  params.post_data = network::ResourceRequestBody::CreateFromBytes(
-      post_data.data(), post_data.size());
+  params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::as_byte_span(post_data));
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 
   LogWarningAction(WarningUIType::INTERSTITIAL, WarningAction::SHOWN,
@@ -676,8 +676,8 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
       url_loader_factory, /*history_service=*/nullptr,
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile_),
-      TriggerManager::GetSBErrorDisplayOptions(*profile_->GetPrefs(),
-                                               web_contents));
+      TriggerManager::GetDataCollectionPermissions(*profile_->GetPrefs(),
+                                                   web_contents));
 }
 
 void ChromePasswordProtectionService::MaybeFinishCollectingThreatDetails(
@@ -694,8 +694,8 @@ void ChromePasswordProtectionService::MaybeFinishCollectingThreatDetails(
       safe_browsing::TriggerType::GAIA_PASSWORD_REUSE,
       GetWebContentsKey(web_contents), base::Milliseconds(0), did_proceed,
       /*num_visits=*/0,
-      TriggerManager::GetSBErrorDisplayOptions(*profile_->GetPrefs(),
-                                               web_contents));
+      TriggerManager::GetDataCollectionPermissions(*profile_->GetPrefs(),
+                                                   web_contents));
 }
 
 void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(
@@ -1891,12 +1891,11 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-LoginReputationClientRequest::ReferringAppInfo
-ChromePasswordProtectionService::GetReferringAppInfo(
+ReferringAppInfo ChromePasswordProtectionService::GetReferringAppInfo(
     content::WebContents* web_contents) {
-  ReferringAppInfo info_struct =
+  internal::ReferringAppInfo info_struct =
       safe_browsing::GetReferringAppInfo(web_contents);
-  LoginReputationClientRequest::ReferringAppInfo info_proto;
+  ReferringAppInfo info_proto;
   info_proto.set_referring_app_source(info_struct.referring_app_source);
   info_proto.set_referring_app_name(info_struct.referring_app_name);
   return info_proto;

@@ -106,7 +106,7 @@
 <translation id="1445276840641906250">جميع علامات التبويب في متصفِّح واحد</translation>
 <translation id="1450170672351507823">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
 <translation id="1455660774629812862">عدم الإخفاء</translation>
-<translation id="1460751212339734034">وفِّر وقت الكتابة</translation>
+<translation id="1460751212339734034">وقت أكثر، كتابة أقلّ</translation>
 <translation id="1466035273550360103">ليست هناك أي علامات تبويب مفتوحة</translation>
 <translation id="1469381646033328562">يدير أحد والدَيك حسابك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -402,6 +402,7 @@
 <translation id="2721190673959776287">اطّلِع على عيّنة من المعلومات عدة مرات في اليوم لتقديم مساعدة مفيدة لك ضِمن "لوحة السياق".</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
 <translation id="2749231692441336879">تتم متابعة <ph name="CHANNEL_NAME" /> حاليًا.</translation>
+<translation id="2755485474385016903">سيرى جميع أعضاء المجموعة التغييرات التي يتم إجراؤها</translation>
 <translation id="2755595981383829244">ستصلك الآن إشعارات عن المحتوى</translation>
 <translation id="2761788987260570878">التقاط صورة لنتيجة البحث</translation>
 <translation id="2762000892062317888">الآن</translation>
@@ -431,6 +432,7 @@
 <translation id="288902476966286676">تم الإرجاع إلى المُرسِل</translation>
 <translation id="2893168226686371498">المتصفح التلقائي</translation>
 <translation id="2894757982205307093">علامة تبويب جديدة في مجموعة</translation>
+<translation id="2902312830803030883">مزيد من الإجراءات</translation>
 <translation id="2905479111267140204">لديك كلمات مرور يبلغ عددها <ph name="NUMBER_OF_PASSWORDS" /> مستخدَمة لحساب آخر ويمكن أن تعرّضك لمشاكل أمنية.</translation>
 <translation id="291754862089661335">ضَع رمز الاستجابة السريعة أو الرمز الشريطي في هذا الإطار</translation>
 <translation id="2918688092312652908">وضع علامة "غير مقروء"</translation>
@@ -553,6 +555,7 @@
 <translation id="3549391962818677448">لم تنجح عملية التسليم. ستتم إعادة المحاولة</translation>
 <translation id="3557336313807607643">إضافة إلى جهات الاتصال</translation>
 <translation id="355765753469272474">تراجع</translation>
+<translation id="3562379378751492229">يمكنك اختيار الموضع المناسب لك.</translation>
 <translation id="3565930036634619844">علامة التبويب رقم <ph name="TAB_INDEX" /> من <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3570693105179140209">يُرجى النقر مرّتين لعرض المزيد من كلمات المرور.</translation>
 <translation id="3572607909481582402">‏في حسابك على Google</translation>
@@ -829,6 +832,7 @@
 <translation id="484280513275854557">تم تسجيل خروجك من الحساب وحذف بيانات التصفُّح</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="4860895144060829044">اتصال</translation>
+<translation id="4861953997778766866">يمكن للجميع إجراء تغييرات على مجموعات علامات التبويب المشتركة</translation>
 <translation id="4869146460927742717">موضع شريط العناوين</translation>
 <translation id="4870911314065352661">هل تريد إغلاق جميع علامات التبويب؟</translation>
 <translation id="4872664437015695612">الفتح في ملف عمليات التنزيل</translation>
@@ -967,6 +971,7 @@
 <translation id="5506763544823940561">حفظ الصورة في…</translation>
 <translation id="5511959326926949696">يوفّر لك هذا الوضع حماية صارمة اختيارية على المتصفِّح. وينصح بعدم استخدام هذا الوضع إلا إذا كنت تعتقد أنّك قد تتعرّض لهجوم إلكتروني متطوِّر جدًا.</translation>
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
+<translation id="5524590039848017563">زر شريط الأدوات الأساسي المُصغَّر</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{هناك كلمة مرور واحدة ({COUNT}) ضعيفة}zero{هناك {COUNT} كلمة مرور ضعيفة}two{هناك كلمتا مرور ({COUNT}) ضعيفتان}few{هناك {COUNT} كلمات مرور ضعيفة}many{هناك {COUNT} كلمة مرور ضعيفة}other{هناك {COUNT} كلمة مرور ضعيفة}}</translation>
 <translation id="5532545557415295622">مربّع حوار تأكيد مهلة عدم استخدام الجهاز</translation>
 <translation id="5548760955356983418">‏يتيح لك Handoff بدء تصفح موقع على هذا الجهاز ثم متابعة التصفح بسهولة على جهاز Mac. سيظهر الموقع المفتوح حاليًا على Dock بـ Mac.
@@ -991,6 +996,7 @@
 <translation id="5611398002774823980">الحفظ في الحساب</translation>
 <translation id="5613297089029360427">الترتيب حسب الأحدث</translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
+<translation id="5614805397884895755">يمكنك الوصول إلى التطبيق بشكل أسرع من خلال الشاشة الرئيسية.</translation>
 <translation id="5619871095170816857">تعرض هذه البطاقة آخر علامة تبويب مفتوحة تم استخدامها على جميع الأجهزة التي تمت مزامنتها خلال آخر 24 ساعة.</translation>
 <translation id="5624120631404540903">إدارة كلمات المرور</translation>
 <translation id="5624637933505983014">عدم تفعيل المزامنة</translation>
@@ -1495,6 +1501,7 @@
 <translation id="7812377703891978671">يمكنك الوصول إلى جميع سجلّات التصفُّح من خلال اختيار <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">عمليات التنزيل</translation>
 <translation id="7815852444315004084">إخفاء الآن</translation>
+<translation id="7831876841288640403">يمكنك وضع شريط العناوين في المكان الذي يناسبك.</translation>
 <translation id="7839994177130598711">‏يمكن لأفراد عائلتك حاليًا استخدام اسم المستخدم وكلمة المرور عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">ستتم إزالة العناصر التي اخترتها.</translation>
 <translation id="7841180087127694526">البحث عن النص الذي نسخته</translation>

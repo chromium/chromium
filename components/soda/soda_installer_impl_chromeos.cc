@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
@@ -31,6 +32,8 @@ namespace {
 
 constexpr char kSodaDlcName[] = "libsoda";
 constexpr char kSodaEnglishUsDlcName[] = "libsoda-model-en-us";
+constexpr float kInitialSodaRetryTimeSeconds = 1.0;
+constexpr float kMaxSodaRetryTimeSeconds = 32.0;
 
 SodaInstaller::ErrorCode DlcCodeToSodaErrorCode(const std::string& code) {
   return (code == dlcservice::kErrorNeedReboot)
@@ -44,6 +47,7 @@ const constexpr char* const kDefaultCrOSEnabledLanguages[] = {"da-DK", "nl-NL",
 
 SodaInstallerImplChromeOS::SodaInstallerImplChromeOS() {
   available_languages_ = ConstructAvailableLanguages();
+  soda_backoff_seconds_ = kInitialSodaRetryTimeSeconds;
 }
 
 void SodaInstallerImplChromeOS::InitLanguages(PrefService* profile_prefs,
@@ -254,6 +258,15 @@ base::FilePath SodaInstallerImplChromeOS::GetLanguagePath(
   return it->second;
 }
 
+void SodaInstallerImplChromeOS::OnSodaInstallRetry() {
+  // we just run a soda install here. Turns out that we don't actually need the
+  // global prefs for this (at time of writing).  Internally runs the install
+  // process again, and then if that fails, continue retrying until
+  // exhausted. Timeout for retry doubles on every try and retries happen for
+  // all non-OK errors, although some errors are permanent.
+  InstallSoda(nullptr);
+}
+
 void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
   if (soda_binary_installed_ || never_download_soda_for_testing_) {
     return;
@@ -362,6 +375,8 @@ std::string SodaInstallerImplChromeOS::GetLanguageDlcNameForLocale(
 
 void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
   soda_binary_installed_ = false;
+  soda_install_retry_timer_.Stop();
+  soda_backoff_seconds_ = kInitialSodaRetryTimeSeconds;
   SetSodaBinaryPath(base::FilePath());
   ash::DlcserviceClient::Get()->Uninstall(
       kSodaDlcName, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
@@ -402,6 +417,8 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
   if (install_result.error == dlcservice::kErrorNone) {
     soda_binary_installed_ = true;
     soda_progress_ = 1.0;
+    soda_backoff_seconds_ = kInitialSodaRetryTimeSeconds;
+    soda_install_retry_timer_.Stop();
     SetSodaBinaryPath(base::FilePath(install_result.root_path));
     for (const auto& available_lang : available_languages_) {
       // Check every installed language and notify on it, in case the language
@@ -413,9 +430,17 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
 
     base::UmaHistogramTimes(kSodaBinaryInstallationSuccessTimeTaken,
                             base::Time::Now() - start_time);
+  } else if (soda_backoff_seconds_ <= kMaxSodaRetryTimeSeconds) {
+    // TODO(robsc): Pipe the original start time through here, so that total
+    // time to fail or install is tracked correctly.
+    soda_install_retry_timer_.Start(
+        FROM_HERE, base::Seconds(soda_backoff_seconds_), this,
+        &SodaInstallerImplChromeOS::OnSodaInstallRetry);
+    soda_backoff_seconds_ *= 2;
   } else {
     soda_binary_installed_ = false;
     soda_progress_ = 0.0;
+    soda_backoff_seconds_ = kInitialSodaRetryTimeSeconds;
     NotifyOnSodaInstallError(LanguageCode::kNone,
                              DlcCodeToSodaErrorCode(install_result.error));
     base::UmaHistogramTimes(kSodaBinaryInstallationFailureTimeTaken,

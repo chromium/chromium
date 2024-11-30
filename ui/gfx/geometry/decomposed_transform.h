@@ -5,15 +5,15 @@
 #ifndef UI_GFX_GEOMETRY_DECOMPOSED_TRANSFORM_H_
 #define UI_GFX_GEOMETRY_DECOMPOSED_TRANSFORM_H_
 
+#include "base/component_export.h"
 #include "base/dcheck_is_on.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/quaternion.h"
 
 namespace gfx {
 
 // Contains the components of a factored transform. These components may be
 // blended and recomposed.
-struct GEOMETRY_EXPORT DecomposedTransform {
+struct COMPONENT_EXPORT(GEOMETRY) DecomposedTransform {
   // The default constructor initializes the components in such a way that
   // will compose the identity transform.
   double translate[3] = {0, 0, 0};

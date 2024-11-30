@@ -128,7 +128,7 @@ namespace ash {
 const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
 const char kAccelRotation[] = "Ash.Accelerators.Rotation.Usage";
 const char kAccelActivateDeskByIndex[] = "Ash.Accelerators.ActivateDeskByIndex";
-const char kAccelTogglePicker[] = "Ash.Accelerators.TogglePicker.Action";
+const char kAccelToggleQuickInsert[] = "Ash.Accelerators.TogglePicker.Action";
 
 namespace accelerators {
 
@@ -169,12 +169,12 @@ enum class ActivateDeskAcceleratorAction {
   kMaxValue = kDesk8,
 };
 
-// Record what action is triggered by pressing toggle picker.
+// Record what action is triggered by pressing toggle Quick Insert.
 // The enum value is 1:1 mapped to what's defined in enums.xml.
-enum class TogglePickerAction {
+enum class ToggleQuickInsertAction {
   kToggleCapsLock = 0,
-  kTogglePicker = 1,
-  kMaxValue = kTogglePicker,
+  kToggleQuickInsert = 1,
+  kMaxValue = kToggleQuickInsert,
 };
 
 void RecordRotationAcceleratorAction(const RotationAcceleratorAction& action) {
@@ -191,8 +191,9 @@ void RecordWindowSnapAcceleratorAction(
   UMA_HISTOGRAM_ENUMERATION(kAccelWindowSnap, action);
 }
 
-void RecordTogglePickerAcceleratorAction(const TogglePickerAction& action) {
-  UMA_HISTOGRAM_ENUMERATION(kAccelTogglePicker, action);
+void RecordToggleQuickInsertAcceleratorAction(
+    const ToggleQuickInsertAction& action) {
+  UMA_HISTOGRAM_ENUMERATION(kAccelToggleQuickInsert, action);
 }
 
 display::Display::Rotation GetNextRotationInClamshell(
@@ -1373,6 +1374,9 @@ void ToggleAssistant() {
     case AssistantAllowedState::DISALLOWED_BY_NO_BINARY:
       // No need to show toast.
       return;
+    case AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT:
+      // No need to show toast.
+      return;
     case AssistantAllowedState::ALLOWED:
       // Nothing need to do if allowed.
       break;
@@ -1432,7 +1436,7 @@ void ToggleClipboardHistory(bool is_plain_text_paste) {
       is_plain_text_paste);
 }
 
-void TogglePicker(base::TimeTicks accelerator_timestamp) {
+void ToggleQuickInsert(base::TimeTicks accelerator_timestamp) {
   const bool outside_user_session =
       !Shell::Get()->session_controller()->IsActiveUserSessionStarted();
   const bool is_oobe = Shell::Get()->session_controller()->GetSessionState() ==
@@ -1440,13 +1444,15 @@ void TogglePicker(base::TimeTicks accelerator_timestamp) {
   const bool is_modal_window = Shell::IsSystemModalWindowOpen();
   if (outside_user_session || is_oobe || is_modal_window) {
     ToggleCapsLock();
-    RecordTogglePickerAcceleratorAction(TogglePickerAction::kToggleCapsLock);
+    RecordToggleQuickInsertAcceleratorAction(
+        ToggleQuickInsertAction::kToggleCapsLock);
     return;
   }
 
   CHECK(Shell::Get()->quick_insert_controller());
   Shell::Get()->quick_insert_controller()->ToggleWidget(accelerator_timestamp);
-  RecordTogglePickerAcceleratorAction(TogglePickerAction::kTogglePicker);
+  RecordToggleQuickInsertAcceleratorAction(
+      ToggleQuickInsertAction::kToggleQuickInsert);
 }
 
 void EnableSelectToSpeak() {

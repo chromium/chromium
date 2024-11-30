@@ -9,6 +9,7 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/check_deref.h"
 #import "base/feature_list.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
@@ -18,9 +19,9 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "base/uuid.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
 #import "ios/chrome/browser/profile/model/profile_ios_impl.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_metrics.h"
@@ -92,54 +93,7 @@ void RecordProfileSizeTask(const base::FilePath& path) {
   base::UmaHistogramCounts10000("Profile.ExtensionSize", size_MB);
 }
 
-// Returns whether `name` matches "TestProfile[0-9]+" regex which is the
-// pattern used to name test profiles during an experiment run while the
-// support for multi-profile was added.
-bool IsTestProfile(std::string_view name) {
-  constexpr std::string_view kTestProfilePrefix = "TestProfile";
-  if (!name.starts_with(kTestProfilePrefix)) {
-    return false;
-  }
-
-  std::string_view tail = name.substr(kTestProfilePrefix.size());
-  if (tail.empty()) {
-    return false;
-  }
-
-  for (const char c : tail) {
-    if (c < '0' || '9' < c) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-// Returns the names of the recently active profiles.
-std::set<std::string> GetRecentlyActiveProfiles(PrefService* local_state) {
-  std::set<std::string> profiles;
-  for (const auto& value : local_state->GetList(prefs::kLastActiveProfiles)) {
-    if (value.is_string()) {
-      const std::string& name = value.GetString();
-      if (!name.empty() && !IsTestProfile(name)) {
-        profiles.insert(name);
-      }
-    }
-  }
-
-  std::string last_used = local_state->GetString(prefs::kLastUsedProfile);
-  if (!last_used.empty() && !IsTestProfile(last_used)) {
-    profiles.insert(last_used);
-  }
-
-  return profiles;
-}
-
 }  // namespace
-
-BASE_FEATURE(kHideLegacyProfiles,
-             "HideLegacyProfiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Stores information about a single Profile.
 class ProfileManagerIOSImpl::ProfileInfo {
@@ -226,36 +180,6 @@ void ProfileManagerIOSImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void ProfileManagerIOSImpl::LoadProfiles() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::set<std::string> profiles = GetRecentlyActiveProfiles(local_state_);
-
-  // LoadProfiles() must load at least one profile, so if there is no
-  // recently active Profile, create one with a default name.
-  if (profiles.empty()) {
-    profiles.insert(kIOSChromeInitialProfile);
-  }
-
-  // Take care of the legacy profiles.
-  if (base::FeatureList::IsEnabled(kHideLegacyProfiles)) {
-    HideLegacyProfiles(profiles);
-  } else {
-    RestoreLegacyProfiles(profiles);
-  }
-
-  // Record the number of legacy profiles.
-  base::UmaHistogramCounts100(
-      "Profile.LegacyProfilesCount",
-      static_cast<int>(
-          std::min(size_t{100},
-                   local_state_->GetDict(prefs::kLegacyProfileMap).size())));
-
-  for (const std::string& name : profiles) {
-    ProfileIOS* profile = CreateProfile(name);
-    DCHECK(profile != nullptr);
-  }
-}
-
 ProfileIOS* ProfileManagerIOSImpl::GetProfileWithName(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the profile is already loaded, just return it.
@@ -291,6 +215,11 @@ bool ProfileManagerIOSImpl::HasProfileWithName(std::string_view name) const {
 bool ProfileManagerIOSImpl::CanCreateProfileWithName(
     std::string_view name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Cannot create a profile with the same name as an existing profile.
+  if (HasProfileWithName(name)) {
+    return false;
+  }
+
   // Cannot create a profile with the same name as a legacy profile.
   if (local_state_->GetDict(prefs::kLegacyProfileMap).Find(name)) {
     return false;
@@ -302,21 +231,29 @@ bool ProfileManagerIOSImpl::CanCreateProfileWithName(
   return true;
 }
 
+std::string ProfileManagerIOSImpl::ReserveNewProfileName() {
+  std::string profile_name;
+  do {
+    const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+    profile_name = uuid.AsLowercaseString();
+  } while (!CanCreateProfileWithName(profile_name));
+
+  DCHECK(!profile_name.empty());
+  DCHECK(!HasProfileWithName(profile_name));
+  profile_attributes_storage_.AddProfile(profile_name);
+
+  return profile_name;
+}
+
 bool ProfileManagerIOSImpl::LoadProfileAsync(
     std::string_view name,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!HasProfileWithName(name)) {
-    // Must not create the ProfileIOS if it does not already exist, so fail.
-    if (!initialized_callback.is_null()) {
-      std::move(initialized_callback).Run(nullptr);
-    }
-    return false;
-  }
-
-  return CreateProfileAsync(name, std::move(initialized_callback),
-                            std::move(created_callback));
+  return CreateProfileWithMode(name, CreationMode::kAsynchronous,
+                               /* load_only_do_not_create */ true,
+                               std::move(initialized_callback),
+                               std::move(created_callback));
 }
 
 bool ProfileManagerIOSImpl::CreateProfileAsync(
@@ -325,23 +262,15 @@ bool ProfileManagerIOSImpl::CreateProfileAsync(
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return CreateProfileWithMode(name, CreationMode::kAsynchronous,
+                               /* load_only_do_not_create */ false,
                                std::move(initialized_callback),
                                std::move(created_callback));
 }
 
 ProfileIOS* ProfileManagerIOSImpl::LoadProfile(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!HasProfileWithName(name)) {
-    // Must not create the ProfileIOS if it does not already exist, so fail.
-    return nullptr;
-  }
-
-  return CreateProfile(name);
-}
-
-ProfileIOS* ProfileManagerIOSImpl::CreateProfile(std::string_view name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CreateProfileWithMode(name, CreationMode::kSynchronous,
+                             /* load_only_do_not_create */ true,
                              /* initialized_callback */ {},
                              /* created_callback */ {})) {
     return nullptr;
@@ -354,8 +283,47 @@ ProfileIOS* ProfileManagerIOSImpl::CreateProfile(std::string_view name) {
   return iter->second.profile();
 }
 
-void ProfileManagerIOSImpl::DestroyAllProfiles() {
-  profiles_map_.clear();
+ProfileIOS* ProfileManagerIOSImpl::CreateProfile(std::string_view name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CreateProfileWithMode(name, CreationMode::kSynchronous,
+                             /* load_only_do_not_create */ false,
+                             /* initialized_callback */ {},
+                             /* created_callback */ {})) {
+    return nullptr;
+  }
+
+  auto iter = profiles_map_.find(name);
+  DCHECK(iter != profiles_map_.end());
+
+  DCHECK(iter->second.is_loaded());
+  return iter->second.profile();
+}
+
+void ProfileManagerIOSImpl::UnloadProfile(std::string_view name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto iter = profiles_map_.find(name);
+  DCHECK(iter != profiles_map_.end());
+  ProfileInfo profile_info = std::move(iter->second);
+  profiles_map_.erase(iter);
+  if (!profile_info.is_loaded()) {
+    // The profile is unloaded before it could be fully loaded, notify
+    // any pending callback that the load has failed.
+    for (auto& callback : profile_info.TakeCallbacks()) {
+      std::move(callback).Run(nullptr);
+    }
+  } else {
+    for (auto& observer : observers_) {
+      observer.OnProfileUnloaded(this, profile_info.profile());
+    }
+  }
+}
+
+void ProfileManagerIOSImpl::UnloadAllProfiles() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  while (!profiles_map_.empty()) {
+    const std::string& name = profiles_map_.begin()->first;
+    UnloadProfile(name);
+  }
 }
 
 ProfileAttributesStorageIOS*
@@ -396,19 +364,28 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
   DCHECK(iter != profiles_map_.end());
   auto callbacks = iter->second.TakeCallbacks();
 
+  // Update the ProfileAttributesStorageIOS before notifying the observers
+  // and callbacks of the success or failure of the operation.
+  const std::string& name = profile->GetProfileName();
+  if (is_new_profile) {
+    if (success) {
+      profile_attributes_storage_.UpdateAttributesForProfileWithName(
+          name, base::BindOnce([](ProfileAttributesIOS attrs) {
+            attrs.ClearIsNewProfile();
+            return attrs;
+          }));
+    } else {
+      // TODO(crbug.com/335630301): Mark the data for removal and prevent the
+      // creation of a profile with the same name until the data has been
+      // deleted.
+      profile_attributes_storage_.RemoveProfile(name);
+    }
+  }
+
   if (success) {
     DoFinalInit(profile);
     iter->second.SetIsLoaded();
   } else {
-    if (is_new_profile) {
-      // TODO(crbug.com/335630301): Mark the data for removal and prevent the
-      // creation of a profile with the same name until the data has been
-      // deleted.
-      const std::string& name = profile->GetProfileName();
-      profile_attributes_storage_.RemoveProfile(name);
-      DCHECK(!HasProfileWithName(name));
-    }
-
     profile = nullptr;
     profiles_map_.erase(iter);
   }
@@ -430,15 +407,34 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
 bool ProfileManagerIOSImpl::CreateProfileWithMode(
     std::string_view name,
     CreationMode creation_mode,
+    bool load_only_do_not_create,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool inserted = false;
   bool existing = HasProfileWithName(name);
 
+  // As the name may have been registered with ProfileAttributesStorageIOS,
+  // a profile is considered as a new profile if the storage does not know
+  // about it, or if the IsNewProfile() flag is still set. The flag will be
+  // cleared the first time the profile is successfully loaded.
+  bool is_new_profile = !existing;
+  if (existing) {
+    const ProfileAttributesIOS attrs =
+        profile_attributes_storage_.GetAttributesForProfileWithName(name);
+    is_new_profile = attrs.IsNewProfile();
+  }
+
+  // Profile creation is forbidden either via `load_only_do_not_create` or
+  // if CanCreateProfileWithName(...) return false.
+  bool can_create = !load_only_do_not_create;
+  if (!existing) {
+    can_create &= CanCreateProfileWithName(name);
+  }
+
   auto iter = profiles_map_.find(name);
   if (iter == profiles_map_.end()) {
-    if (!CanCreateProfileWithName(name)) {
+    if (is_new_profile && !can_create) {
       if (!initialized_callback.is_null()) {
         std::move(initialized_callback).Run(nullptr);
       }
@@ -448,6 +444,12 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     if (!existing) {
       profile_attributes_storage_.AddProfile(name);
       DCHECK(HasProfileWithName(name));
+    }
+
+    // If this is the first profile ever loaded, mark it as the personal
+    // profile.
+    if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
+      profile_attributes_storage_.SetPersonalProfileName(name);
     }
 
     std::tie(iter, inserted) = profiles_map_.insert(std::make_pair(
@@ -474,13 +476,6 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     }
   }
 
-  // If this is the first profile ever loaded, mark it as the personal profile.
-  // TODO(crbug.com/331783685): Handle the (theoretical) case where the pref
-  // does have a value, but no profile with that name actually exists.
-  if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
-    profile_attributes_storage_.SetPersonalProfileName(name);
-  }
-
   // If asked to load synchronously but an asynchronous load was already in
   // progress, pretend the load failed, as we cannot return an uninitialized
   // Profile, nor can we wait for the asynchronous initialisation to complete.
@@ -495,7 +490,7 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
   // of the ProfileInfo. Thus it is necessary to call the method again here.
   if (inserted && creation_mode == CreationMode::kSynchronous) {
     OnProfileCreationFinished(profile_info.profile(),
-                              CreationMode::kAsynchronous, !existing,
+                              CreationMode::kAsynchronous, is_new_profile,
                               /* success */ true);
   }
 
@@ -530,57 +525,4 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
   ListFamilyMembersServiceFactory::GetForProfile(profile)->Init();
-}
-
-void ProfileManagerIOSImpl::HideLegacyProfiles(
-    const std::set<std::string>& profiles) {
-  CHECK(base::FeatureList::IsEnabled(kHideLegacyProfiles));
-  if (local_state_->GetBoolean(prefs::kLegacyProfileHidden)) {
-    return;
-  }
-
-  base::Value::Dict legacy_profiles;
-
-  const size_t count = profile_attributes_storage_.GetNumberOfProfiles();
-  for (size_t i = 0; i < count; ++i) {
-    const size_t index = count - i - 1;  // iterate backwards
-    ProfileAttributesIOS attr =
-        profile_attributes_storage_.GetAttributesForProfileAtIndex(index);
-
-    const std::string name = attr.GetProfileName();
-    if (!base::Contains(profiles, name)) {
-      legacy_profiles.Set(name, std::move(attr).GetStorage());
-      profile_attributes_storage_.RemoveProfile(name);
-    }
-  }
-
-  local_state_->SetBoolean(prefs::kLegacyProfileHidden, true);
-  local_state_->SetDict(prefs::kLegacyProfileMap, std::move(legacy_profiles));
-}
-
-void ProfileManagerIOSImpl::RestoreLegacyProfiles(
-    const std::set<std::string>& profiles) {
-  CHECK(!base::FeatureList::IsEnabled(kHideLegacyProfiles));
-  if (!local_state_->GetBoolean(prefs::kLegacyProfileHidden)) {
-    return;
-  }
-
-  const base::Value::Dict& legacy_profiles =
-      local_state_->GetDict(prefs::kLegacyProfileMap);
-
-  for (const auto [key, value] : legacy_profiles) {
-    DCHECK(!base::Contains(profiles, key));
-    DCHECK(value.is_dict());
-
-    profile_attributes_storage_.AddProfile(key);
-    profile_attributes_storage_.UpdateAttributesForProfileWithName(
-        key, base::BindOnce(
-                 [](const base::Value::Dict* dict, ProfileAttributesIOS attr) {
-                   return ProfileAttributesIOS(attr.GetProfileName(), dict);
-                 },
-                 &value.GetDict()));
-  }
-
-  local_state_->ClearPref(prefs::kLegacyProfileHidden);
-  local_state_->ClearPref(prefs::kLegacyProfileMap);
 }

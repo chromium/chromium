@@ -939,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
                   /*enabled=*/true);
     waiter.WaitForRegistration();
     side_panel_coordinator()->Show(
-        {browser()->GetActiveTabInterface()->GetTabHandle(), extension_key},
+        {browser()->GetActiveTabInterface()->GetHandle(), extension_key},
         /*open_trigger=*/std::nullopt, /*suppress_animations=*/true);
 
     ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());

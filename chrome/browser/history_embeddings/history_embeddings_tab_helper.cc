@@ -4,11 +4,14 @@
 
 #include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 
+#include <numeric>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -20,6 +23,7 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
+#include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,7 +31,67 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/content_extraction/inner_text.mojom.h"
 #include "url/gurl.h"
+
+namespace {
+
+// This corresponds to UMA histogram enum `EmbeddingsExtractionCancelled`
+// in tools/metrics/histograms/metadata/history/enums.xml
+enum class ExtractionCancelled {
+  UNKNOWN = 0,
+  TAB_HELPER_DID_FINISH_LOAD = 1,
+  TAB_HELPER_EXTRACT_PASSAGES_URL = 2,
+  TAB_HELPER_EXTRACT_PASSAGES_RESCHEDULE = 3,
+  TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_RESULTS = 4,
+  TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_TIME = 5,
+  TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_GUID = 6,
+  SERVICE_RETRIEVE_PASSAGES = 7,
+  SERVICE_RETRIEVE_PASSAGES_WITH_URL_DATA = 8,
+
+  // These enum values are logged in UMA. Do not reuse or skip any values.
+  // The order doesn't need to be chronological, but keep identities stable.
+  ENUM_COUNT,
+};
+
+// Record UMA histogram with cancellation reason when extraction,
+// embedding, etc. is cancelled before completion and storage.
+void RecordExtractionCancelled(ExtractionCancelled reason) {
+  base::UmaHistogramEnumeration("History.Embeddings.ExtractionCancelled",
+                                reason, ExtractionCancelled::ENUM_COUNT);
+}
+
+void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
+                    base::ElapsedTimer passage_extraction_timer,
+                    base::OnceCallback<void(std::vector<std::string>)> callback,
+                    blink::mojom::InnerTextFramePtr mojo_frame) {
+  std::vector<std::string> valid_passages;
+  if (mojo_frame) {
+    for (const auto& segment : mojo_frame->segments) {
+      if (segment->is_text()) {
+        valid_passages.emplace_back(segment->get_text());
+      }
+    }
+    base::UmaHistogramTimes("History.Embeddings.Passages.ExtractionTime",
+                            passage_extraction_timer.Elapsed());
+  }
+  // Save passages
+  const size_t total_text_size =
+      std::accumulate(valid_passages.cbegin(), valid_passages.cend(), 0u,
+                      [](size_t acc, const std::string& passage) {
+                        return acc + passage.size();
+                      });
+  base::UmaHistogramCounts1000("History.Embeddings.Passages.PassageCount",
+                               valid_passages.size());
+  base::UmaHistogramCounts10M("History.Embeddings.Passages.TotalTextSize",
+                              total_text_size);
+  std::move(callback).Run(std::move(valid_passages));
+}
+
+}  // namespace
 
 HistoryEmbeddingsTabHelper::HistoryEmbeddingsTabHelper(
     content::WebContents* web_contents)
@@ -82,8 +146,7 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
           << resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount();
 
   if (!ScheduleExtraction(render_frame_host->GetWeakDocumentPtr())) {
-    history_embeddings::RecordExtractionCancelled(
-        history_embeddings::ExtractionCancelled::TAB_HELPER_DID_FINISH_LOAD);
+    RecordExtractionCancelled(ExtractionCancelled::TAB_HELPER_DID_FINISH_LOAD);
     VLOG(3) << "Extraction cancelled in DidFinishLoad";
   }
 }
@@ -96,6 +159,14 @@ void HistoryEmbeddingsTabHelper::OnLoadingStateChange(
       resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount();
   VLOG(3) << "Loading state changed for '" << web_contents->GetTitle()
           << "' with " << loading_tab_count << " tabs now loading.";
+}
+
+void HistoryEmbeddingsTabHelper::RetrievePassagesForTesting(
+    history::URLID url_id,
+    history::VisitID visit_id,
+    base::Time visit_time,
+    content::WeakDocumentPtr weak_render_frame_host) {
+  RetrievePassages(url_id, visit_id, visit_time, weak_render_frame_host);
 }
 
 bool HistoryEmbeddingsTabHelper::ScheduleExtraction(
@@ -116,9 +187,8 @@ bool HistoryEmbeddingsTabHelper::ScheduleExtraction(
 void HistoryEmbeddingsTabHelper::ExtractPassages(
     content::WeakDocumentPtr weak_render_frame_host) {
   if (!history_url_.has_value()) {
-    history_embeddings::RecordExtractionCancelled(
-        history_embeddings::ExtractionCancelled::
-            TAB_HELPER_EXTRACT_PASSAGES_URL);
+    RecordExtractionCancelled(
+        ExtractionCancelled::TAB_HELPER_EXTRACT_PASSAGES_URL);
     VLOG(3) << "Extraction cancelled; no history_url_ value.";
     return;
   }
@@ -128,9 +198,8 @@ void HistoryEmbeddingsTabHelper::ExtractPassages(
   if (loading_tab_count > 0) {
     // Not ready yet. Try again after the delay.
     if (!ScheduleExtraction(weak_render_frame_host)) {
-      history_embeddings::RecordExtractionCancelled(
-          history_embeddings::ExtractionCancelled::
-              TAB_HELPER_EXTRACT_PASSAGES_RESCHEDULE);
+      RecordExtractionCancelled(
+          ExtractionCancelled::TAB_HELPER_EXTRACT_PASSAGES_RESCHEDULE);
       VLOG(3) << "Extraction cancelled; " << loading_tab_count
               << " tabs still loading.";
     } else {
@@ -159,8 +228,8 @@ void HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData(
   // visit being added to the DB, e.g. navigations to
   // "chrome://" URLs.
   if (!result.success || result.visits.empty()) {
-    history_embeddings::RecordExtractionCancelled(
-        history_embeddings::ExtractionCancelled::
+    RecordExtractionCancelled(
+        ExtractionCancelled::
             TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_RESULTS);
     return;
   }
@@ -173,8 +242,8 @@ void HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData(
   // navigation by comparing the visit_times.
   if (!history_visit_time_.has_value() ||
       latest_visit.visit_time != *history_visit_time_) {
-    history_embeddings::RecordExtractionCancelled(
-        history_embeddings::ExtractionCancelled::
+    RecordExtractionCancelled(
+        ExtractionCancelled::
             TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_TIME);
     return;
   }
@@ -186,22 +255,100 @@ void HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData(
   // a problem, consider implementing a
   // GetMostRecent*Local*VisitsForURL().
   if (!latest_visit.originator_cache_guid.empty()) {
-    history_embeddings::RecordExtractionCancelled(
-        history_embeddings::ExtractionCancelled::
+    RecordExtractionCancelled(
+        ExtractionCancelled::
             TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_GUID);
     return;
   }
 
-  if (history_embeddings::HistoryEmbeddingsService* embeddings_service =
-          GetHistoryEmbeddingsService()) {
-    embeddings_service->RetrievePassages(
-        latest_visit.url_id, latest_visit.visit_id, latest_visit.visit_time,
-        weak_render_frame_host);
-  }
+  RetrievePassages(latest_visit.url_id, latest_visit.visit_id,
+                   latest_visit.visit_time, weak_render_frame_host);
 
   // Clear the data. It isn't reused and will be set anew by later navigation.
   history_visit_time_.reset();
   history_url_.reset();
+}
+
+void HistoryEmbeddingsTabHelper::RetrievePassages(
+    history::URLID url_id,
+    history::VisitID visit_id,
+    base::Time visit_time,
+    content::WeakDocumentPtr weak_render_frame_host) {
+  const history_embeddings::HistoryEmbeddingsService* embeddings_service =
+      GetHistoryEmbeddingsService();
+  if (!embeddings_service) {
+    return;
+  }
+
+  content::RenderFrameHost* render_frame_host =
+      weak_render_frame_host.AsRenderFrameHostIfValid();
+  if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
+    RecordExtractionCancelled(ExtractionCancelled::SERVICE_RETRIEVE_PASSAGES);
+    return;
+  }
+
+  if (history_embeddings::GetFeatureParameters().use_database_before_embedder) {
+    base::ElapsedTimer database_access_timer;
+    embeddings_service->GetUrlData(
+        url_id,
+        base::BindOnce(&HistoryEmbeddingsTabHelper::RetrievePassagesWithUrlData,
+                       weak_ptr_factory_.GetWeakPtr(), url_id, visit_id,
+                       visit_time, std::move(weak_render_frame_host),
+                       std::move(database_access_timer)));
+  } else {
+    RetrievePassagesWithUrlData(url_id, visit_id, visit_time,
+                                std::move(weak_render_frame_host), std::nullopt,
+                                std::nullopt);
+  }
+}
+
+void HistoryEmbeddingsTabHelper::RetrievePassagesWithUrlData(
+    history::URLID url_id,
+    history::VisitID visit_id,
+    base::Time visit_time,
+    content::WeakDocumentPtr weak_render_frame_host,
+    std::optional<base::ElapsedTimer> database_access_timer,
+    std::optional<history_embeddings::UrlData> existing_url_data) {
+  content::RenderFrameHost* render_frame_host =
+      weak_render_frame_host.AsRenderFrameHostIfValid();
+  if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
+    RecordExtractionCancelled(
+        ExtractionCancelled::SERVICE_RETRIEVE_PASSAGES_WITH_URL_DATA);
+    return;
+  }
+
+  if (database_access_timer.has_value()) {
+    base::UmaHistogramTimes(
+        "History.Embeddings.DatabaseAsCacheAccessTime.TotalWait",
+        database_access_timer.value().Elapsed());
+  }
+
+  base::ElapsedTimer passage_extraction_timer;
+  mojo::Remote<blink::mojom::InnerTextAgent> agent;
+  render_frame_host->GetRemoteInterfaces()->GetInterface(
+      agent.BindNewPipeAndPassReceiver());
+  auto params = blink::mojom::InnerTextParams::New();
+  params->max_words_per_aggregate_passage =
+      std::max(0, history_embeddings::GetFeatureParameters()
+                      .passage_extraction_max_words_per_aggregate_passage);
+  params->max_passages =
+      history_embeddings::GetFeatureParameters().max_passages_per_page;
+  params->min_words_per_passage = history_embeddings::GetFeatureParameters()
+                                      .search_passage_minimum_word_count;
+  auto* agent_ptr = agent.get();
+  agent_ptr->GetInnerText(
+      std::move(params),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(
+              &OnGotInnerText, std::move(agent),
+              std::move(passage_extraction_timer),
+              base::BindOnce(
+                  &history_embeddings::HistoryEmbeddingsService::
+                      OnPassagesRetrieved,
+                  GetHistoryEmbeddingsService()->AsWeakPtr(),
+                  std::move(existing_url_data),
+                  history_embeddings::UrlData(url_id, visit_id, visit_time))),
+          nullptr));
 }
 
 void HistoryEmbeddingsTabHelper::CancelExtraction() {

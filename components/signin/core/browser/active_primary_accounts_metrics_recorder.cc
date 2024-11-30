@@ -12,6 +12,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace signin {
 
@@ -52,7 +53,7 @@ void ActivePrimaryAccountsMetricsRecorder::RegisterLocalStatePrefs(
 }
 
 void ActivePrimaryAccountsMetricsRecorder::MarkAccountAsActiveNow(
-    std::string_view gaia_id) {
+    const GaiaId& gaia_id) {
   const base::Time now = base::Time::Now();
 
   // The metrics about active accounts aren't that fine-grained; don't bother
@@ -69,7 +70,7 @@ void ActivePrimaryAccountsMetricsRecorder::MarkAccountAsActiveNow(
 
 std::optional<base::Time>
 ActivePrimaryAccountsMetricsRecorder::GetLastActiveTimeForAccount(
-    std::string_view gaia_id) const {
+    const GaiaId& gaia_id) const {
   return base::ValueToTime(
       local_state_->GetDict(kActiveAccountsPrefName)
           .Find(GaiaIdHash::FromGaiaId(gaia_id).ToBase64()));

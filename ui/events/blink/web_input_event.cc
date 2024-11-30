@@ -22,6 +22,8 @@ namespace ui {
 
 namespace {
 
+using WebInputEvent = blink::WebInputEvent;
+
 gfx::PointF GetScreenLocationFromEvent(const LocatedEvent& event) {
   return event.target() ? event.target()->GetScreenLocationF(event)
                         : event.root_location_f();
@@ -63,14 +65,14 @@ blink::WebMouseWheelEvent MakeUntranslatedWebMouseWheelEventFromNativeEvent(
 #endif  // BUILDFLAG(IS_WIN)
 
 blink::WebKeyboardEvent MakeWebKeyboardEventFromUiEvent(const KeyEvent& event) {
-  blink::WebInputEvent::Type type = blink::WebInputEvent::Type::kUndefined;
+  WebInputEvent::Type type = WebInputEvent::Type::kUndefined;
   switch (event.type()) {
     case EventType::kKeyPressed:
-      type = event.is_char() ? blink::WebInputEvent::Type::kChar
-                             : blink::WebInputEvent::Type::kRawKeyDown;
+      type = event.is_char() ? WebInputEvent::Type::kChar
+                             : WebInputEvent::Type::kRawKeyDown;
       break;
     case EventType::kKeyReleased:
-      type = blink::WebInputEvent::Type::kKeyUp;
+      type = WebInputEvent::Type::kKeyUp;
       break;
     default:
       NOTREACHED();
@@ -82,8 +84,9 @@ blink::WebKeyboardEvent MakeWebKeyboardEventFromUiEvent(const KeyEvent& event) {
           DomCodeToWebInputEventModifiers(event.code()),
       event.time_stamp());
 
-  if (webkit_event.GetModifiers() & blink::WebInputEvent::kAltKey)
+  if (webkit_event.GetModifiers() & WebInputEvent::kAltKey) {
     webkit_event.is_system_key = true;
+  }
   webkit_event.windows_key_code = event.key_code();
   webkit_event.native_key_code =
       KeycodeConverter::DomCodeToNativeKeycode(event.code());
@@ -98,7 +101,7 @@ blink::WebKeyboardEvent MakeWebKeyboardEventFromUiEvent(const KeyEvent& event) {
 blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
     const ScrollEvent& event) {
   blink::WebMouseWheelEvent webkit_event(
-      blink::WebInputEvent::Type::kMouseWheel,
+      WebInputEvent::Type::kMouseWheel,
       EventFlagsToWebEventModifiers(event.flags()), event.time_stamp());
 
   webkit_event.button = blink::WebMouseEvent::Button::kNoButton;
@@ -165,13 +168,13 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
 
 blink::WebGestureEvent MakeWebGestureEventFromUiEvent(
     const ScrollEvent& event) {
-  blink::WebInputEvent::Type type = blink::WebInputEvent::Type::kUndefined;
+  WebInputEvent::Type type = WebInputEvent::Type::kUndefined;
   switch (event.type()) {
     case EventType::kScrollFlingStart:
-      type = blink::WebInputEvent::Type::kGestureFlingStart;
+      type = WebInputEvent::Type::kGestureFlingStart;
       break;
     case EventType::kScrollFlingCancel:
-      type = blink::WebInputEvent::Type::kGestureFlingCancel;
+      type = WebInputEvent::Type::kGestureFlingCancel;
       break;
     case EventType::kScroll:
       NOTREACHED() << "Invalid gesture type: "
@@ -351,9 +354,8 @@ blink::WebGestureEvent MakeWebGestureEvent(const ScrollEvent& event) {
 blink::WebGestureEvent MakeWebGestureEventFlingCancel(
     const blink::WebMouseWheelEvent& wheel_event) {
   blink::WebGestureEvent gesture_event(
-      blink::WebInputEvent::Type::kGestureFlingCancel,
-      blink::WebInputEvent::kNoModifiers, wheel_event.TimeStamp(),
-      blink::WebGestureDevice::kTouchpad);
+      WebInputEvent::Type::kGestureFlingCancel, WebInputEvent::kNoModifiers,
+      wheel_event.TimeStamp(), blink::WebGestureDevice::kTouchpad);
   // Coordinates need to be transferred to the fling cancel gesture only
   // for Surface-targeting to ensure that it is targeted to the correct
   // RenderWidgetHost.
@@ -364,15 +366,15 @@ blink::WebGestureEvent MakeWebGestureEventFlingCancel(
 }
 
 blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
-  blink::WebInputEvent::Type type = blink::WebInputEvent::Type::kUndefined;
+  WebInputEvent::Type type = WebInputEvent::Type::kUndefined;
   int click_count = 0;
   switch (event.type()) {
     case EventType::kMousePressed:
-      type = blink::WebInputEvent::Type::kMouseDown;
+      type = WebInputEvent::Type::kMouseDown;
       click_count = event.GetClickCount();
       break;
     case EventType::kMouseReleased:
-      type = blink::WebInputEvent::Type::kMouseUp;
+      type = WebInputEvent::Type::kMouseUp;
       click_count = event.GetClickCount();
       break;
     case EventType::kMouseExited: {
@@ -380,19 +382,16 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
       // pointer crosses through, change these into mouse move events.
       const Event::Properties* props = event.properties();
       if (props && props->contains(kPropertyMouseCrossedIntermediateWindow)) {
-        type = blink::WebInputEvent::Type::kMouseMove;
+        type = WebInputEvent::Type::kMouseMove;
       } else {
-        static bool s_send_leave =
-            base::FeatureList::IsEnabled(features::kSendMouseLeaveEvents);
-        type = s_send_leave ? blink::WebInputEvent::Type::kMouseLeave
-                            : blink::WebInputEvent::Type::kMouseMove;
+        type = WebInputEvent::Type::kMouseLeave;
       }
       break;
     }
     case EventType::kMouseEntered:
     case EventType::kMouseMoved:
     case EventType::kMouseDragged:
-      type = blink::WebInputEvent::Type::kMouseMove;
+      type = WebInputEvent::Type::kMouseMove;
       break;
     default:
       NOTIMPLEMENTED() << "Received unexpected event: "
@@ -445,7 +444,7 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
 blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
     const MouseWheelEvent& event) {
   blink::WebMouseWheelEvent webkit_event(
-      blink::WebInputEvent::Type::kMouseWheel,
+      WebInputEvent::Type::kMouseWheel,
       EventFlagsToWebEventModifiers(event.flags()), event.time_stamp());
 
   webkit_event.button = blink::WebMouseEvent::Button::kNoButton;
@@ -466,28 +465,6 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
       webkit_event.delta_x / MouseWheelEvent::kWheelDelta;
   webkit_event.wheel_ticks_y =
       webkit_event.delta_y / MouseWheelEvent::kWheelDelta;
-
-  // Set deltas to be percent based if percent based scrolling is enabled.
-  // If percent based scrolling is enabled on Windows, percent based
-  // mousewheel events are built in the Windows web input event builder.
-  // Percent based scrolling is not supported on Mac because the current
-  // roadmap for scroll personality work is reserved for Windows and Linux.
-  // Page based scrolling isn't specified in terms of pixels so we don't convert
-  // deltas to a percentage here - it's resolved into percent, then pixels,
-  // in the renderer.
-  // TODO(yshalivskyy) Currently, for page based scrolling we always scroll
-  // by one page dismissing delta_y/delta_x values. https://crbug.com/1196092
-  if (features::IsPercentBasedScrollingEnabled() &&
-      webkit_event.delta_units != ui::ScrollGranularity::kScrollByPage &&
-      webkit_event.delta_units !=
-          ui::ScrollGranularity::kScrollByPrecisePixel) {
-    webkit_event.delta_units = ui::ScrollGranularity::kScrollByPercentage;
-    webkit_event.delta_y *=
-        (kScrollPercentPerLineOrChar / MouseWheelEvent::kWheelDelta);
-    webkit_event.delta_x *=
-        (kScrollPercentPerLineOrChar / MouseWheelEvent::kWheelDelta);
-  }
-
   webkit_event.tilt_x = event.pointer_details().tilt_x;
   webkit_event.tilt_y = event.pointer_details().tilt_y;
   webkit_event.force = event.pointer_details().force;

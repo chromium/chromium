@@ -45,32 +45,8 @@
 
 namespace {
 
-const size_t kMaxMessageSize = 1024 * 1024;  // 1MB
-
-constexpr char kBadAuthenticationError[] = "BadAuthentication";
-constexpr char kBadAuthenticationShortError[] = "badauth";
-constexpr char kServiceUnavailableError[] = "ServiceUnavailable";
-constexpr char kServiceUnavailableShortError[] = "ire";
 constexpr char kFormEncodedContentType[] = "application/x-www-form-urlencoded";
 constexpr char kJsonContentType[] = "application/json;charset=UTF-8";
-
-constexpr char kOAuth2CodeToTokenPairBodyFormat[] =
-    "scope=%s&"
-    "grant_type=authorization_code&"
-    "client_id=%s&"
-    "client_secret=%s&"
-    "code=%s";
-constexpr char kOAuth2CodeToTokenPairDeviceIdParam[] =
-    "device_id=%s&device_type=chrome";
-constexpr char kOAuth2CodeToTokenPairBindingRegistrationTokenParam[] =
-    "bound_token_registration_jwt=%s";
-constexpr char kOAuth2RevokeTokenBodyFormat[] = "token=%s";
-
-constexpr char kErrorParam[] = "Error";
-constexpr char kErrorUrlParam[] = "Url";
-
-constexpr char kOAuthMultiBearerHeaderFormat[] =
-    "Authorization: MultiBearer %s";
 
 std::unique_ptr<const GaiaAuthConsumer::ClientOAuthResult>
 ExtractOAuth2TokenPairResponse(const std::string& data) {
@@ -167,20 +143,19 @@ GaiaAuthConsumer::ReAuthProofTokenStatus ErrorMessageToReAuthProofTokenStatus(
 std::string CreateMultiBearerAuthorizationHeader(
     const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts) {
   std::vector<std::string> authorization_header_parts;
-  for (const auto& account : accounts) {
-    authorization_header_parts.push_back(base::StringPrintf(
-        "%s:%s", account.token.c_str(), account.gaia_id.c_str()));
-  }
+  std::ranges::transform(
+      accounts, std::back_inserter(authorization_header_parts),
+      [](const auto& account) {
+        return base::StrCat({account.token, ":", account.gaia_id.ToString()});
+      });
 
-  return base::StringPrintf(
-      kOAuthMultiBearerHeaderFormat,
-      base::JoinString(authorization_header_parts, ",").c_str());
+  return "Authorization: MultiBearer " +
+         base::JoinString(authorization_header_parts, ",");
 }
 
 std::string CreateMultiOAuthAuthorizationHeader(
     const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts) {
-  return base::StrCat(
-      {"Authorization: MultiOAuth ", gaia::CreateMultiOAuthHeader(accounts)});
+  return "Authorization: MultiOAuth " + gaia::CreateMultiOAuthHeader(accounts);
 }
 
 }  // namespace
@@ -330,7 +305,8 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
       url_loader_factory_.get(),
       base::BindOnce(&GaiaAuthFetcher::OnURLLoadComplete,
                      base::Unretained(this)),
-      kMaxMessageSize);
+      // Limit to 1 MiB.
+      1024 * 1024);
 }
 
 // static
@@ -345,18 +321,17 @@ std::string GaiaAuthFetcher::MakeGetTokenPairBody(
   std::string encoded_client_secret = base::EscapeUrlEncodedData(
       GaiaUrls::GetInstance()->oauth2_chrome_client_secret(), true);
   std::string encoded_auth_code = base::EscapeUrlEncodedData(auth_code, true);
-  std::string body = base::StringPrintf(
-      kOAuth2CodeToTokenPairBodyFormat, encoded_scope.c_str(),
-      encoded_client_id.c_str(), encoded_client_secret.c_str(),
-      encoded_auth_code.c_str());
+  std::string body = base::StrCat(
+      {"scope=", encoded_scope,
+       "&grant_type=authorization_code&client_id=", encoded_client_id,
+       "&client_secret=", encoded_client_secret, "&code=", encoded_auth_code});
   if (!device_id.empty()) {
-    body += "&" + base::StringPrintf(kOAuth2CodeToTokenPairDeviceIdParam,
-                                     device_id.c_str());
+    body =
+        base::StrCat({body, "&device_id=", device_id, "&device_type=chrome"});
   }
   if (!binding_registration_token.empty()) {
-    body += "&" + base::StringPrintf(
-                      kOAuth2CodeToTokenPairBindingRegistrationTokenParam,
-                      binding_registration_token.c_str());
+    body = base::StrCat(
+        {body, "&bound_token_registration_jwt=", binding_registration_token});
   }
   return body;
 }
@@ -364,7 +339,7 @@ std::string GaiaAuthFetcher::MakeGetTokenPairBody(
 // static
 std::string GaiaAuthFetcher::MakeRevokeTokenBody(
     const std::string& auth_token) {
-  return base::StringPrintf(kOAuth2RevokeTokenBodyFormat, auth_token.c_str());
+  return "token=" + auth_token;
 }
 
 // static
@@ -375,9 +350,9 @@ void GaiaAuthFetcher::ParseFailureResponse(const std::string& data,
   base::SplitStringIntoKeyValuePairs(data, '=', '\n', &tokens);
 
   for (const auto& token : tokens) {
-    if (token.first == kErrorParam) {
+    if (token.first == "Error") {
       error->assign(token.second);
-    } else if (token.first == kErrorUrlParam) {
+    } else if (token.first == "Url") {
       error_url->assign(token.second);
     }
   }
@@ -518,7 +493,8 @@ void GaiaAuthFetcher::StartListAccounts() {
 void GaiaAuthFetcher::StartOAuthMultilogin(
     gaia::MultiloginMode mode,
     const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts,
-    const std::string& external_cc_result) {
+    const std::string& external_cc_result,
+    OAuthMultiloginResult::CookieDecryptor cookie_decryptor) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
   UMA_HISTOGRAM_COUNTS_100("Signin.Multilogin.NumberOfAccounts",
@@ -543,6 +519,7 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
         &parameters, "&externalCcResult=%s",
         base::EscapeUrlEncodedData(external_cc_result, true).c_str());
   }
+  oauth_multilogin_cookie_decryptor_ = std::move(cookie_decryptor);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("gaia_auth_multilogin", R"(
@@ -729,21 +706,14 @@ GoogleServiceAuthError GaiaAuthFetcher::GenerateAuthError(
   std::string error;
   std::string url;
   ParseFailureResponse(data, &error, &url);
-  DLOG(WARNING) << "Authentication request failed with " << error;
+  DLOG(WARNING) << "Authentication request failed"
+                << (error.empty() ? std::string() : (" with error: " + error));
 
-  if (error == kBadAuthenticationShortError ||
-      error == kBadAuthenticationError) {
-    return GoogleServiceAuthError(
-        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_SERVER));
+  if (error == "badauth" || error == "BadAuthentication") {
+    return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+            CREDENTIALS_REJECTED_BY_SERVER);
   }
-  if (error == kServiceUnavailableShortError ||
-      error == kServiceUnavailableError) {
-    return GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
-  }
-
-  DLOG(WARNING) << "Incomprehensible response from Google Accounts servers.";
   return GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
 }
 
@@ -859,7 +829,8 @@ void GaiaAuthFetcher::OnOAuthMultiloginFetched(const std::string& data,
                                                int response_code) {
   OAuthMultiloginResult result =
       (net_error == net::Error::OK)
-          ? OAuthMultiloginResult(data)
+          ? OAuthMultiloginResult(data, response_code,
+                                  oauth_multilogin_cookie_decryptor_)
           : OAuthMultiloginResult(OAuthMultiloginResponseStatus::kRetry);
   consumer_->OnOAuthMultiloginFinished(result);
 }

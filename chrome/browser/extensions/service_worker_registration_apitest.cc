@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -757,8 +758,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
 // in the service worker being seen as "updated" (which would result in a
 // "waiting" service worker, violating expectations in the extensions system).
 // https://crbug.com/1271154.
+// TODO(crbug.com/355339195): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ModifyingLocalFilesForUnpackedExtensions \
+  DISABLED_ModifyingLocalFilesForUnpackedExtensions
+#else
+#define MAYBE_ModifyingLocalFilesForUnpackedExtensions \
+  ModifyingLocalFilesForUnpackedExtensions
+#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
-                       ModifyingLocalFilesForUnpackedExtensions) {
+                       MAYBE_ModifyingLocalFilesForUnpackedExtensions) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   const double kUpdateDelayInMilliseconds =
       content::ServiceWorkerContext::GetUpdateDelay().InMillisecondsF();

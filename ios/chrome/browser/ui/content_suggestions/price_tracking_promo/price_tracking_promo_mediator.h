@@ -40,6 +40,9 @@ class AuthenticationService;
 // Price Tracking Promo is removed from the magic stack.
 - (void)removePriceTrackingPromo;
 
+// Price Tracking promo was tapped on.
+- (void)promoWasTapped;
+
 @end
 
 @interface PriceTrackingPromoMediator : NSObject <PriceTrackingPromoCommands>

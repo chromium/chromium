@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -41,7 +42,7 @@ class IdentityManager;
 void SimulateSuccessfulFetchOfAccountInfo(IdentityManager*,
                                           const CoreAccountId&,
                                           const std::string&,
-                                          const std::string&,
+                                          const GaiaId&,
                                           const std::string&,
                                           const std::string&,
                                           const std::string&,
@@ -94,19 +95,19 @@ class AccountTrackerService {
   // have been fetched.
   std::vector<AccountInfo> GetAccounts() const;
   AccountInfo GetAccountInfo(const CoreAccountId& account_id) const;
-  AccountInfo FindAccountInfoByGaiaId(const std::string& gaia_id) const;
+  AccountInfo FindAccountInfoByGaiaId(const GaiaId& gaia_id) const;
   AccountInfo FindAccountInfoByEmail(const std::string& email) const;
 
   // Picks the correct account_id for the specified account depending on the
   // migration state.
-  CoreAccountId PickAccountIdForAccount(const std::string& gaia,
+  CoreAccountId PickAccountIdForAccount(const GaiaId& gaia,
                                         const std::string& email) const;
 
   // Seeds the account whose account_id is given by PickAccountIdForAccount()
   // with its corresponding gaia id and email address.  Returns the same
   // value PickAccountIdForAccount() when given the same arguments.
   CoreAccountId SeedAccountInfo(
-      const std::string& gaia,
+      const GaiaId& gaia,
       const std::string& email,
       signin_metrics::AccessPoint access_point =
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -176,7 +177,7 @@ class AccountTrackerService {
       signin::IdentityManager*,
       const CoreAccountId&,
       const std::string&,
-      const std::string&,
+      const GaiaId&,
       const std::string&,
       const std::string&,
       const std::string&,

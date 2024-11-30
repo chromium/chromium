@@ -38,16 +38,15 @@ void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
   // In this case, retrieving the complete IBAN value requires accessing the
   // saved IBAN from the PersonalDataManager.
   if (const Suggestion::Guid* guid = absl::get_if<Suggestion::Guid>(&payload)) {
-    const Iban* iban = client_->GetPersonalDataManager()
-                           ->payments_data_manager()
-                           .GetIbanByGUID(guid->value());
+    const Iban* iban =
+        client_->GetPersonalDataManager().payments_data_manager().GetIbanByGUID(
+            guid->value());
     if (iban) {
       Iban iban_copy = *iban;
-      client_->GetPersonalDataManager()
-          ->payments_data_manager()
-          .RecordUseOfIban(iban_copy);
+      client_->GetPersonalDataManager().payments_data_manager().RecordUseOfIban(
+          iban_copy);
       if (client_->GetPersonalDataManager()
-              ->payments_data_manager()
+              .payments_data_manager()
               .IsPaymentMethodsMandatoryReauthEnabled()) {
         StartDeviceAuthenticationForFilling(
             std::move(on_iban_fetched), iban_copy.value(),
@@ -72,7 +71,7 @@ void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
   // If there are no server IBANs in the PersonalDataManager that have the same
   // instrument ID as the provided `instrument_id`, then abort the operation.
   if (!client_->GetPersonalDataManager()
-           ->payments_data_manager()
+           .payments_data_manager()
            .GetIbanByInstrumentId(instrument_id)) {
     return;
   }
@@ -85,17 +84,17 @@ void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
   // Construct `UnmaskIbanRequestDetails` and send `UnmaskIban` to fetch the
   // full value of the server IBAN.
   const Iban* iban = client_->GetPersonalDataManager()
-                         ->payments_data_manager()
+                         .payments_data_manager()
                          .GetIbanByInstrumentId(instrument_id);
   if (!iban) {
     return;
   }
   Iban iban_copy = *iban;
-  client_->GetPersonalDataManager()->payments_data_manager().RecordUseOfIban(
+  client_->GetPersonalDataManager().payments_data_manager().RecordUseOfIban(
       iban_copy);
   payments::UnmaskIbanRequestDetails request_details;
   request_details.billing_customer_number = payments::GetBillingCustomerId(
-      &client_->GetPersonalDataManager()->payments_data_manager());
+      &client_->GetPersonalDataManager().payments_data_manager());
   request_details.instrument_id = instrument_id;
   base::TimeTicks unmask_request_timestamp = base::TimeTicks::Now();
   client_->GetPaymentsAutofillClient()
@@ -119,7 +118,7 @@ void IbanAccessManager::OnUnmaskResponseReceived(
   autofill_metrics::LogServerIbanUnmaskStatus(is_successful);
   if (is_successful) {
     if (client_->GetPersonalDataManager()
-            ->payments_data_manager()
+            .payments_data_manager()
             .IsPaymentMethodsMandatoryReauthEnabled()) {
       // On some operating systems (for example, macOS and Windows), the
       // device authentication prompt freezes Chrome. Thus we can only trigger

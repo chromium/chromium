@@ -252,7 +252,7 @@ TEST(AudioInputStreamDataInterceptorTest,
   TestSetAutomaticGainControl(false, false);
 }
 
-TEST(AudioInputStreamDataInterceptorTest, GetAutomaticGainControl_True) {
+TEST(AudioInputStreamDataInterceptorTest, GetAutomaticGainControlTrue) {
   MockDebugRecorderFactory factory;
   StrictMock<MockStream> stream;
   AudioInputStream* interceptor = new AudioInputStreamDataInterceptor(
@@ -268,7 +268,7 @@ TEST(AudioInputStreamDataInterceptorTest, GetAutomaticGainControl_True) {
   interceptor->Close();
 }
 
-TEST(AudioInputStreamDataInterceptorTest, GetAutomaticGainControl_False) {
+TEST(AudioInputStreamDataInterceptorTest, GetAutomaticGainControlFalse) {
   MockDebugRecorderFactory factory;
   StrictMock<MockStream> stream;
   AudioInputStream* interceptor = new AudioInputStreamDataInterceptor(
@@ -284,7 +284,7 @@ TEST(AudioInputStreamDataInterceptorTest, GetAutomaticGainControl_False) {
   interceptor->Close();
 }
 
-TEST(AudioInputStreamDataInterceptorTest, IsMuted_True) {
+TEST(AudioInputStreamDataInterceptorTest, IsMutedTrue) {
   MockDebugRecorderFactory factory;
   StrictMock<MockStream> stream;
   AudioInputStream* interceptor = new AudioInputStreamDataInterceptor(
@@ -300,7 +300,7 @@ TEST(AudioInputStreamDataInterceptorTest, IsMuted_True) {
   interceptor->Close();
 }
 
-TEST(AudioInputStreamDataInterceptorTest, IsMuted_False) {
+TEST(AudioInputStreamDataInterceptorTest, IsMutedFalse) {
   MockDebugRecorderFactory factory;
   StrictMock<MockStream> stream;
   AudioInputStream* interceptor = new AudioInputStreamDataInterceptor(

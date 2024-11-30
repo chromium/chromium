@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/trees/layer_tree_host.h"
 
 #include <stddef.h>
@@ -351,8 +346,10 @@ void LayerTreeHost::QueueSwapPromise(
 void LayerTreeHost::WillBeginMainFrame() {
   DCHECK(IsMainThread());
   inside_main_frame_ = true;
-  devtools_instrumentation::WillBeginMainThreadFrame(GetId(),
-                                                     SourceFrameNumber());
+  if (!GetSettings().is_layer_tree_for_ui) {
+    devtools_instrumentation::WillBeginMainThreadFrame(GetId(),
+                                                       SourceFrameNumber());
+  }
   client_->WillBeginMainFrame();
 }
 
@@ -1204,10 +1201,10 @@ void LayerTreeHost::RecordEndOfFrameMetrics(
   client_->RecordEndOfFrameMetrics(frame_begin_time, trackers);
 }
 
-void LayerTreeHost::NotifyThroughputTrackerResults(
+void LayerTreeHost::NotifyCompositorMetricsTrackerResults(
     CustomTrackerResults results) {
   DCHECK(IsMainThread());
-  client_->NotifyThroughputTrackerResults(std::move(results));
+  client_->NotifyCompositorMetricsTrackerResults(std::move(results));
 }
 
 const base::WeakPtr<CompositorDelegateForInput>&
@@ -1472,6 +1469,17 @@ void LayerTreeHost::SetVisualDeviceViewportSize(
 
   pending_commit_state()->visual_device_viewport_size =
       visual_device_viewport_size;
+  SetNeedsCommit();
+}
+
+void LayerTreeHost::SetMaxSafeAreaInsets(
+    const gfx::Insets& max_safe_area_insets) {
+  if (pending_commit_state()->max_safe_area_insets == max_safe_area_insets) {
+    return;
+  }
+
+  pending_commit_state()->max_safe_area_insets = max_safe_area_insets;
+
   SetNeedsCommit();
 }
 

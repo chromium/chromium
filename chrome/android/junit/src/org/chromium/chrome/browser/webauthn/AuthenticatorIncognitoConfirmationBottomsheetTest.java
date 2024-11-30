@@ -125,11 +125,6 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
         Mockito.doReturn(windowAndroid).when(webContents).getTopLevelNativeWindow();
     }
 
-    private void setContext(Context context) {
-        WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
-        Mockito.doReturn(new WeakReference<Context>(context)).when(windowAndroid).getContext();
-    }
-
     @Test
     public void testShow() {
         createBottomsheet();

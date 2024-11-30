@@ -32,54 +32,69 @@ namespace signin {
 OAuthMultiloginTokenFetcher::OAuthMultiloginTokenFetcher(
     SigninClient* signin_client,
     ProfileOAuth2TokenService* token_service,
-    const std::vector<CoreAccountId>& account_ids,
+    std::vector<AccountParams> account_params,
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    std::string ephemeral_public_key,
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     SuccessCallback success_callback,
     FailureCallback failure_callback)
     : signin_client_(signin_client),
       token_service_(token_service),
-      account_ids_(account_ids),
+      account_params_(std::move(account_params)),
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ephemeral_public_key_(std::move(ephemeral_public_key)),
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       success_callback_(std::move(success_callback)),
       failure_callback_(std::move(failure_callback)) {
   DCHECK(signin_client_);
   DCHECK(token_service_);
-  DCHECK(!account_ids_.empty());
+  DCHECK(!account_params_.empty());
   DCHECK(success_callback_);
   DCHECK(failure_callback_);
 
 #ifndef NDEBUG
   // Check that there is no duplicate accounts.
-  std::set<CoreAccountId> accounts_no_duplicates(account_ids_.begin(),
-                                                 account_ids_.end());
-  DCHECK_EQ(account_ids_.size(), accounts_no_duplicates.size());
+  std::set<CoreAccountId> account_ids_no_duplicates;
+  for (const AccountParams& account : account_params_) {
+    account_ids_no_duplicates.insert(account.account_id);
+  }
+  DCHECK_EQ(account_params_.size(), account_ids_no_duplicates.size());
 #endif
 
-  for (const CoreAccountId& account_id : account_ids_) {
-    StartFetchingToken(account_id);
+  for (const AccountParams& account : account_params_) {
+    StartFetchingToken(account);
   }
 }
 
 OAuthMultiloginTokenFetcher::~OAuthMultiloginTokenFetcher() = default;
 
 void OAuthMultiloginTokenFetcher::StartFetchingToken(
-    const CoreAccountId& account_id) {
-  CHECK(!account_id.empty());
+    const AccountParams& account) {
+  CHECK(!account.account_id.empty());
   // Add a request to `token_requests_` before calling `token_service_` to
   // ensure that a request cannot complete before it's added to
   // `token_requests_`.
   // base::Unretained(this) is safe because `this` owns
   // `OAuthMultiloginTokenRequest` which owns the callback.
   token_requests_.push_back(std::make_unique<OAuthMultiloginTokenRequest>(
-      account_id,
+      account.account_id,
       base::BindOnce(&OAuthMultiloginTokenFetcher::OnTokenRequestComplete,
                      base::Unretained(this))));
-  token_service_->StartRequestForMultilogin(*token_requests_.back());
+  token_service_->StartRequestForMultilogin(*token_requests_.back()
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                                ,
+                                            account.token_binding_challenge,
+                                            ephemeral_public_key_
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
 }
 
 void OAuthMultiloginTokenFetcher::OnTokenRequestComplete(
     const OAuthMultiloginTokenRequest* request,
     OAuthMultiloginTokenRequest::Result result) {
   CoreAccountId account_id = request->account_id();
-  CHECK(base::Contains(account_ids_, account_id));
+  CHECK(
+      base::Contains(account_params_, account_id, &AccountParams::account_id));
   size_t num_erased = std::erase_if(
       token_requests_,
       [request](const auto& element) { return element.get() == request; });
@@ -100,7 +115,7 @@ void OAuthMultiloginTokenFetcher::TokenRequestSucceeded(
       token_responses_.insert({account_id, std::move(response)});
   CHECK(inserted);  // If this fires, we have a duplicate account.
 
-  if (token_responses_.size() != account_ids_.size()) {
+  if (token_responses_.size() != account_params_.size()) {
     return;
   }
 
@@ -118,10 +133,13 @@ void OAuthMultiloginTokenFetcher::TokenRequestFailed(
   if (error.IsTransientError() &&
       retried_requests_.find(account_id) == retried_requests_.end()) {
     retried_requests_.insert(account_id);
+    auto it = std::ranges::find(account_params_, account_id,
+                                &AccountParams::account_id);
+    CHECK(it != account_params_.end());
     // Fetching fresh access tokens requires network.
     signin_client_->DelayNetworkCall(
         base::BindOnce(&OAuthMultiloginTokenFetcher::StartFetchingToken,
-                       weak_ptr_factory_.GetWeakPtr(), account_id));
+                       weak_ptr_factory_.GetWeakPtr(), *it));
     return;
   }
   RecordGetAccessTokenFinished(error);

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.text.TextUtils;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,7 +40,6 @@ class BookmarkBridge {
     private final ObserverList<BookmarkModelObserver> mObservers = new ObserverList<>();
 
     private long mNativeBookmarkBridge;
-    private boolean mIsDestroyed;
     private boolean mIsDoingExtensiveChanges;
     private boolean mIsNativeBookmarkModelLoaded;
 
@@ -82,18 +80,12 @@ class BookmarkBridge {
 
     /** Destroys this instance so no further calls can be executed. */
     void destroy() {
-        mIsDestroyed = true;
         if (mNativeBookmarkBridge != 0) {
             BookmarkBridgeJni.get().destroy(mNativeBookmarkBridge);
             mNativeBookmarkBridge = 0;
             mIsNativeBookmarkModelLoaded = false;
         }
         mObservers.clear();
-    }
-
-    /** Returns whether the bridge has been destroyed. */
-    private boolean isDestroyed() {
-        return mIsDestroyed;
     }
 
     /** Returns the most recently added BookmarkId */
@@ -1030,14 +1022,6 @@ class BookmarkBridge {
     @CalledByNative
     private static void clearLastUsedParent() {
         BookmarkUtils.clearLastUsedPrefs();
-    }
-
-    private static List<Pair<Integer, Integer>> createPairsList(int[] left, int[] right) {
-        List<Pair<Integer, Integer>> pairList = new ArrayList<>();
-        for (int i = 0; i < left.length; i++) {
-            pairList.add(new Pair<>(left[i], right[i]));
-        }
-        return pairList;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

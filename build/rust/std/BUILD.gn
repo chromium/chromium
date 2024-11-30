@@ -15,11 +15,25 @@
 # allocator functions to PartitionAlloc when `use_partition_alloc_as_malloc` is
 # true, so that Rust and C++ use the same allocator backend.
 
-import("//base/allocator/partition_allocator/partition_alloc.gni")
+import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+
+rust_allocator_uses_partition_alloc = false
+if (build_with_chromium) {
+  import("//base/allocator/partition_allocator/partition_alloc.gni")
+  rust_allocator_uses_partition_alloc = use_partition_alloc_as_malloc
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "RUST_ALLOCATOR_USES_PARTITION_ALLOC=$rust_allocator_uses_partition_alloc",
+  ]
+  visibility = [ ":*" ]
+}
 
 if (toolchain_has_rust) {
   # If clang performs the link step, we need to provide the allocator symbols
@@ -29,10 +43,11 @@ if (toolchain_has_rust) {
   # though that would be better done through a #[global_allocator] crate (see
   # above).
   source_set("remap_alloc") {
-    public_deps = [ "//base/allocator/partition_allocator:buildflags" ]
-    if (use_partition_alloc_as_malloc) {
+    public_deps = []
+    if (rust_allocator_uses_partition_alloc) {
       public_deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
     }
+    deps = [ ":buildflags" ]
     sources = [
       # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
       # copied from `//base`.

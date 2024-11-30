@@ -353,11 +353,6 @@ public class AllPasswordsBottomSheetViewTest {
         return mBottomSheetController.getSheetState();
     }
 
-    private RecyclerView getCredentials() {
-        return (RecyclerView)
-                mAllPasswordsBottomSheetView.getContentView().findViewById(R.id.sheet_item_list);
-    }
-
     private TextView getCredentialOrigin(View parent) {
         return parent.findViewById(R.id.password_info_title);
     }

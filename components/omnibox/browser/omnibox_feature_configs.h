@@ -120,8 +120,6 @@ struct DocumentProvider : Config<DocumentProvider> {
   // Whether to ignore the state of the document provider when deciding to
   // finish debouncing.
   bool ignore_when_debouncing;
-  // Whether to treat an HTTP 401 response code as a backoff signal.
-  bool backoff_on_401;
 };
 
 // If enabled, pretends all matches are allowed to be default. This is very
@@ -170,28 +168,14 @@ struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
   bool enabled;
 };
 
-// If enabled, the shortcut provider is more aggressive in scoring.
-struct ShortcutBoosting : Config<ShortcutBoosting> {
-  DECLARE_FEATURE(kShortcutBoost);
-  ShortcutBoosting();
+// If enabled, EnterpriseSearchAggregatorSettings are applied.
+struct SparkSearch : Config<SparkSearch> {
+  DECLARE_FEATURE(kSparkSearch);
+  SparkSearch();
   bool enabled;
-  // The scores to use for boosting search and URL suggestions respectively.
-  // Setting to 0 will prevent boosting.
-  int search_score;
-  int url_score;
-  bool counterfactual;
-  // Shortcuts are boosted if either:
-  // 1) They are the top shortcut.
-  // 2) OR they have more hits than `non_top_hit_[searches_]threshold`. If this
-  //    is 1, then all shortcuts are boosted, since all have at least 1 hit. If
-  //    0 (default), then no shortcuts will be boosted through (2) - only the
-  //    top shortcut will be boosted.
-  int non_top_hit_threshold;
-  int non_top_hit_search_threshold;
-  // If enabled, boosted shortcuts will be grouped with searches. Unboosted
-  // shortcuts are grouped with URLs, like traditionally, regardless of
-  // `group_with_searches`.
-  bool group_with_searches;
+  // If enabled, users can perform a scoped search using the policy set
+  // keywords in the omnibox.
+  bool scoped;
 };
 
 // If enabled, affects autocompleted keywords (e.g. input 'youtu Ispiryan' ->

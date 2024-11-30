@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/glic/glic_ui.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/webui/glic/glic_page_handler.h"
@@ -14,9 +16,11 @@
 #include "chrome/grit/glic_resources.h"
 #include "chrome/grit/glic_resources_map.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace glic {
@@ -37,16 +41,31 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   webui::SetupWebUIDataSource(source, base::make_span(kGlicResources),
                               IDR_GLIC_GLIC_HTML);
 
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+
+  // Set up guest URL via cli flag or default to finch param value.
+  bool hasGlicGuestURL = command_line->HasSwitch(::switches::kGlicGuestURL);
+  source->AddString("glicGuestURL", hasGlicGuestURL
+                                        ? command_line->GetSwitchValueASCII(
+                                              ::switches::kGlicGuestURL)
+                                        : features::kGlicGuestURL.Get());
+
+  // Set up guest api source.
+  source->AddString(
+      "glicGuestAPISource",
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_GENERATED_GLIC_API_IMPL_ROLLUP_JS));
+
   // TODO(crbug.com/378951332): Configure an approved CSP.
+  // Set up csp override by cli flag or default to finch param value. This will
+  // be removed when we go to canary since it will no longer be needed once
+  // crbug.com/378951332 is addressed.
+  bool hasCSPOverride = command_line->HasSwitch(::switches::kCSPOverride);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      "child-src 'self'"
-      " https://*.google.com/"
-      " https://*.googleplex.com/;");
-
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  source->AddString("glicGuestURL", command_line->GetSwitchValueASCII(
-                                        ::switches::kGlicGuestURL));
+      hasCSPOverride
+          ? command_line->GetSwitchValueASCII(::switches::kCSPOverride)
+          : features::kGlicWebUICSPOverride.Get());
 
   extensions::TabHelper::CreateForWebContents(web_ui->GetWebContents());
 }
@@ -62,11 +81,9 @@ void GlicUI::BindInterface(
 }
 
 void GlicUI::CreatePageHandler(
-    mojo::PendingRemote<glic::mojom::Page> page,
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver) {
-  DCHECK(page);
-  page_handler_ =
-      std::make_unique<GlicPageHandler>(std::move(receiver), std::move(page));
+  page_handler_ = std::make_unique<GlicPageHandler>(
+      web_ui()->GetWebContents()->GetBrowserContext(), std::move(receiver));
 }
 
 }  // namespace glic

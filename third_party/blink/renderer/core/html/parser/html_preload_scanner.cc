@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
-#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
@@ -174,13 +173,11 @@ class TokenPreloadScanner::StartTagScanner {
   StartTagScanner(
       const StringImpl* tag_impl,
       MediaValuesCached* media_values,
-      SubresourceIntegrity::IntegrityFeatures features,
       TokenPreloadScanner::ScannerType scanner_type,
       const HashSet<String>* disabled_image_types,
       features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type)
       : tag_impl_(tag_impl),
         media_values_(media_values),
-        integrity_features_(features),
         scanner_type_(scanner_type),
         disabled_image_types_(disabled_image_types),
         preload_lazy_load_image_type_(preload_lazy_load_image_type) {
@@ -393,8 +390,8 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (!integrity_attr_set_ &&
                Match(attribute_name, html_names::kIntegrityAttr)) {
       integrity_attr_set_ = true;
-      SubresourceIntegrity::ParseIntegrityAttribute(
-          attribute_value, integrity_features_, integrity_metadata_);
+      SubresourceIntegrity::ParseIntegrityAttribute(attribute_value,
+                                                    integrity_metadata_);
     } else if (Match(attribute_name, html_names::kTypeAttr)) {
       type_attribute_value_ = attribute_value;
     } else if (Match(attribute_name, html_names::kLanguageAttr)) {
@@ -514,8 +511,8 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (!integrity_attr_set_ &&
                Match(attribute_name, html_names::kIntegrityAttr)) {
       integrity_attr_set_ = true;
-      SubresourceIntegrity::ParseIntegrityAttribute(
-          attribute_value, integrity_features_, integrity_metadata_);
+      SubresourceIntegrity::ParseIntegrityAttribute(attribute_value,
+                                                    integrity_metadata_);
     } else if (Match(attribute_name, html_names::kImagesrcsetAttr) &&
                srcset_attribute_value_.IsNull()) {
       srcset_attribute_value_ = attribute_value;
@@ -815,7 +812,6 @@ class TokenPreloadScanner::StartTagScanner {
   bool is_async_ = false;
   bool disabled_attr_set_ = false;
   IntegrityMetadataSet integrity_metadata_;
-  SubresourceIntegrity::IntegrityFeatures integrity_features_;
   LoadingAttributeValue loading_attr_value_ = LoadingAttributeValue::kAuto;
   TokenPreloadScanner::ScannerType scanner_type_;
   // For explanation, see TokenPreloadScanner's declaration.
@@ -1091,8 +1087,8 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
 
       MediaValuesCached* media_values = EnsureMediaValues();
       StartTagScanner scanner(
-          tag_impl, media_values, document_parameters_->integrity_features,
-          scanner_type_, &document_parameters_->disabled_image_types,
+          tag_impl, media_values, scanner_type_,
+          &document_parameters_->disabled_image_types,
           document_parameters_->preload_lazy_load_image_type);
       scanner.ProcessAttributes(token.Attributes());
 
@@ -1323,8 +1319,6 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   viewport_meta_enabled = document->GetSettings() &&
                           document->GetSettings()->GetViewportMetaEnabled();
   referrer_policy = document->GetReferrerPolicy();
-  integrity_features =
-      SubresourceIntegrityHelper::GetFeatures(document->GetExecutionContext());
   if (document->Loader() && document->Loader()->GetFrame()) {
     lazy_load_image_setting =
         document->Loader()->GetFrame()->GetLazyLoadImageSetting();

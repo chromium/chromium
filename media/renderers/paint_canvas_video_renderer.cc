@@ -48,7 +48,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
-#include "media/renderers/video_frame_shared_image_cache.h"
+#include "media/renderers/video_frame_yuv_converter.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -302,7 +302,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     rows += height % rows_per_chunk;
 
   struct PlaneMetaData {
-    int stride;
+    size_t stride;
     raw_ptr<const uint8_t> data;
   };
   std::array<PlaneMetaData, VideoFrame::kMaxPlanes> plane_meta;
@@ -1259,7 +1259,7 @@ bool TexImageHelper(VideoFrame* frame,
       frame->visible_rect().width() * output_bytes_per_pixel;
   *temp_buffer =
       new DataBuffer(output_row_bytes * frame->visible_rect().height());
-  FlipAndConvertY16(frame, (*temp_buffer)->writable_data(), format, type,
+  FlipAndConvertY16(frame, (*temp_buffer)->writable_data().data(), format, type,
                     flip_y, output_row_bytes);
   return true;
 }
@@ -1519,7 +1519,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     return false;
   }
 
-  if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(*video_frame)) {
+  if (!internals::IsPixelFormatSupportedForYuvSharedImageConversion(
+          video_frame->format())) {
     return false;
   }
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
@@ -1534,7 +1535,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // We need a shared image to receive the intermediate RGB result. Try to reuse
   // one if compatible, otherwise create a new one.
   gpu::SyncToken token;
-  if (yuv_cache_.shared_image && yuv_cache_.size == video_frame->coded_size() &&
+  if (yuv_cache_.rgb_shared_image &&
+      yuv_cache_.size == video_frame->coded_size() &&
       yuv_cache_.raster_context_provider == raster_context_provider) {
     token = yuv_cache_.sync_token;
   } else {
@@ -1553,21 +1555,22 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
       usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
     }
 
-    yuv_cache_.shared_image = sii->CreateSharedImage(
+    yuv_cache_.rgb_shared_image = sii->CreateSharedImage(
         {SHARED_IMAGE_FORMAT, video_frame->coded_size(),
          video_frame->CompatRGBColorSpace(), usage, "PaintCanvasVideoRenderer"},
         gpu::kNullSurfaceHandle);
-    CHECK(yuv_cache_.shared_image);
+    CHECK(yuv_cache_.rgb_shared_image);
     token = sii->GenUnverifiedSyncToken();
   }
 
   // On the source Raster context, do the YUV->RGB conversion.
   gpu::MailboxHolder dest_holder;
-  dest_holder.mailbox = yuv_cache_.shared_image->mailbox();
+  dest_holder.mailbox = yuv_cache_.rgb_shared_image->mailbox();
   dest_holder.texture_target = GL_TEXTURE_2D;
   dest_holder.sync_token = token;
-  yuv_cache_.yuv_converter.ConvertYUVVideoFrame(
-      video_frame.get(), raster_context_provider, dest_holder);
+  internals::ConvertYuvVideoFrameToRgbSharedImage(
+      video_frame.get(), raster_context_provider, dest_holder,
+      /*use_visible_rect=*/false, yuv_cache_.yuv_shared_image.get());
 
   gpu::SyncToken post_conversion_sync_token;
   source_ri->GenUnverifiedSyncTokenCHROMIUM(
@@ -1577,7 +1580,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // destination texture.
   yuv_cache_.sync_token = CopySharedImageToTexture(
       destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
-      yuv_cache_.shared_image.get(), post_conversion_sync_token, target,
+      yuv_cache_.rgb_shared_image.get(), post_conversion_sync_token, target,
       texture, internal_format, format, type, level, premultiply_alpha, flip_y);
 
   // video_frame->UpdateReleaseSyncToken is not necessary since the video frame
@@ -1641,7 +1644,7 @@ bool PaintCanvasVideoRenderer::TexImage2D(
 
   gl->TexImage2D(target, level, internalformat, frame->visible_rect().width(),
                  frame->visible_rect().height(), 0, format, type,
-                 temp_buffer->data());
+                 temp_buffer->data().data());
   return true;
 }
 
@@ -1665,7 +1668,7 @@ bool PaintCanvasVideoRenderer::TexSubImage2D(unsigned target,
 
   gl->TexSubImage2D(
       target, level, xoffset, yoffset, frame->visible_rect().width(),
-      frame->visible_rect().height(), format, type, temp_buffer->data());
+      frame->visible_rect().height(), format, type, temp_buffer->data().data());
   return true;
 }
 
@@ -1832,7 +1835,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 bool PaintCanvasVideoRenderer::CanUseCopyVideoFrameToSharedImage(
     const VideoFrame& video_frame) {
   return video_frame.HasSharedImage() ||
-         VideoFrameYUVConverter::IsVideoFrameFormatSupported(video_frame);
+         internals::IsPixelFormatSupportedForYuvSharedImageConversion(
+             video_frame.format());
 }
 
 gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
@@ -1854,9 +1858,10 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
                         source_rect.height());
   } else {
     // TODO(vasilyt): Add caching support
-    VideoFrameYUVConverter converter;
-    converter.ConvertYUVVideoFrame(video_frame.get(), raster_context_provider,
-                                   destination, use_visible_rect);
+    internals::ConvertYuvVideoFrameToRgbSharedImage(
+        video_frame.get(), raster_context_provider, destination,
+        use_visible_rect,
+        /*shared_image_cache=*/nullptr);
   }
 
   gpu::SyncToken sync_token;
@@ -1872,13 +1877,14 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   return sync_token;
 }
 
-PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache() = default;
+PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache()
+    : yuv_shared_image(std::make_unique<VideoFrameSharedImageCache>()) {}
 PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() {
   Reset();
 }
 
 void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
-  if (!shared_image) {
+  if (!rgb_shared_image) {
     return;
   }
   DCHECK(raster_context_provider);
@@ -1888,9 +1894,9 @@ void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
   ri->OrderingBarrierCHROMIUM();
 
   auto* sii = raster_context_provider->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, std::move(shared_image));
+  sii->DestroySharedImage(sync_token, std::move(rgb_shared_image));
 
-  yuv_converter.ReleaseCachedData();
+  yuv_shared_image.reset();
 
   // Kick off the GL work up to the OrderingBarrierCHROMIUM above as well as the
   // SharedImageInterface work, to ensure the shared image memory is released in

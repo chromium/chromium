@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,7 +29,7 @@ void ShowMv2DeprecationKeepDialog(Browser* browser,
           .SetInternalName("Mv2DeprecationKeepDialog")
           .SetTitle(l10n_util::GetStringFUTF16(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_TITLE,
-              base::UTF8ToUTF16(extension.name())))
+              util::GetFixupExtensionNameForUIDisplay(extension.name())))
           .OverrideShowCloseButton(false)
           .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_DESCRIPTION)))

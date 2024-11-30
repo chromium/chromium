@@ -345,8 +345,7 @@ bool IsResumableUpload(const BinaryUploadService::Request& request) {
   return !safe_browsing::IsConsumerScanRequest(request) &&
          request.cloud_or_local_settings().is_cloud_analysis() &&
          request.content_analysis_request().analysis_connector() !=
-             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY &&
-         IsResumableUploadEnabled();
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY;
 }
 
 bool CloudMultipartResultIsFailure(BinaryUploadService::Result result) {

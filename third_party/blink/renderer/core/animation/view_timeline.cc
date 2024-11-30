@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -180,7 +179,7 @@ Length InsetValueToLength(const CSSValue* inset_value,
         CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
         CSSToLengthConversionData::ContainerSizes(subject),
         CSSToLengthConversionData::AnchorData(),
-        subject->GetComputedStyle()->EffectiveZoom(), ignored_flags);
+        subject->GetComputedStyle()->EffectiveZoom(), ignored_flags, subject);
 
     return DynamicTo<CSSPrimitiveValue>(inset_value)
         ->ConvertToLength(length_conversion_data);

@@ -70,6 +70,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.auth.AuthTabColorSchemeParams;
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
@@ -1122,7 +1123,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void launchAuthTab(String url) {
-        AuthTabIntent authIntent = new AuthTabIntent.Builder().build();
+        int colorScheme = getColorSchemeFromButton(null);
+        AuthTabColorSchemeParams.Builder builder = new AuthTabColorSchemeParams.Builder();
+        if (!TextUtils.isEmpty(mToolbarColor)) {
+            builder.setToolbarColor(Color.parseColor(mToolbarColor));
+        }
+        AuthTabIntent authIntent =
+                new AuthTabIntent.Builder()
+                        .setColorScheme(colorScheme)
+                        .setDefaultColorSchemeParams(builder.build())
+                        .build();
         authIntent.intent.setPackage(mPackageNameToBind);
         String scheme = ((EditText) findViewById(R.id.custom_scheme)).getText().toString();
         if (TextUtils.isEmpty(scheme)) {
@@ -1163,16 +1173,7 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(SHARED_PREF_SHOW_TITLE, UNCHECKED);
         }
         int closeButton = mCloseButtonIcon.getCheckedButtonId();
-        int colorScheme = CustomTabsIntent.COLOR_SCHEME_SYSTEM;
-        if (mThemeButton.getCheckedButtonId() == R.id.light_button) {
-            colorScheme = CustomTabsIntent.COLOR_SCHEME_LIGHT;
-            editor.putInt(SHARED_PREF_THEME, CustomTabsIntent.COLOR_SCHEME_LIGHT);
-        } else if (mThemeButton.getCheckedButtonId() == R.id.dark_button) {
-            colorScheme = CustomTabsIntent.COLOR_SCHEME_DARK;
-            editor.putInt(SHARED_PREF_THEME, CustomTabsIntent.COLOR_SCHEME_DARK);
-        } else {
-            editor.putInt(SHARED_PREF_THEME, CustomTabsIntent.COLOR_SCHEME_SYSTEM);
-        }
+        int colorScheme = getColorSchemeFromButton(editor);
         if (!TextUtils.isEmpty(mToolbarColor)) {
             builder.setToolbarColor(Color.parseColor(mToolbarColor));
         }
@@ -1201,6 +1202,19 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(SHARED_PREF_CLOSE_ICON, CLOSE_ICON_X);
         }
         editor.apply();
+    }
+
+    private int getColorSchemeFromButton(SharedPreferences.Editor editor) {
+        int colorScheme = CustomTabsIntent.COLOR_SCHEME_SYSTEM;
+        if (mThemeButton.getCheckedButtonId() == R.id.light_button) {
+            colorScheme = CustomTabsIntent.COLOR_SCHEME_LIGHT;
+        } else if (mThemeButton.getCheckedButtonId() == R.id.dark_button) {
+            colorScheme = CustomTabsIntent.COLOR_SCHEME_DARK;
+        }
+        if (editor != null) {
+            editor.putInt(SHARED_PREF_THEME, colorScheme);
+        }
+        return colorScheme;
     }
 
     private void prepareMenuItems(CustomTabsIntent.Builder builder) {

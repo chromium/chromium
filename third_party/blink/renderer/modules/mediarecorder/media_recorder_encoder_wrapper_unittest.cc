@@ -128,7 +128,7 @@ class MediaRecorderEncoderWrapperTest
 
  protected:
   MOCK_METHOD(void, CreateEncoder, (), ());
-  MOCK_METHOD(void, OnError, (), ());
+  MOCK_METHOD(void, OnError, (const media::EncoderStatus&), ());
   MOCK_METHOD(void, MockVideoEncoderWrapperDtor, (), ());
 
   std::unique_ptr<media::VideoEncoder> CreateMockVideoEncoder(

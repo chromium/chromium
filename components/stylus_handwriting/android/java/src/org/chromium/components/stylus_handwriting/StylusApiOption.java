@@ -43,11 +43,14 @@ public interface StylusApiOption {
 
     void onWebContentsChanged(Context context, WebContents webContents);
 
-    default void onWindowFocusChanged(Context context, boolean hasFocus) {}
+    /**
+     * This can be called as a result of window focus change event or stylus settings change event.
+     */
+    default void updateHandlerState(Context context, boolean hasFocus) {}
 
     /**
      * @return the type of pointer icon that should be shown when hovering over editable elements
-     * with a stylus.
+     *     with a stylus.
      */
     int getStylusPointerIcon();
 }

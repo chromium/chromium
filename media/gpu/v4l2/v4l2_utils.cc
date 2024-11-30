@@ -12,12 +12,6 @@
 #include <map>
 #include <sstream>
 
-// build_config.h must come before BUILDFLAG()
-#include "build/build_config.h"
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/av1-ctrls.h>
-#endif
-
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -331,7 +325,6 @@ static const std::map<v4l2_enum_type, v4l2_enum_type>
         {V4L2_PIX_FMT_H264, V4L2_CID_MPEG_VIDEO_H264_PROFILE},
         {V4L2_PIX_FMT_H264_SLICE, V4L2_CID_MPEG_VIDEO_H264_PROFILE},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-        {V4L2_PIX_FMT_HEVC, V4L2_CID_MPEG_VIDEO_HEVC_PROFILE},
         {V4L2_PIX_FMT_HEVC_SLICE, V4L2_CID_MPEG_VIDEO_HEVC_PROFILE},
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
         {V4L2_PIX_FMT_VP8, V4L2_CID_MPEG_VIDEO_VP8_PROFILE},
@@ -456,8 +449,7 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
 
   v4l2_queryctrl query_ctrl = {.id = static_cast<__u32>(profile_cid)};
   if (ioctl_cb.Run(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
-    // This happens for example for VP8 on Hana MTK8173, or for HEVC on Trogdor
-    // QC SC7180) at the time of writing.
+    // This happens for example for VP8 on Hana MTK8173 at the time of writing.
     DVLOGF(4) << "Driver doesn't support enumerating "
               << FourccToString(codec_as_pix_fmt)
               << " profiles, using default ones.";
@@ -647,9 +639,6 @@ bool IsV4L2DecoderStateful() {
   // V4L2 stateful formats (don't end up with _SLICE or _FRAME) supported.
   constexpr std::array<uint32_t, 4> kSupportedStatefulInputCodecs = {
       V4L2_PIX_FMT_H264,
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      V4L2_PIX_FMT_HEVC,
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       V4L2_PIX_FMT_VP8,
       V4L2_PIX_FMT_VP9,
   };

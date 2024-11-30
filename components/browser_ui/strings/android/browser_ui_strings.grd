@@ -454,15 +454,6 @@
       <message name="IDS_PAGE_INFO_DOMAIN_HIDDEN" desc="Message to display in the page info bubble when the domain is hidden.">
         This content is from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, delivered by Google.
       </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_TITLE" desc="Label used at top of dialog which clears stored information displayed in page info (ie permissions, cookies, eventually history).">
-        Forget this site?
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_MESSAGE" desc="Message used in dialog which deletes stored information displayed in page info.">
-        Are you sure you want to reset permissions, and delete cookies and site data?
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_CONFIRMATION_BUTTON" desc="Confirmation button in dialog which clears stored information displayed in page info.">
-        Forget
-      </message>
       <message name="IDS_PAGE_INFO_HISTORY_TITLE" desc="Label used in the Page Info dialog above the history list.">
         History
       </message>
@@ -1138,6 +1129,23 @@
         {TILE_COUNT, plural,
          =1 {Hide continue with this tab card}
          other {Hide continue with these tabs card}}
+      </message>
+
+      <!-- Auxiliary search Magic Stack strings -->
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_NAME" desc="Name of the auxiliary search module on NTP.">
+        View tabs in your app list
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTEXT_MENU_HIDE" desc="The string that is going to be part of the context menu item string to hide the auxiliary search card.">
+        Hide View tabs in your app list
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT" desc="Content of the auxiliary search module on NTP.">
+        You can now quickly access suggested tabs from your device's app list and in device search results. Turn this off anytime in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_GO_TO_SETTINGS" desc="The text shown on the Go to settings button on the auxiliary search module on NTP.">
+        Go to settings
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_GOT_IT" desc="The text shown on the Got it button on the auxiliary search module on NTP.">
+        Got it
       </message>
 
       <!-- Educational tip module strings -->

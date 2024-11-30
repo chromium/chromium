@@ -1034,7 +1034,7 @@ bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
 }
 
 bool AppendToFile(const FilePath& filename, std::string_view data) {
-  return AppendToFile(filename, as_bytes(make_span(data)));
+  return AppendToFile(filename, as_byte_span(data));
 }
 
 bool GetCurrentDirectory(FilePath* dir) {

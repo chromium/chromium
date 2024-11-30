@@ -113,6 +113,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "leading_scroll.icon",
     "left_panel_close.icon",
     "link_chrome_refresh.icon",
+    "logout.icon",
     "media_controls_arrow_drop_down.icon",
     "media_controls_arrow_drop_up.icon",
     "media_toolbar_button_chrome_refresh.icon",

@@ -36,10 +36,11 @@ BASE_FEATURE(kAllowAmbientEQ,
              "AllowAmbientEQ",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Cross-Device features, e.g. Nearby Share, Smart Lock, Fast Pair, etc.
-// This flag is used to disable Cross-Device on platforms where we cannot yet
-// guarantee a good experience with the stock Bluetooth hardware (e.g. Reven /
-// ChromeOS Flex). Access through IsCrossDeviceFeatureSuiteAllowed().
+// Enables Cross-Device features, e.g. Nearby Share, Smart Lock, Fast Pair,
+// Quick Start, etc. This flag is used to disable Cross-Device on platforms
+// where we cannot yet guarantee a good experience with the stock Bluetooth
+// hardware (e.g. Reven / ChromeOS Flex). Access through
+// IsCrossDeviceFeatureSuiteAllowed().
 BASE_FEATURE(kAllowCrossDeviceFeatureSuite,
              "AllowCrossDeviceFeatureSuite",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -109,12 +110,6 @@ BASE_FEATURE(kAudioSelectionImprovement,
              "AudioSelectionImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the AudioSourceFetcher resamples the audio for speech
-// recongnition.
-BASE_FEATURE(kAudioSourceFetcherResampling,
-             "AudioSourceFetcherResampling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Audio URL that is designed to help user debug or troubleshoot
 // common issues on ChromeOS.
 BASE_FEATURE(kAudioUrl, "AudioUrl", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -143,11 +138,6 @@ BASE_FEATURE(kAutocorrectFederatedPhh,
 BASE_FEATURE(kAutocorrectParamsTuning,
              "AutocorrectParamsTuning",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables using a toggle for enabling autocorrect on ChromeOS.
-BASE_FEATURE(kAutocorrectToggle,
-             "AutocorrectToggle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using a toggle for enabling autocorrect on ChromeOS.
 BASE_FEATURE(kAutocorrectByDefault,
@@ -684,12 +674,6 @@ BASE_FEATURE(kEnableKeyboardRewriterFix,
              "EnableKeyboardRewriterFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Login WebUI was always loaded for legacy reasons even when it was not needed.
-// When enabled, it will make login WebUI loaded only before showing it.
-BASE_FEATURE(kEnableLazyLoginWebUILoading,
-             "EnableLazyLoginWebUILoading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OAuth support when printing via the IPP protocol.
 BASE_FEATURE(kEnableOAuthIpp,
              "EnableOAuthIpp",
@@ -768,11 +752,6 @@ BASE_FEATURE(kEphemeralNetworkPolicies,
 // find some issue with the policy processing.
 BASE_FEATURE(kEphemeralNetworkPoliciesEnabledPolicy,
              "EphemeralNetworkPoliciesEnabledPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Device End Of Lifetime warning notifications.
-BASE_FEATURE(kEolWarningNotifications,
-             "EolWarningNotifications",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Device End Of Lifetime incentive notifications.
@@ -1194,10 +1173,6 @@ BASE_FEATURE(kGesturePropertiesDBusService,
              "GesturePropertiesDBusService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the ability to record the screen into an animated GIF image from the
-// native screen capture tool.
-BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Graduation app for EDU users if the Graduation policy allows it.
 BASE_FEATURE(kGraduation, "Graduation", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -1543,6 +1518,11 @@ BASE_FEATURE(kImeUsEnglishExperimentalModel,
 BASE_FEATURE(kImeUsEnglishModelUpdate,
              "ImeUsEnglishModelUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable or disable proto-based communication for IME Service.
+BASE_FEATURE(kImeServiceProto,
+             "ImeServiceProto",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable or disable system emoji picker GIF support
 BASE_FEATURE(kImeSystemEmojiPickerGIFSupport,
@@ -1961,11 +1941,6 @@ BASE_FEATURE(kSysUiShouldHoldbackForest,
              "SysUiShouldHoldbackForest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a holdback experiment for GIF Recording.
-BASE_FEATURE(kSysUiShouldHoldbackGifRecording,
-             "SysUiShouldHoldbackGifRecording",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a holdback experiment for Task Management
 // Glanceables.
 BASE_FEATURE(kSysUiShouldHoldbackTaskManagement,
@@ -2050,6 +2025,11 @@ BASE_FEATURE(kOobePersonalizedOnboarding,
              "OobePersonalizedOnboarding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Pre-consent metrics functionality is enabled during OOBE.
+BASE_FEATURE(kOobePreConsentMetrics,
+             "OobePreConsentMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Consumer Software Screen will be shown during OOBE.
 BASE_FEATURE(kOobeSoftwareUpdate,
              "OobeSoftwareUpdate",
@@ -2116,11 +2096,6 @@ BASE_FEATURE(kFeatureManagementOobeSimon,
 // Enables Skipping the assistant setup screen in OOBE.
 BASE_FEATURE(kOobeSkipAssistant,
              "OobeSkipAssistant",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables the OOBE QuickStart flow.
-BASE_FEATURE(kOobeQuickStart,
-             "OobeQuickStart",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the OOBE QuickStart flow on the login screen.
@@ -2252,6 +2227,11 @@ BASE_FEATURE(kOrcaOnWorkspace,
 BASE_FEATURE(kOrcaServiceConnection,
              "OrcaServiceConnection",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables proto-based Orca service communication logic.
+BASE_FEATURE(kOrcaServiceProto,
+             "OrcaServiceProto",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, Orca will only be available in English locales.
 BASE_FEATURE(kOrcaOnlyInEnglishLocales,
@@ -2510,6 +2490,11 @@ BASE_FEATURE(kPromiseIconsForWebApps,
 
 // Controls whether the quick dim prototype is enabled.
 BASE_FEATURE(kQuickDim, "QuickDim", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls whether to readahead files on login screen.
+BASE_FEATURE(kReadaheadForLogin,
+             "ReadaheadForLogin",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the smart reader feature is enabled.
 BASE_FEATURE(kSmartReader, "SmartReader", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2799,16 +2784,6 @@ BASE_FEATURE(kSystemJapanesePhysicalTyping,
              "SystemJapanesePhysicalTyping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables live captions for sounds produced outside of the browser (e.g. by
-// Android or linux apps).
-BASE_FEATURE(kSystemLiveCaption,
-             "SystemLiveCaption",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Restricts the system live caption feature to the intended target population.
-BASE_FEATURE(kFeatureManagementSystemLiveCaption,
-             "FeatureManagementSystemLiveCaption",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Replaces uses of `SystemNudge` with the new `AnchoredNudge` component.
 BASE_FEATURE(kSystemNudgeMigration,
              "SystemNudgeMigration",
@@ -2894,11 +2869,6 @@ BASE_FEATURE(kUnmanagedDeviceDeviceTrustConnectorEnabled,
              "UnmanagedDeviceDeviceTrustConnectorEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables firmware updates for valid firmwares uploaded to lvfs.
-BASE_FEATURE(kUpstreamTrustedReportsFirmware,
-             "UpstreamTrustedReportsFirmware",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use the Android staging SM-DS server when fetching pending eSIM profiles.
 BASE_FEATURE(kUseAndroidStagingSmds,
              "UseAndroidStagingSmds",
@@ -2935,7 +2905,7 @@ BASE_FEATURE(kAllowPasswordlessSetup,
 // a password as their main factor.
 BASE_FEATURE(kAllowPasswordlessRecovery,
              "AllowPasswordlessRecovery",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features controls whether or not pin will be setup as timeout based
 // lockout or attempt based lockout.
@@ -3080,11 +3050,6 @@ BASE_FEATURE(kVcLightIntensity,
 
 // Enables or disables web API support for ChromeOS video conferencing.
 BASE_FEATURE(kVcWebApi, "VcWebApi", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables versioned wallpaper info.
-BASE_FEATURE(kVersionedWallpaperInfo,
-             "VersionedWallpaperInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable or disable global preferences for skin tone and gender in the virtual
 // keyboard emoji picker.
@@ -3491,7 +3456,8 @@ bool IsCrosPrivacyHubLocationEnabled() {
 }
 
 bool IsCrosSafetyServiceEnabled() {
-  return base::FeatureList::IsEnabled(kCrosSafetyService);
+  return base::FeatureList::IsEnabled(kCrosSafetyService) ||
+         switches::IsMantisSecretKeyMatched();
 }
 
 bool IsCrossDeviceFeatureSuiteAllowed() {
@@ -3550,12 +3516,6 @@ int GetDriveFsBulkPinningQueueSize() {
 
 bool IsEapGtcWifiAuthenticationEnabled() {
   return base::FeatureList::IsEnabled(kEapGtcWifiAuthentication);
-}
-
-bool IsAudioSourceFetcherResamplingEnabled() {
-  // TODO(b/245617354): Once ready, enable this feature under
-  // kProjectorBleedingEdgeExperience flag as well.
-  return base::FeatureList::IsEnabled(kAudioSourceFetcherResampling);
 }
 
 bool IsDemoModeGMSCoreWindowCloserEnabled() {
@@ -3764,15 +3724,6 @@ bool IsBlockFwupdClientEnabled() {
 
 bool IsGaiaRecordAccountCreationEnabled() {
   return base::FeatureList::IsEnabled(kGaiaRecordAccountCreation);
-}
-
-bool IsGifRecordingEnabled() {
-  const bool device_enrolled_in_holdback =
-      !base::FeatureList::IsEnabled(
-          kFeatureManagementShouldExcludeFromSysUiHoldback) &&
-      base::FeatureList::IsEnabled(kSysUiShouldHoldbackGifRecording);
-  return !device_enrolled_in_holdback &&
-         base::FeatureList::IsEnabled(kGifRecording);
 }
 
 bool IsGraduationEnabled() {
@@ -4231,6 +4182,10 @@ bool IsOobePersonalizedOnboardingEnabled() {
   return base::FeatureList::IsEnabled(kOobePersonalizedOnboarding);
 }
 
+bool IsOobePreConsentMetricsEnabled() {
+  return base::FeatureList::IsEnabled(kOobePreConsentMetrics);
+}
+
 bool IsOobeSoftwareUpdateEnabled() {
   return base::FeatureList::IsEnabled(kOobeSoftwareUpdate);
 }
@@ -4243,13 +4198,8 @@ bool IsOobePerksDiscoveryEnabled() {
   return base::FeatureList::IsEnabled(kOobePerksDiscovery);
 }
 
-bool IsOobeQuickStartEnabled() {
-  return IsCrossDeviceFeatureSuiteAllowed() &&
-         base::FeatureList::IsEnabled(kOobeQuickStart);
-}
-
 bool IsOobeQuickStartOnLoginScreenEnabled() {
-  return IsOobeQuickStartEnabled() &&
+  return IsCrossDeviceFeatureSuiteAllowed() &&
          base::FeatureList::IsEnabled(kOobeQuickStartOnLoginScreen);
 }
 
@@ -4557,13 +4507,6 @@ bool IsSuspendStateMachineEnabled() {
   return base::FeatureList::IsEnabled(kSuspendStateMachine);
 }
 
-bool IsSystemLiveCaptionEnabled() {
-  // TODO(b/295244553): Once `kSystemLiveCaption` is enabled by default, switch
-  // to `&&`.
-  return base::FeatureList::IsEnabled(kSystemLiveCaption) ||
-         base::FeatureList::IsEnabled(kFeatureManagementSystemLiveCaption);
-}
-
 bool IsSystemNudgeMigrationEnabled() {
   return base::FeatureList::IsEnabled(kSystemNudgeMigration);
 }
@@ -4652,10 +4595,6 @@ bool IsLiveCaptionUserMicrophoneEnabled() {
   return base::FeatureList::IsEnabled(kLiveCaptionUserMicrophone);
 }
 
-bool IsUpstreamTrustedReportsFirmwareEnabled() {
-  return base::FeatureList::IsEnabled(kUpstreamTrustedReportsFirmware);
-}
-
 bool IsVideoConferenceEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementVideoConference);
 }
@@ -4705,10 +4644,6 @@ bool IsVcTrayTitleHeaderEnabled() {
 
 bool IsVcWebApiEnabled() {
   return base::FeatureList::IsEnabled(kVcWebApi) && IsVideoConferenceEnabled();
-}
-
-bool IsVersionWallpaperInfoEnabled() {
-  return base::FeatureList::IsEnabled(kVersionedWallpaperInfo);
 }
 
 bool IsWallpaperFastRefreshEnabled() {

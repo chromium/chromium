@@ -336,6 +336,10 @@ class SessionManagerClientImpl : public SessionManagerClient {
     session_manager_proxy_->CallMethod(&method_call,
                                        dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                                        base::DoNothing());
+
+    for (auto& observer : observers_) {
+      observer.StartSessionExCalled();
+    }
   }
 
   void EmitStartedUserSession(
@@ -405,43 +409,6 @@ class SessionManagerClientImpl : public SessionManagerClient {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
         login_manager::kSessionManagerClearForcedReEnrollmentVpd);
-    dbus::MessageWriter writer(&method_call);
-    session_manager_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void UnblockDevModeForEnrollment(
-      chromeos::VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(
-        login_manager::kSessionManagerInterface,
-        login_manager::kSessionManagerUnblockDevModeForEnrollment);
-    dbus::MessageWriter writer(&method_call);
-    session_manager_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void UnblockDevModeForCarrierLock(
-      chromeos::VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(
-        login_manager::kSessionManagerInterface,
-        login_manager::kSessionManagerUnblockDevModeForCarrierLock);
-    dbus::MessageWriter writer(&method_call);
-    session_manager_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void UnblockDevModeForInitialStateDetermination(
-      chromeos::VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(
-        login_manager::kSessionManagerInterface,
-        login_manager::
-            kSessionManagerUnblockDevModeForInitialStateDetermination);
     dbus::MessageWriter writer(&method_call);
     session_manager_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

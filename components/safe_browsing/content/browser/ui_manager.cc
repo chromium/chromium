@@ -15,9 +15,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/client_report_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -403,7 +403,6 @@ void SafeBrowsingUIManager::OnBlockingPageDone(
   BaseUIManager::OnBlockingPageDone(resources, proceed, web_contents,
                                     main_frame_url, showed_interstitial);
   if (proceed && !resources.empty()) {
-#if !BUILDFLAG(IS_ANDROID)
     if (resources[0].threat_type ==
         SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN) {
       delegate_->TriggerUrlFilteringInterstitialExtensionEventIfDesired(
@@ -411,7 +410,6 @@ void SafeBrowsingUIManager::OnBlockingPageDone(
           resources[0].rt_lookup_response);
       return;
     }
-#endif
     delegate_->TriggerSecurityInterstitialProceededExtensionEventIfDesired(
         web_contents, main_frame_url,
         GetThreatTypeStringForInterstitial(resources[0].threat_type),
@@ -427,7 +425,6 @@ SafeBrowsingUIManager::CreateBlockingPage(
     bool forward_extension_event,
     std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   security_interstitials::SecurityInterstitialPage* blocking_page = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
   if (unsafe_resource.threat_type ==
       SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN) {
     blocking_page = blocking_page_factory_->CreateEnterpriseWarnPage(
@@ -453,7 +450,6 @@ SafeBrowsingUIManager::CreateBlockingPage(
     }
     return blocking_page;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
   blocking_page = blocking_page_factory_->CreateSafeBrowsingPage(
       this, contents, blocked_url, {unsafe_resource},
       /*should_trigger_reporting=*/true, blocked_page_shown_timestamp);
@@ -477,7 +473,6 @@ void SafeBrowsingUIManager::
   delegate_->TriggerSecurityInterstitialShownExtensionEventIfDesired(
       web_contents, page_url, reason, net_error_code);
 }
-#if !BUILDFLAG(IS_ANDROID)
 void SafeBrowsingUIManager::
     ForwardUrlFilteringInterstitialExtensionEventToEmbedder(
         content::WebContents* web_contents,
@@ -487,5 +482,4 @@ void SafeBrowsingUIManager::
   delegate_->TriggerUrlFilteringInterstitialExtensionEventIfDesired(
       web_contents, page_url, threat_type, rt_lookup_response);
 }
-#endif
 }  // namespace safe_browsing

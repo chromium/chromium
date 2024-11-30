@@ -394,12 +394,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 // Kill-switch for a deprecation trial that unpartitions storage in third-party
 // contexts under the registered top-level site. If
-// `kDisableThirdPartyStoragePartitioningDeprecationTrial2` is enabled, the
+// `kDisableThirdPartyStoragePartitioning3DeprecationTrial` is enabled, the
 // deprecation trial information can be sent to and enabled in the browser
 // process (i.e. when the base::Feature is enabled, the deprecation trial
 // extension is enabled in the browser process too).
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kDisableThirdPartyStoragePartitioningDeprecationTrial2);
+    kDisableThirdPartyStoragePartitioning3DeprecationTrial);
 
 // These values are used to implement a browser intervention: if a cross-origin
 // iframe has moved more than {param:distance} device independent pixels
@@ -423,6 +423,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
                                                kDeprecateUnloadAllowlist);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnforceNoopenerOnBlobURLNavigation);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableLazyLoadImageForInvisiblePage);
+enum class EnableLazyLoadImageForInvisiblePageType {
+  kAllInvisiblePage,
+  kPrerenderPage,
+};
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    EnableLazyLoadImageForInvisiblePageType,
+    kEnableLazyLoadImageForInvisiblePageTypeParam);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kMinimumEntropyForLCP);
@@ -1208,6 +1217,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoForcedFrameUpdatesForWebTests);
 // Don't throttle frames that are same-agent with with a visible frame.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoThrottlingVisibleAgent);
 
+// Fix for https://crbug.com/40927333.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOpenAllUrlsOrFilesOnDrop);
+
 // Optimize loading data: URLs.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOptimizeLoadingDataUrls);
 
@@ -1289,9 +1301,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kPreloadingModelTimerStartDelay);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kPreloadingModelTimerInterval);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kPreloadingModelOneExecutionPerHover);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                                kPreloadingModelMaxHoverTime);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
@@ -1460,9 +1469,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kRegisterJSSourceLocationBlockingBFCache);
-
 // Kill-switch for removing Authorization header upon cross origin redirects.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRemoveAuthroizationOnCrossOriginRedirect);
@@ -1484,6 +1490,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // See explainer:
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#23-scoring-bids
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderSizeInScoreAdBrowserSignals);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReportFirstFrameTimeAsRenderTime);
 
 // Enables resampling input events on main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
@@ -1609,30 +1617,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // backing thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSharedStorageWorkletSharedBackingThreadImplementation);
-
-// Additional Shared Storage API features shipped in M118.
-// TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once
-// shipped.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM118);
-
-// Additional Shared Storage API features shipped in M125.
-// TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once
-// shipped.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM125);
-
-// For the Shared Storage API, allows cross-origin script in `addModule()`.
-// TODO(crbug.com/40185706): Merge this flag with `kSharedStorageAPI` once
-// shipped.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageCrossOriginScript);
-
-// Aligns `createWorklet()`'s default data origin with `addModule()`'s to use
-// the invoking context's origin. Also adds the manual `dataOrigin` option to
-// that can be passed in the options dictionary for `createWorklet()` to use the
-// script's origin as the data origin instead.
-// TODO(crbug.com/40185706): Merge this flag with `kSharedStorageAPI` once
-// shipped.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kSharedStorageCreateWorkletUseContextOriginByDefault);
 
 // For the Shared Storage API, allow custom data origins in `createWorklet`.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
@@ -1804,7 +1788,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcAudioSinkUseTimestampAligner);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppBorderless);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableScopeExtensions);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableUrlHandlers);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppManifestLockScreen);
 
 // Parameters are used to control to which latency hints the feature is applied

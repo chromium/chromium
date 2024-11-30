@@ -51,7 +51,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private dialogPageToShow_: AddDialogPage;
   private rowIdToUpdate_: number;
   private commandPairToConfigure_: FaceGazeCommandPair|null = null;
-  private faceGazeActionsAlert_ = '';
+  private actionsSpokenFeedbackAlert_ = '';
 
   // This field stores the current state of gestures assigned to macros and
   // custom key combinations.
@@ -102,10 +102,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
       shouldAnnounceA11yActionFeedback_: {
         type: Boolean,
-        computed: 'shouldAnnounceAlert_(faceGazeActionsAlert_)',
+        computed: 'shouldAnnounceAlert_(actionsSpokenFeedbackAlert_)',
       },
 
-      faceGazeActionsAlert_: {
+      actionsSpokenFeedbackAlert_: {
         type: String,
       },
     };
@@ -116,7 +116,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   }
 
   private shouldAnnounceAlert_(): boolean {
-    return this.faceGazeActionsAlert_ !== '';
+    return this.actionsSpokenFeedbackAlert_ !== '';
   }
 
   override ready(): void {
@@ -152,7 +152,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     this.dialogPageToShow_ = AddDialogPage.SELECT_ACTION;
     this.leftClickGestures_ = this.computeLeftClickGestures_();
     this.showAddActionDialog_ = true;
-    this.faceGazeActionsAlert_ = '';
+    this.clearAlert_();
   }
 
   private onAddActionDialogClose_(): void {
@@ -173,8 +173,8 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     this.leftClickGestures_ = this.computeLeftClickGestures_();
     this.commandPairToConfigure_ = e.model.item;
     this.showAddActionDialog_ = true;
-    this.faceGazeActionsAlert_ = '';
     this.rowIdToUpdate_ = e.model.index;
+    this.clearAlert_();
   }
 
   private getActionDisplayText_(action: MacroName): string {
@@ -221,7 +221,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private onRemoveCommandPairButtonClick_(
       e: DomRepeatEvent<FaceGazeCommandPair>): void {
     this.rowIdToUpdate_ = e.model.index;
-    this.faceGazeActionsAlert_ = '';
+    this.clearAlert_();
     const removedCommandPair: FaceGazeCommandPair = e.model.item;
     this.removeCommandPairFromPref_(removedCommandPair);
 
@@ -229,25 +229,8 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
         FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
         this.rowIdToUpdate_, 1);
 
-    this.faceGazeActionsAlert_ = this.i18n(
-        'faceGazeActionsRemovedActionAlert',
-        this.i18n(
-            FaceGazeUtils.getMacroDisplayTextName(removedCommandPair.action)));
-
-    // If there is one, set focus to the remove button of the next command pair.
-    // Otherwise, set focus to the action button.
-    if (this.commandPairs_[this.rowIdToUpdate_]) {
-      const commandPairElements =
-          this.shadowRoot!.querySelectorAll<HTMLElement>('.command-pair');
-      const nextRemoveButton =
-          commandPairElements[this.rowIdToUpdate_]
-              .querySelector<CrButtonElement>('.icon-clear');
-      nextRemoveButton!.focus();
-    } else {
-      const addActionButton =
-          this.shadowRoot!.querySelector<CrButtonElement>('#addActionButton');
-      addActionButton!.focus();
-    }
+    this.setRemovedAlertText_(removedCommandPair);
+    this.updateFocusAfterRemove_(this.rowIdToUpdate_);
   }
 
   private removeCommandPairFromPref_(removedCommandPair: FaceGazeCommandPair):
@@ -269,6 +252,23 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
         removedCommandPair.gesture) {
       this.removeKeyComboFromPref_(
           removedCommandPair.gesture, removedCommandPair.assignedKeyCombo);
+    }
+  }
+
+  private updateFocusAfterRemove_(removeCommandPairIndex: number): void {
+    // If there is one, set focus to the remove button of the next command pair.
+    // Otherwise, set focus to the action button.
+    if (this.commandPairs_[removeCommandPairIndex]) {
+      const commandPairElements =
+          this.shadowRoot!.querySelectorAll<HTMLElement>('.command-pair');
+      const nextRemoveButton =
+          commandPairElements[removeCommandPairIndex]
+              .querySelector<CrButtonElement>('.icon-clear');
+      nextRemoveButton!.focus();
+    } else {
+      const addActionButton =
+          this.shadowRoot!.querySelector<CrButtonElement>('#addActionButton');
+      addActionButton!.focus();
     }
   }
 
@@ -301,10 +301,14 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       this.addNewCommandPair_(newCommandPair);
     }
 
-    this.faceGazeActionsAlert_ = this.getAlertText_(newCommandPair);
+    this.setAssignedAlertText_(newCommandPair);
   }
 
-  private getAlertText_(commandPair: FaceGazeCommandPair): string {
+  private clearAlert_(): void {
+    this.actionsSpokenFeedbackAlert_ = '';
+  }
+
+  private setAssignedAlertText_(commandPair: FaceGazeCommandPair): void {
     let actionDisplayText =
         this.i18n(FaceGazeUtils.getMacroDisplayTextName(commandPair.action));
     if (commandPair.action === MacroName.CUSTOM_KEY_COMBINATION &&
@@ -313,10 +317,16 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       actionDisplayText = keyComboDisplayText!;
     }
 
-    return this.i18n(
+    this.actionsSpokenFeedbackAlert_ = this.i18n(
         'faceGazeActionsAssignedGestureAlert',
         this.i18n(FaceGazeUtils.getGestureDisplayTextName(commandPair.gesture)),
         actionDisplayText);
+  }
+
+  private setRemovedAlertText_(commandPair: FaceGazeCommandPair): void {
+    this.actionsSpokenFeedbackAlert_ = this.i18n(
+        'faceGazeActionsRemovedActionAlert',
+        this.i18n(FaceGazeUtils.getMacroDisplayTextName(commandPair.action)));
   }
 
   private addCommandPairToPref_(newCommandPair: FaceGazeCommandPair): void {

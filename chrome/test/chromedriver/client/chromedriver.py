@@ -115,8 +115,8 @@ class ChromeDriver(object):
       send_w3c_capability=True, send_w3c_request=True,
       page_load_strategy=None, unexpected_alert_behaviour=None,
       devtools_events_to_log=None, accept_insecure_certs=None,
-      timeouts=None, test_name=None, web_socket_url=None, browser_name=None,
-      http_timeout=None):
+      enable_extension_targets=None, timeouts=None, test_name=None,
+      web_socket_url=None, browser_name=None, http_timeout=None):
     self._executor = command_executor.CommandExecutor(server_url,
                                                       http_timeout=http_timeout)
     self._server_url = server_url
@@ -227,6 +227,9 @@ class ChromeDriver(object):
 
     if accept_insecure_certs is not None:
       params['acceptInsecureCerts'] = accept_insecure_certs
+
+    if enable_extension_targets is not None:
+      params['enableExtensionTargets'] = enable_extension_targets
 
     if timeouts is not None:
       params['timeouts'] = timeouts

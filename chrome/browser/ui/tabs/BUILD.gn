@@ -9,6 +9,8 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("tabs_public") {
   public = [
+    "public/supports_handles.h",
+    "public/tab_dialog_manager.h",
     "public/tab_features.h",
     "public/tab_interface.h",
     "tab_network_state.h",
@@ -130,11 +132,13 @@ if (!is_android) {
       ":tabs",
       ":tabs_public",
       "//base",
+      "//components/back_forward_cache",
       "//components/constrained_window",
       "//components/favicon/core",
       "//components/sessions",
       "//components/sync_sessions",
       "//components/tab_groups",
+      "//components/web_modal",
       "//content/public/browser",
       "//ui/base",
       "//ui/menus",
@@ -244,7 +248,6 @@ if (!is_android) {
       "pinned_tab_collection.h",
       "pinned_tab_service.h",
       "pinned_tab_service_factory.h",
-      "supports_handles.h",
       "tab_collection.cc",
       "tab_collection.h",
       "tab_collection_storage.h",
@@ -293,6 +296,7 @@ if (!is_android) {
       "recent_tabs_sub_menu_model.cc",
       "tab_collection_storage.cc",
       "tab_contents_data.cc",
+      "tab_dialog_manager.cc",
       "tab_features.cc",
       "tab_renderer_data.cc",
       "tab_style.cc",

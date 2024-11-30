@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SMART_CARD_SMART_CARD_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_SMART_CARD_SMART_CARD_PERMISSION_CONTEXT_H_
 
+#include <cstdint>
 #include <map>
 #include <set>
 #include <string>
@@ -104,10 +105,16 @@ class SmartCardPermissionContext
                                   RequestReaderPermissionCallback callback,
                                   SmartCardPermissionRequest::Result result);
 
+  void OnPermissionDenied(const url::Origin& origin);
+
   SmartCardReaderTracker& GetReaderTracker() const;
 
   // Set of readers to which an origin has ephemeral access to.
   std::map<url::Origin, std::set<std::string>> ephemeral_grants_;
+
+  // this is for tracking consecutive denials (after 3, guard setting is to be
+  // set to blocked)
+  std::map<url::Origin, uint8_t> consecutive_denials_;
 
   std::unique_ptr<OneTimeObserver> one_time_observer_;
   std::unique_ptr<PowerSuspendObserver> power_suspend_observer_;

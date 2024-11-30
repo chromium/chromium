@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
@@ -51,43 +52,29 @@ NET_EXPORT bool IsProtocolEnabled(NextProto protocol,
 
 // (protocol, host, port) triple as defined in
 // https://tools.ietf.org/id/draft-ietf-httpbis-alt-svc-06.html
-//
-// TODO(mmenke):  Seems like most of this stuff should be de-inlined.
 struct NET_EXPORT AlternativeService {
-  AlternativeService() : protocol(kProtoUnknown), host(), port(0) {}
+  AlternativeService() = default;
 
-  AlternativeService(NextProto protocol, const std::string& host, uint16_t port)
-      : protocol(protocol), host(host), port(port) {}
+  AlternativeService(NextProto protocol, std::string_view host, uint16_t port);
 
-  AlternativeService(NextProto protocol, const HostPortPair& host_port_pair)
-      : protocol(protocol),
-        host(host_port_pair.host()),
-        port(host_port_pair.port()) {}
+  AlternativeService(NextProto protocol, const HostPortPair& host_port_pair);
 
-  AlternativeService(const AlternativeService& alternative_service) = default;
-  AlternativeService& operator=(const AlternativeService& alternative_service) =
-      default;
+  AlternativeService(const AlternativeService& alternative_service);
+  AlternativeService(AlternativeService&& alternative_service) noexcept;
 
-  HostPortPair host_port_pair() const { return HostPortPair(host, port); }
+  AlternativeService& operator=(AlternativeService&& alternative_service);
+  AlternativeService& operator=(const AlternativeService& alternative_service);
 
-  bool operator==(const AlternativeService& other) const {
-    return protocol == other.protocol && host == other.host &&
-           port == other.port;
-  }
+  HostPortPair GetHostPortPair() const;
 
-  bool operator!=(const AlternativeService& other) const {
-    return !this->operator==(other);
-  }
+  bool operator==(const AlternativeService& other) const = default;
 
-  bool operator<(const AlternativeService& other) const {
-    return std::tie(protocol, host, port) <
-           std::tie(other.protocol, other.host, other.port);
-  }
+  std::strong_ordering operator<=>(const AlternativeService& other) const;
 
   // Output format: "protocol host:port", e.g. "h2 www.google.com:1234".
   std::string ToString() const;
 
-  NextProto protocol;
+  NextProto protocol = kProtoUnknown;
   std::string host;
   uint16_t port;
 };
@@ -108,23 +95,20 @@ class NET_EXPORT_PRIVATE AlternativeServiceInfo {
       const quic::ParsedQuicVersionVector& advertised_versions);
 
   AlternativeServiceInfo();
-  ~AlternativeServiceInfo();
 
   AlternativeServiceInfo(
       const AlternativeServiceInfo& alternative_service_info);
+  AlternativeServiceInfo(
+      AlternativeServiceInfo&& alternative_service_info) noexcept;
 
   AlternativeServiceInfo& operator=(
       const AlternativeServiceInfo& alternative_service_info);
+  AlternativeServiceInfo& operator=(
+      AlternativeServiceInfo&& alternative_service_info);
 
-  bool operator==(const AlternativeServiceInfo& other) const {
-    return alternative_service_ == other.alternative_service() &&
-           expiration_ == other.expiration() &&
-           advertised_versions_ == other.advertised_versions();
-  }
+  ~AlternativeServiceInfo();
 
-  bool operator!=(const AlternativeServiceInfo& other) const {
-    return !this->operator==(other);
-  }
+  bool operator==(const AlternativeServiceInfo& other) const;
 
   std::string ToString() const;
 
@@ -144,16 +128,10 @@ class NET_EXPORT_PRIVATE AlternativeServiceInfo {
     expiration_ = expiration;
   }
 
-  void set_advertised_versions(
-      const quic::ParsedQuicVersionVector& advertised_versions) {
-    if (alternative_service_.protocol != kProtoQUIC) {
-      return;
-    }
-
-    advertised_versions_ = advertised_versions;
-    std::sort(advertised_versions_.begin(), advertised_versions_.end(),
-              TransportVersionLessThan);
-  }
+  // Sets the advertised versions for QUIC alternative services to a sorted copy
+  // of `advertised_versions`.
+  void SetAdvertisedVersions(
+      const quic::ParsedQuicVersionVector& advertised_versions);
 
   const AlternativeService& alternative_service() const {
     return alternative_service_;
@@ -161,8 +139,8 @@ class NET_EXPORT_PRIVATE AlternativeServiceInfo {
 
   NextProto protocol() const { return alternative_service_.protocol; }
 
-  HostPortPair host_port_pair() const {
-    return alternative_service_.host_port_pair();
+  HostPortPair GetHostPortPair() const {
+    return alternative_service_.GetHostPortPair();
   }
 
   base::Time expiration() const { return expiration_; }
@@ -176,9 +154,6 @@ class NET_EXPORT_PRIVATE AlternativeServiceInfo {
       const AlternativeService& alternative_service,
       base::Time expiration,
       const quic::ParsedQuicVersionVector& advertised_versions);
-
-  static bool TransportVersionLessThan(const quic::ParsedQuicVersion& lhs,
-                                       const quic::ParsedQuicVersion& rhs);
 
   AlternativeService alternative_service_;
   base::Time expiration_;

@@ -68,6 +68,8 @@ class NET_EXPORT Session {
     return cached_challenge_;
   }
 
+  const base::Time& creation_date() const { return creation_date_; }
+
   const base::Time& expiry_date() const { return expiry_date_; }
 
   bool should_defer_when_expired() const { return should_defer_when_expired_; }
@@ -76,6 +78,10 @@ class NET_EXPORT Session {
 
   void set_cached_challenge(std::string challenge) {
     cached_challenge_ = std::move(challenge);
+  }
+
+  void set_creation_date(base::Time creation_date) {
+    creation_date_ = creation_date;
   }
 
   void set_expiry_date(base::Time expiry_date) { expiry_date_ = expiry_date; }
@@ -90,6 +96,7 @@ class NET_EXPORT Session {
           SessionInclusionRules inclusion_rules,
           std::vector<CookieCraving> cookie_cravings,
           bool should_defer_when_expired,
+          base::Time creation_date,
           base::Time expiry_date);
 
   // The unique server-issued identifier of the session.
@@ -112,6 +119,8 @@ class NET_EXPORT Session {
   // and will be signed using the cached challenge if present, if not signed
   // using a default value for challenge.
   bool should_defer_when_expired_ = true;
+  // Date the session was created.
+  base::Time creation_date_;
   // Expiry date for session, 400 days from last refresh similar to cookies.
   base::Time expiry_date_;
   // Unexportable key for this session.

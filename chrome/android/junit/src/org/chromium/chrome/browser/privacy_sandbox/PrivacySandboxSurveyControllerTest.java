@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.hats.SurveyClient;
@@ -43,6 +44,8 @@ import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.url.GURL;
@@ -57,7 +60,7 @@ public class PrivacySandboxSurveyControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock UserPrefs.Natives mUserPrefsJniMock;
-    @Mock PrefService mPrefServiceMock;
+    @Mock PrefService mPrefService;
     @Mock TabModelSelector mTabModelSelector;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock Activity mActivity;
@@ -66,7 +69,8 @@ public class PrivacySandboxSurveyControllerTest {
     ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     @Mock SurveyClient mSurveyClient;
     @Mock SurveyClientFactory mSurveyClientFactory;
-    @Mock PrivacySandboxSurveyBridge.Natives mPrivacySandboxSurveyBridge;
+    @Mock IdentityServicesProvider mIdentityServicesProvider;
+    @Mock IdentityManager mIdentityManager;
 
     private static final String SENTIMENT_SURVEY_TRIGGER_ID = "privacy-sandbox-sentiment-survey";
 
@@ -76,13 +80,14 @@ public class PrivacySandboxSurveyControllerTest {
         doReturn(Mockito.mock(Resources.class)).when(mActivity).getResources();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
-        PrivacySandboxSurveyBridgeJni.setInstanceForTesting(mPrivacySandboxSurveyBridge);
-        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
-        when(mPrefServiceMock.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
         SurveyClientFactory.setInstanceForTesting(mSurveyClientFactory);
         doReturn(mSurveyClient).when(mSurveyClientFactory).createClient(any(), any(), any());
-        when(mPrivacySandboxSurveyBridge.getPrivacySandboxSentimentSurveyPsb(mProfile))
-                .thenReturn(Collections.emptyMap());
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(IdentityServicesProvider.get().getIdentityManager(mProfile))
+                .thenReturn(mIdentityManager);
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
     }
 
     @Test
@@ -98,6 +103,20 @@ public class PrivacySandboxSurveyControllerTest {
                         mProfile);
         Assert.assertNotNull(controller);
         controller.destroy();
+    }
+
+    @Test
+    public void surveyControllerDoesNotInitializesForOtrProfiles() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        Assert.assertNull(controller);
     }
 
     @Test
@@ -145,7 +164,7 @@ public class PrivacySandboxSurveyControllerTest {
                 .showSurvey(
                         mActivity,
                         mActivityLifecycleDispatcher,
-                        mPrivacySandboxSurveyBridge.getPrivacySandboxSentimentSurveyPsb(mProfile),
+                        controller.getSentimentSurveyPsb(),
                         Collections.emptyMap());
         controller.destroy();
     }
@@ -199,6 +218,76 @@ public class PrivacySandboxSurveyControllerTest {
         // however we should no-op if we see a null tab.
         mActivityTabProvider.set(null);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        controller.destroy();
+    }
+
+    @Test
+    public void surveyControllerFetchesTopicsBit() {
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)).thenReturn(true);
+        Assert.assertTrue(controller.getSentimentSurveyPsb().get("Topics enabled"));
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)).thenReturn(false);
+        Assert.assertFalse(controller.getSentimentSurveyPsb().get("Topics enabled"));
+        controller.destroy();
+    }
+
+    @Test
+    public void surveyControllerFetchesProtectedAudienceBit() {
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED)).thenReturn(true);
+        Assert.assertTrue(controller.getSentimentSurveyPsb().get("Protected audience enabled"));
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED)).thenReturn(false);
+        Assert.assertFalse(controller.getSentimentSurveyPsb().get("Protected audience enabled"));
+        controller.destroy();
+    }
+
+    @Test
+    public void surveyControllerFetchesMeasurementBit() {
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED))
+                .thenReturn(true);
+        Assert.assertTrue(controller.getSentimentSurveyPsb().get("Measurement enabled"));
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED))
+                .thenReturn(false);
+        Assert.assertFalse(controller.getSentimentSurveyPsb().get("Measurement enabled"));
+        controller.destroy();
+    }
+
+    @Test
+    public void surveyControllerFetchesLoggedInBit() {
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        Assert.assertTrue(controller.getSentimentSurveyPsb().get("Signed in"));
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        Assert.assertFalse(controller.getSentimentSurveyPsb().get("Signed in"));
         controller.destroy();
     }
 }

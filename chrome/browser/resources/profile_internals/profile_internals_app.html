@@ -90,6 +90,27 @@ ${this.profilesList_.map((item, index) => html`
         <td>Has Incognito Profile</td>
         <td>${item.profileState.hasOffTheRecord}</td>
       </tr>
+      <tr>
+        <td>Country Info</td>
+        <td>
+          <table>
+            <thead>
+              <th>Profile</th>
+              <th>Keywords DB (initial)</th>
+              <th>Keywords DB (updated)</th>
+              <th>Variations (client-scoped)</th>
+              <th>OS/Locale (client-scoped)</th>
+            </thead>
+            <tr>
+              <td>${item.profileState.profileCountry}</td>
+              <td>${item.profileState.localeCountry}</td>
+              <td>${item.profileState.variationsCountry}</td>
+              <td>${item.profileState.initialKeywordsDbCountry}</td>
+              <td>${item.profileState.updatedKeywordsDbCountry}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </table>
   </cr-collapse>
 `)}

@@ -16,11 +16,11 @@
 #include "base/tracing/trace_time.h"
 #include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
+#include "content/browser/tracing/triggers_data_source.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
-#include "services/tracing/public/cpp/triggers_data_source.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
 namespace content {
@@ -165,7 +165,7 @@ bool NestedTracingScenario::OnStartTrigger(
   if (current_state() != State::kEnabled) {
     return false;
   }
-  tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
   base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Start",
                            TriggerNameHash(triggered_rule));
   for (auto& rule : start_rules_) {
@@ -187,7 +187,7 @@ bool NestedTracingScenario::OnStartTrigger(
 bool NestedTracingScenario::OnStopTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
   base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Stop",
                            TriggerNameHash(triggered_rule));
   for (auto& rule : stop_rules_) {
@@ -397,7 +397,7 @@ void TracingScenario::OnNestedScenarioUpload(
   CHECK_EQ(nested_scenario->current_state(),
            NestedTracingScenario::State::kDisabled);
   CHECK_EQ(current_state_, State::kRecording);
-  tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
   base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Upload",
                            TriggerNameHash(triggered_rule));
 
@@ -488,7 +488,7 @@ bool TracingScenario::OnStartTrigger(
   });
   tracing_session_->Start();
   if (triggered_rule) {
-    tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+    TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
     base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Start",
                              TriggerNameHash(triggered_rule));
   }
@@ -499,7 +499,7 @@ bool TracingScenario::OnStopTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
   base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Stop",
                            TriggerNameHash(triggered_rule));
   for (auto& rule : stop_rules_) {
@@ -536,7 +536,7 @@ bool TracingScenario::OnUploadTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
   base::UmaHistogramSparse("Tracing.Background.Scenario.Trigger.Upload",
                            TriggerNameHash(triggered_rule));
   for (auto& rule : stop_rules_) {

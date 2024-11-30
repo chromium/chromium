@@ -74,13 +74,6 @@ struct CrossThreadCopier<std::optional<mojo_base::BigBuffer>> {
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
-template <>
-struct CrossThreadCopier<SegmentedBuffer> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = SegmentedBuffer;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
 }  // namespace WTF
 
 namespace blink {
@@ -755,7 +748,7 @@ TEST_F(BackgroundResourceFecherTest, CancelSoonAfterStart) {
                       mojo::PendingRemote<network::mojom::URLLoaderClient>
                           client) {
                     // CreateLoaderAndStart should not be called.
-                    CHECK(false);
+                    NOTREACHED();
                   }));
   std::unique_ptr<BackgroundURLLoader> background_url_loader =
       std::make_unique<BackgroundURLLoader>(

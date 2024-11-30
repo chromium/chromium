@@ -82,8 +82,7 @@ class PaymentMethodAccessoryControllerImpl
 
   // `OnFillingTriggered()` fetches the credit card and calls this function
   // once the `credit_card` is available. If successful, it fills it.
-  void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card);
+  void OnCreditCardFetched(const CreditCard& credit_card);
 
   // Applies the given `value` to the `last_focused_field_id_` if applicable.
   void ApplyToField(const std::u16string& value);

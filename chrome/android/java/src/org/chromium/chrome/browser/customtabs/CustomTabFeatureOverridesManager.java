@@ -10,7 +10,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.ArrayList;
@@ -20,14 +20,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 /**
  * Class that allows the Custom Tab client to override features for a single session. Note that this
  * class is meant to be used for experimentation purposes only, and the features will be removed
  * from the `ALLOWED_FEATURES` list once they fully ship to Stable.
  */
-@ActivityScope
 public class CustomTabFeatureOverridesManager {
     private static final String TAG = "CTFeatureOvrdMgr";
     private static final Set<String> ALLOWED_FEATURES =
@@ -37,13 +34,12 @@ public class CustomTabFeatureOverridesManager {
 
     private Map<String, Boolean> mFeatureOverrides;
 
-    @Inject
-    CustomTabFeatureOverridesManager(BaseCustomTabActivity activity) {
+    CustomTabFeatureOverridesManager(BrowserServicesIntentDataProvider intentDataProvider) {
         if (ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()
                 && (CommandLine.getInstance().hasSwitch("cct-client-firstparty-override")
-                        || activity.getIntentDataProvider().isTrustedIntent())) {
+                        || intentDataProvider.isTrustedIntent())) {
             setUpFeatureOverrides(
-                    activity.getIntentDataProvider().getIntent(),
+                    intentDataProvider.getIntent(),
                     sAllowedFeaturesForTesting != null
                             ? sAllowedFeaturesForTesting
                             : ALLOWED_FEATURES);

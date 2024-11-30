@@ -17,7 +17,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -49,8 +48,7 @@ void FinalizeNewProfileSetup(Profile* profile,
 
   entry->SetLocalProfileName(profile_name, is_default_name);
 
-  if (signin_util::IsForceSigninEnabled() &&
-      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+  if (signin_util::IsForceSigninEnabled()) {
     // Managed accounts do not need to have Sync consent set.
     // TODO(crbug.com/40280466): Align Managed and Consumer accounts.
     if (!entry->CanBeManaged()) {

@@ -31,7 +31,13 @@ TEST_F(LanguageUtilTest, ToTranslateLanguageSynonym) {
   language = std::string("zh-MO");
   language::ToTranslateLanguageSynonym(&language);
   EXPECT_EQ("zh-TW", language);
+  language = std::string("cmn-hant-tw");
+  language::ToTranslateLanguageSynonym(&language);
+  EXPECT_EQ("zh-TW", language);
   language = std::string("zh-SG");
+  language::ToTranslateLanguageSynonym(&language);
+  EXPECT_EQ("zh-CN", language);
+  language = std::string("cmn-hans-cn");
   language::ToTranslateLanguageSynonym(&language);
   EXPECT_EQ("zh-CN", language);
   language = std::string("zh");

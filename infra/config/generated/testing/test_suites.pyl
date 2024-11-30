@@ -660,7 +660,7 @@
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 1,
+          'shards': 3,
         },
       },
     },
@@ -752,7 +752,7 @@
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 4,
+          'shards': 18,
         },
       },
     },
@@ -977,7 +977,7 @@
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 4,
+          'shards': 18,
         },
       },
       'telemetry_gpu_unittests': {
@@ -2396,7 +2396,7 @@
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 3,
+          'shards': 11,
         },
       },
       'webdriver_wpt_tests': {
@@ -2516,10 +2516,27 @@
       'views_unittests': {},
     },
 
+    'ondevice_stability_tests_light_suite': {
+      'ondevice_stability_tests_light': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--out_dir=.',
+        ],
+        'linux_args': [
+          '--no-xvfb',
+        ],
+      },
+    },
+
     'ondevice_stability_tests_suite': {
       'ondevice_stability_tests': {
         'mixins': [
           'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--out_dir=.',
         ],
         'linux_args': [
           '--chromedriver',
@@ -3293,6 +3310,46 @@
       },
     },
 
+    'model_validation_gce_matrix_tests': {
+      'model_validation_tests_light_suite': {
+        'mixins': [
+          'gce',
+        ],
+        'variants': [
+          'CHANNEL_BETA',
+          'CHANNEL_DEV',
+          'CHANNEL_STABLE',
+        ],
+      },
+      'ondevice_stability_tests_light_suite': {
+        'mixins': [
+          'nvidia_geforce_gtx_1660',
+        ],
+        'variants': [
+          'CHANNEL_BETA',
+          'CHANNEL_DEV',
+          'CHANNEL_STABLE',
+        ],
+      },
+    },
+
+    'model_validation_matrix_tests': {
+      'model_validation_tests_light_suite': {
+        'variants': [
+          'CHANNEL_BETA',
+          'CHANNEL_DEV',
+          'CHANNEL_STABLE',
+        ],
+      },
+      'ondevice_stability_tests_light_suite': {
+        'variants': [
+          'CHANNEL_BETA',
+          'CHANNEL_DEV',
+          'CHANNEL_STABLE',
+        ],
+      },
+    },
+
     'optimization_guide_desktop_gtests': {
       'optimization_guide_gpu_gtests': {},
       'optimization_guide_nogpu_gtests': {},
@@ -3346,10 +3403,53 @@
     },
 
     'optimization_guide_mac_script_tests': {
-      'chrome_ai_wpt_tests_suite': {},
+      'chrome_ai_wpt_tests_suite': {
+        'mixins': [
+          'experiments',
+        ],
+      },
       'model_validation_tests_light_suite': {},
       'model_validation_tests_suite': {},
       'ondevice_stability_tests_suite': {},
+    },
+
+    'optimization_guide_win32_script_tests': {
+      'model_validation_tests_light_suite': {
+        'mixins': [
+          'gce',
+        ],
+      },
+      'model_validation_tests_suite': {
+        'mixins': [
+          'gce',
+        ],
+      },
+      'ondevice_stability_tests_suite': {
+        'variants': [
+          'AMD_RADEON_RX_5500_XT',
+          'NVIDIA_GEFORCE_GTX_1660',
+        ],
+      },
+    },
+
+    'optimization_guide_win64_script_tests': {
+      'model_validation_tests_light_suite': {
+        'mixins': [
+          'gce',
+        ],
+      },
+      'model_validation_tests_suite': {
+        'mixins': [
+          'gce',
+        ],
+      },
+      'ondevice_stability_tests_suite': {
+        'variants': [
+          'AMD_RADEON_RX_5500_XT',
+          'INTEL_UHD_630_OR_770',
+          'NVIDIA_GEFORCE_GTX_1660',
+        ],
+      },
     },
 
     'optimization_guide_win_arm64_script_tests': {
@@ -3369,26 +3469,6 @@
       'optimization_guide_nogpu_gtests': {
         'mixins': [
           'gce',
-        ],
-      },
-    },
-
-    'optimization_guide_win_script_tests': {
-      'model_validation_tests_light_suite': {
-        'mixins': [
-          'gce',
-        ],
-      },
-      'model_validation_tests_suite': {
-        'mixins': [
-          'gce',
-        ],
-      },
-      'ondevice_stability_tests_suite': {
-        'variants': [
-          'AMD_RADEON_RX_5500_XT',
-          'INTEL_UHD_630_OR_770',
-          'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
     },

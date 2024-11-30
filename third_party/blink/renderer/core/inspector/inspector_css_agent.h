@@ -158,26 +158,26 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response disable() override;
   protocol::Response getMatchedStylesForNode(
       int node_id,
-      protocol::Maybe<protocol::CSS::CSSStyle>* inline_style,
-      protocol::Maybe<protocol::CSS::CSSStyle>* attributes_style,
-      protocol::Maybe<protocol::Array<protocol::CSS::RuleMatch>>*
+      std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
+      std::unique_ptr<protocol::CSS::CSSStyle>* attributes_style,
+      std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>*
           matched_css_rules,
-      protocol::Maybe<protocol::Array<protocol::CSS::PseudoElementMatches>>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::InheritedStyleEntry>>*,
-      protocol::Maybe<
+      std::unique_ptr<protocol::Array<protocol::CSS::PseudoElementMatches>>*,
+      std::unique_ptr<protocol::Array<protocol::CSS::InheritedStyleEntry>>*,
+      std::unique_ptr<
           protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*,
-      protocol::Maybe<int>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
-      protocol::Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>*,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionTryRule>>*,
+      std::optional<int>*,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
+      std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*
           out_cssFontPaletteValuesRule,
-      protocol::Maybe<int>*) override;
+      std::optional<int>*) override;
   protocol::Response getInlineStylesForNode(
       int node_id,
-      protocol::Maybe<protocol::CSS::CSSStyle>* inline_style,
-      protocol::Maybe<protocol::CSS::CSSStyle>* attributes_style) override;
+      std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
+      std::unique_ptr<protocol::CSS::CSSStyle>* attributes_style) override;
   protocol::Response getComputedStyleForNode(
       int node_id,
       std::unique_ptr<
@@ -194,7 +194,7 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response setStyleSheetText(
       const String& style_sheet_id,
       const String& text,
-      protocol::Maybe<String>* source_map_url) override;
+      std::optional<String>* source_map_url) override;
   protocol::Response setRuleSelector(
       const String& style_sheet_id,
       std::unique_ptr<protocol::CSS::SourceRange>,
@@ -213,7 +213,7 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response setStyleTexts(
       std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>>
           edits,
-      protocol::Maybe<int> node_for_property_syntax_validation,
+      std::optional<int> node_for_property_syntax_validation,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSStyle>>* styles)
       override;
   protocol::Response setMediaText(
@@ -242,7 +242,7 @@ class CORE_EXPORT InspectorCSSAgent final
       const String& style_sheet_id,
       const String& rule_text,
       std::unique_ptr<protocol::CSS::SourceRange>,
-      protocol::Maybe<int> node_for_property_syntax_validation,
+      std::optional<int> node_for_property_syntax_validation,
       std::unique_ptr<protocol::CSS::CSSRule>*) override;
   protocol::Response forcePseudoState(
       int node_id,
@@ -263,9 +263,9 @@ class CORE_EXPORT InspectorCSSAgent final
       const String& value) override;
   protocol::Response getBackgroundColors(
       int node_id,
-      protocol::Maybe<protocol::Array<String>>* background_colors,
-      protocol::Maybe<String>* computed_font_size,
-      protocol::Maybe<String>* computed_font_weight) override;
+      std::unique_ptr<protocol::Array<String>>* background_colors,
+      std::optional<String>* computed_font_size,
+      std::optional<String>* computed_font_weight) override;
 
   protocol::Response startRuleUsageTracking() override;
   protocol::Response takeCoverageDelta(
@@ -275,7 +275,7 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>>* result)
       override;
   protocol::Response trackComputedStyleUpdatesForNode(
-      protocol::Maybe<int> node_id) override;
+      std::optional<int> node_id) override;
   protocol::Response trackComputedStyleUpdates(
       std::unique_ptr<protocol::Array<protocol::CSS::CSSComputedStyleProperty>>
           properties_to_track) override;

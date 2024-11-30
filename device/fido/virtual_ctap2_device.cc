@@ -821,7 +821,7 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
     return 0;
   }
 
-  const auto request_bytes = base::make_span(command).subspan(1);
+  const auto request_bytes = base::span(command).subspan<1>();
   CtapDeviceResponseCode response_code =
       CtapDeviceResponseCode::kCtap1ErrInvalidCommand;
   std::vector<uint8_t> response_data;
@@ -2682,9 +2682,10 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
     }
     cbor::Value::MapValue response_map;
 
-    auto subspan = base::make_span(mutable_state()->large_blob).subspan(offset);
+    auto subspan = base::span(mutable_state()->large_blob)
+                       .subspan(static_cast<size_t>(offset));
     response_map.emplace(static_cast<uint8_t>(LargeBlobsResponseKey::kConfig),
-                         subspan.first(std::min<size_t>(get, subspan.size())));
+                         subspan.first(std::min(get, subspan.size())));
 
     *response =
         cbor::Writer::Write(cbor::Value(std::move(response_map))).value();

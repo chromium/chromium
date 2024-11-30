@@ -381,7 +381,7 @@ void ClipPolygon(GraphicsContext& context,
                  bool antialiased) {
   SkPath path;
   path.moveTo(gfx::PointFToSkPoint(vertices[0]));
-  for (unsigned i = 1; i < vertices.size(); ++i) {
+  for (size_t i = 1; i < vertices.size(); ++i) {
     path.lineTo(gfx::PointFToSkPoint(vertices[i]));
   }
 

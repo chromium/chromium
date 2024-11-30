@@ -34,8 +34,9 @@ enum class EnclaveTransactionResult {
   kDecryptionFailed = 5,
   kParseFailure = 6,
   kOtherError = 7,
+  kWebSocketError = 8,
 
-  kMaxValue = kOtherError,
+  kMaxValue = kWebSocketError,
 };
 
 enum class TransactError {
@@ -53,6 +54,8 @@ enum class TransactError {
   kHandshakeFailed,
   kSigningFailed,
   kUnknownServiceError,
+  kWebSocketError,
+
   // kOther mainly encompasses invalid responses received from the service.
   kOther,
 };

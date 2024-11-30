@@ -32,8 +32,15 @@ ENUM_FIXED_TYPE_ALLOWLIST = [
 
 
 class EnumDefinition:
-  def __init__(self, original_enum_name=None, class_name_override=None,
-               enum_package=None, entries=None, comments=None, fixed_type=None):
+
+  def __init__(self,
+               original_enum_name=None,
+               class_name_override=None,
+               enum_package=None,
+               entries=None,
+               comments=None,
+               fixed_type=None,
+               is_flag=False):
     self.original_enum_name = original_enum_name
     self.class_name_override = class_name_override
     self.enum_package = enum_package
@@ -41,6 +48,7 @@ class EnumDefinition:
     self.comments = collections.OrderedDict(comments or [])
     self.prefix_to_strip = None
     self.fixed_type = fixed_type
+    self.is_flag = is_flag
 
   def AppendEntry(self, key, value):
     if key in self.entries:
@@ -148,8 +156,11 @@ class DirectiveSet:
   class_name_override_key = 'CLASS_NAME_OVERRIDE'
   enum_package_key = 'ENUM_PACKAGE'
   prefix_to_strip_key = 'PREFIX_TO_STRIP'
+  is_flag = 'IS_FLAG'
 
-  known_keys = [class_name_override_key, enum_package_key, prefix_to_strip_key]
+  known_keys = [
+      class_name_override_key, enum_package_key, prefix_to_strip_key, is_flag
+  ]
 
   def __init__(self):
     self._directives = {}
@@ -170,6 +181,8 @@ class DirectiveSet:
         DirectiveSet.enum_package_key)
     definition.prefix_to_strip = self._directives.get(
         DirectiveSet.prefix_to_strip_key)
+    definition.is_flag = self._directives.get(
+        DirectiveSet.is_flag) not in [None, 'false', '0']
 
 
 class HeaderParser:
@@ -398,7 +411,7 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@IntDef({
+@IntDef(${FLAG_DEF}{
 ${INT_DEF}
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -441,10 +454,11 @@ ${ENUM_ENTRIES}
       'CLASS_NAME': enum_definition.class_name,
       'ENUM_ENTRIES': enum_entries_string,
       'PACKAGE': enum_definition.enum_package,
+      'FLAG_DEF': 'flag = true, value = ' if enum_definition.is_flag else '',
       'INT_DEF': enum_names_string,
       'SCRIPT_NAME': java_cpp_utils.GetScriptName(),
       'SOURCE_PATH': source_path,
-      'YEAR': str(date.today().year)
+      'YEAR': str(date.today().year),
   }
   return template.substitute(values)
 

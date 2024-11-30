@@ -1384,4 +1384,28 @@ suite('NewTabPageAppTest', () => {
           });
     });
   });
+
+  suite('MicrosoftAuth', () => {
+    [true, false].forEach(
+        (microsoftAuthEnabled) =>
+            suite(`microsoftAuthEnabled ${microsoftAuthEnabled}`, () => {
+              suiteSetup(() => {
+                loadTimeData.overrideValues({microsoftAuthEnabled});
+              });
+
+              test('Show iframe when appropriate', () => {
+                const iframe =
+                    $$<HTMLIFrameElement>(app, 'iframe#microsoftAuth');
+
+                if (!microsoftAuthEnabled) {
+                  assertFalse(!!iframe);
+                  return;
+                }
+
+                assertTrue(!!iframe);
+                assertEquals(
+                    'chrome-untrusted://ntp-microsoft-auth/', iframe.src);
+              });
+            }));
+  });
 });

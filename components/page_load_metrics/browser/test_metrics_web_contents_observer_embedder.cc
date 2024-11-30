@@ -234,6 +234,11 @@ bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI(const GURL& url) {
   return false;
 }
 
+bool TestMetricsWebContentsObserverEmbedder::ShouldObserveScheme(
+    std::string_view scheme) {
+  return false;
+}
+
 PageLoadMetricsMemoryTracker*
 TestMetricsWebContentsObserverEmbedder::GetMemoryTrackerForBrowserContext(
     content::BrowserContext* browser_context) {

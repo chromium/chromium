@@ -17,19 +17,19 @@ namespace {
 // TODO(elkurin): Migrate this into chromeos common test with lacros.
 class WindowPinUtilTest : public ash::AshTestBase {};
 
-TEST_F(WindowPinUtilTest, IsPinned_Pinned) {
+TEST_F(WindowPinUtilTest, IsPinnedPinned) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   PinWindow(window.get(), /*trusted=*/false);
   EXPECT_TRUE(IsWindowPinned(window.get()));
 }
 
-TEST_F(WindowPinUtilTest, IsPinned_TrustedPinned) {
+TEST_F(WindowPinUtilTest, IsPinnedTrustedPinned) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   PinWindow(window.get(), /*trusted=*/true);
   EXPECT_TRUE(IsWindowPinned(window.get()));
 }
 
-TEST_F(WindowPinUtilTest, IsPinned_Unpinned) {
+TEST_F(WindowPinUtilTest, IsPinnedUnpinned) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   PinWindow(window.get(), /*trusted=*/true);
   ASSERT_TRUE(IsWindowPinned(window.get()));
@@ -38,7 +38,7 @@ TEST_F(WindowPinUtilTest, IsPinned_Unpinned) {
   EXPECT_FALSE(IsWindowPinned(window.get()));
 }
 
-TEST_F(WindowPinUtilTest, IsPinned_FullscreenNotPinned) {
+TEST_F(WindowPinUtilTest, IsPinnedFullscreenNotPinned) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   wm::SetWindowFullscreen(window.get(), /*fullscreen=*/true);
   EXPECT_FALSE(IsWindowPinned(window.get()));

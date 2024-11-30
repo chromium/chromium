@@ -20,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
@@ -72,6 +73,13 @@ void LowDiskNotification::LowDiskSpace(
                  << "suppressed on a managed device.";
     return;
   }
+
+  if (demo_mode::IsDeviceInDemoMode()) {
+    LOG(WARNING) << "Device is low on disk space, but the notification was "
+                 << "suppressed on a demo mode device.";
+    return;
+  }
+
   Severity severity = GetSeverity(status.disk_free_bytes());
   base::Time now = base::Time::Now();
   if (severity != last_notification_severity_ ||

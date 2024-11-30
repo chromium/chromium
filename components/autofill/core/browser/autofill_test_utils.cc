@@ -20,6 +20,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
+#include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
@@ -33,7 +34,6 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -57,6 +57,7 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -70,8 +71,8 @@ bool operator==(const FormFieldDataPredictions& a,
                 const FormFieldDataPredictions& b) = default;
 
 bool operator==(const FormDataPredictions& a, const FormDataPredictions& b) {
-  return test::WithoutUnserializedData(a.data).SameFormAs(
-             test::WithoutUnserializedData(b.data)) &&
+  return FormData::DeepEqual(test::WithoutUnserializedData(a.data),
+                             test::WithoutUnserializedData(b.data)) &&
          a.signature == b.signature && a.fields == b.fields;
 }
 
@@ -1073,13 +1074,31 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
 }
 
 BnplIssuer GetTestBnplIssuer() {
-  PaymentInstrument payment_instrument = PaymentInstrument(
-      /*instrument_id=*/12345, /*nickname=*/std::u16string(), GURL::EmptyGURL(),
-      DenseSet<PaymentInstrument::PaymentRail>(
-          {PaymentInstrument::PaymentRail::kCardNumber}));
-  return BnplIssuer(/*issuer_id=*/"test_issuer_id", payment_instrument,
-                    /*price_lower_bound=*/50,
-                    /*price_upper_bound=*/200);
+  std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
+  // Currency: USD, price lower bound: $50, price upper bound: $200.
+  eligible_price_ranges.emplace_back(/*currency=*/"USD",
+                                     /*price_lower_bound=*/50000000,
+                                     /*price_upper_bound=*/200000000);
+  return BnplIssuer(12345, /*issuer_id=*/"test_issuer_id",
+                    std::move(eligible_price_ranges));
+}
+
+sync_pb::PaymentInstrumentCreationOption
+CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id) {
+  sync_pb::PaymentInstrumentCreationOption payment_instrument_creation_option;
+  payment_instrument_creation_option.set_id(id);
+
+  sync_pb::BnplIssuerDetails* bnpl_option =
+      payment_instrument_creation_option.mutable_buy_now_pay_later_option();
+  bnpl_option->set_issuer_id("issuer_id");
+
+  sync_pb::EligiblePriceRange eligible_price_range;
+  eligible_price_range.set_currency("USD");
+  eligible_price_range.set_min_price_in_micros(50);
+  eligible_price_range.set_max_price_in_micros(200);
+  *bnpl_option->add_eligible_price_range() = eligible_price_range;
+
+  return payment_instrument_creation_option;
 }
 
 }  // namespace test

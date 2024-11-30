@@ -27,6 +27,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   CSSVariableData()
       : length_(0),
         is_animation_tainted_(false),
+        is_attr_tainted_(false),
         needs_variable_resolution_(false),
         is_8bit_(true),
         has_font_units_(false),
@@ -38,6 +39,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   CSSVariableData(PassKey,
                   StringView,
                   bool is_animation_tainted,
+                  bool is_attr_tainted,
                   bool needs_variable_resolution,
                   bool has_font_units,
                   bool has_root_font_units,
@@ -49,6 +51,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   // substitution.
   static CSSVariableData* Create(StringView original_text,
                                  bool is_animation_tainted,
+                                 bool is_attr_tainted,
                                  bool needs_variable_resolution,
                                  bool has_font_units,
                                  bool has_root_font_units,
@@ -61,7 +64,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
     return MakeGarbageCollected<CSSVariableData>(
         AdditionalBytes(original_text.Is8Bit() ? original_text.length()
                                                : 2 * original_text.length()),
-        PassKey(), original_text, is_animation_tainted,
+        PassKey(), original_text, is_animation_tainted, is_attr_tainted,
         needs_variable_resolution, has_font_units, has_root_font_units,
         has_line_height_units);
   }
@@ -71,6 +74,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   // stored.)
   static CSSVariableData* Create(const String& original_text,
                                  bool is_animation_tainted,
+                                 bool is_attr_tainted,
                                  bool needs_variable_resolution);
 
   void Trace(Visitor*) const {}
@@ -85,10 +89,13 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
 
   String Serialize() const;
 
+  bool EqualsIgnoringAttrTainting(const CSSVariableData& other) const;
+
   bool operator==(const CSSVariableData& other) const;
-  bool EqualsIgnoringTaint(const CSSVariableData& other) const;
 
   bool IsAnimationTainted() const { return is_animation_tainted_; }
+
+  bool IsAttrTainted() const { return is_attr_tainted_; }
 
   bool NeedsVariableResolution() const { return needs_variable_resolution_; }
 
@@ -132,15 +139,16 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   // https://randomascii.wordpress.com/2010/06/06/bit-field-packing-with-visual-c/
 
   // Enough for storing up to 2MB (and then some), cf. kMaxSubstitutionBytes.
-  // The remaining 4 bits are kept in reserve for future use.
+  // The remaining 3 bits are kept in reserve for future use.
   const unsigned length_ : 22;
   const unsigned is_animation_tainted_ : 1;       // bool.
+  const unsigned is_attr_tainted_ : 1;            // bool.
   const unsigned needs_variable_resolution_ : 1;  // bool.
   const unsigned is_8bit_ : 1;                    // bool.
   unsigned has_font_units_ : 1;                   // bool.
   unsigned has_root_font_units_ : 1;              // bool.
   unsigned has_line_height_units_ : 1;            // bool.
-  const unsigned unused_ : 4;
+  const unsigned unused_ : 3;
 
   // The actual character data is stored after this.
 };

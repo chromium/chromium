@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/resource_request.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/optional_util.h"
@@ -11,6 +12,7 @@
 #include "net/base/load_flags.h"
 #include "net/log/net_log_source.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/url_request.mojom.h"
@@ -64,6 +66,19 @@ mojo::PendingRemote<mojom::DevToolsObserver> Clone(
   }
   mojo::Remote<mojom::DevToolsObserver> remote(std::move(*observer));
   mojo::PendingRemote<mojom::DevToolsObserver> new_remote;
+  remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
+  *observer = remote.Unbind();
+  return new_remote;
+}
+
+mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver> Clone(
+    mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>* observer) {
+  if (!*observer) {
+    return mojo::NullRemote();
+  }
+  mojo::Remote<mojom::DeviceBoundSessionAccessObserver> remote(
+      std::move(*observer));
+  mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
   *observer = remote.Unbind();
   return new_remote;
@@ -167,6 +182,10 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   devtools_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::DevToolsObserver>&>(
           other.devtools_observer));
+  device_bound_session_observer =
+      Clone(&const_cast<
+            mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>&>(
+          other.device_bound_session_observer));
   client_security_state = other.client_security_state.Clone();
   accept_ch_frame_observer =
       Clone(const_cast<mojo::PendingRemote<mojom::AcceptCHFrameObserver>&>(
@@ -353,8 +372,7 @@ net::ReferrerPolicy ReferrerPolicyForUrlRequest(
       return net::ReferrerPolicy::
           ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
     case mojom::ReferrerPolicy::kDefault:
-      CHECK(false);
-      return net::ReferrerPolicy::NO_REFERRER;
+      NOTREACHED();
     case mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   }

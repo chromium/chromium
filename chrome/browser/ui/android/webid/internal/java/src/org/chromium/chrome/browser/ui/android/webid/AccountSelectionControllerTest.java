@@ -30,6 +30,10 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,8 +63,6 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -699,19 +701,48 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
     }
 
+    @Test
+    public void testFilteredOutAccountNoClickListener() {
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mAnaAccount, mFilteredOutAccount),
+                mIdpData,
+                /* isAutoReauthn= */ false,
+                /* newAccounts= */ Collections.EMPTY_LIST);
+
+        // Account chooser is shown.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+
+        assertEquals(2, mSheetAccountItems.size());
+        // First account has a click listener.
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+        // Second account is filtered out, so does not.
+        assertNull(mSheetAccountItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER));
+
+        View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
+        RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+        assertEquals(2, sheetItemListView.getAdapter().getItemCount());
+
+        View anaRow = sheetItemListView.getChildAt(0);
+        float delta = 0.00001f;
+        assertEquals(anaRow.getAlpha(), 1.f, delta);
+        TextView textView = anaRow.findViewById(R.id.title);
+        assertEquals("Ana Doe", textView.getText());
+        textView = anaRow.findViewById(R.id.description);
+        assertEquals("ana@email.example", textView.getText());
+
+        View nicolasRow = sheetItemListView.getChildAt(1);
+        assertEquals(nicolasRow.getAlpha(), AccountSelectionViewBinder.DISABLED_OPACITY, delta);
+        textView = nicolasRow.findViewById(R.id.title);
+        assertEquals("nicolas@example.com", textView.getText());
+        textView = nicolasRow.findViewById(R.id.description);
+        assertEquals("You can’t sign in using this account", textView.getText());
+    }
+
     private void pressBack() {
         if (mBottomSheetContent.handleBackPress()) return;
 
         mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
-    }
-
-    private static int countListItemsOfType(ModelList list, int searchType) {
-        int count = 0;
-        for (ListItem item : list) {
-            if (item.type == searchType) {
-                count += 1;
-            }
-        }
-        return count;
     }
 }

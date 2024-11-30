@@ -149,7 +149,7 @@ linux_memory_builder(
                 # These are very slow on the ASAN trybot for some reason.
                 # crbug.com/1257927
                 swarming = targets.swarming(
-                    shards = 40,
+                    shards = 50,
                 ),
             ),
             "components_unittests": targets.mixin(
@@ -684,7 +684,7 @@ linux_memory_builder(
         per_test_modifications = {
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 23,
+                    shards = 30,
                 ),
             ),
             "content_browsertests": targets.mixin(
@@ -1482,8 +1482,9 @@ ci.builder(
         },
     ),
     builderless = True,
-    cores = 32,
+    cores = 16,
     os = os.WINDOWS_DEFAULT,
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "win",
         short_name = "asn",

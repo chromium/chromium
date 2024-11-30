@@ -1156,8 +1156,9 @@ INSTANTIATE_TEST_SUITE_P(ForceUpdateOn,
 // navigated back to a devtools extension page, it gets put back in the devtools
 // process.
 // http://crbug.com/570483
+// TODO(crbug.com/331650494): Enable once the test is fixed.
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       HttpIframeInDevToolsExtensionPanel) {
+                       DISABLED_HttpIframeInDevToolsExtensionPanel) {
   // Install the dynamically-generated extension.
   const Extension* extension =
       LoadExtensionForTest("Devtools Extension", "panel_devtools_page.html",
@@ -1894,7 +1895,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                         "devtools_compatibility.js"}));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectComponentExtension) {
+// TODO(crbug.com/380336226): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CantInspectComponentExtension \
+  DISABLED_CantInspectComponentExtension
+#else
+#define MAYBE_CantInspectComponentExtension CantInspectComponentExtension
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       MAYBE_CantInspectComponentExtension) {
   std::string extension_id = BuildComponentExtension();
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
@@ -2023,7 +2032,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
           extensions::ProcessManager::Get(browser()->profile())
               ->GetSiteInstanceForURL(offscreen_url)
               .get(),
-          offscreen_url);
+          browser()->profile(), offscreen_url);
   {
     extensions::ExtensionHostTestHelper offscreen_waiter(browser()->profile(),
                                                          extension->id());
@@ -2200,7 +2209,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSize) {
 }
 
 // Tests raw headers text.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSyncSize) {
+// TODO(crbug.com/40218872): Enable this flaky test. This is flaky on Linux
+// debug build.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_TestNetworkSyncSize DISABLED_TestNetworkSyncSize
+#else
+#define MAYBE_TestNetworkSyncSize TestNetworkSyncSize
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSyncSize) {
   RunTest("testNetworkSyncSize", kChunkedTestPage);
 }
 
@@ -2271,14 +2287,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestDOMWarnings) {
 }
 
 // Tests that console messages are not duplicated on navigation back.
-#if BUILDFLAG(IS_WIN) || defined(MEMORY_SANITIZER)
 // Flaking on windows swarm try runs: crbug.com/409285.
-// Also flaking on MSan runs: crbug.com/1182861
-#define MAYBE_TestConsoleOnNavigateBack DISABLED_TestConsoleOnNavigateBack
-#else
-#define MAYBE_TestConsoleOnNavigateBack TestConsoleOnNavigateBack
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestConsoleOnNavigateBack) {
+// Also flaking on MSan runs: crbug.com/1182861.
+// Flaking on Linux: crbug.com/381077063.
+IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestConsoleOnNavigateBack) {
   RunTest("testConsoleOnNavigateBack", kNavigateBackTestPage);
 }
 
@@ -2308,7 +2320,7 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
   BrowserAutofillManagerTestDelegateDevtoolsImpl& operator=(
       const BrowserAutofillManagerTestDelegateDevtoolsImpl&) = delete;
 
-  ~BrowserAutofillManagerTestDelegateDevtoolsImpl() override {}
+  ~BrowserAutofillManagerTestDelegateDevtoolsImpl() override = default;
 
   void DidPreviewFormData() override {}
 
@@ -4164,8 +4176,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
   CloseDevToolsWindow();
 }
 
+// TODO(crbug.com/381390373): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CanBeDisabledByEnterprisePolicy \
+  DISABLED_CanBeDisabledByEnterprisePolicy
+#else
+#define MAYBE_CanBeDisabledByEnterprisePolicy CanBeDisabledByEnterprisePolicy
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       CanBeDisabledByEnterprisePolicy) {
+                       MAYBE_CanBeDisabledByEnterprisePolicy) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities();
   // Disable via enterprise policy.

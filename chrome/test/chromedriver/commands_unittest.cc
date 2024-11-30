@@ -868,7 +868,7 @@ namespace {
 class MockCommandListener : public CommandListener {
  public:
   MockCommandListener() : called_(false) {}
-  ~MockCommandListener() override {}
+  ~MockCommandListener() override = default;
 
   Status BeforeCommand(const std::string& command_name) override {
     called_ = true;
@@ -964,8 +964,8 @@ namespace {
 
 class FailingCommandListener : public CommandListener {
  public:
-  FailingCommandListener() {}
-  ~FailingCommandListener() override {}
+  FailingCommandListener() = default;
+  ~FailingCommandListener() override = default;
 
   Status BeforeCommand(const std::string& command_name) override {
     return Status(kUnknownError);

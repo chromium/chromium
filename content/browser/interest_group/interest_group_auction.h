@@ -893,6 +893,25 @@ class CONTENT_EXPORT InterestGroupAuction
     std::optional<url::Origin> highest_scoring_other_bid_owner;
   };
 
+  // Per-ScoreAdClient context data that needs to be preserved during a
+  // ScoreAd() call, and that is available during ScoreAdClient callbacks.
+  struct ScoreAdClientData {
+    ScoreAdClientData(
+        std::unique_ptr<Bid> bid,
+        scoped_refptr<TrustedSignalsCacheImpl::Handle> cache_handle);
+    ScoreAdClientData(ScoreAdClientData&&);
+    ~ScoreAdClientData();
+
+    ScoreAdClientData& operator=(ScoreAdClientData&&);
+
+    // The bid itself.
+    std::unique_ptr<Bid> bid;
+    // The cache Handle for keeping the TrustedSignalsCacheImpl request alive,
+    // if there is one. Associating it directly with the ScoreAdClient receiver
+    // means closing the pipe conveniently releases the cache entry as well.
+    scoped_refptr<TrustedSignalsCacheImpl::Handle> cache_handle;
+  };
+
   // ---------------------------------
   // Load interest group phase methods
   // ---------------------------------
@@ -1561,7 +1580,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // Receivers for OnScoreAd() callbacks. Owns Bids, which have raw pointers to
   // other objects, so must be last, to avoid triggering tooling to check for
   // dangling pointers.
-  mojo::ReceiverSet<auction_worklet::mojom::ScoreAdClient, std::unique_ptr<Bid>>
+  mojo::ReceiverSet<auction_worklet::mojom::ScoreAdClient, ScoreAdClientData>
       score_ad_receivers_;
 
   GetDataDecoderCallback get_data_decoder_callback_;

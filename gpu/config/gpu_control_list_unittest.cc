@@ -44,12 +44,8 @@ class GpuControlListTest : public testing::Test,
     return rt;
   }
 
-  bool IsAngleGLRenderer(const std::string& gl_renderer) {
-    std::string vendor;
-    std::string renderer;
-    std::string version;
-    return GpuControlList::ProcessANGLEGLRenderer(gl_renderer, &vendor,
-                                                  &renderer, &version);
+  GpuControlList::GLType GetGLType(const std::string& gl_renderer) {
+    return GpuControlList::ProcessANGLEGLRenderer(gl_renderer);
   }
   bool is_angle() const { return GetParam(); }
 
@@ -237,16 +233,19 @@ TEST_P(GpuControlListTest, TestGroup) {
 }
 
 TEST_P(GpuControlListTest, AngleVulkan) {
-  EXPECT_FALSE(IsAngleGLRenderer(
-      "ANGLE (ARM, Vulkan 1.3.247 (Mali-G52 (0x74021000)), Mali G52-44.1.0)"));
+  EXPECT_EQ(GpuControlList::kGLTypeANGLE_VULKAN,
+            GetGLType("ANGLE (ARM, Vulkan 1.3.247 (Mali-G52 (0x74021000)), "
+                      "Mali G52-44.1.0)"));
 
-  EXPECT_FALSE(IsAngleGLRenderer(
-      "ANGLE (Intel, Vulkan 1.3.289 (Intel(R) Graphics (ADL GT2) "
-      "(0x00004626)), Intel open-source Mesa driver-24.2.0)"));
+  EXPECT_EQ(
+      GpuControlList::kGLTypeANGLE_VULKAN,
+      GetGLType("ANGLE (Intel, Vulkan 1.3.289 (Intel(R) Graphics (ADL GT2) "
+                "(0x00004626)), Intel open-source Mesa driver-24.2.0)"));
 
-  EXPECT_FALSE(IsAngleGLRenderer("ANGLE Vulkan"));
+  EXPECT_EQ(GpuControlList::kGLTypeANGLE_GLES,
+            GetGLType("ANGLE (ARM, Mali-G52, OpenGL ES 3.1 vxxxxx)"));
 
-  EXPECT_TRUE(IsAngleGLRenderer("ANGLE (ARM, Mali-G52, OpenGL ES 3.1 vxxxxx)"));
+  EXPECT_EQ(GpuControlList::kGLTypeGLES, GetGLType("Mali-G52"));
 }
 
 }  // namespace gpu

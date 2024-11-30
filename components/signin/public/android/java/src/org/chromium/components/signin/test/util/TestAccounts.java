@@ -58,6 +58,17 @@ public class TestAccounts {
                                     .build())
                     .build();
 
+    /* To be used in test cases that need to test managed account flows. */
+    public static final AccountInfo MANAGED_ACCOUNT =
+            new AccountInfo.Builder(
+                            "managed@example.com",
+                            FakeAccountManagerFacade.toGaiaId("managed@example.com"))
+                    .fullName("Managed Full")
+                    .givenName("Managed Given")
+                    .hostedDomain("example.com")
+                    .accountImage(createAvatar())
+                    .build();
+
     /** Returns an avatar image created from test resource. */
     private static Bitmap createAvatar() {
         Drawable drawable =

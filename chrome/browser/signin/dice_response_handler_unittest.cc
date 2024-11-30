@@ -91,7 +91,7 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
   DiceTestSigninClient(const DiceTestSigninClient&) = delete;
   DiceTestSigninClient& operator=(const DiceTestSigninClient&) = delete;
 
-  ~DiceTestSigninClient() override {}
+  ~DiceTestSigninClient() override = default;
 
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,

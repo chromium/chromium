@@ -318,6 +318,8 @@ class MetricsWebContentsObserver
   // metrics observers.
   bool ShouldTrackScheme(std::string_view scheme) const;
 
+  bool ShouldTrackSchemeForNonWebUI(std::string_view scheme) const;
+
   void OnBrowserFeatureUsage(
       content::RenderFrameHost* render_frame_host,
       const std::vector<blink::UseCounterFeature>& new_features);

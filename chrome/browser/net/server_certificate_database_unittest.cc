@@ -54,8 +54,16 @@ TEST_F(ServerCertificateDatabaseTest, StoreAndRetrieve) {
       MakeCertInfo(intermediate->GetDER(),
                    CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
 
-  EXPECT_TRUE(database_->InsertOrUpdateCert(root_cert_info));
-  EXPECT_TRUE(database_->InsertOrUpdateCert(intermediate_cert_info));
+  {
+    std::vector<ServerCertificateDatabase::CertInformation> insert_certs;
+    insert_certs.push_back(MakeCertInfo(
+        root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
+    insert_certs.push_back(
+        MakeCertInfo(intermediate->GetDER(),
+                     CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED));
+
+    EXPECT_TRUE(database_->InsertOrUpdateCerts(std::move(insert_certs)));
+  }
 
   EXPECT_THAT(
       database_->RetrieveAllCertificates(),
@@ -84,8 +92,15 @@ TEST_F(ServerCertificateDatabaseTest, Update) {
       MakeCertInfo(intermediate->GetDER(),
                    CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
 
-  EXPECT_TRUE(database_->InsertOrUpdateCert(root_cert_info));
-  EXPECT_TRUE(database_->InsertOrUpdateCert(intermediate_cert_info));
+  {
+    std::vector<ServerCertificateDatabase::CertInformation> insert_certs;
+    insert_certs.push_back(MakeCertInfo(
+        root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
+    insert_certs.push_back(
+        MakeCertInfo(intermediate->GetDER(),
+                     CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED));
+    EXPECT_TRUE(database_->InsertOrUpdateCerts(std::move(insert_certs)));
+  }
 
   EXPECT_THAT(
       database_->RetrieveAllCertificates(),
@@ -95,7 +110,12 @@ TEST_F(ServerCertificateDatabaseTest, Update) {
   root_cert_info.cert_metadata.mutable_trust()->set_trust_type(
       CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED);
 
-  EXPECT_TRUE(database_->InsertOrUpdateCert(root_cert_info));
+  {
+    std::vector<ServerCertificateDatabase::CertInformation> insert_certs;
+    insert_certs.push_back(MakeCertInfo(
+        root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED));
+    EXPECT_TRUE(database_->InsertOrUpdateCerts(std::move(insert_certs)));
+  }
 
   EXPECT_THAT(
       database_->RetrieveAllCertificates(),
@@ -114,8 +134,16 @@ TEST_F(ServerCertificateDatabaseTest, Delete) {
       MakeCertInfo(intermediate->GetDER(),
                    CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
 
-  EXPECT_TRUE(database_->InsertOrUpdateCert(root_cert_info));
-  EXPECT_TRUE(database_->InsertOrUpdateCert(intermediate_cert_info));
+  {
+    std::vector<ServerCertificateDatabase::CertInformation> insert_certs;
+    insert_certs.push_back(MakeCertInfo(
+        root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
+    insert_certs.push_back(
+        MakeCertInfo(intermediate->GetDER(),
+                     CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED));
+
+    EXPECT_TRUE(database_->InsertOrUpdateCerts(std::move(insert_certs)));
+  }
 
   EXPECT_THAT(
       database_->RetrieveAllCertificates(),

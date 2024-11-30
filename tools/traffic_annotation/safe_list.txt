@@ -99,8 +99,6 @@ missing_new_fields,chrome/browser/ash/smb_client/discovery/netbios_client.cc
 missing_new_fields,chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc
 missing_new_fields,chrome/browser/autofill/autofill_image_fetcher_impl.cc
 missing_new_fields,chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc
-missing_new_fields,chrome/browser/cart/cart_discount_fetcher.cc
-missing_new_fields,chrome/browser/cart/cart_discount_link_fetcher.cc
 missing_new_fields,chrome/browser/chromeos/extensions/wallpaper/wallpaper_api.cc
 missing_new_fields,chrome/browser/device_api/managed_configuration_api.cc
 missing_new_fields,chrome/browser/devtools/device/adb/adb_client_socket.cc
@@ -329,7 +327,6 @@ missing_new_fields,chrome/browser/ash/printing/oauth2/authorization_server_data.
 missing_new_fields,chrome/browser/ash/printing/oauth2/authorization_server_session.cc
 missing_new_fields,chrome/browser/ash/printing/oauth2/ipp_endpoint_token_fetcher.cc
 missing_new_fields,chrome/browser/nearby_sharing/client/nearby_share_client_impl.cc
-missing_new_fields,chromeos/ash/services/device_sync/cryptauth_device_manager_impl.cc
 missing_new_fields,components/browsing_data/core/counters/history_counter.cc
 missing_new_fields,components/browsing_data/core/history_notice_utils.cc
 missing_new_fields,components/history/core/browser/browsing_history_service.cc

@@ -45,7 +45,7 @@ class FileSystemBackend;
 // content::ContentBrowserClient.
 class ChromeContentBrowserClientParts {
  public:
-  virtual ~ChromeContentBrowserClientParts() {}
+  virtual ~ChromeContentBrowserClientParts() = default;
 
   virtual void RenderProcessWillLaunch(content::RenderProcessHost* host) {}
   virtual void SiteInstanceGotProcessAndSite(

@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "base/check.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 
@@ -79,6 +80,10 @@ bool Mailbox::Verify() const {
 #else
   return true;
 #endif
+}
+
+uint32_t Mailbox::ToU32() const {
+  return base::U32FromBigEndian(base::as_byte_span(name).first<4>());
 }
 
 std::string Mailbox::ToDebugString() const {

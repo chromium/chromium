@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/preview_badge.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_format_comparison.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
@@ -182,6 +183,9 @@ void VideoStreamCoordinator::StopInternal(
     // to finish processing frames that are in progress. If this isn't done,
     // then allocated buffers can be left dangling until the video stream is
     // stopped.
+    if (video_source_provider) {
+      video_source_provider.set_disconnect_handler(base::DoNothing());
+    }
     auto* handler_ptr = video_frame_handler_.get();
     std::exchange(handler_ptr, nullptr)
         ->Close(base::DoNothingWithBoundArgs(std::move(video_source_provider),

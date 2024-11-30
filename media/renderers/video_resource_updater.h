@@ -35,11 +35,10 @@ namespace viz {
 class ClientResourceProvider;
 class RasterContextProvider;
 class CompositorRenderPass;
-class SharedBitmapReporter;
 }  // namespace viz
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
 }  // namespace gpu
 
 namespace media {
@@ -77,13 +76,12 @@ class MEDIA_EXPORT VideoResourceUpdater
     : public base::trace_event::MemoryDumpProvider {
  public:
   // For GPU compositing |context_provider| should be provided and for software
-  // compositing |shared_bitmap_reporter| should be provided. If there is a
+  // compositing |shared_image_interface| should be provided. If there is a
   // non-null |context_provider| we assume GPU compositing.
   VideoResourceUpdater(
       viz::RasterContextProvider* context_provider,
-      viz::SharedBitmapReporter* shared_bitmap_reporter,
       viz::ClientResourceProvider* resource_provider,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
       bool use_stream_video_draw_quad,
       bool use_gpu_memory_buffer_resources,
       int max_resource_size);
@@ -123,7 +121,7 @@ class MEDIA_EXPORT VideoResourceUpdater
       scoped_refptr<VideoFrame> video_frame);
 
   viz::SharedImageFormat YuvSharedImageFormat(int bits_per_channel);
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface() const;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface() const;
 
  private:
   class PlaneResource;
@@ -212,8 +210,7 @@ class MEDIA_EXPORT VideoResourceUpdater
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   const raw_ptr<viz::RasterContextProvider> context_provider_;
-  const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
   const raw_ptr<viz::ClientResourceProvider, DanglingUntriaged>
       resource_provider_;
   const bool use_stream_video_draw_quad_;

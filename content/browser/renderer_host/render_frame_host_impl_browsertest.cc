@@ -734,7 +734,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(web_ui_page, web_contents()->GetLastCommittedURL());
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Tests that a gesture is required in a frame before it can request a
@@ -776,7 +775,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Tests that requesting a before unload confirm dialog on a non-active
@@ -800,7 +798,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(0, dialog_manager.num_beforeunload_dialogs_seen());
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Test for crbug.com/80401.  Canceling a beforeunload dialog should reset
@@ -836,7 +833,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_GE(dialog_manager.url_invalidate_count(), 1);
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // A separate class needed to test with Origin Trial tokens.
@@ -1041,14 +1037,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
                        DocumentDataAltered) {
   // Generated with:
   // tools/origin_trials/generate_token.py https://127.0.0.1:44444
-  // DisableThirdPartyStoragePartitioning2
+  // DisableThirdPartyStoragePartitioning3
   // --expire-timestamp=2000000000
   const char kValidFirstPartyToken[] =
-      "AxMOenT1sG/"
-      "yhbr90XJPbHZ9fHn4dUuB9ti4X+Ec1QneGq68WfIZCMJ9w9ZI0AjpyceLwlFpxe/"
-      "mdVIf3VJCwwoAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmV"
-      "hdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmcyIiwgImV4cGl"
-      "yeSI6IDIwMDAwMDAwMDB9";
+      "A5jVLTrvQDj8COebCcRQ5xrBVsOZxNYbmx/"
+      "2YWW6muRlmYGegGu2BGjIQfSe3wuJR4WosC+8XNf/"
+      "nFUO7MegiwQAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVh"
+      "dHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmczIiwgImV4cGly"
+      "eSI6IDIwMDAwMDAwMDB9";
 
   SetOriginTrialToken(kValidFirstPartyToken);
   EXPECT_TRUE(NavigateToURL(shell(), simple_origin_trial_url()));
@@ -1079,14 +1075,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   std::string raw_token(kValidFirstPartyToken);
   std::vector<std::string> raw_tokens_vector{raw_token};
   overrides_with_tokens
-      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning2] =
+      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning3] =
           blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
   origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
       std::move(overrides_with_tokens));
 
   // Create the set of expected overrides without the corresponding tokens.
   expected_overrides
-      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning2] =
+      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning3] =
           true;
 
   // Verify that the document data was altered with the correct overrides.
@@ -1111,14 +1107,13 @@ IN_PROC_BROWSER_TEST_F(
     ReloadedCrashedFrameWithHeaderOriginTrialShouldHaveValidRuntimeFeatureStateDocumentData) {
   // Generated with:
   // tools/origin_trials/generate_token.py https://127.0.0.1:44440
-  // DisableThirdPartyStoragePartitioning2
+  // DisableThirdPartyStoragePartitioning3
   // --expire-timestamp=2000000000
   const char kValidFirstPartyTokenForEmptyUrl[] =
-      "A68fOEp2t0jAR/ewxM8TMwuZRCCCqT5+w/"
-      "lmt6pgABRYKg+"
-      "3Ix7S3pe5kqXLTdRgCKKQUeXdGL24tSeDb5cFbwUAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly8"
-      "xMjcuMC4wLjE6NDQ0NDAiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2V"
-      "QYXJ0aXRpb25pbmcyIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+      "AzAtYm5Ul5OyOlBPY0CLWksTcVSXX0t3KSWmzZWT0AwcDRRzadYiezTLXGMjmHgrlkjjCbns"
+      "u0cTOwDyQKHiRAkAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDAiLCAi"
+      "ZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmczIiwgImV4"
+      "cGlyeSI6IDIwMDAwMDAwMDB9";
 
   SetOriginTrialToken(kValidFirstPartyTokenForEmptyUrl);
   EXPECT_TRUE(NavigateToURL(shell(), empty_page_url()));
@@ -1137,7 +1132,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(rfh->IsRenderFrameLive());
 
   // Create an observer that will set the state of
-  // DisableThirdPartyStoragePartitioning2 to true once the navigation begins to
+  // DisableThirdPartyStoragePartitioning3 to true once the navigation begins to
   // commit.
   class ReadyToCommitObserver : public WebContentsObserver {
    public:
@@ -1147,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(
     // WebContentsObserver:
     void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
       navigation_handle->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
+          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
     }
   };
   ReadyToCommitObserver commit_observer(web_contents);
@@ -1170,7 +1165,7 @@ IN_PROC_BROWSER_TEST_F(
         std::string raw_token(kValidFirstPartyTokenForEmptyUrl);
         std::vector<std::string> raw_tokens_vector{raw_token};
         overrides_with_tokens[blink::mojom::RuntimeFeature::
-                                  kDisableThirdPartyStoragePartitioning2] =
+                                  kDisableThirdPartyStoragePartitioning3] =
             blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
         origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
             std::move(overrides_with_tokens));
@@ -1192,7 +1187,7 @@ IN_PROC_BROWSER_TEST_F(
         // Additionally, the RuntimeFeatureStateContext in the navigation
         // request hasn't yet been saved into the DocumentData.
         EXPECT_FALSE(document_data->runtime_feature_state_read_context()
-                         .IsDisableThirdPartyStoragePartitioning2Enabled());
+                         .IsDisableThirdPartyStoragePartitioning3Enabled());
       });
   CommitMessageDelayer commit_delayer(web_contents,
                                       empty_page_url() /* deferred_url */,
@@ -1208,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(
   // Now that the navigation has finished committing, the DocumentData should
   // contain the "true" set by the observer.
   EXPECT_TRUE(document_data->runtime_feature_state_read_context()
-                  .IsDisableThirdPartyStoragePartitioning2Enabled());
+                  .IsDisableThirdPartyStoragePartitioning3Enabled());
 }
 
 // Check that the RuntimeFeatureStateDocumentData is not altered when we receive
@@ -1246,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   std::string raw_token(kInvalidToken);
   std::vector<std::string> raw_tokens_vector{raw_token};
   overrides_with_tokens
-      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning2] =
+      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning3] =
           blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
   origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
       std::move(overrides_with_tokens));
@@ -1347,14 +1342,13 @@ IN_PROC_BROWSER_TEST_F(
     ReusedChildFrameNavigatedFromDeprecationTrialIsPartitioned) {
   // Generated with
   // tools/origin_trials/generate_token.py https://127.0.0.1:44445
-  // DisableThirdPartyStoragePartitioning2 --expire-timestamp=2000000000
+  // DisableThirdPartyStoragePartitioning3 --expire-timestamp=2000000000
   // --is-third-party
   const char kValidToken[] =
-      "A1HN+j5dGwYe307k+"
-      "ljKWOpwMh6rXnk3mFDsOs0TG2ibF9tOnChGQCrhjn6oJXxmZxeU91hgMBfI48Cm+"
-      "iswgg8AAACFeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVhdHVyZ"
-      "SI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmcyIiwgImV4cGlyeSI6I"
-      "DIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
+      "A7BpVOcOsvw3FiZnc4wIJ9pfGSrhUqMyV8GmGkZrm6emdOW5hBe9YN8XKoFa+"
+      "YQkVUxdNR22quD3oCJvuIX2cAoAAACFeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6N"
+      "DQ0NDUiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pb"
+      "mczIiwgImV4cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
   SetOriginTrialToken(kValidToken);
 
   // Navigate to "a.com" and load a script from a third-party. In that script,
@@ -1493,7 +1487,6 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
 
   void TearDownOnMainThread() override {
     web_contents()->SetDelegate(nullptr);
-    web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
     RenderFrameHostImplBrowserTest::TearDownOnMainThread();
   }
 
@@ -3496,7 +3489,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_FALSE(dialog_manager.proceed());
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -3543,7 +3535,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   dialog_manager.Run(true, std::u16string());
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

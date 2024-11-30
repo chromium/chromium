@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 #include "chrome/browser/media/cast_remoting_connector.h"
+#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
@@ -131,17 +132,12 @@ MediaRouterDesktop::~MediaRouterDesktop() {
 }
 
 void MediaRouterDesktop::Initialize() {
-  DCHECK(!internal_routes_observer_);
   media_sink_service_ = ShouldInitializeMediaRouteProviders()
                             ? DualMediaSinkService::GetInstance()
                             : nullptr;
 
   desktop_picker_ = std::make_unique<DesktopMediaPickerController>();
 
-  // Because observer calls virtual methods on MediaRouter, it must be created
-  // outside of the constructor.
-  internal_routes_observer_ =
-      std::make_unique<InternalMediaRoutesObserver>(this);
   if (media_sink_service_) {
     media_sink_service_->AddLogger(GetLogger());
     media_sink_service_->SetDiscoveryPermissionRejectedCallback(
@@ -331,7 +327,7 @@ void MediaRouterDesktop::OnUserGesture() {
 }
 
 std::vector<MediaRoute> MediaRouterDesktop::GetCurrentRoutes() const {
-  return internal_routes_observer_->current_routes();
+  return current_routes_;
 }
 
 std::unique_ptr<media::FlingingController>
@@ -586,10 +582,10 @@ void MediaRouterDesktop::OnRoutesUpdated(
   std::vector<MediaRoute> removed_routes =
       GetRouteSetDifference(current_routes, routes);
 
-  // Update the internal_routes_observer_, and SetRoutesForProvider before
+  // Update the `current_routes_` and SetRoutesForProvider before
   // AddMirroringMediaControllerHost, since the latter relies on these to be up
   // to date.
-  internal_routes_observer_->OnRoutesUpdated(routes);
+  current_routes_ = routes;
   routes_query_.SetRoutesForProvider(provider_id, routes);
 
   for (const auto& route : added_routes) {
@@ -659,12 +655,6 @@ void MediaRouterDesktop::GetDebugger(
 
 void MediaRouterDesktop::GetLogsAsString(GetLogsAsStringCallback callback) {
   std::move(callback).Run(logger_.GetLogsAsJson());
-}
-
-void MediaRouterDesktop::Shutdown() {
-  // The observer calls virtual methods on MediaRouter; it must be destroyed
-  // outside of the dtor
-  internal_routes_observer_.reset();
 }
 
 void MediaRouterDesktop::OnTerminateRouteResult(
@@ -784,7 +774,7 @@ void MediaRouterDesktop::InitializeCastMediaRouteProvider() {
           new CastMediaRouteProvider(
               cast_provider_remote.InitWithNewPipeAndPassReceiver(),
               std::move(media_router_remote),
-              media_sink_service_->GetCastMediaSinkServiceBase(),
+              media_sink_service_->GetCastMediaSinkServiceImpl(),
               media_sink_service_->cast_app_discovery_service(),
               GetCastMessageHandler(), GetHashToken(), task_runner),
           base::OnTaskRunnerDeleter(task_runner));
@@ -959,9 +949,9 @@ const MediaSink* MediaRouterDesktop::GetSinkById(
 
 const MediaRoute* MediaRouterDesktop::GetRoute(
     const MediaRoute::Id& route_id) const {
-  const auto& routes = internal_routes_observer_->current_routes();
-  auto it = base::ranges::find(routes, route_id, &MediaRoute::media_route_id);
-  return it == routes.end() ? nullptr : &*it;
+  auto it = base::ranges::find(current_routes_, route_id,
+                               &MediaRoute::media_route_id);
+  return it == current_routes_.end() ? nullptr : &*it;
 }
 
 void MediaRouterDesktop::NotifyNewObserversOfExistingRoutes() {
@@ -1011,7 +1001,7 @@ void MediaRouterDesktop::RecordPresentationRequestUrlBySink(
 }
 
 bool MediaRouterDesktop::HasJoinableRoute() const {
-  return !(internal_routes_observer_->current_routes().empty());
+  return !(current_routes_.empty());
 }
 
 bool MediaRouterDesktop::ShouldInitializeMediaRouteProviders() const {
@@ -1120,8 +1110,6 @@ void MediaRouterDesktop::MediaRoutesQuery::AddObserver(
     MediaRoutesObserver* observer) {
   new_observers_.push_back(observer);
   observers_.AddObserver(observer);
-  observer->OnRoutesUpdated(
-      cached_route_list_.value_or(std::vector<MediaRoute>()));
 }
 
 void MediaRouterDesktop::MediaRoutesQuery::RemoveObserver(
@@ -1155,23 +1143,6 @@ void MediaRouterDesktop::MediaRoutesQuery::
     observer->OnRoutesUpdated(
         cached_route_list().value_or(std::vector<MediaRoute>{}));
   }
-}
-
-MediaRouterDesktop::InternalMediaRoutesObserver::InternalMediaRoutesObserver(
-    media_router::MediaRouter* router)
-    : MediaRoutesObserver(router) {}
-
-MediaRouterDesktop::InternalMediaRoutesObserver::
-    ~InternalMediaRoutesObserver() = default;
-
-void MediaRouterDesktop::InternalMediaRoutesObserver::OnRoutesUpdated(
-    const std::vector<MediaRoute>& routes) {
-  current_routes_ = routes;
-}
-
-const std::vector<MediaRoute>&
-MediaRouterDesktop::InternalMediaRoutesObserver::current_routes() const {
-  return current_routes_;
 }
 
 }  // namespace media_router

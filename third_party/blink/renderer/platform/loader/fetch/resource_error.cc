@@ -245,6 +245,8 @@ BlockedByResponseReasonToResourceRequestBlockedReason(
           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip;
     case network::mojom::BlockedByResponseReason::kCorpNotSameSite:
       return blink::ResourceRequestBlockedReason::kCorpNotSameSite;
+    case network::mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch:
+      return blink::ResourceRequestBlockedReason::kSRIMessageSignatureMismatch;
   }
   NOTREACHED();
 }
@@ -334,6 +336,8 @@ String DescriptionForBlockedByClientOrResponse(
     case ResourceRequestBlockedReason::kConversionRequest:
       detail = "ConversionRequest";
       break;
+    case ResourceRequestBlockedReason::kSRIMessageSignatureMismatch:
+      detail = "SRIMessageSignatureMismatch";
   }
   return WebString::FromASCII(net::ErrorToString(error) + "." + detail);
 }

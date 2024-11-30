@@ -236,14 +236,6 @@ class ProfilePicker {
   // Returns the path of the default profile used for rendering the picker.
   static base::FilePath GetPickerProfilePath();
 
-  // Shows a dialog where the user can auth the profile or see the
-  // auth error message. If a dialog is already shown, this destroys the current
-  // dialog and creates a new one.
-  static void ShowDialog(Profile* profile, const GURL& url);
-
-  // Hides the dialog if it is showing.
-  static void HideDialog();
-
   // Getter of the target page  url. If not empty and is valid, it opens on
   // profile selection instead of the new tab page.
   static GURL GetOnSelectProfileTargetUrl();
@@ -286,30 +278,6 @@ class ProfilePicker {
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
   // MacOS when there are no windows, or from Windows tray icon.
   static StartupProfileModeReason GetStartupModeReason();
-
-  // Show the dialog and display local sign in error message without browser.
-  static void ShowDialogAndDisplayErrorMessage(Profile* profile);
-};
-
-// Dialog that will be displayed when a locked profile is selected in the
-// ProfilePicker when force-signin is enabled.
-class ProfilePickerForceSigninDialog {
- public:
-  // Dimensions of the reauth dialog displaying the password-separated signin
-  // flow.
-  static constexpr int kDialogHeight = 512;
-  static constexpr int kDialogWidth = 448;
-
-  // Shows a dialog where the user reauthenticates their primary account that
-  // has invalid credentials, when force signin is enabled.
-  static void ShowReauthDialog(Profile* profile, const std::string& email);
-
-  // Shows a dialog where the user logs into their profile for the first time
-  // via the profile picker, when force signin is enabled.
-  static void ShowForceSigninDialog(Profile* profile);
-
-  // Display local sign in error message without browser.
-  static void DisplayErrorMessage();
 };
 
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_

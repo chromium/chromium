@@ -75,7 +75,7 @@
       paymentsClient->GetCardUnmaskPromptModel();
   _cvcInputViewBridge = std::make_unique<autofill::CardUnmaskPromptViewBridge>(
       cvcInputModelController, _navigationController,
-      client->GetPersonalDataManager(), browserCoordinatorCommandsHandler);
+      &client->GetPersonalDataManager(), browserCoordinatorCommandsHandler);
 
   __weak __typeof__(self) weakSelf = self;
   cvcInputModelController->ShowPrompt(

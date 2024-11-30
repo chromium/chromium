@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_AVAILABILITY_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
@@ -31,6 +32,11 @@ class MODULES_EXPORT PresentationAvailability final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static constexpr char kNotSupportedErrorInfo[] =
+      "Requesting PresentationAvailability isn't supported at the moment. It "
+      "can be due to a permanent or temporary system limitation. It is "
+      "recommended to try to blindly start a presentation in that case.";
+
   static PresentationAvailability* Take(ExecutionContext*,
                                         const WTF::Vector<KURL>&,
                                         bool);
@@ -56,7 +62,11 @@ class MODULES_EXPORT PresentationAvailability final
   // PageVisibilityObserver implementation.
   void PageVisibilityChanged() override;
 
-  bool value() const;
+  bool value() const { return value_; }
+
+  void AddResolver(ScriptPromiseResolver<PresentationAvailability>* resolver);
+  void RejectPendingPromises();
+  void ResolvePendingPromises();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
 
@@ -84,6 +94,8 @@ class MODULES_EXPORT PresentationAvailability final
   Vector<KURL> urls_;
   bool value_;
   State state_;
+  HeapVector<Member<ScriptPromiseResolver<PresentationAvailability>>>
+      availability_resolvers_;
 };
 
 }  // namespace blink

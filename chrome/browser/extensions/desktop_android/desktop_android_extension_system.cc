@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -29,10 +30,13 @@
 #include "extensions/browser/service_worker_manager.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 
 using content::BrowserContext;
 namespace extensions {
+
+using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
 
 namespace {
 
@@ -97,12 +101,22 @@ class DesktopAndroidExtensionRegistrarDelegate
       scoped_refptr<const Extension> extension) override {}
   void PostDeactivateExtension(
       scoped_refptr<const Extension> extension) override {}
+
   void LoadExtensionForReload(
       const ExtensionId& extension_id,
       const base::FilePath& path,
       ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override {
-    NOTIMPLEMENTED();
+    CHECK(!path.empty()) << "ExtensionRegistrar should never ask to load an "
+                            "unknown extension with no path";
+    auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
+        ExtensionSystem::Get(browser_context_));
+    DCHECK(android_system);
+    scoped_refptr<const Extension> extension =
+        android_system->LoadExtensionFromDirectory(path);
+    DCHECK(extension);
+    DCHECK_EQ(extension->id(), extension_id);
   }
+
   bool CanEnableExtension(const Extension* extension) override { return true; }
   bool CanDisableExtension(const Extension* extension) override { return true; }
   bool ShouldBlockExtension(const Extension* extension) override {
@@ -153,6 +167,39 @@ bool DesktopAndroidExtensionSystem::AddExtension(
 
   registrar_->AddExtension(std::move(extension));
   return true;
+}
+
+void DesktopAndroidExtensionSystem::DisableExtension(
+    const std::string& extension_id,
+    int disable_reasons) {
+  registrar_->DisableExtension(extension_id, disable_reasons);
+}
+
+void DesktopAndroidExtensionSystem::ReloadExtension(
+    const std::string& extension_id) {
+  registrar_->ReloadExtension(extension_id, LoadErrorBehavior::kNoisy);
+}
+
+const Extension* DesktopAndroidExtensionSystem::LoadExtensionFromDirectory(
+    const base::FilePath& file_path) {
+  base::ScopedAllowBlocking allow_blocking;
+
+  std::string load_error;
+  scoped_refptr<Extension> extension = file_util::LoadExtension(
+      file_path, mojom::ManifestLocation::kUnpacked, 0, &load_error);
+  if (!extension) {
+    return nullptr;
+  }
+
+  std::string error;
+  if (!AddExtension(extension, error)) {
+    return nullptr;
+  }
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+  CHECK(registry->enabled_extensions().Contains(extension->id()));
+
+  return extension.get();
 }
 
 void DesktopAndroidExtensionSystem::InitForRegularProfile(

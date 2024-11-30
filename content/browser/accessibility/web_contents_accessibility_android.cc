@@ -586,6 +586,11 @@ void WebContentsAccessibilityAndroid::HandlePaneOpened(int32_t unique_id) {
 
 void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
     const std::u16string& text) {
+  CHECK(!base::FeatureList::IsEnabled(
+            features::kAccessibilityDeprecateTypeAnnounce), )
+      << "No views should be forcing an announcement outside approved "
+         "instances.";
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {
@@ -984,7 +989,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->CanScrollLeft(), node->CanScrollRight(), node->IsClickable(),
       node->IsTextField(), node->IsEnabled(), node->IsFocusable(),
       node->IsFocused(), node->IsCollapsed(), node->IsExpanded(),
-      node->HasNonEmptyValue(), !node->GetTextContentUTF16().empty(),
+      node->HasNonEmptyValue(), !!node->GetTextContentLengthUTF16(),
       node->IsSeekControl(), node->IsFormDescendant());
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(

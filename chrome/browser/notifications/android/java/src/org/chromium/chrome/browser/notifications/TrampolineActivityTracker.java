@@ -15,7 +15,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,41 +31,6 @@ import java.util.Map;
  * be set to the latest remaining job that is expected to finish.
  */
 public class TrampolineActivityTracker {
-    // Grace period to keep the activity alive.
-    private static final String TIMEOUT_PRIOR_NATIVE_INIT_PARAM =
-            "timeout_in_millis_prior_native_init";
-    private static final String IMMEDIATE_JOB_DURATION_MILLIS = "minimum_job_duration_millis";
-    private static final String NORMAL_JOB_DURATION_MILLIS = "normal_job_duration_millis";
-    private static final String LONG_JOB_DURATION_MILLIS = "long_job_duration_millis";
-    private static final int TIMEOUT_PRIOR_NATIVE_INIT_IN_MILLISECONDS = 5 * 1000;
-    private static final int IMMEDIATE_JOB_DURATION_IN_MILLISECONDS = 10;
-    private static final int NORMAL_JOB_DURATION_IN_MILLISECONDS = 1 * 1000;
-    private static final int LONG_JOB_DURATION_IN_MILLISECONDS = 8 * 1000;
-    static final int INVALID_JOB_HANDLE = -1;
-
-    public static final IntCachedFieldTrialParameter TIMEOUT_PRIOR_NATIVE_INIT_VALUE =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.NOTIFICATION_TRAMPOLINE,
-                    TIMEOUT_PRIOR_NATIVE_INIT_PARAM,
-                    TIMEOUT_PRIOR_NATIVE_INIT_IN_MILLISECONDS);
-
-    public static final IntCachedFieldTrialParameter IMMEDIATE_JOB_DURATION_VALUE =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.NOTIFICATION_TRAMPOLINE,
-                    IMMEDIATE_JOB_DURATION_MILLIS,
-                    IMMEDIATE_JOB_DURATION_IN_MILLISECONDS);
-
-    public static final IntCachedFieldTrialParameter NORMAL_JOB_DURATION_VALUE =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.NOTIFICATION_TRAMPOLINE,
-                    NORMAL_JOB_DURATION_MILLIS,
-                    NORMAL_JOB_DURATION_IN_MILLISECONDS);
-
-    public static final IntCachedFieldTrialParameter LONG_JOB_DURATION_VALUE =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.NOTIFICATION_TRAMPOLINE,
-                    LONG_JOB_DURATION_MILLIS,
-                    LONG_JOB_DURATION_IN_MILLISECONDS);
 
     @SuppressLint("StaticFieldLeak")
     private static TrampolineActivityTracker sInstance;
@@ -148,7 +112,8 @@ public class TrampolineActivityTracker {
         long delayToFinish =
                 mNativeInitialized
                         ? getJobDuration(JobDuration.NORMAL)
-                        : TIMEOUT_PRIOR_NATIVE_INIT_VALUE.getValue();
+                        : ChromeFeatureList.sNotificationTrampolineTimeoutPriorNativeInitMs
+                                .getValue();
         long estimatedFinishTime = TimeUtils.elapsedRealtimeMillis() + delayToFinish;
         // Extend the timeout if necessary.
         if (estimatedFinishTime > mActivityFinishTimeInMillis) {
@@ -264,11 +229,11 @@ public class TrampolineActivityTracker {
     private int getJobDuration(@JobDuration int jobDuration) {
         switch (jobDuration) {
             case JobDuration.IMMEDIATE:
-                return IMMEDIATE_JOB_DURATION_VALUE.getValue();
+                return ChromeFeatureList.sNotificationTrampolineImmediateJobDurationMs.getValue();
             case JobDuration.NORMAL:
-                return NORMAL_JOB_DURATION_VALUE.getValue();
+                return ChromeFeatureList.sNotificationTrampolineNormalJobDurationMs.getValue();
             case JobDuration.LONG:
-                return LONG_JOB_DURATION_VALUE.getValue();
+                return ChromeFeatureList.sNotificationTrampolineLongJobDurationMs.getValue();
         }
         return 0;
     }

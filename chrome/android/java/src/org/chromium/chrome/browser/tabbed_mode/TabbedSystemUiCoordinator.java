@@ -15,7 +15,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -24,7 +23,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.ui.InsetObserver;
 
 import java.util.Optional;
@@ -38,14 +37,6 @@ import java.util.Optional;
  */
 public class TabbedSystemUiCoordinator {
     private @Nullable TabbedNavigationBarColorController mNavigationBarColorController;
-
-    private static final String NAV_BAR_COLOR_ANIMATION_DISABLED_PARAM = "color_animation_disabled";
-    public static final BooleanCachedFieldTrialParameter
-            NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM =
-                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                            ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND,
-                            NAV_BAR_COLOR_ANIMATION_DISABLED_PARAM,
-                            true);
 
     /**
      * Construct a new {@link TabbedSystemUiCoordinator}.
@@ -71,6 +62,7 @@ public class TabbedSystemUiCoordinator {
      *     AccessorySheetVisualStateProvider} to watch for visual changes to the keyboard accessory
      *     sheet.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
+     * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
     public TabbedSystemUiCoordinator(
             Window window,
@@ -87,7 +79,8 @@ public class TabbedSystemUiCoordinator {
             @NonNull
                     ObservableSupplier<AccessorySheetVisualStateProvider>
                             accessorySheetVisualStateSupplier,
-            InsetObserver insetObserver) {
+            InsetObserver insetObserver,
+            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
@@ -104,7 +97,8 @@ public class TabbedSystemUiCoordinator {
                             bottomSheetController,
                             omniboxSuggestionsVisualState,
                             accessorySheetVisualStateSupplier,
-                            insetObserver);
+                            insetObserver,
+                            edgeToEdgeManager);
         }
     }
 

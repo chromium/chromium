@@ -41,7 +41,7 @@ std::optional<std::pair<unsigned, int>> DetermineCounterTypeAndValue(
   const ComputedStyle& style = layout_object.StyleRef();
   switch (style.StyleType()) {
     case kPseudoIdNone:
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
     case kPseudoIdSelectArrow:

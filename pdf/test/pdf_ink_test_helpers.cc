@@ -4,7 +4,7 @@
 
 #include "pdf/test/pdf_ink_test_helpers.h"
 
-#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/notreached.h"
@@ -27,7 +27,7 @@ std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
 }
 
 base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
-    const std::string& type,
+    std::string_view type,
     double size,
     const TestAnnotationBrushMessageParams* params) {
   base::Value::Dict message;

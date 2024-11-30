@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 
 #include "base/test/bind.h"
-#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
@@ -32,9 +31,7 @@
 namespace blink {
 
 namespace {
-double ScrollAnimationDuration() {
-  return ::features::IsImpulseScrollAnimationEnabled() ? 1.5 : 0.5;
-}
+constexpr double kScrollAnimationDuration = 0.5;
 }  // namespace
 
 class FractionalScrollSimTest : public SimTest, public PaintTestConfigurations {
@@ -244,7 +241,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -288,7 +285,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -332,7 +329,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -382,7 +379,7 @@ TEST_P(ScrollAnimatorSimTest, TestDivUserScrollCallBack) {
 
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 

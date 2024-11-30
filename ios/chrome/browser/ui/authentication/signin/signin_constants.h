@@ -9,6 +9,8 @@
 
 #import "base/time/time.h"
 
+@protocol SystemIdentity;
+
 // Sign-in result returned Sign-in result.
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // Sign-in has been canceled by the user or by another reason.
@@ -22,7 +24,18 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // Sign-in did not complete because it is disabled. This can happen if
   // enterprise policies are updated after sign-in is started.
   SigninCoordinatorResultDisabled,
+  // Sign-in cannot start as the UI is not available. In this case, no
+  // SigninCoordinator object is created.
+  // Only triggered by `SceneController` when processing a ShowSigninCommand
+  // and when the UI is not ready to present any signin coordinator.
+  SigninCoordinatorUINotAvailable,
 };
+
+// Called when the sign-in dialog is closed.
+// `result` is the sign-in result state.
+// `signinCompletionIdentity` the identity that was used if any.
+using SigninCoordinatorCompletionCallback =
+    void (^)(SigninCoordinatorResult result, id<SystemIdentity> identity);
 
 // User's signed-in state as defined by AuthenticationService.
 // TODO(crbug.com/40066949): Revisit after phase 3 migration of syncing users.
@@ -71,15 +84,6 @@ extern NSString* const kTangibleSyncViewAccessibilityIdentifier;
 // Name of the accessibility identifier for the "add account" button in the
 // consistency account chooser.
 extern NSString* const kConsistencyAccountChooserAddAccountIdentifier;
-
-// Action that is required to do to complete the sign-in, or instead of sign-in.
-// This action is in charge of the SigninCoordinator's owner.
-typedef NS_ENUM(NSUInteger, SigninCompletionAction) {
-  // No action needed.
-  SigninCompletionActionNone,
-  // The user tapped the manager, learn more, link and sign-in was cancelled.
-  SigninCompletionActionShowManagedLearnMore,
-};
 
 // Intent for TrustedVaultReauthenticationCoordinator to display either
 // the reauthentication or degraded recoverability dialog.

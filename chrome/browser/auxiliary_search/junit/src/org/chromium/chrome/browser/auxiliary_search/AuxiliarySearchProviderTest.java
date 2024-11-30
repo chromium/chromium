@@ -325,9 +325,12 @@ public class AuxiliarySearchProviderTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
     public void testOnNonSensitiveTabsAvailable() {
         int zeroStateFaviconNumber = 10;
-        AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER.setForTesting(zeroStateFaviconNumber);
+        ChromeFeatureList.sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber.setForTesting(
+                zeroStateFaviconNumber);
         assertEquals(
-                zeroStateFaviconNumber, AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER.getValue());
+                zeroStateFaviconNumber,
+                ChromeFeatureList.sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber
+                        .getValue());
 
         mAuxiliarySearchProvider =
                 new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);

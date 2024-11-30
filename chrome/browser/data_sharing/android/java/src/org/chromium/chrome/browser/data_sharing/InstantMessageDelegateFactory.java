@@ -35,7 +35,12 @@ public final class InstantMessageDelegateFactory {
             sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
 
-        return sProfileMap.getForProfile(profile, InstantMessageDelegateImpl::new);
+        return sProfileMap.getForProfile(profile, InstantMessageDelegateFactory::buildForProfile);
+    }
+
+    private static InstantMessageDelegateImpl buildForProfile(Profile profile) {
+        return new InstantMessageDelegateImpl(
+                profile, DataSharingServiceFactory.getForProfile(profile));
     }
 
     /**

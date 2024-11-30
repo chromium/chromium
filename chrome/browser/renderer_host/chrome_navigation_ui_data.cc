@@ -42,7 +42,7 @@ ChromeNavigationUIData::ChromeNavigationUIData(
   }
 }
 
-ChromeNavigationUIData::~ChromeNavigationUIData() {}
+ChromeNavigationUIData::~ChromeNavigationUIData() = default;
 
 // static
 std::unique_ptr<ChromeNavigationUIData>

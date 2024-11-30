@@ -1410,7 +1410,7 @@ void AccessibilityController::RegisterProfilePrefs(
       static_cast<int>(kDefaultAutoclickMenuPosition),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  if (::features::IsAccessibilityFilterKeysEnabled()) {
+  if (::features::IsAccessibilityBounceKeysEnabled()) {
     registry->RegisterIntegerPref(
         prefs::kAccessibilityBounceKeysDelayMs,
         kDefaultAccessibilityBounceKeysDelay.InMilliseconds(),
@@ -1438,7 +1438,7 @@ void AccessibilityController::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDoublePref(prefs::kAccessibilityScreenMagnifierScale,
                                std::numeric_limits<double>::min());
-  if (::features::IsAccessibilityFilterKeysEnabled()) {
+  if (::features::IsAccessibilitySlowKeysEnabled()) {
     registry->RegisterIntegerPref(
         prefs::kAccessibilitySlowKeysDelayMs,
         kDefaultAccessibilitySlowKeysDelay.InMilliseconds(),
@@ -2605,12 +2605,14 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityController::UpdateAutoclickMenuPositionFromPref,
           base::Unretained(this)));
-  if (::features::IsAccessibilityFilterKeysEnabled()) {
+  if (::features::IsAccessibilityBounceKeysEnabled()) {
     pref_change_registrar_->Add(
         prefs::kAccessibilityBounceKeysDelayMs,
         base::BindRepeating(
             &AccessibilityController::UpdateBounceKeysDelayFromPref,
             base::Unretained(this)));
+  }
+  if (::features::IsAccessibilitySlowKeysEnabled()) {
     pref_change_registrar_->Add(
         prefs::kAccessibilitySlowKeysDelayMs,
         base::BindRepeating(
@@ -2743,8 +2745,10 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateAutoclickStabilizePositionFromPref();
   UpdateAutoclickMovementThresholdFromPref();
   UpdateAutoclickMenuPositionFromPref();
-  if (::features::IsAccessibilityFilterKeysEnabled()) {
+  if (::features::IsAccessibilityBounceKeysEnabled()) {
     UpdateBounceKeysDelayFromPref();
+  }
+  if (::features::IsAccessibilitySlowKeysEnabled()) {
     UpdateSlowKeysDelayFromPref();
   }
   if (::features::IsAccessibilityMouseKeysEnabled()) {

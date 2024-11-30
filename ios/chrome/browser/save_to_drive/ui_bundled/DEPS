@@ -1,0 +1,6 @@
+include_rules = [
+  "+ios/chrome/browser/account_picker/ui_bundled",
+  "+ios/chrome/browser/download/model",
+  "+ios/chrome/browser/drive/model",
+  "+ios/chrome/browser/signin/model",
+]

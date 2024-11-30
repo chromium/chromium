@@ -184,7 +184,7 @@ std::optional<size_t> FindFieldMeetingCondition(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     size_t start_index,
     const FieldCondition& condition) {
-  int direction = [&condition]() {
+  int direction = [&condition] {
     switch (condition.location) {
       case FieldLocation::kPredecessor:
       case FieldLocation::kLastClassifiedPredecessor:
@@ -489,6 +489,33 @@ void ApplyRationalizationEngineRules(
                 SetTypeAction{
                     .target = FieldLocation::kTriggerField,
                     .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix ADDRESS_HOME_HOUSE_NUMBER_AND_APT for NL")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("NL")})
+                    .SetFeature(&features::kAutofillUseNLAddressModel)
+                    .Build())
+            .SetTriggerField(
+                FieldCondition{.possible_overall_types =
+                                   FieldTypeSet{ADDRESS_HOME_HOUSE_NUMBER}})
+            .SetFieldsWithConditionsDoNotExist({
+                FieldCondition{
+                    .location = FieldLocation::kNextClassifiedSuccessor,
+                    .possible_overall_types =
+                        FieldTypeSet{ADDRESS_HOME_APT_NUM}},
+                FieldCondition{
+                    .location = FieldLocation::kLastClassifiedPredecessor,
+                    .possible_overall_types =
+                        FieldTypeSet{ADDRESS_HOME_APT_NUM}},
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
                 },
             })
             .Build(),

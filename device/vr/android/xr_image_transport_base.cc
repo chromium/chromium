@@ -25,23 +25,17 @@
 
 namespace device {
 
-// static
-bool XrImageTransportBase::disable_shared_buffer_ = false;
-
 bool XrImageTransportBase::UseSharedBuffer() {
   // When available (Android O and up), use AHardwareBuffer-based shared
   // images for frame transport, unless disabled due to bugs or by the user.
   static bool support_shared_buffer =
       base::FeatureList::IsEnabled(features::kWebXrSharedBuffers) &&
       base::AndroidHardwareBufferCompat::IsSupportAvailable();
-  return support_shared_buffer && !XrImageTransportBase::disable_shared_buffer_;
+  return support_shared_buffer;
 }
 
 GLenum XrImageTransportBase::SharedBufferTextureTarget() {
-  return base::FeatureList::IsEnabled(
-             features::kUseTargetTexture2DForSharedBuffers)
-             ? GL_TEXTURE_2D
-             : GL_TEXTURE_EXTERNAL_OES;
+  return GL_TEXTURE_2D;
 }
 
 XrImageTransportBase::XrImageTransportBase(
@@ -116,42 +110,7 @@ void XrImageTransportBase::OnMailboxBridgeReady(XrInitStatusCallback callback) {
 
   DCHECK(mailbox_bridge_->IsConnected());
 
-  bool success = true;
-
-  // DISABLE_RENDERING_TO_RGB_EXTERNAL_TEXTURE is needed because some drivers
-  // don't allow rendering to TEXTURE_EXTERNAL, it's not applicable if we use
-  // TEXTURE_2D.
-  if (!base::FeatureList::IsEnabled(
-          features::kUseTargetTexture2DForSharedBuffers) &&
-      UseSharedBuffer()) {
-    bool shared_buffer_not_usable = mailbox_bridge_->IsGpuWorkaroundEnabled(
-        gpu::DISABLE_RENDERING_TO_RGB_EXTERNAL_TEXTURE);
-    DVLOG(1) << __func__
-             << ": shared_buffer_not_usable=" << shared_buffer_not_usable;
-    if (shared_buffer_not_usable) {
-      // This is a bug workaround for shared buffer mode being unusable due to
-      // device GLES driver bugs, see https://crbug.com/1355946 for an example.
-      // We want to retry initialization with UseSharedBuffers forced to false.
-      //
-      // It would be nice if we could avoid this retry and just do the right
-      // thing on the first attempt, but unfortunately that's difficult due to
-      // the initialization order. We only know that the GPU bug workaround is
-      // necessary after the GPU process connection is established (this is when
-      // OnMailboxBridgeReady gets called). However, in order to establish the
-      // GPU process connection, we already have to decide if we want to use
-      // shared buffers or not - when not using shared buffers, we need to set
-      // up a Surface/SurfaceTexture pair first, and doing that requires a local
-      // GL context. However, setting up the local GL context wants to know if
-      // we'll be using compositor mode which requires knowing if we're using
-      // shared buffer mode. This is a circular dependency. Instead, just fail
-      // the first initialization attempt, force UseSharedBuffers to false,
-      // and try again a single time.
-      XrImageTransportBase::disable_shared_buffer_ = true;
-      DCHECK(!UseSharedBuffer());
-      success = false;
-    }
-  }
-  std::move(callback).Run(success);
+  std::move(callback).Run(true);
 }
 
 void XrImageTransportBase::SetFrameAvailableCallback(

@@ -7,7 +7,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 
 namespace network {
@@ -15,8 +15,8 @@ namespace network {
 // static
 
 uint32_t SharedDictionaryDataPipeWriter::GetDataPipeBufferSize() {
-  return network::features::GetDataPipeDefaultAllocationSize(
-      features::DataPipeAllocationSize::kLargerSizeIfPossible);
+  return GetDataPipeDefaultAllocationSize(
+      DataPipeAllocationSize::kLargerSizeIfPossible);
 }
 
 // static

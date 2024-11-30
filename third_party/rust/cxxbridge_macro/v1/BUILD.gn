@@ -12,52 +12,52 @@ cargo_crate("lib") {
   crate_name = "cxxbridge_macro"
   epoch = "1"
   crate_type = "proc-macro"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/clang.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/derive.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/expand.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/generics.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/load.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/atom.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/attrs.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/cfg.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/check.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/derive.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/discriminant.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/doc.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/file.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/ident.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/improper.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/instantiate.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/mangle.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/map.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/names.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/namespace.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/parse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/pod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/qualified.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/report.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/resolve.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/set.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/symbol.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/tokens.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/toposort.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/trivial.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/types.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/syntax/visit.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/tokens.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.129/src/type_id.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/clang.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/derive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/expand.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/generics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/load.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/atom.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/attrs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/cfg.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/check.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/derive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/discriminant.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/doc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/ident.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/improper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/instantiate.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/mangle.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/names.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/namespace.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/pod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/qualified.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/report.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/resolve.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/set.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/symbol.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/tokens.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/toposort.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/trivial.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/syntax/visit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/tokens.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.130/src/type_id.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.129"
+  cargo_pkg_version = "1.0.130"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxxbridge-macro"
   cargo_pkg_description = "Implementation detail of the `cxx` crate."
@@ -70,6 +70,7 @@ cargo_crate("lib") {
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/rustversion/v1:lib",
     "//third_party/rust/syn/v2:lib",
   ]
 

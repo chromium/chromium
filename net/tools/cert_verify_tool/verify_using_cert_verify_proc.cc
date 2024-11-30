@@ -111,8 +111,8 @@ bool VerifyUsingCertVerifyProc(
   std::vector<net::ScopedTestRoot> scoped_test_roots;
   for (const auto& cert_input_with_trust : der_certs_with_trust_settings) {
     scoped_refptr<net::X509Certificate> x509_root =
-        net::X509Certificate::CreateFromBytes(base::as_bytes(
-            base::make_span(cert_input_with_trust.cert_input.der_cert)));
+        net::X509Certificate::CreateFromBytes(
+            base::as_byte_span(cert_input_with_trust.cert_input.der_cert));
 
     if (!x509_root) {
       PrintCertError("ERROR: X509Certificate::CreateFromBytes failed:",

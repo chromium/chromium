@@ -11,9 +11,11 @@
 #include <utility>
 #include <variant>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
@@ -26,6 +28,8 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,13 +47,16 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
@@ -127,6 +134,41 @@ struct AppActionInstall {
 using AppAction = std::variant<AppActionRemoveInstallSource, AppActionInstall>;
 using AppActions = base::flat_map<web_package::SignedWebBundleId, AppAction>;
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool g_first_policy_processing_delay_recorded = false;
+
+// Records the elapsed time between the first user sign-in and the beginning
+// of the actual processing of the IsolatedWebAppInstallForceList policy with
+// a lock. Called once per the lifetime of the browser process (we don't need
+// to track this more often).
+void MaybeRecordFirstPolicyProcessingDelay(Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
+  if (g_first_policy_processing_delay_recorded ||
+      !prefs->HasPrefPath(ash::prefs::kAshLoginSessionStartedTime)) {
+    // `ash::prefs::kAshLoginSessionStartedTime` is not defined in tests or
+    // linux-chromeos builds.
+    return;
+  }
+  g_first_policy_processing_delay_recorded = true;
+
+  base::UmaHistogramCustomTimes(
+      "WebApp.Isolated.FirstPolicyProcessingDelay",
+      base::Time::Now() -
+          prefs->GetTime(ash::prefs::kAshLoginSessionStartedTime),
+      /*min=*/base::Milliseconds(100),
+      /*max=*/base::Seconds(20), /*buckets=*/50);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+base::RepeatingCallback<void(web_package::SignedWebBundleId,
+                             IwaInstaller::Result)>&
+GetOnInstallTaskCompletedCallbackForTesting() {
+  static base::NoDestructor<base::RepeatingCallback<void(
+      web_package::SignedWebBundleId, IwaInstaller::Result)>>
+      kCallback;
+  return *kCallback;
+}
+
 }  // namespace
 
 // static
@@ -137,6 +179,14 @@ void IsolatedWebAppPolicyManager::RegisterProfilePrefs(
       prefs::kIsolatedWebAppPendingInitializationCount, 0);
 }
 
+// static
+void IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
+    base::RepeatingCallback<void(web_package::SignedWebBundleId,
+                                 IwaInstaller::Result)> callback) {
+  CHECK_IS_TEST();
+  GetOnInstallTaskCompletedCallbackForTesting() = callback;
+}
+
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
     : profile_(profile),
       install_retry_backoff_entry_(&kInstallRetryBackoffPolicy) {}
@@ -144,7 +194,17 @@ IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
+  key_distribution_info_observation_.Observe(
+      IwaKeyDistributionInfoProvider::GetInstance());
+
   CHECK(on_started_callback_.is_null());
+  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
+    if (!on_started_callback.is_null()) {
+      std::move(on_started_callback).Run();
+    }
+    return;
+  }
+
   on_started_callback_ = std::move(on_started_callback);
 
   pref_change_registrar_.Init(profile_->GetPrefs());
@@ -176,14 +236,6 @@ void IsolatedWebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
                                               WebAppProvider& provider) {
   provider_ = &provider;
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-static_assert(
-    false,
-    "Make sure to update `WebAppInternalsHandler` to call "
-    "`IsolatedWebAppPolicyManager::GetDebugValue` on non-ChromeOS when "
-    "`IsolatedWebAppPolicyManager` is no longer ChromeOS-exclusive.");
-#endif
 
 base::Value IsolatedWebAppPolicyManager::GetDebugValue() const {
   return base::Value(
@@ -226,6 +278,7 @@ void IsolatedWebAppPolicyManager::ProcessPolicy(
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(
           features::kIsolatedWebAppManagedGuestSessionInstall)) {
@@ -234,6 +287,7 @@ void IsolatedWebAppPolicyManager::ProcessPolicy(
     OnPolicyProcessed();
     return;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   provider_->scheduler().ScheduleCallback<AllAppsLock>(
       "IsolatedWebAppPolicyManager::ProcessPolicy", AllAppsLockDescription(),
@@ -275,6 +329,10 @@ void IsolatedWebAppPolicyManager::SetPendingInitCount(int pending_count) {
 void IsolatedWebAppPolicyManager::DoProcessPolicy(
     AllAppsLock& lock,
     base::Value::Dict& debug_info) {
+#if BUILDFLAG(IS_CHROMEOS)
+  MaybeRecordFirstPolicyProcessingDelay(profile_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   CHECK(provider_);
   CHECK(install_tasks_.empty());
 
@@ -463,6 +521,11 @@ void IsolatedWebAppPolicyManager::OnInstallTaskCompleted(
   current_process_log_.EnsureDict("install_results")
       ->Set(base::ToString(web_bundle_id), install_result.ToDebugValue());
 
+  if (auto& testing_callback = GetOnInstallTaskCompletedCallbackForTesting()) {
+    CHECK_IS_TEST();
+    testing_callback.Run(web_bundle_id, install_result);
+  }
+
   callback.Run(install_result);
 }
 
@@ -529,6 +592,15 @@ void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
           base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
                          CleanupOrphanedIsolatedWebAppsCommandError>>(
           std::move(finished_closure)));
+}
+
+void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
+    const base::Version& version,
+    bool is_preloaded) {
+  if (is_preloaded) {
+    return;
+  }
+  ProcessPolicy(/*finished_closure=*/base::DoNothing());
 }
 
 IsolatedWebAppPolicyManager::ProcessLogs::ProcessLogs() = default;

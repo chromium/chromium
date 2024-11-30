@@ -7,7 +7,6 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 source_set("commerce") {
   sources = [
     "commerce_page_action_controller.h",
-    "commerce_prompt.h",
     "commerce_ui_tab_helper.h",
     "discounts_page_action_controller.h",
     "price_tracking_page_action_controller.h",
@@ -16,7 +15,6 @@ source_set("commerce") {
   ]
   public_deps = [
     "//base",
-    "//chrome/browser/cart:mojo_bindings",
     "//chrome/browser/commerce",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",

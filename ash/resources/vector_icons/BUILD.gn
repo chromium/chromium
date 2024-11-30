@@ -132,6 +132,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "discovery_chip.icon",
     "do_not_disturb_disabled.icon",
     "done.icon",
+    "drag_handle.icon",
     "drop_down_arrow.icon",
     "eche_arrow_back.icon",
     "eche_close.icon",

@@ -11,7 +11,6 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -151,19 +150,6 @@ void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
     self->drag_delegate_->OnDragDrop(timestamp);
     self->connection()->Flush();
   }
-
-  // There are buggy Exo versions, which send 'drop' event (even for
-  // unsuccessful drops) without a subsequent 'leave'. In order to mitigate
-  // potential leaks and/or UAFs, forcibly call corresponding delegate callback
-  // here, in Lacros. TODO(crbug.com/40819972): Remove once Exo bug is fixed.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Delegate might have been reset already if the drag was cancelled in
-  // response to the drop event.
-  if (self->drag_delegate_) {
-    self->drag_delegate_->OnDragLeave(timestamp);
-    self->ResetDragDelegateIfNotDragSource();
-  }
-#endif
 }
 
 void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {

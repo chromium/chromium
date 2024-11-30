@@ -13,13 +13,11 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
-#include "components/favicon/content/content_favicon_driver.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/utils.h"
-#include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
@@ -75,6 +73,11 @@ void SavedTabGroupWebContentsListener::OnTabDiscarded(
     content::WebContents* old_content,
     content::WebContents* new_content) {
   Observe(new_content);
+
+  tab_foregrounded_subscription_ =
+      tab_interface->RegisterDidEnterForeground(base::BindRepeating(
+          &SavedTabGroupWebContentsListener::OnTabEnteredForeground,
+          base::Unretained(this)));
 }
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
@@ -85,18 +88,34 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
       base::BindRepeating(&SavedTabGroupWebContentsListener::OnTabDiscarded,
                           base::Unretained(this)));
   Observe(local_tab->GetContents());
+
+  tab_foregrounded_subscription_ =
+      local_tab->RegisterDidEnterForeground(base::BindRepeating(
+          &SavedTabGroupWebContentsListener::OnTabEnteredForeground,
+          base::Unretained(this)));
 }
 
 SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
   TabGroupSyncTabState::Reset(contents());
 }
 
-void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
+void SavedTabGroupWebContentsListener::NavigateToUrl(
+    base::PassKey<LocalTabGroupListener>,
+    const GURL& url) {
+  NavigateToUrlInternal(url);
+}
+
+void SavedTabGroupWebContentsListener::NavigateToUrlForTest(const GURL& url) {
+  NavigateToUrlInternal(url);
+}
+
+void SavedTabGroupWebContentsListener::NavigateToUrlInternal(const GURL& url) {
   if (!url.is_valid()) {
     return;
   }
 
   std::optional<SavedTabGroup> group = saved_group();
+  CHECK(group);
   SavedTabGroupTab* saved_tab = group->GetTab(local_tab_id());
   CHECK(saved_tab);
 
@@ -111,6 +130,18 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
     return;
   }
 
+  // If deferring remote navigations is enabled and the tab is in the
+  // background, then dont actually perform the navigation, instead cache the
+  // URL for performing the navigation later.
+  if (!IsTabGroupsDeferringRemoteNavigations() ||
+      local_tab_->IsInForeground()) {
+    PerformNavigation(url);
+  } else {
+    cached_url_ = url;
+  }
+}
+
+void SavedTabGroupWebContentsListener::PerformNavigation(const GURL& url) {
   // Start loading the URL. Mark the navigation as sync initiated to avoid ping
   // pong issues.
   content::NavigationController::LoadURLParams params(url);
@@ -122,7 +153,7 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
 }
 
 LocalTabID SavedTabGroupWebContentsListener::local_tab_id() const {
-  return local_tab_->GetTabHandle();
+  return local_tab_->GetHandle().raw_value();
 }
 
 content::WebContents* SavedTabGroupWebContentsListener::contents() const {
@@ -131,15 +162,23 @@ content::WebContents* SavedTabGroupWebContentsListener::contents() const {
 
 void SavedTabGroupWebContentsListener::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  UpdateTabRedirectChain(navigation_handle);
-  std::optional<SavedTabGroup> group = saved_group();
-  if (group) {
-    TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
-        local_tab_id(),
-        group->collaboration_id() ? SavedTabGroupType::SHARED
-                                  : SavedTabGroupType::SYNCED,
-        navigation_handle, service_);
+  // Skip navigations that are not in tab groups.
+  if (!local_tab_->GetGroup()) {
+    return;
   }
+
+  std::optional<SavedTabGroup> group = saved_group();
+  if (!group) {
+    // This could be a tab in a group where auto-save isn't enabled.
+    return;
+  }
+
+  UpdateTabRedirectChain(navigation_handle);
+  TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
+      local_tab_id(),
+      group->collaboration_id() ? SavedTabGroupType::SHARED
+                                : SavedTabGroupType::SYNCED,
+      navigation_handle, service_);
 
   // If the navigation was the result of a sync update we don't want to update
   // the SavedTabGroupModel.
@@ -184,21 +223,25 @@ void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
   }
 
   std::optional<SavedTabGroup> group = saved_group();
+  CHECK(group);
+
   SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
   service_->UpdateTabProperties(group->local_group_id().value(), local_tab_id(),
                                 tab_builder);
 }
 
-const SavedTabGroup SavedTabGroupWebContentsListener::saved_group() {
-  std::vector<SavedTabGroup> all_groups = service_->GetAllGroups();
-  auto iter = base::ranges::find_if(
-      all_groups, [&](const SavedTabGroup& potential_group) {
-        return potential_group.ContainsTab(local_tab_id());
-      });
-  CHECK(iter != all_groups.end());
+std::optional<SavedTabGroup> SavedTabGroupWebContentsListener::saved_group() {
+  std::optional<tab_groups::TabGroupId> local_group_id = local_tab_->GetGroup();
+  return local_group_id ? service_->GetGroup(*local_group_id) : std::nullopt;
+}
 
-  return *iter;
+void SavedTabGroupWebContentsListener::OnTabEnteredForeground(
+    tabs::TabInterface* tab_interface) {
+  if (cached_url_.has_value()) {
+    PerformNavigation(cached_url_.value());
+    cached_url_.reset();
+  }
 }
 
 }  // namespace tab_groups

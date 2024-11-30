@@ -295,15 +295,8 @@ void ArcRequirementChecker::OnBackgroundAndroidManagementChecked(
           .Run(BackgroundCheckResult::kNoActionRequired);
       break;
     case ArcAndroidManagementChecker::CheckResult::DISALLOWED:
-      if (base::FeatureList::IsEnabled(
-              arc::kEnableUnmanagedToManagedTransitionFeature)) {
-        state_ = State::kWaitingForPoliciesBackground;
-        WaitForPoliciesLoad();
-      } else {
-        state_ = State::kStopped;
-        std::move(background_check_callback_)
-            .Run(BackgroundCheckResult::kArcShouldBeDisabled);
-      }
+      state_ = State::kWaitingForPoliciesBackground;
+      WaitForPoliciesLoad();
       break;
     case ArcAndroidManagementChecker::CheckResult::ERROR:
       // This code should not be reached. For background check,

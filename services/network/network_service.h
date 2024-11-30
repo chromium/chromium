@@ -355,6 +355,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     return metrics_updater_.get();
   }
 
+  // For tests to clear the metrics updater to avoid time out due to its poor
+  // interaction with TaskEnvironment::FastForward*() methods with long delays.
+  void ResetMetricsUpdaterForTesting();
+
   static NetworkService* GetNetworkServiceForTesting();
 
  private:

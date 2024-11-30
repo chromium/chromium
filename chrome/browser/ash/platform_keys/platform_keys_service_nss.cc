@@ -2001,6 +2001,8 @@ CK_ATTRIBUTE_TYPE TranslateKeyAttributeTypeForSoftoken(KeyAttributeType type) {
       return CKA_START_DATE;
     case KeyAttributeType::kKeyPermissions:
       return CKA_END_DATE;
+    case KeyAttributeType::kPlatformKeysTag:
+      return CKA_OTP_TIME;
   }
 }
 
@@ -2017,6 +2019,8 @@ CK_ATTRIBUTE_TYPE TranslateKeyAttributeType(KeyAttributeType type,
       return pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId;
     case KeyAttributeType::kKeyPermissions:
       return pkcs11_custom_attributes::kCkaChromeOsKeyPermissions;
+    case KeyAttributeType::kPlatformKeysTag:
+      return pkcs11_custom_attributes::kCkaChromeOsPlatformKeysTag;
   }
 }
 

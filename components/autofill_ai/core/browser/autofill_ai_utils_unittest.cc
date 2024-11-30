@@ -29,7 +29,7 @@ void AddHeuristicType(AutofillField& field, autofill::FieldType type) {
 
 void AddImprovedPredictionType(AutofillField& field) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  field.set_heuristic_type(HeuristicSource::kPredictionImprovementRegexes,
+  field.set_heuristic_type(HeuristicSource::kAutofillAiRegexes,
                            autofill::IMPROVED_PREDICTION);
 #else
   AddHeuristicType(field, autofill::IMPROVED_PREDICTION);

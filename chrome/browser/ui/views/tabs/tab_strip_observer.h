@@ -32,7 +32,7 @@ class CHROME_VIEWS_EXPORT TabStripObserver {
   virtual void OnTabRemoved(int index);
 
  protected:
-  virtual ~TabStripObserver() {}
+  virtual ~TabStripObserver() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_OBSERVER_H_

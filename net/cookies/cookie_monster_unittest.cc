@@ -1889,7 +1889,7 @@ TEST_P(CookieMonsterTestGarbageCollectionObc, SecureCookiesPreferred) {
   EXPECT_EQ(domain_count, 150);
 }
 
-TEST_F(CookieMonsterTest, TestPartitionedCookiesGarbageCollection_Memory) {
+TEST_F(CookieMonsterTest, TestPartitionedCookiesGarbageCollectionMemory) {
   // Limit should be 10 KB.
   DCHECK_EQ(1024u * 10u, CookieMonster::kPerPartitionDomainMaxCookieBytes);
 
@@ -1920,7 +1920,7 @@ TEST_F(CookieMonsterTest, TestPartitionedCookiesGarbageCollection_Memory) {
   }
 }
 
-TEST_F(CookieMonsterTest, TestPartitionedCookiesGarbageCollection_MaxCookies) {
+TEST_F(CookieMonsterTest, TestPartitionedCookiesGarbageCollectionMaxCookies) {
   // Partitioned cookies also limit domains to 180 cookies per partition.
   DCHECK_EQ(180u, CookieMonster::kPerPartitionDomainMaxCookies);
 
@@ -2008,7 +2008,7 @@ TEST_F(CookieMonsterTest, SetCookieableSchemes) {
               {CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME}));
 }
 
-TEST_F(CookieMonsterTest, SetCookieableSchemes_StoreInitialized) {
+TEST_F(CookieMonsterTest, SetCookieableSchemesStoreInitialized) {
   auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
   // Initializes the cookie store.
   this->GetCookies(cm.get(), https_www_foo_.url(),
@@ -2520,7 +2520,7 @@ TEST_F(CookieMonsterTest, ExpireSinglePartitionedCookie) {
   EXPECT_EQ(0u, cookies.size());
 }
 
-TEST_F(CookieMonsterTest, DeleteExpiredAfterTimeElapsed_GetAllCookies) {
+TEST_F(CookieMonsterTest, DeleteExpiredAfterTimeElapsedGetAllCookies) {
   auto cm = std::make_unique<CookieMonster>(
       /*store=*/nullptr, net::NetLog::Get());
 
@@ -2691,7 +2691,7 @@ TEST_F(CookieMonsterTest, DontImportDuplicateCookies) {
   EXPECT_EQ(CookieStoreCommand::REMOVE, store->commands()[3].type);
 }
 
-TEST_F(CookieMonsterTest, DontImportDuplicateCookies_PartitionedCookies) {
+TEST_F(CookieMonsterTest, DontImportDuplicateCookiesPartitionedCookies) {
   std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
 
   auto cookie_partition_key =
@@ -2781,7 +2781,7 @@ TEST_F(CookieMonsterTest, ImportDuplicateCreationTimes) {
   EXPECT_NE(name1, name2);
 }
 
-TEST_F(CookieMonsterTest, ImportDuplicateCreationTimes_PartitionedCookies) {
+TEST_F(CookieMonsterTest, ImportDuplicateCreationTimesPartitionedCookies) {
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
 
   Time now(Time::Now());
@@ -4933,7 +4933,7 @@ TEST_F(CookieMonsterTest, SetSecureCookies) {
 // MaybeDeleteEquivalentCookieAndUpdateStatus().
 // Check domain-match criterion: If either cookie domain matches the other,
 // don't set the insecure cookie.
-TEST_F(CookieMonsterTest, LeaveSecureCookiesAlone_DomainMatch) {
+TEST_F(CookieMonsterTest, LeaveSecureCookiesAloneDomainMatch) {
   auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
 
   // These domains will domain-match each other.
@@ -5104,7 +5104,7 @@ TEST_F(CookieMonsterTest, LeaveSecureCookiesAlone_DomainMatch) {
 // MaybeDeleteEquivalentCookieAndUpdateStatus().
 // Check path-match criterion: If the new cookie is for the same path or a
 // subdirectory of the preexisting cookie's path, don't set the new cookie.
-TEST_F(CookieMonsterTest, LeaveSecureCookiesAlone_PathMatch) {
+TEST_F(CookieMonsterTest, LeaveSecureCookiesAlonePathMatch) {
   auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
 
   // A path that is later in this list will path-match all the paths before it.

@@ -101,7 +101,6 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, AddChromePinExistingOrdinal);
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, AddDefaultApps);
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, ProfileChanged);
-  FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, LacrosOnlyPinnedApp);
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, PinPreloadApps);
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, PinPreloadRepeats);
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, PinPreloadEmpty);
@@ -128,8 +127,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   void EnsureProjectorShelfPinConsistency();
 
   // This is run each time ash launches and each time new data is obtained from
-  // sync. It ensures that both ash-chrome and lacros-chrome are properly
-  // pinned or unpinned.
+  // sync. It ensures that ash-chrome is properly pinned or unpinned.
   void EnsureChromePinned();
 
   // Whether the default apps have already been added for this device form

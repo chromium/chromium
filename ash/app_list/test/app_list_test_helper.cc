@@ -256,7 +256,7 @@ AppListView* AppListTestHelper::GetAppListView() {
 
 SearchBoxView* AppListTestHelper::GetSearchBoxView() {
   if (ShouldUseBubbleAppList())
-    return GetBubbleView()->search_box_view_for_test();
+    return GetBubbleView()->search_box_view();
 
   return GetAppListView()->search_box_view();
 }

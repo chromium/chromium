@@ -216,7 +216,7 @@ TEST_F(CrashAnalyzerTest, DISABLED_StackTraceCollection) {
     if (trace[0] == __builtin_return_address(0))
       break;
 
-    trace = trace.subspan(1);
+    trace = trace.subspan<1>();
   }
 
   ASSERT_GT(proto.allocation().stack_trace_size(),

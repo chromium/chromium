@@ -29,7 +29,7 @@ using ::testing::ElementsAre;
 
 class PackagedLicenseScreenTest : public OobeBaseTest {
  public:
-  PackagedLicenseScreenTest() {}
+  PackagedLicenseScreenTest() = default;
   ~PackagedLicenseScreenTest() override = default;
 
   void SetUpOnMainThread() override {

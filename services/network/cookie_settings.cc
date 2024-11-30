@@ -12,6 +12,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
@@ -56,6 +57,12 @@ bool IsValidType(ContentSettingsType type) {
     return true;
   }
   return CookieSettings::GetContentSettingsTypes().contains(type);
+}
+
+void RecordAllowedByStorageAccessType(
+    CookieSettings::AllowedByStorageAccessType value) {
+  base::UmaHistogramEnumeration(
+      "API.EffectiveStorageAccess.AllowedByStorageAccessType", value);
 }
 
 net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
@@ -215,6 +222,10 @@ bool CookieSettings::IsCookieAccessible(
     AugmentInclusionStatus(cookie, top_frame_origin, setting_with_metadata,
                            first_party_set_metadata, *cookie_inclusion_status);
   }
+
+  RecordAllowedByStorageAccessType(
+      setting_with_metadata.allowed_by_storage_access_type());
+
   return allowed;
 }
 
@@ -302,6 +313,9 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
 
   net::cookie_util::DCheckIncludedAndExcludedCookieLists(maybe_included_cookies,
                                                          excluded_cookies);
+
+  RecordAllowedByStorageAccessType(
+      setting_with_metadata.allowed_by_storage_access_type());
 
   return IsAllowed(setting_with_metadata.cookie_setting()) ||
          !maybe_included_cookies.empty();

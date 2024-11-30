@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -37,9 +38,19 @@ class OAuthMultiloginTokenFetcher {
   using FailureCallback =
       base::OnceCallback<void(const GoogleServiceAuthError&)>;
 
+  struct AccountParams {
+    CoreAccountId account_id;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    std::string token_binding_challenge;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  };
+
   OAuthMultiloginTokenFetcher(SigninClient* signin_client,
                               ProfileOAuth2TokenService* token_service,
-                              const std::vector<CoreAccountId>& account_ids,
+                              std::vector<AccountParams> account_params,
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                              std::string ephemeral_public_key,
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                               SuccessCallback success_callback,
                               FailureCallback failure_callback);
 
@@ -53,7 +64,7 @@ class OAuthMultiloginTokenFetcher {
                               OAuthMultiloginTokenRequest::Result result);
 
  private:
-  void StartFetchingToken(const CoreAccountId& account_id);
+  void StartFetchingToken(const AccountParams& account);
 
   void TokenRequestSucceeded(const CoreAccountId& account_id,
                              OAuthMultiloginTokenResponse response);
@@ -62,7 +73,10 @@ class OAuthMultiloginTokenFetcher {
 
   raw_ptr<SigninClient> signin_client_;
   raw_ptr<ProfileOAuth2TokenService> token_service_;
-  const std::vector<CoreAccountId> account_ids_;
+  const std::vector<AccountParams> account_params_;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  const std::string ephemeral_public_key_;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   SuccessCallback success_callback_;
   FailureCallback failure_callback_;

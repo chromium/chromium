@@ -395,13 +395,14 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="269819437389494246">Você pode consultar as páginas visitadas ou excluí-las do histórico</translation>
 <translation id="2704606927547763573">Copiado</translation>
-<translation id="2708051474374549906">Proteção proativa em tempo real contra sites, extensões e downloads perigosos baseados nos dados de navegação enviados ao Google</translation>
+<translation id="2708051474374549906">Proteção proativa em tempo real contra sites, extensões e downloads perigosos baseada nos dados de navegação enviados ao Google</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
 <translation id="2721190673959776287">Exemplo de ajuda detalhada do produto para o painel contextual, que deve aparecer várias vezes por dia.</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Seguindo <ph name="CHANNEL_NAME" /></translation>
+<translation id="2755485474385016903">As mudanças feitas são vistas por todos no grupo</translation>
 <translation id="2755595981383829244">Agora você vai receber notificações de conteúdo</translation>
 <translation id="2761788987260570878">Tire uma foto da sua pesquisa</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
@@ -431,6 +432,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="288902476966286676">Devolver ao remetente</translation>
 <translation id="2893168226686371498">Navegador padrão</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
+<translation id="2902312830803030883">Mais ações</translation>
 <translation id="2905479111267140204">Você tem <ph name="NUMBER_OF_PASSWORDS" /> senhas reutilizadas que podem colocar sua segurança em risco.</translation>
 <translation id="291754862089661335">Posicione o QR code ou o código de barras neste quadro</translation>
 <translation id="2918688092312652908">Marcar como não lido</translation>
@@ -553,6 +555,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3549391962818677448">Tentativa de envio. Vamos tentar de novo</translation>
 <translation id="3557336313807607643">Adicionar aos contatos</translation>
 <translation id="355765753469272474">Desfazer</translation>
+<translation id="3562379378751492229">Selecione a posição ideal para você.</translation>
 <translation id="3565930036634619844">Guia. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Toque duas vezes para conferir mais senhas.</translation>
 <translation id="3572607909481582402">Na Conta do Google</translation>
@@ -560,7 +563,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3575426792457739946">Esta lista contém todos os perfis carregados.</translation>
 <translation id="3581564640715911333">Oferecer para traduzir páginas em outros idiomas</translation>
 <translation id="3587885837929752825">Sua organização limita o que você pode salvar na sua Conta do Google.</translation>
-<translation id="3588820906588687999">Abrir imagem em "Nova guia"</translation>
+<translation id="3588820906588687999">Abrir em uma nova guia</translation>
 <translation id="3591006724568464696">As guias recentes estão indisponíveis</translation>
 <translation id="3595252146048399851">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros na navegação anônima</translation>
@@ -829,6 +832,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="484280513275854557">Sua conta foi desconectada e os dados de navegação foram excluídos</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4860895144060829044">Ligar</translation>
+<translation id="4861953997778766866">Todos os participantes podem fazer mudanças em grupos de guias compartilhados</translation>
 <translation id="4869146460927742717">Posição da barra de endereço</translation>
 <translation id="4870911314065352661">Fechar todas as guias?</translation>
 <translation id="4872664437015695612">Abrir em Downloads</translation>
@@ -967,6 +971,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5506763544823940561">Salvar imagem no…</translation>
 <translation id="5511959326926949696">Proteção extrema e opcional para o navegador. Use esse modo somente se acreditar que você pode ser alvo de um ataque cibernético altamente sofisticado.</translation>
 <translation id="5513681519188741830"><ph name="TIME" />h atrás</translation>
+<translation id="5524590039848017563">Botão principal da barra de ferramentas fechado</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} senha fraca}one{{COUNT} senha fraca}other{{COUNT} senhas fracas}}</translation>
 <translation id="5532545557415295622">Caixa de diálogo de tempo limite de inatividade</translation>
 <translation id="5548760955356983418">A "Transição" permite que você comece a navegar por um website neste dispositivo e, em seguida, continue facilmente no seu Mac. O website aberto aparecerá no Dock do Mac.
@@ -991,6 +996,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5611398002774823980">Salvar na conta</translation>
 <translation id="5613297089029360427">Ordenar por mais recentes</translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
+<translation id="5614805397884895755">Acesse o app com mais rapidez pela tela inicial.</translation>
 <translation id="5619871095170816857">Este card mostra a última guia aberta usada em todos os dispositivos sincronizados nas últimas 24 horas.</translation>
 <translation id="5624120631404540903">Gerenciar senhas</translation>
 <translation id="5624637933505983014">Não ativar a sincronização</translation>
@@ -1271,7 +1277,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6717862474255265991">Monitorar preço</translation>
 <translation id="6722623263381062480">Guias recebidas</translation>
 <translation id="6723740634201835758">Na Conta do Google</translation>
-<translation id="672735642903863329">Acesse seus favoritos, senhas e mais em todos seus dispositivos.</translation>
+<translation id="672735642903863329">Acesse seus favoritos, senhas e mais em todos os seus dispositivos.</translation>
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6746338529702829275">Analisar os dados da sua conta</translation>
 <translation id="6755200887046212842">Gerenciar contas</translation>
@@ -1495,6 +1501,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7812377703891978671">Você pode acessar todo seu histórico de navegação selecionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Downloads</translation>
 <translation id="7815852444315004084">Ocultar por enquanto</translation>
+<translation id="7831876841288640403">Escolha a posição da barra de endereço ideal para você.</translation>
 <translation id="7839994177130598711">Os membros da sua família agora podem usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google.</translation>
 <translation id="7840771868269352570">Os itens selec. serão removidos.</translation>
 <translation id="7841180087127694526">Pesquisar texto copiado</translation>

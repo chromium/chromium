@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 
 // The class that provides a list of forced signin screens.
 @interface SigninScreenProvider : ScreenProvider

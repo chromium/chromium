@@ -37,25 +37,25 @@ std::string FakeUserManager::GetFakeUsernameHash(const AccountId& account_id) {
   return account_id.GetUserEmail() + "-hash";
 }
 
-const User* FakeUserManager::AddUser(const AccountId& account_id) {
+User* FakeUserManager::AddUser(const AccountId& account_id) {
   return AddUserWithAffiliation(account_id, false);
 }
 
-const User* FakeUserManager::AddChildUser(const AccountId& account_id) {
+User* FakeUserManager::AddChildUser(const AccountId& account_id) {
   User* user = User::CreateRegularUser(account_id, UserType::kChild);
   user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
 
-const User* FakeUserManager::AddGuestUser(const AccountId& account_id) {
+User* FakeUserManager::AddGuestUser(const AccountId& account_id) {
   User* user = User::CreateGuestUser(account_id);
   user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
 
-const User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
+User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
   User* user = User::CreateKioskAppUser(account_id);
   user->set_username_hash(GetFakeUsernameHash(account_id));
   user_storage_.emplace_back(user);
@@ -63,8 +63,8 @@ const User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
   return user;
 }
 
-const User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
-                                                    bool is_affiliated) {
+User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
+                                              bool is_affiliated) {
   User* user = User::CreateRegularUser(account_id, UserType::kRegular);
   user->SetAffiliated(is_affiliated);
   user->set_username_hash(GetFakeUsernameHash(account_id));
@@ -73,8 +73,7 @@ const User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
   return user;
 }
 
-const user_manager::User* FakeUserManager::AddPublicAccountUser(
-    const AccountId& account_id) {
+User* FakeUserManager::AddPublicAccountUser(const AccountId& account_id) {
   User* user = User::CreatePublicAccountUserForTesting(account_id);
   user_storage_.emplace_back(user);
   users_.push_back(user);

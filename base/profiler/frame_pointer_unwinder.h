@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 #include "base/profiler/unwinder.h"
 #include "build/build_config.h"
 
@@ -27,7 +28,12 @@ API_AVAILABLE(ios(12))
 #endif
     FramePointerUnwinder : public Unwinder {
  public:
-  FramePointerUnwinder();
+  using CanUnwindFromDelegate =
+      RepeatingCallback<bool(const Frame& current_frame)>;
+
+  FramePointerUnwinder(
+      CanUnwindFromDelegate can_unwind_from_delegate = CanUnwindFromDelegate());
+  ~FramePointerUnwinder() override;
 
   FramePointerUnwinder(const FramePointerUnwinder&) = delete;
   FramePointerUnwinder& operator=(const FramePointerUnwinder&) = delete;
@@ -38,6 +44,9 @@ API_AVAILABLE(ios(12))
                          RegisterContext* thread_context,
                          uintptr_t stack_top,
                          std::vector<Frame>* stack) override;
+
+ private:
+  CanUnwindFromDelegate can_unwind_from_delegate_;
 };
 
 }  // namespace base

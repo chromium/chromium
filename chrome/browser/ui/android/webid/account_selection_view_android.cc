@@ -52,7 +52,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
       ConvertUTF8ToJavaString(env, account->given_name),
       url::GURLAndroid::FromNativeGURL(env, account->picture), decoded_picture,
       account->login_state == Account::LoginState::kSignIn,
-      account->browser_trusted_login_state == Account::LoginState::kSignIn);
+      account->browser_trusted_login_state == Account::LoginState::kSignIn,
+      account->is_filtered_out);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(

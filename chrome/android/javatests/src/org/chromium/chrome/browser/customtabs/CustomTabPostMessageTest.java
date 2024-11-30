@@ -409,7 +409,7 @@ public class CustomTabPostMessageTest {
         final CallbackHelper messageChannelHelper = new CallbackHelper();
         final String url =
                 mWebServer.setResponse("/test.html", TITLE_FROM_POSTMESSAGE_TO_CHANNEL, null);
-        final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        CustomTabsTestUtils.warmUpAndWait();
 
         final CustomTabsSession session =
                 CustomTabsTestUtils.bindWithCallback(

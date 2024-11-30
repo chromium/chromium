@@ -789,12 +789,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_CREATE_SHORTCUT:
       base::RecordAction(base::UserMetricsAction("CreateShortcut"));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
-        chrome::CreateDesktopShortcutForActiveWebContents(browser_);
-      } else {
-        web_app::CreateWebAppFromCurrentWebContents(
-            browser_, web_app::WebAppInstallFlow::kCreateShortcut);
-      }
+      chrome::CreateDesktopShortcutForActiveWebContents(browser_);
 #else
       web_app::CreateWebAppFromCurrentWebContents(
           browser_, web_app::WebAppInstallFlow::kCreateShortcut);
@@ -1627,13 +1622,8 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_.UpdateCommandEnabled(IDC_INSTALL_PWA, can_create_web_app);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
     command_updater_.UpdateCommandEnabled(
         IDC_CREATE_SHORTCUT, shortcuts::CanCreateDesktopShortcut(browser_));
-  } else {
-    command_updater_.UpdateCommandEnabled(IDC_CREATE_SHORTCUT,
-                                          can_create_web_app);
-  }
 #else
   command_updater_.UpdateCommandEnabled(IDC_CREATE_SHORTCUT,
                                         can_create_web_app);
@@ -2054,14 +2044,14 @@ Profile* BrowserCommandController::profile() {
 
 void BrowserCommandController::ShowCustomizeChromeSidePanel(
     std::optional<CustomizeChromeSection> section) {
-  tabs::TabModel* tab = browser_->tab_strip_model()->GetActiveTab();
-  if (!tab || !tab->tab_features() ||
-      !tab->tab_features()->customize_chrome_side_panel_controller()) {
+  tabs::TabInterface* tab = browser_->tab_strip_model()->GetActiveTab();
+  if (!tab || !tab->GetTabFeatures() ||
+      !tab->GetTabFeatures()->customize_chrome_side_panel_controller()) {
     return;
   }
 
   customize_chrome::SidePanelController* side_panel_controller =
-      tab->tab_features()->customize_chrome_side_panel_controller();
+      tab->GetTabFeatures()->customize_chrome_side_panel_controller();
 
   if (!side_panel_controller ||
       !side_panel_controller->IsCustomizeChromeEntryAvailable()) {

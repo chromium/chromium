@@ -50,17 +50,19 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
  public:
   // String for the generic "default" ALSA device that has the highest
   // compatibility and chance of working.
-  static const char kDefaultDevice[];
+  static constexpr char kDefaultDevice[] = "default";
 
   // Pass this to the AlsaPcmOutputStream if you want to attempt auto-selection
   // of the audio device.
-  static const char kAutoSelectDevice[];
+  static constexpr char kAutoSelectDevice[] = "";
 
   // Prefix for device names to enable ALSA library resampling.
-  static const char kPlugPrefix[];
+  static constexpr char kPlugPrefix[] = "plug:";
 
   // The minimum latency that is accepted by the device.
-  static const uint32_t kMinLatencyMicros;
+  // We use 40ms as our minimum required latency. If it is needed, we may be
+  // able to get it down to 20ms.
+  static constexpr uint32_t kMinLatencyMicros = 40 * 1000;
 
   // Create a PCM Output stream for the ALSA device identified by
   // |device_name|.  The AlsaPcmOutputStream uses |wrapper| to communicate with
@@ -93,15 +95,15 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
  private:
   friend class AlsaPcmOutputStreamTest;
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest,
-                           AutoSelectDevice_DeviceSelect);
+                           AutoSelectDeviceDeviceSelect);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest,
-                           AutoSelectDevice_FallbackDevices);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, AutoSelectDevice_HintFail);
+                           AutoSelectDeviceFallbackDevices);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, AutoSelectDeviceHintFail);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket_Negative);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket_StopStream);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket_Underrun);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket_FullBuffer);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacketNegative);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacketStopStream);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacketUnderrun);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacketFullBuffer);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, ConstructedState);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, LatencyFloor);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, OpenClose);
@@ -109,12 +111,12 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, PcmSetParamsFailed);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, ScheduleNextWrite);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest,
-                           ScheduleNextWrite_StopStream);
+                           ScheduleNextWriteStopStream);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, StartStop);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacket_FinishedPacket);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacket_NormalPacket);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacket_StopStream);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacket_WriteFails);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacketFinishedPacket);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacketNormalPacket);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacketStopStream);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacketWriteFails);
 
   // Flags indicating the state of the stream.
   enum InternalState {

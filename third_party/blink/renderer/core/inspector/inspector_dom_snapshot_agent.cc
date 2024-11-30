@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -51,7 +50,6 @@
 namespace blink {
 
 using mojom::blink::FormControlType;
-using protocol::Maybe;
 
 namespace {
 
@@ -255,9 +253,9 @@ protocol::Response InspectorDOMSnapshotAgent::disable() {
 
 protocol::Response InspectorDOMSnapshotAgent::getSnapshot(
     std::unique_ptr<protocol::Array<String>> style_filter,
-    protocol::Maybe<bool> include_event_listeners,
-    protocol::Maybe<bool> include_paint_order,
-    protocol::Maybe<bool> include_user_agent_shadow_tree,
+    std::optional<bool> include_event_listeners,
+    std::optional<bool> include_paint_order,
+    std::optional<bool> include_user_agent_shadow_tree,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>>* dom_nodes,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::LayoutTreeNode>>*
         layout_tree_nodes,
@@ -276,10 +274,10 @@ protocol::Response InspectorDOMSnapshotAgent::getSnapshot(
 
 protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
     std::unique_ptr<protocol::Array<String>> computed_styles,
-    protocol::Maybe<bool> include_paint_order,
-    protocol::Maybe<bool> include_dom_rects,
-    protocol::Maybe<bool> include_blended_background_colors,
-    protocol::Maybe<bool> include_text_color_opacities,
+    std::optional<bool> include_paint_order,
+    std::optional<bool> include_dom_rects,
+    std::optional<bool> include_blended_background_colors,
+    std::optional<bool> include_text_color_opacities,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DocumentSnapshot>>*
         documents,
     std::unique_ptr<protocol::Array<String>>* strings) {
@@ -591,8 +589,8 @@ void InspectorDOMSnapshotAgent::VisitPseudoElements(
     int parent_index,
     InspectorContrast& contrast) {
   for (PseudoId pseudo_id :
-       {kPseudoIdFirstLetter, kPseudoIdCheck, kPseudoIdBefore, kPseudoIdAfter,
-        kPseudoIdSelectArrow, kPseudoIdMarker}) {
+       {kPseudoIdFirstLetter, kPseudoIdCheckMark, kPseudoIdBefore,
+        kPseudoIdAfter, kPseudoIdSelectArrow, kPseudoIdMarker}) {
     if (Node* pseudo_node = parent->GetPseudoElement(pseudo_id))
       VisitNode(pseudo_node, parent_index, contrast);
   }

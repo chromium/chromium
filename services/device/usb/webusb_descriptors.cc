@@ -68,7 +68,7 @@ void OnReadLandingPage(uint8_t landing_page_id,
   }
 
   GURL url;
-  ParseWebUsbUrlDescriptor(base::make_span(buffer->data(), length), &url);
+  ParseWebUsbUrlDescriptor(base::span(buffer->data(), length), &url);
   std::move(callback).Run(url);
 }
 
@@ -84,8 +84,7 @@ void OnReadBosDescriptor(scoped_refptr<UsbDeviceHandle> device_handle,
   }
 
   WebUsbPlatformCapabilityDescriptor descriptor;
-  if (!descriptor.ParseFromBosDescriptor(
-          base::make_span(buffer->data(), length))) {
+  if (!descriptor.ParseFromBosDescriptor(base::span(buffer->data(), length))) {
     std::move(callback).Run(std::nullopt);
     return;
   }

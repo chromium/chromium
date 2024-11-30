@@ -28,7 +28,7 @@ class TestComboboxModelObserver : public ui::ComboboxModelObserver {
   TestComboboxModelObserver& operator=(const TestComboboxModelObserver&) =
       delete;
 
-  ~TestComboboxModelObserver() override {}
+  ~TestComboboxModelObserver() override = default;
 
   // Returns whether the model changed and clears changed state.
   bool GetAndClearChanged() {

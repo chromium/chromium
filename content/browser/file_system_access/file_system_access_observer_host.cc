@@ -197,14 +197,14 @@ void FileSystemAccessObserverHost::DidCheckItemExists(
   switch (handle.index()) {
     case 0u:
       watcher_manager()->GetDirectoryObservation(
-          std::move(url), is_recursive,
+          binding_context_.storage_key, std::move(url), is_recursive,
           base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
                          weak_factory_.GetWeakPtr(), std::move(handle),
                          std::move(callback)));
       break;
     case 1u:
       watcher_manager()->GetFileObservation(
-          std::move(url),
+          binding_context_.storage_key, std::move(url),
           base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
                          weak_factory_.GetWeakPtr(), std::move(handle),
                          std::move(callback)));
@@ -246,7 +246,7 @@ void FileSystemAccessObserverHost::GotObservation(
     absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
                   std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
     ObserveCallback callback,
-    base::expected<std::unique_ptr<FileSystemAccessWatcherManager::Observation>,
+    base::expected<std::unique_ptr<FileSystemAccessObservationGroup::Observer>,
                    blink::mojom::FileSystemAccessErrorPtr>
         observation_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

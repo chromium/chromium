@@ -376,9 +376,16 @@ ExtensionFunction::ResponseValue ClipboardBookmarkManagerFunction::CopyOrCut(
     return Error(bookmarks_errors::kModifyManagedError);
   if (cut && HasPermanentNodes(nodes))
     return Error(bookmarks_errors::kModifySpecialError);
-  bookmarks::CopyToClipboard(model, nodes, cut,
-                             bookmarks::metrics::BookmarkEditSource::kExtension,
-                             GetProfile()->IsOffTheRecord());
+
+  if (cut) {
+    BookmarkUIOperationsHelperNonMergedSurfaces::CutToClipboard(
+        model, nodes, bookmarks::metrics::BookmarkEditSource::kExtension,
+        GetProfile()->IsOffTheRecord());
+  } else {
+    BookmarkUIOperationsHelperNonMergedSurfaces::CopyToClipboard(
+        model, nodes, bookmarks::metrics::BookmarkEditSource::kExtension,
+        GetProfile()->IsOffTheRecord());
+  }
   return NoArguments();
 }
 
@@ -415,7 +422,8 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   std::string error;
   if (!CanBeModified(parent_node, &error))
     return Error(error);
-  bool can_paste = bookmarks::CanPasteFromClipboard(model, parent_node);
+  BookmarkUIOperationsHelperNonMergedSurfaces helper(model, parent_node);
+  bool can_paste = helper.CanPasteFromClipboard();
   if (!can_paste)
     return Error("Could not paste from clipboard");
 
@@ -433,7 +441,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   if (!highest_index)
     highest_index = parent_node->children().size();
 
-  bookmarks::PasteFromClipboard(model, parent_node, highest_index);
+  helper.PasteFromClipboard(highest_index);
   return NoArguments();
 }
 
@@ -452,7 +460,9 @@ BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
   const BookmarkNode* parent_node = GetNodeFromString(model, params->parent_id);
   if (!parent_node)
     return Error(bookmarks_errors::kNoParentError);
-  bool can_paste = bookmarks::CanPasteFromClipboard(model, parent_node);
+  bool can_paste =
+      BookmarkUIOperationsHelperNonMergedSurfaces(model, parent_node)
+          .CanPasteFromClipboard();
   return WithArguments(can_paste);
 }
 

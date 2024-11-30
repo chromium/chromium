@@ -9,7 +9,6 @@
 #include <limits>
 #include <vector>
 
-#include "base/logging.h"
 #include "cc/base/math_util.h"
 #include "cc/base/region.h"
 #include "components/viz/common/display/renderer_settings.h"

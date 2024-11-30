@@ -46,6 +46,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
     case AuthenticatorRequestDialogModel::Step::kClosed:
     case AuthenticatorRequestDialogModel::Step::kNotStarted:
     case AuthenticatorRequestDialogModel::Step::kPasskeyAutofill:
+    case AuthenticatorRequestDialogModel::Step::kPasskeyUpgrade:
       return StepUIType::NONE;
 
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
@@ -215,6 +216,7 @@ std::ostream& operator<<(std::ostream& os,
   constexpr auto kStepNames = base::MakeFixedFlatMap<Step, std::string_view>({
       {Step::kNotStarted, "kNotStarted"},
       {Step::kPasskeyAutofill, "kPasskeyAutofill"},
+      {Step::kPasskeyUpgrade, "kPasskeyUpgrade"},
       {Step::kMechanismSelection, "kMechanismSelection"},
       {Step::kErrorNoAvailableTransports, "kErrorNoAvailableTransports"},
       {Step::kErrorNoPasskeys, "kErrorNoPasskeys"},

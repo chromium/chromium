@@ -11,6 +11,7 @@ source_set("public") {
     "magic_stack_module_container_delegate.h",
   ]
   deps = [
+    "//base",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/content_suggestions:constants",
   ]
@@ -42,6 +43,8 @@ source_set("ranking_model") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",
+    "//ios/chrome/browser/lens/ui_bundled:lens_availability",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/parcel_tracking:features",
@@ -66,8 +69,6 @@ source_set("ranking_model") {
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
     "//ios/chrome/browser/ui/content_suggestions/tips",
-    "//ios/chrome/browser/ui/lens:lens_availability",
-    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

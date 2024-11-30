@@ -329,6 +329,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public network::mojom::CookieAccessObserver,
       public network::mojom::TrustTokenAccessObserver,
       public network::mojom::SharedDictionaryAccessObserver,
+      public network::mojom::DeviceBoundSessionAccessObserver,
       public BucketContext {
  public:
   using JavaScriptDialogCallback =
@@ -2284,11 +2285,22 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This is not exactly the opposite of IsRenderFrameLive().
   // IsRenderFrameLive() is false when the RenderProcess died, but it is also
   // false when it hasn't been initialized.
-  bool must_be_replaced() const { return must_be_replaced_; }
+  bool must_be_replaced_for_crash() const {
+    return must_be_replaced_for_crash_;
+  }
   // Resets the must_be_replaced after the RFH has been reinitialized. Do not
   // add any more usages of this.
   // TODO(crbug.com/40615943): Remove this.
-  void reset_must_be_replaced() { must_be_replaced_ = false; }
+  void reset_must_be_replaced() { must_be_replaced_for_crash_ = false; }
+
+  // True if the RenderFrameHost should be replaced because we are navigating
+  // the main frame to about:blank between web tests.
+  bool must_be_replaced_for_webtest() const {
+    return must_be_replaced_for_webtest_;
+  }
+  void set_must_be_replaced_for_webtest() {
+    must_be_replaced_for_webtest_ = true;
+  }
 
   int renderer_exit_count() const { return renderer_exit_count_; }
 
@@ -2668,6 +2680,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::PendingRemote<device::mojom::VibrationManagerListener>
   CreateVibrationManagerListener();
 
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+  CreateDeviceBoundSessionObserver();
+
   // network::mojom::CookieAccessObserver:
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
                              details_vector) override;
@@ -2682,6 +2697,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // device::mojom::VibrationManagerListener:
   void OnVibrate() override;
+
+  // network::mojom::DeviceBoundSessionAccessObserver
+  void OnDeviceBoundSessionAccessed(
+      const net::device_bound_sessions::SessionKey& session) override;
 
   void GetSavableResourceLinksFromRenderer();
 
@@ -3538,6 +3557,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<network::mojom::SharedDictionaryAccessObserver>
           observer) override;
 
+  // network::mojom::DeviceBoundSessionAccessObserver
+  void Clone(
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+          observer) override;
+
   // Resets any waiting state of this RenderFrameHost that is no longer
   // relevant.
   void ResetWaitingState();
@@ -4114,6 +4138,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreateBroadcastChannelProvider(
       mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
           receiver);
+
+  void LogWebFeatureForCurrentPage(blink::mojom::WebFeature feature);
+
+  base::RepeatingClosure CreateLogWebFeatureClosure(
+      blink::mojom::WebFeature feature);
 
   // For frames and main thread worklets we use a navigation-associated
   // interface and bind `receiver` to a `BlobURLStore` instance, which
@@ -4716,7 +4745,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // whereas this field is updated at CommitNavigation() time.
   bool has_committed_any_navigation_ = false;
 
-  bool must_be_replaced_ = false;
+  // True if the RenderFrameHost should be replaced because the renderer process
+  // has crashed.
+  // TODO(crbug.com/40228869): After crrev.com/c/5321191 lands, we can commbine
+  // must_be_replaced_for_crash_ and must_be_replaced_for_webtest_ into one.
+  bool must_be_replaced_for_crash_ = false;
+
+  // True if the RenderFrameHost should be replaced because we are navigating
+  // the main frame to about:blank between web tests.
+  // TODO(crbug.com/40228869): After crrev.com/c/5321191 lands, we can commbine
+  // must_be_replaced_for_crash_ and must_be_replaced_for_webtest_ into one.
+  bool must_be_replaced_for_webtest_ = false;
 
   // Counts the number of times the associated renderer process has exited.
   // This is used to track problematic RenderFrameHost reuse.
@@ -5073,8 +5112,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // in this RenderFrameHost. This is done because the first observer is created
   // before the navigation actually commits and because the old routing-id based
   // behaved in the same way as well.
-  // This problem should go away with RenderDocumentHost in any case.
-  // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
+  // This problem should go away with RenderDocument in any case.
+  // TODO(crbug.com/40615943): Remove this warning after the RD ships.
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
 
   // Observers listening to Trust Token access notifications for the current
@@ -5082,8 +5121,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // cleared when a new document is created in this RenderFrameHost. This is
   // done because the first observer is created before the navigation actually
   // commits and because the old routing-id based behaved in the same way as
-  // well. This problem should go away with RenderDocumentHost in any case.
-  // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
+  // well. This problem should go away with RenderDocument in any case.
+  // TODO(crbug.com/40615943): Remove this warning after the RD ships.
   mojo::ReceiverSet<network::mojom::TrustTokenAccessObserver>
       trust_token_observers_;
 
@@ -5092,13 +5131,25 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // not cleared when a new document is created in this RenderFrameHost. This is
   // done because the first observer is created before the navigation actually
   // commits and because the old routing-id based behaved in the same way as
-  // well. This problem should go away with RenderDocumentHost in any case.
-  // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
+  // well. This problem should go away with RenderDocument in any case.
+  // TODO(crbug.com/40615943): Remove this warning after the RD ships.
   mojo::ReceiverSet<network::mojom::SharedDictionaryAccessObserver>
       shared_dictionary_observers_;
 
   mojo::ReceiverSet<device::mojom::VibrationManagerListener>
       vibration_manager_listeners_;
+
+  // Observers listening to device bound session access notifications
+  // (https://github.com/WICG/dbsc/blob/main/README.md) for the current
+  // document in this RenderFrameHost. Note: at the moment this set is
+  // not cleared when a new document is created in this
+  // RenderFrameHost. This is done because the first observer is created
+  // before the navigation actually commits and because the old
+  // routing-id based behaved in the same way as well. This problem
+  // should go away with RenderDocument in any case.
+  // TODO(crbug.com/40615943): Remove this warning after the RD ships.
+  mojo::ReceiverSet<network::mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observers_;
 
   // Indicates whether this frame is an outer delegate frame for some other
   // RenderFrameHost. This will be a valid ID if so, and invalid otherwise.

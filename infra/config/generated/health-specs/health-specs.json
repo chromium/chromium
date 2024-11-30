@@ -6787,6 +6787,48 @@
           }
         ]
       },
+      "android-15-tablet-landscape-x64-dbg-tests": {
+        "contact_team_email": "clank-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "android-15-tablet-x64-dbg-tests": {
+        "contact_team_email": "clank-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "android-15-x64-fyi-rel": {
         "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
@@ -6809,6 +6851,27 @@
         ]
       },
       "android-15-x64-rel": {
+        "contact_team_email": "clank-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "android-16-x64-fyi-rel": {
         "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
           {
@@ -10635,6 +10698,7 @@
         ]
       },
       "linux-updater-builder-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -10655,6 +10719,7 @@
         ]
       },
       "linux-updater-builder-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -10675,6 +10740,7 @@
         ]
       },
       "linux-updater-tester-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -10695,6 +10761,7 @@
         ]
       },
       "linux-updater-tester-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11356,6 +11423,7 @@
         ]
       },
       "mac-updater-builder-arm64-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11376,6 +11444,7 @@
         ]
       },
       "mac-updater-builder-arm64-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11396,6 +11465,7 @@
         ]
       },
       "mac-updater-builder-asan-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11416,6 +11486,7 @@
         ]
       },
       "mac-updater-builder-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11436,6 +11507,7 @@
         ]
       },
       "mac-updater-builder-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11519,6 +11591,7 @@
         ]
       },
       "mac11-arm64-updater-tester-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11539,6 +11612,7 @@
         ]
       },
       "mac11-arm64-updater-tester-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11601,6 +11675,7 @@
         ]
       },
       "mac11-x64-updater-tester-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11621,6 +11696,7 @@
         ]
       },
       "mac11-x64-updater-tester-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11683,6 +11759,7 @@
         ]
       },
       "mac12-arm64-updater-tester-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11724,6 +11801,7 @@
         ]
       },
       "mac12-x64-updater-tester-asan-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11786,6 +11864,7 @@
         ]
       },
       "mac13-arm64-updater-tester-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -11848,6 +11927,7 @@
         ]
       },
       "mac13-x64-updater-tester-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12469,6 +12549,7 @@
         ]
       },
       "win-updater-builder-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12489,6 +12570,7 @@
         ]
       },
       "win-updater-builder-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12571,6 +12653,7 @@
         ]
       },
       "win10-32-on-64-updater-tester-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12591,6 +12674,7 @@
         ]
       },
       "win10-32-on-64-updater-tester-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12735,6 +12819,7 @@
         ]
       },
       "win10-updater-tester-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12755,6 +12840,7 @@
         ]
       },
       "win10-updater-tester-dbg-uac": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12775,6 +12861,7 @@
         ]
       },
       "win10-updater-tester-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12795,6 +12882,7 @@
         ]
       },
       "win10-updater-tester-rel-uac": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12899,6 +12987,7 @@
         ]
       },
       "win11-updater-tester-dbg-uac": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12919,6 +13008,7 @@
         ]
       },
       "win11-updater-tester-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -13043,6 +13133,7 @@
         ]
       },
       "win32-updater-builder-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -13063,6 +13154,7 @@
         ]
       },
       "win32-updater-builder-rel": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

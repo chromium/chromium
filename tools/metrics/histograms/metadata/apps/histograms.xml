@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppDiscovery.MallUsageTime" units="ms"
-    expires_after="2025-03-26">
+    expires_after="2025-05-25">
   <owner>joelhockey@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
@@ -323,9 +323,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppInstallService.AppInstallResult{AppInstallSurface}"
-    enum="AppInstallResult" expires_after="2025-04-13">
-  <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+    enum="AppInstallResult" expires_after="2025-11-01">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
     Records the result of a request to install an app via AppInstallService for
     a given install surface.
@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppInstallService.ArcAppInstaller.InstallResult{AppInstallSurface}"
-    enum="ArcAppInstallResultCode" expires_after="2025-01-03">
+    enum="ArcAppInstallResultCode" expires_after="2025-11-01">
   <owner>tsergeant@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
@@ -347,7 +347,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppInstallService.WebAppInstaller.CommandResultCode{AppInstallSurface}"
-    enum="WebAppInstallResultCode" expires_after="2025-01-03">
+    enum="WebAppInstallResultCode" expires_after="2025-11-01">
   <owner>tsergeant@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
@@ -360,9 +360,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppInstallService.WebAppInstaller.InstallResult{AppInstallSurface}"
-    enum="WebAppInstallResultCode" expires_after="2025-04-13">
-  <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+    enum="WebAppInstallResultCode" expires_after="2025-11-01">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
     The overall result of installing a web app through the App Install Service
     for a given install surface.
@@ -444,9 +444,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.AnnotationStorage.IcaStatus"
+    enum="ImageAnnotationWorkerIcaStatus" expires_after="2025-01-31">
+  <owner>chenjih@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    Records status of launcher image search ICA processing. Logged at each stage
+    for debug purpose. The bucket proportion is not meaningful as it is a
+    recording of status through the ICA workflow. Instead, the bucket ratio can
+    be used to calculate the percentage of failures at each stage.
+  </summary>
+</histogram>
+
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.NumberOfRetries"
-    units="count" expires_after="2025-03-02">
+    units="count" expires_after="2025-11-30">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -458,7 +470,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.Status"
-    enum="ImageContentAnnotatorStatus" expires_after="2025-05-04">
+    enum="ImageContentAnnotatorStatus" expires_after="2025-11-30">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -484,7 +496,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueNumberOfObjectsToProcess"
-    units="units" expires_after="2025-05-04">
+    units="units" expires_after="2025-11-30">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -496,7 +508,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueProcessingTime"
-    units="ms" expires_after="2025-05-04">
+    units="ms" expires_after="2025-11-30">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -517,8 +529,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Timeout"
+    units="count" expires_after="2025-01-31">
+  <owner>chenjih@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    Records the number of already indexed images before the timeout happens.
+    Logged once per Timeout.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.AnnotationStorage.SqlDatabase.Status"
-    enum="SqlDatabaseStatus" expires_after="2024-12-30">
+    enum="SqlDatabaseStatus" expires_after="2025-11-30">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -528,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.Status"
-    enum="AnnotationStorageStatus" expires_after="2024-12-30">
+    enum="AnnotationStorageStatus" expires_after="2025-11-30">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1774,7 +1796,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppListBubble.{AppListPage}.AppLaunchesByCategory{ExperimentalArm}"
-    enum="AppListAppCollections" expires_after="2025-03-18">
+    enum="AppListAppCollections" expires_after="2025-05-18">
   <owner>anasalazar@google.com</owner>
   <owner>anooshree@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -1798,7 +1820,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppListBubble.{AppListPage}.AppLaunchesByEntity{ExperimentalArm}"
-    enum="AppListEntity" expires_after="2025-03-18">
+    enum="AppListEntity" expires_after="2025-05-18">
   <owner>anasalazar@google.com</owner>
   <owner>anooshree@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2922,40 +2944,6 @@ chromium-metrics-reviews@google.com.
     Records the restored browser window count from session restore. This is
     logged when the restoration process finishes during the system startup
     phase.
-  </summary>
-</histogram>
-
-<histogram name="Apps.Shortcut.LaunchSource" enum="ShortcutActionSource"
-    expires_after="2024-12-01">
-  <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
-  <summary>
-    Records whether a shortcut is launched from the Launcher or Shelf. Emitted
-    when the user activates the shortcut by clicking on the shortcut item in the
-    Launcher or Shelf. Activating a shortcut will launch its linked parent app
-    to land on a specific page or screen.
-  </summary>
-</histogram>
-
-<histogram name="Apps.Shortcut.PinAction" enum="ShortcutPinAction"
-    expires_after="2024-12-01">
-  <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
-  <summary>
-    Records when the user pins or unpins a shortcut in the shelf. Pinning or
-    unpinning can be triggered via the context menu of the shortcut item in the
-    launcher or shelf.
-  </summary>
-</histogram>
-
-<histogram name="Apps.Shortcut.RemovalSource" enum="ShortcutActionSource"
-    expires_after="2024-12-01">
-  <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
-  <summary>
-    Records whether a shortcut is removed via the Launcher or Shelf. Emitted
-    when the user removes a shortcut via the Launcher or Shelf context menu.
-    Shortcuts are items in the Launcher/ Shelf that link to an installed app.
   </summary>
 </histogram>
 

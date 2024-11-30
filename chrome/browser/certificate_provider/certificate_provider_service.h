@@ -70,12 +70,12 @@ class CertificateProviderService : public KeyedService {
 
   class Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Returns the ids of the extensions that want to provide certificates and
     // therefore want to be notified about certificate requests. This is called

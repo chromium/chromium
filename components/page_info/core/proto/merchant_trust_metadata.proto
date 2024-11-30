@@ -1,0 +1,29 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package page_info.proto;
+
+message MerchantTrustSignalsV3 {
+  // Overall rating out of 5.
+  optional float star_rating = 1;
+
+  // Total number of reviews went into the rating.
+  optional int32 count_rating = 2;
+
+  // Google's merchant details page.
+  optional string page_url = 3;
+
+  // Shopper Voice Summary.
+  optional string overall_summary = 4;
+
+  // Number of positive reviews for the overall summary.
+  optional int32 positive_sentiment_count = 5;
+
+  // Number of negative reviews for the overall summary.
+  optional int32 negative_sentiment_count = 6;
+}

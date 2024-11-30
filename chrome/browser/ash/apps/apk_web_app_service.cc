@@ -203,12 +203,6 @@ ApkWebAppService::ApkWebAppService(Profile* profile, Delegate* test_delegate)
   }
 
   if (web_app::IsWebAppsCrosapiEnabled()) {
-    // null in unit tests
-    if (auto* browser_manager = crosapi::BrowserManager::Get()) {
-      keep_alive_ = browser_manager->KeepAlive(
-          crosapi::BrowserManager::Feature::kApkWebAppService);
-    }
-
     crosapi::WebAppServiceAsh* web_app_service_ash =
         crosapi::CrosapiManager::Get()->crosapi_ash()->web_app_service_ash();
     web_app_service_observer_.Observe(web_app_service_ash);
@@ -266,8 +260,15 @@ std::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
   if (!web_app_provider) {
     return std::nullopt;
   }
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<webapps::AppId> app_id =
-      web_app_provider->registrar_unsafe().FindAppWithUrlInScope(url);
+      web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
+          url,
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          });
   if (!app_id) {
     return std::nullopt;
   }

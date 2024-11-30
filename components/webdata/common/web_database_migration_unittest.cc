@@ -1472,3 +1472,29 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion134ToCurrent) {
         "masked_credit_cards", "card_info_retrieval_enrollment_state"));
   }
 }
+
+// Tests addition of the new table `payment_instrument_creation_options` and
+// its columns `id` and `serialized_value_encrypted`.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion135ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_135.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(135, VersionFromConnection(&connection));
+    EXPECT_FALSE(
+        connection.DoesTableExist("payment_instrument_creation_options"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(
+        connection.DoesTableExist("payment_instrument_creation_options"));
+    EXPECT_TRUE(connection.DoesColumnExist(
+        "payment_instrument_creation_options", "id"));
+    EXPECT_TRUE(connection.DoesColumnExist(
+        "payment_instrument_creation_options", "serialized_value_encrypted"));
+  }
+}

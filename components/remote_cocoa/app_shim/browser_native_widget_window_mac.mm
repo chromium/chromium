@@ -6,9 +6,14 @@
 
 #import <AppKit/AppKit.h>
 
+#include "components/remote_cocoa/app_shim/features.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 
+namespace {
+// Workaround for https://crbug.com/1369643
+const double kThinControllerHeight = 0.5;
+}  // namespace
 @interface NSWindow (PrivateBrowserNativeWidgetAPI)
 + (Class)frameViewClassForStyleMask:(NSUInteger)windowStyle;
 @end
@@ -97,6 +102,8 @@
 
 @implementation BrowserNativeWidgetWindow
 
+@synthesize thinTitlebarViewController = _thinTitlebarViewController;
+
 // NSWindow (PrivateAPI) overrides.
 
 + (Class)frameViewClassForStyleMask:(NSUInteger)windowStyle {
@@ -119,6 +126,19 @@
            selector:@selector(windowDidBecomeKey:)
                name:NSWindowDidBecomeKeyNotification
              object:nil];
+    if (base::FeatureList::IsEnabled(
+            remote_cocoa::features::kFullscreenPermanentThinController)) {
+      _thinTitlebarViewController =
+          [[NSTitlebarAccessoryViewController alloc] init];
+      NSView* thinView = [[NSView alloc] init];
+      thinView.wantsLayer = YES;
+      thinView.layer.backgroundColor = NSColor.blackColor.CGColor;
+      _thinTitlebarViewController.view = thinView;
+      _thinTitlebarViewController.layoutAttribute = NSLayoutAttributeBottom;
+      _thinTitlebarViewController.fullScreenMinHeight = kThinControllerHeight;
+      _thinTitlebarViewController.hidden = YES;
+      [self addTitlebarAccessoryViewController:_thinTitlebarViewController];
+    }
   }
   return self;
 }

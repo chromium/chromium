@@ -95,9 +95,9 @@ CSSValueID InterpolableLength::LengthTypeToCSSValueID(Length::Type lt) {
     case Length::Type::kFitContent:
       return CSSValueID::kFitContent;
     case Length::Type::kStretch:
-      return RuntimeEnabledFeatures::LayoutStretchEnabled()
-                 ? CSSValueID::kStretch
-                 : CSSValueID::kWebkitFillAvailable;
+      return CSSValueID::kStretch;
+    case Length::Type::kFillAvailable:
+      return CSSValueID::kWebkitFillAvailable;
     case Length::Type::kContent:  // only valid for flex-basis.
       return CSSValueID::kContent;
     default:
@@ -119,8 +119,9 @@ Length::Type InterpolableLength::CSSValueIDToLengthType(CSSValueID id) {
     case CSSValueID::kWebkitFitContent:
       return Length::Type::kFitContent;
     case CSSValueID::kStretch:
-    case CSSValueID::kWebkitFillAvailable:
       return Length::Type::kStretch;
+    case CSSValueID::kWebkitFillAvailable:
+      return Length::Type::kFillAvailable;
     case CSSValueID::kContent:  // only valid for flex-basis.
       return Length::Type::kContent;
     default:
@@ -135,9 +136,6 @@ InterpolableLength* InterpolableLength::MaybeConvertLength(
     float zoom,
     std::optional<EInterpolateSize> interpolate_size) {
   if (!length.IsSpecified()) {
-    if (!RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
-      return nullptr;
-    }
     CSSValueID keyword = LengthTypeToCSSValueID(length.GetType());
     if (keyword == CSSValueID::kInvalid ||
         !LengthPropertyFunctions::CanAnimateKeyword(property, keyword)) {

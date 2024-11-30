@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/welcome/welcome_ui.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ui/webui/welcome/bookmark_handler.h"
 #include "chrome/browser/ui/webui/welcome/google_apps_handler.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
+#include "chrome/browser/ui/webui/welcome/ntp_background_fetcher.h"
 #include "chrome/browser/ui/webui/welcome/ntp_background_handler.h"
 #include "chrome/browser/ui/webui/welcome/set_as_default_handler.h"
 #include "chrome/browser/ui/webui/welcome/welcome_handler.h"
@@ -32,6 +35,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "net/base/url_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -144,9 +149,8 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
 
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(profile, url.host());
-  webui::SetupWebUIDataSource(
-      html_source, base::make_span(kWelcomeResources, kWelcomeResourcesSize),
-      IDR_WELCOME_WELCOME_HTML);
+  webui::SetupWebUIDataSource(html_source, base::span(kWelcomeResources),
+                              IDR_WELCOME_WELCOME_HTML);
 
   // Add welcome strings.
   AddStrings(html_source);

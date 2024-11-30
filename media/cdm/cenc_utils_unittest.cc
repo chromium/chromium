@@ -397,7 +397,7 @@ TEST_F(CencUtilsTest, HugeSize) {
       std::vector<uint8_t>(data, data + std::size(data)), &key_ids));
 }
 
-TEST_F(CencUtilsTest, GetPsshData_Version0) {
+TEST_F(CencUtilsTest, GetPsshDataVersion0) {
   const uint8_t data_bytes[] = {0x01, 0x02, 0x03, 0x04};
   std::vector<uint8_t> pssh_data;
 
@@ -411,7 +411,7 @@ TEST_F(CencUtilsTest, GetPsshData_Version0) {
   EXPECT_EQ(data, pssh_data);
 }
 
-TEST_F(CencUtilsTest, GetPsshData_Version1NoKeys) {
+TEST_F(CencUtilsTest, GetPsshDataVersion1NoKeys) {
   const uint8_t data_bytes[] = {0x05, 0x06, 0x07, 0x08};
   std::vector<uint8_t> pssh_data;
 
@@ -425,7 +425,7 @@ TEST_F(CencUtilsTest, GetPsshData_Version1NoKeys) {
   EXPECT_EQ(data, pssh_data);
 }
 
-TEST_F(CencUtilsTest, GetPsshData_Version1WithKeys) {
+TEST_F(CencUtilsTest, GetPsshDataVersion1WithKeys) {
   const uint8_t data_bytes[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
   std::vector<uint8_t> pssh_data;
 
@@ -439,7 +439,7 @@ TEST_F(CencUtilsTest, GetPsshData_Version1WithKeys) {
   EXPECT_EQ(data, pssh_data);
 }
 
-TEST_F(CencUtilsTest, GetPsshData_Version2) {
+TEST_F(CencUtilsTest, GetPsshDataVersion2) {
   std::vector<uint8_t> pssh_data;
 
   std::vector<uint8_t> box = MakePSSHBox(1, Key1());
@@ -450,7 +450,7 @@ TEST_F(CencUtilsTest, GetPsshData_Version2) {
   EXPECT_FALSE(GetPsshData(box, CommonSystemSystemId(), &pssh_data));
 }
 
-TEST_F(CencUtilsTest, GetPsshData_Version2ThenVersion1) {
+TEST_F(CencUtilsTest, GetPsshDataVersion2ThenVersion1) {
   std::vector<uint8_t> pssh_data;
 
   std::vector<uint8_t> box_v1 = MakePSSHBox(1, Key1());
@@ -470,7 +470,7 @@ TEST_F(CencUtilsTest, GetPsshData_Version2ThenVersion1) {
   EXPECT_EQ(key_ids[0], Key1());
 }
 
-TEST_F(CencUtilsTest, GetPsshData_Version1ThenVersion2) {
+TEST_F(CencUtilsTest, GetPsshDataVersion1ThenVersion2) {
   std::vector<uint8_t> pssh_data;
 
   std::vector<uint8_t> box_v1 = MakePSSHBox(1, Key3());
@@ -490,7 +490,7 @@ TEST_F(CencUtilsTest, GetPsshData_Version1ThenVersion2) {
   EXPECT_EQ(key_ids[0], Key3());
 }
 
-TEST_F(CencUtilsTest, GetPsshData_DifferentSystemID) {
+TEST_F(CencUtilsTest, GetPsshDataDifferentSystemID) {
   std::vector<uint8_t> unknown_system_id(kKey1Data,
                                          kKey1Data + std::size(kKey1Data));
   std::vector<uint8_t> pssh_data;
@@ -500,7 +500,7 @@ TEST_F(CencUtilsTest, GetPsshData_DifferentSystemID) {
   EXPECT_FALSE(GetPsshData(box, unknown_system_id, &pssh_data));
 }
 
-TEST_F(CencUtilsTest, GetPsshData_MissingData) {
+TEST_F(CencUtilsTest, GetPsshDataMissingData) {
   const uint8_t data_bytes[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
   std::vector<uint8_t> pssh_data;
 
@@ -515,7 +515,7 @@ TEST_F(CencUtilsTest, GetPsshData_MissingData) {
   EXPECT_FALSE(GetPsshData(box, CommonSystemSystemId(), &pssh_data));
 }
 
-TEST_F(CencUtilsTest, GetPsshData_MultiplePssh) {
+TEST_F(CencUtilsTest, GetPsshDataMultiplePssh) {
   const uint8_t data1_bytes[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
   const uint8_t data2_bytes[] = {0xa1, 0xa2, 0xa3, 0xa4};
   std::vector<uint8_t> pssh_data;

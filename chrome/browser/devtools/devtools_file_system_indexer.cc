@@ -283,7 +283,8 @@ DevToolsFileSystemIndexer::FileSystemIndexingJob::FileSystemIndexingJob(
   pending_folders_.push_back(file_system_path);
 }
 
-DevToolsFileSystemIndexer::FileSystemIndexingJob::~FileSystemIndexingJob() {}
+DevToolsFileSystemIndexer::FileSystemIndexingJob::~FileSystemIndexingJob() =
+    default;
 
 void DevToolsFileSystemIndexer::FileSystemIndexingJob::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

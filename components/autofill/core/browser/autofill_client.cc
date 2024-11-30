@@ -55,7 +55,7 @@ AutofillCrowdsourcingManager* AutofillClient::GetCrowdsourcingManager() {
   return nullptr;
 }
 
-const PersonalDataManager* AutofillClient::GetPersonalDataManager() const {
+const PersonalDataManager& AutofillClient::GetPersonalDataManager() const {
   return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
 }
 
@@ -210,5 +210,8 @@ PasswordFormClassification AutofillClient::ClassifyAsPasswordForm(
     FieldGlobalId field_id) const {
   return {};
 }
+
+void AutofillClient::TriggerPlusAddressUserPerceptionSurvey(
+    plus_addresses::hats::SurveyType survey_type) {}
 
 }  // namespace autofill

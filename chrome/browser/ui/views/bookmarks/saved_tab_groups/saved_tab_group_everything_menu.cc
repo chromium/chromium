@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -363,9 +364,23 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
         TabGroupSyncService* tab_group_service =
             tab_groups::SavedTabGroupUtils::GetServiceForProfile(
                 browser_->profile());
+
+        bool will_open_shared_group = false;
+        if (std::optional<tab_groups::SavedTabGroup> saved_group =
+                tab_group_service->GetGroup(uuid)) {
+          will_open_shared_group = !saved_group->local_group_id().has_value() &&
+                                   saved_group->is_shared_tab_group();
+        }
+
         tab_group_service->OpenTabGroup(
             uuid, std::make_unique<TabGroupActionContextDesktop>(
                       browser_, OpeningSource::kOpenedFromRevisitUi));
+
+        if (will_open_shared_group) {
+          saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
+              saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+                  kOpenedFromSubmenu);
+        }
         break;
       }
       case Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW:
@@ -391,9 +406,23 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
     TabGroupSyncService* tab_group_service =
         tab_groups::SavedTabGroupUtils::GetServiceForProfile(
             browser_->profile());
+
+    bool will_open_shared_group = false;
+    if (std::optional<tab_groups::SavedTabGroup> saved_group =
+            tab_group_service->GetGroup(group_id)) {
+      will_open_shared_group = !saved_group->local_group_id().has_value() &&
+                               saved_group->is_shared_tab_group();
+    }
+
     tab_group_service->OpenTabGroup(
         group_id, std::make_unique<TabGroupActionContextDesktop>(
                       browser_, OpeningSource::kOpenedFromRevisitUi));
+
+    if (will_open_shared_group) {
+      saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
+          saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+              kOpenedFromEverythingMenu);
+    }
   }
 }
 

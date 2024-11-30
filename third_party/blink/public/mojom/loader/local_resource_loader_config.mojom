@@ -4,13 +4,12 @@
 
 module blink.mojom;
 
+import "url/mojom/origin.mojom";
+
 // Contains the information necessary for a renderer process to procure the
 // binary data for a resource given just the URL without further communication
 // with the browser process.
 struct LocalResourceSource {
-  // Data source name. This source serves URLs of the form: chrome://<name>
-  string name;
-
   // HTTP response headers associated with all content served from this source.
   // The format is that of net::HttpResponseHeaders::raw_headers_.
   string headers;
@@ -25,5 +24,6 @@ struct LocalResourceSource {
 };
 
 struct LocalResourceLoaderConfig {
-  array<LocalResourceSource> sources;
+  // The key is an origin used to determine which URLs the data source serves.
+  map<url.mojom.Origin, LocalResourceSource> sources;
 };

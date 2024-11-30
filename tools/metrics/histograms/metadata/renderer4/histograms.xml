@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Renderer4.Browser.RasterTaskTotalDuration"
     units="microseconds" expires_after="2023-09-10">
   <owner>khushalsagar@chromium.org</owner>
-  <owner>chrome-gpu@google.com</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
     Time spent completing all work for a compositor rasterization task. This
     includes the time in the renderer process for sending GL or paint commands
@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
     expires_after="2025-04-13">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Whether gpu rasterization is enabled (checked once after the page is painted
     for the first time).
@@ -222,9 +222,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2025-03-23">
+    units="microseconds" expires_after="2025-05-25">
   <owner>khushalsagar@chromium.org</owner>
-  <owner>chrome-gpu@google.com</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
     Time spent completing all work for a compositor rasterization task. This
     includes the time in the renderer process for sending GL or paint commands

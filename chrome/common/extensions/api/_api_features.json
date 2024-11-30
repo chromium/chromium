@@ -744,13 +744,13 @@
     ],
     "contexts": ["privileged_extension"]
   },
-  "permissions.addSiteAccessRequest": {
+  "permissions.addHostAccessRequest": {
     "min_manifest_version": 3,
-    "feature_flag": "ApiPermissionsSiteAccessRequests"
+    "feature_flag": "ApiPermissionsHostAccessRequests"
   },
-  "permissions.removeSiteAccessRequest": {
+  "permissions.removeHostAccessRequest": {
     "min_manifest_version": 3,
-    "feature_flag": "ApiPermissionsSiteAccessRequests"
+    "feature_flag": "ApiPermissionsHostAccessRequests"
   },
   "platformKeys": {
     "dependencies": ["permission:platformKeys"],

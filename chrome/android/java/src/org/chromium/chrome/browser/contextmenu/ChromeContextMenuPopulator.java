@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconBut
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -694,10 +693,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     private WindowAndroid getWindow() {
         return mItemDelegate.getWebContents().getTopLevelNativeWindow();
-    }
-
-    private Activity getActivity() {
-        return getWindow().getActivity().get();
     }
 
     private void shareHighlighting() {

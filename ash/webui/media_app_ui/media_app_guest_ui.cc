@@ -24,7 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/ash/components/mantis/media_app/mantis_media_app_untrusted_service.h"
+#include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -301,18 +301,31 @@ void MediaAppGuestUI::CreateMahiUntrustedService(
       web_ui()->GetWebContents()->GetTopLevelNativeWindow());
 }
 
+void MediaAppGuestUI::OnMantisAvailableDone(IsMantisAvailableCallback callback,
+                                            bool result) {
+  is_mantis_available_ = result;
+  std::move(callback).Run(result);
+}
+
+void MediaAppGuestUI::IsMantisAvailable(IsMantisAvailableCallback callback) {
+  // Mantis does not live in //chrome, no need to use delegate.
+  if (mantis_untrusted_service_manager_ == nullptr) {
+    mantis_untrusted_service_manager_ =
+        std::make_unique<MantisUntrustedServiceManager>();
+  }
+  mantis_untrusted_service_manager_->IsAvailable(
+      base::BindOnce(&MediaAppGuestUI::OnMantisAvailableDone,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void MediaAppGuestUI::CreateMantisUntrustedService(
-    mojo::PendingReceiver<media_app_ui::mojom::MantisMediaAppUntrustedService>
-        receiver) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantis)) {
+    CreateMantisUntrustedServiceCallback callback) {
+  if (!is_mantis_available_.value_or(false)) {
     untrusted_service_factory_.ReportBadMessage(
-        "Trying to bind interface when flag is not enabled.");
+        "Trying to bind interface when feature is not available.");
     return;
   }
-
-  // Mantis does not live in //chrome, no need to use delegate.
-  mantis_untrusted_service_ =
-      std::make_unique<MantisMediaAppUntrustedService>(std::move(receiver));
+  mantis_untrusted_service_manager_->Create(std::move(callback));
 }
 
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {

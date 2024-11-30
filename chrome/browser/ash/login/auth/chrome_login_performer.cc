@@ -33,7 +33,7 @@ ChromeLoginPerformer::ChromeLoginPerformer(Delegate* delegate,
                                            AuthEventsRecorder* metrics_recorder)
     : LoginPerformer(delegate, metrics_recorder) {}
 
-ChromeLoginPerformer::~ChromeLoginPerformer() {}
+ChromeLoginPerformer::~ChromeLoginPerformer() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // ChromeLoginPerformer, public:

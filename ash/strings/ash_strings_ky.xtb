@@ -441,7 +441,7 @@
 <translation id="2530896289327917474">Caret серептөөсүн күйгүзүү же өчүрүү</translation>
 <translation id="2531025035050312891">түзмөк жай</translation>
 <translation id="2531107890083353124">Өтмөктү сүйрөгөндө, <ph name="KEY_ONE" /> баскычын басып туруңуз</translation>
-<translation id="2545334090614121435">Home'ду колдонууга аракет кылып жатасызбы? Колдонуу</translation>
+<translation id="2545334090614121435">Home баскычы керек болуп жатабы? Муну колдонуңуз:</translation>
 <translation id="254900897760075745">Тандалган контентти алмашуу буферине көчүрүү</translation>
 <translation id="2549711466868162843">Жарыгыраак кылуу</translation>
 <translation id="2549985041256363841">Жаздырып баштоо</translation>
@@ -563,7 +563,7 @@
 <translation id="2985148236010982088">Бардык колдонмолорду көрүү</translation>
 <translation id="2992272421330787632">Бардык медиа сунуштарын жашыруу</translation>
 <translation id="2992327365391326550">Түзмөктүн микрофон баскычы өчүк.</translation>
-<translation id="2993956882370897557">End'ди колдонууга аракет кылып жатасызбы? Колдонуу</translation>
+<translation id="2993956882370897557">End баскычы керек болуп жатабы? Муну колдонуңуз:</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Экран өлчөмүн түзөтүү</translation>
 <translation id="3009178788565917040">Чыгаруу</translation>
@@ -619,7 +619,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү мурунку версияга кайтарууда. Түзмөгүңүз баштапкы абалга келтирилип, бардык дайын-даректер өчүрүлөт.</translation>
 <translation id="316798519864381606">Google слайды</translation>
 <translation id="3171170659304083361">Киргизүү ыкмаларынын параметрлери</translation>
-<translation id="3174897399179348329">Page Up'ты колдонууга аракет кылып жатасызбы? Колдонуу</translation>
+<translation id="3174897399179348329">Page Up баскычы керек болуп жатабы? Муну колдонуңуз:</translation>
 <translation id="3176221688814061633">Chromebook же Bluetooth түзмөгүңүз Bluetooth'дун эски версиясын колдонуп жатат. Аудионун сапатын жакшыртуу үчүн Bluetooth Super Resolution'ду күйгүзүңүз же ички микрофонду колдонуңуз.</translation>
 <translation id="3181441307743005334">Өчүрүп күйгүзүү бир нече убакытка созулушу мүмкүн</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Бир түзмөккө туташты}other{# түзмөккө туташты}}</translation>
@@ -1827,7 +1827,7 @@
 <translation id="7144942256906679589">Батареянын абалы</translation>
 <translation id="7145639536026937076">Батареянын деңгээли <ph name="PERCENTAGE" />%, кубатталууда. Батареяны үнөмдөгүч күйүк.</translation>
 <translation id="7147587499155271409">Көрүлгөн вебсайттар жок</translation>
-<translation id="7147657298465433425">F баскычтарын колдонуу үчүн fn + жогорку саптагы баскычтарды басыңыз</translation>
+<translation id="7147657298465433425">Функциялар баскычтарын колдонуу үчүн Fn баскычы менен кошо жогорку катардагы баскычтарды басыңыз.</translation>
 <translation id="7149149900052329230">Түзмөктөгү жана Google Drive'дагы файлдарыңыздын баарын Файлдар колдонмосунда тескеңиз.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1934,7 +1934,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> учурда микрофонуңузду колдонуп жатат</translation>
 <translation id="7561982940498449837">Менюну жабуу</translation>
 <translation id="7564874036684306347">Терезелер башка иш тактасына жылдырылганда күтүлбөгөн аракеттер орун алышы мүмкүн. Кийинки билдирмелер, терезелер жана диалог кутучалары иш такталардын ортосунда бөлүнүп калышы мүмкүн.</translation>
-<translation id="7568154670718626683">Delete'ти колдонууга аракет кылып жатасызбы? Колдонуу</translation>
+<translation id="7568154670718626683">Delete баскычы керек болуп жатабы? Муну колдонуңуз:</translation>
 <translation id="7568790562536448087">Жаңыртуу</translation>
 <translation id="7569509451529460200">Брайль жана ChromeVox иштетилди</translation>
 <translation id="7569886975397378678">Телефонуңуздагы билдирмелерди жана колдонмолорду көрүү параметрин жабуу</translation>
@@ -2124,6 +2124,7 @@
 <translation id="8142699993796781067">Жеке тармак</translation>
 <translation id="8144760705599030999"><ph name="NAME" /> түзмөгүн <ph name="EMAIL" /> аккаунтуңузга сактап койсоңуз, башка түзмөктөр менен ыкчам туташа аласыз</translation>
 <translation id="8144914663975476336">Жаздыруу форматын тандоо</translation>
+<translation id="8145272500474066209">Генеративдик жасалма интеллект адамдар, ошондой эле башка нерселер тууралуу так эмес маалыматты көрсөтүшү мүмкүн, андыктан анын жоопторун эки жолу текшериңиз. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Bluetooth параметрлерин көрсөтүү. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Жабуу үчүн Ctrl + W баскычтарын басыңыз.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, автотолтуруу</translation>
@@ -2138,7 +2139,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> <ph name="FOCUSED_TIME" /> үчүн коюлган Ынтаа коюу режими өчтү. Аны кайра күйгүзүү үчүн, Ыкчам параметрлерди ачыңыз.</translation>
 <translation id="8203224998425013577">Көбүрөөк быйтыкчалар менен GIF'терди көрсөтүү</translation>
 <translation id="8203795194971602413">Оң баскычын чыкылдатуу</translation>
-<translation id="8205469348819768313">Page Down'ду колдонууга аракет кылып жатасызбы? Колдонуу</translation>
+<translation id="8205469348819768313">Page Down баскычы керек болуп жатабы? Муну колдонуңуз:</translation>
 <translation id="8214996719228530800">Canary каналы</translation>
 <translation id="8219451629189078428">Бул убакта Chromebook күйүп, электр кубатына туташып турушу керек. Кубаттагычтын же адаптердин кабелдери Chromebook'ка жана розеткага жакшы сайылып турганын текшериңиз. Chromebook'ту өчүрбөңүз.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> кошуу</translation>
@@ -2332,7 +2333,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Жардамчы бул тилде иштебейт.</translation>
 <translation id="8926951137623668982">Текче ар дайым жашырылат</translation>
-<translation id="8929566928381252430">Caps Lock'ту колдонууга аракет кылып жатасызбы? Колдонуу</translation>
+<translation id="8929566928381252430">Caps Lock баскычы керек болуп жатабы? Муну колдонуңуз:</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өчүрүлдү</translation>
 <translation id="8938800817013097409">USB-C түзмөгү (аркасындагы оң жактагы оюкча)</translation>

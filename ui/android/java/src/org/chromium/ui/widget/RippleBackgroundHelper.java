@@ -228,39 +228,6 @@ public class RippleBackgroundHelper {
     }
 
     /**
-     * This initializes all members with new drawables needed to display/update a ripple effect.
-     *
-     * @param rippleColorList A {@link ColorStateList} that is used for the ripple effect.
-     * @param borderColorList A {@link ColorStateList} that is used for the border.
-     * @param borderSize The border width in pixels.
-     * @param cornerRadius The corner radius in pixels.
-     * @param verticalInset The vertical inset of the background drawable.
-     * @return The {@link GradientDrawable}/{@link LayerDrawable} to be used as ripple background.
-     */
-    private Drawable createBackgroundDrawable(
-            ColorStateList rippleColorList,
-            ColorStateList borderColorList,
-            @Px int borderSize,
-            @Px int cornerRadius,
-            @Px int verticalInset) {
-        return createBackgroundDrawable(
-                rippleColorList,
-                borderColorList,
-                borderSize,
-                new float[] {
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius
-                },
-                verticalInset);
-    }
-
-    /**
      * @param drawable The {@link Drawable} that needs to be wrapped with insets.
      * @param verticalInset The vertical inset for the specified drawable.
      * @return A {@link Drawable} that wraps the specified drawable with the specified inset.

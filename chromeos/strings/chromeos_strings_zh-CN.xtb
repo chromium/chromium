@@ -1044,6 +1044,7 @@
 <translation id="6058625436358447366">要完成更改，请输入您的旧密码和新密码</translation>
 <translation id="6061772781719867950">HTTPS 请求失败</translation>
 <translation id="6073292342939316679">调低键盘亮度</translation>
+<translation id="6074752328838739425">隐藏摘要</translation>
 <translation id="6075872808778243331">(Android) HTTP 延迟时间</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
 <translation id="6091080061796993741">黄色</translation>
@@ -1233,6 +1234,7 @@
 <translation id="6866732840889595464">雏菊</translation>
 <translation id="6871256179359663621">浅紫色</translation>
 <translation id="6889786074662672253">重启期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。这可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
+<translation id="6899460405678814458">显示摘要</translation>
 <translation id="6900701049656042631">此相册内尚无任何照片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="6902359863093437070">利用 AI 创建背景</translation>
 <translation id="6905163627763043954">试用一下</translation>

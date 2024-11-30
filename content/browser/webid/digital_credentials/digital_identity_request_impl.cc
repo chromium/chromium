@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -194,19 +196,24 @@ blink::mojom::RequestDigitalIdentityStatus ToRequestDigitalIdentityStatus(
     case RequestStatusForMetrics::kErrorUserDeclined:
     case RequestStatusForMetrics::kErrorOther:
       return blink::mojom::RequestDigitalIdentityStatus::kError;
+    case RequestStatusForMetrics::kErrorInvalidJson:
+      return blink::mojom::RequestDigitalIdentityStatus::kErrorInvalidJson;
   }
 }
 
 }  // anonymous namespace
 
 // static
-void DigitalIdentityRequestImpl::Create(
+base::WeakPtr<DigitalIdentityRequestImpl>
+DigitalIdentityRequestImpl::CreateInstance(
     RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest> receiver) {
   // DigitalIdentityRequestImpl owns itself. It will self-destruct when a mojo
   // interface error occurs, the RenderFrameHost is deleted, or the
   // RenderFrameHost navigates to a new document.
-  new DigitalIdentityRequestImpl(host, std::move(receiver));
+  DigitalIdentityRequestImpl* instance =
+      new DigitalIdentityRequestImpl(host, std::move(receiver));
+  return instance->weak_ptr_factory_.GetWeakPtr();
 }
 
 // static
@@ -282,7 +289,7 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
                            base::OptionalFromExpected(response));
 }
 
-std::optional<base::Value> BuildRequest(
+std::optional<base::Value> BuildGetRequest(
     blink::mojom::DigitalCredentialProviderPtr provider) {
   auto result = Value::Dict();
 
@@ -299,6 +306,14 @@ std::optional<base::Value> BuildRequest(
   base::Value::Dict out =
       Value::Dict().Set("providers", Value::List().Append(std::move(result)));
   return base::Value(std::move(out));
+}
+
+base::Value BuildCreateRequest(
+    blink::mojom::DigitalCredentialRequestPtr request) {
+  auto result = Value::Dict();
+  result.Set("protocol", request->protocol);
+  result.Set("data", request->data);
+  return base::Value(std::move(result));
 }
 
 void DigitalIdentityRequestImpl::Request(
@@ -348,9 +363,8 @@ void DigitalIdentityRequestImpl::Request(
   blink::mojom::DigitalCredentialProviderPtr digital_credential_provider =
       std::move(digital_credential_providers[0]);
 
-  RenderFrameHost* render_frame_host_ptr = &render_frame_host();
   WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host_ptr);
+      WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
     return;
@@ -360,7 +374,7 @@ void DigitalIdentityRequestImpl::Request(
   std::optional<std::string> request_json_string =
       digital_credential_provider->request;
   std::optional<base::Value> request_to_send =
-      BuildRequest(std::move(digital_credential_provider));
+      BuildGetRequest(std::move(digital_credential_provider));
   if (!request_json_string || !request_to_send) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
     return;
@@ -368,9 +382,67 @@ void DigitalIdentityRequestImpl::Request(
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       *request_json_string,
-      base::BindOnce(&DigitalIdentityRequestImpl::OnRequestJsonParsed,
+      base::BindOnce(&DigitalIdentityRequestImpl::OnGetRequestJsonParsed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
                      std::move(*request_to_send)));
+}
+
+void DigitalIdentityRequestImpl::Create(
+    blink::mojom::DigitalCredentialRequestPtr digital_credential_request,
+    CreateCallback callback) {
+  if (!IsWebIdentityDigitalCredentialsCreationEnabled()) {
+    std::move(callback).Run(RequestDigitalIdentityStatus::kError,
+                            /*protocol=*/std::nullopt, /*token=*/std::nullopt);
+    return;
+  }
+
+  if (render_frame_host().IsNestedWithinFencedFrame()) {
+    mojo::ReportBadMessage(
+        "DigitalIdentityRequest should not be allowed in fenced frame "
+        "trees.");
+    return;
+  }
+
+  if (callback_) {
+    // Only allow one in-flight wallet request.
+    std::move(callback).Run(RequestDigitalIdentityStatus::kErrorTooManyRequests,
+                            /*protocol=*/std::nullopt, /*token=*/std::nullopt);
+    return;
+  }
+
+  callback_ = std::move(callback);
+
+  if (!render_frame_host().HasTransientUserActivation()) {
+    CompleteRequestWithError(
+        RequestStatusForMetrics::kErrorNoTransientUserActivation);
+    return;
+  }
+
+  if (digital_credential_request.is_null()) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorNoProviders);
+    return;
+  }
+
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  if (!web_contents) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
+  std::string protocol = digital_credential_request->protocol;
+  std::string request_json_string = digital_credential_request->data;
+
+  base::Value request_to_send =
+      BuildCreateRequest(std::move(digital_credential_request));
+
+  // TODO(crbug.com/378330032): consider using Value over mojo instead of string
+  // since the param is already a JSON object.
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      std::move(request_json_string),
+      base::BindOnce(&DigitalIdentityRequestImpl::OnCreateRequestJsonParsed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
+                     std::move(request_to_send)));
 }
 
 void DigitalIdentityRequestImpl::Abort() {
@@ -389,7 +461,7 @@ void DigitalIdentityRequestImpl::Abort() {
       base::unexpected(RequestStatusForMetrics::kErrorAborted));
 }
 
-void DigitalIdentityRequestImpl::OnRequestJsonParsed(
+void DigitalIdentityRequestImpl::OnGetRequestJsonParsed(
     std::optional<std::string> protocol,
     base::Value request_to_send,
     data_decoder::DataDecoder::ValueOrError parsed_result) {
@@ -435,6 +507,47 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
           base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
                          weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
                          std::move(request_to_send)));
+}
+
+void DigitalIdentityRequestImpl::OnCreateRequestJsonParsed(
+    std::optional<std::string> protocol,
+    base::Value request_to_send,
+    data_decoder::DataDecoder::ValueOrError parsed_result) {
+  if (!parsed_result.has_value()) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorInvalidJson);
+    return;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeUIForDigitalIdentity)) {
+    // Post delayed task to enable testing abort+.
+    GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
+                       "fake_test_token"),
+        base::Milliseconds(1));
+    return;
+  }
+
+  provider_ = GetContentClient()->browser()->CreateDigitalIdentityProvider();
+  if (!provider_) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
+  if (!render_frame_host().IsActive() ||
+      render_frame_host().GetVisibilityState() !=
+          content::PageVisibilityState::kVisible) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
+  provider_->Create(
+      WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
+      request_to_send,
+      base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(protocol)));
 }
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(

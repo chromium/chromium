@@ -22,7 +22,10 @@ def __filegroups(ctx):
         # vendor provided headers for libc++.
         "buildtools/third_party/libc++:headers": {
             "type": "glob",
-            "includes": ["__*"],
+            "includes": [
+                "__*",
+                "gross_hack.h",
+            ],
         },
 
         # toolchain root
@@ -38,6 +41,29 @@ def __filegroups(ctx):
                 "*_ignorelist.txt",
                 # https://crbug.com/335997052
                 "clang_rt.profile*.lib",
+            ],
+        },
+        "third_party/cronet_android_mainline_clang/linux-amd64:headers": {
+            "type": "glob",
+            "includes": [
+                "*.h",
+                "bin/clang*",
+            ],
+        },
+        "third_party/cronet_android_mainline_clang/linux-amd64:link": {
+            "type": "glob",
+            "includes": [
+                "bin/clang*",
+                "bin/ld.lld",
+                "bin/lld",
+                "bin/llvm-nm",
+                "bin/llvm-objcopy",
+                "bin/llvm-readelf",
+                "bin/llvm-readobj",
+                "bin/llvm-strip",
+                "*.so",
+                "*.so.*",
+                "*.a",
             ],
         },
     }
@@ -67,6 +93,33 @@ __input_deps = {
     ],
     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": [
         "build/config/unsafe_buffers_paths.txt",
+    ],
+    "build/toolchain/gcc_solink_wrapper.py": [
+        "build/toolchain/whole_archive.py",
+        "build/toolchain/wrapper_utils.py",
+    ],
+    "build/toolchain/gcc_solink_wrapper.py:link": [
+        "build/toolchain/gcc_solink_wrapper.py",
+        "build/toolchain/whole_archive.py",
+        "build/toolchain/wrapper_utils.py",
+    ],
+    "build/toolchain/gcc_link_wrapper.py": [
+        "build/toolchain/whole_archive.py",
+        "build/toolchain/wrapper_utils.py",
+    ],
+    "build/toolchain/gcc_link_wrapper.py:link": [
+        "build/toolchain/gcc_link_wrapper.py",
+        "build/toolchain/whole_archive.py",
+        "build/toolchain/wrapper_utils.py",
+    ],
+    "build/toolchain/apple/linker_driver.py:link": [
+        "build/toolchain/apple/linker_driver.py",
+        "build/toolchain/whole_archive.py",
+    ],
+    "build/toolchain/apple/solink_driver.py:link": [
+        "build/toolchain/apple/linker_driver.py",
+        "build/toolchain/apple/solink_driver.py",
+        "build/toolchain/whole_archive.py",
     ],
 }
 

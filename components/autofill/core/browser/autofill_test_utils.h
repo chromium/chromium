@@ -406,6 +406,11 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
 // Returns a BNPL issuer with fake data.
 BnplIssuer GetTestBnplIssuer();
 
+// Returns a payment instrument creation option with a BNPL issuer filled with
+// fake data using `id` as the `PaymentInstrumentCreationOption.id`.
+sync_pb::PaymentInstrumentCreationOption
+CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id);
+
 }  // namespace test
 }  // namespace autofill
 

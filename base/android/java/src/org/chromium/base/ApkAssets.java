@@ -38,7 +38,7 @@ public class ApkAssets {
         try {
             Context context = ContextUtils.getApplicationContext();
             if (!TextUtils.isEmpty(splitName) && BundleUtils.isIsolatedSplitInstalled(splitName)) {
-                context = BundleUtils.createIsolatedSplitContext(context, splitName);
+                context = BundleUtils.createIsolatedSplitContext(splitName);
             }
             AssetManager manager = context.getAssets();
             afd = manager.openNonAssetFd(apkSubpath);

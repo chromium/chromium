@@ -86,27 +86,6 @@ ui::ImageModel GetFaviconForNode(BookmarkModel* model,
                          : ui::ImageModel::FromImage(image);
 }
 
-BookmarkParentFolder GetBookmarkParentFolderForNode(
-    const BookmarkNode* parent_node) {
-  CHECK(parent_node->is_folder());
-  if (!parent_node->is_permanent_node()) {
-    return BookmarkParentFolder::FromNonPermanentNode(parent_node);
-  }
-  switch (parent_node->type()) {
-    case bookmarks::BookmarkNode::URL:
-      NOTREACHED();
-    case bookmarks::BookmarkNode::FOLDER:
-      return BookmarkParentFolder::ManagedFolder();
-    case bookmarks::BookmarkNode::BOOKMARK_BAR:
-      return BookmarkParentFolder::BookmarkBarFolder();
-    case bookmarks::BookmarkNode::OTHER_NODE:
-      return BookmarkParentFolder::OtherFolder();
-    case bookmarks::BookmarkNode::MOBILE:
-      return BookmarkParentFolder::MobileFolder();
-  }
-  NOTREACHED();
-}
-
 class BookmarkFolderOrURL {
  public:
   explicit BookmarkFolderOrURL(const BookmarkNode* node)
@@ -142,7 +121,7 @@ class BookmarkFolderOrURL {
     if (node->is_url()) {
       return node;
     }
-    return GetBookmarkParentFolderForNode(node);
+    return BookmarkParentFolder::FromFolderNode(node);
   }
 
   const std::variant<BookmarkParentFolder, raw_ptr<const BookmarkNode>>
@@ -526,8 +505,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(
   const BookmarkNode* node = menu_id_to_node_map_[id];
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes(1, node);
   context_menu_ = std::make_unique<BookmarkContextMenu>(
-      parent_, browser_, profile_, location_, node->parent(), nodes,
-      ShouldCloseOnRemove(node));
+      parent_, browser_, profile_, location_, nodes, ShouldCloseOnRemove(node));
   context_menu_->set_observer(this);
   context_menu_->RunMenuAt(p, source_type);
   return true;
@@ -687,7 +665,7 @@ BookmarkMenuDelegate::GetDropParams(
         const BookmarkNode* node = drop_node.GetIfNonPermanentNode();
         CHECK(node);
         drop_params.drop_parent =
-            GetBookmarkParentFolderForNode(node->parent());
+            BookmarkParentFolder::FromFolderNode(node->parent());
         drop_params.index_to_drop_at = service->GetIndexOf(node) + 1;
       }
       break;
@@ -711,7 +689,7 @@ BookmarkMenuDelegate::GetDropParams(
         const BookmarkNode* node = drop_node.GetIfNonPermanentNode();
         CHECK(node);
         drop_params.drop_parent =
-            GetBookmarkParentFolderForNode(node->parent());
+            BookmarkParentFolder::FromFolderNode(node->parent());
         drop_params.index_to_drop_at = service->GetIndexOf(node);
       }
       break;

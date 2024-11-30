@@ -560,7 +560,6 @@ source_set("unit_tests") {
     "tab_cluster/correlation_clusterer_unittest.cc",
     "tab_cluster/undirected_graph_unittest.cc",
     "wallpaper/wallpaper_info_unittest.cc",
-    "wallpaper/wallpaper_types_unittest.cc",
   ]
 
   deps = [

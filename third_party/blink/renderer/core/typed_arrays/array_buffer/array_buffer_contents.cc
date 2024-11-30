@@ -65,7 +65,7 @@ ArrayBufferContents::ArrayBufferContents(
     size_t offset = reinterpret_cast<uintptr_t>(buffer) %
                     base::SysInfo::VMAllocationGranularity();
     uint8_t* base = static_cast<uint8_t*>(buffer) - offset;
-    base::span<uint8_t> mapping = base::make_span(base, length + offset);
+    auto mapping = base::span(base, length + offset);
     auto* mapper = gin::GetSharedMemoryMapperForArrayBuffers();
     base::subtle::PlatformSharedMemoryRegion::Unmap(mapping, mapper);
   };

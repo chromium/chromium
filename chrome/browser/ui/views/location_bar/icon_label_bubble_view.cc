@@ -194,7 +194,7 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
   GetViewAccessibility().AddVirtualChildView(std::move(alert_view));
 }
 
-IconLabelBubbleView::~IconLabelBubbleView() {}
+IconLabelBubbleView::~IconLabelBubbleView() = default;
 
 void IconLabelBubbleView::InkDropAnimationStarted() {
   separator_view_->UpdateOpacity();
@@ -356,8 +356,8 @@ void IconLabelBubbleView::UpdateBackground() {
   // solid background.
   const bool painted_on_solid_background = PaintedOnSolidBackground();
   SetBackground(painted_on_solid_background
-                    ? views::CreateRoundedRectBackground(
-                          GetBackgroundColor(), GetPreferredSize().height())
+                    ? views::CreateRoundedRectBackground(GetBackgroundColor(),
+                                                         GetCornerRadii())
                     : nullptr);
   // TODO(pbos): Consider renaming kOmniboxIcon/kOmniboxActionIcon color IDs to
   // share the same prefix. Here OmniboxIcon assumes to have a background and
@@ -538,6 +538,19 @@ void IconLabelBubbleView::AnimationCanceled(const gfx::Animation* animation) {
 void IconLabelBubbleView::SetImageModel(const ui::ImageModel& image_model) {
   DCHECK(!image_model.IsEmpty());
   LabelButton::SetImageModel(STATE_NORMAL, image_model);
+}
+
+gfx::RoundedCornersF IconLabelBubbleView::GetCornerRadii() const {
+  if (radii_.has_value()) {
+    return radii_.value();
+  }
+  return gfx::RoundedCornersF(GetPreferredSize().height() / 2);
+}
+
+void IconLabelBubbleView::SetCornerRadii(const gfx::RoundedCornersF& radii) {
+  radii_ = radii;
+  UpdateBackground();
+  UpdateBorder();
 }
 
 gfx::Size IconLabelBubbleView::GetSizeForLabelWidth(int label_width) const {
@@ -727,11 +740,15 @@ SkPath IconLabelBubbleView::GetHighlightPath() const {
   }
   highlight_bounds = GetMirroredRect(highlight_bounds);
 
-  const float corner_radius = highlight_bounds.height() / 2.f;
   const SkRect rect = RectToSkRect(highlight_bounds);
+  gfx::RoundedCornersF radii = GetCornerRadii();
+  const SkScalar sk_radii[8] = {
+      SkIntToScalar(radii.upper_left()),  SkIntToScalar(radii.upper_left()),
+      SkIntToScalar(radii.upper_right()), SkIntToScalar(radii.upper_right()),
+      SkIntToScalar(radii.lower_right()), SkIntToScalar(radii.lower_right()),
+      SkIntToScalar(radii.lower_left()),  SkIntToScalar(radii.lower_left())};
 
-  return SkPath().addRoundRect(rect, corner_radius, corner_radius);
-  // return SkPath().addCircle(12, radius, radius); // size / 2
+  return SkPath().addRoundRect(rect, sk_radii);
 }
 
 bool IconLabelBubbleView::PaintedOnSolidBackground() const {

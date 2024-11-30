@@ -11,10 +11,9 @@ import './supported_links_dialog.js';
 import './supported_links_overlapping_apps_dialog.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
-import {AppManagementUserAction, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {castExists, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import type {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_link/localized_link.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
@@ -120,8 +119,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
    * in the browser.
    */
   private isDisabled_(): boolean {
-    return this.app.type === AppType.kWeb &&
-        this.app.windowMode === WindowMode.kBrowser;
+    return this.app.disableUserChoiceNavigationCapturing;
   }
 
   protected getCurrentPreferredApp_(): string {

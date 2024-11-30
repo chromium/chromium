@@ -308,7 +308,10 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
       app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
                proto::INSTALLED_WITH_OS_INTEGRATION}));
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value(),
             mojom::UserDisplayMode::kStandalone);
 

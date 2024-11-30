@@ -677,7 +677,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 /* listenToActivityState= */ true,
                 getIntentRequestTracker(),
                 getInsetObserver(),
-                /* trackOcclusion= */ false);
+                /* trackOcclusion= */ true);
     }
 
     @CalledByNative

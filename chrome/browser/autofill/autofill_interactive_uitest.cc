@@ -58,6 +58,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
+#include "components/autofill/core/browser/crowdsourcing/votes_uploader_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -2101,7 +2102,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // When suggestions are shown, disable autocomplete for the active field.
-  auto SetAutocompleteOff = [this]() {
+  auto SetAutocompleteOff = [this] {
     ASSERT_TRUE(content::ExecJs(
         GetWebContents(),
         "document.querySelector('input').autocomplete = 'off';"));
@@ -2308,11 +2309,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   EXPECT_EQ("Austin", GetFieldValueById("city"));
   EXPECT_EQ("Initech", GetFieldValueById("company"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? "15125551234"
-          : "5125551234",
-      GetFieldValueById("phone"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // An extension of the test fixture for tests with site isolation.
@@ -2441,7 +2438,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
   // Let |test_delegate()| also observe autofill events in the iframe.
   test_delegate()->Observe(cross_driver->GetAutofillManager());
 
-  auto Wait = [this]() { DoNothingAndWait(base::Seconds(2)); };
+  auto Wait = [this] { DoNothingAndWait(base::Seconds(2)); };
   ASSERT_TRUE(AutofillFlow(GetElementById("CREDIT_CARD_NUMBER"), this,
                            {.after_focus = base::BindLambdaForTesting(Wait),
                             .execution_target = cross_frame_host}));
@@ -2551,11 +2548,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
   EXPECT_EQ("Initech", GetFieldValueById("company_form1"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? "15125551234"
-          : "5125551234",
-      GetFieldValueById("phone_form1"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_form1"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
@@ -2576,11 +2569,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
   EXPECT_EQ("Initech", GetFieldValueById("company_form1"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? "15125551234"
-          : "5125551234",
-      GetFieldValueById("phone_form1"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_form1"));
 
   refill = ListenForRefill("firstname_form2");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_form2"), this));
@@ -2593,11 +2582,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Austin", GetFieldValueById("city_form2"));
   EXPECT_EQ("Initech", GetFieldValueById("company_form2"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form2"));
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? "15125551234"
-          : "5125551234",
-      GetFieldValueById("phone_form2"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_form2"));
 }
 
 // Test that forms that dynamically change a second time do not get filled.
@@ -3007,11 +2992,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
   EXPECT_EQ("Initech", GetFieldValueById("company_form1"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? "15125551234"
-          : "5125551234",
-      GetFieldValueById("phone_form1"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_form1"));
 }
 
 // Test that we can Autofill dynamically changing selects that have options
@@ -3060,11 +3041,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Initech", GetFieldValueById("company_syntheticform1"));
   EXPECT_EQ("red.swingline@initech.com",
             GetFieldValueById("email_syntheticform1"));
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? "15125551234"
-          : "5125551234",
-      GetFieldValueById("phone_syntheticform1"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_syntheticform1"));
 }
 
 // Test that we can Autofill dynamically synthetic forms when the select options
@@ -3129,7 +3106,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   ASSERT_TRUE(content::ExecJs(GetWebContents(),
                               "document.getElementById('testform').submit();"));
   ASSERT_TRUE(std::move(submission_waiter).Wait());
-  ASSERT_TRUE(test_api(autofill_manager).FlushPendingVotes());
+  ASSERT_TRUE(test_api(test_api(autofill_manager).votes_uploader())
+                  .FlushPendingVotes());
   load_stop_observer.Wait();
 
   // Short hand for ExpectBucketCount:
@@ -3234,7 +3212,7 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
     // Load ChromeVox and block until it's fully loaded.
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
     sm_.ExpectSpeechPattern("*");
-    sm_.Call([this]() { DisableEarcons(); });
+    sm_.Call([this] { DisableEarcons(); });
   }
 
   void DisableEarcons() {
@@ -3275,7 +3253,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
   // to first flush the expected speech patterns, otherwise the two functions
   // start incompatible RunLoops.
   sm_.ExpectSpeechPattern("Web Content");
-  sm_.Call([this]() {
+  sm_.Call([this] {
     content::WaitForAccessibilityTreeToContainNodeWithName(web_contents(),
                                                            "First name:");
     web_contents()->Focus();
@@ -3287,8 +3265,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
   sm_.ExpectSpeechPattern("Region");
   // Wait for suggestions popup to show up. This needs to happen before we
   // simulate the cursor down key press.
-  sm_.Call([this]() { ASSERT_TRUE(test_delegate()->Wait()); });
-  sm_.Call([this]() {
+  sm_.Call([this] { ASSERT_TRUE(test_delegate()->Wait()); });
+  sm_.Call([this] {
     test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData});
     ASSERT_TRUE(
         ui_controls::SendKeyPress(browser()->window()->GetNativeWindow(),
@@ -3298,7 +3276,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
   sm_.ExpectSpeechPattern("Milton 4120 Freidrich Lane");
   sm_.ExpectSpeechPattern("List item");
   sm_.ExpectSpeechPattern("1 of 2");
-  sm_.Call([this]() { ASSERT_TRUE(test_delegate()->Wait()); });
+  sm_.Call([this] { ASSERT_TRUE(test_delegate()->Wait()); });
   sm_.Replay();
 }
 

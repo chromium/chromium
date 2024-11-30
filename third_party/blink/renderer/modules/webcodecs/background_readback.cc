@@ -49,8 +49,8 @@ SkImageInfo GetImageInfoForFrame(const media::VideoFrame& frame,
 
 gpu::raster::RasterInterface* GetSharedGpuRasterInterface() {
   auto wrapper = blink::SharedGpuContext::ContextProviderWrapper();
-  if (wrapper && wrapper->ContextProvider()) {
-    auto* raster_provider = wrapper->ContextProvider()->RasterContextProvider();
+  if (wrapper) {
+    auto* raster_provider = wrapper->ContextProvider().RasterContextProvider();
     if (raster_provider)
       return raster_provider->RasterInterface();
   }

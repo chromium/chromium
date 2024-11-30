@@ -46,7 +46,7 @@ class TestDialog : public views::DialogDelegateView {
   TestDialog(const TestDialog&) = delete;
   TestDialog& operator=(const TestDialog&) = delete;
 
-  ~TestDialog() override {}
+  ~TestDialog() override = default;
 
   views::View* GetInitiallyFocusedView() override { return this; }
 };

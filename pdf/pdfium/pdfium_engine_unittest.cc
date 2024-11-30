@@ -1097,6 +1097,18 @@ TEST_P(PDFiumEngineTest, DrawTextSelectionsBigtableMicro) {
       *engine, /*page_index=*/0, "bigtable_micro_selection.png");
 }
 
+TEST_P(PDFiumEngineTest, GetPageText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  static constexpr char16_t kExpectedPageText[] = u"Hello, world!\r\nGoodbye, world!";
+
+  EXPECT_EQ(kExpectedPageText, engine->GetPageText(/*page_index=*/0));
+  EXPECT_EQ(kExpectedPageText, engine->GetPageText(/*page_index=*/1));
+}
+
 TEST_P(PDFiumEngineTest, LinkNavigates) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -2098,26 +2110,31 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
                     kBlankPngFilePath);
 
   // Draw 2 strokes.
-  auto brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
-                                             SK_ColorRED, /*size=*/4.0f);
-  constexpr auto kInputs1 = std::to_array<PdfInkInputData>({
+  auto pen_brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
+                                                 SK_ColorRED, /*size=*/4.0f);
+  constexpr auto kPenInputs = std::to_array<PdfInkInputData>({
       {{5.0f, 5.0f}, base::Seconds(0.0f)},
       {{50.0f, 5.0f}, base::Seconds(0.1f)},
   });
-  constexpr auto kInputs2 = std::to_array<PdfInkInputData>({
+  auto highlighter_brush = std::make_unique<PdfInkBrush>(
+      PdfInkBrush::Type::kHighlighter, SK_ColorCYAN, /*size=*/6.0f);
+  constexpr auto kHighlighterInputs = std::to_array<PdfInkInputData>({
       {{75.0f, 5.0f}, base::Seconds(0.0f)},
       {{75.0f, 60.0f}, base::Seconds(0.1f)},
   });
-  std::optional<ink::StrokeInputBatch> inputs1 = CreateInkInputBatch(kInputs1);
-  ASSERT_TRUE(inputs1.has_value());
-  std::optional<ink::StrokeInputBatch> inputs2 = CreateInkInputBatch(kInputs2);
-  ASSERT_TRUE(inputs2.has_value());
-  ink::Stroke stroke1(brush->ink_brush(), inputs1.value());
-  ink::Stroke stroke2(brush->ink_brush(), inputs2.value());
-  constexpr InkStrokeId kStrokeId1(1);
-  constexpr InkStrokeId kStrokeId2(2);
-  engine->ApplyStroke(kPageIndex, kStrokeId1, stroke1);
-  engine->ApplyStroke(kPageIndex, kStrokeId2, stroke2);
+  std::optional<ink::StrokeInputBatch> pen_inputs =
+      CreateInkInputBatch(kPenInputs);
+  ASSERT_TRUE(pen_inputs.has_value());
+  std::optional<ink::StrokeInputBatch> highlighter_inputs =
+      CreateInkInputBatch(kHighlighterInputs);
+  ASSERT_TRUE(highlighter_inputs.has_value());
+  ink::Stroke pen_stroke(pen_brush->ink_brush(), pen_inputs.value());
+  ink::Stroke highligter_stroke(highlighter_brush->ink_brush(),
+                                highlighter_inputs.value());
+  constexpr InkStrokeId kPenStrokeId(1);
+  constexpr InkStrokeId kHighlighterStrokeId(2);
+  engine->ApplyStroke(kPageIndex, kPenStrokeId, pen_stroke);
+  engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highligter_stroke);
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
 
@@ -2137,9 +2154,11 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
                                          kInkAnnotationIdentifierKeyV2),
             2);
 
-  // Perform equivalent of an "undo", to cause stroke to be inactive.
-  // This causes a stroke to no longer be included in the saved PDF data.
-  engine->UpdateStrokeActive(kPageIndex, kStrokeId2, /*active=*/false);
+  // Set the highlighter stroke as inactive, to perform the equivalent of an
+  // "undo" action. The affected stroke should no longer be included in the
+  // saved PDF data.
+  engine->UpdateStrokeActive(kPageIndex, kHighlighterStrokeId,
+                             /*active=*/false);
   const base::FilePath kAppliedStroke1FilePath(
       GetInkTestDataFilePath("applied_stroke1.png"));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke1FilePath);
@@ -2151,9 +2170,10 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
                                          kInkAnnotationIdentifierKeyV2),
             1);
 
-  // Perform equivalent of a "redo", to cause stroke to become active again.
-  // This causes the stroke to be included in saved PDF data again.
-  engine->UpdateStrokeActive(kPageIndex, kStrokeId2, /*active=*/true);
+  // Set the highlighter stroke as active again, to perform the equivalent of an
+  // "redo" action. The affected stroke should be included in the saved PDF data
+  // again.
+  engine->UpdateStrokeActive(kPageIndex, kHighlighterStrokeId, /*active=*/true);
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke2FilePath);
   saved_pdf_data = engine->GetSaveData();
   ASSERT_FALSE(saved_pdf_data.empty());
@@ -2205,7 +2225,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
       GetInkTestDataFilePath("applied_stroke1.png"));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke1FilePath);
 
-  // Perform the equivalent of an "undo", to cause the stroke to be inactive.
+  // Set the stroke as inactive, to perform the equivalent of an "undo" action.
   engine->UpdateStrokeActive(kPageIndex, kStrokeId, /*active=*/false);
 
   // The document should not have any stroke data.

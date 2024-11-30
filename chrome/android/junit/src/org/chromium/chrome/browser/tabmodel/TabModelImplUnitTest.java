@@ -162,7 +162,8 @@ public class TabModelImplUnitTest {
 
                     @Override
                     public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
-                        mTabModelSelector.getModel(isIncognito).closeTabs(tabClosureParams);
+                        ((TabModelImpl) mTabModelSelector.getModel(isIncognito))
+                                .closeTabs(tabClosureParams);
                     }
 
                     @Override
@@ -203,9 +204,9 @@ public class TabModelImplUnitTest {
         TabModel activeIncognito = createTabModel(true, true);
         TabModel inactiveNormal = createTabModel(false, false);
 
-        Tab incognitoTab0 = createTab(activeIncognito);
+        createTab(activeIncognito);
         Tab incognitoTab1 = createTab(activeIncognito);
-        Tab tab0 = createTab(inactiveNormal);
+        createTab(inactiveNormal);
         Tab tab1 = createTab(inactiveNormal);
 
         selectTab(activeIncognito, incognitoTab1);
@@ -219,7 +220,7 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_NotCurrentTab() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         Tab tab0 = createTab(activeNormal);
         Tab tab1 = createTab(activeNormal);
@@ -243,10 +244,10 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_ParentTab() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         Tab tab0 = createTab(activeNormal);
-        Tab tab1 = createTab(activeNormal);
+        createTab(activeNormal);
         Tab tab2 = createTab(activeNormal, 0, tab0.getId());
 
         selectTab(activeNormal, tab2);
@@ -258,7 +259,7 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_Adjacent() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         Tab tab0 = createTab(activeNormal);
         Tab tab1 = createTab(activeNormal);
@@ -296,7 +297,7 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_MostRecentTab() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         // uponExit overrides parent selection..
         Tab tab0 = createTab(activeNormal, 10, Tab.INVALID_TAB_ID);
@@ -318,7 +319,7 @@ public class TabModelImplUnitTest {
     public void testGetNextTabIfClosed_InvalidSelection() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         Tab tab0 = createTab(activeNormal);
         selectTab(activeNormal, tab0);
@@ -334,14 +335,17 @@ public class TabModelImplUnitTest {
         Tab incognitoTab0 = createTab(activeIncognito);
         Tab incognitoTab1 = createTab(activeIncognito);
         Tab incognitoTab2 = createTab(activeIncognito);
-        Tab tab0 = createTab(inactiveNormal);
+        createTab(inactiveNormal);
 
         selectTab(activeIncognito, incognitoTab0);
 
-        activeIncognito.closeTabs(
-                TabClosureParams.closeTabs(List.of(incognitoTab0, incognitoTab1))
-                        .allowUndo(false)
-                        .build());
+        activeIncognito
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(incognitoTab0, incognitoTab1))
+                                .allowUndo(false)
+                                .build(),
+                        /* allowDialog= */ false);
         verify(mTabModelSelector, never()).selectModel(anyBoolean());
         assertEquals(incognitoTab2, activeIncognito.getTabAt(activeIncognito.index()));
     }
@@ -351,7 +355,7 @@ public class TabModelImplUnitTest {
     public void testObserveCurrentTabSupplierActiveNormal() {
         TabModel activeNormal = createTabModel(true, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel inactiveIncognito = createTabModel(false, true);
+        createTabModel(false, true);
 
         assertNull(activeNormal.getCurrentTabSupplier().get());
         assertEquals(0, activeNormal.getTabCountSupplier().get().intValue());
@@ -383,7 +387,7 @@ public class TabModelImplUnitTest {
     public void testObserveCurrentTabSupplierInactiveNormal() {
         TabModel inactiveNormal = createTabModel(false, false);
         // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
-        TabModel activeIncognito = createTabModel(true, true);
+        createTabModel(true, true);
 
         assertNull(inactiveNormal.getCurrentTabSupplier().get());
         assertEquals(0, inactiveNormal.getTabCountSupplier().get().intValue());

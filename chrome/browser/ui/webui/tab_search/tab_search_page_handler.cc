@@ -286,7 +286,8 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // Do not add code past this point.
 }
 
-void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
+void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids,
+                                         const std::vector<GURL>& urls) {
   // TODO(crbug.com/358382903): Add metrics logging.
   // Potentially also invoke IPH pending UX.
   if (!tab_declutter_controller_) {
@@ -306,7 +307,7 @@ void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
 
     tabs.push_back(details->tab);
   }
-  tab_declutter_controller_->DeclutterTabs(tabs);
+  tab_declutter_controller_->DeclutterTabs(tabs, urls);
 
   auto embedder = webui_controller_->embedder();
   if (embedder) {
@@ -399,7 +400,19 @@ void TabSearchPageHandler::ExcludeFromStaleTabs(int32_t tab_id) {
 
   std::erase(stale_tabs_, details->tab);
 
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
+}
+
+void TabSearchPageHandler::ExcludeFromDuplicateTabs(const GURL& url) {
+  if (!tab_declutter_controller_) {
+    return;
+  }
+
+  tab_declutter_controller_->ExcludeFromDuplicateTabs(url);
+
+  // TODO(crbug.com/376879701): Erase from local duplicates list
+
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::RegisterTabDeclutterCallbacks(
@@ -454,27 +467,27 @@ void TabSearchPageHandler::BrowserWindowInterfaceChanged() {
 void TabSearchPageHandler::OnStaleTabDidEnterForeground(
     tabs::TabInterface* tab) {
   RemoveStaleTab(static_cast<tabs::TabInterface*>(tab));
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::OnStaleTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
   RemoveStaleTab(static_cast<tabs::TabInterface*>(tab));
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::OnStaleTabPinnedStateChanged(tabs::TabInterface* tab,
                                                         bool new_pinned_state) {
   RemoveStaleTab(tab);
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::OnStaleTabGroupChanged(
     tabs::TabInterface* tab,
     std::optional<tab_groups::TabGroupId> new_group) {
   RemoveStaleTab(tab);
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
@@ -503,9 +516,10 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   std::move(callback).Run(std::move(profile_tabs));
 }
 
-void TabSearchPageHandler::GetStaleTabs(GetStaleTabsCallback callback) {
+void TabSearchPageHandler::GetUnusedTabs(GetUnusedTabsCallback callback) {
   UpdateStaleTabs();
-  std::move(callback).Run(GetMojoStaleTabs());
+  // TODO(crbug.com/376879734): Maybe update duplicate tabs here?
+  std::move(callback).Run(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::GetTabSearchSection(
@@ -746,15 +760,6 @@ void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
                : TabSearchRecentlyClosedToggleAction::kCollapse);
 }
 
-void TabSearchPageHandler::SetTabSearchSection(
-    tab_search::mojom::TabSearchSection section) {
-  if (section != tab_search::mojom::TabSearchSection::kNone) {
-    Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(
-        tab_search_prefs::kTabSearchTabIndex,
-        tab_search_prefs::GetIntFromTabSearchSection(section));
-  }
-}
-
 void TabSearchPageHandler::SetOrganizationFeature(
     tab_search::mojom::TabOrganizationFeature feature) {
   Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(
@@ -847,6 +852,22 @@ void TabSearchPageHandler::SetTabOrganizationModelStrategy(
   profile->GetPrefs()->SetInteger(
       tab_search_prefs::kTabOrganizationModelStrategy, strategy_int);
   page_->TabOrganizationModelStrategyUpdated(std::move(strategy));
+}
+
+void TabSearchPageHandler::SetTabOrganizationUserInstruction(
+    const std::string& user_instruction) {
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction)) {
+    Browser* browser = chrome::FindLastActive();
+    if (!browser) {
+      return;
+    }
+    TabOrganizationSession* session =
+        organization_service_->GetSessionForBrowser(browser);
+    if (!session) {
+      return;
+    }
+    session->SetUserInstruction(user_instruction);
+  }
 }
 
 void TabSearchPageHandler::SetUserFeedback(
@@ -967,8 +988,6 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
                            profile_data->recently_closed_tab_groups,
                            tab_group_ids, profile_data->tab_groups,
                            tab_dedup_keys);
-  DCHECK(features::kTabSearchRecentlyClosedTabCountThreshold.Get() >= 0);
-
   profile_data->recently_closed_section_expanded =
       Profile::FromWebUI(web_ui_)->GetPrefs()->GetBoolean(
           tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
@@ -1000,7 +1019,7 @@ void TabSearchPageHandler::SetTabDeclutterController(
   if (tab_declutter_controller_) {
     tab_declutter_observation_.Observe(tab_declutter_controller_.get());
     UpdateStaleTabs();
-    page_->StaleTabsChanged(GetMojoStaleTabs());
+    page_->UnusedTabsChanged(GetMojoUnusedTabs());
   }
 }
 
@@ -1012,7 +1031,15 @@ void TabSearchPageHandler::OnStaleTabsProcessed(
   for (tabs::TabInterface* tab : stale_tabs_) {
     RegisterTabDeclutterCallbacks(tab);
   }
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
+}
+
+mojo::StructPtr<tab_search::mojom::UnusedTabInfo>
+TabSearchPageHandler::GetMojoUnusedTabs() {
+  auto unused_tabs = tab_search::mojom::UnusedTabInfo::New();
+  unused_tabs->stale_tabs = GetMojoStaleTabs();
+  unused_tabs->duplicate_tabs = GetMojoDuplicateTabs();
+  return unused_tabs;
 }
 
 std::vector<mojo::StructPtr<tab_search::mojom::Tab>>
@@ -1034,6 +1061,17 @@ TabSearchPageHandler::GetMojoStaleTabs() {
   return mojo_tabs;
 }
 
+base::flat_map<std::string,
+               std::vector<mojo::StructPtr<tab_search::mojom::Tab>>>
+TabSearchPageHandler::GetMojoDuplicateTabs() {
+  // TODO(crbug.com/376879734): Placeholder, replace with actual duplicate tabs.
+  base::flat_map<std::string,
+                 std::vector<mojo::StructPtr<tab_search::mojom::Tab>>>
+      map;
+  map.emplace("about:blank", GetMojoStaleTabs());
+  return map;
+}
+
 void TabSearchPageHandler::AddRecentlyClosedEntries(
     std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
     std::vector<tab_search::mojom::RecentlyClosedTabGroupPtr>&
@@ -1046,13 +1084,10 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
   if (!tab_restore_service)
     return;
 
-  const int kRecentlyClosedTabCountThreshold = static_cast<size_t>(
-      features::kTabSearchRecentlyClosedTabCountThreshold.Get());
+  const int kRecentlyClosedTabCountThreshold = 100;
   int recently_closed_tab_count = 0;
   // The minimum number of desired recently closed items (tab or group) to be
   // shown in the 'Recently Closed' section of the UI.
-  const int kMinRecentlyClosedItemDisplayCount = static_cast<size_t>(
-      features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
   int recently_closed_item_count = 0;
 
   // Attempt to add as many recently closed items as necessary to support the
@@ -1170,7 +1205,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   const tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
 
   tab_data->active = tab->IsInForeground();
-  tab_data->tab_id = tab->GetTabHandle();
+  tab_data->tab_id = tab->GetHandle().raw_value();
   tab_data->index = index;
   const std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
   if (group_id.has_value()) {
@@ -1283,7 +1318,7 @@ void TabSearchPageHandler::OnTabStripModelChanged(
     std::set<SessionID> tab_restore_ids;
     for (const auto& removed_tab : change.GetRemove()->contents) {
       tabs::TabInterface* tab = removed_tab.tab;
-      tab_ids.push_back(tab->GetTabHandle());
+      tab_ids.push_back(tab->GetHandle().raw_value());
 
       if (removed_tab.session_id.has_value() &&
           removed_tab.session_id.value().is_valid()) {
@@ -1428,8 +1463,9 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
   mojo_session->session_id = session->session_id();
   mojo_session->error = tab_search::mojom::TabOrganizationError::kNone;
   mojo_session->active_tab_id =
-      session->base_session_tab() ? session->base_session_tab()->GetTabHandle()
-                                  : tabs::TabHandle::NullValue;
+      session->base_session_tab()
+          ? session->base_session_tab()->GetHandle().raw_value()
+          : tabs::TabHandle::NullValue;
   std::vector<tab_search::mojom::TabOrganizationPtr> organizations;
 
   TabOrganizationRequest::State state = session->request()->state();

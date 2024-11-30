@@ -16,7 +16,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/observer_list.h"
 #import "components/autofill/core/browser/autofill_driver_router.h"
-#import "components/autofill/core/browser/form_filler.h"
+#import "components/autofill/core/browser/filling/form_filler.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
@@ -30,6 +30,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -146,6 +147,10 @@ AutofillClient& AutofillDriverIOS::GetAutofillClient() {
 
 BrowserAutofillManager& AutofillDriverIOS::GetAutofillManager() {
   return *manager_;
+}
+
+ukm::SourceId AutofillDriverIOS::GetPageUkmSourceId() const {
+  return ukm::GetSourceIdForWebStateDocument(web_state_);
 }
 
 // Return true as iOS has no MPArch.
@@ -359,6 +364,14 @@ void AutofillDriverIOS::GetFourDigitCombinationsFromDom(
         potential_matches) {
   // TODO(crbug.com/40260122): Implement GetFourDigitCombinationsFromDom() in
   // iOS.
+  NOTIMPLEMENTED();
+}
+
+void AutofillDriverIOS::ExtractLabeledTextNodeValue(
+    const std::u16string& value_regex,
+    const std::u16string& label_regex,
+    uint32_t number_of_ancestor_levels_to_search,
+    base::OnceCallback<void(const std::string& amount)> response_callback) {
   NOTIMPLEMENTED();
 }
 

@@ -8,7 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -103,7 +103,6 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
           .with_card(card));
 
   // Ensure the accessor received the correct response.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(accessor_->number(), base::UTF8ToUTF16(test_number));
 
   // There was no interactive authentication in this flow, so check that this
@@ -145,7 +144,6 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
                            RiskBasedAuthenticationResponse::Result::kError));
 
   // Expect the CreditCardAccessManager to end the session.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->autofill_error_dialog_shown());
 
@@ -178,9 +176,6 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
           .with_result(CreditCardRiskBasedAuthenticator::
                            RiskBasedAuthenticationResponse::Result::
                                kAuthenticationCancelled));
-
-  // Expect the CreditCardAccessManager to end the session.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(

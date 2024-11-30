@@ -1,0 +1,51 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lens.mojom;
+
+import "url/mojom/url.mojom";
+
+// Factory method for creating a new WebUI page handler for lens side panel.
+interface LensSidePanelPageHandlerFactory {
+  // The side panel WebUI calls this method when the page is first initialized.
+  CreateSidePanelPageHandler(
+      pending_receiver<LensSidePanelPageHandler> handler,
+      pending_remote<LensSidePanelPage> page);
+};
+
+// Browser-side handler for requests from Side PanelWebUI page.
+// (TypeScript -> C++)
+interface LensSidePanelPageHandler {
+  // Pops the most recent search query from the history stack to load in the
+  // side panel.
+  PopAndLoadQueryFromHistory();
+  // Gets whether the current searchbox is contextual.
+  GetIsContextualSearchbox() => (bool is_contextual_searchbox);
+};
+
+// Side Panel WebUI page handler for request from Browser side.
+// (C++ -> TypeScript)
+interface LensSidePanelPage {
+  // Load a provided URL into the side panel results iframe.
+  LoadResultsInFrame(url.mojom.Url results_url);
+
+  // Sets whether the results frame is currently loading. This cannot be done
+  // from the renderer because the results iframe is cross-origin. This prevents
+  // load events on the iframe from triggering reliably on every navigation.
+  // Instead, we listen for the start of the navigations in the browser and set
+  // the loading state appropriately.
+  SetIsLoadingResults(bool is_loading);
+
+  // Sets visibility for back arrow next to the searchbox.
+  SetBackArrowVisible(bool visible);
+
+  // Sets whether to show a full error page in the side panel WebUI. This is
+  // used when the user opens the side panel in an offline state or the full
+  // image request times out.
+  SetShowErrorPage(bool should_show_error_page);
+
+  // Updates the ghost loader state. Loading state is reset on page navigation.
+  // |suppress_ghost_loader| is true when the page bytes can't be uploaded.
+  UpdateGhostLoaderState(bool suppress_ghost_loader, bool reset_loading_state);
+};

@@ -370,6 +370,10 @@ TestProfileIOS::Builder& TestProfileIOS::Builder::SetUserCloudPolicyManager(
   return *this;
 }
 
+std::string TestProfileIOS::Builder::GetEffectiveName() const {
+  return profile_name_.empty() ? "Test" : profile_name_;
+}
+
 std::unique_ptr<TestProfileIOS> TestProfileIOS::Builder::Build() && {
   return std::move(*this).Build(base::CreateUniqueTempDirectoryScopedToTest());
 }
@@ -378,13 +382,8 @@ std::unique_ptr<TestProfileIOS> TestProfileIOS::Builder::Build(
     const base::FilePath& data_dir) && {
   CHECK(!data_dir.empty());
 
-  // Ensure that the name is not empty.
-  if (profile_name_.empty()) {
-    profile_name_ = "Test";
-  }
-
   return base::WrapUnique(new TestProfileIOS(
-      data_dir.Append(profile_name_), profile_name_, std::move(pref_service_),
-      std::move(testing_factories_), std::move(policy_connector_),
-      std::move(user_cloud_policy_manager_)));
+      data_dir.Append(GetEffectiveName()), GetEffectiveName(),
+      std::move(pref_service_), std::move(testing_factories_),
+      std::move(policy_connector_), std::move(user_cloud_policy_manager_)));
 }

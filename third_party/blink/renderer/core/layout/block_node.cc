@@ -793,6 +793,22 @@ void BlockNode::PrepareForLayout() const {
       block->GetScrollableArea()->GetScrollAnchor()->NotifyBeforeLayout();
   }
 
+  // Scroll markers are found and attached when the scrollable container has
+  // finished layout. However, it's still possible for a scroll marker group to
+  // be re-attached without re-laying out the scrollable container (e.g. if the
+  // display type of the scroll marker group changes). If the scroll marker
+  // group object has never had layout, we may need to populate it now. In case
+  // of an after-scroll-marker-group, though, the scrollable container will
+  // populate it before we get to its first layout. So also check that it's
+  // childless, as an attempt to avoid populating it twice.
+  if (box_->IsScrollMarkerGroup() && !box_->EverHadLayout() &&
+      !box_->SlowFirstChild()) {
+    LayoutBlock* scroller_box = box_->ScrollerFromScrollMarkerGroup();
+    if (scroller_box) {
+      PopulateScrollMarkerGroup(BlockNode(scroller_box));
+    }
+  }
+
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())
@@ -1588,52 +1604,43 @@ bool BlockNode::IsCustomLayoutLoaded() const {
   return To<LayoutCustom>(box_.Get())->IsLoaded();
 }
 
+void BlockNode::PopulateScrollMarkerGroup(const BlockNode& scroller) const {
+  DCHECK(box_->IsScrollMarkerGroup());
+  LayoutBox* scroller_box = scroller.GetLayoutBox();
+
+  StyleEngine::AttachScrollMarkersScope scope(GetDocument().GetStyleEngine());
+
+  // Detach all markers.
+  while (LayoutObject* child = GetLayoutBox()->SlowFirstChild()) {
+    // Anonymous wrappers may have been inserted. Search for the marker.
+    for (LayoutObject* walker = child; walker;
+         walker = walker->NextInPreOrder(child)) {
+      if (walker->GetNode() &&
+          walker->GetNode()->IsScrollMarkerPseudoElement()) {
+        walker->GetNode()->DetachLayoutTree(/*performing_reattach=*/true);
+        break;
+      }
+    }
+  }
+  DCHECK(!GetLayoutBox()->SlowFirstChild());
+
+  Node::AttachContext context;
+  context.parent = GetLayoutBox();
+  DCHECK(context.parent);
+
+  auto* scroll_marker_group =
+      To<ScrollMarkerGroupPseudoElement>(GetLayoutBox()->GetNode());
+  scroll_marker_group->ClearFocusGroup();
+  AttachScrollMarkers(*scroller_box, context);
+}
+
 void BlockNode::HandleScrollMarkerGroup() const {
   BlockNode group_node = GetScrollMarkerGroup();
   if (!group_node) {
     return;
   }
 
-  {
-    StyleEngine::AttachScrollMarkersScope scope(GetDocument().GetStyleEngine());
-
-    // Detach all markers.
-    while (LayoutObject* child = group_node.GetLayoutBox()->SlowFirstChild()) {
-      // Anonymous wrappers may have been inserted. Search for the marker.
-      for (LayoutObject* walker = child; walker;
-           walker = walker->NextInPreOrder(child)) {
-        if (walker->GetNode() &&
-            walker->GetNode()->IsScrollMarkerPseudoElement()) {
-          walker->GetNode()->DetachLayoutTree(/*performing_reattach=*/true);
-          break;
-        }
-      }
-    }
-    DCHECK(!group_node.GetLayoutBox()->SlowFirstChild());
-
-    Node::AttachContext context;
-    context.parent = group_node.GetLayoutBox();
-    DCHECK(context.parent);
-
-    auto* scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-        group_node.GetLayoutBox()->GetNode());
-    scroll_marker_group->ClearFocusGroup();
-    if (PseudoElement* scroll_next_button =
-            scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
-                kPseudoIdScrollNextButton)) {
-      To<ScrollButtonPseudoElement>(scroll_next_button)
-          ->SetScrollMarkerGroup(scroll_marker_group);
-    }
-    if (PseudoElement* scroll_prev_button =
-            scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
-                kPseudoIdScrollPrevButton)) {
-      To<ScrollButtonPseudoElement>(scroll_prev_button)
-          ->SetScrollMarkerGroup(scroll_marker_group);
-    }
-    AttachScrollMarkers(*box_, context);
-
-    DCHECK(GetDocument().GetStyleEngine().InScrollMarkersAttachment());
-  }
+  group_node.PopulateScrollMarkerGroup(*this);
 
   // The ::scroll-marker-group has now been populated with markers. If the group
   // comes after the principal box, we can return, and let the parent layout

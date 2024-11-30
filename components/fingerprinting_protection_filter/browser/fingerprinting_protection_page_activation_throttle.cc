@@ -159,31 +159,23 @@ void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(
 
 namespace {
 
-bool GetMeasurePerformance(double performance_measurement_rate) {
+bool ShouldMeasurePerformance(double performance_measurement_rate) {
   return base::ThreadTicks::IsSupported() &&
          (performance_measurement_rate == 1 ||
           base::RandDouble() < performance_measurement_rate);
 }
 
-bool MeasurePerformance(bool use_incognito_param) {
-  double performance_measurement_rate = GetFieldTrialParamByFeatureAsDouble(
-      use_incognito_param
-          ? features::kEnableFingerprintingProtectionFilterInIncognito
-          : features::kEnableFingerprintingProtectionFilter,
-      features::kPerformanceMeasurementRateParam, 0.0);
-  return GetMeasurePerformance(performance_measurement_rate);
-}
-
 }  // namespace
 
-// Whether we record enhanced performance measurements is dependent on the
-// performance measurement rate which may differ between incognito and
-// non-incognito modes.
 bool FingerprintingProtectionPageActivationThrottle::
     GetEnablePerformanceMeasurements(bool is_incognito) const {
-  bool use_incognito_param =
-      features::IsFingerprintingProtectionEnabledInIncognito(is_incognito);
-  return MeasurePerformance(use_incognito_param);
+  // Performance measurement rate may differ between incognito and
+  // non-incognito modes.
+  double performance_measurement_rate = GetFieldTrialParamByFeatureAsDouble(
+      is_incognito ? features::kEnableFingerprintingProtectionFilterInIncognito
+                   : features::kEnableFingerprintingProtectionFilter,
+      features::kPerformanceMeasurementRateParam, 0.0);
+  return ShouldMeasurePerformance(performance_measurement_rate);
 }
 
 }  // namespace fingerprinting_protection_filter

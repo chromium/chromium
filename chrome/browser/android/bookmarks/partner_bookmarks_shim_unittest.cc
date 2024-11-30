@@ -26,7 +26,7 @@ using testing::_;
 
 class MockObserver : public PartnerBookmarksShim::Observer {
  public:
-  MockObserver() {}
+  MockObserver() = default;
 
   MockObserver(const MockObserver&) = delete;
   MockObserver& operator=(const MockObserver&) = delete;

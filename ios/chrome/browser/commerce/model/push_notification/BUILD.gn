@@ -47,7 +47,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/session_proto_db:session_proto_db",
     "//components/sync_bookmarks",
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/browser/bookmarks/model:model",
     "//ios/chrome/browser/commerce/model:session_proto_db",
     "//ios/chrome/browser/commerce/model:shopping_service",

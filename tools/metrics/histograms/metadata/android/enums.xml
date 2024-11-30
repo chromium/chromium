@@ -269,6 +269,21 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Chrome Image"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidUidType) -->
+
+<enum name="AndroidUidType">
+  <int value="0" label="root"/>
+  <int value="1" label="system"/>
+  <int value="2" label="phone"/>
+  <int value="3" label="nfc"/>
+  <int value="4" label="bluetooth"/>
+  <int value="5" label="wifi"/>
+  <int value="6" label="shell"/>
+  <int value="7" label="Other non-app UID"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumFactoryProvider.java:UidType)-->
+
 <enum name="AndroidWebViewCrashCollectionState">
   <int value="0" label="ENABLED_BY_COMMANDLINE">
     Enabled by commandline. This doesn't check later cases (ex. user consent).
@@ -588,6 +603,9 @@ chromium-metrics-reviews@google.com.
   <int value="111" label="Profile.cancelPrefetch"/>
   <int value="112" label="WebViewCompat.setDefaultTrafficStatsTag"/>
   <int value="113" label="WebViewCompat.setDefaultTrafficStatsUid"/>
+  <int value="114" label="WebViewCompat.startUpWebView"/>
+  <int value="115" label="WebViewCompat.prerenderUrl"/>
+  <int value="116" label="WebViewCompat.prerenderUrlWithParams"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -820,6 +838,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="FailedNullInputTransferToken"/>
   <int value="5" label="FailedNullCallbacks"/>
   <int value="6" label="SuccessfulButNullTransferToken"/>
+  <int value="7" label="ReuseExistingInputReceiver"/>
 </enum>
 
 <enum name="DebuggingEnabled">
@@ -1205,6 +1224,21 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Device lock restored"/>
 </enum>
 
+<enum name="MotionEventAction">
+  <int value="0" label="NONE"/>
+  <int value="1" label="DOWN"/>
+  <int value="2" label="UP"/>
+  <int value="3" label="MOVE"/>
+  <int value="4" label="CANCEL"/>
+  <int value="5" label="POINTER_DOWN"/>
+  <int value="6" label="POINTER_UP"/>
+  <int value="7" label="HOVER_ENTER"/>
+  <int value="8" label="HOVER_EXIT"/>
+  <int value="9" label="HOVER_MOVE"/>
+  <int value="10" label="BUTTON_PRESS"/>
+  <int value="11" label="BUTTON_RELEASE"/>
+</enum>
+
 <enum name="MultipleUserProfilesState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Single user profile"/>
@@ -1442,13 +1476,14 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SearchActivityTerminationReason">
   <int value="0" label="Navigation"/>
-  <int value="1" label="Unspecified termination"/>
+  <int value="1" label="Unspecified Termination"/>
   <int value="2" label="Tap Outside"/>
   <int value="3" label="Back Key Pressed"/>
   <int value="4" label="Omnibox Focus Lost"/>
   <int value="5" label="Activity Focus Lost"/>
   <int value="6" label="FRE Not Completed"/>
   <int value="7" label="Custom back arrow"/>
+  <int value="8" label="Bring Tab To Front"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java:TerminationReason) -->
@@ -2281,6 +2316,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="getDefaultWebStorage"/>
   <int value="8" label="getDefaultWebViewDatabase"/>
   <int value="9" label="getTracingController"/>
+  <int value="10" label="asyncWebViewStartUp"/>
 </enum>
 
 <enum name="WebViewUrlScheme">
@@ -2309,6 +2345,16 @@ chromium-metrics-reviews@google.com.
 <enum name="WebViewVisibility">
   <int value="0" label="Visible"/>
   <int value="1" label="NotVisible"/>
+</enum>
+
+<enum name="WindowingMode">
+  <int value="0" label="Mode is unknown."/>
+  <int value="1" label="The app is running in a fullscreen window."/>
+  <int value="2" label="The app is running in a picture-in-picture window."/>
+  <int value="3" label="The app is running in a desktop window."/>
+  <int value="4"
+      label="The app is running in a multi-windowing mode not equivalent to
+             any of the other modes."/>
 </enum>
 
 </enums>

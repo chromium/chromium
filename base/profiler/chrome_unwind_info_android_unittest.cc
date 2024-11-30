@@ -86,13 +86,13 @@ TEST(ChromeUnwindInfoAndroidTest, CreateUnwindInfo) {
   ASSERT_EQ(&data[256], reinterpret_cast<const uint8_t*>(
                             &unwind_info.unwind_instruction_table[0]));
 
-  ExpectSpanSizeAndContentsEqual(unwind_info.page_table, make_span(page_table));
+  ExpectSpanSizeAndContentsEqual(unwind_info.page_table, span(page_table));
   ExpectSpanSizeAndContentsEqual(unwind_info.function_table,
-                                 make_span(function_table));
+                                 span(function_table));
   ExpectSpanSizeAndContentsEqual(unwind_info.function_offset_table,
-                                 make_span(function_offset_table));
+                                 span(function_offset_table));
   ExpectSpanSizeAndContentsEqual(unwind_info.unwind_instruction_table,
-                                 make_span(unwind_instruction_table));
+                                 span(unwind_instruction_table));
 }
 
 }  // namespace base

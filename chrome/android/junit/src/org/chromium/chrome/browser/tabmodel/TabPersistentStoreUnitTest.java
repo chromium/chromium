@@ -76,8 +76,8 @@ public class TabPersistentStoreUnitTest {
 
     @Mock private TabPersistencePolicy mPersistencePolicy;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModel mNormalTabModel;
-    @Mock private TabModel mIncognitoTabModel;
+    @Mock private TabModelInternal mNormalTabModel;
+    @Mock private TabModelInternal mIncognitoTabModel;
     @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabCreator mNormalTabCreator;

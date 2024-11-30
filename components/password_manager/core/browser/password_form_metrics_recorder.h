@@ -322,7 +322,7 @@ class PasswordFormMetricsRecorder
     // Neither user input nor filling.
     kNoUserInputNoFillingOfUsername = 7,
     // Whether the user used manual fallback to fill a form.
-    kManualFallbackUsed = 9,
+    kManualFallbackUsed = 8,
     kMaxValue = kManualFallbackUsed,
   };
 

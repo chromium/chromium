@@ -35,15 +35,25 @@ struct BoundingBoxStruct {
   lens::CoordinateType coordinate_type;
 };
 
-// Struct for creating fake text data for one word.
+// Struct for creating fake word text data.
+struct WordStruct {
+  BoundingBoxStruct geometry;
+  std::string formula_metadata_latex;
+  std::string plain_text;
+  std::string text_separator;
+  lens::TextLayout_Word_Type word_type;
+};
+
+// Struct for creating fake line text data.
+struct LineStruct {
+  BoundingBoxStruct geometry;
+  std::vector<WordStruct> words;
+};
+
+// Struct for creating fake text data.
 struct TextStruct {
   BoundingBoxStruct paragraph_geometry;
-  BoundingBoxStruct line_geometry;
-  std::string word_plain_text;
-  std::string word_text_seperator;
-  BoundingBoxStruct word_geometry;
-  lens::TextLayout_Word_Type word_type;
-  std::string formula_metadata_latex;
+  std::vector<LineStruct> lines;
   lens::WritingDirection writing_direction;
   std::string content_language;
 };
@@ -52,6 +62,23 @@ struct TextStruct {
 struct TranslationWordStruct {
   int start_index;
   int end_index;
+  std::string_view expected_translation;
+  std::string_view expected_separator;
+};
+
+// Struct for creating fake translation lines.
+struct TranslationLineStruct {
+  int start_index;
+  int end_index;
+  uint32_t background_color;
+  std::string_view background_image_bytes;
+  int background_image_height;
+  int background_image_width;
+  int background_image_vertical_padding;
+  int background_image_horizontal_padding;
+  uint32_t text_color;
+  std::string_view text_mask_bytes;
+  std::vector<TranslationWordStruct> words;
 };
 
 // Struct for creating fake translation text data.
@@ -60,15 +87,7 @@ struct TranslationTextStruct {
   std::string_view translation_text;
   std::string_view source_language;
   std::string_view target_language;
-  uint32_t background_color;
-  std::string_view background_image_bytes;
-  int background_image_height;
-  int background_image_width;
-  int background_image_vertical_padding;
-  int background_image_horizontal_padding;
-  std::string_view text_mask_bytes;
-  uint32_t text_color;
-  std::vector<TranslationWordStruct> word_indexes;
+  std::vector<TranslationLineStruct> lines;
   lens::Alignment alignment;
   lens::WritingDirection writing_direction;
   lens::TranslationData::Status::Code status_code;
@@ -92,38 +111,76 @@ inline constexpr BoundingBoxStruct kTestBoundingBox2 = {
     .rotation_z = 0,
     .coordinate_type = lens::IMAGE};
 
-inline constexpr TextStruct kTestText = {
+inline const TextStruct kTestText = {
     .paragraph_geometry = kTestBoundingBox1,
-    .line_geometry = kTestBoundingBox1,
-    .word_plain_text = "plain",
-    .word_text_seperator = " ",
-    .word_geometry = kTestBoundingBox1,
-    .word_type = lens::TextLayout_Word_Type::TextLayout_Word_Type_TEXT,
-    .formula_metadata_latex = "latex",
+    .lines = {{
+        .geometry = kTestBoundingBox1,
+        .words = {{
+            .geometry = kTestBoundingBox1,
+            .formula_metadata_latex = "latex",
+            .plain_text = "plain",
+            .text_separator = " ",
+            .word_type = lens::TextLayout_Word_Type::TextLayout_Word_Type_TEXT,
+        }},
+    }},
     .writing_direction = lens::DEFAULT_WRITING_DIRECTION_LEFT_TO_RIGHT,
     .content_language = "en",
+};
+
+inline const TextStruct kTestTextMultiline = {
+    .paragraph_geometry = kTestBoundingBox1,
+    .lines =
+        {{
+             .geometry = kTestBoundingBox1,
+             .words = {{
+                 .geometry = kTestBoundingBox1,
+                 .formula_metadata_latex = "latex",
+                 .plain_text = "plain",
+                 .text_separator = " ",
+                 .word_type =
+                     lens::TextLayout_Word_Type::TextLayout_Word_Type_FORMULA,
+             }},
+         },
+         {
+             .geometry = kTestBoundingBox2,
+             .words = {{
+                 .geometry = kTestBoundingBox2,
+                 .formula_metadata_latex = "",
+                 .plain_text = "text",
+                 .text_separator = "",
+                 .word_type =
+                     lens::TextLayout_Word_Type::TextLayout_Word_Type_TEXT,
+
+             }},
+         }},
+    .writing_direction = lens::WRITING_DIRECTION_RIGHT_TO_LEFT,
+    .content_language = "fr",
 };
 
 inline const TranslationTextStruct kTestTranslationText = {
     .translation_text = "Hola, mundo!",
     .source_language = "fr",
     .target_language = "es",
-    .background_color = 100,
-    .background_image_bytes = "background",
-    .background_image_height = 10,
-    .background_image_width = 15,
-    .background_image_vertical_padding = 25,
-    .background_image_horizontal_padding = 20,
-    .text_mask_bytes = "text-mask",
-    .text_color = 200,
-    .word_indexes = {{
-                         .start_index = 0,
-                         .end_index = 5,
-                     },
-                     {
-                         .start_index = 6,
-                         .end_index = 12,
-                     }},
+    .lines = {{
+        .start_index = 0,
+        .end_index = 12,
+        .background_color = 100,
+        .background_image_bytes = "background",
+        .background_image_height = 10,
+        .background_image_width = 15,
+        .background_image_vertical_padding = 25,
+        .background_image_horizontal_padding = 20,
+        .text_color = 200,
+        .text_mask_bytes = "text-mask",
+        .words = {{
+                      .start_index = 0,
+                      .end_index = 5,
+                  },
+                  {
+                      .start_index = 6,
+                      .end_index = 12,
+                  }},
+    }},
     .alignment = lens::Alignment::DEFAULT_LEFT_ALIGNED,
     .writing_direction = lens::DEFAULT_WRITING_DIRECTION_LEFT_TO_RIGHT,
     .status_code = lens::TranslationData::Status::SUCCESS,
@@ -133,22 +190,91 @@ inline const TranslationTextStruct kTestUnicodeTranslationText = {
     .translation_text = "美丽世界",
     .source_language = "fr",
     .target_language = "zh",
-    .background_color = 100,
-    .background_image_bytes = "background",
-    .background_image_height = 10,
-    .background_image_width = 15,
-    .background_image_vertical_padding = 25,
-    .background_image_horizontal_padding = 20,
-    .text_mask_bytes = "text-mask",
-    .text_color = 200,
-    .word_indexes = {{
-                         .start_index = 0,
-                         .end_index = 2,
-                     },
-                     {
-                         .start_index = 2,
-                         .end_index = 4,
-                     }},
+    .lines = {{
+        .start_index = 0,
+        .end_index = 4,
+        .background_color = 100,
+        .background_image_bytes = "background",
+        .background_image_height = 10,
+        .background_image_width = 15,
+        .background_image_vertical_padding = 25,
+        .background_image_horizontal_padding = 20,
+        .text_color = 200,
+        .text_mask_bytes = "text-mask",
+        .words = {{
+                      .start_index = 0,
+                      .end_index = 2,
+                      .expected_translation = "美丽",
+                      .expected_separator = "",
+                  },
+                  {
+                      .start_index = 2,
+                      .end_index = 4,
+                      .expected_translation = "世界",
+                      .expected_separator = "",
+                  }},
+    }},
+    .alignment = lens::Alignment::DEFAULT_LEFT_ALIGNED,
+    .writing_direction = lens::DEFAULT_WRITING_DIRECTION_LEFT_TO_RIGHT,
+    .status_code = lens::TranslationData::Status::SUCCESS,
+};
+
+inline const TranslationTextStruct kTestUnicodeTranslationTextMutliline = {
+    .translation_text = "美丽世界。我在这里",
+    .source_language = "fr",
+    .target_language = "zh",
+    .lines = {{
+                  .start_index = 0,
+                  .end_index = 5,
+                  .background_color = 100,
+                  .background_image_bytes = "background",
+                  .background_image_height = 10,
+                  .background_image_width = 15,
+                  .background_image_vertical_padding = 25,
+                  .background_image_horizontal_padding = 20,
+                  .text_color = 200,
+                  .text_mask_bytes = "text-mask",
+                  .words = {{
+                                .start_index = 0,
+                                .end_index = 2,
+                                .expected_translation = "美丽",
+                                .expected_separator = "",
+
+                            },
+                            {
+                                .start_index = 2,
+                                .end_index = 4,
+                                .expected_translation = "世界",
+                                .expected_separator = "。",
+
+                            }},
+              },
+              {
+                  .start_index = 5,
+                  .end_index = 9,
+                  .background_color = 200,
+                  .background_image_bytes = "bytes",
+                  .background_image_height = 5,
+                  .background_image_width = 9,
+                  .background_image_vertical_padding = 10,
+                  .background_image_horizontal_padding = 5,
+                  .text_color = 300,
+                  .text_mask_bytes = "mask-text",
+                  .words = {{
+                                .start_index = 5,
+                                .end_index = 7,
+                                .expected_translation = "我在",
+                                .expected_separator = "",
+
+                            },
+                            {
+                                .start_index = 7,
+                                .end_index = 9,
+                                .expected_translation = "这里",
+                                .expected_separator = "",
+
+                            }},
+              }},
     .alignment = lens::Alignment::DEFAULT_LEFT_ALIGNED,
     .writing_direction = lens::DEFAULT_WRITING_DIRECTION_LEFT_TO_RIGHT,
     .status_code = lens::TranslationData::Status::SUCCESS,
@@ -188,19 +314,22 @@ class LensOverlayProtoConverterTest : public testing::Test {
   void CreateServerText(TextStruct text_struct, lens::Text* text) {
     text->set_content_language(text_struct.content_language);
     auto* paragraph = text->mutable_text_layout()->add_paragraphs();
-    paragraph->set_content_language(kTestText.content_language);
+    paragraph->set_content_language(text_struct.content_language);
     CreateServerGeometry(text_struct.paragraph_geometry,
                          paragraph->mutable_geometry());
 
-    auto* line = paragraph->add_lines();
-    CreateServerGeometry(text_struct.line_geometry, line->mutable_geometry());
-
-    auto* word = line->add_words();
-    word->set_plain_text(kTestText.word_plain_text);
-    word->set_text_separator(kTestText.word_text_seperator);
-    CreateServerGeometry(text_struct.word_geometry, word->mutable_geometry());
-    word->mutable_formula_metadata()->set_latex(
-        kTestText.formula_metadata_latex);
+    for (const auto& line_struct : text_struct.lines) {
+      auto* line = paragraph->add_lines();
+      CreateServerGeometry(line_struct.geometry, line->mutable_geometry());
+      for (const auto& word_struct : line_struct.words) {
+        auto* word = line->add_words();
+        word->set_plain_text(word_struct.plain_text);
+        word->set_text_separator(word_struct.text_separator);
+        CreateServerGeometry(word_struct.geometry, word->mutable_geometry());
+        word->mutable_formula_metadata()->set_latex(
+            word_struct.formula_metadata_latex);
+      }
+    }
   }
 
   lens::DeepGleamData CreateServerTranslationText(
@@ -219,27 +348,31 @@ class LensOverlayProtoConverterTest : public testing::Test {
     deep_gleam_data.mutable_translation()->mutable_status()->set_code(
         translation_struct.status_code);
 
-    auto* line = deep_gleam_data.mutable_translation()->add_line();
-    line->mutable_style()->set_background_primary_color(
-        translation_struct.background_color);
-    line->mutable_style()->set_text_color(translation_struct.text_color);
-    line->mutable_background_image_data()->set_image_height(
-        translation_struct.background_image_height);
-    line->mutable_background_image_data()->set_image_width(
-        translation_struct.background_image_width);
-    line->mutable_background_image_data()->set_vertical_padding(
-        translation_struct.background_image_vertical_padding);
-    line->mutable_background_image_data()->set_horizontal_padding(
-        translation_struct.background_image_horizontal_padding);
-    line->mutable_background_image_data()->set_background_image(
-        translation_struct.background_image_bytes.data());
-    line->mutable_background_image_data()->set_text_mask(
-        translation_struct.text_mask_bytes.data());
+    for (const auto& lineStruct : translation_struct.lines) {
+      auto* line = deep_gleam_data.mutable_translation()->add_line();
+      line->set_start(lineStruct.start_index);
+      line->set_end(lineStruct.end_index);
+      line->mutable_style()->set_background_primary_color(
+          lineStruct.background_color);
+      line->mutable_style()->set_text_color(lineStruct.text_color);
+      line->mutable_background_image_data()->set_image_height(
+          lineStruct.background_image_height);
+      line->mutable_background_image_data()->set_image_width(
+          lineStruct.background_image_width);
+      line->mutable_background_image_data()->set_vertical_padding(
+          lineStruct.background_image_vertical_padding);
+      line->mutable_background_image_data()->set_horizontal_padding(
+          lineStruct.background_image_horizontal_padding);
+      line->mutable_background_image_data()->set_background_image(
+          lineStruct.background_image_bytes.data());
+      line->mutable_background_image_data()->set_text_mask(
+          lineStruct.text_mask_bytes.data());
 
-    for (const auto& wordStruct : translation_struct.word_indexes) {
-      auto* word = line->add_word();
-      word->set_start(wordStruct.start_index);
-      word->set_end(wordStruct.end_index);
+      for (const auto& wordStruct : lineStruct.words) {
+        auto* word = line->add_word();
+        word->set_start(wordStruct.start_index);
+        word->set_end(wordStruct.end_index);
+      }
     }
 
     return deep_gleam_data;
@@ -398,8 +531,9 @@ TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromServerResponse) {
   // Compare words in line.
   EXPECT_EQ(mojo_line->words.size(), static_cast<unsigned long>(1));
   lens::mojom::WordPtr mojo_word = mojo_line->words[0]->Clone();
-  EXPECT_EQ(mojo_word->plain_text, kTestText.word_plain_text);
-  EXPECT_EQ(mojo_word->text_separator, kTestText.word_text_seperator);
+  const auto& test_word_struct = kTestText.lines[0].words[0];
+  EXPECT_EQ(mojo_word->plain_text, test_word_struct.plain_text);
+  EXPECT_EQ(mojo_word->text_separator, test_word_struct.text_separator);
   lens::TextLayout_Word server_word = server_line.words()[0];
   VerifyGeometriesAreEqual(server_word.geometry(),
                            mojo_word->geometry->Clone());
@@ -407,7 +541,7 @@ TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromServerResponse) {
   EXPECT_EQ(static_cast<int>(mojo_word->writing_direction.value()),
             static_cast<int>(kTestText.writing_direction));
   EXPECT_EQ(mojo_word->formula_metadata->latex,
-            kTestText.formula_metadata_latex);
+            test_word_struct.formula_metadata_latex);
 }
 
 TEST_F(LensOverlayProtoConverterTest,
@@ -452,31 +586,32 @@ TEST_F(LensOverlayProtoConverterTest,
             static_cast<unsigned long>(1));
   const lens::mojom::TranslatedLinePtr& mojo_line =
       mojo_translate_paragraph->lines[0];
+  const auto& test_line_struct = kTestTranslationText.lines[0];
   lens::TextLayout_Line server_line = server_paragraph.lines()[0];
   VerifyGeometriesAreEqual(server_line.geometry(),
                            mojo_line->geometry->Clone());
   EXPECT_EQ(mojo_line->translation, kTestTranslationText.translation_text);
-  EXPECT_EQ(mojo_line->text_color, kTestTranslationText.text_color);
+  EXPECT_EQ(mojo_line->text_color, test_line_struct.text_color);
   EXPECT_EQ(mojo_line->background_primary_color,
-            kTestTranslationText.background_color);
+            test_line_struct.background_color);
 
   // Compare background image data of line.
   const lens::mojom::BackgroundImageDataPtr& image_data =
       mojo_line->background_image_data;
   EXPECT_EQ(image_data->image_size.height(),
-            kTestTranslationText.background_image_height);
+            test_line_struct.background_image_height);
   EXPECT_EQ(image_data->image_size.width(),
-            kTestTranslationText.background_image_width);
+            test_line_struct.background_image_width);
   EXPECT_EQ(image_data->vertical_padding,
-            kTestTranslationText.background_image_vertical_padding);
+            test_line_struct.background_image_vertical_padding);
   EXPECT_EQ(image_data->horizontal_padding,
-            kTestTranslationText.background_image_horizontal_padding);
+            test_line_struct.background_image_horizontal_padding);
   std::string background_image = std::string(
       image_data->background_image.begin(), image_data->background_image.end());
-  EXPECT_EQ(background_image, kTestTranslationText.background_image_bytes);
+  EXPECT_EQ(background_image, test_line_struct.background_image_bytes);
   std::string text_mask =
       std::string(image_data->text_mask.begin(), image_data->text_mask.end());
-  EXPECT_EQ(text_mask, kTestTranslationText.text_mask_bytes);
+  EXPECT_EQ(text_mask, test_line_struct.text_mask_bytes);
 
   // Compare words in line.
   EXPECT_EQ(mojo_line->words.size(), static_cast<unsigned long>(2));
@@ -537,33 +672,33 @@ TEST_F(LensOverlayProtoConverterTest,
             static_cast<unsigned long>(1));
   const lens::mojom::TranslatedLinePtr& mojo_line =
       mojo_translate_paragraph->lines[0];
+  const auto& test_line_struct = kTestUnicodeTranslationText.lines[0];
   lens::TextLayout_Line server_line = server_paragraph.lines()[0];
   VerifyGeometriesAreEqual(server_line.geometry(),
                            mojo_line->geometry->Clone());
   EXPECT_EQ(mojo_line->translation,
             kTestUnicodeTranslationText.translation_text);
-  EXPECT_EQ(mojo_line->text_color, kTestUnicodeTranslationText.text_color);
+  EXPECT_EQ(mojo_line->text_color, test_line_struct.text_color);
   EXPECT_EQ(mojo_line->background_primary_color,
-            kTestUnicodeTranslationText.background_color);
+            test_line_struct.background_color);
 
   // Compare background image data of line.
   const lens::mojom::BackgroundImageDataPtr& image_data =
       mojo_line->background_image_data;
   EXPECT_EQ(image_data->image_size.height(),
-            kTestUnicodeTranslationText.background_image_height);
+            test_line_struct.background_image_height);
   EXPECT_EQ(image_data->image_size.width(),
-            kTestUnicodeTranslationText.background_image_width);
+            test_line_struct.background_image_width);
   EXPECT_EQ(image_data->vertical_padding,
-            kTestUnicodeTranslationText.background_image_vertical_padding);
+            test_line_struct.background_image_vertical_padding);
   EXPECT_EQ(image_data->horizontal_padding,
-            kTestUnicodeTranslationText.background_image_horizontal_padding);
+            test_line_struct.background_image_horizontal_padding);
   std::string background_image = std::string(
       image_data->background_image.begin(), image_data->background_image.end());
-  EXPECT_EQ(background_image,
-            kTestUnicodeTranslationText.background_image_bytes);
+  EXPECT_EQ(background_image, test_line_struct.background_image_bytes);
   std::string text_mask =
       std::string(image_data->text_mask.begin(), image_data->text_mask.end());
-  EXPECT_EQ(text_mask, kTestUnicodeTranslationText.text_mask_bytes);
+  EXPECT_EQ(text_mask, test_line_struct.text_mask_bytes);
 
   // Compare words in line.
   EXPECT_EQ(mojo_line->words.size(), static_cast<unsigned long>(2));
@@ -580,6 +715,93 @@ TEST_F(LensOverlayProtoConverterTest,
   EXPECT_TRUE(second_mojo_word->writing_direction.has_value());
   EXPECT_EQ(static_cast<int>(second_mojo_word->writing_direction.value()),
             static_cast<int>(kTestUnicodeTranslationText.writing_direction));
+}
+
+TEST_F(LensOverlayProtoConverterTest,
+       CreateTextMojomFromServerResponse_Multiline) {
+  lens::LensOverlayServerResponse server_response =
+      CreateLensServerOverlayResponse({});
+  CreateServerText(kTestTextMultiline,
+                   server_response.mutable_objects_response()->mutable_text());
+  server_response.mutable_objects_response()->mutable_deep_gleams()->Add(
+      CreateServerTranslationText(kTestUnicodeTranslationTextMutliline));
+
+  // Compare top level text object.
+  lens::mojom::TextPtr mojo_text = lens::CreateTextMojomFromServerResponse(
+      server_response, /*resized_bitmap_size=*/gfx::Size(1, 1));
+  EXPECT_TRUE(mojo_text);
+  EXPECT_EQ(mojo_text->content_language, kTestTextMultiline.content_language);
+
+  // Compare paragraphs.
+  lens::TextLayout_Paragraph server_paragraph =
+      server_response.objects_response().text().text_layout().paragraphs()[0];
+  const lens::mojom::ParagraphPtr& mojo_paragraph =
+      mojo_text->text_layout->paragraphs[0];
+  EXPECT_TRUE(mojo_paragraph->translation);
+  EXPECT_EQ(mojo_text->text_layout->paragraphs.size(),
+            static_cast<unsigned long>(1));
+  const lens::mojom::TranslatedParagraphPtr& mojo_translate_paragraph =
+      mojo_paragraph->translation;
+  EXPECT_EQ(mojo_translate_paragraph->content_language,
+            kTestUnicodeTranslationTextMutliline.target_language);
+  EXPECT_TRUE(mojo_translate_paragraph->writing_direction.has_value());
+  EXPECT_EQ(
+      static_cast<int>(mojo_translate_paragraph->writing_direction.value()),
+      static_cast<int>(kTestUnicodeTranslationTextMutliline.writing_direction));
+  EXPECT_TRUE(mojo_translate_paragraph->alignment.has_value());
+  EXPECT_EQ(static_cast<int>(mojo_translate_paragraph->alignment.value()),
+            static_cast<int>(kTestUnicodeTranslationTextMutliline.alignment));
+  VerifyGeometriesAreEqual(server_paragraph.geometry(),
+                           mojo_paragraph->geometry->Clone());
+
+  // Verify lines.
+  EXPECT_EQ(mojo_translate_paragraph->lines.size(),
+            kTestUnicodeTranslationTextMutliline.lines.size());
+  for (unsigned long i = 0; i < mojo_translate_paragraph->lines.size(); i++) {
+    const auto& mojo_line = mojo_translate_paragraph->lines[i];
+    const auto& test_line_struct =
+        kTestUnicodeTranslationTextMutliline.lines[i];
+    lens::TextLayout_Line server_line = server_paragraph.lines()[i];
+    VerifyGeometriesAreEqual(server_line.geometry(),
+                             mojo_line->geometry->Clone());
+    EXPECT_EQ(mojo_line->translation,
+              kTestUnicodeTranslationTextMutliline.translation_text);
+    EXPECT_EQ(mojo_line->text_color, test_line_struct.text_color);
+    EXPECT_EQ(mojo_line->background_primary_color,
+              test_line_struct.background_color);
+
+    // Compare background image data of line.
+    const lens::mojom::BackgroundImageDataPtr& image_data =
+        mojo_line->background_image_data;
+    EXPECT_EQ(image_data->image_size.height(),
+              test_line_struct.background_image_height);
+    EXPECT_EQ(image_data->image_size.width(),
+              test_line_struct.background_image_width);
+    EXPECT_EQ(image_data->vertical_padding,
+              test_line_struct.background_image_vertical_padding);
+    EXPECT_EQ(image_data->horizontal_padding,
+              test_line_struct.background_image_horizontal_padding);
+    std::string background_image =
+        std::string(image_data->background_image.begin(),
+                    image_data->background_image.end());
+    EXPECT_EQ(background_image, test_line_struct.background_image_bytes);
+    std::string text_mask =
+        std::string(image_data->text_mask.begin(), image_data->text_mask.end());
+    EXPECT_EQ(text_mask, test_line_struct.text_mask_bytes);
+
+    // Verify words in lines.
+    EXPECT_EQ(mojo_line->words.size(), test_line_struct.words.size());
+    for (unsigned long j = 0; j < mojo_line->words.size(); j++) {
+      const auto& mojo_word = mojo_line->words[j];
+      const auto& test_word_struct = test_line_struct.words[j];
+      EXPECT_EQ(mojo_word->plain_text, test_word_struct.expected_translation);
+      EXPECT_EQ(mojo_word->text_separator, test_word_struct.expected_separator);
+      EXPECT_TRUE(mojo_word->writing_direction.has_value());
+      EXPECT_EQ(
+          static_cast<int>(mojo_word->writing_direction.value()),
+          static_cast<int>(kTestUnicodeTranslationText.writing_direction));
+    }
+  }
 }
 
 TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromServerResponse_Empty) {

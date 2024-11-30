@@ -39,7 +39,7 @@ const std::u16string kCapturingUrl = u"https://capturing.chromium.org/";
 
 class MockTabSharingUIViews : public TabSharingUI {
  public:
-  MockTabSharingUIViews() {}
+  MockTabSharingUIViews() = default;
   MOCK_METHOD(void, StartSharing, (infobars::InfoBar * infobar));
   MOCK_METHOD(void, StopSharing, ());
 

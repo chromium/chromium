@@ -2042,6 +2042,34 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorOnSyncPaused) {
             SyncService::DataTypeDownloadStatus::kError);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(SyncServiceImplTest, ShouldRecordUserActionableErrorOnSyncPaused) {
+  base::HistogramTester histogram_tester;
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService();
+
+  // Mimic entering Sync paused state.
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  ASSERT_EQ(SyncService::TransportState::PAUSED,
+            service()->GetTransportState());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.UserActionableError",
+      /*sample=*/
+      SyncService::UserActionableError::kSignInNeedsUpdate,
+      /*expected_bucket_count=*/1);
+
+  // Make sure the same error only recorded once per browser startup.
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.UserActionableError",
+      /*sample=*/
+      SyncService::UserActionableError::kSignInNeedsUpdate,
+      /*expected_bucket_count=*/1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 // These tests cover signing in after browser startup, which isn't supported on
 // ChromeOS-Ash (where there's always a signed-in user).
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

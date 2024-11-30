@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">사이트에서 기기에 데이터를 저장하도록 허용</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384959399684842514">다운로드 일시중지됨</translation>
+<translation id="1396327438254055134">사이트에서 V8 옵티마이저를 사용하도록 허용합니다.</translation>
 <translation id="1415402041810619267">URL 잘림</translation>
 <translation id="1448064542941920355">축소</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 사이트}other{<ph name="SITE_COUNT" /> 사이트}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">이미지 디코더</translation>
 <translation id="1785415724048343560">최적의 경험을 위해 권장됨</translation>
 <translation id="1799920918471566157">Chrome 사용 팁</translation>
+<translation id="1816835383954230954">사용 설정하면 Chrome이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동합니다. 사용 중지하면 성능은 저하되지만 V8의 공격에 대한 저항력이 강화됩니다.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />에서 AR을 사용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="1887786770086287077">이 기기의 위치 액세스가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="1915307458270490472">종료</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">사용 설정하면 사이트에서 카메라 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" />의 사이트</translation>
 <translation id="3523447078673133727">사이트에서 내 손을 추적하도록 허용하지 않음</translation>
+<translation id="3532312529397438268">사이트에서 V8 옵티마이저를 사용할 수 없음</translation>
 <translation id="3536227077203206203">현재 허용됨</translation>
 <translation id="3538390592868664640">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하지 못하도록 차단</translation>
 <translation id="3544058026430919413">쿠키를 사용하여 내 그룹 활동을 공유할 수 있는 사이트 그룹을 회사가 정의할 수 있습니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">확대/축소</translation>
 <translation id="4807122856660838973">세이프 브라우징 사용 설정</translation>
 <translation id="4811450222531576619">출처와 주제에 관해 자세히 알아보기</translation>
+<translation id="481168145262973879">사이트에서 V8 옵티마이저를 사용할 수 있음</translation>
 <translation id="4816495437032298535">저장된 사이트 확대/축소</translation>
 <translation id="4836046166855586901">사용자가 현재 기기를 사용 중인지 사이트에서 알고자 할 때 확인</translation>
 <translation id="483914009762354899">이 도메인의 모든 사이트 포함</translation>
@@ -337,10 +341,8 @@
 <translation id="6071501408666570960">이 사이트에서 로그아웃될 수 있습니다</translation>
 <translation id="6085954183010297841">파일 수정 권한을 삭제하시겠습니까? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">사용 설정하면 사이트에서 사용자가 현재 기기를 사용 중인지에 관한 확인을 요청할 수 있습니다. 사용 중지하면 사이트에서 사용자가 현재 기기를 사용 중인지 확인할 수 없습니다.</translation>
-<translation id="6140839633433422817">권한을 재설정하고 쿠키 및 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6171020522141473435">사용 설정하면 사이트에서 블루투스 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 블루투스 기기를 사용할 수 없습니다.</translation>
-<translation id="6177111841848151710">현재 검색엔진에는 허용되지 않음</translation>
 <translation id="6177128806592000436">이 사이트는 보안 연결(HTTPS)이 사용되지 않았습니다.</translation>
 <translation id="6181444274883918285">사이트 예외 추가</translation>
 <translation id="6192792657125177640">예외</translation>
@@ -405,8 +407,8 @@
 <translation id="6980861169612950611"><ph name="SITE_NAME" /> 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="6992289844737586249">사이트에서 마이크를 사용하기 전에 확인(권장)</translation>
+<translation id="6999131147875565462">Chrome이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동함</translation>
 <translation id="7000754031042624318">Android 설정에서 사용 중지됨</translation>
-<translation id="7016516562562142042">현재 검색엔진에 허용됨</translation>
 <translation id="702275896380648118">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다. Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
@@ -425,7 +427,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />개 선택됨</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 허용됨</translation>
 <translation id="7276071417425470385">사용 설정하면 사이트에서 가상 현실 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 가상 현실 기기를 사용할 수 없습니다.</translation>
-<translation id="7302486331832100261">기본적으로 알림을 차단하는 중입니다. 허용하려면 '세부정보'를 탭하세요.</translation>
 <translation id="7366415735885268578">사이트 추가</translation>
 <translation id="7368695150573390554">오프라인 데이터가 모두 삭제됩니다.</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> 설정</translation>
@@ -542,7 +543,6 @@
 <translation id="8928445016601307354">사이트에서 NFC 기기의 정보를 보고 변경할 수 없도록 차단</translation>
 <translation id="8944485226638699751">제한됨</translation>
 <translation id="8959122750345127698">탐색할 수 없음: <ph name="URL" /></translation>
-<translation id="8986362086234534611">저장 안함</translation>
 <translation id="8990043154272859344">모든 사이트에서 로그아웃됩니다.</translation>
 <translation id="8993853206419610596">모든 요청 펼치기</translation>
 <translation id="9002538116239926534">사용 설정하면 사이트에서 기기에 데이터를 저장할 수 있습니다. 사용 중지하면 사이트에서 기기에 데이터를 저장할 수 없습니다.</translation>
@@ -555,8 +555,8 @@
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 <ph name="APP_NAME" /> 관련 권한을 허용하세요.</translation>
 <translation id="9138217887606523162">현재 확대/축소 레벨은 <ph name="ZOOM_LEVEL" />%%입니다</translation>
 <translation id="9162462602695099906">위험한 페이지입니다.</translation>
-<translation id="930525582205581608">사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="947156494302904893">방문하는 사이트에서 내가 봇이 아니라 실제 사람인지 확인할 수 있습니다</translation>
 <translation id="959682366969460160">깔끔하게 정리하기</translation>
 <translation id="967624055006145463">저장된 데이터</translation>
+<translation id="969975166333045662">사이트에서 V8 옵티마이저를 사용하지 못하도록 차단합니다.</translation>
 </translationbundle>

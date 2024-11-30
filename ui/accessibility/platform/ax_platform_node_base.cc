@@ -927,6 +927,13 @@ std::u16string AXPlatformNodeBase::GetTextContentUTF16() const {
   return delegate_->GetTextContentUTF16();
 }
 
+int AXPlatformNodeBase::GetTextContentLengthUTF16() const {
+  if (!delegate_) {
+    return 0;
+  }
+  return delegate_->GetTextContentLengthUTF16();
+}
+
 std::u16string
 AXPlatformNodeBase::GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
     const {
@@ -1544,6 +1551,12 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("id", id, attributes);
   }
 
+  std::string input_name;
+  if (delegate_->GetStringAttribute(ax::mojom::StringAttribute::kHtmlInputName,
+                                    &input_name)) {
+    AddAttributeToList("html-input-name", input_name, attributes);
+  }
+
   std::string src;
   if (IsImage(GetRole()) &&
       GetStringAttribute(ax::mojom::StringAttribute::kUrl, &src)) {
@@ -1802,6 +1815,8 @@ void AXPlatformNodeBase::SanitizeStringAttribute(const std::string& input,
   base::ReplaceChars(*output, ",", "\\,", output);
   base::ReplaceChars(*output, "=", "\\=", output);
   base::ReplaceChars(*output, ";", "\\;", output);
+  base::ReplaceChars(*output, "\r", " ", output);
+  base::ReplaceChars(*output, "\n", " ", output);
 }
 
 int32_t AXPlatformNodeBase::GetHyperlinkIndexFromChild(
@@ -2381,7 +2396,7 @@ int AXPlatformNodeBase::NearestTextIndexToPoint(gfx::Point point) {
                                 ->GetInnerTextRangeBoundsRect(
                                     0, 1, coordinate_system, clipping_behavior)
                                 .ManhattanDistanceToPoint(point);
-  for (int i = 1, text_length = GetTextContentUTF16().length(); i < text_length;
+  for (int i = 1, text_length = GetTextContentLengthUTF16(); i < text_length;
        ++i) {
     float current_distance =
         GetDelegate()

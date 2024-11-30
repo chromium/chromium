@@ -18,6 +18,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth_multilogin_result.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -124,7 +125,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   void StartOAuthMultilogin(
       gaia::MultiloginMode mode,
       const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts,
-      const std::string& external_cc_result);
+      const std::string& external_cc_result,
+      OAuthMultiloginResult::CookieDecryptor cookie_decryptor =
+          base::NullCallback());
 
   // Starts a request to list the accounts in the GAIA cookie.
   void StartListAccounts();
@@ -266,6 +269,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   GURL original_url_;
   std::string request_body_;
+
+  // Only populated in Multilogin requests.
+  OAuthMultiloginResult::CookieDecryptor oauth_multilogin_cookie_decryptor_;
 
   bool fetch_pending_ = false;
 

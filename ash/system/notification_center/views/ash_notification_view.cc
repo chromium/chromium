@@ -970,7 +970,7 @@ void AshNotificationView::RemoveGroupNotification(
     return;
   }
 
-  auto on_notification_slid_out = base::BindRepeating(
+  auto on_notification_slid_out = base::BindOnce(
       [](base::WeakPtr<AshNotificationView> self,
          const std::string& notification_id) {
         if (!self) {
@@ -990,7 +990,7 @@ void AshNotificationView::RemoveGroupNotification(
       },
       weak_factory_.GetWeakPtr(), notification_id);
 
-  auto on_animation_aborted = base::BindRepeating(
+  auto on_animation_aborted = base::BindOnce(
       [](base::WeakPtr<AshNotificationView> self,
          const std::string& notification_id) {
         if (!self) {
@@ -1016,13 +1016,14 @@ void AshNotificationView::RemoveGroupNotification(
   // slide out if there is no transform.
   if (to_be_removed && to_be_removed->layer()->transform().IsIdentity()) {
     message_center_utils::SlideOutView(
-        to_be_removed.get(), on_notification_slid_out, on_animation_aborted,
+        to_be_removed.get(), std::move(on_notification_slid_out),
+        std::move(on_animation_aborted),
         /*delay_in_ms=*/0,
         /*duration_in_ms=*/kSlideOutGroupedNotificationAnimationDurationMs,
         gfx::Tween::LINEAR,
         "Ash.Notification.GroupNotification.SlideOut.AnimationSmoothness");
   } else {
-    on_notification_slid_out.Run();
+    std::move(on_notification_slid_out).Run();
   }
 }
 

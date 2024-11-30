@@ -229,7 +229,8 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
         final int overflowSize = 5;
-        OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE.setForTesting(overflowSize);
+        ChromeFeatureList.sOptimizationGuidePushNotificationsMaxCacheSize.setForTesting(
+                overflowSize);
 
         for (int i = 1; i <= overflowSize; i++) {
             Assert.assertEquals(

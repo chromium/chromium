@@ -376,7 +376,7 @@ class GeneratedCodeCache::PendingOperation {
       const bool code_cache_hit = data.size() > 0;
       const bool in_memory_code_cache_hit = code_cache->lru_cache_.Has(key_);
       if (code_cache_hit && !in_memory_code_cache_hit) {
-        code_cache->lru_cache_.Put(key_, response_time, base::make_span(data));
+        code_cache->lru_cache_.Put(key_, response_time, base::span(data));
       }
       if (!base::FeatureList::IsEnabled(features::kInMemoryCodeCache)) {
         if (code_cache_hit && in_memory_code_cache_hit) {
@@ -500,7 +500,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
 
   const std::string key = GetCacheKey(url, origin_lock, nik, cache_type_);
   if (cache_type_ == CodeCacheType::kJavaScript) {
-    lru_cache_.Put(key, response_time, base::make_span(data));
+    lru_cache_.Put(key, response_time, base::span(data));
   }
 
   scoped_refptr<net::IOBufferWithSize> small_buffer;

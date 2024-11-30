@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.preferences;
 import android.util.ArrayMap;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Map;
 
@@ -15,7 +18,7 @@ import java.util.Map;
  * This class is the Java implementation of native PrefChangeRegistrar. It receives notification for
  * changes of one or more preferences from native PrefService.
  *
- * Note that {@link #destroy} should be called to destroy the native PrefChangeRegistrar.
+ * <p>Note that {@link #destroy} should be called to destroy the native PrefChangeRegistrar.
  */
 public class PrefChangeRegistrar {
     /** Interface for callback when registered preference is changed. */
@@ -30,12 +33,13 @@ public class PrefChangeRegistrar {
     private long mNativeRegistrar;
 
     /** Initialize native PrefChangeRegistrar. */
-    public PrefChangeRegistrar() {
-        mNativeRegistrar = PrefChangeRegistrarJni.get().init(PrefChangeRegistrar.this);
+    public PrefChangeRegistrar(Profile profile) {
+        mNativeRegistrar = PrefChangeRegistrarJni.get().init(PrefChangeRegistrar.this, profile);
     }
 
     /**
      * Add an observer to be notified of changes to the specified preference.
+     *
      * @param preference The preference to be observed.
      * @param observer The observer to be notified.
      */
@@ -48,6 +52,7 @@ public class PrefChangeRegistrar {
 
     /**
      * Remove an observer for the specified preference if it has previously been added.
+     *
      * @param preference The specified preference.
      */
     public void removeObserver(String preference) {
@@ -74,7 +79,7 @@ public class PrefChangeRegistrar {
 
     @NativeMethods
     public interface Natives {
-        long init(PrefChangeRegistrar caller);
+        long init(PrefChangeRegistrar caller, @JniType("Profile*") Profile profile);
 
         void add(
                 long nativePrefChangeRegistrarAndroid,

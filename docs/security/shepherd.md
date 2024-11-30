@@ -88,6 +88,7 @@ during your shepherding shift:
 * [Reference for questions related to security fix merge process](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/process/merge_request.md#Security-merge-triage)
   for answering questions (you do not need to approve merges).
 * [Shepherding Handoff Log](https://goto.google.com/chrome-security-shepherd-handoff)
+* [GPU for dummies](https://goto.google.com/gpu-for-dummies)
 
 ### Every New Incoming Security Bug
 
@@ -432,7 +433,22 @@ pass it along to / include someone who can direct it more precisely.
       cc:chrome-ios-security-bugs@google.com. This alias is monitored by the iOS
       Chrome team so they can be notified when the WebKit bug is fixed.
         * Note the WebKit bug ID in the Chromium issue report.
-    * All security issues need owners, the WebKit ones can be assigned to ajuma@.
+    * All security issues need owners, the WebKit ones can be assigned to michaeldo@.
+*  GPU driver bugs - bugs in GPU drivers that reachable from a renderer process
+   and triggerable through Chrome, such as bugs in Mesa or Mali drivers,
+   should be assigned to the appropriate Chrome engineering team, such as WebGL
+   or WebGPU, to determine if a shader workaround is appropriate. The report
+   should include a valid test case that demonstrates reachability in an active
+   release channel of Chrome on a supported platform.
+   * Because these driver bugs also impact Android, Pixel, and ChromeOS
+     platforms, we do also want to provide those teams visibility. If deemed
+     necessary they can create a bug in their tracker, that should be tracked as
+     a child bug to the original report we received in the Chromium tracker.
+   * For Mesa driver bugs, please cc: robclark@ and msturner@ for visibility for
+     ChromeOS.
+   * For Mali driver bugs, please cc: aygupta@, bcreasey@, asdl-kfc@ from
+     Android, mjstokes@ and layog@ from Pixel GPU, and robclark@ and msturner@
+     from ChromeOS GPU.
 
 ### Shift handoff
 

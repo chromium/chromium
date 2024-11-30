@@ -12,7 +12,7 @@
 
 :host {
   --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
-  --cr-searchbox-height: 44px;
+  --cr-searchbox-height: 48px;
   --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
   --cr-searchbox-icon-left-position: 12px;
   --cr-searchbox-icon-size-in-searchbox: 20px;
@@ -37,7 +37,7 @@
  * point available to be shown.
  */
 :host([realbox-can-show-secondary-side][realbox-had-secondary-side]),
-:host([realbox-can-show-secondary-side][searchbox-width-behavior_='wide']) {
+:host([realbox-can-show-secondary-side]) {
   --ntp-search-box-width: 746px;
 }
 
@@ -51,10 +51,6 @@
   :host {
     --ntp-search-box-width: 561px;
   }
-}
-
-:host([realbox-is-tall_]) {
-  --cr-searchbox-height: 48px;
 }
 
 /*A module width of 768px with 18px gaps on each side. */
@@ -408,4 +404,12 @@ ntp-lens-upload-dialog {
 
 #webstoreToast {
   padding: 16px;
+}
+
+/*
+  Microsoft Auth's iframe is used for script sandboxing only and requires no
+  user interaction. It does not need to be visible.
+*/
+#microsoftAuth {
+  display: none;
 }

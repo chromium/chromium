@@ -12,17 +12,6 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace {
-
-void OnTemplateIdFromFileExtracted(std::optional<int> template_id) {
-  if (!template_id.has_value()) {
-    return;
-  }
-  base::UmaHistogramSparse("Ash.Wallpaper.SeaPen.Template.Settled",
-                           *template_id);
-}
-
-}  // namespace
 WallpaperMetricsProvider::WallpaperMetricsProvider() = default;
 WallpaperMetricsProvider::~WallpaperMetricsProvider() = default;
 
@@ -67,6 +56,25 @@ void WallpaperMetricsProvider::ProvideCurrentSessionData(
         ash::Shell::Get()->session_controller()->GetActiveAccountId();
 
     ash::SeaPenWallpaperManager::GetInstance()->GetTemplateIdFromFile(
-        account_id, sea_pen_id, base::BindOnce(&OnTemplateIdFromFileExtracted));
+        account_id, sea_pen_id,
+        base::BindOnce(&WallpaperMetricsProvider::OnTemplateIdFromFileExtracted,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void WallpaperMetricsProvider::SetGetTemplateIdCallbackForTesting(
+    GetTemplateIdCallback callback) {
+  g_get_template_id_callback_for_testing_ = std::move(callback);
+}
+
+void WallpaperMetricsProvider::OnTemplateIdFromFileExtracted(
+    std::optional<int> template_id) {
+  if (!template_id.has_value()) {
+    return;
+  }
+  base::UmaHistogramSparse("Ash.Wallpaper.SeaPen.Template.Settled",
+                           *template_id);
+  if (g_get_template_id_callback_for_testing_) {
+    g_get_template_id_callback_for_testing_.Run(true);
   }
 }

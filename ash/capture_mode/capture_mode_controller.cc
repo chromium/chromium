@@ -21,7 +21,6 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/capture_mode/disclaimer_view.h"
 #include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
@@ -44,6 +43,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/message_view_factory.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -137,11 +137,6 @@ constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 constexpr char kCanShowDemoToolsNudge[] =
     "ash.capture_mode.can_show_demo_tools_nudge";
 
-// The name of a boolean pref that records whether the sunfish consent
-// disclaimer has been accepted.
-constexpr char kSunfishConsentDisclaimerAccepted[] =
-    "ash.capture_mode.sunfish_consent_disclaimer_accepted";
-
 // The ID for the toast shown when text is copied to clipboard.
 constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
 
@@ -231,21 +226,6 @@ base::FilePath SaveFile(scoped_refptr<base::RefCountedMemory> data,
 
   return DoSaveFile(data,
                     SelectFilePathForCapturedFile(current_path, fallback_path));
-}
-
-void DeleteFileAsync(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                     const base::FilePath& path,
-                     OnFileDeletedCallback callback) {
-  task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&base::DeleteFile, path),
-      callback ? base::BindOnce(std::move(callback), path)
-               : base::BindOnce(
-                     [](const base::FilePath& path, bool success) {
-                       // TODO(afakhry): Show toast?
-                       if (!success)
-                         LOG(ERROR) << "Failed to delete the file: " << path;
-                     },
-                     path));
 }
 
 // Called when the "Share to YouTube" button is pressed to
@@ -549,20 +529,41 @@ bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
           capture_type == PerformCaptureType::kSearch);
 }
 
-gfx::Rect CalculateSearchResultPanelBounds(aura::Window* root,
+gfx::Rect CalculateSearchResultPanelBounds(const gfx::Rect& work_area,
+                                           const gfx::Rect& captured_region,
                                            const gfx::Rect& feedback_bounds) {
   // TODO: crbug.com/362284723 - Ensure tooltips are visible over overlay
   // container.
-  const gfx::Rect work_area(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
 
-  gfx::Rect bounds(work_area.right() - capture_mode::kSearchResultsPanelWidth -
-                       capture_mode::kPanelWorkAreaSpacing,
+  // Attempt to place the panel on the left by default.
+  gfx::Rect bounds(work_area.x() + capture_mode::kPanelWorkAreaSpacing,
                    work_area.bottom() -
                        capture_mode::kSearchResultsPanelHeight -
                        capture_mode::kPanelWorkAreaSpacing,
                    capture_mode::kSearchResultsPanelWidth,
                    capture_mode::kSearchResultsPanelHeight);
+
+  // If the region would then intersect with the panel, attempt to place the
+  // panel on the right.
+  if (bounds.Intersects(captured_region)) {
+    bounds.set_x(work_area.right() - capture_mode::kSearchResultsPanelWidth -
+                 capture_mode::kPanelWorkAreaSpacing);
+
+    // If the region would still intersect with the panel, choose the side with
+    // the least intersection.
+    if (bounds.Intersects(captured_region)) {
+      // Calculate the horizontal distance from the centerpoint of the work area
+      // to the left and right edges of the capture region. The panel will be
+      // placed on the side with the smaller distance (more space for the
+      // panel).
+      const int center_x = work_area.CenterPoint().x();
+      const int left_dist = center_x - captured_region.x();
+      const int right_dist = captured_region.right() - center_x;
+      if (left_dist < right_dist) {
+        bounds.set_x(work_area.x() + capture_mode::kPanelWorkAreaSpacing);
+      }
+    }
+  }
 
   // If the panel would overlap with the feedback button when it is created,
   // instead place it just above the button.
@@ -667,7 +668,7 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/true);
   registry->RegisterBooleanPref(prefs::kSunfishEnabled,
                                 /*default_value=*/true);
-  registry->RegisterBooleanPref(kSunfishConsentDisclaimerAccepted,
+  registry->RegisterBooleanPref(capture_mode::kSunfishConsentDisclaimerAccepted,
                                 /*default_value=*/false);
 }
 
@@ -686,25 +687,6 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
              : nullptr;
 }
 
-void CaptureModeController::MaybeShowDisclaimer(
-    base::RepeatingClosure accept_callback) {
-  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-          kSunfishConsentDisclaimerAccepted)) {
-    if (accept_callback) {
-      std::move(accept_callback).Run();
-    }
-    return;
-  }
-  disclaimer_ = DisclaimerView::CreateWidget(
-      capture_mode_util::GetPreferredRootWindow(),
-      base::BindRepeating(&CaptureModeController::OnDisclaimerAccepted,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          std::move(accept_callback)),
-      base::BindRepeating(&CaptureModeController::OnDisclaimerDeclined,
-                          weak_ptr_factory_.GetWeakPtr()));
-  disclaimer_->Show();
-}
-
 void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                                                    GURL url) {
   DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
@@ -716,13 +698,18 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
     if (!is_active) {
       return;
     }
-    const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
-        capture_mode_session_->current_root(),
-        capture_mode_session_->GetFeedbackWidgetScreenBounds());
-    search_results_panel_widget_ = SearchResultsPanel::CreateWidget(
-        capture_mode_session_->current_root(), panel_bounds);
+
+    search_results_panel_widget_ =
+        SearchResultsPanel::CreateWidget(capture_mode_session_->current_root());
 
     RecordSearchResultsPanelEntryType(capture_mode_session_->active_behavior());
+
+    // Setting or updating the bounds here only accounts for newly selected
+    // regions. We also have to update the bounds elsewhere when the region is
+    // adjusted or the display metrics change. We don't want the panel to update
+    // its bounds when we make a multimodal search, as it would reset the panel
+    // back to its default position each time.
+    MaybeUpdateSearchResultsPanelBounds();
   }
 
   // If the panel was not visible beforehand (either the panel was not created
@@ -740,6 +727,25 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                        ->ShouldEndSessionOnShowingSearchResults()) {
     Stop();
   }
+}
+
+void CaptureModeController::MaybeUpdateSearchResultsPanelBounds() {
+  if (!search_results_panel_widget_) {
+    return;
+  }
+
+  CHECK(IsSunfishFeatureEnabledWithFeatureKey());
+
+  // TODO: crbug.com/364718783 - Ensure this works with multi-display.
+  const gfx::Rect work_area =
+      search_results_panel_widget_->GetWorkAreaBoundsInScreen();
+
+  const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
+      work_area, user_capture_region_,
+      capture_mode_session_
+          ? capture_mode_session_->GetFeedbackWidgetScreenBounds()
+          : gfx::Rect());
+  search_results_panel_widget_->SetBounds(panel_bounds);
 }
 
 void CaptureModeController::OnLocatedEventDragged() {
@@ -895,6 +901,8 @@ void CaptureModeController::StartSunfishSession() {
           prefs::kSunfishEnabled)) {
     return;
   }
+  // Close the launcher nudge if it is still visible.
+  AnchoredNudgeManager::Get()->Cancel(capture_mode::kSunfishLauncherNudgeId);
   StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
 }
 
@@ -1181,7 +1189,7 @@ bool CaptureModeController::IsLinuxFilesPath(const base::FilePath& path) const {
 
 bool CaptureModeController::IsRootOneDriveFilesPath(
     const base::FilePath& path) const {
-  return path == delegate_->GetOneDriveMountPointPath();
+  return path == delegate_->GetOneDriveVirtualPath();
 }
 
 std::unique_ptr<AshWebView> CaptureModeController::CreateSearchResultsView()
@@ -1977,35 +1985,13 @@ void CaptureModeController::OnCopyTextButtonClicked(
   Stop();
 }
 
-void CaptureModeController::OnDisclaimerDeclined() {
-  RecordScannerFeatureUserState(
-      ScannerFeatureUserState::kConsentDisclaimerRejected);
-
-  if (disclaimer_.get() != nullptr) {
-    disclaimer_.reset();
-  }
-}
-
-void CaptureModeController::OnDisclaimerAccepted(
-    base::RepeatingClosure callback) {
-  RecordScannerFeatureUserState(
-      ScannerFeatureUserState::kConsentDisclaimerAccepted);
-  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
-      kSunfishConsentDisclaimerAccepted, true);
-
-  disclaimer_.reset();
-  if (callback) {
-    std::move(callback).Run();
-  }
-}
-
 void CaptureModeController::OnScannerActionsFetched(
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
     std::vector<ScannerActionViewModel> scanner_actions) {
   if (!image_search_token) {
     return;
   }
-  capture_mode_session_->AddScannerActionButtons(std::move(scanner_actions));
+  capture_mode_session_->OnScannerActionsFetched(std::move(scanner_actions));
 }
 
 void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,
@@ -2173,8 +2159,7 @@ void CaptureModeController::HandleNotificationClicked(
             break;
           case GameDashboardVideoNotificationButtonIndex::
               kButtonDeleteGameVideo:
-            DeleteFileAsync(blocking_task_runner_, screen_capture_path,
-                            std::move(on_file_deleted_callback_for_test_));
+            DeleteFileAsync(screen_capture_path);
             break;
           default:
             NOTREACHED();
@@ -2182,8 +2167,7 @@ void CaptureModeController::HandleNotificationClicked(
       } else {
         CHECK_EQ(VideoNotificationButtonIndex::kButtonDeleteVideo,
                  button_index_value);
-        DeleteFileAsync(blocking_task_runner_, screen_capture_path,
-                        std::move(on_file_deleted_callback_for_test_));
+        DeleteFileAsync(screen_capture_path);
       }
     } else {
       CHECK_EQ(type, CaptureModeType::kImage);
@@ -2194,8 +2178,7 @@ void CaptureModeController::HandleNotificationClicked(
               CaptureQuickAction::kBacklight);
           break;
         case ScreenshotNotificationButtonIndex::kButtonDelete:
-          DeleteFileAsync(blocking_task_runner_, screen_capture_path,
-                          std::move(on_file_deleted_callback_for_test_));
+          DeleteFileAsync(screen_capture_path);
           RecordScreenshotNotificationQuickAction(CaptureQuickAction::kDelete);
           break;
         default:
@@ -2626,8 +2609,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
     message_center::MessageCenter::Get()->RemoveNotification(
         kScreenCaptureNotificationId, /*by_user=*/false);
 
-    DeleteFileAsync(blocking_task_runner_, video_file_path,
-                    std::move(on_file_deleted_callback_for_test_));
+    DeleteFileAsync(video_file_path);
     OnVideoFileFinalized(/*should_delete_file=*/true, video_thumbnail);
   } else {
     if (!success) {
@@ -2768,7 +2750,7 @@ CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
     if (drive_root_path.IsParent(dir_path))
       return CaptureModeSaveToLocation::kDriveFolder;
   }
-  base::FilePath one_drive_mount_path = delegate_->GetOneDriveMountPointPath();
+  base::FilePath one_drive_mount_path = delegate_->GetOneDriveVirtualPath();
   if (!one_drive_mount_path.empty()) {
     if (dir_path == one_drive_mount_path) {
       return CaptureModeSaveToLocation::kOneDrive;
@@ -2788,6 +2770,27 @@ CaptureModeBehavior* CaptureModeController::GetBehavior(
   }
 
   return behavior.get();
+}
+
+void CaptureModeController::DeleteFileAsync(const base::FilePath& path) {
+  OnFileDeletedCallback callback =
+      on_file_deleted_callback_for_test_
+          ? std::move(on_file_deleted_callback_for_test_)
+          : base::BindOnce([](const base::FilePath& path, bool success) {
+              // TODO(afakhry): Show toast?
+              if (!success) {
+                LOG(ERROR) << "Failed to delete the file: " << path;
+              }
+            });
+  const base::FilePath onedrive_path = delegate_->GetOneDriveMountPointPath();
+  if (onedrive_path.IsParent(path)) {
+    delegate_->DeleteRemoteFile(path,
+                                base::BindOnce(std::move(callback), path));
+    return;
+  }
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::DeleteFile, path),
+      base::BindOnce(std::move(callback), path));
 }
 
 }  // namespace ash

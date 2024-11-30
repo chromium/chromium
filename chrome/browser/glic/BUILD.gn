@@ -6,11 +6,17 @@ source_set("glic") {
   sources = [
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
+    "glic_page_context_fetcher.h",
+    "glic_window_controller.h",
+    "glic_window_manager.h",
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/content_extraction:content_extraction",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/glic:mojo_bindings",
     "//content/public/browser",
+    "//ui/views:views",
   ]
 }
 
@@ -18,10 +24,26 @@ source_set("impl") {
   sources = [
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
+    "glic_page_context_fetcher.cc",
+    "glic_window_controller.cc",
+    "glic_window_manager.cc",
   ]
   public_deps = [ "//chrome/browser/ui:ui" ]
   deps = [
     ":glic",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//components/sessions",
+  ]
+}
+
+source_set("enabling") {
+  sources = [
+    "glic_enabling.cc",
+    "glic_enabling.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/common:chrome_features",
   ]
 }

@@ -189,6 +189,8 @@ QuickInsertCategory GetCategoryForMoreResults(QuickInsertSectionType type) {
     case QuickInsertSectionType::kNone:
     case QuickInsertSectionType::kContentEditor:
     case QuickInsertSectionType::kExamples:
+    case QuickInsertSectionType::kFeaturedGifs:
+    case QuickInsertSectionType::kSearchedGifs:
       NOTREACHED();
     case QuickInsertSectionType::kClipboard:
       return QuickInsertCategory::kClipboard;
@@ -251,6 +253,9 @@ std::u16string GetNoResultsFoundDescription(QuickInsertCategory category) {
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
       NOTREACHED();
+    case QuickInsertCategory::kGifs:
+      // TODO: b/345303965 - Add finalized strings for GIFs.
+      return l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT);
   }
 }
 
@@ -447,9 +452,15 @@ void QuickInsertView::SelectMoreResults(QuickInsertSectionType type) {
                           search_field_view_->GetQueryText());
 }
 
-void QuickInsertView::ToggleGifs() {
+void QuickInsertView::ToggleGifs(bool is_checked) {
   if (base::FeatureList::IsEnabled(ash::features::kPickerGifs)) {
-    // TODO: b/368442959 - Search and display GIF results.
+    is_gif_toggle_checked_ = is_checked;
+    if (is_gif_toggle_checked_) {
+      SelectCategoryWithQuery(QuickInsertCategory::kGifs,
+                              search_field_view_->GetQueryText());
+    } else {
+      ResetSelectedCategory(/*reset_query=*/false);
+    }
   } else {
     ShowEmojiPicker(ui::EmojiPickerCategory::kGifs);
   }
@@ -606,11 +617,13 @@ void QuickInsertView::UpdateActivePage() {
   std::u16string_view query =
       base::TrimWhitespace(search_field_view_->GetQueryText(), base::TRIM_ALL);
 
-  if (query == last_query_ && selected_category_ == last_selected_category_) {
+  if (query == last_query_ && selected_category_ == last_selected_category_ &&
+      is_gif_toggle_checked_ == last_is_gif_toggle_checked_) {
     return;
   }
   last_query_ = std::u16string(query);
   last_selected_category_ = selected_category_;
+  last_is_gif_toggle_checked_ = is_gif_toggle_checked_;
 
   delegate_->GetSessionMetrics().UpdateSearchQuery(query);
 
@@ -771,8 +784,9 @@ void QuickInsertView::SelectCategoryWithQuery(QuickInsertCategory category,
 
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForQuickInsertCategory(category));
-  search_field_view_->SetBackButtonVisible(true);
-  SetEmojiBarVisibleIfEnabled(false);
+  search_field_view_->SetBackButtonVisible(category !=
+                                           QuickInsertCategory::kGifs);
+  SetEmojiBarVisibleIfEnabled(category == QuickInsertCategory::kGifs);
   UpdateSearchQueryAndActivePage(std::u16string(query));
 }
 
@@ -907,14 +921,22 @@ views::View* QuickInsertView::GetPseudoFocusedView() {
   return pseudo_focused_view_tracker_.view();
 }
 
-void QuickInsertView::OnSearchBackButtonPressed() {
+void QuickInsertView::ResetSelectedCategory(bool reset_query) {
   search_field_view_->SetPlaceholderText(GetSearchFieldPlaceholderText(
       delegate_->GetMode(),
       IsEditorAvailable(delegate_->GetAvailableCategories())));
   search_field_view_->SetBackButtonVisible(false);
   SetEmojiBarVisibleIfEnabled(true);
   selected_category_ = std::nullopt;
-  UpdateSearchQueryAndActivePage(u"");
+  if (reset_query) {
+    UpdateSearchQueryAndActivePage(u"");
+  } else {
+    UpdateActivePage();
+  }
+}
+
+void QuickInsertView::OnSearchBackButtonPressed() {
+  ResetSelectedCategory(/*reset_query=*/true);
   CHECK_EQ(main_container_view_->active_page(), zero_state_view_)
       << "UpdateSearchQueryAndActivePage did not set active page to zero state "
          "view";

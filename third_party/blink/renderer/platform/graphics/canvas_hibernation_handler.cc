@@ -9,13 +9,24 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
+#include "cc/layers/texture_layer.h"
+#include "cc/layers/texture_layer_impl.h"
+#include "components/viz/common/resources/transferable_resource.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
@@ -373,6 +384,106 @@ size_t CanvasHibernationHandler::ImageMemorySize(const SkImage& image) {
 
 size_t CanvasHibernationHandler::original_memory_size() const {
   return static_cast<size_t>(width_) * height_ * bytes_per_pixel_;
+}
+
+// static
+void CanvasHibernationHandler::HibernateOrLogFailure(
+    base::WeakPtr<CanvasHibernationHandler> handler,
+    base::TimeTicks /*idleDeadline*/) {
+  if (handler) {
+    handler->Hibernate();
+  } else {
+    ReportHibernationEvent(
+        HibernationEvent::
+            kHibernationAbortedDueToDestructionWhileHibernatePending);
+  }
+}
+
+void CanvasHibernationHandler::Hibernate() {
+  TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
+  DCHECK(!IsHibernating());
+  DCHECK(hibernation_scheduled_);
+
+  hibernation_scheduled_ = false;
+
+  if (!resource_host_->ResourceProvider()) {
+    ReportHibernationEvent(
+        HibernationEvent::kHibernationAbortedBecauseNoSurface);
+    return;
+  }
+
+  if (resource_host_->IsPageVisible()) {
+    ReportHibernationEvent(
+        HibernationEvent::kHibernationAbortedDueToVisibilityChange);
+    return;
+  }
+
+  if (!resource_host_->IsResourceValid()) {
+    ReportHibernationEvent(
+        HibernationEvent::kHibernationAbortedDueGpuContextLoss);
+    return;
+  }
+
+  if (resource_host_->GetRasterMode() == RasterMode::kCPU) {
+    ReportHibernationEvent(
+        HibernationEvent::
+            kHibernationAbortedDueToSwitchToUnacceleratedRendering);
+    return;
+  }
+
+  TRACE_EVENT0("blink", "CanvasHibernationHandler::hibernate");
+  // No HibernationEvent reported on success. This is on purppose to avoid
+  // non-complementary stats. Each HibernationScheduled event is paired with
+  // exactly one failure or exit event.
+  resource_host_->FlushRecording(FlushReason::kHibernating);
+  scoped_refptr<StaticBitmapImage> snapshot =
+      resource_host_->ResourceProvider()->Snapshot(FlushReason::kHibernating);
+  if (!snapshot) {
+    ReportHibernationEvent(
+        HibernationEvent::kHibernationAbortedDueSnapshotFailure);
+    return;
+  }
+  sk_sp<SkImage> sw_image =
+      snapshot->PaintImageForCurrentFrame().GetSwSkImage();
+  if (!sw_image) {
+    ReportHibernationEvent(
+        HibernationEvent::kHibernationAbortedDueSnapshotFailure);
+    return;
+  }
+  SaveForHibernation(std::move(sw_image),
+                     resource_host_->ResourceProvider()->ReleaseRecorder());
+
+  resource_host_->ReplaceResourceProvider(nullptr);
+  resource_host_->ClearLayerTexture();
+
+  // shouldBeDirectComposited() may have changed.
+  resource_host_->SetNeedsCompositingUpdate();
+
+  // We've just used a large transfer cache buffer to get the snapshot, make
+  // sure that it's collected. Calling `SetAggressivelyFreeResources()` also
+  // frees things immediately, so use that, since deferring cleanup until the
+  // next flush is not a viable option (since we are not visible, when
+  // will a flush come?).
+  if (base::FeatureList::IsEnabled(
+          features::kCanvas2DHibernationReleaseTransferMemory)) {
+    // Unnecessary since there would be an early return above otherwise, but
+    // let's document that.
+    DCHECK(!resource_host_->IsPageVisible());
+    SetAggressivelyFreeSharedGpuContextResourcesIfPossible(true);
+  }
+}
+
+void CanvasHibernationHandler::InitiateHibernationIfNecessary() {
+  if (hibernation_scheduled_) {
+    return;
+  }
+
+  resource_host_->ClearLayerTexture();
+  ReportHibernationEvent(HibernationEvent::kHibernationScheduled);
+  hibernation_scheduled_ = true;
+  ThreadScheduler::Current()->PostIdleTask(
+      FROM_HERE, WTF::BindOnce(&CanvasHibernationHandler::HibernateOrLogFailure,
+                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace blink

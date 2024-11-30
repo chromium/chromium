@@ -39,8 +39,10 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
+#include "third_party/blink/renderer/platform/loader/identity_digest.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -417,6 +419,13 @@ std::optional<base::Time> ResourceResponse::LastModified(
     have_parsed_last_modified_header_ = true;
   }
   return last_modified_;
+}
+
+std::optional<IdentityDigest> ResourceResponse::IdentityDigest() const {
+  if (!RuntimeEnabledFeatures::IdentityDigestEnabled()) {
+    return std::nullopt;
+  }
+  return IdentityDigest::Create(HttpHeaderFields());
 }
 
 bool ResourceResponse::IsAttachment() const {

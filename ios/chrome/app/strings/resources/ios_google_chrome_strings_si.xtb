@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chrome පෙරනිමි බ්‍රව්සරය ලෙස සැකසීමට Chrome සැකසීම විවෘත කරයි.</translation>
 <translation id="1670609221633730681">Chrome ඉඟිය: ඔබේ ලිපින තීරුවේ පිහිටීම තෝරන්න</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Chrome හි ඔබේ මුරපද සුරකින්න</translation>
 <translation id="1790080846677398234">Chrome තුළ ඔබේ පිටුසන් වෙත ආදානය කළ URLs එක් කරයි.</translation>
 <translation id="1799920918471566157">Chrome ඉඟි</translation>
 <translation id="1830634592642484976">මෙම ලිපිනය දැනට Chrome වෙත සුරැකෙයි. එය Google නිෂ්පාදන පුරා භාවිතා කිරීමට, එය ඔබේ Google ගිණුම, <ph name="USER_EMAIL" /> තුළ සුරකින්න.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">මෙයින් අදහස් කරන්නේ Chrome සැම විටම ජංගම අඩවිය ඉල්ලනු ඇති බවය.</translation>
 <translation id="3740397331642243698">අප්‍රසිද්ධ තුළ Google Chrome in හි ආදානය කළ URL විවෘත කරයි.</translation>
 <translation id="3741995255368156336">Chrome කියවීම් ලැයිස්තුව විවෘත කරයි.</translation>
+<translation id="3808570423967020928">ඔබේ මුල් තිර ඩොක් එකෙන් Chrome වෙත වේගයෙන් ප්‍රවේශ වන්න.</translation>
 <translation id="3827545470516145620">ඔබට මෙම උපාංගයේ සම්මත ආරක්ෂක රැකවරණය ලැබේ</translation>
 <translation id="384394811301901750">Google Chrome හට මේ අවස්ථාවේදී ඔබේ කැමරාව භාවිත කළ නොහැකිය</translation>
 <translation id="3863841106411295595">Chrome හි ඔබේ කියවීම් ලැයිස්තුවට ආදාන URL එක් කරයි.</translation>
@@ -219,9 +221,11 @@
 
 ඔබේ Chrome අත්දැකීම වැඩි දියුණු කිරීමට දත්ත භාවිතා කරන තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> වෙත යන්න.</translation>
 <translation id="6922332667202044570">Chrome තුළ බ්‍රවුස් කිරීමේ දත්ත මකන්න.</translation>
+<translation id="6924922227983877439">පෙරනිමියෙන් Chrome හි සබැඳි විවෘත කරන්න</translation>
 <translation id="6975725306479268850">ස්වයං පිරවුම සඳහා Chrome තෝරා ගන්න</translation>
 <translation id="7056826488869329999">Chrome තුළ ආරක්ෂක පරීක්ෂාව විවෘත කර ධාවනය කරයි.</translation>
 <translation id="7061455974939528301">Chrome නිරූපකය ඔබා අල්ලාගෙන "මුල් තිරය සංස්කරණය කරන්න" ක්ලික් කරන්න</translation>
+<translation id="7065813315247345131">Chrome ඩොකය වෙත ගෙන යන්න</translation>
 <translation id="7124339256045485976">Chrome යාවත්කාලීනව තබා ගන්න</translation>
 <translation id="7161390184744336561">Google Chrome යල් පැන ඇත</translation>
 <translation id="7165736900384873061">Google Chrome QR ස්කෑනරය භාවිත කිරීම ආරම්භ කරන්න</translation>

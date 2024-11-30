@@ -253,6 +253,12 @@ const std::set<std::string>* ImageMimeTypes() {
   return &set;
 }
 
+ContentMetaData::CopiedTextSource MakeClipboardSource(std::string url) {
+  ContentMetaData::CopiedTextSource source;
+  source.set_url(std::move(url));
+  return source;
+}
+
 // A fake delegate with minimal overrides to obtain behavior that's as close to
 // the real one as possible.
 class MinimalFakeContentAnalysisDelegate : public ContentAnalysisDelegate {
@@ -800,7 +806,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   data.text.emplace_back(text());
   data.text.emplace_back(text());
   data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
-  data.clipboard_source = "https://source.com/";
+  data.clipboard_source = MakeClipboardSource("https://source.com/");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 
@@ -977,7 +983,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, AllowTextAndImage) {
   data.image = image();
   data.text.emplace_back(text());
   data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
-  data.clipboard_source = "https://source.com/";
+  data.clipboard_source = MakeClipboardSource("https://source.com/");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 
@@ -1081,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   data.image = image();
   data.text.emplace_back(text());
   data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
-  data.clipboard_source = "https://source.com/";
+  data.clipboard_source = MakeClipboardSource("https://source.com/");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 
@@ -1292,7 +1298,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   ContentAnalysisDelegate::Data data;
   data.image = image();
   data.text.emplace_back(text());
-  data.clipboard_source = "https://source.com/";
+  data.clipboard_source = MakeClipboardSource("https://source.com/");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 
@@ -1534,22 +1540,15 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
 // - block_large_files
 class ContentAnalysisDelegateBlockingSettingBrowserTest
     : public ContentAnalysisDelegateBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ContentAnalysisDelegateBlockingSettingBrowserTest()
       : ContentAnalysisDelegateBrowserTestBase(machine_scope()) {
-    if (is_resumable()) {
-      scoped_feature_list_.InitAndEnableFeature(kResumableUploadEnabled);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(kResumableUploadEnabled);
-    }
   }
 
   bool machine_scope() const { return std::get<0>(GetParam()); }
 
   bool setting_param() const { return std::get<1>(GetParam()); }
-
-  bool is_resumable() const { return std::get<2>(GetParam()); }
 
   // Use a string since the setting value is inserted into a JSON policy.
   const char* bool_setting_value() const {
@@ -1563,7 +1562,6 @@ class ContentAnalysisDelegateBlockingSettingBrowserTest
 INSTANTIATE_TEST_SUITE_P(,
                          ContentAnalysisDelegateBlockingSettingBrowserTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
@@ -1573,7 +1571,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // policy value. So this specific scenario only applies to multi-part upload.
   //
   // TODO(b/341264970): Add test support when setting_param is on.
-  if (is_resumable() && !setting_param()) {
+  if (!setting_param()) {
     return;
   }
 
@@ -1676,7 +1674,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // value. So this specific testcase only applies to multi-part upload.
   //
   // TODO(b/341264970): Add test support when setting_param is on.
-  if (is_resumable() && !setting_param()) {
+  if (!setting_param()) {
     return;
   }
 
@@ -1781,7 +1779,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // value. So this specific testcase only applies to multi-part upload.
   //
   // TODO(b/341264970): Add test support when setting_param is on.
-  if (is_resumable() && !setting_param()) {
+  if (!setting_param()) {
     return;
   }
 
@@ -2038,7 +2036,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   ContentAnalysisDelegate::Data data;
   data.text.emplace_back(text());
   data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
-  data.clipboard_source = "about:blank";
+  data.clipboard_source = MakeClipboardSource("about:blank");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 

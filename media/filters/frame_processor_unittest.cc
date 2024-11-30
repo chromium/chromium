@@ -496,7 +496,7 @@ TEST_P(FrameProcessorTest, NonMonotonicallyIncreasingTimestampInOneCall) {
   CheckReadStalls(audio_.get());
 }
 
-TEST_P(FrameProcessorTest, AudioOnly_SingleFrame) {
+TEST_P(FrameProcessorTest, AudioOnlySingleFrame) {
   // Tests A: P(A) -> (a)
   InSequence s;
   AddTestTracks(HAS_AUDIO);
@@ -511,7 +511,7 @@ TEST_P(FrameProcessorTest, AudioOnly_SingleFrame) {
   CheckReadsThenReadStalls(audio_.get(), "0");
 }
 
-TEST_P(FrameProcessorTest, VideoOnly_SingleFrame) {
+TEST_P(FrameProcessorTest, VideoOnlySingleFrame) {
   // Tests V: P(V) -> (v)
   InSequence s;
   AddTestTracks(HAS_VIDEO);
@@ -526,7 +526,7 @@ TEST_P(FrameProcessorTest, VideoOnly_SingleFrame) {
   CheckReadsThenReadStalls(video_.get(), "0");
 }
 
-TEST_P(FrameProcessorTest, AudioOnly_TwoFrames) {
+TEST_P(FrameProcessorTest, AudioOnlyTwoFrames) {
   // Tests A: P(A0, A10) -> (a0, a10)
   InSequence s;
   AddTestTracks(HAS_AUDIO);
@@ -541,7 +541,7 @@ TEST_P(FrameProcessorTest, AudioOnly_TwoFrames) {
   CheckReadsThenReadStalls(audio_.get(), "0 10");
 }
 
-TEST_P(FrameProcessorTest, AudioOnly_SetOffsetThenSingleFrame) {
+TEST_P(FrameProcessorTest, AudioOnlySetOffsetThenSingleFrame) {
   // Tests A: STSO(50)+P(A0) -> TSO==50,(a0@50)
   InSequence s;
   AddTestTracks(HAS_AUDIO);
@@ -560,7 +560,7 @@ TEST_P(FrameProcessorTest, AudioOnly_SetOffsetThenSingleFrame) {
   CheckReadsThenReadStalls(audio_.get(), "50:0");
 }
 
-TEST_P(FrameProcessorTest, AudioOnly_SetOffsetThenFrameTimestampBelowOffset) {
+TEST_P(FrameProcessorTest, AudioOnlySetOffsetThenFrameTimestampBelowOffset) {
   // Tests A: STSO(50)+P(A20) ->
   //   if sequence mode: TSO==30,(a20@50)
   //   if segments mode: TSO==50,(a20@70)
@@ -593,7 +593,7 @@ TEST_P(FrameProcessorTest, AudioOnly_SetOffsetThenFrameTimestampBelowOffset) {
   }
 }
 
-TEST_P(FrameProcessorTest, AudioOnly_SequentialProcessFrames) {
+TEST_P(FrameProcessorTest, AudioOnlySequentialProcessFrames) {
   // Tests A: P(A0,A10)+P(A20,A30) -> (a0,a10,a20,a30)
   InSequence s;
   AddTestTracks(HAS_AUDIO);
@@ -615,7 +615,7 @@ TEST_P(FrameProcessorTest, AudioOnly_SequentialProcessFrames) {
   CheckReadsThenReadStalls(audio_.get(), "0 10 20 30");
 }
 
-TEST_P(FrameProcessorTest, AudioOnly_NonSequentialProcessFrames) {
+TEST_P(FrameProcessorTest, AudioOnlyNonSequentialProcessFrames) {
   // Tests A: P(A20,A30)+P(A0,A10) ->
   //   if sequence mode: TSO==-20 after first P(), 20 after second P(), and
   //                     a(20@0,a30@10,a0@20,a10@30)
@@ -659,7 +659,7 @@ TEST_P(FrameProcessorTest, AudioOnly_NonSequentialProcessFrames) {
   }
 }
 
-TEST_P(FrameProcessorTest, AudioVideo_SequentialProcessFrames) {
+TEST_P(FrameProcessorTest, AudioVideoSequentialProcessFrames) {
   // Tests AV: P(A0,A10;V0k,V10,V20)+P(A20,A30,A40,V30) ->
   //   (a0,a10,a20,a30,a40);(v0,v10,v20,v30)
   InSequence s;
@@ -689,7 +689,7 @@ TEST_P(FrameProcessorTest, AudioVideo_SequentialProcessFrames) {
   CheckReadsThenReadStalls(video_.get(), "0 10 20 30");
 }
 
-TEST_P(FrameProcessorTest, AudioVideo_Discontinuity) {
+TEST_P(FrameProcessorTest, AudioVideoDiscontinuity) {
   // Tests AV: P(A0,A10,A30,A40,A50;V0key,V10,V40,V50key) ->
   //   if sequence mode: TSO==10,(a0,a10,a30,a40,a50@60);(v0,v10,v50@60)
   //   if segments mode: TSO==0,(a0,a10,a30,a40,a50);(v0,v10,v50)
@@ -729,7 +729,7 @@ TEST_P(FrameProcessorTest, AudioVideo_Discontinuity) {
   }
 }
 
-TEST_P(FrameProcessorTest, AudioVideo_Discontinuity_TimestampOffset) {
+TEST_P(FrameProcessorTest, AudioVideoDiscontinuityTimestampOffset) {
   InSequence s;
   AddTestTracks(HAS_AUDIO | HAS_VIDEO);
   frame_processor_->SetSequenceMode(use_sequence_mode_);
@@ -795,7 +795,7 @@ TEST_P(FrameProcessorTest, AudioVideo_Discontinuity_TimestampOffset) {
   CheckReadsThenReadStalls(video_.get(), "210:10 220:20 230:30");
 }
 
-TEST_P(FrameProcessorTest, AudioVideo_OutOfSequence_After_Discontinuity) {
+TEST_P(FrameProcessorTest, AudioVideoOutOfSequenceAfterDiscontinuity) {
   // Once a discontinuity is detected (and all tracks drop everything until the
   // next keyframe per each track), we should gracefully handle the case where
   // some tracks' first keyframe after the discontinuity are appended after, but
@@ -947,7 +947,7 @@ TEST_P(FrameProcessorTest, AppendWindowFilterWithInexactPreroll) {
   CheckReadsThenReadStalls(audio_.get(), "0P 0:9.75 10:20");
 }
 
-TEST_P(FrameProcessorTest, AppendWindowFilterWithInexactPreroll_2) {
+TEST_P(FrameProcessorTest, AppendWindowFilterWithInexactPreroll2) {
   InSequence s;
   AddTestTracks(HAS_AUDIO);
   if (use_sequence_mode_)
@@ -1105,7 +1105,7 @@ TEST_P(FrameProcessorTest, PartialAppendWindowFilterNoNewMediaSegment) {
   CheckReadsThenReadStalls(video_.get(), "0 10");
 }
 
-TEST_P(FrameProcessorTest, AudioOnly_SequenceModeContinuityAcrossReset) {
+TEST_P(FrameProcessorTest, AudioOnlySequenceModeContinuityAcrossReset) {
   if (!use_sequence_mode_) {
     DVLOG(1) << "Skipping segments mode variant; inapplicable to this case.";
     return;
@@ -1219,7 +1219,7 @@ TEST_P(FrameProcessorTest,
   CheckReadsThenReadStalls(video_.get(), "50 60 40");
 }
 
-TEST_P(FrameProcessorTest, OOOKeyframePts_1) {
+TEST_P(FrameProcessorTest, OOOKeyframePts1) {
   InSequence s;
   AddTestTracks(HAS_AUDIO);
   frame_processor_->SetSequenceMode(use_sequence_mode_);
@@ -1251,7 +1251,7 @@ TEST_P(FrameProcessorTest, OOOKeyframePts_1) {
   CheckReadsThenReadStalls(audio_.get(), "0 100 500 1000");
 }
 
-TEST_P(FrameProcessorTest, OOOKeyframePts_2) {
+TEST_P(FrameProcessorTest, OOOKeyframePts2) {
   InSequence s;
   AddTestTracks(HAS_AUDIO);
   frame_processor_->SetSequenceMode(use_sequence_mode_);
@@ -1364,7 +1364,7 @@ TEST_P(FrameProcessorTest, LargeTimestampOffsetJumpForward) {
   }
 }
 
-TEST_P(FrameProcessorTest, ContinuousDts_SapType2_and_PtsJumpForward) {
+TEST_P(FrameProcessorTest, ContinuousDtsSapType2AndPtsJumpForward) {
   InSequence s;
   AddTestTracks(HAS_VIDEO | OBSERVE_APPENDS_AND_GROUP_STARTS);
   frame_processor_->SetSequenceMode(use_sequence_mode_);
@@ -1425,7 +1425,7 @@ TEST_P(FrameProcessorTest, ContinuousDts_SapType2_and_PtsJumpForward) {
   CheckReadsThenReadStalls(video_.get(), "1130 1070 1120 1080 1110 1090 1100");
 }
 
-TEST_P(FrameProcessorTest, ContinuousDts_NewGopEndOverlapsLastGop_1) {
+TEST_P(FrameProcessorTest, ContinuousDtsNewGopEndOverlapsLastGop1) {
   // API user might craft a continuous-in-DTS-with-previous-append GOP that has
   // PTS interval overlapping the previous append.
   // Tests SAP-Type-1 GOPs, where newly appended GOP overlaps a nonkeyframe of
@@ -1460,7 +1460,7 @@ TEST_P(FrameProcessorTest, ContinuousDts_NewGopEndOverlapsLastGop_1) {
   CheckReadsThenReadStalls(video_.get(), "100 110 120 125 135 145 155");
 }
 
-TEST_P(FrameProcessorTest, ContinuousDts_NewGopEndOverlapsLastGop_2) {
+TEST_P(FrameProcessorTest, ContinuousDtsNewGopEndOverlapsLastGop2) {
   // API user might craft a continuous-in-DTS-with-previous-append GOP that has
   // PTS interval overlapping the previous append.
   // Tests SAP-Type 1 GOPs, where newly appended GOP overlaps the keyframe of
@@ -1497,7 +1497,7 @@ TEST_P(FrameProcessorTest, ContinuousDts_NewGopEndOverlapsLastGop_2) {
   CheckReadsThenReadStalls(video_.get(), "100 110 115 125");
 }
 
-TEST_P(FrameProcessorTest, ContinuousDts_NewSap2GopEndOverlapsLastGop_1) {
+TEST_P(FrameProcessorTest, ContinuousDtsNewSap2GopEndOverlapsLastGop1) {
   // API user might craft a continuous-in-DTS-with-previous-append GOP that has
   // PTS interval overlapping the previous append, using SAP Type 2 GOPs.
   // Tests SAP-Type 2 GOPs, where newly appended GOP overlaps nonkeyframes of
@@ -1540,7 +1540,7 @@ TEST_P(FrameProcessorTest, ContinuousDts_NewSap2GopEndOverlapsLastGop_1) {
   CheckReadsThenReadStalls(video_.get(), "145 125 155 135");
 }
 
-TEST_P(FrameProcessorTest, ContinuousDts_NewSap2GopEndOverlapsLastGop_2) {
+TEST_P(FrameProcessorTest, ContinuousDtsNewSap2GopEndOverlapsLastGop2) {
   // API user might craft a continuous-in-DTS-with-previous-append GOP that has
   // PTS interval overlapping the previous append, using SAP Type 2 GOPs.
   // Tests SAP-Type 2 GOPs, where newly appended GOP overlaps the keyframe of
@@ -1773,7 +1773,7 @@ TEST_P(FrameProcessorTest,
   CheckReadsThenReadStalls(video_.get(), "500 520 510 550 520 530 540");
 }
 
-TEST_P(FrameProcessorTest, ContinuousDts_GopKeyframePtsOrder_2_1_3) {
+TEST_P(FrameProcessorTest, ContinuousDtsGopKeyframePtsOrder213) {
   // White-box test, demonstrating expected behavior for a specially crafted
   // sequence that "should" be unusual, but gracefully handled:
   // SAP-Type 1 GOPs for simplicity of test. First appended GOP is highest in
@@ -1830,7 +1830,7 @@ TEST_P(FrameProcessorTest, ContinuousDts_GopKeyframePtsOrder_2_1_3) {
   CheckReadsThenReadStalls(video_.get(), "100 110 120 130 240 250");
 }
 
-TEST_P(FrameProcessorTest, ContinuousPts_DiscontinuousDts_AcrossGops) {
+TEST_P(FrameProcessorTest, ContinuousPtsDiscontinuousDtsAcrossGops) {
   // GOPs which overlap in DTS, but are continuous in PTS should be buffered
   // correctly. In particular, monotonic increase of DTS in continuous-in-PTS
   // append sequences is not required across GOPs (just within GOPs).
@@ -1871,7 +1871,7 @@ TEST_P(FrameProcessorTest, ContinuousPts_DiscontinuousDts_AcrossGops) {
   CheckReadsThenReadStalls(video_.get(), "200 210 220 230 240 250 260 270");
 }
 
-TEST_P(FrameProcessorTest, OnlyKeyframes_ContinuousDts_ContinousPts_1) {
+TEST_P(FrameProcessorTest, OnlyKeyframesContinuousDtsContinousPts1) {
   // Verifies that precisely one group start and one stream append occurs for a
   // single continuous set of frames.
   InSequence s;
@@ -1892,7 +1892,7 @@ TEST_P(FrameProcessorTest, OnlyKeyframes_ContinuousDts_ContinousPts_1) {
   CheckReadsThenReadStalls(audio_.get(), "0 10 20 30");
 }
 
-TEST_P(FrameProcessorTest, OnlyKeyframes_ContinuousDts_ContinuousPts_2) {
+TEST_P(FrameProcessorTest, OnlyKeyframesContinuousDtsContinuousPts2) {
   // Verifies that precisely one group start and one stream append occurs while
   // processing a single continuous set of frames that uses fudge room to just
   // barely remain adjacent.
@@ -1998,7 +1998,7 @@ TEST_P(FrameProcessorTest,
   CheckReadsThenReadStalls(video_.get(), "0 5");
 }
 
-TEST_P(FrameProcessorTest, NonkeyframeAudioBuffering_BasicOperation) {
+TEST_P(FrameProcessorTest, NonkeyframeAudioBufferingBasicOperation) {
   // With the support for audio nonkeyframe buffering enabled, buffer a couple
   // continuous groups of audio key and nonkey frames.
   // Note, see the AudioNonKeyframeChangedToKeyframe test that tests where
@@ -2019,7 +2019,7 @@ TEST_P(FrameProcessorTest, NonkeyframeAudioBuffering_BasicOperation) {
                                           "0K 10N 20N 30N 40K 50N 60N 70N");
 }
 
-TEST_P(FrameProcessorTest, NonkeyframeAudioBuffering_BasicOverlaps) {
+TEST_P(FrameProcessorTest, NonkeyframeAudioBufferingBasicOverlaps) {
   // With the support for audio nonkeyframe buffering enabled, buffer a few
   // groups of audio key and nonkey frames which overlap each other.
   // For sequence mode versions, timestampOffset is adjusted to make it act like
@@ -2263,7 +2263,7 @@ TEST_P(FrameProcessorTest,
   CheckReadsAndKeyframenessThenReadStalls(audio_.get(), "0K 10N 20N");
 }
 
-TEST_P(FrameProcessorTest, NonkeyframeAudioBuffering_TrimSpliceOverlap) {
+TEST_P(FrameProcessorTest, NonkeyframeAudioBufferingTrimSpliceOverlap) {
   // White-box test which focuses on the behavior of underlying
   // SourceBufferStream::TrimSpliceOverlap() for frame sequences involving
   // nonkeyframes appended by the FrameProcessor. That method detects and
@@ -2332,7 +2332,7 @@ TEST_P(FrameProcessorTest, NonkeyframeAudioBuffering_TrimSpliceOverlap) {
                                           "0K 10N 20N 22N 32K 42N 45K");
 }
 
-TEST_P(FrameProcessorTest, FrameDuration_kNoTimestamp_Fails) {
+TEST_P(FrameProcessorTest, FrameDurationKNoTimestampFails) {
   InSequence s;
   AddTestTracks(HAS_AUDIO);
   frame_processor_->SetSequenceMode(use_sequence_mode_);
@@ -2389,7 +2389,7 @@ TEST_P(FrameProcessorTest,
   EXPECT_FALSE(ProcessFrames("0|MaxK", ""));
 }
 
-TEST_P(FrameProcessorTest, After_Sequence_OffsetUpdate_kNoTimestamp_Fails) {
+TEST_P(FrameProcessorTest, AfterSequenceOffsetUpdateKNoTimestampFails) {
   if (!use_sequence_mode_) {
     DVLOG(1) << "Skipping segments mode variant; inapplicable to this case.";
     return;
@@ -2443,7 +2443,7 @@ TEST_P(FrameProcessorTest,
   EXPECT_FALSE(ProcessFrames("0K", ""));
 }
 
-TEST_P(FrameProcessorTest, Segments_InfiniteTimestampOffset_Fails) {
+TEST_P(FrameProcessorTest, SegmentsInfiniteTimestampOffsetFails) {
   if (use_sequence_mode_) {
     DVLOG(1) << "Skipping sequence mode variant; inapplicable to this case.";
     return;
@@ -2458,7 +2458,7 @@ TEST_P(FrameProcessorTest, Segments_InfiniteTimestampOffset_Fails) {
   EXPECT_FALSE(ProcessFrames("0K", ""));
 }
 
-TEST_P(FrameProcessorTest, Pts_AfterTimestampOffsetApplied_kNoTimestamp_Fails) {
+TEST_P(FrameProcessorTest, PtsAfterTimestampOffsetAppliedKNoTimestampFails) {
   InSequence s;
   AddTestTracks(HAS_VIDEO);
   frame_processor_->SetSequenceMode(use_sequence_mode_);
@@ -2561,7 +2561,7 @@ TEST_P(FrameProcessorTest,
   EXPECT_FALSE(ProcessFrames("0|10K", ""));
 }
 
-TEST_P(FrameProcessorTest, FrameEndTimestamp_kInfiniteDuration_Fails) {
+TEST_P(FrameProcessorTest, FrameEndTimestampKInfiniteDurationFails) {
   InSequence s;
 
   AddTestTracks(HAS_AUDIO);

@@ -10,8 +10,6 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
-import dagger.Lazy;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -22,10 +20,8 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -40,19 +36,16 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
-import javax.inject.Inject;
-
 /**
  * Creates {@link Tab}, {@link TabModelSelector}, and {@link ChromeTabCreator}s in the context of a
  * Custom Tab activity.
  */
-@ActivityScope
 public class CustomTabActivityTabFactory {
     private final Activity mActivity;
     private final CustomTabTabPersistencePolicy mPersistencePolicy;
-    private final Lazy<ActivityWindowAndroid> mActivityWindowAndroid;
+    private final ActivityWindowAndroid mActivityWindowAndroid;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private final Lazy<CustomTabDelegateFactory> mCustomTabDelegateFactory;
+    private final CustomTabDelegateFactory mCustomTabDelegateFactory;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -62,25 +55,27 @@ public class CustomTabActivityTabFactory {
     @Nullable private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
     @ActivityType int mActivityType;
 
-    @Inject
     public CustomTabActivityTabFactory(
-            BaseCustomTabActivity activity,
+            Activity activity,
             CustomTabTabPersistencePolicy persistencePolicy,
-            Lazy<ActivityWindowAndroid> activityWindowAndroid,
+            ActivityWindowAndroid activityWindowAndroid,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
+            CustomTabDelegateFactory customTabDelegateFactory,
+            BrowserServicesIntentDataProvider intentDataProvider,
             TabCreatorManager tabCreatorManager,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            CipherFactory cipherFactory) {
         mActivity = activity;
         mPersistencePolicy = persistencePolicy;
         mActivityWindowAndroid = activityWindowAndroid;
         mProfileProviderSupplier = profileProviderSupplier;
         mCustomTabDelegateFactory = customTabDelegateFactory;
-        mIntentDataProvider = activity.getIntentDataProvider();
+        mIntentDataProvider = intentDataProvider;
         mTabCreatorManager = tabCreatorManager;
-        mTabModelSelectorSupplier = activity.getTabModelSelectorSupplier();
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
-        mCipherFactory = activity.getCipherFactory();
+        mCipherFactory = cipherFactory;
     }
 
     public void setActivityType(int activityType) {
@@ -138,8 +133,8 @@ public class CustomTabActivityTabFactory {
     private ChromeTabCreator createTabCreator(boolean incognito) {
         return new ChromeTabCreator(
                 mActivity,
-                mActivityWindowAndroid.get(),
-                mCustomTabDelegateFactory::get,
+                mActivityWindowAndroid,
+                () -> mCustomTabDelegateFactory,
                 mProfileProviderSupplier,
                 incognito,
                 AsyncTabParamsManagerSingleton.getInstance(),
@@ -157,7 +152,7 @@ public class CustomTabActivityTabFactory {
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
         return TabBuilder.createLiveTab(profile, /* initiallyHidden= */ false)
                 .setId(IntentHandler.getTabId(intent))
-                .setWindow(mActivityWindowAndroid.get())
+                .setWindow(mActivityWindowAndroid)
                 .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)
                 .setWebContents(webContents)
                 .setDelegateFactory(delegateFactory)

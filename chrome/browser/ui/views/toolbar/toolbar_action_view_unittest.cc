@@ -142,7 +142,7 @@ class TestToolbarActionView : public ToolbarActionView {
       : ToolbarActionView(view_controller, delegate) {}
   TestToolbarActionView(const TestToolbarActionView&) = delete;
   TestToolbarActionView& operator=(const TestToolbarActionView&) = delete;
-  ~TestToolbarActionView() override {}
+  ~TestToolbarActionView() override = default;
 };
 
 // Verifies there is no crash when a ToolbarActionView with an InkDrop is

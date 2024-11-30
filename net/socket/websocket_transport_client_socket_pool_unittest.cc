@@ -303,7 +303,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, PendingRequestsFinishFifo) {
   EXPECT_EQ(ClientSocketPoolTest::kIndexOutOfBounds, GetOrderOfRequest(7));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, PendingRequests_NoKeepAlive) {
+TEST_F(WebSocketTransportClientSocketPoolTest, PendingRequestsNoKeepAlive) {
   // First request finishes asynchronously.
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT(request(0)->WaitForResult(), IsOk());

@@ -615,9 +615,9 @@ Browser* ZoomBubbleView::GetBrowser() const {
   return web_contents() ? chrome::FindBrowserWithTab(web_contents()) : nullptr;
 }
 
-ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() {}
+ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() = default;
 
-ZoomBubbleView::ZoomBubbleExtensionInfo::~ZoomBubbleExtensionInfo() {}
+ZoomBubbleView::ZoomBubbleExtensionInfo::~ZoomBubbleExtensionInfo() = default;
 
 BEGIN_METADATA(ZoomBubbleView)
 END_METADATA

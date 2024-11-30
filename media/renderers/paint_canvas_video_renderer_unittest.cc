@@ -495,7 +495,7 @@ TEST_F(PaintCanvasVideoRendererTest, CroppedFrameToRGBParallel) {
             rgb_pixels[(visible_size.width() - 1) * visible_size.height()]);
 }
 
-TEST_F(PaintCanvasVideoRendererTest, CroppedFrame_NoScaling) {
+TEST_F(PaintCanvasVideoRendererTest, CroppedFrameNoScaling) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   const gfx::Rect crop_rect = cropped_frame()->visible_rect();
@@ -523,7 +523,7 @@ TEST_F(PaintCanvasVideoRendererTest, CroppedFrame_NoScaling) {
                                           offset_y + crop_rect.height() - 1));
 }
 
-TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_90) {
+TEST_F(PaintCanvasVideoRendererTest, VideoRotation90) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   PaintRotated(cropped_frame(), &canvas, kNaturalRect, kNone,
@@ -535,7 +535,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_90) {
   EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(0, kHeight - 1));
 }
 
-TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_180) {
+TEST_F(PaintCanvasVideoRendererTest, VideoRotation180) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   PaintRotated(cropped_frame(), &canvas, kNaturalRect, kNone,
@@ -547,7 +547,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_180) {
   EXPECT_EQ(SK_ColorRED, bitmap.getColor(0, kHeight - 1));
 }
 
-TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_270) {
+TEST_F(PaintCanvasVideoRendererTest, VideoRotation270) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   PaintRotated(cropped_frame(), &canvas, kNaturalRect, kNone,
@@ -559,7 +559,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_270) {
   EXPECT_EQ(SK_ColorBLACK, bitmap.getColor(0, kHeight - 1));
 }
 
-TEST_F(PaintCanvasVideoRendererTest, Video_Translate) {
+TEST_F(PaintCanvasVideoRendererTest, VideoTranslate) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   canvas.clear(SkColors::kMagenta);
@@ -579,7 +579,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate) {
   EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(kWidth / 2, kHeight - 1));
 }
 
-TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_90) {
+TEST_F(PaintCanvasVideoRendererTest, VideoTranslateRotation90) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   canvas.clear(SkColors::kMagenta);
@@ -600,7 +600,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_90) {
   EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(kWidth / 2, kHeight - 1));
 }
 
-TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_180) {
+TEST_F(PaintCanvasVideoRendererTest, VideoTranslateRotation180) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   canvas.clear(SkColors::kMagenta);
@@ -621,7 +621,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_180) {
   EXPECT_EQ(SK_ColorRED, bitmap.getColor(kWidth / 2, kHeight - 1));
 }
 
-TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_270) {
+TEST_F(PaintCanvasVideoRendererTest, VideoTranslateRotation270) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   canvas.clear(SkColors::kMagenta);
@@ -999,7 +999,7 @@ TEST_F(PaintCanvasVideoRendererTest, CorrectFrameSizeToVisibleRect) {
   EXPECT_EQ(fWidth / 2, renderer_.LastImageDimensionsForTesting().height());
 }
 
-TEST_F(PaintCanvasVideoRendererTest, TexImage2D_Y16_RGBA32F) {
+TEST_F(PaintCanvasVideoRendererTest, TexImage2DY16RGBA32F) {
   // Create test frame.
   // |offset_x| and |offset_y| define visible rect's offset to coded rect.
   const int offset_x = 3;
@@ -1047,7 +1047,7 @@ TEST_F(PaintCanvasVideoRendererTest, TexImage2D_Y16_RGBA32F) {
       GL_RGBA, GL_RGBA, GL_FLOAT, true /*flip_y*/, true);
 }
 
-TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
+TEST_F(PaintCanvasVideoRendererTest, TexSubImage2DY16R32F) {
   // Create test frame.
   // |offset_x| and |offset_y| define visible rect's offset to coded rect.
   const int offset_x = 3;

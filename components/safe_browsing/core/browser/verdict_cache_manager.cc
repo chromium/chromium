@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 
 namespace safe_browsing {
 
@@ -37,10 +38,6 @@ const char kRealTimeThreatInfoProto[] = "rt_threat_info_proto";
 const char kPasswordOnFocusCacheKey[] = "password_on_focus_cache_key";
 const char kRealTimeUrlCacheKey[] = "real_time_url_cache_key";
 const char kCsdTypeCacheKey[] = "client_side_detection_type_cache_key";
-
-// Command-line flag for caching an artificial unsafe verdict for URL real-time
-// lookups.
-const char kUnsafeUrlFlag[] = "mark_as_real_time_phishing";
 
 // The maximum number of entries to be removed in a single cleanup. Removing too
 // many entries all at once could cause jank.
@@ -1067,7 +1064,7 @@ size_t VerdictCacheManager::GetRealTimeUrlCheckVerdictCountForURL(
 void VerdictCacheManager::CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kUnsafeUrlFlag);
+          switches::kArtificialCachedUrlRealTimeVerdictFlag);
   CacheArtificialRealTimeUrlVerdict(phishing_url_string, /*is_unsafe=*/true);
 }
 
@@ -1107,7 +1104,7 @@ void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict(
 void VerdictCacheManager::CacheArtificialUnsafePhishGuardVerdictFromSwitch() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kArtificialCachedPhishGuardVerdictFlag);
+          switches::kArtificialCachedPhishGuardVerdictFlag);
   if (phishing_url_string.empty()) {
     return;
   }
@@ -1170,7 +1167,7 @@ void VerdictCacheManager::
     CacheArtificialUnsafeHashRealTimeLookupVerdictFromSwitch() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kArtificialCachedHashPrefixRealTimeVerdictFlag);
+          switches::kArtificialCachedHashPrefixRealTimeVerdictFlag);
   CacheArtificialHashRealTimeLookupVerdict(phishing_url_string,
                                            /*is_unsafe=*/true);
 }

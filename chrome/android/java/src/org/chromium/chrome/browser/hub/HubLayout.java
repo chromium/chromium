@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
@@ -478,15 +478,9 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         mCurrentSceneLayer = mEmptySceneLayer;
         updateEmptyLayerColor(mPaneManager.getFocusedPaneSupplier().get());
 
-        @ColorInt int backgroundColor;
-        if (newIsIncognito) {
-            backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), newIsIncognito);
-        } else {
-            // See https://crbug/1507124.
-            backgroundColor =
-                    ChromeColors.getSurfaceColor(
-                            getContext(), R.dimen.home_surface_background_color_elevation);
-        }
+        @ColorInt
+        int backgroundColor =
+                NewTabAnimationsUtils.getBackgroundColor(getContext(), newIsIncognito);
         SyncOneshotSupplierImpl<ShrinkExpandAnimationData> animationDataSupplier =
                 new SyncOneshotSupplierImpl<>();
         HubLayoutAnimatorProvider animatorProvider =
@@ -500,8 +494,10 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         Rect containerViewRect = new Rect();
         containerView.getGlobalVisibleRect(containerViewRect);
         int searchBoxHeight =
-                HubUtils.getSearchBoxHeight(
-                        containerView, R.id.hub_toolbar, R.id.toolbar_action_container);
+                OmniboxFeatures.sAndroidHubSearch.isEnabled()
+                        ? HubUtils.getSearchBoxHeight(
+                                containerView, R.id.hub_toolbar, R.id.toolbar_action_container)
+                        : 0;
 
         View paneHost = mHubController.getPaneHostView();
         assert paneHost.isLaidOut();

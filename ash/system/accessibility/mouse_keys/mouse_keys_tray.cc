@@ -21,6 +21,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 
@@ -58,6 +59,9 @@ MouseKeysTray::MouseKeysTray(Shelf* shelf,
   // Observe the accessibility controller state changes to know when mouse keys
   // state is updated or when it is disabled/enabled.
   Shell::Get()->accessibility_controller()->AddObserver(this);
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME));
 }
 
 MouseKeysTray::~MouseKeysTray() {
@@ -77,10 +81,6 @@ void MouseKeysTray::Initialize() {
   TrayBackgroundView::Initialize();
   OnAccessibilityStatusChanged();
   HandleLocaleChange();
-}
-
-std::u16string MouseKeysTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME);
 }
 
 void MouseKeysTray::HandleLocaleChange() {

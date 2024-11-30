@@ -45,7 +45,7 @@ class BrowserCrashEventRouterFactory : public ProfileKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<BrowserCrashEventRouterFactory>;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

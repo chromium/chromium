@@ -170,7 +170,7 @@ class DownloadRemovedObserver : public DownloadPersistedObserver {
   DownloadRemovedObserver(const DownloadRemovedObserver&) = delete;
   DownloadRemovedObserver& operator=(const DownloadRemovedObserver&) = delete;
 
-  ~DownloadRemovedObserver() override {}
+  ~DownloadRemovedObserver() override = default;
 
   bool WaitForRemoved() {
     if (removed_)
@@ -298,7 +298,7 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
 
 class SavePageBrowserTest : public InProcessBrowserTest {
  public:
-  SavePageBrowserTest() {}
+  SavePageBrowserTest() = default;
 
   SavePageBrowserTest(const SavePageBrowserTest&) = delete;
   SavePageBrowserTest& operator=(const SavePageBrowserTest&) = delete;
@@ -549,7 +549,7 @@ class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   DelayingDownloadManagerDelegate& operator=(
       const DelayingDownloadManagerDelegate&) = delete;
 
-  ~DelayingDownloadManagerDelegate() override {}
+  ~DelayingDownloadManagerDelegate() override = default;
 
   bool ShouldCompleteDownload(
       download::DownloadItem* item,
@@ -1015,7 +1015,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveURLQuarantine) {
 // See http://dev.chromium.org/developers/design-documents/site-isolation.
 class SavePageSitePerProcessBrowserTest : public SavePageBrowserTest {
  public:
-  SavePageSitePerProcessBrowserTest() {}
+  SavePageSitePerProcessBrowserTest() = default;
 
   SavePageSitePerProcessBrowserTest(const SavePageSitePerProcessBrowserTest&) =
       delete;

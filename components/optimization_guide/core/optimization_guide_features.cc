@@ -163,6 +163,12 @@ BASE_FEATURE(kTextSafetyClassifier,
              "TextSafetyClassifier",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to scan the full text when running the language detection in the text
+// safety classifier.
+BASE_FEATURE(kTextSafetyScanLanguageDetection,
+             "TextSafetyScanLanguageDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether the text safety remote fallback should be used.
 BASE_FEATURE(kTextSafetyRemoteFallback,
              "TextSafetyRemoteFallback",
@@ -192,6 +198,10 @@ const base::FeatureParam<bool> kShowAiSettingsForTesting{
 const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
     &kOptimizationGuideOnDeviceModel,
     "compatible_on_device_performance_classes", "5,6"};
+
+BASE_FEATURE(kOptimizationGuideIconView,
+             "OptimizationGuideIconView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.
@@ -697,42 +707,11 @@ base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime() {
   return kOnDeviceModelCrashBackoffBaseTime.Get();
 }
 
-int GetOnDeviceModelTimeoutCountBeforeDisable() {
-  static const base::FeatureParam<int> kOnDeviceModelDisableTimeoutCount{
-      &kOptimizationGuideOnDeviceModel, "on_device_model_disable_timeout_count",
-      2};
-  return kOnDeviceModelDisableTimeoutCount.Get();
-}
-
-base::TimeDelta GetOnDeviceModelMaxTimeoutBackoffTime() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelMaxTimeoutBackoffTime{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_model_max_timeout_backoff_time", base::Hours(1)};
-  return kOnDeviceModelMaxTimeoutBackoffTime.Get();
-}
-
-base::TimeDelta GetOnDeviceModelTimeoutBackoffBaseTime() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelTimeoutBackoffBaseTime{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_model_timeout_backoff_base_time", base::Minutes(1)};
-  return kOnDeviceModelTimeoutBackoffBaseTime.Get();
-}
-
 base::TimeDelta GetOnDeviceStartupMetricDelay() {
   static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
       &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
       base::Minutes(3)};
   return kOnDeviceStartupMetricDelay.Get();
-}
-
-base::TimeDelta GetOnDeviceModelTimeForInitialResponse() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelTimeForInitialResponse{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_time_for_initial_response", base::Seconds(15)};
-  return kOnDeviceModelTimeForInitialResponse.Get();
 }
 
 bool GetOnDeviceFallbackToServerOnDisconnect() {
@@ -899,6 +878,10 @@ int GetOnDeviceModelValidationAttemptCount() {
   static const base::FeatureParam<int> kParam{
       &kOnDeviceModelValidation, "on_device_model_validation_attempt_count", 3};
   return kParam.Get();
+}
+
+bool ShouldEnableOptimizationGuideIconView() {
+  return base::FeatureList::IsEnabled(kOptimizationGuideIconView);
 }
 
 }  // namespace features

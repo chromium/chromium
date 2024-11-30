@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/browser/client_report_util.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 

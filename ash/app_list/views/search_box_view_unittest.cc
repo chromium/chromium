@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -30,6 +31,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
@@ -47,6 +49,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -1357,10 +1360,10 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
   ASSERT_TRUE(home_button->IsShowingAppList());
   auto* sunfish_button =
       GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
-  ASSERT_EQ(IsSunfishEnabled(), !!sunfish_button);
+  ASSERT_TRUE(sunfish_button);
+  ASSERT_EQ(sunfish_button->GetVisible(), IsSunfishEnabled());
 
   if (IsSunfishEnabled()) {
-    ASSERT_TRUE(sunfish_button->GetVisible());
     // `SetShowSunfishButton` should control the visibility of the button.
     GetSearchModel()->search_box()->SetShowSunfishButton(false);
     EXPECT_FALSE(sunfish_button->GetVisible());
@@ -1398,6 +1401,56 @@ TEST_P(SunfishLauncherButtonTest, TabletModeAppList) {
   ASSERT_TRUE(sunfish_button);
   GestureTapOn(sunfish_button);
   EXPECT_TRUE(presenter->GetTargetVisibility());
+}
+
+class SunfishLauncherButtonGooglerTest : public NoSessionAshTestBase {
+ public:
+  SunfishLauncherButtonGooglerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{{features::kSunfishFeature}},
+        /*disabled_features=*/{
+            {features::kScannerUpdate, features::kScannerDogfood}});
+  }
+  ~SunfishLauncherButtonGooglerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that switching from a non-Googler user to a Googler user does not crash
+// the session, and updates the Sunfish button visibility.
+TEST_F(SunfishLauncherButtonGooglerTest, NonGooglerToGooglerSwitch) {
+  constexpr std::string_view kNonGoogler = "nongoogler@gmail.com";
+  constexpr std::string_view kGoogler = "googler@google.com";
+  AccountId kNonGooglerAccount = AccountId::FromUserEmail(kNonGoogler);
+  AccountId kGooglerAccount = AccountId::FromUserEmail(kGoogler);
+  TestSessionControllerClient* session = GetSessionControllerClient();
+  session->AddUserSession(std::string(kNonGoogler));
+  session->AddUserSession(std::string(kGoogler));
+
+  // Switch to the non-Googler account.
+  session->SwitchActiveUser(kNonGooglerAccount);
+  session->RequestHideLockScreen();
+  HomeButton* home_button =
+      GetPrimaryShelf()->navigation_widget()->GetHomeButton();
+  ASSERT_FALSE(home_button->IsShowingAppList());
+  LeftClickOn(home_button);
+  ASSERT_TRUE(home_button->IsShowingAppList());
+  auto* sunfish_button =
+      GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+  EXPECT_FALSE(sunfish_button->GetVisible());
+  // Switch to the Googler account.
+  session->SwitchActiveUser(kGooglerAccount);
+  GetPrimaryShelf()->navigation_widget()->GetHomeButton();
+  ASSERT_FALSE(home_button->IsShowingAppList());
+  LeftClickOn(home_button);
+  ASSERT_TRUE(home_button->IsShowingAppList());
+  sunfish_button =
+      GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
+
+  ASSERT_TRUE(sunfish_button);
+  EXPECT_TRUE(sunfish_button->GetVisible());
 }
 
 }  // namespace

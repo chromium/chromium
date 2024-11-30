@@ -95,6 +95,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
     private final ThemeColorProvider mThemeColorProvider;
+    private final ObservableSupplierImpl<Integer> mBackgroundColorSupplier;
 
     // These should only be used when regular (non-incognito) tabs are set in the model.
     private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -125,7 +126,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                             dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             SharedImageTilesCoordinator sharedImageTilesCoordinator,
-            ThemeColorProvider themeColorProvider) {
+            ThemeColorProvider themeColorProvider,
+            ObservableSupplierImpl<Integer> backgroundColorSupplier) {
         mResetHandler = resetHandler;
         mModel = model;
         mTabModelSelector = tabModelSelector;
@@ -136,6 +138,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
         mThemeColorProvider = themeColorProvider;
+        mBackgroundColorSupplier = backgroundColorSupplier;
 
         mThemeColorProvider.addThemeColorObserver(this);
         mThemeColorProvider.addTintObserver(this);
@@ -370,6 +373,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
     public void onThemeColorChanged(int color, boolean shouldAnimate) {
         mVisibilityController.setBottomControlsColor(color);
         mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, color);
+        mBackgroundColorSupplier.set(color);
     }
 
     @Override

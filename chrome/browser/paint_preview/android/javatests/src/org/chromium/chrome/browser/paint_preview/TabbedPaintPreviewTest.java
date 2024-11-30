@@ -193,10 +193,10 @@ public class TabbedPaintPreviewTest {
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getCurrentModel()
+                                .getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeTab(newTab)
-                                                .allowUndo(false)
-                                                .build()));
+                                        TabClosureParams.closeTab(newTab).allowUndo(false).build(),
+                                        /* allowDialog= */ false));
         assertToolbarPersistence(true, visibilityDelegate);
     }
 
@@ -242,10 +242,10 @@ public class TabbedPaintPreviewTest {
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getCurrentModel()
+                                .getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeTab(newTab)
-                                                .allowUndo(false)
-                                                .build()));
+                                        TabClosureParams.closeTab(newTab).allowUndo(false).build(),
+                                        /* allowDialog= */ false));
         assertProgressbarUpdatePreventionCallback(true, preventionCallback);
 
         // Remove paint preview.

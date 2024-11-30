@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.compositor.bottombar;
 import android.animation.Animator;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -57,13 +59,16 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param updateHost The {@link LayoutUpdateHost} used to request updates in the Layout.
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for measuring
+     *     controls.
      */
     public OverlayPanelAnimation(
             Context context,
             LayoutUpdateHost updateHost,
             float toolbarHeightDp,
-            DesktopWindowStateManager desktopWindowStateManager) {
-        super(context, toolbarHeightDp, desktopWindowStateManager);
+            DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider) {
+        super(context, toolbarHeightDp, desktopWindowStateManager, browserControlsStateProvider);
         mUpdateHost = updateHost;
     }
 

@@ -30,7 +30,7 @@ class BrowserHandler : public DomainHandler, public Browser::Backend {
 
   // Browser::Backend implementation
   Response GetWindowForTarget(
-      Maybe<std::string> target_id,
+      std::optional<std::string> target_id,
       int* out_window_id,
       std::unique_ptr<Browser::Bounds>* out_bounds) override;
 

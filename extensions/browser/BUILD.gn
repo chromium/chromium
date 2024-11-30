@@ -257,7 +257,6 @@ source_set("browser_sources") {
     "error_map.h",
     "event_listener_map.cc",
     "event_listener_map.h",
-    "event_page_tracker.h",
     "event_router.cc",
     "event_router.h",
     "event_router_factory.cc",
@@ -366,6 +365,8 @@ source_set("browser_sources") {
     "file_reader.h",
     "granted_file_entry.cc",
     "granted_file_entry.h",
+    "host_access_request_helper.cc",
+    "host_access_request_helper.h",
     "image_loader.cc",
     "image_loader.h",
     "image_loader_factory.cc",
@@ -463,8 +464,6 @@ source_set("browser_sources") {
     "service_worker/worker_id_set.h",
     "service_worker_manager.cc",
     "service_worker_manager.h",
-    "site_access_requests_helper.cc",
-    "site_access_requests_helper.h",
     "state_store.cc",
     "state_store.h",
     "state_store_test_observer.cc",
@@ -659,6 +658,7 @@ source_set("browser_sources") {
 
     deps += [
       "//components/guest_view/browser",
+      "//components/page_load_metrics/browser",
       "//extensions/browser/guest_view/web_view/web_ui",
     ]
   }

@@ -28,7 +28,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/autofill/content/browser/risk/proto/fingerprint.pb.h"
-#include "components/autofill/content/common/content_autofill_features.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"

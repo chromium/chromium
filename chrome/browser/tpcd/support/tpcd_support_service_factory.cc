@@ -52,10 +52,11 @@ TpcdTrialServiceFactory::TpcdTrialServiceFactory()
 
 TpcdTrialServiceFactory::~TpcdTrialServiceFactory() = default;
 
-KeyedService* TpcdTrialServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TpcdTrialServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return new TpcdTrialService(context);
+  return std::make_unique<TpcdTrialService>(context);
 }
 
 }  // namespace tpcd::trial

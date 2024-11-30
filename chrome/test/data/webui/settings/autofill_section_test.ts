@@ -1195,9 +1195,11 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
 suite('PlusAddressesTest', function() {
   const fakeUrl = 'https://foo.bar';
+  let metrics: MetricsTracker;
   let openWindowProxy: TestOpenWindowProxy;
 
   setup(function() {
+    metrics = fakeMetricsPrivate();
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     loadTimeData.overrideValues({
@@ -1247,7 +1249,8 @@ suite('PlusAddressesTest', function() {
         plusAddressButton.click();
         const url = await openWindowProxy.whenCalled('openUrl');
         assertEquals(url, fakeUrl);
-
+        assertEquals(
+            1, metrics.count('Settings.ManageOptionOnSettingsSelected'));
         autofillSection.remove();
       });
 });

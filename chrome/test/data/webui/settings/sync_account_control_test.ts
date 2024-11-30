@@ -233,6 +233,42 @@ suite('SyncAccountControl', function() {
     await browserProxy.whenCalled('startSignIn');
   });
 
+  test(
+      'Updated UI shown when sync off, kImprovedSettingsUIOnDesktop enabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: true});
+        testElement.syncStatus = {
+          signedInState: SignedInState.SIGNED_IN,
+          statusAction: StatusAction.NO_ACTION,
+        };
+
+        flush();
+
+        assertTrue(isChildVisible(testElement, '#sync-button'));
+        assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
+        assertTrue(isChildVisible(testElement, '#signout-button'));
+      });
+
+
+  test(
+      'Updated UI hidden when sync off, kImprovedSettingsUIOnDesktop disabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: false});
+        testElement.syncStatus = {
+          signedInState: SignedInState.SIGNED_IN,
+          statusAction: StatusAction.NO_ACTION,
+        };
+
+        flush();
+
+        assertTrue(isChildVisible(testElement, '#sync-button'));
+        assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
+        assertFalse(isChildVisible(testElement, '#signout-button'));
+      });
+
+
   test('managedUser, Sync off, turn sync off disabled', function() {
     loadTimeData.overrideValues({turnOffSyncAllowedForManagedProfiles: false});
 

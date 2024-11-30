@@ -90,7 +90,7 @@ class DownloadControllerBase : public download::DownloadItem::Observer,
       const DownloadInfo& info) = 0;
 
  protected:
-  ~DownloadControllerBase() override {}
+  ~DownloadControllerBase() override = default;
   static DownloadControllerBase* download_controller_;
 };
 

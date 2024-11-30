@@ -103,4 +103,7 @@
 // Supports CWVOmniboxInput.
 #define IOS_WEB_VIEW_SUPPORTS_OMNIBOX_INPUT 1
 
+// Supports AccountAddressSyncing
+#define IOS_WEB_VIEW_SUPPORTS_ACCOUNT_ADDRESS_SYNC 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

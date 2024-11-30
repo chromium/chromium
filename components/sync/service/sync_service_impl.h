@@ -465,6 +465,8 @@ class SyncServiceImpl : public SyncService,
 
   std::unique_ptr<BackendMigrator> migrator_;
 
+  std::set<UserActionableError> encountered_user_actionable_errors_;
+
   // This is the last `SyncProtocolError` we received from the server that had
   // an action set on it.
   SyncProtocolError last_actionable_error_;

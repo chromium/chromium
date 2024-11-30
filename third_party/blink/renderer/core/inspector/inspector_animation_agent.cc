@@ -582,7 +582,7 @@ String InspectorAnimationAgent::CreateCSSId(blink::Animation& animation) {
   DigestValue digest_result;
   digestor.Finish(digest_result);
   DCHECK(!digestor.has_failed());
-  return Base64Encode(base::make_span(digest_result).first<10>());
+  return Base64Encode(base::span(digest_result).first<10>());
 }
 
 void InspectorAnimationAgent::DidCreateAnimation(unsigned sequence_number) {

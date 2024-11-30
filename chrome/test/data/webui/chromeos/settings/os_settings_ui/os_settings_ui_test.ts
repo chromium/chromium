@@ -40,18 +40,14 @@ suite('OSSettingsUi', () => {
     flush();
 
     await CrSettingsPrefs.initialized;
+    flush();
+
     settingsMain = ui.shadowRoot!.querySelector('os-settings-main');
     assert(settingsMain);
 
     mainPageContainer =
         settingsMain.shadowRoot!.querySelector('main-page-container');
     assert(mainPageContainer);
-
-    const idleRender =
-        mainPageContainer.shadowRoot!.querySelector('settings-idle-load');
-    assert(idleRender);
-    await idleRender.get();
-    flush();
   });
 
   suiteTeardown(() => {

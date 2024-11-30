@@ -29,7 +29,7 @@ WebApkInstallService::WebApkInstallService(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-WebApkInstallService::~WebApkInstallService() {}
+WebApkInstallService::~WebApkInstallService() = default;
 
 bool WebApkInstallService::IsInstallInProgress(const GURL& web_manifest_id) {
   return install_ids_.count(web_manifest_id);

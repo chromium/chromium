@@ -27,6 +27,9 @@ dictionary AuthenticationExtensionsClientOutputs {
   // https://w3c.github.io/webauthn/#sctn-supplemental-public-keys-extension
   [RuntimeEnabled=WebAuthenticationSupplementalPubKeys] AuthenticationExtensionsSupplementalPubKeysOutputs supplementalPubKeys;
 
+  // Payment extension outputs support.
+  [RuntimeEnabled=SecurePaymentConfirmationBrowserBoundKeys] AuthenticationExtensionsPaymentOutputs payment;
+
   // Pseudo-random function support.
   // https://w3c.github.io/webauthn/#prf-extension
   [RuntimeEnabled=WebAuthenticationPRF] AuthenticationExtensionsPRFOutputs prf;

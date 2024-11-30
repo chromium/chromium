@@ -61,7 +61,19 @@ struct AILanguageModelCreateOptions {
   array<AILanguageModelInitialPrompt> initial_prompts;
 };
 
-// The client interface that receives an AILanguageModel from an AIManager.
+enum AIManagerCreateLanguageModelError {
+  // The underlying service fails to create the on-device session.
+  kUnableToCreateSession = 0,
+  // The manager is unable to calculate the token size of the initial prompt.
+  kUnableToCalculateTokenSize = 1,
+  // The initial prompt is too large to fit in the context.
+  kInitialPromptsTooLarge = 2,
+
+  // Append new line here
+};
+
+// The client interface that receives an AILanguageModel or errors from an
+// AIManager.
 interface AIManagerCreateLanguageModelClient {
   // Called with a created language model's mojo interface as a result for the
   // CreateLanguageModel() method of the AIManager. When failed to create an
@@ -69,9 +81,11 @@ interface AIManagerCreateLanguageModelClient {
   // It also returns the language model info if the language model is created
   // successfully.
   OnResult(
-    pending_remote<blink.mojom.AILanguageModel>? language_model_remote,
-    AILanguageModelInfo? info
+    pending_remote<blink.mojom.AILanguageModel> language_model_remote,
+    AILanguageModelInfo info
   );
+  // Called when the manager cannot create an AILanguageModel.
+  OnError(AIManagerCreateLanguageModelError error);
 };
 
 // The client interface that receives the number of tokens counted by the

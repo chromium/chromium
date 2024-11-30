@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_MODAL_SAVE_CARD_SAVE_CARD_INFOBAR_MODAL_OVERLAY_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_MODAL_SAVE_CARD_SAVE_CARD_INFOBAR_MODAL_OVERLAY_MEDIATOR_H_
 
+#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_mediator.h"
-
-#import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_delegate.h"
 
 @protocol InfobarSaveCardModalConsumer;
 @protocol SaveCardInfobarModalOverlayMediatorDelegate;

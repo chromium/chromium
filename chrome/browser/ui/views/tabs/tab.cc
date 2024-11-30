@@ -279,12 +279,16 @@ Tab::Tab(TabSlotController* controller)
   SetProperty(views::kElementIdentifierKey, kTabElementId);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
+  UpdateAccessibleName();
+
+  // Tab hover cards replace tooltips for tabs.
+  SetCachedTooltipText(std::u16string());
+
   root_name_changed_subscription_ =
       GetViewAccessibility().AddStringAttributeChangedCallback(
           ax::mojom::StringAttribute::kName,
           base::BindRepeating(&Tab::OnAXNameChanged,
                               weak_ptr_factory_.GetWeakPtr()));
-  UpdateAccessibleName();
 }
 
 Tab::~Tab() {
@@ -711,7 +715,7 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
 
 std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
   // Tab hover cards replace tooltips for tabs.
-  return std::u16string();
+  return GetCachedTooltipText();
 }
 
 // This function updates the accessible name for the tab whenever any of the

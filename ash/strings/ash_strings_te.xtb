@@ -1530,7 +1530,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="612734058257491180">గెస్ట్ సెషన్‌లో Google Assistant పని చేయదు.</translation>
 <translation id="6127395413317891856">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
-<translation id="6129953537138746214">ఖాళీ</translation>
+<translation id="6129953537138746214">స్పేస్</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయండి'ని తెరవండి</translation>
 <translation id="6141205840878048728">మీరు దేనిపై ఫోకస్ చేయాలనుకుంటున్నారు?</translation>
 <translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
@@ -2125,6 +2125,7 @@
 <translation id="8142699993796781067">ప్రైవే. నెట్‌వర్క్</translation>
 <translation id="8144760705599030999">మీ ఇతర పరికరాలతో ఫాస్ట్ పెయిరింగ్ కోసం మీ <ph name="NAME" />ను <ph name="EMAIL" />కు సేవ్ చేయండి</translation>
 <translation id="8144914663975476336">రికార్డింగ్ ఫార్మాట్‌ను ఎంచుకోండి</translation>
+<translation id="8145272500474066209">జెనరేటివ్ AI ఇచ్చే సమాధానాలు కరెక్ట్‌గా ఉండకపోవచ్చు,వ్యక్తులకు సంబంధించిన సమాచారం విషయంలో కూడా ఇదే వర్తిస్తుంది, కాబట్టి దాన్ని డబుల్-చెక్ చేయండి. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">బ్లూటూత్ సెట్టింగ్‌లను చూడండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">మూసివేయడానికి Ctrl + W నొక్కండి.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ఆటోఫిల్</translation>

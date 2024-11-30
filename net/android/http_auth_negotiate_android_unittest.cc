@@ -44,7 +44,7 @@ TEST(HttpAuthNegotiateAndroidTest, GenerateAuthToken) {
   DummySpnegoAuthenticator::RemoveTestAccounts();
 }
 
-TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_FirstRound) {
+TEST(HttpAuthNegotiateAndroidTest, ParseChallengeFirstRound) {
   // The first round should just consist of an unadorned "Negotiate" header.
   MockAllowHttpAuthPreferences prefs;
   prefs.set_auth_android_negotiate_account_type(
@@ -55,7 +55,7 @@ TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_FirstRound) {
             auth.ParseChallenge(&challenge));
 }
 
-TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_UnexpectedTokenFirstRound) {
+TEST(HttpAuthNegotiateAndroidTest, ParseChallengeUnexpectedTokenFirstRound) {
   // If the first round challenge has an additional authentication token, it
   // should be treated as an invalid challenge from the server.
   MockAllowHttpAuthPreferences prefs;
@@ -67,7 +67,7 @@ TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_UnexpectedTokenFirstRound) {
             auth.ParseChallenge(&challenge));
 }
 
-TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_TwoRounds) {
+TEST(HttpAuthNegotiateAndroidTest, ParseChallengeTwoRounds) {
   // The first round should just have "Negotiate", and the second round should
   // have a valid base64 token associated with it.
   MockAllowHttpAuthPreferences prefs;
@@ -83,7 +83,7 @@ TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_TwoRounds) {
             auth.ParseChallenge(&second_challenge));
 }
 
-TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_MissingTokenSecondRound) {
+TEST(HttpAuthNegotiateAndroidTest, ParseChallengeMissingTokenSecondRound) {
   // If a later-round challenge is simply "Negotiate", it should be treated as
   // an authentication challenge rejection from the server or proxy.
   MockAllowHttpAuthPreferences prefs;

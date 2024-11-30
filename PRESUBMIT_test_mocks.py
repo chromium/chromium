@@ -106,6 +106,7 @@ class MockInputApi(object):
         def mock_exists(path):
             if not os.path.isabs(path):
                 path = os.path.join(self.presubmit_local_path, path)
+            path = os.path.normpath(path)
             return path in files_that_exist
 
         def mock_glob(pattern, *args, **kwargs):
@@ -169,8 +170,10 @@ class MockInputApi(object):
     def ReadFile(self, filename, mode='r'):
         if hasattr(filename, 'AbsoluteLocalPath'):
             filename = filename.AbsoluteLocalPath()
+        norm_filename = os.path.normpath(filename)
         for file_ in self.files:
-            if filename in (file_.LocalPath(), file_.AbsoluteLocalPath()):
+            to_check = (file_.LocalPath(), file_.AbsoluteLocalPath())
+            if filename in to_check or norm_filename in to_check:
                 return '\n'.join(file_.NewContents())
         # Otherwise, file is not in our mock API.
         raise IOError("No such file or directory: '%s'" % filename)

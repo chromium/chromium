@@ -182,22 +182,26 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
 
   if (features::IsToolbarPinningEnabled()) {
     CHECK(browser);
-    chrome_labs_action_item_ = actions::ActionManager::Get().FindAction(
-        kActionShowChromeLabs, browser->browser_actions()->root_action_item());
-    CHECK(chrome_labs_action_item_);
-    chrome_labs_action_item_->SetIsShowingBubble(true);
+    chrome_labs_action_item_ =
+        actions::ActionManager::Get()
+            .FindAction(kActionShowChromeLabs,
+                        browser->browser_actions()->root_action_item())
+            ->GetAsWeakPtr();
+    CHECK(chrome_labs_action_item_.get());
+    chrome_labs_action_item_.get()->SetIsShowingBubble(true);
   }
 }
 
 ChromeLabsBubbleView::~ChromeLabsBubbleView() {
   if (features::IsToolbarPinningEnabled()) {
-    CHECK(chrome_labs_action_item_);
-    chrome_labs_action_item_->SetIsShowingBubble(false);
+    if (chrome_labs_action_item_.get()) {
+      chrome_labs_action_item_.get()->SetIsShowingBubble(false);
 
-    BrowserView::GetBrowserViewForBrowser(browser_)
-        ->toolbar()
-        ->pinned_toolbar_actions_container()
-        ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
+      BrowserView::GetBrowserViewForBrowser(browser_)
+          ->toolbar()
+          ->pinned_toolbar_actions_container()
+          ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
+    }
   }
 }
 

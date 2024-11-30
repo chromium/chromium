@@ -323,6 +323,10 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     this.apiProxy_.setTabOrganizationModelStrategy(event.detail.value);
   }
 
+  protected onUserInstructionInputChange_(event: CustomEvent<{value: string}>) {
+    this.apiProxy_.setTabOrganizationUserInstruction(event.detail.value);
+  }
+
   protected getSessionError_(): TabOrganizationError {
     return this.session_?.error || TabOrganizationError.kNone;
   }

@@ -104,14 +104,7 @@ int InitSocketPoolHelper(
     const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback) {
   DCHECK(endpoint.IsValid());
 
-  bool using_ssl = GURL::SchemeIsCryptographic(endpoint.scheme());
-  if (!using_ssl && session->params().testing_fixed_http_port != 0) {
-    endpoint = url::SchemeHostPort(endpoint.scheme(), endpoint.host(),
-                                   session->params().testing_fixed_http_port);
-  } else if (using_ssl && session->params().testing_fixed_https_port != 0) {
-    endpoint = url::SchemeHostPort(endpoint.scheme(), endpoint.host(),
-                                   session->params().testing_fixed_https_port);
-  }
+  session->ApplyTestingFixedPort(endpoint);
 
   bool disable_cert_network_fetches =
       !!(request_load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);

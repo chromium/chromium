@@ -31,8 +31,7 @@ void FakeDeviceProvider::GetDeviceIds(
 std::string FakeDeviceProvider::GetDeviceModelId(const std::string& device_id) {
   auto iter = base::ranges::find(descriptors_, device_id,
                                  &VideoCaptureDeviceDescriptor::device_id);
-  if (iter == descriptors_.end())
-    CHECK(false) << "Unknown device_id " << device_id;
+  CHECK(iter != descriptors_.end()) << "Unknown device_id " << device_id;
 
   return iter->model_id;
 }
@@ -41,8 +40,7 @@ std::string FakeDeviceProvider::GetDeviceDisplayName(
     const std::string& device_id) {
   auto iter = base::ranges::find(descriptors_, device_id,
                                  &VideoCaptureDeviceDescriptor::device_id);
-  if (iter == descriptors_.end())
-    CHECK(false) << "Unknown device_id " << device_id;
+  CHECK(iter != descriptors_.end()) << "Unknown device_id " << device_id;
 
   return iter->display_name();
 }

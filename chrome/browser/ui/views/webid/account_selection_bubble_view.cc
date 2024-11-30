@@ -87,7 +87,7 @@ class ContinueButton : public views::MdTextButton {
         bubble_view_(bubble_view),
         brand_background_color_(idp_metadata.brand_background_color),
         brand_text_color_(idp_metadata.brand_text_color) {
-    SetCornerRadius(kButtonRadius);
+    SetCornerRadius(fedcm::kButtonRadius);
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetStyle(ui::ButtonStyle::kProminent);
     if (extra_accessible_text.has_value()) {
@@ -186,11 +186,13 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
                                rp_for_display),
       rp_context_(rp_context) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  set_fixed_width(kBubbleWidth);
+  set_fixed_width(fedcm::kBubbleWidth);
   set_margins(idp_title.has_value()
-                  ? gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0)
-                  : gfx::Insets::TLBR(kTopBottomPadding + kVerticalSpacing, 0,
-                                      kVerticalSpacing, 0));
+                  ? gfx::Insets::VH(
+                        fedcm::kTopBottomPadding + fedcm::kVerticalSpacing, 0)
+                  : gfx::Insets::TLBR(
+                        fedcm::kTopBottomPadding + fedcm::kVerticalSpacing, 0,
+                        fedcm::kVerticalSpacing, 0));
   // TODO(crbug.com/40224637): we are currently using a custom header because
   // the icon, title, and close buttons from a bubble are not customizable
   // enough to satisfy the UI requirements. However, this adds complexity to the
@@ -211,33 +213,12 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kTopBottomPadding));
+      fedcm::kTopBottomPadding));
   header_view_ =
       AddChildView(CreateHeaderView(/*has_idp_icon=*/idp_title.has_value()));
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
-
-void AccountSelectionBubbleView::InitDialogWidget() {
-  if (!web_contents_) {
-    return;
-  }
-
-  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
-
-  if (!widget) {
-    return;
-  }
-
-  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
-
-  dialog_widget_ = widget->GetWeakPtr();
-  // TODO(https://crbug.com/377803489): Get rid of this and move all of
-  // InitDialogWidget() into FedCmAccountSelectionView.
-  if (owner_) {
-    owner_->PostWidgetCreate(widget);
-  }
-}
 
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
     const std::vector<IdentityRequestAccountPtr>& accounts,
@@ -265,12 +246,6 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
   RemoveNonHeaderChildViews();
   AddSeparatorAndMultipleAccountChooser(accounts, idp_list);
 
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    InitDialogWidget();
-    return;
-  }
-
   PreferredSizeChanged();
 }
 
@@ -283,25 +258,19 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
   RemoveNonHeaderChildViews();
   views::ProgressBar* const progress_bar =
       AddChildView(std::make_unique<views::ProgressBar>());
-  progress_bar->SetPreferredHeight(kProgressBarHeight);
+  progress_bar->SetPreferredHeight(fedcm::kProgressBarHeight);
   // Use an infinite animation: SetValue(-1).
   progress_bar->SetValue(-1);
   progress_bar->SetBackgroundColor(SK_ColorLTGRAY);
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
+      gfx::Insets::VH(fedcm::kTopBottomPadding, fedcm::kLeftRightPadding)));
   CHECK(!account.is_filtered_out);
   row->AddChildView(CreateAccountRow(account,
                                      /*clickable_position=*/std::nullopt,
                                      /*should_include_idp=*/false));
   AddChildView(std::move(row));
-
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    InitDialogWidget();
-    return;
-  }
 
   PreferredSizeChanged();
 }
@@ -320,12 +289,6 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
   AddChildView(std::make_unique<views::Separator>());
   AddChildView(CreateSingleAccountChooser(account));
 
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    InitDialogWidget();
-    return;
-  }
-
   PreferredSizeChanged();
 }
 
@@ -341,7 +304,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(0, kLeftRightPadding)));
+      gfx::Insets::VH(0, fedcm::kLeftRightPadding)));
 
   // Add body.
   views::Label* const body = row->AddChildView(std::make_unique<views::Label>(
@@ -357,7 +320,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
   // button.
   constexpr int kBottomSpacing = 16;
   body->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kVerticalSpacing, 0, kBottomSpacing, 0)));
+      gfx::Insets::TLBR(fedcm::kVerticalSpacing, 0, kBottomSpacing, 0)));
 
   // Add continue button.
   auto button = std::make_unique<ContinueButton>(
@@ -368,12 +331,6 @@ void AccountSelectionBubbleView::ShowFailureDialog(
       /*extra_accessible_text=*/std::nullopt);
   row->AddChildView(std::move(button));
   AddChildView(std::move(row));
-
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    InitDialogWidget();
-    return;
-  }
 
   PreferredSizeChanged();
 }
@@ -392,7 +349,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
+      gfx::Insets::VH(fedcm::kTopBottomPadding, fedcm::kLeftRightPadding)));
 
   std::u16string summary_text;
   std::u16string description_text;
@@ -426,7 +383,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   button_row->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
   constexpr int kButtonRowTopPadding = 6;
   button_row->SetInsideBorderInsets(
-      gfx::Insets::TLBR(kButtonRowTopPadding, 0, 0, kLeftRightPadding));
+      gfx::Insets::TLBR(kButtonRowTopPadding, 0, 0, fedcm::kLeftRightPadding));
   constexpr int kButtonRowChildSpacing = 8;
   button_row->SetBetweenChildSpacing(kButtonRowChildSpacing);
 
@@ -448,18 +405,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
 
   AddChildView(std::move(button_row));
 
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    InitDialogWidget();
-    return;
-  }
-
   PreferredSizeChanged();
-}
-
-void AccountSelectionBubbleView::ShowLoadingDialog() {
-  NOTREACHED()
-      << "ShowLoadingDialog is only implemented for AccountSelectionModalView";
 }
 
 void AccountSelectionBubbleView::ShowRequestPermissionDialog(
@@ -484,30 +430,11 @@ void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
   AddChildView(std::make_unique<views::Separator>());
   AddChildView(CreateSingleReturningAccountChooser(accounts, idp_list));
 
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    InitDialogWidget();
-    return;
-  }
-
   PreferredSizeChanged();
-}
-
-void AccountSelectionBubbleView::CloseDialog() {
-  if (!dialog_widget_) {
-    return;
-  }
-
-  CancelDialog();
-  dialog_widget_.reset();
 }
 
 std::string AccountSelectionBubbleView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_);
-}
-
-void AccountSelectionBubbleView::UpdateDialogPosition() {
-  dialog_widget_->SetBounds(GetBubbleBounds());
 }
 
 void AccountSelectionBubbleView::OnAnchorBoundsChanged() {
@@ -563,11 +490,13 @@ gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
   if (base::i18n::IsRTL()) {
     web_contents_bounds.Inset(gfx::Insets::TLBR(
-        /*top=*/kTopMargin, /*left=*/kRightMargin, /*bottom=*/0, /*right=*/0));
+        /*top=*/fedcm::kTopMargin, /*left=*/fedcm::kRightMargin, /*bottom=*/0,
+        /*right=*/0));
     bubble_bounds.set_origin(web_contents_->GetViewBounds().origin());
   } else {
     web_contents_bounds.Inset(gfx::Insets::TLBR(
-        /*top=*/kTopMargin, /*left=*/0, /*bottom=*/0, /*right=*/kRightMargin));
+        /*top=*/fedcm::kTopMargin, /*left=*/0, /*bottom=*/0,
+        /*right=*/fedcm::kRightMargin));
     bubble_bounds.set_origin(web_contents_->GetViewBounds().top_right());
   }
   bubble_bounds.AdjustToFit(web_contents_bounds);
@@ -580,18 +509,20 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
   auto header = std::make_unique<views::View>();
   // Do not use a top margin as it has already been set in the bubble.
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets::TLBR(
-          0, kLeftRightPadding, kVerticalSpacing, kLeftRightPadding));
+      ->SetInteriorMargin(gfx::Insets::TLBR(0, fedcm::kLeftRightPadding,
+                                            fedcm::kVerticalSpacing,
+                                            fedcm::kLeftRightPadding));
 
   // Add the space for the icon.
   if (has_idp_icon) {
     auto image_view = std::make_unique<BrandIconImageView>(
         base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                        weak_ptr_factory_.GetWeakPtr()),
-        kBubbleIdpIconSize, /*should_circle_crop=*/true);
-    image_view->SetImageSize(gfx::Size(kBubbleIdpIconSize, kBubbleIdpIconSize));
+        fedcm::kBubbleIdpIconSize, /*should_circle_crop=*/true);
+    image_view->SetImageSize(
+        gfx::Size(fedcm::kBubbleIdpIconSize, fedcm::kBubbleIdpIconSize));
     image_view->SetProperty(views::kMarginsKey,
-                            gfx::Insets().set_right(kLeftRightPadding));
+                            gfx::Insets().set_right(fedcm::kLeftRightPadding));
     header_icon_view_ = header->AddChildView(std::move(image_view));
   }
 
@@ -604,7 +535,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
   back_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button_->SetVisible(false);
 
-  int back_button_right_margin = kLeftRightPadding;
+  int back_button_right_margin = fedcm::kLeftRightPadding;
   if (header_icon_view_) {
     // Set the right margin of the back button so that the back button and
     // the IDP brand icon have the same width. This ensures that the header
@@ -639,7 +570,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(0, kLeftRightPadding), kVerticalSpacing));
+      gfx::Insets::VH(0, fedcm::kLeftRightPadding), fedcm::kVerticalSpacing));
   CHECK(!account.is_filtered_out);
   row->AddChildView(CreateAccountRow(account,
                                      /*clickable_position=*/std::nullopt,
@@ -710,9 +641,9 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
         // Add a separator the first time that a use other account button is
         // used.
         auto separator = std::make_unique<views::Separator>();
-        separator->SetBorder(views::CreateEmptyBorder(
-            gfx::Insets::TLBR(kVerticalSpacing + kTopBottomPadding, 0,
-                              kTopBottomPadding + kVerticalSpacing, 0)));
+        separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+            fedcm::kVerticalSpacing + fedcm::kTopBottomPadding, 0,
+            fedcm::kTopBottomPadding + fedcm::kVerticalSpacing, 0)));
         separator_size = separator->GetPreferredSize().height();
         accounts_content->AddChildView(std::move(separator));
         // GetPreferredSize() can be expensive so only compute the first time.
@@ -747,10 +678,10 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
       // We will have some spacing between the scroller and the separator at the
       // top but we need some additional spacing to match the bottom margin,
       // which is slightly larger in single IDP case.
-      account_scroll_view->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets::TLBR(is_multi_idp ? kVerticalSpacing - kTopBottomPadding
-                                         : kVerticalSpacing,
-                            0, 0, 0)));
+      account_scroll_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+          is_multi_idp ? fedcm::kVerticalSpacing - fedcm::kTopBottomPadding
+                       : fedcm::kVerticalSpacing,
+          0, 0, 0)));
     }
   }
 
@@ -786,8 +717,9 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
         // We will have some spacing between the scroller and the separator at
         // the top but we need some additional spacing to match the bottom
         // margin. Note that this can only happen when there are multiple IDPs.
-        mismatch_scroll_view->SetBorder(views::CreateEmptyBorder(
-            gfx::Insets::TLBR(kVerticalSpacing - kTopBottomPadding, 0, 0, 0)));
+        mismatch_scroll_view->SetBorder(
+            views::CreateEmptyBorder(gfx::Insets::TLBR(
+                fedcm::kVerticalSpacing - fedcm::kTopBottomPadding, 0, 0, 0)));
       }
     }
   }
@@ -802,7 +734,7 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   auto separator = std::make_unique<views::Separator>();
   if (!starts_with_scroller) {
     separator->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(0, 0, kTopBottomPadding, 0)));
+        gfx::Insets::TLBR(0, 0, fedcm::kTopBottomPadding, 0)));
   }
   container->AddChildView(std::move(separator));
   container->AddChildView(std::move(account_scroll_view));
@@ -880,8 +812,9 @@ AccountSelectionBubbleView::CreateSingleReturningAccountChooser(
   // children since there is a separator between them.1
   content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::TLBR(kVerticalSpacing - kTopBottomPadding, 0, 0, 0),
-      kVerticalSpacing));
+      gfx::Insets::TLBR(fedcm::kVerticalSpacing - fedcm::kTopBottomPadding, 0,
+                        0, 0),
+      fedcm::kVerticalSpacing));
   std::optional<std::u16string> last_used_string =
       accounts[0]->last_used_timestamp
           ? std::make_optional<std::u16string>(l10n_util::GetStringUTF16(
@@ -906,8 +839,9 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
   auto image_view = std::make_unique<BrandIconImageView>(
       base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                      weak_ptr_factory_.GetWeakPtr()),
-      kMultiIdpIconSize, /*should_circle_crop=*/true);
-  image_view->SetImageSize(gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
+      fedcm::kMultiIdpIconSize, /*should_circle_crop=*/true);
+  image_view->SetImageSize(
+      gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
   image_view->SetVisible(idp_metadata.brand_icon_url.is_valid());
   ConfigureBrandImageView(image_view.get(), idp_metadata.brand_icon_url);
 
@@ -921,12 +855,12 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
       /*subtitle=*/std::u16string(),
       /*secondary_view=*/
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kOpenInNewIcon, ui::kColorMenuIcon, kBubbleIdpIconSize)));
+          kOpenInNewIcon, ui::kColorMenuIcon, fedcm::kBubbleIdpIconSize)));
   button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      /*vertical=*/kMultiIdpVerticalSpacing,
-      /*horizontal=*/kLeftRightPadding)));
-  button->SetIconHorizontalMargins(kMultiIdpIconLeftMargin,
-                                   kMultiIdpIconRightMargin);
+      /*vertical=*/fedcm::kMultiIdpVerticalSpacing,
+      /*horizontal=*/fedcm::kLeftRightPadding)));
+  button->SetIconHorizontalMargins(fedcm::kMultiIdpIconLeftMargin,
+                                   fedcm::kMultiIdpIconRightMargin);
   return button;
 }
 
@@ -937,7 +871,7 @@ AccountSelectionBubbleView::CreateUseOtherAccountButton(
     int icon_margin) {
   auto icon_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kOpenInNewIcon, ui::kColorMenuIcon, kIdpLoginIconSize));
+          kOpenInNewIcon, ui::kColorMenuIcon, fedcm::kIdpLoginIconSize));
   auto button = std::make_unique<HoverButton>(
       base::BindRepeating(&FedCmAccountSelectionView::OnLoginToIdP,
                           base::Unretained(owner_), idp_metadata.config_url,
@@ -996,7 +930,7 @@ AccountSelectionBubbleView::CreateChooseAnAccountButton(
   // still taking the same amount of space.
   auto icon_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kPersonIcon, ui::kColorMenuIcon, kMultiIdpIconSize));
+          kPersonIcon, ui::kColorMenuIcon, fedcm::kMultiIdpIconSize));
   auto button = std::make_unique<HoverButton>(
       base::BindOnce(&FedCmAccountSelectionView::OnChooseAnAccountClicked,
                      base::Unretained(owner_)),
@@ -1006,14 +940,15 @@ AccountSelectionBubbleView::CreateChooseAnAccountButton(
       /*subtitle=*/BuildStringFromIDPs(mismatch_idps, non_mismatch_idps),
       /*secondary_view=*/
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kKeyboardArrowRightIcon, ui::kColorMenuIcon, kMultiIdpIconSize)));
+          kKeyboardArrowRightIcon, ui::kColorMenuIcon,
+          fedcm::kMultiIdpIconSize)));
   button->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
                                views::style::STYLE_SECONDARY);
   button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      /*vertical=*/kMultiIdpVerticalSpacing,
-      /*horizontal=*/kLeftRightPadding)));
-  button->SetIconHorizontalMargins(kMultiIdpIconLeftMargin,
-                                   kMultiIdpIconRightMargin);
+      /*vertical=*/fedcm::kMultiIdpVerticalSpacing,
+      /*horizontal=*/fedcm::kLeftRightPadding)));
+  button->SetIconHorizontalMargins(fedcm::kMultiIdpIconLeftMargin,
+                                   fedcm::kMultiIdpIconRightMargin);
   return button;
 }
 

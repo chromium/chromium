@@ -14,9 +14,6 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
-#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
-
-using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace media::cast {
 
@@ -45,12 +42,11 @@ void FakeSoftwareVideoEncoder::Encode(
   }
 
   encoded_frame->frame_id = frame_id_++;
+  encoded_frame->is_key_frame = next_frame_is_key_;
   if (next_frame_is_key_) {
-    encoded_frame->dependency = Dependency::kKeyFrame;
     encoded_frame->referenced_frame_id = encoded_frame->frame_id;
     next_frame_is_key_ = false;
   } else {
-    encoded_frame->dependency = Dependency::kDependent;
     encoded_frame->referenced_frame_id = encoded_frame->frame_id - 1;
   }
   encoded_frame->rtp_timestamp =
@@ -59,7 +55,7 @@ void FakeSoftwareVideoEncoder::Encode(
 
   const auto values =
       base::Value::Dict()
-          .Set("key", encoded_frame->dependency == Dependency::kKeyFrame)
+          .Set("key", encoded_frame->is_key_frame)
           .Set("ref", static_cast<int>(
                           encoded_frame->referenced_frame_id.lower_32_bits()))
           .Set("id", static_cast<int>(encoded_frame->frame_id.lower_32_bits()))
@@ -73,7 +69,7 @@ void FakeSoftwareVideoEncoder::Encode(
   encoded_frame->data = base::HeapArray<uint8_t>::CopiedFrom(
       base::as_bytes(base::span(raw_data)));
 
-  if (encoded_frame->dependency == Dependency::kKeyFrame) {
+  if (encoded_frame->is_key_frame) {
     encoded_frame->encoder_utilization = 1.0;
     encoded_frame->lossiness = 6.0;
   } else {

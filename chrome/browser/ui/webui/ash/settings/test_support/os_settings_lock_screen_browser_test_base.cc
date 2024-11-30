@@ -25,7 +25,8 @@
 namespace ash::settings {
 
 OSSettingsLockScreenBrowserTestBase::OSSettingsLockScreenBrowserTestBase(
-    ash::AshAuthFactor auth_factor_type)
+    ash::AshAuthFactor auth_factor_type,
+    LoggedInUserMixin::LogInType login_type)
     : auth_factor_type_(auth_factor_type) {
   // We configure FakeUserDataAuthClient (via `cryptohome_`) here and not
   // later because the global PinBackend object reads whether or not
@@ -47,8 +48,7 @@ OSSettingsLockScreenBrowserTestBase::OSSettingsLockScreenBrowserTestBase(
   }
 
   logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
-      &mixin_host_, /*test_base=*/this, embedded_test_server(),
-      LoggedInUserMixin::LogInType::kConsumer,
+      &mixin_host_, /*test_base=*/this, embedded_test_server(), login_type,
       /*include_initial_user=*/true,
       /*account_id=*/std::nullopt, config);
   cryptohome_ = &logged_in_user_mixin_->GetCryptohomeMixin();

@@ -152,10 +152,12 @@ public class RepostFormWarningTest {
                                 sActivityTestRule
                                         .getActivity()
                                         .getCurrentTabModel()
+                                        .getTabRemover()
                                         .closeTabs(
                                                 TabClosureParams.closeTab(mTab)
                                                         .allowUndo(false)
-                                                        .build()));
+                                                        .build(),
+                                                /* allowDialog= */ false));
 
         waitForNoReportFormWarningDialog();
     }

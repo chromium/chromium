@@ -60,7 +60,9 @@ const float kMaxModuleEngagementIndex = 50;
           kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kSendTabPromo:
-      // TODO(crbug.com/343495516): log metrics.
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementSendTabPromoIndexHistogram, index,
+          kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kShortcuts:
       UMA_HISTOGRAM_EXACT_LINEAR(
@@ -91,6 +93,8 @@ const float kMaxModuleEngagementIndex = 50;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kSetUpListDocking:
+    case ContentSuggestionsModuleType::kSetUpListAddressBar:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
       UMA_HISTOGRAM_EXACT_LINEAR(

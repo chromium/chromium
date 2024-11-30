@@ -1922,5 +1922,9 @@
     // interactivity
     // auto
     "inert",
+
+    // Used as functions in calc()
+    "sibling-count",
+    "sibling-index",
   ],
 }

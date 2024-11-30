@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "gpu/config/gpu_finch_features.h"
 
@@ -436,6 +437,29 @@ void SyncPointManager::EnsureFenceSyncReleased(const SyncToken& release,
   scoped_refptr<SyncPointClientState> client_state;
   {
     base::AutoLock lock(lock_);
+
+    if (metrics_subsampler_.ShouldSample(0.01)) {
+      if (graph_validation_enabled_) {
+        UMA_HISTOGRAM_ENUMERATION("GPU.FenceSyncRelease.GraphValidation.Cause",
+                                  cause);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION("GPU.FenceSyncrelease.OrderValidation.Cause",
+                                  cause);
+      }
+    }
+
+    if (cause == ReleaseCause::kForceRelease) {
+      if (graph_validation_enabled_) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "GPU.FenceSyncRelease.GraphValidation.ForceReleaseNamespace",
+            release.namespace_id(),
+            CommandBufferNamespace::NUM_COMMAND_BUFFER_NAMESPACES);
+      } else {
+        NOTREACHED() << "ReleaseCause::kForceRelease is only used in "
+                        "graph-based validation.";
+      }
+    }
+
     client_state = GetSyncPointClientState(release.namespace_id(),
                                            release.command_buffer_id());
   }

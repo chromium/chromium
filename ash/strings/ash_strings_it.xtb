@@ -1526,7 +1526,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6121838516699723042">Conferma download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
 <translation id="6127395413317891856">Sei offline. Controlla la connessione e riprova.</translation>
-<translation id="6129953537138746214">Spazio</translation>
+<translation id="6129953537138746214">BARRA SPAZIATRICE</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Su cosa ti piacerebbe concentrati?</translation>
 <translation id="6141988275892716286">Conferma download</translation>
@@ -2121,6 +2121,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8142699993796781067">Rete privata</translation>
 <translation id="8144760705599030999">Salva <ph name="NAME" /> nell'account <ph name="EMAIL" /> per velocizzare l'accoppiamento con gli altri dispositivi</translation>
 <translation id="8144914663975476336">Seleziona il formato di registrazione</translation>
+<translation id="8145272500474066209">L'AI generativa può fare errori, anche riguardo a persone, quindi verifica le sue risposte. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Mostra le impostazioni Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Premi CTRL + W per chiudere.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, completamento automatico</translation>

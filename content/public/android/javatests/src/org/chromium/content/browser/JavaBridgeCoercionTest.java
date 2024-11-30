@@ -33,6 +33,7 @@ import java.io.File;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
+@SuppressWarnings("UnusedMethod")
 public class JavaBridgeCoercionTest {
     private static final double ASSERTION_DELTA = 0;
 

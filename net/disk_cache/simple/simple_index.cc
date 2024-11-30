@@ -22,8 +22,10 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/memory_entry_data_hints.h"
 #include "net/disk_cache/simple/simple_entry_format.h"
 #include "net/disk_cache/simple/simple_histogram_macros.h"
 #include "net/disk_cache/simple/simple_index_delegate.h"
@@ -184,7 +186,16 @@ SimpleIndex::SimpleIndex(
       delegate_(delegate),
       cache_type_(cache_type),
       index_file_(std::move(index_file)),
-      task_runner_(task_runner) {
+      task_runner_(task_runner),
+      prioritized_caching_enabled_(base::FeatureList::IsEnabled(
+          net::features::kSimpleCachePrioritizedCaching)),
+      caching_prioritization_factor_(
+          net::features::kSimpleCachePrioritizedCachingPrioritizationFactor
+              .Get()),
+      caching_prioritization_period_in_seconds_(static_cast<uint64_t>(
+          net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod
+              .Get()
+              .InSeconds())) {
   // Creating the callback once so it is reused every time
   // write_to_disk_timer_.Start() is called.
   write_to_disk_cb_ = base::BindRepeating(&SimpleIndex::WriteToDisk,
@@ -416,7 +427,7 @@ void SimpleIndex::StartEvictionIfNeeded() {
   eviction_in_progress_ = true;
   eviction_start_time_ = base::TimeTicks::Now();
 
-  bool use_size_heuristic =
+  const bool use_size_heuristic =
       (cache_type_ != net::GENERATED_BYTE_CODE_CACHE &&
        cache_type_ != net::GENERATED_WEBUI_BYTE_CODE_CACHE);
 
@@ -426,13 +437,24 @@ void SimpleIndex::StartEvictionIfNeeded() {
   uint32_t now = (base::Time::Now() - base::Time::UnixEpoch()).InSeconds();
   for (EntrySet::const_iterator i = entries_set_.begin();
        i != entries_set_.end(); ++i) {
-    uint64_t sort_value = now - i->second.RawTimeForSorting();
+    const uint64_t time_since_last_used = now - i->second.RawTimeForSorting();
+    uint64_t sort_value = time_since_last_used;
     // See crbug.com/736437 for context.
     //
     // Will not overflow since we're multiplying two 32-bit values and storing
     // them in a 64-bit variable.
-    if (use_size_heuristic)
+    if (use_size_heuristic) {
       sort_value *= i->second.GetEntrySize() + kEstimatedEntryOverhead;
+      // When prioritized caching is enabled, we want to evict entries that are
+      // not prioritized before entries that are prioritized. So we divide the
+      // sort value by the `caching_prioritization_factor`.
+      if (prioritized_caching_enabled_ &&
+          time_since_last_used < caching_prioritization_period_in_seconds_ &&
+          (i->second.GetInMemoryData() & HINT_HIGH_PRIORITY) ==
+              HINT_HIGH_PRIORITY) {
+        sort_value /= caching_prioritization_factor_;
+      }
+    }
     // Subtract so we don't need a custom comparator.
     entries.emplace_back(std::numeric_limits<uint64_t>::max() - sort_value,
                          &*i);

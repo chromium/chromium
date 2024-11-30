@@ -31,9 +31,6 @@ class ProfileManagerIOS {
   virtual void AddObserver(ProfileManagerObserverIOS* observer) = 0;
   virtual void RemoveObserver(ProfileManagerObserverIOS* observer) = 0;
 
-  // Loads the last active profiles. *Deprecated*.
-  virtual void LoadProfiles() = 0;
-
   // Returns the Profile known by `name` or nullptr if there is no loaded
   // Profiles with that `name`.
   virtual ProfileIOS* GetProfileWithName(std::string_view name) = 0;
@@ -46,6 +43,17 @@ class ProfileManagerIOS {
 
   // Returns whether a profile with `name` can be created.
   virtual bool CanCreateProfileWithName(std::string_view name) const = 0;
+
+  // Reserves a new randomly generated name that can be used to create a new
+  // profile and returns the new name. The profile will be registered in the
+  // ProfileAttributesStorageIOS and its attributes can be set before the
+  // storage on disk is created via CreateProfileAsync() or CreateProfile().
+  //
+  // After this call, passing the returned value to HasProfileWithName(...)
+  // will return true, but passing it to GetProfileWithName(...) will still
+  // return a null pointer as the profile has not been created. Loading the
+  // profile with LoadProfileAsync() or LoadProfile() will also fail.
+  virtual std::string ReserveNewProfileName() = 0;
 
   // Asynchronously loads a Profile known by `name` if it exists. The
   // `created_callback` will be called with the Profile when it has been created
@@ -89,9 +97,12 @@ class ProfileManagerIOS {
   // null if loading or creating the Profile failed.
   virtual ProfileIOS* CreateProfile(std::string_view name) = 0;
 
-  // Destroys all loaded Profile objects. Meant to be called right before the
+  // Unloads the given loaded Profile objects.
+  virtual void UnloadProfile(std::string_view name) = 0;
+
+  // Unloads all loaded Profile objects. Meant to be called right before the
   // ProfileManagerIOS itself is destroyed.
-  virtual void DestroyAllProfiles() = 0;
+  virtual void UnloadAllProfiles() = 0;
 
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;

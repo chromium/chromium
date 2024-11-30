@@ -115,7 +115,7 @@ TEST_F(MediaFoundationCdmSessionTest, Initialize) {
   Initialize();
 }
 
-TEST_F(MediaFoundationCdmSessionTest, Initialize_Failure) {
+TEST_F(MediaFoundationCdmSessionTest, InitializeFailure) {
   COM_EXPECT_CALL(mf_cdm_,
                   CreateSession(MF_MEDIAKEYSESSION_TYPE_TEMPORARY, _, _))
       .WillOnce(DoAll(SaveComPtr<1>(&mf_cdm_session_callbacks_),
@@ -129,7 +129,7 @@ TEST_F(MediaFoundationCdmSessionTest, GenerateRequest) {
   GenerateRequest();
 }
 
-TEST_F(MediaFoundationCdmSessionTest, GenerateRequest_Failure) {
+TEST_F(MediaFoundationCdmSessionTest, GenerateRequestFailure) {
   Initialize();
   std::vector<uint8_t> init_data = StringToVector("init_data");
   base::MockCallback<MediaFoundationCdmSession::SessionIdCB> session_id_cb;
@@ -141,7 +141,7 @@ TEST_F(MediaFoundationCdmSessionTest, GenerateRequest_Failure) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(MediaFoundationCdmSessionTest, GetSessionId_Failure) {
+TEST_F(MediaFoundationCdmSessionTest, GetSessionIdFailure) {
   Initialize();
   std::vector<uint8_t> init_data = StringToVector("init_data");
   std::vector<uint8_t> license_request = StringToVector("request");
@@ -163,7 +163,7 @@ TEST_F(MediaFoundationCdmSessionTest, GetSessionId_Failure) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(MediaFoundationCdmSessionTest, GetSessionId_Empty) {
+TEST_F(MediaFoundationCdmSessionTest, GetSessionIdEmpty) {
   Initialize();
   std::vector<uint8_t> init_data = StringToVector("init_data");
   std::vector<uint8_t> license_request = StringToVector("request");
@@ -208,7 +208,7 @@ TEST_F(MediaFoundationCdmSessionTest, Update) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(MediaFoundationCdmSessionTest, Update_Failure) {
+TEST_F(MediaFoundationCdmSessionTest, UpdateFailure) {
   Initialize();
   GenerateRequest();
 
@@ -226,7 +226,7 @@ TEST_F(MediaFoundationCdmSessionTest, Close) {
   EXPECT_SUCCESS(cdm_session_.Close());
 }
 
-TEST_F(MediaFoundationCdmSessionTest, Close_Failure) {
+TEST_F(MediaFoundationCdmSessionTest, CloseFailure) {
   Initialize();
   GenerateRequest();
 
@@ -246,7 +246,7 @@ TEST_F(MediaFoundationCdmSessionTest, Remove) {
   EXPECT_SUCCESS(cdm_session_.Remove());
 }
 
-TEST_F(MediaFoundationCdmSessionTest, Remove_Failure) {
+TEST_F(MediaFoundationCdmSessionTest, RemoveFailure) {
   Initialize();
   GenerateRequest();
 

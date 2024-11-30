@@ -97,7 +97,7 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
 
   NewSubViewAddedObserver(const NewSubViewAddedObserver&) = delete;
   NewSubViewAddedObserver& operator=(const NewSubViewAddedObserver&) = delete;
-  ~NewSubViewAddedObserver() override {}
+  ~NewSubViewAddedObserver() override = default;
 
   void WaitForNextSubView() {
     if (did_receive_rect_)

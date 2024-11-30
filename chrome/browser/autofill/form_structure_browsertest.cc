@@ -73,7 +73,7 @@ const auto& GetFailingTestNames() {
 #endif
 
 const base::FilePath& GetTestDataDir() {
-  static base::NoDestructor<base::FilePath> dir([]() {
+  static base::NoDestructor<base::FilePath> dir([] {
     base::FilePath dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     dir = dir.AppendASCII("components").AppendASCII("test").AppendASCII("data");
@@ -214,9 +214,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillEnableSupportForParsingWithSharedLabels,
           // TODO(crbug.com/40230674): Remove once launched.
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
-          // TODO(crbug.com/40220393): Remove once launched.
-          features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-          features::kAutofillInferCountryCallingCode,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
           features::kAutofillUseITAddressModel,
@@ -224,11 +221,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillInferLabelFromDefaultSelectText,
       },
       // Disabled
-      {// TODO(crbug.com/40220393): Remove once launched.
-       // This feature is part of the AutofillRefinedPhoneNumberTypes rollout.
-       // As it is not supported on iOS yet, it is disabled.
-       features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-       // TODO(crbug.com/1493145): Remove when/if launched. This feature changes
+      {// TODO(crbug.com/1493145): Remove when/if launched. This feature changes
        // default parsing behavior, so must be disabled to avoid
        // fieldtrial_testing_config interference.
        features::kAutofillEnableEmailHeuristicOnlyAddressForms});

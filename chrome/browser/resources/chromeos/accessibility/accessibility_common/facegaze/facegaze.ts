@@ -6,6 +6,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {BubbleController} from './bubble_controller.js';
+import {PrefNames, SettingsPath} from './constants.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
@@ -15,16 +16,19 @@ type PrefObject = chrome.settingsPrivate.PrefObject;
 
 /** Main class for FaceGaze. */
 export class FaceGaze {
-  private mouseController_: MouseController;
-  private gestureHandler_: GestureHandler;
-  private onInitCallbackForTest_: (() => void)|undefined;
-  private initialized_ = false;
-  private cursorControlEnabled_ = false;
-  private actionsEnabled_ = false;
-  private prefsListener_: (prefs: PrefObject[]) => void;
-  private metricsUtils_: MetricsUtils;
-  private webCamFaceLandmarker_: WebCamFaceLandmarker;
+  // References to core classes.
   private bubbleController_: BubbleController;
+  private gestureHandler_: GestureHandler;
+  private metricsUtils_: MetricsUtils;
+  private mouseController_: MouseController;
+  private webCamFaceLandmarker_: WebCamFaceLandmarker;
+
+  // Other variables, such as state and callbacks.
+  private actionsEnabled_ = false;
+  private cursorControlEnabled_ = false;
+  private initialized_ = false;
+  private onInitCallbackForTest_: (() => void)|undefined;
+  private prefsListener_: (prefs: PrefObject[]) => void;
 
   constructor(isDictationActive: () => boolean) {
     this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
@@ -47,7 +51,8 @@ export class FaceGaze {
         dictation: isDictationActive() ?
             this.gestureHandler_.getGestureForDictation() :
             undefined,
-        heldActions: this.gestureHandler_.getHeldMacroDisplayStrings(),
+        heldMacros: this.gestureHandler_.getHeldMacroDisplayStrings(),
+        precision: this.mouseController_.isPrecisionActive(),
       };
     });
 
@@ -78,7 +83,7 @@ export class FaceGaze {
 
   private maybeShowConfirmationDialog_(): void {
     chrome.settingsPrivate.getPref(
-        FaceGaze.PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, pref => {
+        PrefNames.ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, pref => {
           if (pref.value === undefined || pref.value === null) {
             return;
           }
@@ -106,16 +111,15 @@ export class FaceGaze {
   /** Runs when the confirmation dialog has either been accepted or rejected. */
   private onConfirmationDialog_(accepted: boolean): void {
     chrome.settingsPrivate.setPref(
-        FaceGaze.PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, accepted);
+        PrefNames.ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, accepted);
     if (!accepted) {
       // If the dialog was rejected, then disable the FaceGaze feature.
-      chrome.settingsPrivate.setPref(FaceGaze.PREF_FACE_GAZE_ENABLED, false);
+      chrome.settingsPrivate.setPref(PrefNames.FACE_GAZE_ENABLED, false);
       return;
     }
 
     // If the dialog was accepted, then initialize FaceGaze.
-    chrome.accessibilityPrivate.openSettingsSubpage(
-        FaceGaze.SETTINGS_PAGE_ROUTE);
+    chrome.accessibilityPrivate.openSettingsSubpage(SettingsPath);
 
     this.bubbleController_.updateBubble('');
     this.webCamFaceLandmarker_.init();
@@ -123,12 +127,49 @@ export class FaceGaze {
 
   private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
+      if (pref.value === undefined || pref.value === null) {
+        return;
+      }
+
       switch (pref.key) {
-        case FaceGaze.PREF_CURSOR_CONTROL_ENABLED:
+        case PrefNames.ACTIONS_ENABLED:
+          this.actionsEnabledChanged_(pref.value);
+          break;
+        case PrefNames.CURSOR_CONTROL_ENABLED:
           this.cursorControlEnabledChanged_(pref.value);
           break;
-        case FaceGaze.PREF_ACTIONS_ENABLED:
-          this.actionsEnabledChanged_(pref.value);
+        case PrefNames.CURSOR_USE_ACCELERATION:
+          this.mouseController_.useCursorAccelerationChanged(pref.value);
+          break;
+        case PrefNames.GESTURE_TO_CONFIDENCE:
+          this.gestureHandler_.gesturesToConfidencesChanged(pref.value);
+          break;
+        case PrefNames.GESTURE_TO_KEY_COMBO:
+          this.gestureHandler_.gesturesToKeyCombosChanged(pref.value);
+          break;
+        case PrefNames.GESTURE_TO_MACRO:
+          this.gestureHandler_.gesturesToMacrosChanged(pref.value);
+          break;
+        case PrefNames.PRECISION_CLICK:
+          this.mouseController_.precisionClickChanged(pref.value);
+          break;
+        case PrefNames.PRECISION_CLICK_SPEED_FACTOR:
+          this.mouseController_.precisionSpeedFactorChanged(pref.value);
+          break;
+        case PrefNames.SPD_UP:
+          this.mouseController_.speedUpChanged(pref.value);
+          break;
+        case PrefNames.SPD_DOWN:
+          this.mouseController_.speedDownChanged(pref.value);
+          break;
+        case PrefNames.SPD_LEFT:
+          this.mouseController_.speedLeftChanged(pref.value);
+          break;
+        case PrefNames.SPD_RIGHT:
+          this.mouseController_.speedRightChanged(pref.value);
+          break;
+        case PrefNames.VELOCITY_THRESHOLD:
+          this.mouseController_.velocityThresholdChanged(pref.value);
           break;
         default:
           return;
@@ -169,6 +210,10 @@ export class FaceGaze {
 
       if (this.mouseController_.isLongClickActive()) {
         this.mouseController_.toggleLongClick();
+      }
+
+      if (this.mouseController_.isPrecisionActive()) {
+        this.mouseController_.togglePrecision();
       }
     }
   }
@@ -217,6 +262,7 @@ export class FaceGaze {
     this.mouseController_.reset();
     this.gestureHandler_.stop();
     this.webCamFaceLandmarker_.stop();
+    chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
   }
 
   /** Allows tests to wait for FaceGaze to be fully initialized. */
@@ -228,18 +274,6 @@ export class FaceGaze {
 
     callback();
   }
-}
-
-export namespace FaceGaze {
-  // Pref names. Should be in sync with with values at ash_pref_names.h.
-  export const PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED =
-      'settings.a11y.face_gaze.accelerator_dialog_has_been_accepted';
-  export const PREF_FACE_GAZE_ENABLED = 'settings.a11y.face_gaze.enabled';
-  export const PREF_ACTIONS_ENABLED = 'settings.a11y.face_gaze.actions_enabled';
-  export const PREF_CURSOR_CONTROL_ENABLED =
-      'settings.a11y.face_gaze.cursor_control_enabled';
-
-  export const SETTINGS_PAGE_ROUTE = 'manageAccessibility/faceGaze';
 }
 
 TestImportManager.exportForTesting(FaceGaze);

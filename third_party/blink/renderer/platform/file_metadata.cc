@@ -97,7 +97,7 @@ KURL FilePathToURL(const String& path) {
   GURL gurl = net::FilePathToFileURL(file_path);
 #endif
   const std::string& url_spec = gurl.possibly_invalid_spec();
-  return KURL(AtomicString::FromUTF8(url_spec.data(), url_spec.length()),
+  return KURL(AtomicString::FromUTF8(url_spec),
               gurl.parsed_for_possibly_invalid_spec(), gurl.is_valid());
 }
 

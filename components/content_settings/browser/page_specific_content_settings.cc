@@ -104,6 +104,8 @@ class InflightNavigationContentSettings
       service_worker_accesses;
   std::vector<network::mojom::SharedDictionaryAccessDetailsPtr>
       shared_dictionary_accesses;
+  std::vector<net::device_bound_sessions::SessionKey>
+      device_bound_session_accesses;
 
  private:
   explicit InflightNavigationContentSettings(
@@ -188,6 +190,12 @@ class WebContentsHandler
   void OnSharedDictionaryAccessed(
       content::RenderFrameHost* rfh,
       const network::mojom::SharedDictionaryAccessDetails& details) override;
+  void OnDeviceBoundSessionAccessed(
+      content::NavigationHandle* navigation,
+      const net::device_bound_sessions::SessionKey& details) override;
+  void OnDeviceBoundSessionAccessed(
+      content::RenderFrameHost* rfh,
+      const net::device_bound_sessions::SessionKey& details) override;
   void WebContentsDestroyed() override;
 
   std::unique_ptr<Delegate> delegate_;
@@ -275,6 +283,10 @@ void WebContentsHandler::TransferNavigationContentSettingsToCommittedDocument(
   for (const auto& shared_dictionary_access :
        navigation_settings.shared_dictionary_accesses) {
     OnSharedDictionaryAccessed(rfh, *shared_dictionary_access);
+  }
+  for (const auto& device_bound_session_access :
+       navigation_settings.device_bound_session_accesses) {
+    OnDeviceBoundSessionAccessed(rfh, device_bound_session_access);
   }
 }
 
@@ -388,6 +400,34 @@ void WebContentsHandler::OnSharedDictionaryAccessed(
       rfh, details.isolation_key,
       BrowsingDataModel::StorageType::kSharedDictionary, details.is_blocked);
 }
+
+void WebContentsHandler::OnDeviceBoundSessionAccessed(
+    content::NavigationHandle* navigation,
+    const net::device_bound_sessions::SessionKey& details) {
+  if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
+    auto* inflight_navigation_settings =
+        content::NavigationHandleUserData<InflightNavigationContentSettings>::
+            GetOrCreateForNavigationHandle(*navigation);
+    inflight_navigation_settings->device_bound_session_accesses.emplace_back(
+        details);
+    return;
+  }
+  // All accesses during main frame navigations should enter the block above and
+  // not reach here. We also don't expect any accesses to be made during page
+  // activations or same-document navigations.
+  DCHECK(navigation->GetParentFrame());
+  OnDeviceBoundSessionAccessed(navigation->GetParentFrame()->GetMainFrame(),
+                               details);
+}
+
+void WebContentsHandler::OnDeviceBoundSessionAccessed(
+    content::RenderFrameHost* rfh,
+    const net::device_bound_sessions::SessionKey& details) {
+  PageSpecificContentSettings::BrowsingDataAccessed(
+      rfh, details, BrowsingDataModel::StorageType::kDeviceBoundSession,
+      /*blocked=*/false);
+}
+
 void WebContentsHandler::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();

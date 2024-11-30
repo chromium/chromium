@@ -490,7 +490,7 @@ TEST_F(WebTransportTest, SendDatagram) {
         static_cast<uint8_t>(base::RandInt(0, 255)),
         static_cast<uint8_t>(base::RandInt(0, 255)),
     };
-    transport_remote->SendDatagram(base::make_span(data),
+    transport_remote->SendDatagram(base::span(data),
                                    base::BindLambdaForTesting([&](bool r) {
                                      result = r;
                                      run_loop_for_datagram.Quit();
@@ -527,7 +527,7 @@ TEST_F(WebTransportTest, SendToolargeDatagram) {
   mojo::Remote<mojom::WebTransport> transport_remote(
       test_handshake_client.PassTransport());
 
-  transport_remote->SendDatagram(base::make_span(data),
+  transport_remote->SendDatagram(base::span(data),
                                  base::BindLambdaForTesting([&](bool r) {
                                    result = r;
                                    run_loop_for_datagram.Quit();

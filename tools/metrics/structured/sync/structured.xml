@@ -1246,6 +1246,7 @@
     <variant value="13">TRANSFORM_TITLE_CASE</variant>
     <variant value="14">CAPS_ON</variant>
     <variant value="15">CAPS_OFF</variant>
+    <variant value="16">OPEN_GIFS</variant>
   </enum>
 
   <enum name="PickerResultSource">
@@ -3001,6 +3002,11 @@
         The duration of transcription model download in milliseconds.
       </summary>
     </metric>
+    <metric name="TranscriptionLocale" type="RecorderAppTranscriptionLocale">
+      <summary>
+        The locale for which to download the transcription model.
+      </summary>
+    </metric>
   </event>
 
   <event name="RecorderApp.SummaryModelDownloadPerf">
@@ -3157,6 +3163,11 @@
       <summary>
         Unique ID of this debugging session. If DevTools is opened on multiple tabs,
         each instance would have a unique ID.
+      </summary>
+    </metric>
+    <metric name="IsSignedIn" type="int">
+      <summary>
+        Whether the user is signed in or not.
       </summary>
     </metric>
   </event>

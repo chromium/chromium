@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -376,17 +375,6 @@ public final class MultiprocessTestClientLauncher {
 
     private static boolean isRunningOnLauncherThread() {
         return sLauncherHandler.getLooper() == Looper.myLooper();
-    }
-
-    private static void runOnLauncherThreadBlocking(final Runnable runnable) {
-        assert !isRunningOnLauncherThread();
-        final Semaphore done = new Semaphore(0);
-        sLauncherHandler.post(
-                () -> {
-                    runnable.run();
-                    done.release();
-                });
-        done.acquireUninterruptibly();
     }
 
     private static <RT> RT runOnLauncherAndGetResult(Callable<RT> callable) {

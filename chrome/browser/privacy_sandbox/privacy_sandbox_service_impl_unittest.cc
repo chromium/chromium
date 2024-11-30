@@ -308,6 +308,7 @@ class MockPrivacySandboxCountries : public PrivacySandboxCountries {
  public:
   MOCK_METHOD(bool, IsConsentCountry, (), (override));
   MOCK_METHOD(bool, IsRestOfWorldCountry, (), (override));
+  MOCK_METHOD(bool, IsChina, (), (override));
 };
 
 class PrivacySandboxServiceTest : public testing::Test {
@@ -442,7 +443,11 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
 
   virtual profile_metrics::BrowserProfileType GetProfileType() {
-    return profile_metrics::BrowserProfileType::kRegular;
+    return profile_type_;
+  }
+
+  void SetProfileType(profile_metrics::BrowserProfileType profile_type) {
+    profile_type_ = profile_type;
   }
 
   void RunTestCase(const TestState& test_state,
@@ -530,6 +535,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 
+  profile_metrics::BrowserProfileType profile_type_ =
+      profile_metrics::BrowserProfileType::kRegular;
+
   base::test::ScopedFeatureList outer_feature_list_;
   base::test::ScopedFeatureList inner_feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
@@ -581,111 +589,6 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
                                          std::tuple(true, false, false),
                                          std::tuple(false, true, false),
                                          std::tuple(false, false, false)));
-
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(PrivacySandboxServiceTest, PrimaryAccountSignedOutOnStartup) {
-  // Mimics the emit call after initial sign in
-  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
-
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-
-  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
-              base::Time());
-  EXPECT_THAT(
-      histograms,
-      testing::Not(testing::AnyOf(
-          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration")));
-  histogram_tester()->ExpectBucketCount(
-      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
-      PrimaryAccountUserGroups::kSignedOut, 1);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-TEST_F(PrivacySandboxServiceTest,
-       PrimaryAccountSignedInCapabilityUnknownOnStartup) {
-  EnableSignIn();
-  // Mimics the emit call after initial sign in
-  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
-
-  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
-              testing::Not(base::Time()));
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms,
-              testing::ContainsRegex(
-                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
-  histogram_tester()->ExpectBucketCount(
-      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
-      PrimaryAccountUserGroups::kSignedInCapabilityUnknown, 1);
-}
-
-TEST_F(PrivacySandboxServiceTest,
-       PrimaryAccountSignedInCapabilityFalseOnStartup) {
-  EnableSignInU18();
-  // Mimics the emit call after initial sign in
-  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
-
-  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
-              testing::Not(base::Time()));
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms,
-              testing::ContainsRegex(
-                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
-  histogram_tester()->ExpectBucketCount(
-      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
-      PrimaryAccountUserGroups::kSignedInCapabilityFalse, 1);
-}
-
-TEST_F(PrivacySandboxServiceTest,
-       PrimaryAccountSignedInCapabilityTrueOnStartup) {
-  EnableSignInOver18();
-  // Mimics the emit call after initial sign in
-  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
-
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms,
-              testing::ContainsRegex(
-                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
-  histogram_tester()->ExpectBucketCount(
-      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
-      PrimaryAccountUserGroups::kSignedInCapabilityTrue, 1);
-}
-
-TEST_F(PrivacySandboxServiceTest, OnPrimaryAccountChangedSignIn) {
-  EnableSignIn();
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms,
-              testing::ContainsRegex(
-                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
-
-  auto sign_in_time =
-      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime);
-  EXPECT_THAT(sign_in_time, testing::Not(base::Time()));
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Signing in again should not change the metrics.
-  SignOut();
-  EnableSignIn();
-  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
-              sign_in_time);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(PrivacySandboxServiceTest, OnPrimaryAccountChangedSignOut) {
-  EnableSignIn();
-  SignOut();
-
-  EXPECT_THAT(
-      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignOutTime),
-      testing::Not(base::Time()));
-
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(
-      histograms,
-      testing::ContainsRegex(
-          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignOutDuration"));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
@@ -1235,6 +1138,158 @@ TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
     EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
   }
 }
+
+using PrivacySandboxDarkLaunchMetrics = PrivacySandboxServiceTest;
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       IdentityManagerHistogramSkippedForNonRegularProfile) {
+  base::HistogramTester histogram_tester;
+  SetProfileType(profile_metrics::BrowserProfileType::kGuest);
+  CreateService();
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.DarkLaunch.IdentityManagerSuccess", 0);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       IdentityManagerHistogramEmittedForRegularProfile) {
+  base::HistogramTester histogram_tester;
+  SetProfileType(profile_metrics::BrowserProfileType::kRegular);
+  CreateService();
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.DarkLaunch.IdentityManagerSuccess", 1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       NoDarkLaunchStartupMetricsIfNotRegularProfile) {
+  SetProfileType(profile_metrics::BrowserProfileType::kIncognito);
+  CreateService();
+  base::HistogramTester histogram_tester;
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup", 0);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       NoDarkLaunchStartupMetricsOnSubsequentGetRequiredPromptCalls) {
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+  base::HistogramTester histogram_tester;
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup", 0);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxDarkLaunchMetrics, PrimaryAccountSignedOutOnStartup) {
+  // First GetRequiredPromptType call triggers startup histograms
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              base::Time());
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::AnyOf(
+          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration")));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedOut, 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       PrimaryAccountSignedInCapabilityUnknownOnStartup) {
+  EnableSignIn();
+  // First GetRequiredPromptType call triggers startup histograms
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              testing::Not(base::Time()));
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityUnknown, 1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       PrimaryAccountSignedInCapabilityFalseOnStartup) {
+  EnableSignInU18();
+  // First GetRequiredPromptType call triggers startup histograms
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              testing::Not(base::Time()));
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityFalse, 1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       PrimaryAccountSignedInCapabilityTrueOnStartup) {
+  EnableSignInOver18();
+  // First GetRequiredPromptType call triggers startup histograms
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityTrue, 1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics, OnPrimaryAccountChangedSignIn) {
+  EnableSignIn();
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+
+  auto sign_in_time =
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime);
+  EXPECT_THAT(sign_in_time, testing::Not(base::Time()));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Signing in again should not change the metrics.
+  SignOut();
+  EnableSignIn();
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              sign_in_time);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxDarkLaunchMetrics, OnPrimaryAccountChangedSignOut) {
+  EnableSignIn();
+  SignOut();
+
+  EXPECT_THAT(
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignOutTime),
+      testing::Not(base::Time()));
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(
+      histograms,
+      testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignOutDuration"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 using PrivacySandboxServiceDeathTest = PrivacySandboxServiceTest;
 
 TEST_F(PrivacySandboxServiceDeathTest, TPSettingsNullExpectDeath) {
@@ -2591,6 +2646,39 @@ TEST_F(PrivacySandboxServiceM1DelayCreation,
             static_cast<int>(PromptSuppressedReason::kRestricted));
 }
 
+TEST_F(
+    PrivacySandboxServiceM1DelayCreation,
+    ThirdPartyCookieBlockedSuppressReasonClearedWhenAllowPromptFeatureEnabled) {
+  feature_list()->InitAndEnableFeature(
+      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies);
+
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
+
+  CreateService();
+
+  EXPECT_EQ(prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
+            static_cast<int>(PromptSuppressedReason::kNone));
+}
+
+TEST_F(
+    PrivacySandboxServiceM1DelayCreation,
+    ThirdPartyCookieBlockedSuppressReasonClearedWhenAllowPromptFeatureDisabled) {
+  feature_list()->InitAndDisableFeature(
+      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies);
+
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
+
+  CreateService();
+
+  EXPECT_EQ(
+      prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
+      static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
+}
+
 class PrivacySandboxServiceM1DelayCreationRestricted
     : public PrivacySandboxServiceM1DelayCreation {
  public:
@@ -2659,11 +2747,13 @@ TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
 class PrivacySandboxServiceM1PromptTest : public PrivacySandboxServiceTest {
  public:
   void InitializeFeaturesBeforeStart() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxSettings4,
-        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
-          "false"}});
+    feature_list()->InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxSettings4,
+          {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+            "true"},
+           {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+            "false"}}}},
+        {privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies});
   }
 };
 

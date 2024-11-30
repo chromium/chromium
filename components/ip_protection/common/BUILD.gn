@@ -2,28 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("ip_protection_config_getter") {
-  sources = [ "ip_protection_config_getter.h" ]
-  public_deps = [
-    ":ip_protection_data_types",
-    "//base",
-    "//net",
-  ]
-}
-
-source_set("ip_protection_config_getter_mojo_impl") {
+source_set("ip_protection_core_host_remote") {
   sources = [
-    "ip_protection_config_getter_mojo_impl.cc",
-    "ip_protection_config_getter_mojo_impl.h",
+    "ip_protection_core_host_remote.cc",
+    "ip_protection_core_host_remote.h",
   ]
   public_deps = [
-    ":ip_protection_config_getter",
-    ":ip_protection_data_types",
     "//base",
+    "//components/ip_protection/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network/public/mojom",
   ]
-  deps = [ ":ip_protection_core_impl" ]
 }
 
 source_set("ip_protection_config_http") {
@@ -47,7 +36,6 @@ source_set("ip_protection_config_http_unittest") {
     "//base",
     "//base/test:test_support",
     "//net",
-    "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -56,47 +44,11 @@ source_set("ip_protection_config_http_unittest") {
   ]
 }
 
-source_set("ip_protection_control") {
-  sources = [ "ip_protection_control.h" ]
-  public_deps = [
-    ":ip_protection_data_types",
-    "//base",
-  ]
-}
-
-source_set("ip_protection_control_mojo") {
-  sources = [
-    "ip_protection_control_mojo.cc",
-    "ip_protection_control_mojo.h",
-  ]
-  public_deps = [
-    ":ip_protection_control",
-    "//mojo/public/cpp/bindings",
-    "//services/network/public/mojom",
-  ]
-}
-
 source_set("ip_protection_core") {
   sources = [ "ip_protection_core.h" ]
   public_deps = [
-    ":ip_protection_data_types",
-    ":ip_protection_proxy_config_manager",
-    ":ip_protection_token_manager",
     "//base",
-  ]
-}
-
-source_set("ip_protection_core_host_helper") {
-  sources = [
-    "ip_protection_core_host_helper.cc",
-    "ip_protection_core_host_helper.h",
-  ]
-  public_deps = [
-    ":ip_protection_data_types",
-    "//base",
-    "//components/ip_protection:get_proxy_config_proto",
-    "//net/third_party/quiche:blind_sign_auth",
-    "//services/network/public/mojom",
+    "//net",
   ]
 }
 
@@ -106,20 +58,18 @@ source_set("ip_protection_core_impl") {
     "ip_protection_core_impl.h",
   ]
   public_deps = [
-    ":ip_protection_config_getter",
-    ":ip_protection_control",
     ":ip_protection_core",
-    ":ip_protection_data_types",
-    ":ip_protection_proxy_config_manager",
-    ":ip_protection_token_manager",
-    ":masked_domain_list_manager",
     "//base",
     "//net",
   ]
   deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_telemetry",
+    ":ip_protection_token_manager",
     ":ip_protection_token_manager_impl",
+    ":masked_domain_list_manager",
   ]
 }
 
@@ -131,6 +81,47 @@ source_set("ip_protection_core_impl_unittest") {
     ":ip_protection_data_types",
     ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_config_manager_impl",
+    ":ip_protection_token_manager",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_core_impl_mojo") {
+  sources = [
+    "ip_protection_core_impl_mojo.cc",
+    "ip_protection_core_impl_mojo.h",
+  ]
+  public_deps = [
+    ":ip_protection_core_impl",
+    "//components/ip_protection/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+  ]
+  deps = [
+    ":ip_protection_core_host_remote",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
+    ":ip_protection_proxy_config_manager_impl",
+    ":ip_protection_proxy_config_mojo_fetcher",
+    ":ip_protection_token_manager",
+    ":ip_protection_token_manager_impl",
+    ":ip_protection_token_mojo_fetcher",
+    "//base",
+    "//net",
+  ]
+}
+
+source_set("ip_protection_core_impl_mojo_unittest") {
+  testonly = true
+  sources = [ "ip_protection_core_impl_mojo_unittest.cc" ]
+  deps = [
+    ":ip_protection_core_impl_mojo",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
+    ":ip_protection_token_manager",
     "//base",
     "//base/test:test_support",
     "//net",
@@ -161,13 +152,15 @@ source_set("ip_protection_proxy_config_direct_fetcher") {
     "ip_protection_proxy_config_direct_fetcher.h",
   ]
   public_deps = [
-    ":ip_protection_data_types",
     ":ip_protection_proxy_config_fetcher",
     "//base",
     "//components/ip_protection:get_proxy_config_proto",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+  ]
+  deps = [
+    ":ip_protection_data_types",
     "//url",
   ]
 }
@@ -176,17 +169,83 @@ source_set("ip_protection_proxy_config_direct_fetcher_unittest") {
   testonly = true
   sources = [ "ip_protection_proxy_config_direct_fetcher_unittest.cc" ]
   deps = [
-    ":ip_protection_core_host_helper",
     ":ip_protection_data_types",
     ":ip_protection_proxy_config_direct_fetcher",
     "//base",
     "//base/test:test_support",
+    "//components/ip_protection:get_proxy_config_proto",
     "//net",
-    "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_proxy_config_mojo_fetcher") {
+  sources = [
+    "ip_protection_proxy_config_mojo_fetcher.cc",
+    "ip_protection_proxy_config_mojo_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_proxy_config_fetcher",
+    "//base",
+  ]
+  deps = [
+    ":ip_protection_core_host_remote",
+    "//components/ip_protection/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("ip_protection_proxy_config_mojo_fetcher_unittest") {
+  testonly = true
+  sources = [ "ip_protection_proxy_config_mojo_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_core_host_remote",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_mojo_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection/mojom",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_token_mojo_fetcher") {
+  sources = [
+    "ip_protection_token_mojo_fetcher.cc",
+    "ip_protection_token_mojo_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_token_fetcher",
+    "//base",
+  ]
+  deps = [
+    ":ip_protection_core_host_remote",
+    ":ip_protection_data_types",
+    "//components/ip_protection/mojom",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("ip_protection_token_mojo_fetcher_unittest") {
+  testonly = true
+  sources = [ "ip_protection_token_mojo_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_core_host_remote",
+    ":ip_protection_data_types",
+    ":ip_protection_token_mojo_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection/mojom",
     "//testing/gtest",
   ]
 }
@@ -196,11 +255,7 @@ source_set("ip_protection_proxy_config_fetcher") {
     "ip_protection_proxy_config_fetcher.cc",
     "ip_protection_proxy_config_fetcher.h",
   ]
-  public_deps = [
-    ":ip_protection_data_types",
-    "//base",
-    "//net",
-  ]
+  public_deps = [ "//net" ]
 }
 
 source_set("ip_protection_proxy_config_manager") {
@@ -213,21 +268,25 @@ source_set("ip_protection_proxy_config_manager_impl") {
     "ip_protection_proxy_config_manager_impl.h",
   ]
   public_deps = [
-    ":ip_protection_config_getter",
-    ":ip_protection_core",
-    ":ip_protection_data_types",
     ":ip_protection_proxy_config_manager",
     "//base",
+  ]
+  deps = [
+    ":ip_protection_core",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_fetcher",
+    ":ip_protection_telemetry",
     "//net",
   ]
-  deps = [ ":ip_protection_telemetry" ]
 }
 
 source_set("ip_protection_proxy_config_manager_impl_unittest") {
   testonly = true
   sources = [ "ip_protection_proxy_config_manager_impl_unittest.cc" ]
   deps = [
+    ":ip_protection_core",
     ":ip_protection_data_types",
+    ":ip_protection_proxy_config_fetcher",
     ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_telemetry",
@@ -245,13 +304,14 @@ source_set("ip_protection_proxy_delegate") {
     "ip_protection_proxy_delegate.h",
   ]
   public_deps = [
-    ":ip_protection_core",
-    ":ip_protection_telemetry",
     "//base",
     "//net",
   ]
   deps = [
+    ":ip_protection_core",
+    ":ip_protection_data_types",
     ":ip_protection_proxy_config_manager_impl",
+    ":ip_protection_telemetry",
     ":ip_protection_token_manager_impl",
   ]
 }
@@ -260,7 +320,7 @@ source_set("ip_protection_proxy_delegate_unittest") {
   testonly = true
   sources = [ "ip_protection_proxy_delegate_unittest.cc" ]
   deps = [
-    ":ip_protection_core_impl",
+    ":ip_protection_core",
     ":ip_protection_data_types",
     ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_delegate",
@@ -269,7 +329,6 @@ source_set("ip_protection_proxy_delegate_unittest") {
     ":masked_domain_list_manager",
     "//base",
     "//base/test:test_support",
-    "//mojo/public/cpp/bindings",
     "//net",
     "//net:gtest_util",
     "//net:test_support",
@@ -283,7 +342,6 @@ source_set("ip_protection_proxy_delegate_unittest") {
 source_set("ip_protection_telemetry") {
   sources = [ "ip_protection_telemetry.h" ]
   public_deps = [
-    ":ip_protection_data_types",
     "//base",
     "//net",
   ]
@@ -295,10 +353,10 @@ source_set("ip_protection_telemetry_uma") {
     "ip_protection_telemetry_uma.h",
   ]
   public_deps = [
-    ":ip_protection_data_types",
     ":ip_protection_telemetry",
     "//base",
   ]
+  deps = [ ":ip_protection_data_types" ]
 }
 
 source_set("ip_protection_token_direct_fetcher") {
@@ -307,32 +365,62 @@ source_set("ip_protection_token_direct_fetcher") {
     "ip_protection_token_direct_fetcher.h",
   ]
   public_deps = [
-    ":ip_protection_config_http",
     ":ip_protection_token_fetcher",
+    ":ip_protection_token_fetcher_helper",
     "//base",
     "//services/network/public/cpp",
   ]
-  deps = [ "//net/third_party/quiche:blind_sign_auth" ]
+  deps = [
+    ":ip_protection_config_http",
+    ":ip_protection_data_types",
+    ":ip_protection_telemetry",
+    ":ip_protection_token_fetcher_helper",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//net/third_party/quiche:blind_sign_auth",
+  ]
+}
+
+source_set("ip_protection_token_direct_fetcher_unittest") {
+  testonly = true
+  sources = [ "ip_protection_token_direct_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_token_direct_fetcher",
+    ":mock_blind_sign_auth",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
 }
 
 source_set("ip_protection_token_fetcher") {
-  sources = [
-    "ip_protection_token_fetcher.cc",
-    "ip_protection_token_fetcher.h",
-  ]
+  sources = [ "ip_protection_token_fetcher.h" ]
   public_deps = [
+    ":ip_protection_data_types",
     "//base",
     "//third_party/abseil-cpp:absl",
   ]
-  deps = [ "//net/third_party/quiche:blind_sign_auth" ]
+}
+
+source_set("ip_protection_token_fetcher_helper") {
+  sources = [
+    "ip_protection_token_fetcher_helper.cc",
+    "ip_protection_token_fetcher_helper.h",
+  ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//base",
+    "//net",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//third_party/abseil-cpp:absl",
+  ]
 }
 
 source_set("ip_protection_token_manager") {
   sources = [ "ip_protection_token_manager.h" ]
-  public_deps = [
-    ":ip_protection_config_getter",
-    ":ip_protection_data_types",
-  ]
 }
 
 source_set("ip_protection_token_manager_impl") {
@@ -341,13 +429,15 @@ source_set("ip_protection_token_manager_impl") {
     "ip_protection_token_manager_impl.h",
   ]
   public_deps = [
-    ":ip_protection_config_getter",
     ":ip_protection_core",
-    ":ip_protection_data_types",
     ":ip_protection_token_manager",
     "//base",
   ]
-  deps = [ ":ip_protection_telemetry" ]
+  deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_telemetry",
+    ":ip_protection_token_fetcher",
+  ]
 }
 
 source_set("ip_protection_token_manager_impl_unittest") {
@@ -357,6 +447,7 @@ source_set("ip_protection_token_manager_impl_unittest") {
     ":ip_protection_core",
     ":ip_protection_data_types",
     ":ip_protection_telemetry",
+    ":ip_protection_token_fetcher",
     ":ip_protection_token_manager",
     ":ip_protection_token_manager_impl",
     "//base",

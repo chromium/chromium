@@ -42,7 +42,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
 
   // Returns form cache containing information about parsed password forms on
   // the web page.
-  virtual const PasswordFormCache* GetPasswordFormCache() const = 0;
+  virtual PasswordFormCache* GetPasswordFormCache() = 0;
 
   // Returns true if password element is detected on the current page.
   virtual bool IsPasswordFieldDetectedOnPage() const = 0;
@@ -130,6 +130,13 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
                            autofill::AutofillType::ServerPrediction>&
+          field_predictions) = 0;
+
+  // Processes the classification model predictions received via Autofill.
+  virtual void ProcessClassificationModelPredictions(
+      PasswordManagerDriver* driver,
+      const autofill::FormData& form,
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
           field_predictions) = 0;
 
   // Getter for the PasswordManagerClient.

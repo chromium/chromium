@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_util.h"
 
-#import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
+#import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/web/common/uikit_ui_util.h"

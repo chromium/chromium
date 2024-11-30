@@ -42,10 +42,6 @@ bool IsFedCmSelectiveDisclosureEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmSelectiveDisclosure);
 }
 
-bool IsFedCmSameSiteNoneEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmSameSiteNone);
-}
-
 bool IsFedCmIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }

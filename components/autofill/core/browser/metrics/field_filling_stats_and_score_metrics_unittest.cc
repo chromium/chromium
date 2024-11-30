@@ -8,7 +8,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
@@ -16,18 +15,6 @@
 
 namespace autofill::autofill_metrics {
 namespace {
-
-FillFieldLogEvent GetFillFieldLogEventWithFillingMethod(
-    FillingMethod filling_method) {
-  return FillFieldLogEvent{
-      .fill_event_id = GetNextFillEventId(),
-      .had_value_before_filling = ToOptionalBoolean(false),
-      .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-      .was_autofilled_before_security_policy = ToOptionalBoolean(true),
-      .had_value_after_filling = ToOptionalBoolean(true),
-      .filling_method = filling_method,
-      .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse};
-}
 
 std::vector<test::FieldDescription> GetTestFormDataFields() {
   return {
@@ -113,12 +100,11 @@ class AutofillFieldFillingStatsAndScoreMetricsTest
   // Creates, adds and "sees" a form that contains `fields`.
   const FormData& GetAndAddSeenFormWithFields(
       const std::vector<test::FieldDescription>& fields) {
-    form_data_ =
-        GetAndAddSeenForm({.description_for_logging = "FieldFillingStats",
-                           .fields = fields,
-                           .renderer_id = test::MakeFormRendererId(),
-                           .main_frame_origin = url::Origin::Create(
-                               autofill_client_->form_origin())});
+    form_data_ = GetAndAddSeenForm(
+        {.description_for_logging = "FieldFillingStats",
+         .fields = fields,
+         .renderer_id = test::MakeFormRendererId(),
+         .main_frame_origin = url::Origin::Create(autofill_driver_->url())});
     return form_data_;
   }
 
@@ -179,110 +165,6 @@ TEST_F(AutofillFieldFillingStatsAndScoreMetricsTest, FillingStats) {
     ExpectFieldFillingStatsUniqueSample(
         histogram_tester, base::StrCat({form_type, ".Total"}), 17);
   }
-}
-
-// Same as above but for different filling methods. Note that metrics related to
-// a filled not being autofilled like `ManuallyFilledToSameType` are always
-// counted in the Any bucket of filling methods, since the other ones by
-// definition means that the filled was autofilled.
-TEST_F(AutofillFieldFillingStatsAndScoreMetricsTest,
-       FillingStats_FillingMethod) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillGranularFillingAvailable);
-
-  const FormData& form = GetAndAddSeenFormWithFields(GetTestFormDataFields());
-  FormStructure* form_structure =
-      autofill_manager().FindCachedFormById(form.global_id());
-
-  form_structure->field(0)->AppendLogEventIfNotRepeated(
-      GetFillFieldLogEventWithFillingMethod(FillingMethod::kGroupFillingName));
-  form_structure->field(1)->AppendLogEventIfNotRepeated(
-      GetFillFieldLogEventWithFillingMethod(
-          FillingMethod::kGroupFillingAddress));
-  form_structure->field(2)->AppendLogEventIfNotRepeated(
-      GetFillFieldLogEventWithFillingMethod(
-          FillingMethod::kFieldByFieldFilling));
-
-  // Make all other filled fields, be `FillingMethod::kFullForm`.
-  for (size_t i = 3; i < form_structure->fields().size(); i++) {
-    AutofillField* field = form_structure->field(i);
-    if (field->is_autofilled()) {
-      field->AppendLogEventIfNotRepeated(
-          GetFillFieldLogEventWithFillingMethod(FillingMethod::kFullForm));
-    }
-  }
-  base::HistogramTester histogram_tester;
-  SimulationOfDefaultUserChangesOnAddedFormTextFields();
-  SubmitForm(form);
-
-  // The first field which was simply accepted had
-  // FillingMethod::kGroupFillingAddress as filling method.
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "GroupFilling.Address.Accepted", 1);
-  // The second field was corrected.
-  ExpectFieldFillingStatsUniqueSample(
-      histogram_tester, "GroupFilling.Address.CorrectedToSameType", 1);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "GroupFilling.Address.TotalFilled", 2);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "GroupFilling.Address.Total", 2);
-
-  // The third field which was changed to the same type had
-  // FillingMethod::kGroupFillingAddress as filling method.
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "FieldByFieldFilling.Address."
-                                      "CorrectedToSameType",
-                                      1);
-  ExpectFieldFillingStatsUniqueSample(
-      histogram_tester, "FieldByFieldFilling.Address.TotalFilled", 1);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "FieldByFieldFilling.Address.Total", 1);
-
-  // The other filled fields had FillingMethod::kFullForm as filling
-  // method
-  ExpectFieldFillingStatsUniqueSample(
-      histogram_tester, "FullForm.Address.CorrectedToDifferentType", 1);
-  ExpectFieldFillingStatsUniqueSample(
-      histogram_tester, "FullForm.Address.CorrectedToUnknownType", 1);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "FullForm.Address.CorrectedToEmpty", 1);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "FullForm.Address.TotalFilled", 7);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "FullForm.Address.TotalCorrected", 3);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "FullForm.Address.Total", 7);
-
-  // Manually filled fields are only counted under Any since they have no
-  // filling method.
-  ExpectFieldFillingStatsUniqueSample(histogram_tester, "Any.Address.Accepted",
-                                      5);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "Any.Address.CorrectedToSameType", 2);
-  ExpectFieldFillingStatsUniqueSample(
-      histogram_tester, "Any.Address.CorrectedToDifferentType", 1);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "Any.Address.CorrectedToUnknownType", 1);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "Any.Address.CorrectedToEmpty", 1);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester, "Any.Address.LeftEmpty",
-                                      1);
-  ExpectFieldFillingStatsUniqueSample(
-      histogram_tester, "Any.Address.ManuallyFilledToSameType", 2);
-  ExpectFieldFillingStatsUniqueSample(
-      histogram_tester, "Any.Address.ManuallyFilledToDifferentType", 1);
-  ExpectFieldFillingStatsUniqueSample(
-      histogram_tester, "Any.Address.ManuallyFilledToUnknownType", 3);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "Any.Address.TotalManuallyFilled", 6);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "Any.Address.TotalFilled", 10);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "Any.Address.TotalCorrected", 5);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester,
-                                      "Any.Address.TotalUnfilled", 7);
-  ExpectFieldFillingStatsUniqueSample(histogram_tester, "Any.Address.Total",
-                                      17);
 }
 
 // Test form-wise filling score for the different form types.

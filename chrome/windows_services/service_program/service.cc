@@ -7,27 +7,29 @@
 #include <sddl.h>
 #include <wrl/module.h>
 
+#include <atomic>
 #include <string_view>
 #include <type_traits>
 #include <utility>
 
+#include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
-#include "base/feature_list.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/run_loop.h"
-#include "base/task/single_thread_task_executor.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/windows_services/service_program/process_wrl_module.h"
 #include "chrome/windows_services/service_program/service_delegate.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
 
-Service* g_instance = nullptr;
+std::atomic<Service*> g_instance(nullptr);
 
 // Command line switch "--console" runs the service interactively for debugging
 // purposes.
@@ -38,14 +40,63 @@ constexpr std::string_view kConsoleSwitchName = "console";
 // https://learn.microsoft.com/en-us/windows/win32/api/winsvc/ns-winsvc-service_table_entrya#members
 constexpr wchar_t kWindowsServiceName[] = L"";
 
+void WINAPI SpuriousServiceControlHandler(DWORD) {}
+
+// A service main function that logs the state of its service and then stops it.
+void HandleSpuriousServiceMain(DWORD argc, const wchar_t* const* argv) {
+  using ServiceHandle =
+      std::unique_ptr<SC_HANDLE__, decltype(&::CloseServiceHandle)>;
+
+  // The first argument is the name of the service.
+  const wchar_t* service_name = argc && *argv ? *argv : kWindowsServiceName;
+
+  if (auto scm_raw = ::OpenSCManager(
+          /*lpMachineName=*/nullptr,
+          /*lpDatabaseName=*/SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT)) {
+    ServiceHandle scm(scm_raw, &::CloseServiceHandle);
+    if (auto svc_raw =
+            ::OpenService(scm.get(), service_name, SERVICE_QUERY_STATUS)) {
+      ServiceHandle svc(svc_raw, &::CloseServiceHandle);
+      SERVICE_STATUS_PROCESS status = {};
+      DWORD bytes_needed = 0;
+      if (::QueryServiceStatusEx(svc.get(), SC_STATUS_PROCESS_INFO,
+                                 reinterpret_cast<unsigned char*>(&status),
+                                 sizeof(status), &bytes_needed)) {
+        LOG(ERROR) << "Spurious start for " << service_name
+                   << ". Current state: " << status.dwCurrentState
+                   << "; pid: " << status.dwProcessId;
+      } else {
+        PLOG(ERROR) << "Failed to query " << service_name;
+      }
+    } else {
+      PLOG(ERROR) << "Failed to open " << service_name;
+    }
+  } else {
+    PLOG(ERROR) << "Failed to connect to SCM";
+  }
+
+  if (auto service_status_handle = ::RegisterServiceCtrlHandler(
+          service_name, &SpuriousServiceControlHandler)) {
+    SERVICE_STATUS service_status{.dwServiceType = SERVICE_WIN32_OWN_PROCESS,
+                                  .dwCurrentState = SERVICE_STOPPED};
+    ::SetServiceStatus(service_status_handle, &service_status);
+  } else {
+    PCHECK(false);
+  }
+}
+
 }  // namespace
 
 Service::Service(ServiceDelegate& delegate) : delegate_(delegate) {
-  CHECK_EQ(std::exchange(g_instance, this), nullptr);
+  Service* expected = nullptr;
+  CHECK(g_instance.compare_exchange_strong(expected, this,
+                                           std::memory_order_relaxed));
 }
 
 Service::~Service() {
-  CHECK_EQ(std::exchange(g_instance, nullptr), this);
+  Service* expected = this;
+  CHECK(g_instance.compare_exchange_strong(expected, nullptr,
+                                           std::memory_order_relaxed));
 }
 
 bool Service::InitWithCommandLine(const base::CommandLine* command_line) {
@@ -58,27 +109,34 @@ bool Service::InitWithCommandLine(const base::CommandLine* command_line) {
   // Run interactively if needed.
   if (command_line->HasSwitch(kConsoleSwitchName)) {
     run_routine_ = &Service::RunInteractive;
+    exit_routine_ = &Service::StopInteractive;
   }
-
-  // Register an empty FeatureList so that queries on it do not fail.
-  base::FeatureList::SetInstance(std::make_unique<base::FeatureList>());
 
   return true;
 }
 
-// Start() is the entry point called by ServiceMain().
+// Start() is the entry point called by `ServiceProgramMain()`.
 int Service::Start() {
-  return (this->*run_routine_)();
+  delegate_implements_run_ = delegate_->PreRun();
+
+  const auto result = (this->*run_routine_)();
+
+  delegate_->PostRun();
+
+  return result;
 }
 
 // When _Service gets called, it initializes COM, and then calls Run().
 // Run() initializes security, then calls RegisterClassObjects().
-HRESULT Service::RegisterClassObjects() {
+// static
+HRESULT Service::RegisterClassObjects(ServiceDelegate& delegate,
+                                      base::OnceClosure on_module_released,
+                                      base::HeapArray<DWORD>& cookies) {
   auto& module = Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule();
 
   // We hand-register the class factories to support unique CLSIDs for each
   // Chrome channel, which is determined at runtime.
-  auto factories_or_error = delegate_->CreateClassFactories();
+  auto factories_or_error = delegate.CreateClassFactories();
   if (!factories_or_error.has_value()) {
     LOG(ERROR) << "Factory creation failed; hr: " << factories_or_error.error();
     return factories_or_error.error();
@@ -92,7 +150,7 @@ HRESULT Service::RegisterClassObjects() {
   // An array to hold the CLSIDs for each factory.
   auto class_ids = base::HeapArray<IID>::Uninit(factories.size());
   // An array to hold the registration cookie for each factory.
-  cookies_ = base::HeapArray<DWORD>::Uninit(factories.size());
+  auto new_cookies = base::HeapArray<DWORD>::Uninit(factories.size());
 
   size_t i = 0;
   for (auto& factory_and_clsid : factories) {
@@ -101,36 +159,42 @@ HRESULT Service::RegisterClassObjects() {
     ++i;
   }
 
+  // Register a callback with the process's WRL module to signal the service to
+  // exit when the last reference is released.
+  SetModuleReleasedCallback(std::move(on_module_released));
+
   HRESULT hr = module.RegisterCOMObject(
-      nullptr, class_ids.data(), weak_factories.data(), cookies_.data(),
+      nullptr, class_ids.data(), weak_factories.data(), new_cookies.data(),
       static_cast<unsigned int>(factories.size()));
   if (FAILED(hr)) {
     LOG(ERROR) << "RegisterCOMObject failed; hr: " << hr;
+    SetModuleReleasedCallback({});
     return hr;
   }
 
-  // Register a callback with the process's WRL module to signal the service to
-  // exit when the last reference is released.
-  SetModuleReleasedCallback(
-      base::BindOnce(&Service::SignalExit, base::Unretained(this)));
-
+  // Return the cookies on success.
+  cookies = std::move(new_cookies);
   return hr;
 }
 
-void Service::UnregisterClassObjects() {
-  // Clear the callback registered with the process's WRL module.
-  SetModuleReleasedCallback({});
+// static
+void Service::UnregisterClassObjects(base::HeapArray<DWORD>& cookies) {
+  if (!cookies.empty()) {
+    // Clear the callback registered with the process's WRL module.
+    SetModuleReleasedCallback({});
 
-  auto& module = Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule();
-  const HRESULT hr =
-      module.UnregisterCOMObject(nullptr, cookies_.data(), cookies_.size());
-  if (FAILED(hr)) {
-    LOG(ERROR) << "UnregisterCOMObject failed; hr: " << hr;
+    const HRESULT hr =
+        Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
+            .UnregisterCOMObject(nullptr, cookies.data(), cookies.size());
+    if (FAILED(hr)) {
+      LOG(ERROR) << "UnregisterCOMObject failed; hr: 0x" << std::hex << hr;
+    }
+    cookies = base::HeapArray<DWORD>();
   }
 }
 
 Service& Service::GetInstance() {
-  return CHECK_DEREF(g_instance);
+  return CHECK_DEREF(g_instance.load(std::memory_order_relaxed));
 }
 
 int Service::RunAsService() {
@@ -138,103 +202,153 @@ int Service::RunAsService() {
       {const_cast<LPTSTR>(kWindowsServiceName), &Service::ServiceMainEntry},
       {nullptr, nullptr}};
 
+  // This thread becomes the service control dispatcher thread for the process
+  // upon the call to `::StartServiceCtrlDispatcher()`.
+
+  // Upon this call, processing will continue on the service main thread in
+  // `ServiceMainEntry()`. Processing will resume here when the service is
+  // stopped. This same thread will process calls to `ServiceControlHandler()`.
   if (!::StartServiceCtrlDispatcher(dispatch_table)) {
-    service_status_.dwWin32ExitCode = ::GetLastError();
+    const auto error = ::GetLastError();
+
+    // MSDN States: "If StartServiceCtrlDispatcher succeeds, it connects the
+    // calling thread to the service control manager and does not return until
+    // all running services in the process have entered the SERVICE_STOPPED
+    // state." Despite that, https://crbug.com/380943791 is a case where a
+    // service main thread is executing `ServiceMainEntry()` after the service
+    // control dispatcher returns. Put the error code from a failure to start
+    // the dispatcher into a crash key so that it is included in such crashes.
+    static auto* const crash_key = base::debug::AllocateCrashKeyString(
+        "Service-DispatcherError", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(crash_key, base::NumberToString(error));
+
     PLOG(ERROR) << "Failed to connect to the service control manager";
+    return error;
   }
 
+  // Take the lock both for the sake of accessing service_status_ and to wait
+  // for the thread in `OnModuleReleased()` to complete the call.
+  base::AutoLock lock(lock_);
   return service_status_.dwWin32ExitCode;
 }
 
+void Service::StopService() {
+  // This will cause the service control dispatcher to exit on the main thread.
+  // Processing will continue in `RunAsService()`. After this call, the SCM will
+  // launch a new process to handle inbound requests even if this process takes
+  // time to clean up and terminate.
+  SetServiceStatus(SERVICE_STOPPED);
+}
+
 void Service::ServiceMainImpl(const base::CommandLine& command_line) {
+  base::AutoLock lock(lock_);
+
   service_status_handle_ = ::RegisterServiceCtrlHandler(
       kWindowsServiceName, &Service::ServiceControlHandler);
   if (service_status_handle_ == nullptr) {
     PLOG(ERROR) << "RegisterServiceCtrlHandler failed";
     return;
   }
-  SetServiceStatus(SERVICE_RUNNING);
-  absl::Cleanup service_stopped = [this] { SetServiceStatus(SERVICE_STOPPED); };
 
-  service_status_.dwWin32ExitCode = ERROR_SUCCESS;
-  service_status_.dwCheckPoint = 0;
-  service_status_.dwWaitHint = 0;
-
-  // Initialize COM for the current thread.
+  // Initialize this thread into the process's MTA.
   base::win::ScopedCOMInitializer com_initializer(
       base::win::ScopedCOMInitializer::kMTA);
-  if (!com_initializer.Succeeded()) {
-    PLOG(ERROR) << "Failed to initialize COM";
-    return;
+  HRESULT hr = com_initializer.hr();
+  if (SUCCEEDED(hr)) {
+    // Tell the service control manager that the service is now running, and
+    // will accept a stop request.
+    SetServiceStatus(SERVICE_RUNNING);
+    // Start the service.
+    hr = Run(command_line);
+  } else {
+    PLOG(ERROR) << "Failed to initialize COM; hr = 0x" << std::hex << hr;
   }
 
-  // When the Run function returns, the service has stopped.
-  const HRESULT hr = Run(command_line);
   if (FAILED(hr)) {
+    // Shut down immediately in case of error.
     service_status_.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
     service_status_.dwServiceSpecificExitCode = hr;
+    SetServiceStatus(SERVICE_STOPPED);
+  } else if (delegate_implements_run_) {
+    // Shut down immediately if the service provided its own `Run()`.
+    SetServiceStatus(SERVICE_STOPPED);
   }
 }
 
 int Service::RunInteractive() {
-  return Run(*base::CommandLine::ForCurrentProcess());
+  base::WaitableEvent exit_event;
+  base::AutoReset<raw_ptr<base::WaitableEvent>> reset_stop_event(
+      &interactive_stop_event_, &exit_event);
+
+  base::AutoLock lock(lock_);
+  if (HRESULT hr = Run(*base::CommandLine::ForCurrentProcess());
+      FAILED(hr) || delegate_implements_run_) {
+    // Return immediately on error or if the service provided its own `Run()`.
+    return hr;
+  }
+
+  {
+    base::AutoUnlock unlock(lock_);
+    // Wait for StopInteractive to be called.
+    exit_event.Wait();
+  }
+
+  return S_OK;
+}
+
+void Service::StopInteractive() {
+  CHECK_DEREF(interactive_stop_event_.get()).Signal();
 }
 
 // static
 void Service::ServiceControlHandler(DWORD control) {
-  Service& self = Service::GetInstance();
-  switch (control) {
-    case SERVICE_CONTROL_STOP:
-      self.SetServiceStatus(SERVICE_STOP_PENDING);
-      self.delegate_->OnServiceControlStop();
-      self.SignalExit();
-      break;
-
-    default:
-      break;
+  if (control == SERVICE_CONTROL_STOP) {
+    GetInstance().OnStopRequested();
   }
 }
 
 // static
 void WINAPI Service::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
-  GetInstance().ServiceMainImpl(base::CommandLine(argc, argv));
+  if (Service* instance = g_instance.load(std::memory_order_relaxed)) {
+    instance->ServiceMainImpl(base::CommandLine(argc, argv));
+  } else {
+    // There are cases where this function is called when there is no active
+    // Service instance; see https://crbug.com/380943791.
+    HandleSpuriousServiceMain(argc, argv);
+  }
 }
 
 void Service::SetServiceStatus(DWORD state) {
-  ::InterlockedExchange(&service_status_.dwCurrentState, state);
-  ::SetServiceStatus(service_status_handle_, &service_status_);
+  if (service_status_handle_) {
+    service_status_.dwCurrentState = state;
+    ::SetServiceStatus(service_status_handle_, &service_status_);
+    if (state == SERVICE_STOPPED) {
+      // The handle becomes invalid once STOPPED has been sent.
+      service_status_handle_ = nullptr;
+    }
+  }
 }
 
 HRESULT Service::Run(const base::CommandLine& command_line) {
-  // Allow this thread to run tasks. Consider using a UI message pump if there
-  // is a need to respond to window messages (e.g., WM_ENDSESSION).
-  base::SingleThreadTaskExecutor task_executor;
-
-  const bool delegate_implements_run = delegate_->PreRun();
-  absl::Cleanup post_run = [&delegate = *delegate_] { delegate.PostRun(); };
-
-  HRESULT hr = InitializeComSecurity();
-  if (FAILED(hr)) {
+  if (HRESULT hr = InitializeComSecurity(); FAILED(hr)) {
     return hr;
   }
 
-  // If `PreRun` returns `true`, the delegate's `Run` method is expected to do
+  // If `PreRun` returned `true`, the delegate's `Run` method is expected to do
   // all the logic of registering/unregistering classes and running the COM
   // server.
-  if (delegate_implements_run) {
+  if (delegate_implements_run_) {
+    base::AutoUnlock unlock(lock_);
     return delegate_->Run(command_line);
   }
 
-  hr = RegisterClassObjects();
-  if (SUCCEEDED(hr)) {
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitWhenIdleClosure();
-
-    run_loop.Run();
-    UnregisterClassObjects();
-  }
-
-  return hr;
+  // Registering class objects is sufficient for the service to be running.
+  // Unretained is safe here because the callback is cleared in
+  // `UnregisterClassObjects()`, which is run under lock during shutdown.
+  return RegisterClassObjects(
+      *delegate_,
+      base::BindOnce(&Service::OnModuleReleased, base::Unretained(this)),
+      cookies_);
 }
 
 // static
@@ -280,8 +394,30 @@ HRESULT Service::InitializeComSecurity() {
       nullptr);
 }
 
-void Service::SignalExit() {
-  if (quit_closure_) {
-    quit_closure_.Run();
-  }
+void Service::OnModuleReleased() {
+  base::AutoLock lock(lock_);
+
+  // It is tempting to send a STOP_PENDING message to the service control
+  // manager to tell it that shutdown has started. Unfortunately, it seems that
+  // doing so does nothing to reduce errors on rapid reuse. It could be that
+  // doing so actually increases the errors, as it delays shutdown.
+
+  // Revoke the service's class objects.
+  UnregisterClassObjects(cookies_);
+  // Exit the service.
+  (this->*exit_routine_)();
+}
+
+void Service::OnStopRequested() {
+  // Tell the delegate that a stop has been requested. Do this before running
+  // the exit routine, as that will cause the service control dispatcher to
+  // return on the main thread.
+  delegate_->OnServiceControlStop();
+
+  base::AutoLock lock(lock_);
+
+  // Revoke the service's class objects.
+  UnregisterClassObjects(cookies_);
+  // Exit the service.
+  (this->*exit_routine_)();
 }

@@ -10,7 +10,6 @@ import android.os.Build;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Locale;
@@ -75,10 +74,5 @@ public class TabUiFeatureUtilities {
     public static boolean doesOEMSupportDragToCreateInstance() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
                 && TAB_TEARING_OEM_ALLOWLIST.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
-    }
-
-    /** Returns whether the settings button for showing the group creation dialog is enabled. */
-    public static boolean isTabGroupCreationDialogShowConfigurable() {
-        return TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.getValue();
     }
 }

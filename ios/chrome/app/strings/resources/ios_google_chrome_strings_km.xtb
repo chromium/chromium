@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">បើក​ការកំណត់ Chrome ដើម្បី​កំណត់ Chrome ជាកម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម។</translation>
 <translation id="1670609221633730681">គន្លឹះ Chrome៖ ជ្រើសរើសទីតាំងរបារអាសយដ្ឋានរបស់អ្នក</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">រក្សាទុក​ពាក្យសម្ងាត់​របស់អ្នក​នៅក្នុង Chrome</translation>
 <translation id="1790080846677398234">បញ្ចូល URL ដែលបាន​បញ្ចូលទៅចំណាំរបស់អ្នកនៅក្នុង Chrome។</translation>
 <translation id="1799920918471566157">គន្លឹះ Chrome</translation>
 <translation id="1830634592642484976">បច្ចុប្បន្ន អាសយដ្ឋាននេះ​ត្រូវបាន​រក្សាទុក​ទៅក្នុង Chrome។ ដើម្បីប្រើវា​នៅលើ​ផលិតផល Google នានា សូមរក្សាទុកវា​នៅក្នុង​គណនី Google របស់អ្នក <ph name="USER_EMAIL" />។</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">មានន័យថា Chrome នឹងស្នើសុំទំព័រឧបករណ៍ចល័តគ្រប់ពេល។</translation>
 <translation id="3740397331642243698">បើក URL ដែលបានបញ្ចូល​នៅក្នុង Google Chrome ក្នុងមុខងារឯកជន។</translation>
 <translation id="3741995255368156336">បើក​បញ្ជីអាន Chrome។</translation>
+<translation id="3808570423967020928">ចូលប្រើ Chrome បានកាន់តែលឿន​ពីធ្នើរ​អេក្រង់ដើម​របស់អ្នក។</translation>
 <translation id="3827545470516145620">អ្នកកំពុង​ទទួលបាន​ការការពារ​សុវត្ថិភាព​ស្តង់ដារ​នៅលើ​ឧបករណ៍នេះ</translation>
 <translation id="384394811301901750">Google Chrome មិនអាចប្រើកាមេរ៉ារបស់អ្នកបានទេឥឡូវនេះ</translation>
 <translation id="3863841106411295595">បញ្ចូល URL ដែលបាន​បញ្ចូលទៅ​បញ្ជីអាន​របស់អ្នក​នៅក្នុង Chrome។</translation>
@@ -219,9 +221,11 @@
 
 សម្រាប់ការកំណត់ច្រើនទៀតដែលប្រើទិន្នន័យដើម្បីកែលម្អបទពិសោធប្រើប្រាស់ Chrome របស់អ្នក សូមចូលទៅកាន់<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" />។</translation>
 <translation id="6922332667202044570">លុប​ទិន្នន័យរុករក​នៅក្នុង Chrome។</translation>
+<translation id="6924922227983877439">បើក​តំណ​នៅក្នុង Chrome តាម​លំនាំដើម</translation>
 <translation id="6975725306479268850">ជ្រើសរើស Chrome សម្រាប់ការ​បំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="7056826488869329999">បើក និង​ដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព​នៅក្នុង Chrome។</translation>
 <translation id="7061455974939528301">ចុចរូប Chrome ឱ្យជាប់ រួចចុច "កែអេក្រង់ដើម"</translation>
+<translation id="7065813315247345131">ផ្លាស់ទី Chrome ទៅធ្នើរ</translation>
 <translation id="7124339256045485976">រក្សាឱ្យ Chrome មានកំណែថ្មីជានិច្ច</translation>
 <translation id="7161390184744336561">Google Chrome ហួសសម័យហើយ</translation>
 <translation id="7165736900384873061">ចាប់ផ្តើមប្រើកម្មវិធីស្កេនកូដ QR របស់ Google Chrome</translation>
@@ -266,7 +270,7 @@
 <translation id="7948283758957877064">អ្វីដែលថ្មីនៅក្នុង Chrome</translation>
 <translation id="8000174216052461231">គន្លឹះ Chrome៖ ទទួលបាន​សុវត្ថិភាព​ខ្លាំងបំផុត​របស់ Chrome</translation>
 <translation id="8006014511203279255">ប្រើប្រាស់ Chrome រាល់ពេល​ដែល​អ្នក​ចុច​តំណ​នៅ​ក្នុង​សារ ឬកម្មវិធី​ផ្សេង​ទៀត។</translation>
-<translation id="8014670471808569312">Chrome នឹងរក្សាទុកពាក្យ​សម្ងាត់របស់អ្នក។</translation>
+<translation id="8014670471808569312">Chrome នឹងផ្ដល់ការរក្សាទុកពាក្យ​សម្ងាត់របស់អ្នក។</translation>
 <translation id="8018153653741938705">រក្សាសុវត្ថិភាព​ដោយប្រើ Google Chrome</translation>
 <translation id="8022947259858476807">ប្រើ Chrome តាមលំនាំដើម ដើម្បីបើកតំណ ស្វែងរក​ពីធាតុក្រាហ្វិក និងបំពេញ​ពាក្យសម្ងាត់ដោយស្វ័យ​ប្រវត្តិនៅក្នុងកម្មវិធី​ផ្សេងទៀត</translation>
 <translation id="804638182476029347">អនុញ្ញាត​ការ​ជូនដំណឹងនៅលើ Chrome ដើម្បី​ទទួលបាន​ការ​ជូនដំណឹង​អំពី​ការ​ធ្លាក់​តម្លៃ</translation>

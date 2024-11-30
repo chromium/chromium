@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,6 +39,7 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.url.GURL;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /** Unit tests for {@link SearchResumptionModuleUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -105,9 +105,7 @@ public class SearchResumptionModuleUtilsUnitTest {
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.NOT_SYNC));
 
-        doReturn(CollectionUtil.newHashSet(UserSelectableType.HISTORY))
-                .when(mSyncServiceMock)
-                .getSelectedTypes();
+        doReturn(Set.of(UserSelectableType.HISTORY)).when(mSyncServiceMock).getSelectedTypes();
         Assert.assertTrue(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
     }
 

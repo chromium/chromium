@@ -22,6 +22,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -70,6 +71,28 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::ResultOf;
+
+auto UnsafeComposeConfig() {
+  auto cfg = SimpleComposeConfig();
+  cfg.set_can_skip_text_safety(true);
+  return cfg;
+}
+
+auto UnsafeTestConfig() {
+  auto cfg = UnsafeComposeConfig();
+  cfg.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
+  return cfg;
+}
+
+// A complete set of assets for the most common case.
+struct StandardAssets {
+  FakeBaseModelAsset base_model{FakeBaseModelAsset::Content{}};
+  FakeAdaptationAsset compose{{
+      .config = SimpleComposeConfig(),
+  }};
+  FakeSafetyModelAsset safety{ComposeSafetyConfig()};
+  FakeLanguageModelAsset language;
+};
 
 const std::string& GetCheckText(
     const proto::InternalOnDeviceModelExecutionInfo& log) {
@@ -200,10 +223,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     pref_service_.SetInteger(
         model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
-    pref_service_.SetTime(
-        model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
-            ModelBasedCapabilityKey::kCompose),
-        base::Time::Now());
+    model_execution::prefs::RecordFeatureUsage(
+        &pref_service_, ModelBasedCapabilityKey::kCompose);
   }
 
   void TearDown() override {
@@ -212,39 +233,42 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   }
 
   struct InitializeParams {
-    // The model execution config to write before initialization. Writes a
-    // default configuration if not provided.
-    std::optional<proto::OnDeviceModelExecutionFeatureConfig> config;
-    std::optional<proto::OnDeviceModelExecutionFeatureConfig> config2;
-    // Whether to make the downloaded model available prior to initialization of
-    // the service controller.
-    bool model_component_ready = true;
-
-    std::optional<proto::OnDeviceModelValidationConfig> validation_config;
+    raw_ptr<FakeBaseModelAsset> base_model;
+    raw_ptr<FakeSafetyModelAsset> safety;
+    raw_ptr<FakeLanguageModelAsset> language;
+    std::vector<FakeAdaptationAsset*> adaptations;
   };
 
-  void Initialize() { Initialize({}); }
-
   void Initialize(const InitializeParams& params) {
-    if (params.config) {
-      base_model_asset_.Write(*params.config, params.config2,
-                              params.validation_config);
-    } else {
-      auto default_config = SimpleComposeConfig();
-      default_config.set_can_skip_text_safety(true);
-      base_model_asset_.Write(default_config, std::nullopt,
-                              params.validation_config);
-    }
-
-    if (params.model_component_ready) {
+    if (params.base_model) {
       on_device_component_state_manager_.get()->OnStartup();
       task_environment_.FastForwardBy(base::Seconds(1));
-      on_device_component_state_manager_.SetReady(base_model_asset_.path());
+      on_device_component_state_manager_.SetReady(params.base_model->path(),
+                                                  params.base_model->version());
     }
-
     RecreateServiceController();
+    if (params.safety) {
+      test_controller_->MaybeUpdateSafetyModel(params.safety->model_info());
+    }
+    if (params.language) {
+      test_controller_->SetLanguageDetectionModel(
+          params.language->model_info());
+    }
+    for (auto* adaptation : params.adaptations) {
+      test_controller_->MaybeUpdateModelAdaptation(adaptation->feature(),
+                                                   adaptation->metadata());
+    }
     // Wait until the OnDeviceModelExecutionConfig has been read.
     task_environment_.RunUntilIdle();
+  }
+
+  void Initialize(StandardAssets& assets) {
+    Initialize(InitializeParams{
+        .base_model = &standard_assets_.base_model,
+        .safety = &standard_assets_.safety,
+        .language = &standard_assets_.language,
+        .adaptations = {&standard_assets_.compose},
+    });
   }
 
   ExecuteRemoteFn CreateExecuteRemoteFn() {
@@ -304,8 +328,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   }
 
  protected:
-  FakeBaseModelAsset base_model_asset_;
-  FakeLanguageModelAsset language_asset_;
+  StandardAssets standard_assets_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
@@ -327,7 +350,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 };
 
 TEST_F(OnDeviceModelServiceControllerTest, ScoreNullBeforeContext) {
-  Initialize();
+  Initialize(standard_assets_);
 
   base::HistogramTester histogram_tester;
   auto session = CreateSession();
@@ -338,7 +361,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ScoreNullBeforeContext) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
-  Initialize();
+  Initialize(standard_assets_);
 
   base::HistogramTester histogram_tester;
   auto session = CreateSession();
@@ -352,7 +375,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ScoreNullAfterExecute) {
-  Initialize();
+  Initialize(standard_assets_);
 
   base::HistogramTester histogram_tester;
   auto session = CreateSession();
@@ -367,16 +390,24 @@ TEST_F(OnDeviceModelServiceControllerTest, ScoreNullAfterExecute) {
   EXPECT_EQ(score_future.Get(), std::nullopt);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
-  Initialize();
+TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
+  FakeAdaptationAsset compose_asset({
+      .config = SimpleComposeConfig(),
+      // No weight, so will use base model.
+  });
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
 
   base::HistogramTester histogram_tester;
   auto session = CreateSession();
   EXPECT_TRUE(session);
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
+  ASSERT_TRUE(response_.GetFinalStatus());
   const std::string expected_response = "Input: execute:foo\n";
   EXPECT_EQ(*response_.value(), expected_response);
   EXPECT_TRUE(*response_.provided_by_on_device());
@@ -394,7 +425,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
             "Test");
   EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
             "0.0.1");
-  EXPECT_FALSE(model_version.model_adaptation_version());
+  EXPECT_EQ(model_version.model_adaptation_version(), compose_asset.version());
   EXPECT_GT(logged_on_device_model_execution_info.execution_infos_size(), 0);
   EXPECT_EQ(logged_on_device_model_execution_info.execution_infos(0)
                 .response()
@@ -412,7 +443,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
             "Test");
   EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
             "0.0.1");
-  EXPECT_FALSE(model_version.model_adaptation_version());
+  EXPECT_EQ(model_version.model_adaptation_version(), compose_asset.version());
   EXPECT_GT(logged_on_device_model_execution_info.execution_infos_size(), 0);
   EXPECT_EQ(logged_on_device_model_execution_info.execution_infos(0)
                 .response()
@@ -423,8 +454,42 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
       OnDeviceModelEligibilityReason::kSuccess, 1);
+  // If we wait long enough, everything should idle out and the service should
+  // get terminated.
+  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+                                  base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, AdaptationModelExecutionSuccess) {
+  FakeAdaptationAsset compose_asset({
+      .config = SimpleComposeConfig(),
+      .weight = 1015,
+  });
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(), "Adaptation model: 1015\nInput: execute:foo\n");
+
+  // If we wait long enough, everything should idle out and the service should
+  // get terminated.
+  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+                                  base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(fake_launcher_.is_service_running());
+}
+
+// Sessions using different adaptations should be able to execute
+// concurrently.
 TEST_F(OnDeviceModelServiceControllerTest,
        MultipleModelAdaptationExecutionSuccess) {
   base::test::ScopedFeatureList feature_list;
@@ -434,47 +499,26 @@ TEST_F(OnDeviceModelServiceControllerTest,
         {{"enable_adaptation", "true"}}}},
       {});
 
-  auto config_compose = SimpleComposeConfig();
-  config_compose.set_can_skip_text_safety(true);
-  auto config_test = SimpleComposeConfig();
-  config_test.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
-  config_test.set_can_skip_text_safety(true);
-
-  Initialize({.config = config_compose, .config2 = config_test});
-
-  FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
-      ModelBasedCapabilityKey::kCompose),
-      availability_observer_test(ModelBasedCapabilityKey::kTest);
-  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
-  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey::kTest, &availability_observer_test);
-
   FakeAdaptationAsset compose_asset({
-      .config = config_compose,
+      .config = SimpleComposeConfig(),
       .weight = 1015,
   });
-  test_controller_->MaybeUpdateModelAdaptation(compose_asset.feature(),
-                                               compose_asset.metadata());
-  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
-            availability_observer_compose.reason_);
-  EXPECT_FALSE(availability_observer_test.reason_);
-
   FakeAdaptationAsset test_asset({
-      .config = config_test,
+      .config = UnsafeTestConfig(),
       .weight = 2024,
   });
-  test_controller_->MaybeUpdateModelAdaptation(test_asset.feature(),
-                                               test_asset.metadata());
-  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
-            availability_observer_test.reason_);
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset, &test_asset},
+  });
 
   auto session_compose = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kCompose, base::DoNothing(),
       logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_compose);
-  task_environment_.RunUntilIdle();
   auto session_test = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
       nullptr,
@@ -483,46 +527,21 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   EXPECT_EQ(2u, GetModelAdaptationControllers().size());
 
+  ResponseHolder compose_response;
   session_compose->ExecuteModel(PageUrlRequest("foo"),
-                                response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(), "Adaptation model: 1015\nInput: execute:foo\n");
-  EXPECT_TRUE(*response_.provided_by_on_device());
-
+                                compose_response.GetStreamingCallback());
+  ResponseHolder test_response;
   session_test->ExecuteModel(PageUrlRequest("bar"),
-                             response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(), "Adaptation model: 2024\nInput: execute:bar\n");
-  EXPECT_TRUE(*response_.provided_by_on_device());
+                             test_response.GetStreamingCallback());
 
-  EXPECT_TRUE(response_.log_entry());
-  auto logged_on_device_model_execution_info =
-      response_.log_entry()
-          ->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info();
-  auto model_version = logged_on_device_model_execution_info.model_versions()
-                           .on_device_model_service_version();
-  EXPECT_EQ(model_version.component_version(), "0.0.1");
-  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
-            "Test");
-  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
-            "0.0.1");
-  EXPECT_EQ(model_version.model_adaptation_version(), compose_asset.version());
-
-  EXPECT_TRUE(response_.model_execution_info());
-  logged_on_device_model_execution_info =
-      response_.model_execution_info()->on_device_model_execution_info();
-  model_version = logged_on_device_model_execution_info.model_versions()
-                      .on_device_model_service_version();
-  EXPECT_EQ(model_version.component_version(), "0.0.1");
-  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
-            "Test");
-  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
-            "0.0.1");
-  EXPECT_EQ(model_version.model_adaptation_version(), compose_asset.version());
+  ASSERT_TRUE(compose_response.GetFinalStatus());
+  EXPECT_EQ(*compose_response.value(),
+            "Adaptation model: 1015\nInput: execute:foo\n");
+  EXPECT_TRUE(*compose_response.provided_by_on_device());
+  ASSERT_TRUE(test_response.GetFinalStatus());
+  EXPECT_EQ(*test_response.value(),
+            "Adaptation model: 2024\nInput: execute:bar\n");
+  EXPECT_TRUE(*test_response.provided_by_on_device());
 
   session_compose.reset();
   session_test.reset();
@@ -535,61 +554,56 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
+// A session using the base model should be able to execute concurrently
+// with one using and adaptation.
 TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::internal::kModelAdaptationCompose, {}},
-       {features::internal::kOnDeviceModelTestFeature,
-        {{"enable_adaptation", "false"}}}},
-      {});
-
-  auto config_compose = SimpleComposeConfig();
-  config_compose.set_can_skip_text_safety(true);
-  auto config_test = SimpleComposeConfig();
-  config_test.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
-  config_test.set_can_skip_text_safety(true);
-
-  Initialize({.config = config_compose, .config2 = config_test});
-
-  FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
-      ModelBasedCapabilityKey::kCompose);
-  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
+      {{features::internal::kOnDeviceModelTestFeature, {}}}, {});
 
   FakeAdaptationAsset compose_asset({
-      .config = config_compose,
+      .config = SimpleComposeConfig(),
       .weight = 1015,
   });
-  test_controller_->MaybeUpdateModelAdaptation(compose_asset.feature(),
-                                               compose_asset.metadata());
-  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
-            availability_observer_compose.reason_);
+  FakeAdaptationAsset test_asset({
+      .config = UnsafeTestConfig(),
+      // no weight, will use base model.
+  });
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset, &test_asset},
+  });
 
   auto session_compose = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kCompose, base::DoNothing(),
       logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(session_compose);
   auto session_test = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
       nullptr,
       /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session_test);
 
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, GetModelAdaptationControllers().size());
 
+  ResponseHolder compose_response;
   session_compose->ExecuteModel(PageUrlRequest("foo"),
-                                response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(), "Adaptation model: 1015\nInput: execute:foo\n");
-  EXPECT_TRUE(*response_.provided_by_on_device());
-
+                                compose_response.GetStreamingCallback());
+  ResponseHolder test_response;
   session_test->ExecuteModel(PageUrlRequest("bar"),
-                             response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(), "Input: execute:bar\n");
-  EXPECT_TRUE(*response_.provided_by_on_device());
+                             test_response.GetStreamingCallback());
+
+  ASSERT_TRUE(compose_response.GetFinalStatus());
+  EXPECT_EQ(*compose_response.value(),
+            "Adaptation model: 1015\nInput: execute:foo\n");
+  EXPECT_TRUE(*compose_response.provided_by_on_device());
+  ASSERT_TRUE(test_response.GetFinalStatus());
+  EXPECT_EQ(*test_response.value(), "Input: execute:bar\n");
+  EXPECT_TRUE(*test_response.provided_by_on_device());
 
   session_compose.reset();
   session_test.reset();
@@ -604,60 +618,12 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
-       ModelAdaptationEmptyWeightsUsesBaseModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::internal::kModelAdaptationCompose, {}}}, {});
-
-  auto config_compose = SimpleComposeConfig();
-  config_compose.set_can_skip_text_safety(true);
-
-  Initialize({.config = config_compose});
-
-  FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
-      ModelBasedCapabilityKey::kCompose);
-  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
-      ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
-
-  FakeAdaptationAsset compose_asset({
-      .config = config_compose,
-      .weight = std::nullopt,
-  });
-  test_controller_->MaybeUpdateModelAdaptation(compose_asset.feature(),
-                                               compose_asset.metadata());
-  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
-            availability_observer_compose.reason_);
-
-  auto session_compose = test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kCompose, base::DoNothing(),
-      logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  task_environment_.RunUntilIdle();
-
-  EXPECT_TRUE(GetModelAdaptationControllers().empty());
-
-  session_compose->ExecuteModel(PageUrlRequest("foo"),
-                                response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(), "Input: execute:foo\n");
-  EXPECT_TRUE(*response_.provided_by_on_device());
-
-  session_compose.reset();
-
-  // Fast forward by idle timeout. The base model remote will be reset.
-  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
-                                  base::Seconds(1));
-  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       ModelExecutionFeatureExecutionNotEnabled) {
+       SessionCreationFailsWhenExecutionNotEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {}, {features::kOptimizationGuideComposeOnDeviceEval});
 
-  Initialize();
+  Initialize(standard_assets_);
 
   base::HistogramTester histogram_tester;
   auto session = test_controller_->CreateSession(
@@ -671,63 +637,18 @@ TEST_F(OnDeviceModelServiceControllerTest,
       OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled, 1);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
-  Initialize();
-  auto session = CreateSession();
-  EXPECT_TRUE(session);
-  {
-    base::HistogramTester histogram_tester;
-    session->AddContext(UserInputRequest("foo"));
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Compose",
-        SessionImpl::AddContextResult::kUsingOnDevice, 1);
-  }
-  task_environment_.RunUntilIdle();
-
-  session->AddContext(UserInputRequest("bar"));
-  session->ExecuteModel(PageUrlRequest("baz"),
-                        response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  const std::vector<std::string> expected_responses = ConcatResponses({
-      "Context: ctx:bar off:0 max:10\n",
-      "Input: execute:barbaz\n",
-  });
-  EXPECT_EQ(*response_.value(), expected_responses.back());
-  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       ModelExecutionLoadsSingleContextChunk) {
-  Initialize();
-  auto session = CreateSession();
-  EXPECT_TRUE(session);
-
-  session->AddContext(UserInputRequest("context"));
-  task_environment_.RunUntilIdle();
-
-  session->ExecuteModel(PageUrlRequest("foo"),
-                        response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  std::vector<std::string> expected_responses = ConcatResponses({
-      "Context: ctx:contex off:0 max:10\n",
-      "Context: t off:10 max:4\n",
-      "Input: execute:contextfoo\n",
-  });
-  EXPECT_EQ(*response_.value(), expected_responses.back());
-  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
-}
-
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsLongContextInChunks) {
-  Initialize();
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
   session->AddContext(UserInputRequest("this is long context"));
-  task_environment_.RunUntilIdle();
-
+  task_environment_.RunUntilIdle();  // Wait for context to be processed.
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
@@ -745,23 +666,21 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionCancelsOptionalContext) {
-  Initialize();
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
   fake_settings_.set_execute_delay(base::Seconds(10));
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
   session->AddContext(UserInputRequest("this is long context"));
-  // ExecuteModel() directly after AddContext() should only load first chunk.
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
-
-  // Give time to make sure we don't process the optional context.
-  task_environment_.RunUntilIdle();
-  task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
-  task_environment_.RunUntilIdle();
-
-  EXPECT_TRUE(response_.value());
+  ASSERT_TRUE(response_.GetFinalStatus());
   std::vector<std::string> expected_responses = ConcatResponses({
+      // min_context tokens are processed, but remaining context is dropped.
       "Context: ctx:this i off:0 max:10\n",
       "Input: execute:this is long contextfoo\n",
   });
@@ -769,8 +688,16 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionModelToBeInstalled) {
-  Initialize({.model_component_ready = false});
+// Without a base model available, sessions should fail to be created.
+TEST_F(OnDeviceModelServiceControllerTest, BaseModelToBeInstalled) {
+  on_device_component_state_manager_.get()->OnStartup();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  Initialize(InitializeParams{
+      .base_model = nullptr,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&standard_assets_.compose},
+  });
 
   base::HistogramTester histogram_tester;
   auto session = CreateSession();
@@ -781,17 +708,24 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionModelToBeInstalled) {
       OnDeviceModelEligibilityReason::kModelToBeInstalled, 1);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelAvailableAfterInit) {
-  Initialize({.model_component_ready = false});
+TEST_F(OnDeviceModelServiceControllerTest, BaseModelAvailableAfterInit) {
+  on_device_component_state_manager_.get()->OnStartup();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  Initialize(InitializeParams{
+      .base_model = nullptr,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&standard_assets_.compose},
+  });
 
   // Model not yet available.
   base::HistogramTester histogram_tester;
   auto session = CreateSession();
   EXPECT_FALSE(session);
 
-  on_device_component_state_manager_.get()->OnStartup();
-  task_environment_.RunUntilIdle();
-  on_device_component_state_manager_.SetReady(base_model_asset_.path());
+  on_device_component_state_manager_.SetReady(
+      standard_assets_.base_model.path(),
+      standard_assets_.base_model.version());
   task_environment_.RunUntilIdle();
 
   // Model now available.
@@ -799,51 +733,55 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAvailableAfterInit) {
   EXPECT_TRUE(session);
 }
 
-// Validates behavior of a session when execution config is updated after a
-// session is created.
+// Updating the model should not break existing sessions until a new session
+// is started.
 TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
-  Initialize();
+  Initialize(standard_assets_);
 
   auto session = CreateSession();
 
   // Simulate a model update.
-  base_model_asset_.Write({});
-  on_device_component_state_manager_.SetReady(base_model_asset_.path());
+  FakeBaseModelAsset next_model({
+      .weight = 2,
+  });
+  on_device_component_state_manager_.SetReady(next_model.path(),
+                                              next_model.version());
   task_environment_.RunUntilIdle();
 
   // Verify the existing session still works.
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-
-  ASSERT_TRUE(response_.value());
-  const std::string expected_response = "Input: execute:foo\n";
-  EXPECT_EQ(*response_.value(), expected_response);
-  EXPECT_TRUE(*response_.provided_by_on_device());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  // Note that the session does not execute with the new model.
+  EXPECT_EQ(*response_.value(), "Input: execute:foo\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
-  Initialize();
+  Initialize(standard_assets_);
 
-  auto session = CreateSession();
-  session->AddContext(UserInputRequest("context"));
+  auto session1 = CreateSession();
+  session1->AddContext(UserInputRequest("context"));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1ull, fake_launcher_.on_device_model_receiver_count());
 
   // Simulates a model update. This should close the model remote.
-  // Write a new empty execution config to check that the config is reloaded.
-  base_model_asset_.Write({});
-  on_device_component_state_manager_.SetReady(base_model_asset_.path());
+  FakeBaseModelAsset next_model({
+      .weight = 2,
+  });
+  on_device_component_state_manager_.SetReady(next_model.path(),
+                                              next_model.version());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0ull, fake_launcher_.on_device_model_receiver_count());
 
-  // Create a new session and verify it fails due to the configuration.
+  // Create a new session and verify it uses the new model.
   base::HistogramTester histogram_tester;
-  session = CreateSession();
-  ASSERT_FALSE(session);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
-      OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature, 1);
+  auto session2 = CreateSession();
+  ASSERT_TRUE(session2);
+  ResponseHolder response2;
+  session2->ExecuteModel(PageUrlRequest("foo"),
+                         response2.GetStreamingCallback());
+  ASSERT_TRUE(response2.GetFinalStatus());
+  EXPECT_EQ(*response2.value(), "Base model: 2\nInput: execute:foo\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
@@ -851,7 +789,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
   feature_list.InitAndEnableFeature(
       features::internal::kOnDeviceModelTestFeature);
 
-  Initialize();
+  Initialize(standard_assets_);
   base::HistogramTester histogram_tester;
 
   EXPECT_FALSE(test_controller_->CreateSession(
@@ -867,7 +805,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
 TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
   FakeSafetyModelAsset fake_safety_asset(ComposeSafetyConfig());
 
-  Initialize();
+  Initialize(standard_assets_);
 
   // Safety model info is valid but no metadata.
   {
@@ -949,20 +887,20 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {
-          {features::internal::kModelAdaptationCompose, {}},
-          {features::internal::kOnDeviceModelTestFeature,
-           {{"enable_adaptation", "false"}}},
+          {features::internal::kOnDeviceModelTestFeature, {}},
           {features::kTextSafetyClassifier,
            {{"on_device_retract_unsafe_content", "true"}}},
       },
       {});
 
-  auto config_compose = SimpleComposeConfig();
-  config_compose.set_can_skip_text_safety(false);
-  auto config_test = SimpleComposeConfig();
-  config_test.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
-  config_test.set_can_skip_text_safety(true);
-  Initialize({.config = config_compose, .config2 = config_test});
+  FakeAdaptationAsset compose_asset({.config = SimpleComposeConfig()});
+  FakeAdaptationAsset test_asset({.config = UnsafeTestConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = nullptr,
+      .language = nullptr,
+      .adaptations = {&compose_asset, &test_asset},
+  });
 
   // Compose capability can't start because it's missing safety model.
   EXPECT_FALSE(test_controller_->CreateSession(
@@ -1010,9 +948,12 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = nullptr,
+      .language = nullptr,
+      .adaptations = {&standard_assets_.compose},
+  });
 
   // No safety model received yet.
   {
@@ -1053,8 +994,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   {
     base::HistogramTester histogram_tester;
 
-    FakeSafetyModelAsset safety_asset(ComposeSafetyConfig());
-    test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+    test_controller_->MaybeUpdateSafetyModel(
+        standard_assets_.safety.model_info());
     EXPECT_TRUE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
@@ -1140,7 +1081,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
       return safety_config;
     }());
     test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-    test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
+    test_controller_->SetLanguageDetectionModel(
+        standard_assets_.language.model_info());
 
     EXPECT_TRUE(CreateSession());
 
@@ -1171,14 +1113,12 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SucceedsWithPassingSafetyChecks) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
+
+  Initialize(standard_assets_);
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
@@ -1227,14 +1167,12 @@ TEST_F(OnDeviceModelServiceControllerTest, SucceedsWithPassingSafetyChecks) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        FailsWithFailingRequestSafetyChecks) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
+
+  Initialize(standard_assets_);
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
@@ -1286,14 +1224,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        FallbackWithInvalidRequestSafetyChecks) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
+
+  Initialize(standard_assets_);
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
@@ -1342,14 +1278,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        FailsWithFailingRawOutputSafetyChecks) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
+
+  Initialize(standard_assets_);
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
@@ -1400,14 +1334,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, FallbackWithInvalidRawOutputChecks) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
+
+  Initialize(standard_assets_);
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
@@ -1457,14 +1389,12 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackWithInvalidRawOutputChecks) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        SucceedsWithPassingResponseSafetyCheck) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
+
+  Initialize(standard_assets_);
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
@@ -1509,14 +1439,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        FailsWithFailingResponseSafetyCheck) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
+
+  Initialize(standard_assets_);
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
@@ -1564,14 +1492,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        FallbackWithInvalidResponseSafetyCheck) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
+
+  Initialize(standard_assets_);
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
@@ -1620,15 +1546,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
-  // Tests the behavior of "on_device_retract_unsafe_content = false" flag.
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "false"}});
+
+  Initialize(standard_assets_);
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
@@ -1675,7 +1598,6 @@ TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
-  Initialize();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
@@ -1684,6 +1606,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
        {"on_device_model_context_token_chunk_size", "4"},
        {"on_device_model_topk", "1"},
        {"on_device_model_temperature", "0"}});
+
+  Initialize(standard_assets_);
 
   auto session = CreateSession();
   EXPECT_TRUE(session);
@@ -1702,15 +1626,16 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
       "Input: execute:contextfoo\n",
   });
   EXPECT_EQ(*response_.value(), expected_responses.back());
-  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
-  Initialize();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
       {{"on_device_fallback_to_server_on_disconnect", "false"}});
+
+  Initialize(standard_assets_);
+
   auto session = CreateSession();
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
@@ -1731,7 +1656,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
-  Initialize();
+  Initialize(standard_assets_);
   auto session = CreateSession();
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
@@ -1754,7 +1679,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
-  Initialize();
+  Initialize(standard_assets_);
   auto session = test_controller_->CreateSession(
       kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
@@ -1774,7 +1699,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
-  Initialize();
+  Initialize(standard_assets_);
   // Start a session.
   fake_settings_.service_disconnect_reason =
       on_device_model::ServiceDisconnectReason::kGpuBlocked;
@@ -1798,7 +1723,7 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
-  Initialize();
+  Initialize(standard_assets_);
   fake_settings_.service_disconnect_reason =
       on_device_model::ServiceDisconnectReason::kGpuBlocked;
   auto session = CreateSession();
@@ -1814,7 +1739,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
-  Initialize();
+  Initialize(standard_assets_);
   // Start a session.
   fake_settings_.set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
@@ -1827,7 +1752,7 @@ TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AllowsConnectingAfterBackoffPeriod) {
-  Initialize();
+  Initialize(standard_assets_);
   fake_settings_.set_drop_connection_request(true);
 
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
@@ -1861,7 +1786,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AllowsConnectingAfterBackoffPeriod) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ClearsCrashDataOnSuccessAfterBackoff) {
-  Initialize();
+  Initialize(standard_assets_);
   fake_settings_.set_drop_connection_request(true);
 
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
@@ -1892,7 +1817,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
-  Initialize();
+  Initialize(standard_assets_);
   // Start a session.
   for (int i = 0; i < 10; ++i) {
     fake_settings_.set_drop_connection_request(i % 2 == 1);
@@ -1903,7 +1828,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        MultipleDisconnectsThenVersionChangeRetries) {
-  Initialize();
+  Initialize(standard_assets_);
   // Create enough sessions that fail to trigger no longer creating a session.
   fake_settings_.set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
@@ -1912,6 +1837,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
     task_environment_.RunUntilIdle();
   }
   EXPECT_FALSE(CreateSession());
+  EXPECT_EQ(test_controller_->CanCreateSession(kFeature),
+            OnDeviceModelEligibilityReason::kTooManyRecentCrashes);
 
   // Change the pref to a different value and recreate the service.
   access_controller_ = nullptr;
@@ -1920,15 +1847,22 @@ TEST_F(OnDeviceModelServiceControllerTest,
       model_execution::prefs::localstate::kOnDeviceModelChromeVersion,
       "BOGUS VERSION");
   RecreateServiceController();
+  test_controller_->MaybeUpdateModelAdaptation(
+      standard_assets_.compose.feature(), standard_assets_.compose.metadata());
+  test_controller_->MaybeUpdateSafetyModel(
+      standard_assets_.safety.model_info());
   // Wait until configuration is read.
   task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_controller_->CanCreateSession(kFeature),
+            OnDeviceModelEligibilityReason::kSuccess);
 
   // A new session should be started because the version changed.
   EXPECT_TRUE(CreateSession());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
-  Initialize();
+  Initialize(standard_assets_);
   auto session = CreateSession();
   EXPECT_TRUE(session);
   session->AddContext(UserInputRequest("foo"));
@@ -1939,20 +1873,18 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
   task_environment_.RunUntilIdle();
 
   // Send some text, ensuring the context is received.
+  base::HistogramTester histogram_tester;
   session->ExecuteModel(PageUrlRequest("baz"),
                         response_.GetStreamingCallback());
-  base::HistogramTester histogram_tester;
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(response_.GetFinalStatus());
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kUsedOnDevice, 1);
-  ASSERT_TRUE(response_.value());
   const std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:foo off:0 max:10\n",
       "Input: execute:foobaz\n",
   });
   EXPECT_EQ(*response_.value(), expected_responses[1]);
-  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
   EXPECT_EQ(response_.log_entry()
                 ->log_ai_data_request()
                 ->compose()
@@ -1969,7 +1901,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
-  Initialize();
+  Initialize(standard_assets_);
   auto session = CreateSession();
   EXPECT_TRUE(session);
   session->AddContext(UserInputRequest("foo"));
@@ -1986,7 +1918,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
-  Initialize();
+  Initialize(standard_assets_);
   auto session1 = CreateSession();
   EXPECT_TRUE(session1);
   session1->AddContext(UserInputRequest("foo"));
@@ -1999,14 +1931,12 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
   task_environment_.RunUntilIdle();
 
   session2->ExecuteModel(PageUrlRequest("2"), response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  ASSERT_TRUE(response_.value());
+  ASSERT_TRUE(response_.GetFinalStatus());
   const std::vector<std::string> expected_responses1 = {
       "Context: ctx:bar off:0 max:10\n",
       "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n",
   };
   EXPECT_EQ(*response_.value(), expected_responses1[1]);
-  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses1));
   EXPECT_EQ(response_.log_entry()
                 ->log_ai_data_request()
                 ->compose()
@@ -2023,14 +1953,12 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
 
   ResponseHolder response2;
   session1->ExecuteModel(PageUrlRequest("1"), response2.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  ASSERT_TRUE(response2.value());
+  ASSERT_TRUE(response2.GetFinalStatus());
   const std::vector<std::string> expected_responses2 = {
       "Context: ctx:foo off:0 max:10\n",
       "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n",
   };
   EXPECT_EQ(*response2.value(), expected_responses2[1]);
-  EXPECT_THAT(response2.streamed(), ElementsAreArray(expected_responses2));
   EXPECT_EQ(response2.log_entry()
                 ->log_ai_data_request()
                 ->compose()
@@ -2047,7 +1975,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
-  Initialize();
+  Initialize(standard_assets_);
   fake_settings_.service_disconnect_reason =
       on_device_model::ServiceDisconnectReason::kGpuBlocked;
   auto session = test_controller_->CreateSession(
@@ -2076,10 +2004,15 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+  });
   proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_can_skip_text_safety(true);
   config.set_feature(ToModelExecutionFeatureProto(kFeature));
-  Initialize({.config = config});
+  FakeAdaptationAsset bad_compose_asset({.config = config});
+  test_controller_->MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
+                                               bad_compose_asset.metadata());
 
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
@@ -2108,10 +2041,15 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+  });
   proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_can_skip_text_safety(true);
   config.set_feature(ToModelExecutionFeatureProto(kFeature));
-  Initialize({.config = config});
+  FakeAdaptationAsset bad_compose_asset({.config = config});
+  test_controller_->MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
+                                               bad_compose_asset.metadata());
 
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
@@ -2128,44 +2066,9 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   EXPECT_FALSE(log_ai_data_request_passed_to_remote_);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
-  Initialize();
-  fake_settings_.set_execute_delay(
-      features::GetOnDeviceModelTimeForInitialResponse() * 2);
-
-  auto session = test_controller_->CreateSession(
-      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  ASSERT_TRUE(session);
-  session->ExecuteModel(PageUrlRequest("2z"), response_.GetStreamingCallback());
-  base::HistogramTester histogram_tester;
-  task_environment_.FastForwardBy(
-      features::GetOnDeviceModelTimeForInitialResponse() +
-      base::Milliseconds(1));
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
-      ExecuteModelResult::kTimedOut, 1);
-  EXPECT_TRUE(response_.streamed().empty());
-  EXPECT_FALSE(response_.value());
-  EXPECT_TRUE(remote_execute_called_);
-  ASSERT_TRUE(last_remote_message_);
-  auto& compose_request =
-      static_cast<const proto::ComposeRequest&>(*last_remote_message_);
-  ASSERT_TRUE(compose_request.has_page_metadata());
-  EXPECT_EQ("2z", compose_request.page_metadata().page_url());
-  ASSERT_TRUE(log_ai_data_request_passed_to_remote_);
-  EXPECT_EQ(log_ai_data_request_passed_to_remote_->compose()
-                .request()
-                .page_metadata()
-                .page_url(),
-            "2z");
-  EXPECT_FALSE(log_ai_data_request_passed_to_remote_->compose().has_response());
-  EXPECT_FALSE(response_.provided_by_on_device().has_value());
-}
-
 TEST_F(OnDeviceModelServiceControllerTest,
        FallbackToServerOnDisconnectWhileWaitingForExecute) {
-  Initialize();
+  Initialize(standard_assets_);
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
@@ -2191,7 +2094,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        DestroySessionWhileWaitingForResponse) {
-  Initialize();
+  Initialize(standard_assets_);
   auto session = CreateSession();
   ASSERT_TRUE(session);
   session->ExecuteModel(PageUrlRequest("foo"),
@@ -2215,7 +2118,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
       {{"on_device_model_service_idle_timeout", "10s"}});
-  Initialize();
+  Initialize(standard_assets_);
   auto session = CreateSession();
   ASSERT_TRUE(session);
   session->ExecuteModel(PageUrlRequest("foo"),
@@ -2237,7 +2140,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ShutsDownServiceAfterPerformanceCheck) {
-  Initialize();
+  Initialize(standard_assets_);
   base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
   OnDeviceModelServiceController::GetEstimatedPerformanceClass(
       test_controller_, result_future.GetCallback());
@@ -2248,7 +2151,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        PerformanceCheckKeepsControllerAlive) {
-  Initialize();
+  Initialize(standard_assets_);
   auto weak_controller = test_controller_->GetWeakPtr();
   access_controller_ = nullptr;  // Avoid dangling pointer
   base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
@@ -2259,95 +2162,18 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_FALSE(weak_controller);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
-  Initialize();
-  fake_settings_.set_execute_delay(
-      features::GetOnDeviceModelTimeForInitialResponse() * 2);
-
-  // Create a bunch of sessions that all timeout.
-  for (int i = 0; i < features::GetOnDeviceModelTimeoutCountBeforeDisable();
-       ++i) {
-    auto session = test_controller_->CreateSession(
-        kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt);
-    ASSERT_TRUE(session);
-    session->ExecuteModel(PageUrlRequest("2z"),
-                          response_.GetStreamingCallback());
-    task_environment_.FastForwardBy(
-        features::GetOnDeviceModelTimeForInitialResponse() +
-        base::Milliseconds(1));
-    EXPECT_TRUE(response_.streamed().empty());
-    EXPECT_FALSE(response_.value());
-    EXPECT_TRUE(remote_execute_called_);
-    remote_execute_called_ = false;
-  }
-
-  // As we reached GetOnDeviceModelTimeoutCountBeforeDisable() timeouts, the
-  // next session should use the server.
-  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       AllowsConnectingAfterTimeoutAfterBackoffPeriod) {
-  Initialize();
-  fake_settings_.set_execute_delay(
-      features::GetOnDeviceModelTimeForInitialResponse() * 2);
-
-  auto create_session_and_timeout = [&] {
-    auto session = test_controller_->CreateSession(
-        kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt);
-    ASSERT_TRUE(session);
-    session->ExecuteModel(PageUrlRequest("2z"),
-                          response_.GetStreamingCallback());
-    task_environment_.FastForwardBy(
-        features::GetOnDeviceModelTimeForInitialResponse() +
-        base::Milliseconds(1));
-    EXPECT_TRUE(response_.streamed().empty());
-    EXPECT_FALSE(response_.value());
-    EXPECT_TRUE(remote_execute_called_);
-    remote_execute_called_ = false;
-  };
-
-  // Create a bunch of sessions that all timeout.
-  for (int i = 0; i < features::GetOnDeviceModelTimeoutCountBeforeDisable();
-       ++i) {
-    create_session_and_timeout();
-  }
-
-  // As we reached GetOnDeviceModelTimeoutCountBeforeDisable() timeouts, the
-  // next session will be blocked.
-  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
-
-  // Fast forward by backoff time and starting a session should succeed.
-  task_environment_.FastForwardBy(
-      features::GetOnDeviceModelTimeoutBackoffBaseTime() +
-      base::Milliseconds(1));
-  create_session_and_timeout();
-  task_environment_.RunUntilIdle();
-
-  // Starting another session after another timeout should fail.
-  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
-
-  // Fast forward base time should not work.
-  task_environment_.FastForwardBy(
-      features::GetOnDeviceModelTimeoutBackoffBaseTime() +
-      base::Milliseconds(1));
-  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
-
-  // Fast forward again should allow retrying (now 2 * base time).
-  task_environment_.FastForwardBy(
-      features::GetOnDeviceModelTimeoutBackoffBaseTime() +
-      base::Milliseconds(1));
-  EXPECT_TRUE(CreateSession());
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
   *config.mutable_output_config()->mutable_redact_rules() =
       SimpleRedactRule("bar");
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
+  test_controller_->MaybeUpdateModelAdaptation(compose_asset.feature(),
+                                               compose_asset.metadata());
 
   // `foo` doesn't match the redaction, so should be returned.
   auto session1 = CreateSession();
@@ -2384,11 +2210,18 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
+  Initialize(standard_assets_);
   auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
   *config.mutable_output_config()->mutable_redact_rules() =
       SimpleRedactRule("bar", proto::RedactBehavior::REJECT);
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
 
   auto session1 = CreateSession();
   ASSERT_TRUE(session1);
@@ -2442,7 +2275,11 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
   auto& output_config = *config.mutable_output_config();
   auto& redact_rules = *output_config.mutable_redact_rules();
   redact_rules.mutable_fields_to_check()->Add(PreviousResponseField());
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
 
   // Force 'bar' to be returned from model.
   fake_settings_.set_execute_result({"Input: bar\n"});
@@ -2464,7 +2301,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   config.set_can_skip_text_safety(true);
   *config.mutable_output_config()->mutable_redact_rules() =
       SimpleRedactRule("bar", proto::REDACT_IF_ONLY_IN_OUTPUT, "[redacted]");
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
 
   // Output contains redacted text (and  input doesn't), so redact.
   fake_settings_.set_execute_result({"Input: abarx\n"});
@@ -2485,8 +2326,11 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
       {{"on_device_model_retract_repeats", "false"}});
 
   base::HistogramTester histogram_tester;
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  Initialize();
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
 
   fake_settings_.set_execute_result({
       "some text",
@@ -2546,8 +2390,11 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
       {{"on_device_model_retract_repeats", "true"}});
 
   base::HistogramTester histogram_tester;
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  Initialize();
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
 
   fake_settings_.set_execute_result({
       "some text",
@@ -2606,8 +2453,11 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
       {{"on_device_model_retract_repeats", "false"}});
 
   base::HistogramTester histogram_tester;
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  Initialize();
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
 
   fake_settings_.set_execute_result({
       "some text",
@@ -2672,8 +2522,11 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
       {{"on_device_model_retract_repeats", "false"}});
 
   base::HistogramTester histogram_tester;
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  Initialize();
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
 
   fake_settings_.set_execute_result({
       "some text",
@@ -2733,9 +2586,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
 
   base::HistogramTester histogram_tester;
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(true);
-  Initialize({.config = config});
+  Initialize(standard_assets_);
 
   fake_settings_.set_execute_result({
       "some text",
@@ -2770,7 +2621,13 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
   config.set_can_skip_text_safety(true);
   *config.mutable_text_safety_fallback_config()
        ->mutable_input_url_proto_field() = UserInputField();
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
 
   fake_settings_.set_execute_result({
       "some text",
@@ -2870,7 +2727,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
   // Create an empty ts fallback config which is valid and will call the
   // fallback.
   config.mutable_text_safety_fallback_config();
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
 
   fake_settings_.set_execute_result({
       "some text",
@@ -2971,7 +2834,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
   // Create an empty ts fallback config which is valid and will call the
   // fallback.
   config.mutable_text_safety_fallback_config();
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
 
   fake_settings_.set_execute_result({
       "some text",
@@ -3030,7 +2899,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
   // Create an empty ts fallback config which is valid and will call the
   // fallback.
   config.mutable_text_safety_fallback_config();
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
 
   fake_settings_.set_execute_result({
       "some text",
@@ -3115,10 +2990,15 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
   auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(true);
   config.mutable_sampling_params()->set_top_k(4);
   config.mutable_sampling_params()->set_temperature(1.5);
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
 
   auto session = test_controller_->CreateSession(kFeature, base::DoNothing(),
                                                  logger_.GetWeakPtr(), nullptr,
@@ -3137,10 +3017,15 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
 TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   // Session sampling params should have precedence over feature ones.
   auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(true);
   config.mutable_sampling_params()->set_top_k(4);
   config.mutable_sampling_params()->set_temperature(1.5);
-  Initialize({.config = config});
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -3170,16 +3055,16 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
            {{"on_device_text_safety_token_interval", "0"}}},
       },
       {});
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     return safety_config;
   }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &safety_asset,
+      .adaptations = {&standard_assets_.compose},
+  });
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
@@ -3206,13 +3091,16 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval1) {
            {{"on_device_text_safety_token_interval", "1"}}},
       },
       {});
-  Initialize();
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     return safety_config;
   }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &safety_asset,
+      .adaptations = {&standard_assets_.compose},
+  });
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
@@ -3243,16 +3131,16 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
            {{"on_device_text_safety_token_interval", "3"}}},
       },
       {});
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     return safety_config;
   }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &safety_asset,
+      .adaptations = {&standard_assets_.compose},
+  });
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
@@ -3274,20 +3162,13 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
 TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::internal::kModelAdaptationCompose, {}},
-       {features::internal::kOnDeviceModelTestFeature,
-        {{"enable_adaptation", "false"}}}},
-      {});
+      {{features::internal::kOnDeviceModelTestFeature, {}}}, {});
 
-  auto config_compose = SimpleComposeConfig();
-  config_compose.set_can_skip_text_safety(true);
-  auto config_test = SimpleComposeConfig();
-  config_test.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
-  config_test.set_can_skip_text_safety(true);
-
-  Initialize({.config = config_compose,
-              .config2 = config_test,
-              .model_component_ready = false});
+  FakeAdaptationAsset test_asset_noweight({.config = UnsafeTestConfig()});
+  Initialize({
+      .base_model = nullptr,
+      .adaptations = {&test_asset_noweight},
+  });
 
   FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
       ModelBasedCapabilityKey::kCompose),
@@ -3299,13 +3180,15 @@ TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
 
   on_device_component_state_manager_.get()->OnStartup();
   task_environment_.RunUntilIdle();
-  on_device_component_state_manager_.SetReady(base_model_asset_.path());
+  on_device_component_state_manager_.SetReady(
+      standard_assets_.base_model.path(),
+      standard_assets_.base_model.version());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
 
   FakeAdaptationAsset adaptation_asset({
-      .config = config_compose,
+      .config = UnsafeComposeConfig(),
       .weight = 1015,
   });
   test_controller_->MaybeUpdateModelAdaptation(adaptation_asset.feature(),
@@ -3333,10 +3216,7 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
           base::NumberToString(GetParam())}}}},
       {});
 
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
+  Initialize(standard_assets_);
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
@@ -3399,7 +3279,8 @@ INSTANTIATE_TEST_SUITE_P(OnDeviceModelServiceControllerTsIntervalTests,
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationSucceeds) {
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = WillPassValidationConfig()});
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  Initialize({.base_model = &base_model});
   task_environment_.RunUntilIdle();
   // Service should be immediately shut down.
   EXPECT_FALSE(test_controller_->IsConnectedForTesting());
@@ -3417,10 +3298,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
         {{"on_device_model_validation_delay", "30s"},
          {"on_device_model_block_on_validation_failure", "true"}}}},
       {});
-  proto::OnDeviceModelValidationConfig validation_config;
 
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = validation_config});
+  FakeBaseModelAsset base_model(proto::OnDeviceModelValidationConfig{});
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(CreateSession());
@@ -3437,9 +3319,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationBlocksSession) {
         {{"on_device_model_validation_delay", "0"},
          {"on_device_model_block_on_validation_failure", "true"}}}},
       {});
+  FakeBaseModelAsset base_model(WillFailValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = WillFailValidationConfig()});
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     EXPECT_FALSE(CreateSession());
@@ -3453,10 +3337,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationBlocksSession) {
         OnDeviceModelEligibilityReason::kValidationFailed, 1);
   }
 
+  FakeBaseModelAsset next_model(WillPassValidationConfig());
   {
-    fake_settings_.set_execute_result({"goodbye"});
     base::HistogramTester histogram_tester;
-    RecreateServiceController();
+    on_device_component_state_manager_.SetReady(next_model.path(),
+                                                next_model.version());
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3475,9 +3360,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
         {{"on_device_model_validation_delay", "30s"},
          {"on_device_model_block_on_validation_failure", "true"}}}},
       {});
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = WillPassValidationConfig()});
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     EXPECT_FALSE(CreateSession());
@@ -3502,17 +3389,26 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(CreateSession());
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
+// TODO(crbug.com/380229867): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ModelValidationNewModelVersion \
+  DISABLED_ModelValidationNewModelVersion
+#else
+#define MAYBE_ModelValidationNewModelVersion ModelValidationNewModelVersion
+#endif
+TEST_F(OnDeviceModelServiceControllerTest,
+       MAYBE_ModelValidationNewModelVersion) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kOnDeviceModelValidation,
         {{"on_device_model_validation_delay", "0"},
          {"on_device_model_block_on_validation_failure", "true"}}}},
       {});
-
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = WillPassValidationConfig()});
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3522,15 +3418,15 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
 
   EXPECT_TRUE(CreateSession());
 
+  FakeBaseModelAsset next_model({
+      .weight = 2,
+      .config = ExecutionConfigWithValidation(WillFailValidationConfig()),
+      .version = "0.0.2",
+  });
   {
     base::HistogramTester histogram_tester;
-    fake_settings_.set_execute_result({"goodbye"});
-    RecreateServiceController();  // Simulate a restart.
-
-    on_device_component_state_manager_.get()->OnStartup();
-    task_environment_.RunUntilIdle();
-    on_device_component_state_manager_.SetReady(base_model_asset_.path(),
-                                                "0.0.2");
+    on_device_component_state_manager_.SetReady(next_model.path(),
+                                                next_model.version());
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3552,16 +3448,18 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   base::HistogramTester histogram_tester;
 
-  Initialize({.validation_config = WillPassValidationConfig()});
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
-  // Write an empty validation config and send a new model update.
-  auto default_config = SimpleComposeConfig();
-  default_config.set_can_skip_text_safety(true);
-  base_model_asset_.Write(default_config);
-
-  on_device_component_state_manager_.SetReady(base_model_asset_.path(),
-                                              "0.0.2");
+  // Send a new model update with no validation config.
+  FakeBaseModelAsset next_model({
+      .weight = 2,
+      .version = "0.0.2",
+  });
+  on_device_component_state_manager_.SetReady(next_model.path(),
+                                              next_model.version());
   task_environment_.RunUntilIdle();
 
   task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
@@ -3578,9 +3476,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDoesNotRepeat) {
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = WillPassValidationConfig()});
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3599,14 +3499,18 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDoesNotRepeat) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationRepeatsOnFailure) {
-  proto::OnDeviceModelValidationConfig validation_config;
-  auto* prompt = validation_config.add_validation_prompts();
-  prompt->set_prompt("hello");
-  prompt->set_expected_output("goodbye");
+  FakeBaseModelAsset base_model([]() {
+    proto::OnDeviceModelValidationConfig validation_config;
+    auto* prompt = validation_config.add_validation_prompts();
+    prompt->set_prompt("hello");
+    prompt->set_expected_output("goodbye");
+    return validation_config;
+  }());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
 
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = validation_config});
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3643,14 +3547,18 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationMaximumRetry) {
         {{"on_device_model_validation_delay", "0"},
          {"on_device_model_validation_attempt_count", "2"}}}},
       {});
-  proto::OnDeviceModelValidationConfig validation_config;
-  auto* prompt = validation_config.add_validation_prompts();
-  prompt->set_prompt("hello");
-  prompt->set_expected_output("goodbye");
+  FakeBaseModelAsset base_model([]() {
+    proto::OnDeviceModelValidationConfig validation_config;
+    auto* prompt = validation_config.add_validation_prompts();
+    prompt->set_prompt("hello");
+    prompt->set_expected_output("goodbye");
+    return validation_config;
+  }());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
 
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = validation_config});
+    Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3696,8 +3604,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kOnDeviceModelValidation);
 
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = WillPassValidationConfig()});
+  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
@@ -3711,8 +3622,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDelayed) {
         {{"on_device_model_validation_delay", "30s"}}}},
       {});
 
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = WillPassValidationConfig()});
+  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
@@ -3734,8 +3648,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDelayed) {
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationInterrupted) {
   fake_settings_.set_execute_delay(base::Seconds(30));
 
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = WillPassValidationConfig()});
+  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
@@ -3759,8 +3675,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationInterrupted) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFails) {
+  FakeBaseModelAsset base_model(WillFailValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = WillFailValidationConfig()});
+  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
@@ -3771,8 +3689,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFails) {
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFailsOnCrash) {
   fake_settings_.set_execute_delay(base::Seconds(10));
 
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = WillPassValidationConfig()});
+  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
   fake_launcher_.CrashService();
@@ -3788,8 +3709,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
        PerformanceCheckDoesNotInterruptModelValidation) {
   fake_settings_.set_execute_delay(base::Seconds(10));
 
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = WillPassValidationConfig()});
+  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
   base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
@@ -3817,8 +3741,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
   fake_settings_.set_estimated_performance_delay(base::Seconds(10));
   fake_settings_.set_execute_delay(base::Seconds(1));
 
+  FakeBaseModelAsset base_model(WillPassValidationConfig());
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = WillPassValidationConfig()});
+  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
   base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
@@ -3842,7 +3769,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest, LoggingModeDefault) {
   TestModelQualityLogsUploaderService test_uploader(&pref_service_);
-  Initialize();
+  Initialize(standard_assets_);
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(),
       test_uploader.GetWeakPtr(),
@@ -3861,7 +3788,7 @@ TEST_F(OnDeviceModelServiceControllerTest, LoggingModeDefault) {
 
 TEST_F(OnDeviceModelServiceControllerTest, LoggingModeAlwaysDisable) {
   TestModelQualityLogsUploaderService test_uploader(&pref_service_);
-  Initialize();
+  Initialize(standard_assets_);
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(),
       test_uploader.GetWeakPtr(),

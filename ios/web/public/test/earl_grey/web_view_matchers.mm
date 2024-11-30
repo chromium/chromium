@@ -43,7 +43,10 @@ id<GREYMatcher> WebViewInWebState(WebState* web_state) {
   };
 
   GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
-    [description appendText:@"web view in web state"];
+    [description
+        appendText:[NSString
+                       stringWithFormat:@"web view in web state (webView: %@)",
+                                        web_state->GetView().description]];
   };
 
   return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
@@ -58,7 +61,10 @@ id<GREYMatcher> WebViewScrollView(WebState* web_state) {
   };
 
   GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
-    [description appendText:@"web view scroll view"];
+    [description
+        appendText:[NSString
+                       stringWithFormat:@"web view scroll view (webView: %@)",
+                                        web_state->GetView().description]];
   };
 
   return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches

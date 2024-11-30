@@ -138,10 +138,19 @@ NavigationCapturingNavigationHandleUserData::
     NavigationCapturingNavigationHandleUserData(
         content::NavigationHandle& navigation_handle,
         std::optional<NavigationCapturingRedirectionInfo> redirection_info,
-        std::optional<webapps::AppId> launched_app)
+        std::optional<webapps::AppId> launched_app,
+        bool force_iph_off)
     : navigation_handle_(navigation_handle),
       redirection_info_(std::move(redirection_info)),
-      launched_app_(std::move(launched_app)) {}
+      launched_app_(std::move(launched_app)),
+      force_iph_off_(force_iph_off) {}
+
+void NavigationCapturingNavigationHandleUserData::SetLaunchedAppState(
+    std::optional<webapps::AppId> launched_app,
+    bool force_iph_off) {
+  launched_app_ = launched_app;
+  force_iph_off_ = force_iph_off;
+}
 
 void NavigationCapturingNavigationHandleUserData::
     MaybePerformAppHandlingTasksInWebContents() {
@@ -164,10 +173,12 @@ void NavigationCapturingNavigationHandleUserData::
                       apps::LaunchSource::kFromNavigationCapturing,
                       navigation_handle_->GetURL(), web_contents);
 
-  // TODO(crbug.com/371237535): Avoid reliance on FindBrowserWithTab and instead
-  // pass in the Browser instance earlier.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  MaybeShowNavigationCaptureIph(app_id, browser->profile(), browser);
+  if (!force_iph_off_) {
+    // TODO(crbug.com/371237535): Avoid reliance on FindBrowserWithTab and
+    // instead pass in the Browser instance earlier.
+    Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    MaybeShowNavigationCaptureIph(app_id, browser->profile(), browser);
+  }
 }
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(

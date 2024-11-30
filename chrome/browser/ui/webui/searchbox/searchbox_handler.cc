@@ -446,11 +446,6 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "searchboxMatchSearchboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
 
-  bool redesigned_modules_enabled =
-      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
-  source->AddString("searchboxWidthBehavior",
-                    redesigned_modules_enabled ? "wide" : "");
-  source->AddBoolean("realboxIsTall", redesigned_modules_enabled);
   DefineChromeRefreshRealboxIcons();
   source->AddString(
       "searchboxDefaultIcon",

@@ -12,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 
@@ -217,7 +216,6 @@ class ClientManager {
         private boolean mShouldSendBottomBarScrollState;
         private KeepAliveServiceConnection mKeepAliveConnection;
         private String mPredictedUrl;
-        private long mLastMayLaunchUrlTimestamp;
         private boolean mCanUseHiddenTab;
         private boolean mAllowParallelRequest;
         private boolean mAllowResourcePrefetch;
@@ -272,10 +270,8 @@ class ClientManager {
             mKeepAliveConnection = serviceConnection;
         }
 
-        public void setPredictionMetrics(
-                String predictedUrl, long lastMayLaunchUrlTimestamp, boolean lowConfidence) {
+        public void setPredictionMetrics(String predictedUrl, boolean lowConfidence) {
             mPredictedUrl = predictedUrl;
-            mLastMayLaunchUrlTimestamp = lastMayLaunchUrlTimestamp;
             highConfidencePrediction |= !TextUtils.isEmpty(predictedUrl);
             lowConfidencePrediction |= lowConfidence;
         }
@@ -286,17 +282,12 @@ class ClientManager {
          */
         public void resetPredictionMetrics() {
             mPredictedUrl = null;
-            mLastMayLaunchUrlTimestamp = 0;
             highConfidencePrediction = false;
             lowConfidencePrediction = false;
         }
 
         public String getPredictedUrl() {
             return mPredictedUrl;
-        }
-
-        public long getLastMayLaunchUrlTimestamp() {
-            return mLastMayLaunchUrlTimestamp;
         }
 
         /**
@@ -439,7 +430,7 @@ class ClientManager {
         if (params == null || params.uid != uid) return false;
         boolean firstLowConfidencePrediction =
                 TextUtils.isEmpty(url) && lowConfidence && !params.lowConfidencePrediction;
-        params.setPredictionMetrics(url, SystemClock.elapsedRealtime(), lowConfidence);
+        params.setPredictionMetrics(url, lowConfidence);
         if (firstLowConfidencePrediction) return true;
         RequestThrottler throttler = RequestThrottler.getForUid(uid);
         return throttler.updateStatsAndReturnWhetherAllowed();

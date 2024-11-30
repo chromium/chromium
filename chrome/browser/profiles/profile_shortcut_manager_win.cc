@@ -95,6 +95,9 @@ void OnProfileIconCreateSuccess(base::FilePath profile_path) {
   if (profile) {
     profile->GetPrefs()->SetInteger(prefs::kProfileIconVersion,
                                     kCurrentProfileIconVersion);
+    profile->GetPrefs()->SetBoolean(
+        prefs::kProfileIconWin11Format,
+        base::win::GetVersion() >= base::win::Version::WIN11);
   }
 }
 
@@ -414,7 +417,7 @@ struct CreateOrUpdateShortcutsParams {
         profile_path(profile_path),
         single_profile(single_profile),
         incognito(incognito) {}
-  ~CreateOrUpdateShortcutsParams() {}
+  ~CreateOrUpdateShortcutsParams() = default;
 
   ProfileShortcutManagerWin::CreateOrUpdateMode create_mode;
   ProfileShortcutManagerWin::NonProfileShortcutAction action;
@@ -1024,8 +1027,15 @@ void ProfileShortcutManagerWin::OnProfileHighResAvatarLoaded(
 }
 
 void ProfileShortcutManagerWin::OnProfileAdded(Profile* profile) {
-  if (profile->GetPrefs()->GetInteger(prefs::kProfileIconVersion) <
-      kCurrentProfileIconVersion) {
+  // Upgrade the profile icon if the current profile icon version has
+  // increased or if running on Win 11 and we don't know that the profile icon
+  // is the Win 11 format. This will result in a one time upgrade of profile
+  // icons on Win 11 since we were previously not tracking whether or not the
+  // profile icon was Win11 format.
+  if ((base::win::GetVersion() >= base::win::Version::WIN11 &&
+       !profile->GetPrefs()->GetBoolean(prefs::kProfileIconWin11Format)) ||
+      (profile->GetPrefs()->GetInteger(prefs::kProfileIconVersion) <
+       kCurrentProfileIconVersion)) {
     const base::FilePath profile_path = profile->GetPath();
     // Ensure the profile's icon file has been created.
     CreateOrUpdateProfileIcon(profile_path);

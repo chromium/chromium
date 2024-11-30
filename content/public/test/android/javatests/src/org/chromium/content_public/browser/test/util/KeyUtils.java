@@ -4,7 +4,6 @@
 
 package org.chromium.content_public.browser.test.util;
 
-import android.app.Activity;
 import android.app.Instrumentation;
 import android.os.SystemClock;
 import android.view.KeyCharacterMap;
@@ -79,14 +78,5 @@ public class KeyUtils {
                     }
                 });
         if (!ThreadUtils.runningOnUiThread()) i.waitForIdleSync();
-    }
-
-    private static void dispatchKeyEventToActivity(
-            final Instrumentation i, final Activity a, final KeyEvent event) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    a.dispatchKeyEvent(event);
-                });
-        i.waitForIdleSync();
     }
 }

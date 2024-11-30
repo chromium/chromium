@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy.StatusBarNotificationProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
@@ -67,13 +68,10 @@ import org.chromium.url.URI;
 import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Provides the ability for the NotificationPlatformBridgeAndroid to talk to the Android platform
@@ -1319,12 +1317,6 @@ public class NotificationPlatformBridge {
                 identifyingAttributes.origin, otherNotificationsBackups);
         sLastPreUnsubscribePreNativeTaskStartRealMillis = taskStartRealtimeMillis;
 
-        Predicate<NotificationWrapper> isTappedNotification =
-                nw -> {
-                    if (nw.getMetadata().id != PLATFORM_ID) return false;
-                    return nw.getMetadata().tag.equals(identifyingAttributes.notificationId);
-                };
-
         Context context = ContextUtils.getApplicationContext();
         var notificationManager = BaseNotificationManagerProxyFactory.create();
         NotificationSuspender suspender =
@@ -1338,12 +1330,18 @@ public class NotificationPlatformBridge {
 
                     // This may be null if the user quickly dismissed the notification after
                     // clicking "Unsubscribe" but before this handler could run.
-                    var tappedNotification =
-                            activeNotificationsForOrigin.stream()
-                                    .filter(isTappedNotification)
-                                    .map(nw -> nw.getNotification())
-                                    .findFirst()
-                                    .orElse(null);
+                    Notification tappedNotification = null;
+                    for (NotificationWrapper nw : activeNotificationsForOrigin) {
+                        if (nw.getMetadata().id == PLATFORM_ID
+                                && nw.getMetadata()
+                                        .tag
+                                        .equals(identifyingAttributes.notificationId)) {
+                            tappedNotification = nw.getNotification();
+                        } else {
+                            otherNotificationsBackups.put(
+                                    nw.getMetadata().tag, nw.getNotification());
+                        }
+                    }
 
                     // TODO(crbug.com/360700866): This might theoretically exceed the transaction
                     // buffer size. Re-evaluate the pros/cons here once we have telemetry about the
@@ -1356,15 +1354,7 @@ public class NotificationPlatformBridge {
                     displayProvisionallyUnsubscribedNotification(
                             identifyingAttributes, originalNotificationBackup);
 
-                    otherNotificationsBackups.putAll(
-                            activeNotificationsForOrigin.stream()
-                                    .filter(nw -> !isTappedNotification.test(nw))
-                                    .collect(
-                                            Collectors.toMap(
-                                                    nw -> nw.getMetadata().tag,
-                                                    nw -> nw.getNotification())));
-                    suspender.cancelNotificationsWithIds(
-                            new ArrayList<String>(otherNotificationsBackups.keySet()));
+                    suspender.cancelNotificationsWithIds(otherNotificationsBackups.keySet());
 
                     NotificationUmaTracker.getInstance()
                             .recordPreUnsubscribeRealDuration(
@@ -1392,24 +1382,19 @@ public class NotificationPlatformBridge {
                         NotificationUmaTracker.GlobalStatePreservedActionSuffix.UNDO,
                         otherNotificationsBackups != null);
 
-        Predicate<BaseNotificationManagerProxy.StatusBarNotificationProxy> isTappedNotification =
-                sbn -> {
-                    if (sbn.getId() != PLATFORM_ID) return false;
-                    return sbn.getTag().equals(identifyingAttributes.notificationId);
-                };
-
         Context context = ContextUtils.getApplicationContext();
         var notificationManager = BaseNotificationManagerProxyFactory.create();
         notificationManager.getActiveNotifications(
                 (activeNotifications) -> {
-                    var tappedStatusBarNotification =
-                            activeNotifications.stream()
-                                    .filter(isTappedNotification)
-                                    .findFirst()
-                                    .orElse(null);
-                    if (tappedStatusBarNotification == null) return;
-                    var tappedNotificationExtras =
-                            tappedStatusBarNotification.getNotification().extras;
+                    Bundle tappedNotificationExtras = null;
+                    for (StatusBarNotificationProxy proxy : activeNotifications) {
+                        if (proxy.getId() == PLATFORM_ID
+                                && proxy.getTag().equals(identifyingAttributes.notificationId)) {
+                            tappedNotificationExtras = proxy.getNotification().extras;
+                            break;
+                        }
+                    }
+                    if (tappedNotificationExtras == null) return;
 
                     // If the tapped notification does not have a backup key in the metadata, it is
                     // not a provisionally unsubscribed notification. Likely, the user clicked

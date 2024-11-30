@@ -43,7 +43,7 @@ MessagingBackendServiceFactory::~MessagingBackendServiceFactory() = default;
 std::unique_ptr<KeyedService>
 MessagingBackendServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   CHECK(!profile->IsOffTheRecord());
 
   if (!base::FeatureList::IsEnabled(

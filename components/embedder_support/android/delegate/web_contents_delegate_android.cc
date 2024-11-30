@@ -485,11 +485,14 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
 }
 
 SkBitmap WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync() {
+  TRACE_EVENT("content",
+              "WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync");
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null()) {
     return SkBitmap();
   }
+  base::TimeTicks start_time = base::TimeTicks::Now();
   ScopedJavaLocalRef<jobject> bitmap =
       Java_WebContentsDelegateAndroid_maybeCopyContentAreaAsBitmapSync(env,
                                                                        obj);
@@ -499,6 +502,8 @@ SkBitmap WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync() {
   gfx::JavaBitmap java_bitmap_lock(bitmap);
   SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
   skbitmap.setImmutable();
+  base::UmaHistogramTimes("Android.MaybeCopyContentAreaAsBitmapSync.Time",
+                          base::TimeTicks::Now() - start_time);
   return skbitmap;
 }
 

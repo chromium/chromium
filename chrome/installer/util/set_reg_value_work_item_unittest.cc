@@ -34,7 +34,7 @@ class SetRegValueWorkItemTest : public testing::Test {
   SetRegValueWorkItemTest& operator=(const SetRegValueWorkItemTest&) = delete;
 
  protected:
-  SetRegValueWorkItemTest() {}
+  SetRegValueWorkItemTest() = default;
 
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(

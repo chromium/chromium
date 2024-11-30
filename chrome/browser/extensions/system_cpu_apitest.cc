@@ -42,7 +42,7 @@ class MockCpuInfoProviderImpl : public CpuInfoProvider {
   ~MockCpuInfoProviderImpl() override = default;
 };
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class SystemCpuApiTest : public ExtensionApiTest,
                          public testing::WithParamInterface<ContextType> {

@@ -48,6 +48,12 @@ ArcKeyMintBridge* ArcKeyMintBridge::GetForBrowserContext(
   return ArcKeyMintBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcKeyMintBridge* ArcKeyMintBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcKeyMintBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcKeyMintBridge::ArcKeyMintBridge(content::BrowserContext* context,
                                    ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
@@ -90,6 +96,37 @@ void ArcKeyMintBridge::UpdatePlaceholderKeysAfterBootstrap(
   }
 }
 
+void ArcKeyMintBridge::SetSerialNumberInKeyMint(
+    const std::string& serial_number) {
+  if (serial_number.empty()) {
+    LOG(ERROR) << "Failed to set an empty serial number.";
+    return;
+  }
+  // Cannot set the serial number more than once for the same user.
+  if (arcvm_serial_number_.has_value()) {
+    return;
+  }
+  arcvm_serial_number_ = serial_number;
+}
+
+void ArcKeyMintBridge::SendSerialNumberToKeyMint() {
+  if (!arcvm_serial_number_.has_value()) {
+    LOG(ERROR) << "Failed to send serial number as it is empty.";
+    return;
+  }
+
+  cert_store_bridge_->SetSerialNumber(arcvm_serial_number_.value());
+}
+
+void ArcKeyMintBridge::SendSerialNumberToKeyMintForTesting() {
+  SendSerialNumberToKeyMint();
+}
+
+void ArcKeyMintBridge::SetCertStoreBridgeForTesting(
+    std::unique_ptr<keymint::CertStoreBridgeKeyMint> cert_store_bridge) {
+  cert_store_bridge_ = std::move(cert_store_bridge);
+}
+
 void ArcKeyMintBridge::GetServer(GetServerCallback callback) {
   if (keymint_server_proxy_.is_bound()) {
     std::move(callback).Run(keymint_server_proxy_.Unbind());
@@ -113,6 +150,7 @@ void ArcKeyMintBridge::OnBootstrapMojoConnection(
     BootstrapMojoConnectionCallback callback,
     bool result) {
   if (result) {
+    SendSerialNumberToKeyMint();
     DVLOG(1) << "Success bootstrapping Mojo in arc-keymintd.";
   } else {
     LOG(ERROR) << "Error bootstrapping Mojo in arc-keymintd.";

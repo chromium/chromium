@@ -29,6 +29,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -38,6 +39,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/document_suggestions_service.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -47,6 +49,7 @@
 #include "components/search/search.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -555,13 +558,23 @@ void DocumentProvider::OnURLLoadComplete(
   base::UmaHistogramSparse("Omnibox.DocumentSuggest.HttpResponseCode",
                            response_code);
 
+  // Also log the response code sliced by the enterprise account capability.
+  const auto& account_is_subject_to_enterprise_policies =
+      signin::TriboolToString(
+          client_->GetDocumentSuggestionsService()
+              ->account_is_subject_to_enterprise_policies());
+  base::UmaHistogramSparse(
+      base::StringPrintf("Omnibox.DocumentSuggest.HttpResponseCode."
+                         "IsSubjectToEnterprisePolicies.%s",
+                         account_is_subject_to_enterprise_policies),
+      response_code);
+
   // The following are codes that we believe indicate non-transient failures,
   // based on experience working with the owners of the API. Since they are
   // expected to be semi-persistent, it does not make sense to continue to issue
   // requests during the current session after receiving one.
-  if (response_code == 400 || response_code == 403 || response_code == 499 ||
-      (omnibox_feature_configs::DocumentProvider::Get().backoff_on_401 &&
-       response_code == 401)) {
+  if (response_code == 400 || response_code == 401 || response_code == 403 ||
+      response_code == 499) {
     backoff_for_session_ = true;
   }
 

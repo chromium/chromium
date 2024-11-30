@@ -49,7 +49,7 @@ void AcceleratedStaticBitmapImage::ReleaseTexture(void* ctx) {
   if (release_ctx->context_provider_wrapper) {
     if (release_ctx->texture_id) {
       auto* ri = release_ctx->context_provider_wrapper->ContextProvider()
-                     ->RasterInterface();
+                     .RasterInterface();
       ri->EndSharedImageAccessDirectCHROMIUM(release_ctx->texture_id);
       ri->DeleteGpuRasterTexture(release_ctx->texture_id);
     }
@@ -84,9 +84,9 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
 
 // static
 scoped_refptr<AcceleratedStaticBitmapImage>
-AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
-    const gpu::MailboxHolder& mailbox_holder,
-    gpu::SharedImageUsageSet usage,
+AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
+    const gpu::ExportedSharedImage& exported_shared_image,
+    const gpu::SyncToken& sync_token,
     const SkImageInfo& sk_image_info,
     bool is_origin_top_left,
     bool supports_display_compositing,
@@ -96,27 +96,13 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
   if (!shared_gpu_context) {
     return nullptr;
   }
-  auto* sii = shared_gpu_context->ContextProvider()->SharedImageInterface();
+  auto* sii = shared_gpu_context->ContextProvider().SharedImageInterface();
   if (!sii) {
     return nullptr;
   }
-  // TODO(crbug.com/1494911): Obtain metadata from the original
-  // ClientSharedImage instead once we add the code that allows
-  // ClientSharedImage data to be sent over Mojo.
-  gfx::ColorSpace color_space =
-      sk_image_info.colorSpace()
-          ? gfx::ColorSpace(*(sk_image_info.colorSpace()))
-          : gfx::ColorSpace::CreateSRGB();
+
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      sii->AddReferenceToSharedImage(
-          mailbox_holder.sync_token, mailbox_holder.mailbox,
-          viz::SkColorTypeToSinglePlaneSharedImageFormat(
-              sk_image_info.colorType()),
-          gfx::SkISizeToSize(sk_image_info.dimensions()), color_space,
-          (is_origin_top_left) ? kTopLeft_GrSurfaceOrigin
-                               : kBottomLeft_GrSurfaceOrigin,
-          sk_image_info.alphaType(), gpu::SharedImageUsageSet(usage),
-          mailbox_holder.texture_target);
+      sii->ImportSharedImage(exported_shared_image);
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.
@@ -133,10 +119,11 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
       },
       shared_gpu_context, shared_image);
 
+  auto texture_target = shared_image->GetTextureTarget();
+
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), release_token, 0u, sk_image_info,
-      mailbox_holder.texture_target, is_origin_top_left,
-      supports_display_compositing, is_overlay_candidate,
+      std::move(shared_image), sync_token, 0u, sk_image_info, texture_target,
+      is_origin_top_left, supports_display_compositing, is_overlay_candidate,
       ImageOrientationEnum::kDefault, shared_gpu_context,
       base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
@@ -308,7 +295,7 @@ bool AcceleratedStaticBitmapImage::IsValid() const {
 WebGraphicsContext3DProvider* AcceleratedStaticBitmapImage::ContextProvider()
     const {
   auto context = ContextProviderWrapper();
-  return context ? context->ContextProvider() : nullptr;
+  return context ? &(context->ContextProvider()) : nullptr;
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
@@ -333,11 +320,11 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     return;
 
   gpu::raster::RasterInterface* shared_ri =
-      context_provider_wrapper->ContextProvider()->RasterInterface();
+      context_provider_wrapper->ContextProvider().RasterInterface();
   shared_ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
 
   const auto& capabilities =
-      context_provider_wrapper->ContextProvider()->GetCapabilities();
+      context_provider_wrapper->ContextProvider().GetCapabilities();
 
   if (capabilities.gpu_rasterization) {
     DCHECK_EQ(shared_image_texture_id, 0u);
@@ -349,7 +336,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   }
 
   GrDirectContext* shared_gr_context =
-      context_provider_wrapper->ContextProvider()->GetGrContext();
+      context_provider_wrapper->ContextProvider().GetGrContext();
   DCHECK(shared_ri &&
          shared_gr_context);  // context isValid already checked in callers
 
@@ -370,7 +357,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   texture_info.fTarget = texture_target_;
   texture_info.fID = shared_context_texture_id;
   texture_info.fFormat =
-      context_provider_wrapper->ContextProvider()->GetGrGLTextureFormat(
+      context_provider_wrapper->ContextProvider().GetGrGLTextureFormat(
           viz::SkColorTypeToSinglePlaneSharedImageFormat(
               sk_image_info_.colorType()));
   auto backend_texture =
@@ -461,7 +448,7 @@ bool AcceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
 gpu::SharedImageUsageSet AcceleratedStaticBitmapImage::GetUsage() const {
   return ContextProviderWrapper()
       ->ContextProvider()
-      ->SharedImageInterface()
+      .SharedImageInterface()
       ->UsageForMailbox(shared_image_->mailbox());
 }
 

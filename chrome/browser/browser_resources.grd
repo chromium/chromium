@@ -248,8 +248,6 @@
         <include name="IDR_IME_WINDOW_CLOSE" file="resources\input_ime\ime_window_close.png" type="BINDATA" />
         <include name="IDR_IME_WINDOW_CLOSE_C" file="resources\input_ime\ime_window_close_click.png" type="BINDATA" />
         <include name="IDR_IME_WINDOW_CLOSE_H" file="resources\input_ime\ime_window_close_hover.png" type="BINDATA" />
-        <!-- Chrome Cart -->
-        <part file="cart/resources/cart_resources.grdp" />
         <!-- FedCM -->
         <part file="ui/views/webid/resources/webid_resources.grdp" />
       </if>

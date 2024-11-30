@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/history_embeddings/cpu_histogram_logger.h"
 #include "components/history_embeddings/passage_embeddings_service_controller.h"
 
 namespace base {
@@ -36,6 +37,7 @@ class ChromePassageEmbeddingsServiceController
 
   // PassageEmbeddingsServiceController implementation:
   void LaunchService() override;
+  void ResetRemotes() override;
 
   // Initializes `cpu_logger_`; can only be called when the service process is
   // launched and connected.
@@ -43,6 +45,10 @@ class ChromePassageEmbeddingsServiceController
 
   // Called after service is launched.
   void OnServiceLaunched(const base::Process& process);
+
+  // When the embeddings service is running, the logger will periodically sample
+  // and log the CPU time used by the service process.
+  CpuHistogramLogger cpu_logger_;
 
   // Used to generate weak pointers to self.
   base::WeakPtrFactory<ChromePassageEmbeddingsServiceController>

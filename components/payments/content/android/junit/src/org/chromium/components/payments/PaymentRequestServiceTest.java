@@ -22,6 +22,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
 import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -47,7 +48,8 @@ import java.util.Set;
 /** A test for PaymentRequestService. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES)
+@DisableFeatures({PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES,
+        PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS})
 public class PaymentRequestServiceTest implements PaymentRequestClient {
     private static final int NATIVE_WEB_CONTENTS_ANDROID = 1;
     private static final int NO_PAYMENT_ERROR = PaymentErrorReason.MIN_VALUE;
@@ -445,6 +447,17 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         service.updateWith(details);
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
         verifyContinuedShowWithUpdatedDetails(0);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS})
+    public void testOmitDeprecatedParametersNoError() {
+        PaymentRequestService service = defaultBuilder().build();
+        assertNoError();
+
+        show(service);
+        assertNoError();
     }
 
     @Test

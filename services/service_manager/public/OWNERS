@@ -1,0 +1,4 @@
+# Some utility classes and interfaces here in public/ (e.g. InterfaceProvider)
+# are still used in isolation around Chromium. These could be effectively
+# replaced by other concepts in //mojo and //content.
+file://mojo/OWNERS

@@ -63,6 +63,11 @@ constexpr int kMinPermissionRowHeight = 40;
 constexpr float kMaxPermissionRowCount = 10.5;
 constexpr int kContainerExtraRightMargin = 2;
 
+int GetSeparatorPadding() {
+  return ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW);
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kCookieButtonElementId);
@@ -135,23 +140,37 @@ PageInfoMainView::PageInfoMainView(
             this),
         PageInfoViewFactory::GetSiteSettingsIcon(),
         /*title_text=*/l10n_util::GetStringUTF16(link_text_id),
-        std::u16string(),
-        /*tooltip_text=*/l10n_util::GetStringUTF16(tooltip_text_id),
         std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
     site_settings_link_->SetID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
     site_settings_link_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(0, 0, 0, kContainerExtraRightMargin));
+    site_settings_link_->SetTooltipText(
+        l10n_util::GetStringUTF16(tooltip_text_id));
   }
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoHistoryDesktop)) {
     history_controller->InitRow(AddChildView(CreateContainerView()));
   }
 
+  extended_site_info_section_ = AddChildView(CreateContainerView());
+  extended_site_info_section_->AddChildView(
+      PageInfoViewFactory::CreateSeparator(GetSeparatorPadding()));
+  // Hide until at least one of the children buttons is visible.
+  extended_site_info_section_->SetVisible(false);
+
   if (allow_about_this_site && page_info::IsAboutThisSiteFeatureEnabled(
                                    g_browser_process->GetApplicationLocale())) {
-    about_this_site_section_ = AddChildView(CreateContainerView());
+    about_this_site_section_ =
+        extended_site_info_section_->AddChildView(CreateContainerView());
+  }
+
+  // TODO(crbug.com/381400291): Rename |allow_about_this_site| to
+  // |allow_extended_site_info| and check it for merchant trust too.
+  if (base::FeatureList::IsEnabled(page_info::kMerchantTrust)) {
+    merchant_trust_section_ =
+        extended_site_info_section_->AddChildView(CreateContainerView());
   }
 
   presenter_->InitializeUiState(this, std::move(initialized_callback));
@@ -165,49 +184,21 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
     return;
   }
 
-  ui::ImageModel icon;
-  std::u16string tooltip, title, label = std::u16string();
-
-  // Check if 3PCD blocking status is initialized.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtection3pcdUx) &&
-      cookie_info.blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd) {
-    icon = PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon();
-    title = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME);
-    tooltip = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_TOOLTIP);
-
-    if (!cookie_info.protections_on) {
-      label = l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED);
-    } else if (cookie_info.blocking_status == CookieBlocking3pcdStatus::kAll) {
-      label = l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED);
-    } else if (cookie_info.blocking_status ==
-               CookieBlocking3pcdStatus::kLimited) {
-      label = l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED);
-    }
-  } else {
-    icon = PageInfoViewFactory::GetCookiesAndSiteDataIcon();
-    title = l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER);
-    tooltip = l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
-  }
-
-  // Create a cookie button that opens a cookies subpage (or Tracking Protection
-  // subpage in the case of 3PCD).
+  // Create a cookie button that opens a cookies subpage.
   cookie_button_ =
       site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                               base::Unretained(navigation_handler_)),
-          icon, title,
-          /*secondary_text=*/std::u16string(), tooltip, label,
+          PageInfoViewFactory::GetCookiesAndSiteDataIcon(),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
+          /*subtitle_text=*/std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
   cookie_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
   cookie_button_->SetProperty(views::kElementIdentifierKey,
                               kCookieButtonElementId);
+  cookie_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP));
   cookie_button_->title()->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   cookie_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
   if (cookie_button_->subtitle()) {
@@ -249,10 +240,9 @@ void PageInfoMainView::SetPermissionInfo(
     UpdateResetButton(permission_info_list);
     return;
   }
-  const int separator_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW);
+  const int separator_padding = GetSeparatorPadding();
   permissions_view_->AddChildView(
-      PageInfoViewFactory::CreateSeparator(separator_padding));
+      PageInfoViewFactory::CreateSeparator(GetSeparatorPadding()));
 
   auto* scroll_view =
       permissions_view_->AddChildView(std::make_unique<views::ScrollView>());
@@ -386,28 +376,35 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
         std::make_unique<RichHoverButton>(
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
                                 base::Unretained(navigation_handler_)),
-            PageInfoViewFactory::GetConnectionSecureIcon(), std::u16string(),
-            std::u16string(),
-
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_BUTTON),
-            std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon())
+            PageInfoViewFactory::GetConnectionSecureIcon(),
+            security_description->summary, std::u16string(),
+            PageInfoViewFactory::GetOpenSubpageIcon())
             .release());
     connection_button_->SetID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION);
-    connection_button_->SetTitleText(security_description->summary);
+    connection_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_BUTTON));
     connection_button_->title()->SetTextStyle(
         views::style::STYLE_BODY_3_MEDIUM);
 
-    // Show "About this site" section only if connection is secure, because
-    // security information has higher priority.
+    // Show "About this site" and "Merchant trust" sections only if connection
+    // is secure, because security information has higher priority.
     if (about_this_site_section_) {
       auto info = ui_delegate_->GetAboutThisSiteInfo();
       if (info.has_value()) {
         about_this_site_section_->RemoveAllChildViews();
         about_this_site_section_->AddChildView(
-            CreateAboutThisSiteSection(info.value()));
+            CreateAboutThisSiteButton(info.value()));
+        extended_site_info_section_->SetVisible(true);
       }
+    }
+
+    if (merchant_trust_section_) {
+      // TOOD(crbug.com/378854649): Fetch data from the service.
+      merchant_trust_section_->RemoveAllChildViews();
+      merchant_trust_section_->AddChildView(CreateMerchantTrustButton());
+      extended_site_info_section_->SetVisible(true);
     }
   } else {
     security_content_view_ = security_container_view_->AddChildView(
@@ -501,7 +498,7 @@ void PageInfoMainView::SetAdPersonalizationInfo(
     return;
   }
 
-  ads_personalization_section_->AddChildView(CreateAdPersonalizationSection());
+  ads_personalization_section_->AddChildView(CreateAdPersonalizationButton());
 
   PreferredSizeChanged();
 }
@@ -609,24 +606,18 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
       .Build();
 }
 
-std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
+std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteButton(
     const page_info::proto::SiteInfo& info) {
-  auto about_this_site_section = std::make_unique<views::View>();
-  about_this_site_section
-      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
-  about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
-
+  const std::u16string title =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE);
   const auto& description =
       info.has_description()
           ? base::UTF8ToUTF16(info.description().description())
           : l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
 
-  RichHoverButton* about_this_site_button =
-      about_this_site_section->AddChildView(std::make_unique<RichHoverButton>(
+  auto about_this_site_button =
+      std::make_unique<RichHoverButton>(
           base::BindRepeating(
               [](PageInfoMainView* view, GURL more_info_url,
                  bool has_description, const ui::Event& event) {
@@ -639,14 +630,13 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
                 view->GetWidget()->Close();
               },
               this, GURL(info.more_about().url()), info.has_description()),
-          PageInfoViewFactory::GetAboutThisSiteIcon(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
-          std::u16string(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),
-          description, PageInfoViewFactory::GetLaunchIcon()));
+          PageInfoViewFactory::GetAboutThisSiteIcon(), title, description,
+          PageInfoViewFactory::GetLaunchIcon());
   about_this_site_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
   about_this_site_button->SetSubtitleMultiline(false);
+  about_this_site_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP));
   about_this_site_button->title()->SetTextStyle(
       views::style::STYLE_BODY_3_MEDIUM);
   about_this_site_button->title()->SetEnabledColorId(kColorPageInfoForeground);
@@ -654,30 +644,20 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   about_this_site_button->subtitle()->SetEnabledColorId(
       kColorPageInfoSubtitleForeground);
 
-  return about_this_site_section;
+  return about_this_site_button;
 }
 
-std::unique_ptr<views::View>
-PageInfoMainView::CreateAdPersonalizationSection() {
-  auto ads_personalization_section = std::make_unique<views::View>();
-  ads_personalization_section
-      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
-  RichHoverButton* ads_personalization_button =
-      ads_personalization_section->AddChildView(
-          std::make_unique<RichHoverButton>(
-              base::BindRepeating(
-                  [](PageInfoMainView* view) {
-                    view->navigation_handler_->OpenAdPersonalizationPage();
-                  },
-                  this),
-              PageInfoViewFactory::GetAdPersonalizationIcon(),
-              l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
-              std::u16string(),
-              l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP),
-              std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon()));
+std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
+  auto ads_personalization_button = std::make_unique<RichHoverButton>(
+      base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
+                          base::Unretained(navigation_handler_)),
+      PageInfoViewFactory::GetAdPersonalizationIcon(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
+      std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
   ads_personalization_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);
+  ads_personalization_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP));
 
   ads_personalization_button->title()->SetTextStyle(
       views::style::STYLE_BODY_3_MEDIUM);
@@ -690,7 +670,20 @@ PageInfoMainView::CreateAdPersonalizationSection() {
         kColorPageInfoSubtitleForeground);
   }
 
-  return ads_personalization_section;
+  return ads_personalization_button;
+}
+
+std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton() {
+  // TODO(crbug.com/381215331): Add add actual string.
+  auto merchant_trust_button = std::make_unique<RichHoverButton>(
+      base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
+                          base::Unretained(navigation_handler_)),
+      PageInfoViewFactory::GetMerchantTrustIcon(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
+      std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
+  merchant_trust_button->title()->SetEnabledColorId(kColorPageInfoForeground);
+  // TODO(crbug.com/381215331): Add custom subtitle with a star rating.
+  return merchant_trust_button;
 }
 
 BEGIN_METADATA(PageInfoMainView)

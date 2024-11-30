@@ -35,13 +35,13 @@
 namespace network {
 namespace {
 
-typedef uint16_t PacketLength;
-const int kPacketHeaderSize = sizeof(PacketLength);
-const int kTcpReadBufferSize = 4096;
-const int kPacketLengthOffset = 2;
-const int kTurnChannelDataHeaderSize = 4;
-const int kTcpRecvSocketBufferSize = 128 * 1024;
-const int kTcpSendSocketBufferSize = 128 * 1024;
+using PacketLength = uint16_t;
+constexpr size_t kPacketHeaderSize = sizeof(PacketLength);
+constexpr int kTcpReadBufferSize = 4096;
+constexpr int kPacketLengthOffset = 2;
+constexpr int kTurnChannelDataHeaderSize = 4;
+constexpr int kTcpRecvSocketBufferSize = 128 * 1024;
+constexpr int kTcpSendSocketBufferSize = 128 * 1024;
 
 bool IsTlsClientSocket(P2PSocketType type) {
   return (type == P2P_SOCKET_STUN_TLS_CLIENT || type == P2P_SOCKET_TLS_CLIENT);
@@ -516,17 +516,13 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
                               const rtc::PacketOptions& options) {
   // Each packet is expected to have header (STUN/TURN ChannelData), where
   // header contains message type and and length of message.
-  if (data.size() < kPacketHeaderSize + kPacketLengthOffset) {
-    NOTREACHED();
-  }
+  CHECK_GE(data.size(), kPacketHeaderSize + kPacketLengthOffset);
 
   int pad_bytes;
   size_t expected_len = GetExpectedPacketSize(data, &pad_bytes);
 
   // Accepts only complete STUN/TURN packets.
-  if (data.size() != expected_len) {
-    NOTREACHED();
-  }
+  CHECK_EQ(data.size(), expected_len);
 
   // Add any pad bytes to the total size.
   int buffer_size = data.size() + pad_bytes;
@@ -548,10 +544,10 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
   }
 
   // WriteOrQueue may free the memory, so dump it first.
-  delegate_->DumpPacket(base::make_span(reinterpret_cast<const uint8_t*>(
-                                            send_buffer.buffer->data()),
-                                        data.size()),
-                        false);
+  delegate_->DumpPacket(
+      base::span(reinterpret_cast<const uint8_t*>(send_buffer.buffer->data()),
+                 data.size()),
+      false);
 
   WriteOrQueue(send_buffer);
 }

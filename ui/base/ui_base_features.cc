@@ -156,17 +156,6 @@ BASE_FEATURE(kInputMethodSettingsUiUpdate,
              "InputMethodSettingsUiUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables percent-based scrolling for mousewheel and keyboard initiated
-// scrolls and impulse curve animations.
-BASE_FEATURE(kWindowsScrollingPersonality,
-             "WindowsScrollingPersonality",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The feature is deprecated. The code removal is tracked in crbug.com/359747082
-bool IsPercentBasedScrollingEnabled() {
-  return false;
-}
-
 // Uses a stylus-specific tap slop region parameter for gestures.  Stylus taps
 // tend to slip more than touch taps (presumably because the user doesn't feel
 // the movement friction with a stylus).  As a result, it is harder to tap with
@@ -449,14 +438,6 @@ bool IsVariableRefreshRateAlwaysOn() {
 BASE_FEATURE(kBubbleMetricsApi,
              "BubbleMetricsApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_APPLE)
-// Font Smoothing was enabled by default prior to introducing this feature.
-// We want to experiment with disabling it to align with CR2023 designs.
-BASE_FEATURE(kCr2023MacFontSmoothing,
-             "Cr2023MacFontSmoothing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kUseGammaContrastRegistrySettings,

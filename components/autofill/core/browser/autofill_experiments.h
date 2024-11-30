@@ -36,7 +36,7 @@ bool IsCreditCardUploadEnabled(
     LogManager* log_manager);
 
 // Returns true if autofill local card migration flow is enabled.
-bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
+bool IsCreditCardMigrationEnabled(PersonalDataManager& personal_data_manager,
                                   syncer::SyncService* sync_service,
                                   const PrefService& pref_service,
                                   bool is_test_mode,

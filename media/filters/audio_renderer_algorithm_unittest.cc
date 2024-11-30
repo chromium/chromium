@@ -450,30 +450,30 @@ TEST_F(AudioRendererAlgorithmTest, InitializeWithLargeParameters) {
   EXPECT_LT(kBufferSize, algorithm_.QueueCapacity());
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_Bitstream) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferBitstream) {
   Initialize(CHANNEL_LAYOUT_STEREO, kSampleFormatEac3, kSamplesPerSecond,
              kSamplesPerSecond / 100);
   TestPlaybackRate(1.0, kFrameSize, 16 * kFrameSize, /* dest_offset */ 0);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_NormalRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferNormalRate) {
   Initialize();
   TestPlaybackRate(1.0);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_NearlyNormalFasterRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferNearlyNormalFasterRate) {
   Initialize();
   TestPlaybackRate(1.0001);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_NearlyNormalSlowerRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferNearlyNormalSlowerRate) {
   Initialize();
   TestPlaybackRate(0.9999);
 }
 
 // This test verifies that the resampling based time stretch algorithms works.
 // The range of playback rates in which we use resampling is [0.95, 1.06].
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_ResamplingRates) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferResamplingRates) {
   Initialize();
   // WSOLA.
   TestPlaybackRate(0.50);
@@ -493,7 +493,7 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_ResamplingRates) {
 
 // This test verifies that we use the right underlying algorithms based on
 // the preserves pitch flag and the playback rate.
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_FillModes) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferFillModes) {
   Initialize();
 
   // WSOLA.
@@ -530,7 +530,7 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_FillModes) {
             AudioRendererAlgorithm::FillBufferMode::kResampler);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_WithOffset) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferWithOffset) {
   Initialize();
   const int kBufferSize = algorithm_.samples_per_second() / 10;
   const int kOffset = kBufferSize / 10;
@@ -547,7 +547,7 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_WithOffset) {
   TestPlaybackRate(1.25, kBufferSize, kFramesRequested, kOffset);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_UnderFlow) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferUnderFlow) {
   Initialize();
   TestResamplingWithUnderflow(0.75, true);
   TestResamplingWithUnderflow(0.75, false);
@@ -555,47 +555,47 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_UnderFlow) {
   TestResamplingWithUnderflow(1.25, false);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_OneAndAQuarterRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferOneAndAQuarterRate) {
   Initialize();
   TestPlaybackRate(1.25);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_OneAndAHalfRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferOneAndAHalfRate) {
   Initialize();
   TestPlaybackRate(1.5);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_DoubleRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferDoubleRate) {
   Initialize();
   TestPlaybackRate(2.0);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_EightTimesRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferEightTimesRate) {
   Initialize();
   TestPlaybackRate(8.0);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_ThreeQuartersRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferThreeQuartersRate) {
   Initialize();
   TestPlaybackRate(0.75);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_HalfRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferHalfRate) {
   Initialize();
   TestPlaybackRate(0.5);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_QuarterRate) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferQuarterRate) {
   Initialize();
   TestPlaybackRate(0.25);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_Pause) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferPause) {
   Initialize();
   TestPlaybackRate(0.0);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_SlowDown) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferSlowDown) {
   Initialize();
   TestPlaybackRate(4.5);
   TestPlaybackRate(3.0);
@@ -605,7 +605,7 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_SlowDown) {
   TestPlaybackRate(0.25);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_SpeedUp) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferSpeedUp) {
   Initialize();
   TestPlaybackRate(0.25);
   TestPlaybackRate(0.5);
@@ -615,7 +615,7 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_SpeedUp) {
   TestPlaybackRate(4.5);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_JumpAroundSpeeds) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferJumpAroundSpeeds) {
   Initialize();
   TestPlaybackRate(2.1);
   TestPlaybackRate(0.9);
@@ -624,7 +624,7 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_JumpAroundSpeeds) {
   TestPlaybackRate(0.3);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_SmallBufferSize) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferSmallBufferSize) {
   Initialize();
   static const int kBufferSizeInFrames = 1;
   static const int kFramesRequested = kOutputDurationInSec * kSamplesPerSecond;
@@ -633,14 +633,14 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_SmallBufferSize) {
   TestPlaybackRate(1.5, kBufferSizeInFrames, kFramesRequested, 0);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_LargeBufferSize) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferLargeBufferSize) {
   Initialize(CHANNEL_LAYOUT_STEREO, kSampleFormatS16, 44100, 441);
   TestPlaybackRate(1.0);
   TestPlaybackRate(0.5);
   TestPlaybackRate(1.5);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_LowerQualityAudio) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferLowerQualityAudio) {
   Initialize(CHANNEL_LAYOUT_MONO, kSampleFormatU8, kSamplesPerSecond,
              kSamplesPerSecond / 100);
   TestPlaybackRate(1.0);
@@ -648,7 +648,7 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_LowerQualityAudio) {
   TestPlaybackRate(1.5);
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_HigherQualityAudio) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferHigherQualityAudio) {
   Initialize(CHANNEL_LAYOUT_STEREO, kSampleFormatS32, kSamplesPerSecond,
              kSamplesPerSecond / 100);
   TestPlaybackRate(1.0);
@@ -839,7 +839,7 @@ TEST_F(AudioRendererAlgorithmTest, QuadraticInterpolation) {
   EXPECT_FLOAT_EQ(y_star, extremum_value);
 }
 
-TEST_F(AudioRendererAlgorithmTest, QuadraticInterpolation_Colinear) {
+TEST_F(AudioRendererAlgorithmTest, QuadraticInterpolationColinear) {
   float y_values[3];
   y_values[0] = 1.0;
   y_values[1] = 1.0;
@@ -887,7 +887,7 @@ TEST_F(AudioRendererAlgorithmTest, FillBufferOffset) {
   }
 }
 
-TEST_F(AudioRendererAlgorithmTest, FillBuffer_ChannelMask) {
+TEST_F(AudioRendererAlgorithmTest, FillBufferChannelMask) {
   // Setup a quad channel layout where even channels are always muted.
   Initialize(CHANNEL_LAYOUT_QUAD, kSampleFormatS16, 44100, 441,
              {true, false, true, false});

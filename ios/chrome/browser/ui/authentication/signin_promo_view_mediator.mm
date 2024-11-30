@@ -15,6 +15,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -671,17 +673,24 @@ const char* AlreadySeenSigninViewPreferenceKey(
 // See documentation of displayedIdentity property.
 id<SystemIdentity> GetDisplayedIdentity(
     AuthenticationService* authService,
+    signin::IdentityManager* identityManager,
     ChromeAccountManagerService* accountManagerService) {
+  CHECK(authService);
+  CHECK(identityManager);
+  CHECK(accountManagerService);
+
   if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   }
-  DCHECK(accountManagerService);
-  return accountManagerService->GetDefaultIdentity();
+
+  return signin::GetDefaultIdentityOnDevice(identityManager,
+                                            accountManagerService);
 }
 
 }  // namespace
 
 @interface SigninPromoViewMediator () <ChromeAccountManagerServiceObserver,
+                                       IdentityManagerObserverBridgeDelegate,
                                        SyncObserverModelBridge>
 
 // Redefined to be readwrite. See documentation in the header file.
@@ -703,12 +712,6 @@ id<SystemIdentity> GetDisplayedIdentity(
 // User's preferences service.
 @property(nonatomic, assign) PrefService* prefService;
 
-// AccountManager Service used to retrive identities.
-@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-
-// Authentication Service for the user's signed-in state.
-@property(nonatomic, assign) AuthenticationService* authService;
-
 // The access point for the sign-in promo view.
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 
@@ -726,8 +729,16 @@ id<SystemIdentity> GetDisplayedIdentity(
 @end
 
 @implementation SigninPromoViewMediator {
+  // Authentication Service for the user's signed-in state.
+  raw_ptr<AuthenticationService> _authService;
+  // AccountManager Service used to retrive identities.
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
+  // IdentityManager used to retrive identities.
+  raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
   // Sync service.
   raw_ptr<syncer::SyncService> _syncService;
   // Observer for changes to the sync state.
@@ -819,19 +830,21 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (instancetype)
-    initWithAccountManagerService:
-        (ChromeAccountManagerService*)accountManagerService
-                      authService:(AuthenticationService*)authService
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint
-                  signinPresenter:(id<SigninPresenter>)signinPresenter
-         accountSettingsPresenter:
-             (id<AccountSettingsPresenter>)accountSettingsPresenter {
+     initWithIdentityManager:(signin::IdentityManager*)identityManager
+       accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                 authService:(AuthenticationService*)authService
+                 prefService:(PrefService*)prefService
+                 syncService:(syncer::SyncService*)syncService
+                 accessPoint:(signin_metrics::AccessPoint)accessPoint
+             signinPresenter:(id<SigninPresenter>)signinPresenter
+    accountSettingsPresenter:
+        (id<AccountSettingsPresenter>)accountSettingsPresenter {
   self = [super init];
   if (self) {
-    DCHECK(accountManagerService);
+    CHECK(identityManager);
+    CHECK(accountManagerService);
     DCHECK(IsSupportedAccessPoint(accessPoint));
+    _identityManager = identityManager;
     _accountManagerService = accountManagerService;
     _authService = authService;
     _prefService = prefService;
@@ -845,6 +858,9 @@ id<SystemIdentity> GetDisplayedIdentity(
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
     // Starting the sync state observation enables the sign-in progress to be
     // set to YES even if the user hasn't interacted with the promo. It is
     // intentional to keep UX consistency, given the initial sync cancellation
@@ -852,8 +868,8 @@ id<SystemIdentity> GetDisplayedIdentity(
     _syncObserverBridge =
         std::make_unique<SyncObserverBridge>(self, _syncService);
 
-    id<SystemIdentity> displayedIdentity =
-        GetDisplayedIdentity(self.authService, self.accountManagerService);
+    id<SystemIdentity> displayedIdentity = GetDisplayedIdentity(
+        _authService, _identityManager, _accountManagerService);
     if (displayedIdentity) {
       self.displayedIdentity = displayedIdentity;
     }
@@ -870,7 +886,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   BOOL hasCloseButton =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint,
                                          self.signinPromoAction) != nullptr;
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     if (!self.displayedIdentity) {
       // TODO(crbug.com/40777223): The default identity should already be known
       // by the mediator. We should not have no identity. This can be reproduced
@@ -1001,10 +1017,12 @@ id<SystemIdentity> GetDisplayedIdentity(
 - (void)disconnect {
   [self signinPromoViewIsRemoved];
   self.consumer = nil;
-  self.accountManagerService = nullptr;
-  self.authService = nullptr;
+  _accountManagerService = nullptr;
+  _identityManager = nullptr;
+  _authService = nullptr;
   _syncService = nullptr;
   _accountManagerServiceObserver.reset();
+  _identityManagerObserver.reset();
   _syncObserverBridge.reset();
 }
 
@@ -1033,7 +1051,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     self.displayedIdentityAvatar = nil;
   } else {
     self.displayedIdentityAvatar =
-        self.accountManagerService->GetIdentityAvatarWithIdentity(
+        _accountManagerService->GetIdentityAvatarWithIdentity(
             _displayedIdentity, IdentityAvatarSize::SmallSize);
   }
 }
@@ -1137,8 +1155,8 @@ id<SystemIdentity> GetDisplayedIdentity(
   // To make sure -[<SigninPromoViewConsumer> signinDidFinish], we have to save
   // in a variable and not get it from weakSelf (that might not exist anymore).
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
-  ShowSigninCommandCompletionCallback completion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
+  SigninCoordinatorCompletionCallback completion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
         [weakSelf signinCallbackWithResult:result];
         if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
           [weakConsumer signinDidFinish];
@@ -1192,8 +1210,9 @@ id<SystemIdentity> GetDisplayedIdentity(
   // counted as being dismissed.
   // TODO(crbug.com/40067025): Once new sync opt-ins are deprecated this usage
   // of kSync will become obsolete. Delete this code after phase 2.
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSync))
+  if (_authService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
     return;
+  }
   int displayedCount =
       self.prefService->GetInteger(displayedCountPreferenceKey);
   RecordImpressionsTilDismissHistogramForAccessPoint(self.accessPoint,
@@ -1206,12 +1225,10 @@ id<SystemIdentity> GetDisplayedIdentity(
   return self.dataTypeToWaitForInitialSync != syncer::DataType::UNSPECIFIED;
 }
 
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)identityListChanged {
+- (void)handleIdentityListChanged {
   id<SystemIdentity> currentIdentity = self.displayedIdentity;
-  id<SystemIdentity> displayedIdentity =
-      GetDisplayedIdentity(self.authService, self.accountManagerService);
+  id<SystemIdentity> displayedIdentity = GetDisplayedIdentity(
+      _authService, _identityManager, _accountManagerService);
   if (![currentIdentity isEqual:displayedIdentity]) {
     // Don't update the the sign-in promo if the sign-in is in progress,
     // to avoid flashes of the promo.
@@ -1220,14 +1237,50 @@ id<SystemIdentity> GetDisplayedIdentity(
   }
 }
 
-- (void)identityUpdated:(id<SystemIdentity>)identity {
+- (void)handleIdentityUpdated {
   [self sendConsumerNotificationWithIdentityChanged:NO];
+}
+
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityListChanged {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onAccountsOnDeviceChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
+}
+
+- (void)identityUpdated:(id<SystemIdentity>)identity {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onExtendedAccountInfoUpdated` instead.
+    return;
+  }
+  [self handleIdentityUpdated];
 }
 
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
   // TODO(crbug.com/40284086): Remove `[self disconnect]`.
   [self disconnect];
+}
+
+#pragma mark -  IdentityManagerObserver
+
+- (void)onAccountsOnDeviceChanged {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityListChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityUpdated` instead.
+    return;
+  }
+  [self handleIdentityUpdated];
 }
 
 #pragma mark - SigninPromoViewDelegate

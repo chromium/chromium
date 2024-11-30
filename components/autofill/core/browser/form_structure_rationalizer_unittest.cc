@@ -186,8 +186,7 @@ class FormStructureRationalizerTest : public testing::Test {
 FormStructureRationalizerTest::FormStructureRationalizerTest() {
   scoped_features_.InitWithFeatures(
       /*enabled_features=*/
-      {features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-       features::kAutofillParseVcnCardOnFileStandaloneCvcFields},
+      {features::kAutofillParseVcnCardOnFileStandaloneCvcFields},
       /*disabled_features=*/{});
 }
 

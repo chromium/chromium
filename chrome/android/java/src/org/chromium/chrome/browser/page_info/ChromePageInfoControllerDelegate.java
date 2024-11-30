@@ -400,11 +400,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     }
 
     @Override
-    public boolean shouldShowTrackingProtectionBrandedUi() {
-        return getSiteSettingsDelegate().shouldShowTrackingProtectionBrandedUi();
-    }
-
-    @Override
     public boolean showTrackingProtectionActFeaturesUi() {
         return getSiteSettingsDelegate().shouldShowTrackingProtectionActFeaturesUi();
     }

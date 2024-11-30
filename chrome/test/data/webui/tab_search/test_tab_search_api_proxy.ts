@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, TabSearchApiProxy, UserFeedback} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {PageRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, TabSearchApiProxy, UnusedTabInfo, UserFeedback} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {PageCallbackRouter, TabOrganizationFeature, TabOrganizationModelStrategy, TabSearchSection} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -12,7 +13,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   callbackRouterRemote: PageRemote;
   private profileData_?: ProfileData;
   private tabOrganizationSession_?: TabOrganizationSession;
-  private staleTabs_: Tab[] = [];
+  private unusedTabs_: UnusedTabInfo = {staleTabs: [], duplicateTabs: {}};
 
   constructor() {
     super([
@@ -22,8 +23,9 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'rejectTabOrganization',
       'renameTabOrganization',
       'excludeFromStaleTabs',
+      'excludeFromDuplicateTabs',
       'getProfileData',
-      'getStaleTabs',
+      'getUnusedTabs',
       'getTabSearchSection',
       'getTabOrganizationFeature',
       'getTabOrganizationSession',
@@ -35,13 +37,13 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'restartSession',
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
-      'setTabSearchSection',
       'setOrganizationFeature',
       'startTabGroupTutorial',
       'triggerFeedback',
       'triggerSignIn',
       'openHelpPage',
       'setTabOrganizationModelStrategy',
+      'setTabOrganizationUserInstruction',
       'setUserFeedback',
       'notifyOrganizationUiReadyToShow',
       'notifySearchUiReadyToShow',
@@ -57,8 +59,8 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
     this.methodCalled('closeTab', [tabId]);
   }
 
-  declutterTabs(tabIds: number[]) {
-    this.methodCalled('declutterTabs', [tabIds]);
+  declutterTabs(tabIds: number[], urls: Url[]) {
+    this.methodCalled('declutterTabs', [tabIds, urls]);
   }
 
   acceptTabOrganization(
@@ -81,14 +83,18 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
     this.methodCalled('excludeFromStaleTabs', [tabId]);
   }
 
+  excludeFromDuplicateTabs(url: Url) {
+    this.methodCalled('excludeFromDuplicateTabs', [url]);
+  }
+
   getProfileData() {
     this.methodCalled('getProfileData');
     return Promise.resolve({profileData: this.profileData_!});
   }
 
-  getStaleTabs() {
-    this.methodCalled('getStaleTabs');
-    return Promise.resolve({tabs: this.staleTabs_});
+  getUnusedTabs() {
+    this.methodCalled('getUnusedTabs');
+    return Promise.resolve({tabs: this.unusedTabs_});
   }
 
   getTabSearchSection() {
@@ -144,10 +150,6 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
     this.methodCalled('saveRecentlyClosedExpandedPref', [expanded]);
   }
 
-  setTabSearchSection(section: TabSearchSection) {
-    this.methodCalled('setTabSearchSection', [section]);
-  }
-
   setOrganizationFeature(feature: TabOrganizationFeature) {
     this.methodCalled('setOrganizationFeature', [feature]);
   }
@@ -170,6 +172,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   setTabOrganizationModelStrategy(strategy: TabOrganizationModelStrategy) {
     this.methodCalled('setTabOrganizationModelStrategy', [strategy]);
+  }
+
+  setTabOrganizationUserInstruction(userInstruction: string) {
+    this.methodCalled('setTabOrganizationUserInstruction', [userInstruction]);
   }
 
   setUserFeedback(feedback: UserFeedback) {
@@ -201,6 +207,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   }
 
   setStaleTabs(tabs: Tab[]) {
-    this.staleTabs_ = tabs;
+    this.unusedTabs_.staleTabs = tabs;
+  }
+
+  setDuplicateTabs(tabs: {[key: string]: Tab[]}) {
+    this.unusedTabs_.duplicateTabs = tabs;
   }
 }

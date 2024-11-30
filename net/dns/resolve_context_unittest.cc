@@ -141,7 +141,7 @@ TEST_F(ResolveContextTest, ReusedSessionPointer) {
   EXPECT_FALSE(context.GetDohServerAvailability(1u, session.get()));
 }
 
-TEST_F(ResolveContextTest, DohServerAvailability_InitialAvailability) {
+TEST_F(ResolveContextTest, DohServerAvailabilityInitialAvailability) {
   DnsConfig config =
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
@@ -168,7 +168,7 @@ TEST_F(ResolveContextTest, DohServerAvailability_InitialAvailability) {
       "Net.DNS.ResolveContext.DohAutoupgrade.Other.Status", 0);
 }
 
-TEST_F(ResolveContextTest, DohServerAvailability_RecordedSuccess) {
+TEST_F(ResolveContextTest, DohServerAvailabilityRecordedSuccess) {
   DnsConfig config =
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
@@ -203,7 +203,7 @@ TEST_F(ResolveContextTest, DohServerAvailability_RecordedSuccess) {
       DohServerAutoupgradeStatus::kSuccessWithNoPriorFailures, 1);
 }
 
-TEST_F(ResolveContextTest, DohServerAvailability_NoCurrentSession) {
+TEST_F(ResolveContextTest, DohServerAvailabilityNoCurrentSession) {
   DnsConfig config =
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
@@ -222,7 +222,7 @@ TEST_F(ResolveContextTest, DohServerAvailability_NoCurrentSession) {
   EXPECT_FALSE(context.GetDohServerAvailability(1, session.get()));
 }
 
-TEST_F(ResolveContextTest, DohServerAvailability_DifferentSession) {
+TEST_F(ResolveContextTest, DohServerAvailabilityDifferentSession) {
   DnsConfig config1 =
       CreateDnsConfig(1 /* num_servers */, 3 /* num_doh_servers */);
   scoped_refptr<DnsSession> session1 = CreateDnsSession(config1);
@@ -277,7 +277,7 @@ TEST_F(ResolveContextTest, DohServerIndexToUse) {
   EXPECT_FALSE(doh_itr->AttemptAvailable());
 }
 
-TEST_F(ResolveContextTest, DohServerIndexToUse_NoneEligible) {
+TEST_F(ResolveContextTest, DohServerIndexToUseNoneEligible) {
   DnsConfig config =
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
@@ -293,7 +293,7 @@ TEST_F(ResolveContextTest, DohServerIndexToUse_NoneEligible) {
   EXPECT_FALSE(doh_itr->AttemptAvailable());
 }
 
-TEST_F(ResolveContextTest, DohServerIndexToUse_SecureMode) {
+TEST_F(ResolveContextTest, DohServerIndexToUseSecureMode) {
   DnsConfig config =
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
@@ -518,7 +518,7 @@ TEST_F(ResolveContextTest, InvalidateCachesAndPerSessionDataSameSession) {
   EXPECT_TRUE(context.GetDohServerAvailability(0u, session.get()));
 }
 
-TEST_F(ResolveContextTest, Failures_Consecutive) {
+TEST_F(ResolveContextTest, FailuresConsecutive) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -566,7 +566,7 @@ TEST_F(ResolveContextTest, Failures_Consecutive) {
   }
 }
 
-TEST_F(ResolveContextTest, Failures_NonConsecutive) {
+TEST_F(ResolveContextTest, FailuresNonConsecutive) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -625,7 +625,7 @@ TEST_F(ResolveContextTest, Failures_NonConsecutive) {
   }
 }
 
-TEST_F(ResolveContextTest, Failures_NoSession) {
+TEST_F(ResolveContextTest, FailuresNoSession) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -649,7 +649,7 @@ TEST_F(ResolveContextTest, Failures_NoSession) {
   EXPECT_FALSE(classic_itr->AttemptAvailable());
 }
 
-TEST_F(ResolveContextTest, Failures_DifferentSession) {
+TEST_F(ResolveContextTest, FailuresDifferentSession) {
   DnsConfig config1 =
       CreateDnsConfig(1 /* num_servers */, 3 /* num_doh_servers */);
   scoped_refptr<DnsSession> session1 = CreateDnsSession(config1);
@@ -763,7 +763,7 @@ class TestDohStatusObserver : public ResolveContext::DohStatusObserver {
   int server_unavailable_notifications_ = 0;
 };
 
-TEST_F(ResolveContextTest, DohFailures_Consecutive) {
+TEST_F(ResolveContextTest, DohFailuresConsecutive) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -814,7 +814,7 @@ TEST_F(ResolveContextTest, DohFailures_Consecutive) {
   context.UnregisterDohStatusObserver(&observer);
 }
 
-TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
+TEST_F(ResolveContextTest, DohFailuresNonConsecutive) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -892,7 +892,7 @@ TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
   context.UnregisterDohStatusObserver(&observer);
 }
 
-TEST_F(ResolveContextTest, DohFailures_SuccessAfterFailures) {
+TEST_F(ResolveContextTest, DohFailuresSuccessAfterFailures) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -946,7 +946,7 @@ TEST_F(ResolveContextTest, DohFailures_SuccessAfterFailures) {
   context.UnregisterDohStatusObserver(&observer);
 }
 
-TEST_F(ResolveContextTest, DohFailures_NoSession) {
+TEST_F(ResolveContextTest, DohFailuresNoSession) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -965,7 +965,7 @@ TEST_F(ResolveContextTest, DohFailures_NoSession) {
   EXPECT_EQ(0u, context.NumAvailableDohServers(session.get()));
 }
 
-TEST_F(ResolveContextTest, DohFailures_DifferentSession) {
+TEST_F(ResolveContextTest, DohFailuresDifferentSession) {
   DnsConfig config1 =
       CreateDnsConfig(1 /* num_servers */, 3 /* num_doh_servers */);
   scoped_refptr<DnsSession> session1 = CreateDnsSession(config1);
@@ -992,7 +992,7 @@ TEST_F(ResolveContextTest, DohFailures_DifferentSession) {
   EXPECT_EQ(1u, context.NumAvailableDohServers(session2.get()));
 }
 
-TEST_F(ResolveContextTest, DohFailures_NeverSuccessful) {
+TEST_F(ResolveContextTest, DohFailuresNeverSuccessful) {
   DnsConfig config = CreateDnsConfig(/*num_servers=*/2, /*num_doh_servers=*/2);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
   ResolveContext context(/*url_request_context=*/nullptr,
@@ -1022,7 +1022,7 @@ TEST_F(ResolveContextTest, DohFailures_NeverSuccessful) {
 // Test that metrics are recorded properly when auto-upgrade is never successful
 // for a provider that is in the list of providers where we can auto-upgrade
 // insecure DNS queries to secure DNS queries.
-TEST_F(ResolveContextTest, DohFailures_NeverSuccessfulKnownProviderConfig) {
+TEST_F(ResolveContextTest, DohFailuresNeverSuccessfulKnownProviderConfig) {
   ResolveContext context(/*url_request_context=*/nullptr,
                          /*enable_caching=*/false);
   DnsConfig config = CreateDnsConfigWithKnownDohProviderConfig();
@@ -1112,7 +1112,7 @@ TEST_F(ResolveContextTest, TwoDohFailures) {
 
 // Expect default calculated fallback period to be within 10ms of
 // |DnsConfig::fallback_period|.
-TEST_F(ResolveContextTest, FallbackPeriod_Default) {
+TEST_F(ResolveContextTest, FallbackPeriodDefault) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1134,7 +1134,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_Default) {
 
 // Expect short calculated fallback period to be within 10ms of
 // |DnsConfig::fallback_period|.
-TEST_F(ResolveContextTest, FallbackPeriod_ShortConfigured) {
+TEST_F(ResolveContextTest, FallbackPeriodShortConfigured) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1159,7 +1159,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_ShortConfigured) {
 // |DnsConfig::fallback_period|. (Default max fallback period is 5 seconds, so
 // NextClassicFallbackPeriod() should return exactly the config fallback
 // period.)
-TEST_F(ResolveContextTest, FallbackPeriod_LongConfigured) {
+TEST_F(ResolveContextTest, FallbackPeriodLongConfigured) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1178,7 +1178,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_LongConfigured) {
 }
 
 // Expect fallback periods to increase on recording long round-trip times.
-TEST_F(ResolveContextTest, FallbackPeriod_LongRtt) {
+TEST_F(ResolveContextTest, FallbackPeriodLongRtt) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1218,7 +1218,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_LongRtt) {
 
 // Expect recording round-trip times to have no affect on fallback period
 // without a current session.
-TEST_F(ResolveContextTest, FallbackPeriod_NoSession) {
+TEST_F(ResolveContextTest, FallbackPeriodNoSession) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1245,7 +1245,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_NoSession) {
 
 // Expect recording round-trip times to have no affect on fallback periods
 // without a current session.
-TEST_F(ResolveContextTest, FallbackPeriod_DifferentSession) {
+TEST_F(ResolveContextTest, FallbackPeriodDifferentSession) {
   DnsConfig config1 =
       CreateDnsConfig(1 /* num_servers */, 3 /* num_doh_servers */);
   scoped_refptr<DnsSession> session1 = CreateDnsSession(config1);
@@ -1292,7 +1292,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_DifferentSession) {
 }
 
 // Expect minimum timeout will be used when fallback period is small.
-TEST_F(ResolveContextTest, SecureTransactionTimeout_SmallFallbackPeriod) {
+TEST_F(ResolveContextTest, SecureTransactionTimeoutSmallFallbackPeriod) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1309,7 +1309,7 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_SmallFallbackPeriod) {
 
 // Expect multiplier on fallback period to be used when larger than minimum
 // timeout.
-TEST_F(ResolveContextTest, SecureTransactionTimeout_LongFallbackPeriod) {
+TEST_F(ResolveContextTest, SecureTransactionTimeoutLongFallbackPeriod) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   const base::TimeDelta kFallbackPeriod = base::Minutes(5);
@@ -1329,7 +1329,7 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_LongFallbackPeriod) {
       expected);
 }
 
-TEST_F(ResolveContextTest, SecureTransactionTimeout_LongRtt) {
+TEST_F(ResolveContextTest, SecureTransactionTimeoutLongRtt) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1363,7 +1363,7 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_LongRtt) {
       features::kDnsMinTransactionTimeout.Get());
 }
 
-TEST_F(ResolveContextTest, SecureTransactionTimeout_DifferentSession) {
+TEST_F(ResolveContextTest, SecureTransactionTimeoutDifferentSession) {
   const base::TimeDelta kFallbackPeriod = base::Minutes(5);
   DnsConfig config1 =
       CreateDnsConfig(0 /* num_servers */, 1 /* num_doh_servers */);
@@ -1392,7 +1392,7 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_DifferentSession) {
 }
 
 // Expect minimum timeout will be used when fallback period is small.
-TEST_F(ResolveContextTest, ClassicTransactionTimeout_SmallFallbackPeriod) {
+TEST_F(ResolveContextTest, ClassicTransactionTimeoutSmallFallbackPeriod) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1408,7 +1408,7 @@ TEST_F(ResolveContextTest, ClassicTransactionTimeout_SmallFallbackPeriod) {
 
 // Expect multiplier on fallback period to be used when larger than minimum
 // timeout.
-TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongFallbackPeriod) {
+TEST_F(ResolveContextTest, ClassicTransactionTimeoutLongFallbackPeriod) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   const base::TimeDelta kFallbackPeriod = base::Minutes(5);
@@ -1426,7 +1426,7 @@ TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongFallbackPeriod) {
   EXPECT_EQ(context.ClassicTransactionTimeout(session.get()), expected);
 }
 
-TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongRtt) {
+TEST_F(ResolveContextTest, ClassicTransactionTimeoutLongRtt) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1458,7 +1458,7 @@ TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongRtt) {
             features::kDnsMinTransactionTimeout.Get());
 }
 
-TEST_F(ResolveContextTest, ClassicTransactionTimeout_DifferentSession) {
+TEST_F(ResolveContextTest, ClassicTransactionTimeoutDifferentSession) {
   const base::TimeDelta kFallbackPeriod = base::Minutes(5);
   DnsConfig config1 =
       CreateDnsConfig(1 /* num_servers */, 0 /* num_doh_servers */);
@@ -1526,7 +1526,7 @@ TEST_F(ResolveContextTest, SessionChange) {
   context.UnregisterDohStatusObserver(&observer);
 }
 
-TEST_F(ResolveContextTest, SessionChange_NoSession) {
+TEST_F(ResolveContextTest, SessionChangeNoSession) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
 
@@ -1542,7 +1542,7 @@ TEST_F(ResolveContextTest, SessionChange_NoSession) {
   context.UnregisterDohStatusObserver(&observer);
 }
 
-TEST_F(ResolveContextTest, SessionChange_NoDohServers) {
+TEST_F(ResolveContextTest, SessionChangeNoDohServers) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
 

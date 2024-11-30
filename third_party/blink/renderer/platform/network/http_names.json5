@@ -106,6 +106,7 @@
     {name: "ect", Symbol: "kEct_DEPRECATED"},
     {name: "etag", Symbol: "kLowerETag"},
     {name: "expires", Symbol: "kLowerExpires"},
+    {name: "identity-digest", Symbol: "kIdentityDigest"},
     {name: "last-modified", Symbol: "kLowerLastModified"},
     {name: "light", Symbol: "kLight"},
     {name: "no-preference", Symbol: "kNoPreference"},

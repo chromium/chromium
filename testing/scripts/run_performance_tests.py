@@ -88,6 +88,7 @@ if TELEMETRY_DIR.exists() and (CATAPULT_DIR / 'common').exists():
   sys.path.append(str(TELEMETRY_DIR))
   from telemetry.internal.browser import browser_finder
   from telemetry.internal.browser import browser_options
+  from telemetry.core import util
   from telemetry.internal.util import binary_manager
 else:
   print('Optional telemetry library not available.')
@@ -708,7 +709,11 @@ class CrossbenchTest(object):
   CHROME_BROWSER = '--browser=%s'
   ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
   STORY_LABEL = 'default'
-  BENCHMARK_FILESERVERS = {'speedometer_3.0': 'third_party/speedometer/v3.0'}
+  BENCHMARK_FILESERVERS = {
+      'speedometer_3.0': 'third_party/speedometer/v3.0',
+      'speedometer_2.1': 'third_party/speedometer/v2.1',
+      'speedometer_2.0': 'third_party/speedometer/v2.0'
+  }
 
   def __init__(self, options, isolated_out_dir):
     self.options = options
@@ -730,6 +735,11 @@ class CrossbenchTest(object):
       return self._create_fileserver_network(_arg)
     if self._get_arg(args, '--wpr'):
       return self._create_wpr_network(args)
+    if self.options.benchmarks in self.BENCHMARK_FILESERVERS:
+      # Use file server when it is available.
+      arg = '--fileserver'
+      args.append(arg)
+      return self._create_fileserver_network(arg)
     return []
 
   def _create_fileserver_network(self, arg):
@@ -754,8 +764,7 @@ class CrossbenchTest(object):
     if wpr_arg and '=' in wpr_arg:
       wpr_name = wpr_arg.split('=', 1)[1]
     else:
-      # TODO: Use update_wpr library when it supports Crossbench archive files.
-      wpr_name = 'crossbench_android_speedometer_3.0_000.wprgo'
+      raise ValueError('The archive file path is missing!')
     archive = str(PAGE_SETS_DATA / wpr_name)
     if (wpr_go := fetch_binary_path('wpr_go')) is None:
       raise ValueError(f'wpr_go not found: {wpr_go}')
@@ -1016,7 +1025,48 @@ def parse_arguments(args):
   return options
 
 
+def _set_cwd():
+  """Change current working directory to build output directory.
+
+  On perf waterfall, the recipe sets the current working directory to the chrome
+  build output directory. Pinpoint, on the other hand, does not know where the
+  build output directory is, so it is hardcoded to set current working directory
+  to out/Release. This used to be correct most of the time, but this has been
+  changed by https://crbug.com/355218109, causing various problems (e.g.,
+  https://crbug.com/377748127). This function attempts to detect such cases and
+  change the current working directory to chrome output directory.
+  """
+
+  # If the current directory is named out/Release and is empty, we are likely
+  # running on Pinpoint with a wrong working directory.
+  cwd = pathlib.Path.cwd()
+  if list(cwd.iterdir()):
+    return
+  if cwd.name != 'Release' or cwd.parent.name != 'out':
+    return
+
+  print(f'Current directory {cwd} is empty, attempting to find build output')
+  candidates = []
+  for build_dir in util.GetBuildDirectories():
+    path = pathlib.Path(build_dir).resolve()
+    if path.exists() and list(path.iterdir()):
+      candidates.append(path)
+
+  if len(candidates) != 1:
+    if not candidates:
+      print('No build output directory found')
+    else:
+      print(f'Multiple build output directories found: {candidates}')
+    raise RuntimeError(
+        'Unable to find build output. Please change to the build output '
+        'directory before running this script.')
+
+  print(f'Changing current directory to {candidates[0]}')
+  os.chdir(candidates[0])
+
+
 def main(sys_args):
+  _set_cwd()
   args = sys_args[1:]  # Skip program name.
   options = parse_arguments(args)
   isolated_out_dir = os.path.dirname(options.isolated_script_test_output)

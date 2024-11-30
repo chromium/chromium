@@ -124,10 +124,6 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-
-  if (model_) {
-    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
-  }
 }
 
 ToolbarButton::~ToolbarButton() = default;
@@ -482,11 +478,7 @@ void ToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
-  // Suppress tooltip when IPH is showing.
-  // TODO(crbug.com/40258442): Investigate if we should suppress tooltip for all
-  // Buttons rather than just ToolbarButtons when IPH is on.
-  return has_in_product_help_promo_ ? std::u16string()
-                                    : views::LabelButton::GetTooltipText(p);
+  return GetCachedTooltipText();
 }
 
 void ToolbarButton::ShowContextMenuForViewImpl(
@@ -500,11 +492,28 @@ void ToolbarButton::ShowContextMenuForViewImpl(
   ShowDropDownMenu(source_type);
 }
 
+std::u16string ToolbarButton::GetAlternativeAccessibleName() const {
+  if (!suppressed_tooltip_text_.empty()) {
+    return suppressed_tooltip_text_;
+  }
+
+  return Button::GetAlternativeAccessibleName();
+}
+
 void ToolbarButton::AfterPropertyChange(const void* key, int64_t old_value) {
   View::AfterPropertyChange(key, old_value);
   if (key == user_education::kHasInProductHelpPromoKey) {
     has_in_product_help_promo_ =
         GetProperty(user_education::kHasInProductHelpPromoKey);
+
+    // Suppress tooltip when IPH is showing.
+    // TODO(crbug.com/40258442): Investigate if we should suppress tooltip for
+    // all Buttons rather than just ToolbarButtons when IPH is on.
+    if (has_in_product_help_promo_) {
+      suppressed_tooltip_text_ = GetCachedTooltipText();
+    } else {
+      suppressed_tooltip_text_ = std::u16string();
+    }
     UpdateIcon();
   }
 }

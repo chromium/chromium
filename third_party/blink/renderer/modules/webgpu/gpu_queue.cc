@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 
 #include "build/build_config.h"
@@ -414,12 +409,8 @@ void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
           DOMExceptionCode::kOperationError,
           "Instance dropped in onSubmittedWorkDone");
       break;
-    case wgpu::QueueWorkDoneStatus::DeviceLost:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kOperationError,
-          "Device lost during onSubmittedWorkDone (do not use this error for "
-          "recovery - it is NOT guaranteed to happen on device loss)");
-      break;
+    default:
+      DCHECK(false);
   }
 }
 
@@ -532,11 +523,16 @@ void GPUQueue::WriteBufferImpl(ScriptState* script_state,
     return;
   }
 
-  const uint8_t* data_base_ptr_bytes =
-      static_cast<const uint8_t*>(data_base_ptr);
-  const uint8_t* data_ptr = data_base_ptr_bytes + data_byte_offset;
-  GetHandle().WriteBuffer(buffer->GetHandle(), buffer_offset, data_ptr,
-                          static_cast<size_t>(write_byte_size));
+  // SAFETY: Bounds already checked
+  auto data_span =
+      UNSAFE_BUFFERS(
+          base::span<const uint8_t>(static_cast<const uint8_t*>(data_base_ptr),
+                                    static_cast<size_t>(data_byte_length)))
+          .subspan(static_cast<size_t>(data_byte_offset),
+                   static_cast<size_t>(write_byte_size));
+
+  GetHandle().WriteBuffer(buffer->GetHandle(), buffer_offset, data_span.data(),
+                          data_span.size());
   EnsureFlush(ToEventLoop(script_state));
 }
 
@@ -562,6 +558,7 @@ void GPUQueue::writeTexture(ScriptState* script_state,
                    exception_state);
 }
 
+// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 void GPUQueue::WriteTextureImpl(ScriptState* script_state,
                                 GPUImageCopyTexture* destination,
                                 const void* data,
@@ -592,12 +589,14 @@ void GPUQueue::WriteTextureImpl(ScriptState* script_state,
     return;
   }
 
+  // SAFETY: Required from caller
   // Handle the data layout offset by offsetting the data pointer instead. This
   // helps move less data between then renderer and GPU process (otherwise all
   // the data from 0 to offset would be copied over as well).
-  const void* data_ptr =
-      static_cast<const uint8_t*>(data) + dawn_data_layout.offset;
-  data_size -= dawn_data_layout.offset;
+  auto data_span =
+      UNSAFE_BUFFERS(base::span<const uint8_t>(
+                         static_cast<const uint8_t*>(data), data_size))
+          .subspan(base::checked_cast<size_t>(dawn_data_layout.offset));
   dawn_data_layout.offset = 0;
 
   // Compute a tight upper bound of the number of bytes to send for this
@@ -608,10 +607,11 @@ void GPUQueue::WriteTextureImpl(ScriptState* script_state,
   size_t data_size_upper_bound = EstimateWriteTextureBytesUpperBound(
       dawn_data_layout, dawn_write_size, destination->texture()->Format(),
       dawn_destination.aspect);
-  size_t required_copy_size = std::min(data_size, data_size_upper_bound);
+  size_t required_copy_size = std::min(data_span.size(), data_size_upper_bound);
 
-  GetHandle().WriteTexture(&dawn_destination, data_ptr, required_copy_size,
-                           &dawn_data_layout, &dawn_write_size);
+  GetHandle().WriteTexture(&dawn_destination, data_span.data(),
+                           required_copy_size, &dawn_data_layout,
+                           &dawn_write_size);
   EnsureFlush(ToEventLoop(script_state));
   return;
 }
@@ -962,7 +962,10 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     size_t size = static_cast<size_t>(buffer_desc.size);
     void* data = intermediate_buffer.GetMappedRange(0, size);
 
-    auto dest_pixels = base::span<uint8_t>(static_cast<uint8_t*>(data), size);
+    // SAFETY: Mapped Range already checked
+    auto dest_pixels = data != nullptr ? UNSAFE_BUFFERS(base::span<uint8_t>(
+                                             static_cast<uint8_t*>(data), size))
+                                       : base::span<uint8_t>();
 
     SkImageInfo copy_rect_info = source_image_info.makeWH(
         image_source_copy_rect.width(), image_source_copy_rect.height());

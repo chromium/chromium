@@ -216,7 +216,7 @@ TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogChromeAlreadySignedIn) {
   ASSERT_TRUE(identity_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
   base::test::TestFuture<void> on_complete;
-  api()->MaybeShowChromeSigninDialog("Extension name",
+  api()->MaybeShowChromeSigninDialog(u"Extension name",
                                      on_complete.GetCallback());
   // The UI is not shown and the callback is shown immediately.
   EXPECT_TRUE(on_complete.IsReady());
@@ -228,7 +228,7 @@ TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogNoAccountsOnTheWeb) {
                   ->GetAccountsWithRefreshTokens()
                   .empty());
   base::test::TestFuture<void> on_complete;
-  api()->MaybeShowChromeSigninDialog("Extension name",
+  api()->MaybeShowChromeSigninDialog(u"Extension name",
                                      on_complete.GetCallback());
   // The UI is not shown and the callback is shown immediately.
   EXPECT_TRUE(on_complete.IsReady());
@@ -247,7 +247,7 @@ TEST_F(IdentityAPITest, MaybeShowChromeSigninDialog) {
     api()->SetSkipUIForTesting(on_ui_triggered.GetCallback());
 
     base::test::TestFuture<void> on_complete;
-    api()->MaybeShowChromeSigninDialog("Extension name",
+    api()->MaybeShowChromeSigninDialog(u"Extension name",
                                        on_complete.GetCallback());
 
     EXPECT_FALSE(on_complete.IsReady());
@@ -271,13 +271,13 @@ TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogConcurrent) {
 
   base::test::TestFuture<void> on_complete_1;
   base::test::TestFuture<void> on_complete_2;
-  api()->MaybeShowChromeSigninDialog("Extension name",
+  api()->MaybeShowChromeSigninDialog(u"Extension name",
                                      on_complete_1.GetCallback());
 
   EXPECT_TRUE(on_ui_triggered.IsReady());
   // Should crash if UI is shown as `on_ui_triggered` should have been already
   // consumed.
-  api()->MaybeShowChromeSigninDialog("Extension name",
+  api()->MaybeShowChromeSigninDialog(u"Extension name",
                                      on_complete_2.GetCallback());
 
   EXPECT_FALSE(on_complete_1.IsReady());

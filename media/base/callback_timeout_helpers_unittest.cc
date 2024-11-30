@@ -27,7 +27,7 @@ class CallbackTimeoutHelpersTest : public testing::Test {
   testing::StrictMock<base::MockOnceCallback<void(bool)>> timeout_handler_;
 };
 
-TEST_F(CallbackTimeoutHelpersTest, TimeoutHandler_RunBeforeTimeout) {
+TEST_F(CallbackTimeoutHelpersTest, TimeoutHandlerRunBeforeTimeout) {
   auto wrapped_callback = WrapCallbackWithTimeoutHandler(
       original_callback_.Get(), base::Seconds(1), timeout_handler_.Get());
 
@@ -39,7 +39,7 @@ TEST_F(CallbackTimeoutHelpersTest, TimeoutHandler_RunBeforeTimeout) {
   task_environment_.FastForwardBy(base::Seconds(2));
 }
 
-TEST_F(CallbackTimeoutHelpersTest, TimeoutHandler_RunAfterTimeout) {
+TEST_F(CallbackTimeoutHelpersTest, TimeoutHandlerRunAfterTimeout) {
   auto wrapped_callback = WrapCallbackWithTimeoutHandler(
       original_callback_.Get(), base::Seconds(1), timeout_handler_.Get());
 
@@ -52,7 +52,7 @@ TEST_F(CallbackTimeoutHelpersTest, TimeoutHandler_RunAfterTimeout) {
   std::move(wrapped_callback).Run(123);
 }
 
-TEST_F(CallbackTimeoutHelpersTest, TimeoutHandler_Timeout) {
+TEST_F(CallbackTimeoutHelpersTest, TimeoutHandlerTimeout) {
   auto wrapped_callback = WrapCallbackWithTimeoutHandler(
       original_callback_.Get(), base::Seconds(1), timeout_handler_.Get());
 
@@ -60,7 +60,7 @@ TEST_F(CallbackTimeoutHelpersTest, TimeoutHandler_Timeout) {
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-TEST_F(CallbackTimeoutHelpersTest, TimeoutHandler_Destruction) {
+TEST_F(CallbackTimeoutHelpersTest, TimeoutHandlerDestruction) {
   auto wrapped_callback = WrapCallbackWithTimeoutHandler(
       original_callback_.Get(), base::Seconds(1), timeout_handler_.Get());
 
@@ -68,7 +68,7 @@ TEST_F(CallbackTimeoutHelpersTest, TimeoutHandler_Destruction) {
   wrapped_callback.Reset();
 }
 
-TEST_F(CallbackTimeoutHelpersTest, DefaultInvoke_RunBeforeTimeout) {
+TEST_F(CallbackTimeoutHelpersTest, DefaultInvokeRunBeforeTimeout) {
   auto wrapped_callback = WrapCallbackWithDefaultInvokeIfTimeout(
       original_callback_.Get(), base::Seconds(1), 456);
 
@@ -77,7 +77,7 @@ TEST_F(CallbackTimeoutHelpersTest, DefaultInvoke_RunBeforeTimeout) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(CallbackTimeoutHelpersTest, DefaultInvoke_RunAfterTimeout) {
+TEST_F(CallbackTimeoutHelpersTest, DefaultInvokeRunAfterTimeout) {
   auto wrapped_callback = WrapCallbackWithDefaultInvokeIfTimeout(
       original_callback_.Get(), base::Seconds(1), 456);
 
@@ -89,7 +89,7 @@ TEST_F(CallbackTimeoutHelpersTest, DefaultInvoke_RunAfterTimeout) {
   std::move(wrapped_callback).Run(123);
 }
 
-TEST_F(CallbackTimeoutHelpersTest, DefaultInvoke_Timeout) {
+TEST_F(CallbackTimeoutHelpersTest, DefaultInvokeTimeout) {
   auto wrapped_callback = WrapCallbackWithDefaultInvokeIfTimeout(
       original_callback_.Get(), base::Seconds(1), 456);
 
@@ -97,7 +97,7 @@ TEST_F(CallbackTimeoutHelpersTest, DefaultInvoke_Timeout) {
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
-TEST_F(CallbackTimeoutHelpersTest, DefaultInvoke_Destruction) {
+TEST_F(CallbackTimeoutHelpersTest, DefaultInvokeDestruction) {
   auto wrapped_callback = WrapCallbackWithDefaultInvokeIfTimeout(
       original_callback_.Get(), base::Seconds(1), 456);
 

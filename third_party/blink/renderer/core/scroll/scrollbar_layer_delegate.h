@@ -59,8 +59,8 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   bool UsesSolidColorThumb() const override;
   gfx::Insets SolidColorThumbInsets() const override;
   bool UsesNinePatchTrackAndButtonsResource() const override;
-  gfx::Size NinePatchTrackAndButtonsCanvasSize() const override;
-  gfx::Rect NinePatchTrackAndButtonsAperture() const override;
+  gfx::Size NinePatchTrackAndButtonsCanvasSize(float scale) const override;
+  gfx::Rect NinePatchTrackAndButtonsAperture(float scale) const override;
   gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
       gfx::Rect& rect) const override;
 

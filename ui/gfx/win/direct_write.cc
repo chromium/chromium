@@ -11,6 +11,7 @@
 
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/font_utils.h"
@@ -42,8 +43,7 @@ void CreateDWriteFactory(IDWriteFactory** factory) {
                           &factory_unknown);
   if (FAILED(hr)) {
     base::debug::Alias(&hr);
-    CHECK(false);
-    return;
+    NOTREACHED();
   }
   factory_unknown.CopyTo(factory);
 }

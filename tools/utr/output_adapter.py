@@ -39,6 +39,8 @@ class LegacyOutputAdapter:
   ANNOTATOR_PREFIX_SUFIX = '@@@'
   TRIGGER_STEP_PREFIX = 'test_pre_run.[trigger] '
   TRIGGER_LINK_TEXT = '@@@STEP_LINK@task UI:'
+  # Special sub-log names added by the UTR recipe to surface to users.
+  UTR_LOG_NAME = 'utr_log'
 
   def __init__(self):
     self._trigger_link_re = re.compile(r'.+@(https://.+)@@@$')
@@ -60,6 +62,7 @@ class LegacyOutputAdapter:
         'reclient compile': self._ProcessCompileLine,
         'test_pre_run.[trigger] ': self._ProcessTriggerLine,
         'collect tasks.wait for tasks': self._ProcessCollectLine,
+        'download compilation outputs': self._PrintOnlyStepName,
     }
     # The first match is used. This allows us to filter parent steps while still
     # printing child steps by adding the child step name first. By default INFO
@@ -106,22 +109,32 @@ class LegacyOutputAdapter:
     self._current_step_name = ''
     self._dot_count = 0
 
+  def _PrintCurrentStepName(self, log_level):
+    logging.log(log_level, '\n[cyan]Running: %s[/]', self._current_step_name)
+
   def _StdoutProcessLine(self, line):
-    if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
-      # Pass through any non-engine text
-      is_urlish = re.match(r'^http[s]?://\S+$', line)
-      if is_urlish:
-        logging.log(self._current_log_level, line)
-      else:
-        basic_logger.log(self._current_log_level, line)
+    # Pass through any non-engine or utr-log text.
+    if line.startswith(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):
+      # '-3' corresponds to the trailing @@@ on every sub-log line.
+      line = line[len(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):-3]
+    if line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
+      return
+    is_urlish = re.match(r'^http[s]?://\S+$', line)
+    if is_urlish:
+      logging.log(self._current_log_level, line)
+    else:
+      basic_logger.log(self._current_log_level, line)
 
   def _StepNameProcessLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
       # Always print the step name to info
-      logging.log(self._current_log_level,
-                  '\n[cyan]Running: ' + self._current_step_name + '[/]')
+      self._PrintCurrentStepName(self._current_log_level)
       return
     self._StdoutProcessLine(line)
+
+  def _PrintOnlyStepName(self, line):
+    if line.startswith(self.SEED_STEP_TEXT):
+      self._PrintCurrentStepName(logging.INFO)
 
   def _ProcessTriggerLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT + self.TRIGGER_STEP_PREFIX):
@@ -143,7 +156,7 @@ class LegacyOutputAdapter:
 
   def _ProcessCompileLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
-      logging.info('\n[cyan]Running: ' + self._current_step_name + '[/]')
+      self._PrintCurrentStepName(logging.INFO)
       return
     matches = self._ninja_status_re.match(line)
     if matches:
@@ -161,7 +174,7 @@ class LegacyOutputAdapter:
 
   def _ProcessCollectLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
-      logging.info('\n[cyan]Running: ' + self._current_step_name + '[/]')
+      self._PrintCurrentStepName(logging.INFO)
     matches = self._collect_wait_re.match(line)
     if matches:
       task_ids = json.loads(matches[2])['task_id']

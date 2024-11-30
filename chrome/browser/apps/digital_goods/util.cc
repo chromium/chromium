@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/browser/document_user_data.h"
@@ -54,8 +55,14 @@ std::string GetScope(content::RenderFrameHost* render_frame_host) {
   }
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  std::optional<webapps::AppId> app_id = registrar.FindAppWithUrlInScope(
-      render_frame_host->GetMainFrame()->GetLastCommittedURL());
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      render_frame_host->GetMainFrame()->GetLastCommittedURL(),
+      {
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+      });
   if (!app_id) {
     return std::string();
   }

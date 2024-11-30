@@ -255,6 +255,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebAuthentication.EnclaveTransactionDecryptFailureSize"
+    units="bytes" expires_after="2025-06-30">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    When an enclave transaction fails to decrypt after negotiating a Noise
+    session, this reports the size of the received data in the failed
+    decryption.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.EnclaveTransactionResult"
     enum="WebAuthenticationEnclaveTransactionResult" expires_after="2025-06-30">
   <owner>kenrb@chromium.org</owner>

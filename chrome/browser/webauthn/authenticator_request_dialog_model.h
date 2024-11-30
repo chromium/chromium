@@ -200,6 +200,10 @@ struct AuthenticatorRequestDialogModel
     // dialog is shown, instead credentials are offered to the user on the
     // password autofill prompt.
     kPasskeyAutofill,
+    // During passkey upgrade (i.e. WebAuthn create() with conditional
+    // mediation), the WebAuthn tab-modal dialog is not used. A separate dialog
+    // controller implements its own UI.
+    kPasskeyUpgrade,
     kMechanismSelection,
     // The request errored out before completing. Error will only be sent
     // after user interaction.

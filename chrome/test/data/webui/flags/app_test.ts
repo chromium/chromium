@@ -67,9 +67,8 @@ suite('FlagsAppTest', function() {
     'needsRestart': false,
     'showBetaChannelPromotion': false,
     'showDevChannelPromotion': false,
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     'showOwnerWarning': true,
-    'showSystemFlagsLink': true,
     // </if>
   };
 
@@ -92,6 +91,22 @@ suite('FlagsAppTest', function() {
         app.getRequiredElement<HTMLButtonElement>('#experiment-reset-all');
   }
 
+  function assertRestartNeeded(state: boolean) {
+    const restartToast = app.getRequiredElement('#needs-restart');
+    assertEquals(state ? 'alert' : 'none', restartToast.role);
+    assertEquals(state, restartToast.hasAttribute('show'));
+
+    const restartButton =
+        app.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
+    assertEquals(state, !restartButton.disabled);
+  }
+
+  function simulateSelectChange(select: HTMLSelectElement, index: number) {
+    select.selectedIndex = index;
+    select.dispatchEvent(new Event('change'));
+    return microtasksFinished();
+  }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestFlagsBrowserProxy();
@@ -111,17 +126,13 @@ suite('FlagsAppTest', function() {
     assertFalse(isVisible(clearSearch));
     assertTrue(isVisible(resetAllButton));
 
-    // <if expr="chromeos_ash">
-    assertTrue(isVisible(app.getRequiredElement('#os-link-container')));
-    // </if>
-
     // Title and version
     assertTrue(isVisible(app.getRequiredElement('.section-header-title')));
     assertTrue(isVisible(app.getRequiredElement('#version')));
 
     // Blurb warning
     assertTrue(isVisible(app.getRequiredElement('.blurb-container')));
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     // Owner warning
     assertTrue(!!app.getRequiredElement('#owner-warning'));
     // </if>
@@ -196,9 +207,7 @@ suite('FlagsAppTest', function() {
     assertTrue(!!select);
     select.focus();
     assertEquals(select, getDeepActiveElement());
-    select.selectedIndex = 1;
-    select.dispatchEvent(new Event('change'));
-    await microtasksFinished();
+    await simulateSelectChange(select, 1);
 
     // Simulate a 'Tab' keystroke, and check that the 'restart' button is
     // focused, instead of the next experiment.
@@ -243,31 +252,19 @@ suite('FlagsAppTest', function() {
   });
 
   test('ResetAllClick', async function() {
-    const restartToast = app.getRequiredElement('#needs-restart');
-    const restartButton =
-        app.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
-
-    // The restart toast is not visible initially.
-    assertFalse(restartToast.classList.contains('show'));
-    // The restartButton should be disabled so that it is not in the tab order.
-    assertTrue(restartButton.disabled);
+    assertRestartNeeded(false);
 
     let defaultExperiments = app.getRequiredElement('#default-experiments')
                                  .querySelectorAll('flags-experiment');
     assertEquals(supportedFeatures.length, defaultExperiments.length);
 
-    // Need to turn `needsRestart` to true, so that the toast is not dismissed
-    // after re-fetching the backend data below.
-    const data: ExperimentalFeaturesData =
-        structuredClone(experimentalFeaturesData);
-    data.needsRestart = true;
-    browserProxy.setFeatureData(data);
-
     // The "Reset all" button is clicked, the restart toast becomes visible and
     // the experiment data is re-requested from the backend.
     browserProxy.reset();
     resetAllButton.click();
-    assertTrue(restartToast.classList.contains('show'));
+    await microtasksFinished();
+
+    assertRestartNeeded(true);
     await browserProxy.whenCalled('requestExperimentalFeatures');
 
     // Check that the same number of experiments is rendered after re-rendering.
@@ -276,57 +273,59 @@ suite('FlagsAppTest', function() {
     assertEquals(supportedFeatures.length, defaultExperiments.length);
 
     // The restart button is clicked and a request to restart is sent.
-    assertFalse(restartButton.disabled);
+    assertRestartNeeded(true);
+    const restartButton =
+        app.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
     restartButton.click();
     return browserProxy.whenCalled('restartBrowser');
   });
 
-  test('SearchMatchFound', function() {
+  test('SearchMatchFound', async function() {
     const promise = eventToPromise('search-finished-for-testing', app);
     searchBoxInput('available');
-    return promise.then(() => {
-      assertFalse(isVisible(app.getRequiredElement('.no-match')));
-      const noMatchMsg = app.shadowRoot!.querySelectorAll<HTMLElement>(
-          '.tab-content .no-match');
-      assertTrue(!!noMatchMsg[0]);
-      assertEquals(
-          2,
-          app.shadowRoot!
-              .querySelectorAll(
-                  `#tab-content-available flags-experiment:not([hidden])`)
-              .length);
-      assertTrue(!!noMatchMsg[1]);
-      assertEquals(
-          1,
-          app.shadowRoot!
-              .querySelectorAll(
-                  `#tab-content-unavailable flags-experiment:not([hidden])`)
-              .length);
-    });
+    await promise;
+
+    assertFalse(isVisible(app.getRequiredElement('.no-match')));
+    const noMatchMsg =
+        app.shadowRoot!.querySelectorAll<HTMLElement>('.tab-content .no-match');
+    assertTrue(!!noMatchMsg[0]);
+    assertEquals(
+        2,
+        app.shadowRoot!
+            .querySelectorAll(
+                `#tab-content-available flags-experiment:not([hidden])`)
+            .length);
+    assertTrue(!!noMatchMsg[1]);
+    assertEquals(
+        1,
+        app.shadowRoot!
+            .querySelectorAll(
+                `#tab-content-unavailable flags-experiment:not([hidden])`)
+            .length);
   });
 
-  test('SearchMatchNotFound', function() {
+  test('SearchMatchNotFound', async function() {
     const promise = eventToPromise('search-finished-for-testing', app);
     searchBoxInput('none');
-    return promise.then(() => {
-      assertTrue(isVisible(app.getRequiredElement('.no-match')));
-      const noMatchMsg = app.shadowRoot!.querySelectorAll<HTMLElement>(
-          '.tab-content .no-match');
-      assertTrue(!!noMatchMsg[0]);
-      assertEquals(
-          0,
-          app.shadowRoot!
-              .querySelectorAll(
-                  `#tab-content-available flags-experiment:not([hidden])`)
-              .length);
-      assertTrue(!!noMatchMsg[1]);
-      assertEquals(
-          0,
-          app.shadowRoot!
-              .querySelectorAll(
-                  `#tab-content-unavailable flags-experiment:not([hidden])`)
-              .length);
-    });
+    await promise;
+
+    assertTrue(isVisible(app.getRequiredElement('.no-match')));
+    const noMatchMsg =
+        app.shadowRoot!.querySelectorAll<HTMLElement>('.tab-content .no-match');
+    assertTrue(!!noMatchMsg[0]);
+    assertEquals(
+        0,
+        app.shadowRoot!
+            .querySelectorAll(
+                '#tab-content-available flags-experiment:not([hidden])')
+            .length);
+    assertTrue(!!noMatchMsg[1]);
+    assertEquals(
+        0,
+        app.shadowRoot!
+            .querySelectorAll(
+                '#tab-content-unavailable flags-experiment:not([hidden])')
+            .length);
   });
 
   test('SearchFieldFocusTest', function() {
@@ -351,5 +350,36 @@ suite('FlagsAppTest', function() {
 
     // Search field is focused after search is cleared.
     assertEquals(searchTextArea, getDeepActiveElement());
+  });
+
+
+  // Test the case where the user searches, then changes a feature's value, then
+  // clears search.
+  test('Search_Change_ClearSearch', async function() {
+    // Assert initial state.
+    assertRestartNeeded(false);
+
+    // Simulate search and assert results were found.
+    const promise = eventToPromise('search-finished-for-testing', app);
+    searchBoxInput('available');
+    await promise;
+    const experiments = app.shadowRoot!.querySelectorAll(
+        '#tab-content-available flags-experiment:not([hidden])');
+    assertEquals(2, experiments.length);
+
+    // Simulate changing the experiment's state.
+    const select = experiments[0]!.shadowRoot!.querySelector('select');
+    assertTrue(!!select);
+    await simulateSelectChange(select, 1);
+    assertRestartNeeded(true);
+
+    // Simulate changing again to the original value.
+    await simulateSelectChange(select, 0);
+    assertRestartNeeded(true);
+
+    // Simulate clearing search.
+    clearSearch.click();
+    await microtasksFinished();
+    assertRestartNeeded(true);
   });
 });

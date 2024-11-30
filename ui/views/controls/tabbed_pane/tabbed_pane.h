@@ -50,6 +50,7 @@ class VIEWS_EXPORT TabbedPane : public FlexLayoutView {
     kBorder,           // Draw border around the selected tab.
     kHighlight,        // Highlight background and text of the selected tab.
     kCompactWithIcon,  // Draw an icon, shrink the highlight bar to icon+text
+    kWithIcon,         // Draw an icon, expand the highlight bar to entire tab.
   };
 
   explicit TabbedPane(Orientation orientation = Orientation::kHorizontal,
@@ -108,6 +109,9 @@ class VIEWS_EXPORT TabbedPane : public FlexLayoutView {
 
   // Gets the style of the tab strip.
   TabStripStyle GetStyle() const;
+
+  // Returns whether an Icon should be rendered for the TabbedPaneTab children.
+  bool HasIconStyle() const;
 
   // Returns the tab at the given index.
   TabbedPaneTab* GetTabAt(size_t index);
@@ -283,6 +287,14 @@ class TabbedPaneTabStrip : public View, public gfx::AnimationDelegate {
   struct Coordinates {
     int start, end;
   };
+
+  // Returns the beginning and ending distances for the icon+label in a tab.
+  // start is the distance from the origin to the left-side of the icon,
+  // and end is the distance from the origin to the right-side of the text.
+  //                    (x) Label
+  // -------start-------^       ^
+  // -------end-----------------^
+  Coordinates GetIconLabelStartEndingX(TabbedPaneTab* tab);
 
   // The orientation of the tab alignment.
   const TabbedPane::Orientation orientation_;

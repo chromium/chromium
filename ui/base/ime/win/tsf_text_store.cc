@@ -172,10 +172,10 @@ HRESULT TSFTextStore::GetACPFromPoint(TsViewCookie view_cookie,
   if (stylus_handwriting::win::IsStylusHandwritingWinEnabled()) {
     IndexFromPointFlags index_flags{};
     if (flags & GXFPF_NEAREST) {
-      index_flags |= IndexFromPointFlags::kIndexFromPointNearest;
+      index_flags |= IndexFromPointFlags::kNearestToUncontainedPoint;
     }
     if (flags & GXFPF_ROUND_NEAREST) {
-      index_flags |= IndexFromPointFlags::kIndexFromPointRoundNearest;
+      index_flags |= IndexFromPointFlags::kNearestToContainedPoint;
     }
     const std::optional<size_t> index =
         text_input_client_->GetProximateCharacterIndexFromPoint(

@@ -232,7 +232,10 @@ public class ChromeTabbedActivityTest {
                 () ->
                         mActivity
                                 .getCurrentTabModel()
-                                .closeTabs(TabClosureParams.closeAllTabs().build()));
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeAllTabs().build(),
+                                        /* allowDialog= */ false));
 
         viewIntent.putExtra(IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
         mActivity.getApplicationContext().startActivity(viewIntent);

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement(): Placed elements respect css animations.</title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/WICG/canvas-place-element" />
+  <meta name="assert" content="Checks that canvas placed elements are
+    affected by css transform animations.">
+  <link rel="match" href="placeElement-ref.html">
+
+  <style>
+    @keyframes transformAnimation {
+      from {
+        transform: translateX(0px);
+      }
+
+      to {
+        transform: translateX(-100px);
+      }
+    }
+
+    #fallback {
+      background-color: green;
+      animation-name: transformAnimation;
+      animation-duration: 0s;
+      animation-fill-mode: forwards;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+    <div id="fallback">Placed Element</div>
+  </canvas>
+</body>
+
+<script>
+  const ctx = document.querySelector("canvas").getContext("2d");
+  const fallback = document.getElementById("fallback");
+  ctx.placeElement(fallback, 100, 0);
+</script>

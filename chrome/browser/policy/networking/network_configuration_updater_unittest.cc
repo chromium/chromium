@@ -174,7 +174,7 @@ const char kExtensionIdWithScopedCert[] = "ngjobkbdodapjbbncmagbccommkggmnj";
 
 class NetworkConfigurationUpdaterTest : public testing::Test {
  protected:
-  NetworkConfigurationUpdaterTest() {}
+  NetworkConfigurationUpdaterTest() = default;
 
   void SetUp() override {
     EXPECT_CALL(provider_, IsInitializationComplete(_))

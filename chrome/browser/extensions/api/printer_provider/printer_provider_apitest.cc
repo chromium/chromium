@@ -41,7 +41,7 @@ namespace extensions {
 
 namespace {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 using GetPrintersRepeatingFuture =
     base::test::RepeatingTestFuture<base::Value::List, bool>;

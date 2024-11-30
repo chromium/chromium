@@ -13,7 +13,11 @@
 #include "ash/quick_insert/quick_insert_shortcuts.h"
 #include "ash/quick_insert/search/quick_insert_date_search.h"
 #include "ash/quick_insert/search/quick_insert_math_search.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 namespace {
@@ -22,6 +26,26 @@ constexpr int kMaxRecentFiles = 10;
 constexpr int kMaxRecentLinks = 10;
 constexpr base::TimeDelta kMaxLocalFileSuggestionRecencyDelta = base::Days(30);
 constexpr base::TimeDelta kMaxLocalFileCategoryRecencyDelta = base::Days(3652);
+
+std::vector<QuickInsertSearchResult> ConvertToSearchResults(
+    base::expected<tenor::mojom::PaginatedGifResponsesPtr,
+                   GifTenorApiFetcher::Error> response) {
+  if (!response.has_value()) {
+    // TODO: b/325368650 - Add better handling of errors.
+    return {};
+  }
+  return base::ToVector(
+      (*response)->results, [](tenor::mojom::GifResponsePtr& result) {
+        CHECK(result);
+        const tenor::mojom::GifUrlsPtr& urls = result->url;
+        CHECK(urls);
+        return QuickInsertSearchResult(QuickInsertGifResult(
+            urls->preview, urls->preview_image, result->preview_size,
+            urls->full, result->full_size,
+            base::UTF8ToUTF16(result->content_description)));
+      });
+}
+
 }  // namespace
 
 QuickInsertSuggestionsController::QuickInsertSuggestionsController() = default;
@@ -136,6 +160,12 @@ void QuickInsertSuggestionsController::GetSuggestionsForCategory(
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
       NOTREACHED();
+    case QuickInsertCategory::kGifs:
+      GifTenorApiFetcher::FetchFeaturedGifs(
+          client.GetSharedURLLoaderFactory(),
+          /*=*/std::nullopt,
+          base::BindOnce(ConvertToSearchResults).Then(std::move(callback)));
+      return;
     case QuickInsertCategory::kDriveFiles:
       client.GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
       return;

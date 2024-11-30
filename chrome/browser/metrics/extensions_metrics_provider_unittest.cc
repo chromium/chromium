@@ -209,14 +209,14 @@ TEST_F(ExtensionsMetricsProviderTest, ProvideCurrentSessionData) {
 class ExtensionMetricsProviderInstallsTest
     : public extensions::ExtensionServiceTestBase {
  public:
-  ExtensionMetricsProviderInstallsTest() {}
+  ExtensionMetricsProviderInstallsTest() = default;
 
   ExtensionMetricsProviderInstallsTest(
       const ExtensionMetricsProviderInstallsTest&) = delete;
   ExtensionMetricsProviderInstallsTest& operator=(
       const ExtensionMetricsProviderInstallsTest&) = delete;
 
-  ~ExtensionMetricsProviderInstallsTest() override {}
+  ~ExtensionMetricsProviderInstallsTest() override = default;
 
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();

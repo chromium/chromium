@@ -82,16 +82,12 @@ std::string GetAudioProcesingPropertiesLogString(
   auto str = base::StringPrintf(
       "aec: %s, "
       "disable_hw_ns: %s, "
-      "goog_audio_mirroring: %s, "
       "auto_gain_control: %s, "
-      "noise_suppression: %s, "
-      "goog_highpass_filter: %s, ",
+      "noise_suppression: %s",
       aec_to_string(properties.echo_cancellation_type),
       bool_to_string(properties.disable_hw_noise_suppression),
-      bool_to_string(properties.goog_audio_mirroring),
       bool_to_string(properties.auto_gain_control),
-      bool_to_string(properties.noise_suppression),
-      bool_to_string(properties.goog_highpass_filter));
+      bool_to_string(properties.noise_suppression));
   return str;
 }
 

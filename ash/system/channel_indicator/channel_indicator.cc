@@ -76,10 +76,6 @@ views::View* ChannelIndicatorView::GetTooltipHandlerForPoint(
   return GetLocalBounds().Contains(point) ? this : nullptr;
 }
 
-std::u16string ChannelIndicatorView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_;
-}
-
 void ChannelIndicatorView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
 
@@ -119,9 +115,10 @@ void ChannelIndicatorView::Update() {
 
   SetImageOrText();
   SetVisible(true);
-  SetTooltip();
+  SetCachedTooltipText(l10n_util::GetStringUTF16(
+      channel_indicator_utils::GetChannelNameStringResourceID(
+          channel_, /*append_channel=*/true)));
 
-  DCHECK(channel_indicator_utils::IsDisplayableChannel(channel_));
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       channel_indicator_utils::GetChannelNameStringResourceID(
           channel_, /*append_channel=*/true)));
@@ -201,13 +198,6 @@ void ChannelIndicatorView::OnAccessibleNameChanged(
   // Otherwise set it on the label.
   if (label())
     label()->GetViewAccessibility().SetName(new_name);
-}
-
-void ChannelIndicatorView::SetTooltip() {
-  DCHECK(channel_indicator_utils::IsDisplayableChannel(channel_));
-  tooltip_ = l10n_util::GetStringUTF16(
-      channel_indicator_utils::GetChannelNameStringResourceID(
-          channel_, /*append_channel=*/true));
 }
 
 void ChannelIndicatorView::OnSessionStateChanged(

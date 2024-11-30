@@ -15,6 +15,8 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,13 +99,12 @@ void FakePlusAddressService::OnPlusAddressSuggestionShown(
   NOTIMPLEMENTED();
 }
 
-void FakePlusAddressService::DidFillPlusAddress(bool did_show_email_suggestion,
-                                                bool is_manual_fallback) {
+void FakePlusAddressService::DidFillPlusAddress() {
   did_fill_plus_address_suggestion_ = true;
 }
 
-void FakePlusAddressService::DidChooseEmailOverPlusAddress() {
-  was_email_chosen_over_plus_address_ = true;
+size_t FakePlusAddressService::GetPlusAddressesCount() {
+  return plus_profiles_.size();
 }
 
 void FakePlusAddressService::OnClickedRefreshInlineSuggestion(
@@ -125,7 +126,6 @@ void FakePlusAddressService::OnAcceptedInlineSuggestion(
     const url::Origin& primary_main_frame_origin,
     base::span<const autofill::Suggestion> current_suggestions,
     size_t current_suggestion_index,
-    bool is_manual_fallback,
     UpdateSuggestionsCallback update_suggestions_callback,
     HideSuggestionsCallback hide_suggestions_callback,
     PlusAddressCallback fill_field_callback,
@@ -133,6 +133,12 @@ void FakePlusAddressService::OnAcceptedInlineSuggestion(
     ShowErrorDialogCallback show_error_dialog,
     base::OnceClosure reshow_suggestions) {
   NOTIMPLEMENTED();
+}
+
+std::map<std::string, std::string>
+FakePlusAddressService::GetPlusAddressHatsData() const {
+  return {{hats::kFirstPlusAddressCreationTime, "-1"},
+          {hats::kLastPlusAddressFillingTime, "-1"}};
 }
 
 bool FakePlusAddressService::IsPlusAddressFillingEnabled(
@@ -211,7 +217,6 @@ void FakePlusAddressService::ReservePlusAddress(
 void FakePlusAddressService::ConfirmPlusAddress(
     const url::Origin& origin,
     const PlusAddress& plus_address,
-    bool is_manual_fallback,
     PlusAddressRequestCallback on_completed) {
   if (should_fail_to_confirm_) {
     std::move(on_completed)
@@ -305,11 +310,6 @@ void FakePlusAddressService::SavePlusProfile(const PlusProfile& profile) {
 
 bool FakePlusAddressService::IsEnabled() const {
   return true;
-}
-
-void FakePlusAddressService::TriggerUserPerceptionSurvey(
-    hats::SurveyType survey_type) {
-  triggered_survey_ = survey_type;
 }
 
 void FakePlusAddressService::ClearState() {

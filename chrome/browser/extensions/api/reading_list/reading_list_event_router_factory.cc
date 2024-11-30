@@ -39,9 +39,10 @@ ReadingListEventRouterFactory::ReadingListEventRouterFactory()
 
 ReadingListEventRouterFactory::~ReadingListEventRouterFactory() = default;
 
-KeyedService* ReadingListEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ReadingListEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ReadingListEventRouter(context);
+  return std::make_unique<ReadingListEventRouter>(context);
 }
 
 bool ReadingListEventRouterFactory::ServiceIsCreatedWithBrowserContext() const {

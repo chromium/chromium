@@ -104,7 +104,7 @@ public class TrustedWebActivityTestUtil {
     /** Waits till {@link CurrentPageVerifier} verification either succeeds or fails. */
     public static void waitForCurrentPageVerifierToFinish(CustomTabActivity activity)
             throws TimeoutException {
-        CurrentPageVerifier verifier = activity.getComponent().resolveCurrentPageVerifier();
+        CurrentPageVerifier verifier = activity.getCurrentPageVerifier();
         new CurrentPageVerifierWaiter().start(verifier);
     }
 }

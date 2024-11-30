@@ -80,7 +80,7 @@ class AutofillPopupView {
   virtual base::WeakPtr<AutofillPopupView> GetWeakPtr() = 0;
 
  protected:
-  virtual ~AutofillPopupView() {}
+  virtual ~AutofillPopupView() = default;
 };
 
 }  // namespace autofill

@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
@@ -35,6 +34,8 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
+
+import java.util.Set;
 
 /** Tests for {@link PriceTrackingFeatures}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -146,9 +147,6 @@ public class PriceTrackingFeaturesTest {
     private void setTabSyncStatus(boolean isSyncFeatureEnabled, boolean hasSessions) {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(isSyncFeatureEnabled);
         when(mSyncServiceMock.getActiveDataTypes())
-                .thenReturn(
-                        hasSessions
-                                ? CollectionUtil.newHashSet(DataType.SESSIONS)
-                                : CollectionUtil.newHashSet(DataType.AUTOFILL));
+                .thenReturn(hasSessions ? Set.of(DataType.SESSIONS) : Set.of(DataType.AUTOFILL));
     }
 }

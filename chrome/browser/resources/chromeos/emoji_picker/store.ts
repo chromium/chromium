@@ -240,12 +240,14 @@ export class RecentlyUsedStore {
     if (this.category !== CategoryEnum.GIF) {
       EmojiPickerApiProxy.getInstance().updateHistoryInPrefs(
           convertCategoryEnum(this.category),
-          this.store.data.history.map((x) => ({
-                                        emoji: x.base.string!,
-                                        timestamp: {
-                                          msec: x.timestamp || 0,
-                                        },
-                                      })));
+          this.store.data.history.filter((x) => x.base.string)
+              .map((x) => ({
+                     // Explicit cast here is safe due to filter above.
+                     emoji: x.base.string!,
+                     timestamp: {
+                       msec: x.timestamp || 0,
+                     },
+                   })));
     }
   }
 

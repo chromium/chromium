@@ -284,7 +284,7 @@ void FuzzedCompositorFrameBuilder::TryAddTileDrawQuad(
   quad->rect = rect;
   quad->visible_rect = visible_rect;
   quad->needs_blending = quad_spec.tile_quad().needs_blending();
-  quad->resources.ids[0] = transferable_resource.id;
+  quad->resource_id = transferable_resource.id;
   quad->tex_coord_rect =
       gfx::RectF(GetRectFromProtobuf(quad_spec.tile_quad().tex_coord_rect()));
   quad->texture_size = tile_size;

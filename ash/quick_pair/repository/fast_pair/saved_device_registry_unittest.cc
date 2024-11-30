@@ -140,7 +140,7 @@ TEST_F(SavedDeviceRegistryTest, MissingPrefService) {
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
 }
 
-TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_MacAddress) {
+TEST_F(SavedDeviceRegistryTest, DeleteAccountKeyMacAddress) {
   bool success1 = saved_device_registry_->SaveAccountAssociation(
       kFirstSavedMacAddress, kAccountKey1);
   bool success2 = saved_device_registry_->SaveAccountAssociation(
@@ -178,7 +178,7 @@ TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_MacAddress) {
   EXPECT_FALSE(saved_device_registry_->DeleteAccountKey(kFirstSavedMacAddress));
 }
 
-TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_AccountKey) {
+TEST_F(SavedDeviceRegistryTest, DeleteAccountKeyAccountKey) {
   bool success1 = saved_device_registry_->SaveAccountAssociation(
       kFirstSavedMacAddress, kAccountKey1);
   bool success2 = saved_device_registry_->SaveAccountAssociation(

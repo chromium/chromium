@@ -348,7 +348,7 @@ class CORE_EXPORT MediaQueryExpNode
     kFeatureStyle = 1 << 6,
     kFeatureSticky = 1 << 7,
     kFeatureSnap = 1 << 8,
-    kFeatureOverflow = 1 << 9,
+    kFeatureScrollable = 1 << 9,
   };
 
   using FeatureFlags = unsigned;

@@ -34,6 +34,7 @@
 #include <optional>
 
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom-shared.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
@@ -49,7 +50,7 @@ struct WebCSPSource {
 };
 
 struct WebCSPHashSource {
-  network::mojom::CSPHashAlgorithm algorithm;
+  network::mojom::IntegrityAlgorithm algorithm;
   WebVector<uint8_t> value;
 };
 

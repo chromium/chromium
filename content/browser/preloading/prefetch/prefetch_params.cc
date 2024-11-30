@@ -258,4 +258,10 @@ bool UseNewWaitLoop() {
              features::kPrerender2FallbackPrefetchSpecRules);
 }
 
+size_t GetPrefetchDataPipeTeeBodySizeLimit() {
+  return std::max(
+      static_cast<size_t>(features::kPrefetchReusableBodySizeLimit.Get()),
+      features::kPrerender2FallbackBodySizeLimit.Get());
+}
+
 }  // namespace content

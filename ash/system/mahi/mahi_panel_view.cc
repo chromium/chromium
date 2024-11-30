@@ -93,6 +93,9 @@ constexpr int kAskQuestionContainerCornerRadius = 8;
 constexpr int kInputRowContainerBetweenChildSpacing = 8;
 constexpr gfx::Insets kInputTextfieldPadding = gfx::Insets::TLBR(0, 0, 0, 8);
 
+constexpr int kDragHandleIconSize = 12;
+constexpr gfx::Insets kDragHandleIconPadding = gfx::Insets::VH(6, 6);
+
 // The below constants for the feedback buttons and cutout dimensions refer to
 // the following spec, where an order is designated for the first, second, and
 // third curves of the cutout in the content section's bottom-right corner:
@@ -526,6 +529,23 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
       views::HighlightBorder::Type::kHighlightBorderOnShadow,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 
+  // If resizing is enabled, display the drag handle icon at the bottom right
+  // corner of the panel.
+  if (base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)) {
+    AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+            .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
+            .AddChild(views::Builder<views::ImageView>()
+                          .SetID(mahi_constants::ViewId::kDragHandleIcon)
+                          .SetImage(ui::ImageModel::FromVectorIcon(
+                              kDragHandleIcon, cros_tokens::kCrosSysSecondary,
+                              kDragHandleIconSize))
+                          .SetBorder(
+                              views::CreateEmptyBorder(kDragHandleIconPadding)))
+            .Build());
+  }
+
   // The `main_container` is used to anchor the contents to the middle of the
   // panel when its size is animating. The anchoring to middle effect is
   // achieved by setting a transform on the `main_container`s layer and
@@ -864,8 +884,7 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
       send_button_->SetEnabled(true);
       return;
     case MahiUiUpdateType::kContentsRefreshInitiated: {
-      content_source_button_->RefreshContentSourceInfo(
-          /*elucidation_in_use=*/false);
+      content_source_button_->RefreshContentSourceInfo();
 
       // Reset feedback buttons when new content is requested.
       thumbs_up_button_->SetToggled(false);
@@ -873,8 +892,7 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
       return;
     }
     case MahiUiUpdateType::kElucidationRequested: {
-      content_source_button_->RefreshContentSourceInfo(
-          /*elucidation_in_use=*/true);
+      content_source_button_->RefreshContentSourceInfo();
       return;
     }
     case MahiUiUpdateType::kErrorReceived:

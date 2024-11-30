@@ -5,8 +5,8 @@
 #ifndef UI_GFX_GEOMETRY_INSETS_H_
 #define UI_GFX_GEOMETRY_INSETS_H_
 
+#include "base/component_export.h"
 #include "base/numerics/clamped_math.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 
@@ -18,7 +18,7 @@ class Vector2d;
 // This can be used to represent a space within a rectangle, by "shrinking" the
 // rectangle by the inset amount on all four sides. Alternatively, it can
 // represent a border that has a different thickness on each side.
-class GEOMETRY_EXPORT Insets : public InsetsOutsetsBase<Insets> {
+class COMPONENT_EXPORT(GEOMETRY) Insets : public InsetsOutsetsBase<Insets> {
  public:
   using InsetsOutsetsBase::InsetsOutsetsBase;
 
@@ -55,18 +55,18 @@ inline Insets operator+(Insets insets, const gfx::Vector2d& offset) {
 }
 
 // Helper methods to scale a gfx::Insets to a new gfx::Insets.
-GEOMETRY_EXPORT Insets ScaleToCeiledInsets(const Insets& insets,
-                                           float x_scale,
-                                           float y_scale);
-GEOMETRY_EXPORT Insets ScaleToCeiledInsets(const Insets& insets, float scale);
-GEOMETRY_EXPORT Insets ScaleToFlooredInsets(const Insets& insets,
-                                            float x_scale,
-                                            float y_scale);
-GEOMETRY_EXPORT Insets ScaleToFlooredInsets(const Insets& insets, float scale);
-GEOMETRY_EXPORT Insets ScaleToRoundedInsets(const Insets& insets,
-                                            float x_scale,
-                                            float y_scale);
-GEOMETRY_EXPORT Insets ScaleToRoundedInsets(const Insets& insets, float scale);
+COMPONENT_EXPORT(GEOMETRY)
+Insets ScaleToCeiledInsets(const Insets& insets, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Insets ScaleToCeiledInsets(const Insets& insets, float scale);
+COMPONENT_EXPORT(GEOMETRY)
+Insets ScaleToFlooredInsets(const Insets& insets, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Insets ScaleToFlooredInsets(const Insets& insets, float scale);
+COMPONENT_EXPORT(GEOMETRY)
+Insets ScaleToRoundedInsets(const Insets& insets, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Insets ScaleToRoundedInsets(const Insets& insets, float scale);
 
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit

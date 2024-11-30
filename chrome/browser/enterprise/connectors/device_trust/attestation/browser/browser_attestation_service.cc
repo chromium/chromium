@@ -19,7 +19,10 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "crypto/aes_cbc.h"
 #include "crypto/random.h"
+#include "third_party/boringssl/src/include/openssl/hmac.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace enterprise_connectors {
 
@@ -46,6 +49,22 @@ VAType GetVAType() {
   return VAType::DEFAULT_VA;
 }
 
+void FillHMAC(base::span<const uint8_t> key, EncryptedData* data) {
+  std::array<uint8_t, SHA512_DIGEST_LENGTH> hmac;
+  bssl::ScopedHMAC_CTX ctx;
+  CHECK(HMAC_Init_ex(ctx.get(), key.data(), key.size(), EVP_sha512(), nullptr));
+  {
+    auto iv = base::as_byte_span(data->iv());
+    CHECK(HMAC_Update(ctx.get(), iv.data(), iv.size()));
+  }
+  {
+    auto payload = base::as_byte_span(data->encrypted_data());
+    CHECK(HMAC_Update(ctx.get(), payload.data(), payload.size()));
+  }
+  CHECK(HMAC_Final(ctx.get(), hmac.data(), nullptr));
+  data->mutable_mac()->assign(base::as_string_view(hmac));
+}
+
 // The KeyInfo message encrypted using a public encryption key, with
 // the following parameters:
 //   Key encryption: RSA-OAEP with no custom parameters.
@@ -63,11 +82,19 @@ std::optional<std::string> CreateChallengeResponseString(
   nonce->resize(kChallengeResponseNonceBytesSize);
   crypto::RandBytes(base::as_writable_byte_span(*nonce));
 
-  std::string key;
-  if (!CryptoUtility::EncryptWithSeed(
-          serialized_key_info, response_pb.mutable_encrypted_key_info(), key)) {
-    return std::nullopt;
-  }
+  std::array<uint8_t, 32> key;
+  std::array<uint8_t, crypto::aes_cbc::kBlockSize> iv;
+
+  crypto::RandBytes(key);
+  crypto::RandBytes(iv);
+
+  EncryptedData* key_info = response_pb.mutable_encrypted_key_info();
+  key_info->mutable_encrypted_data()->assign(
+      base::as_string_view(crypto::aes_cbc::Encrypt(
+          key, iv, base::as_byte_span(serialized_key_info))));
+  key_info->mutable_iv()->assign(base::as_string_view(iv));
+
+  FillHMAC(key, key_info);
 
   bssl::UniquePtr<RSA> rsa(CryptoUtility::GetRSA(wrapping_key_modulus_hex));
   if (!rsa) {

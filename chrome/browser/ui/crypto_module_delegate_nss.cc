@@ -23,7 +23,7 @@ ChromeNSSCryptoModuleDelegate::ChromeNSSCryptoModuleDelegate(
              base::WaitableEvent::InitialState::NOT_SIGNALED),
       cancelled_(false) {}
 
-ChromeNSSCryptoModuleDelegate::~ChromeNSSCryptoModuleDelegate() {}
+ChromeNSSCryptoModuleDelegate::~ChromeNSSCryptoModuleDelegate() = default;
 
 std::string ChromeNSSCryptoModuleDelegate::RequestPassword(
     const std::string& slot_name,

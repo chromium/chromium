@@ -13,9 +13,24 @@
 
 namespace payments::facilitated {
 
-void LogPixCodeCopied() {
+void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.PixCodeCopied",
                             /*sample=*/true);
+  ukm::builders::FacilitatedPayments_PixCodeCopied(ukm_source_id)
+      .SetPixCodeCopied(true)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void LogFopSelectorShownUkm(ukm::SourceId ukm_source_id) {
+  ukm::builders::FacilitatedPayments_Pix_FopSelectorShown(ukm_source_id)
+      .SetShown(true)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void LogFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id) {
+  ukm::builders::FacilitatedPayments_Pix_FopSelectorResult(ukm_source_id)
+      .SetResult(accepted)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void LogFopSelected() {
@@ -102,13 +117,43 @@ void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration) {
       duration);
 }
 
-void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration) {
+void LogInitiatePurchaseActionAttempt() {
   // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
-  UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.InitiatePurchaseAction.Result",
-                        result);
+  base::UmaHistogramBoolean(
+      "FacilitatedPayments.Pix.InitiatePurchaseAction.Attempt",
+      /*sample=*/true);
+}
+
+void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
+                                               base::TimeDelta duration) {
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
+  // FacilitatedPaymentsType enum.
   base::UmaHistogramLongTimes(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency", duration);
+      base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.", result,
+                    ".Latency"}),
+      duration);
+}
+
+void LogInitiatePurchaseActionResultUkm(const std::string& result,
+                                        ukm::SourceId ukm_source_id) {
+  ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult(
+      ukm_source_id)
+      .SetResult(ConvertPurchaseActionResultToEnumValue(result))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result) {
+  if (result == "Failed") {
+    return 0;  // See the definition of the enum
+               // FacilitatedPayments.InitiatePurchaseActionResult.
+  } else if (result == "Succeeded") {
+    return 1;
+  } else if (result == "Abandoned") {
+    return 2;
+  } else {
+    NOTREACHED();
+  }
 }
 
 void LogFopSelectorShown(bool shown) {
@@ -150,6 +195,11 @@ void LogTransactionResult(TransactionResult result,
 void LogUiScreenShown(UiState ui_screen) {
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.UiScreenShown",
                                 ui_screen);
+}
+
+void LogPixFopSelectorShownLatency(base::TimeDelta latency) {
+  base::UmaHistogramLongTimes(
+      "FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy", latency);
 }
 
 }  // namespace payments::facilitated

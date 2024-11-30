@@ -12,21 +12,20 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import static org.chromium.chrome.browser.safety_hub.SafetyHubModuleViewBinder.getModuleState;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubModuleViewBinder.isBrowserStateSafe;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.app.Activity;
 import android.os.Bundle;
-import android.provider.Browser;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsIntent;
 
-import org.chromium.base.IntentUtils;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -64,18 +63,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 SafetyHubFetchService.Observer,
                 PasswordStoreBridge.PasswordStoreObserver,
                 SigninManager.SignInStateObserver {
-    /**
-     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
-     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
-     * TODO(crbug.com/40751023): Update when LaunchIntentDispatcher is (partially-)modularized.
-     */
-    public interface CustomTabIntentHelper {
-        /**
-         * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
-         */
-        Intent createCustomTabActivityIntent(Context context, Intent intent);
-    }
-
     private static final String PREF_PASSWORDS = "passwords_account";
     private static final String PREF_UPDATE = "update_check";
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
@@ -100,6 +87,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @VisibleForTesting
     static final String HELP_CENTER_URL = "https://support.google.com/chrome?p=safety_check";
 
+    private static final int ORGANIC_HATS_SURVEY_DELAY_MS = 10000;
+
     private SafetyHubModuleDelegate mDelegate;
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
@@ -110,13 +99,19 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private PropertyModel mPermissionsModel;
     private PropertyModel mNotificationsModel;
     private PropertyModel mBrowserStateModule;
-    private CustomTabIntentHelper mCustomTabIntentHelper;
     private PasswordStoreBridge mPasswordStoreBridge;
     private SigninManager mSigninManager;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private CallbackController mCallbackController;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        mCallbackController = new CallbackController();
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(this::triggerOrganicHatsSurvey),
+                ORGANIC_HATS_SURVEY_DELAY_MS);
+
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         mPageTitle.set(getString(R.string.prefs_safety_check));
 
@@ -429,7 +424,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         findPreference(PREF_SAFETY_TIPS_SAFETY_TOOLS)
                 .setOnPreferenceClickListener(
                         (preference) -> {
-                            openUrlInCct(SAFETY_TOOLS_LEARN_MORE_URL);
+                            getCustomTabLauncher()
+                                    .openUrlInCct(getContext(), SAFETY_TOOLS_LEARN_MORE_URL);
                             recordDashboardInteractions(
                                     DashboardInteractions.OPEN_SAFETY_TOOLS_INFO);
                             return true;
@@ -438,7 +434,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         findPreference(PREF_SAFETY_TIPS_INCOGNITO)
                 .setOnPreferenceClickListener(
                         (preference) -> {
-                            openUrlInCct(INCOGNITO_LEARN_MORE_URL);
+                            getCustomTabLauncher()
+                                    .openUrlInCct(getContext(), INCOGNITO_LEARN_MORE_URL);
                             recordDashboardInteractions(DashboardInteractions.OPEN_INCOGNITO_INFO);
                             return true;
                         });
@@ -446,7 +443,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         findPreference(PREF_SAFETY_TIPS_SAFE_BROWSING)
                 .setOnPreferenceClickListener(
                         (preference) -> {
-                            openUrlInCct(SAFE_BROWSING_LEARN_MORE_URL);
+                            getCustomTabLauncher()
+                                    .openUrlInCct(getContext(), SAFE_BROWSING_LEARN_MORE_URL);
                             recordDashboardInteractions(
                                     DashboardInteractions.OPEN_SAFE_BROWSING_INFO);
                             return true;
@@ -466,31 +464,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            openUrlInCct(HELP_CENTER_URL);
+            getCustomTabLauncher().openUrlInCct(getContext(), HELP_CENTER_URL);
             recordDashboardInteractions(DashboardInteractions.OPEN_HELP_CENTER);
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /** Sets the {@link CustomTabIntentHelper} to open urls in CCT. */
-    public void setCustomTabIntentHelper(CustomTabIntentHelper helper) {
-        mCustomTabIntentHelper = helper;
-    }
-
-    private void openUrlInCct(String url) {
-        assert (mCustomTabIntentHelper != null)
-                : "CCT helpers must be set on SafetyHubFragment before opening a link";
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                mCustomTabIntentHelper.createCustomTabActivityIntent(
-                        getContext(), customTabIntent.intent);
-        intent.setPackage(getContext().getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(getContext(), intent);
     }
 
     @Override
@@ -513,6 +491,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mSigninManager.removeSignInStateObserver(this);
         if (mPasswordStoreBridge != null) {
             mPasswordStoreBridge.removeObserver(this);
+        }
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
         }
     }
 
@@ -738,5 +720,16 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         int browserState =
                 isBrowserStateSafe(mBrowserStateModule) ? ModuleState.SAFE : ModuleState.WARNING;
         recordModuleState(browserState, DashboardModuleType.BROWSER_STATE, event);
+    }
+
+    private void triggerOrganicHatsSurvey() {
+        Activity activity = getActivity();
+        ViewStub hatsSurveyViewStub = activity.findViewById(R.id.hats_survey_container_stub);
+        if (hatsSurveyViewStub != null && hatsSurveyViewStub.getParent() != null) {
+            hatsSurveyViewStub.inflate();
+        }
+        SafetyHubHatsHelper safetyHubHatsHelper = SafetyHubHatsHelper.getForProfile(getProfile());
+        assert safetyHubHatsHelper != null && activity != null;
+        safetyHubHatsHelper.triggerOrganicHatsSurvey(activity);
     }
 }

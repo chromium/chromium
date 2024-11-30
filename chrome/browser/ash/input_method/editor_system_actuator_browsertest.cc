@@ -22,7 +22,7 @@ namespace {
 
 class EditorSystemActuatorAccessibilityTest : public InProcessBrowserTest {
  public:
-  EditorSystemActuatorAccessibilityTest() {}
+  EditorSystemActuatorAccessibilityTest() = default;
   ~EditorSystemActuatorAccessibilityTest() override = default;
   EditorSystemActuatorAccessibilityTest(
       const EditorSystemActuatorAccessibilityTest&) = delete;

@@ -338,6 +338,11 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     }
     if (base::FeatureList::IsEnabled(kEnableArcIdleManager))
       ArcIdleManager::GetForBrowserContext(profile);
+    if (ShouldUseArcKeyMint()) {
+      auto serial_number = arc_session_manager_->GetSerialNumberForKeyMint();
+      ArcKeyMintBridge::GetForBrowserContext(profile)->SetSerialNumberInKeyMint(
+          serial_number);
+    }
   } else {
     // ARC Container-only services.
     ArcTimerBridge::GetForBrowserContext(profile);

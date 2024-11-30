@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -31,14 +33,20 @@ AtomicString FromPaintTypeToString(PerformancePaintTiming::PaintType type) {
 
 PerformancePaintTiming::PerformancePaintTiming(
     PaintType type,
-    double start_time,
+    DOMHighResTimeStamp start_time,
+    DOMHighResTimeStamp rendering_update_end_time,
     DOMWindow* source,
     bool is_triggered_by_soft_navigation)
-    : PerformanceEntry(FromPaintTypeToString(type),
-                       start_time,
-                       start_time,
-                       source,
-                       is_triggered_by_soft_navigation) {}
+    : PerformanceEntry(
+          FromPaintTypeToString(type),
+          // https://w3c.github.io/paint-timing/#report-paint-timing
+          // Set newEntry’s startTime attribute to the default paint timestamp
+          // given paintTimingInfo.
+          start_time,
+          start_time,
+          source,
+          is_triggered_by_soft_navigation),
+      rendering_update_end_time_(rendering_update_end_time) {}
 
 PerformancePaintTiming::~PerformancePaintTiming() = default;
 
@@ -48,6 +56,14 @@ const AtomicString& PerformancePaintTiming::entryType() const {
 
 PerformanceEntryType PerformancePaintTiming::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kPaint;
+}
+
+void PerformancePaintTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
+  PerformanceEntry::BuildJSONValue(builder);
+  if (RuntimeEnabledFeatures::PaintTimingMixinEnabled()) {
+    builder.AddNumber("paintTime", paintTime());
+    builder.AddNumber("presentationTime", presentationTime());
+  }
 }
 
 }  // namespace blink

@@ -84,6 +84,8 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
     return file_system_context_.get();
   }
 
+  static size_t quota_limit() { return FilePathWatcher::quota_limit(); }
+
  protected:
   virtual void Initialize(
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>

@@ -49,6 +49,9 @@ enum class KeepAliveOrigin {
   // c/b/extensions
   NATIVE_MESSAGING_HOST_ERROR_REPORT,
 
+  // c/b/glic
+  GLIC_LAUNCHER,
+
   // c/b/notifications
   NOTIFICATION,
   PENDING_NOTIFICATION_CLICK_EVENT,

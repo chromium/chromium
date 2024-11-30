@@ -18,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/url_visit_types.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -243,8 +244,9 @@ void MostRelevantTabResumptionPageHandler::GetURLVisits(
           &MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
-                           base::PersistentHash("tab_resumption"));
+  base::UmaHistogramSparse(
+      "NewTabPage.Modules.DataRequest",
+      base::PersistentHash(ntp_modules::kMostRelevantTabResumptionModuleId));
 }
 
 void MostRelevantTabResumptionPageHandler::DismissModule(

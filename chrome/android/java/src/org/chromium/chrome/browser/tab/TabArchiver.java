@@ -142,8 +142,11 @@ public class TabArchiver implements TabWindowManager.Observer {
                             int tabAgeDays =
                                     timestampMillisToDays(
                                             archivePersistedTabData.getArchivedTimeMs());
-                            mArchivedTabModel.closeTabs(
-                                    TabClosureParams.closeTab(tab).allowUndo(false).build());
+                            mArchivedTabModel
+                                    .getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                            /* allowDialog= */ false);
                             RecordHistogram.recordCount1000Histogram(
                                     "Tabs.TabAutoDeleted.AfterNDays", tabAgeDays);
                             RecordUserAction.record("Tabs.ArchivedTabAutoDeleted");
@@ -186,7 +189,10 @@ public class TabArchiver implements TabWindowManager.Observer {
 
         int tabCount = tabs.size();
         // Once the archived tabs are added, do a bulk closure from the regular tab model.
-        tabModel.closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
+        tabModel.getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTabs(tabs).allowUndo(false).build(),
+                        /* allowDialog= */ false);
         RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.TabCount", tabCount);
 
         for (Tab archivedTab : archivedTabs) {
@@ -235,7 +241,11 @@ public class TabArchiver implements TabWindowManager.Observer {
         }
 
         int tabCount = tabs.size();
-        mArchivedTabModel.closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
+        mArchivedTabModel
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTabs(tabs).allowUndo(false).build(),
+                        /* allowDialog= */ false);
         RecordHistogram.recordCount1000Histogram("Tabs.ArchivedTabRestored.TabCount", tabCount);
     }
 
@@ -275,10 +285,12 @@ public class TabArchiver implements TabWindowManager.Observer {
                                 }
                             }
                             if (tabsToClose.size() > 0) {
-                                model.closeTabs(
-                                        TabClosureParams.closeTabs(tabsToClose)
-                                                .allowUndo(false)
-                                                .build());
+                                model.getTabRemover()
+                                        .closeTabs(
+                                                TabClosureParams.closeTabs(tabsToClose)
+                                                        .allowUndo(false)
+                                                        .build(),
+                                                /* allowDialog= */ false);
                             }
                             if (tabsToArchive.size() > 0) {
                                 archiveAndRemoveTabs(model, tabsToArchive);

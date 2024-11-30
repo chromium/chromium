@@ -538,7 +538,7 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
 
   // TODO(crbug.com/362675965): remove after origin trial.
   if (trial_name == "AISummarizationAPI") {
-    return base::FeatureList::IsEnabled(features::kEnableAISummarizationAPI);
+    return base::FeatureList::IsEnabled(features::kAISummarizationAPI);
   }
 
   if (trial_name == "LanguageDetectionAPI") {
@@ -546,13 +546,12 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   }
 
   if (trial_name == "AIPromptAPIForExtension") {
-    return base::FeatureList::IsEnabled(
-        features::kEnableAIPromptAPIForExtension);
+    return base::FeatureList::IsEnabled(features::kAIPromptAPIForExtension);
   }
 
   if (trial_name == "TranslationAPI") {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    return base::FeatureList::IsEnabled(features::kEnableTranslationAPI);
+    return base::FeatureList::IsEnabled(features::kTranslationAPI);
 #else
     return false;
 #endif

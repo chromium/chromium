@@ -57,6 +57,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutoDarkUserEducationMessageOptIn"
       summary="message educating users about enabling auto dark web contents
                feature globally"/>
+  <variant name="IPH_AutofillCardInfoRetrievalSuggestion"
+      summary="message shown in the Autofill dropdown to educate users that a
+               card info retrieval card appears because their account with
+               their issuer was linked to their Google Pay account."/>
   <variant name="IPH_AutofillCreditCardBenefit"
       summary="message shown in the Autofill dropdown to educate users on the
                existence of credit card benefits."/>
@@ -315,6 +319,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_iOSSavedTabGroupClosed"
       summary="showing the IPH when closing a saved tab group for the first
                time"/>
+  <variant name="IPH_iOSSharedTabGroupForeground"
+      summary="showing the IPH when the user is returning to an opened shared
+               tab group"/>
   <variant name="IPH_iOSSwipeBackForward"
       summary="the full screen IPH for edge swipe on page to go backward or
                forward"/>
@@ -402,8 +409,6 @@ chromium-metrics-reviews@google.com.
       summary="surfacing the Android PWA install option"/>
   <variant name="IPH_PwaQuietNotification"
       summary="the PWA quiet notification feature"/>
-  <variant name="IPH_QuietNotificationPrompts"
-      summary="the quiet notification prompts feature"/>
   <variant name="IPH_ReadAloudAppMenuFeature"
       summary="the Read Aloud button in the overflow menu"/>
   <variant name="IPH_ReadAloudExpandedPlayerFeature"
@@ -610,7 +615,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="InProductHelp.Config.ParsingEvent" enum="ConfigParsingEvent"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if in-product help configuration is parsed correctly, and the

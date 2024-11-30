@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.WindowingMode;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -76,6 +77,7 @@ public class AppHeaderCoordinator
     private boolean mIsInUnfocusedDesktopWindow;
     private @DesktopWindowHeuristicResult int mHeuristicResult =
             DesktopWindowHeuristicResult.UNKNOWN;
+    private @WindowingMode int mWindowingMode = WindowingMode.UNKNOWN;
     private int mKeyboardInset;
 
     /**
@@ -195,6 +197,15 @@ public class AppHeaderCoordinator
                 checkIsInDesktopWindow(
                         mActivity, mInsetObserver, mCaptionBarRectProvider, mHeuristicResult);
         var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
+
+        // Avoid determining the mode when there are no window insets, which may be the case in the
+        // middle of a windowing mode change. Presence of insets indicates that the window is in a
+        // stable state.
+        if (mInsetObserver.getLastRawWindowInsets().hasInsets()) {
+            mWindowingMode =
+                    AppHeaderUtils.getWindowingMode(mActivity, isInDesktopWindow, mWindowingMode);
+        }
+
         // Use an empty |widestUnoccludedRect| instead of the cached Rect while creating the
         // AppHeaderState while not in or while exiting desktop windowing mode, so that it always
         // holds a valid state for observers to use.

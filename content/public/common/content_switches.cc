@@ -768,9 +768,9 @@ const char kUseFakeUIForFedCM[] = "use-fake-ui-for-fedcm";
 const char kUseFakeUIForMediaStream[]     = "use-fake-ui-for-media-stream";
 
 #if BUILDFLAG(IS_WIN)
-// This will replace the existing font manager with SkiaFontManager in the
+// This will replace the existing font manager with FontDataManager in the
 // renderer.
-const char kUseSkiaFontManager[] = "use-skia-font-manager";
+const char kUseFontDataManager[] = "use-font-data-manager";
 #endif
 
 // Texture target for CHROMIUM_image backed video frame textures.
@@ -855,11 +855,6 @@ const char kWebOtpBackendAuto[] = "web-otp-backend-auto";
 // Disables encryption of RTP Media for WebRTC. When Chrome embeds Content, it
 // ignores this switch on its stable and beta channels.
 const char kDisableWebRtcEncryption[]      = "disable-webrtc-encryption";
-
-// Enforce IP Permission check. TODO(guoweis): Remove this once the feature is
-// not under finch and becomes the default.
-const char kEnforceWebRtcIPPermissionCheck[] =
-    "enforce-webrtc-ip-permission-check";
 
 // Override WebRTC IP handling policy to mimic the behavior when WebRTC IP
 // handling policy is specified in Preferences.

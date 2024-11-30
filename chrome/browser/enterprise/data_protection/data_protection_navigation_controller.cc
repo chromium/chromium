@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/enterprise/watermarking/content/watermark_text_container.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -135,6 +136,15 @@ void DataProtectionNavigationController::
     clear_screenshot_protection_on_page_load_ = true;
   }
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+
+  // Regardless of whether watermark text is empty, attach it as web contents
+  // user data so that other browser process code can draw watermarks outside
+  // of the context of a navigation (ex. when printing).
+  enterprise_watermark::WatermarkTextContainer::CreateForWebContents(
+      expected_web_contents.get());
+  enterprise_watermark::WatermarkTextContainer::FromWebContents(
+      expected_web_contents.get())
+      ->SetWatermarkText(settings.watermark_text);
 
   if (!settings.watermark_text.empty()) {
     browser_view->ApplyWatermarkSettings(settings.watermark_text);

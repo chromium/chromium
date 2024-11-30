@@ -32,7 +32,7 @@ ClientCertStoreAsh::ClientCertStoreAsh(
       cert_filter_(base::MakeRefCounted<ClientCertFilter>(use_system_slot,
                                                           username_hash)) {}
 
-ClientCertStoreAsh::~ClientCertStoreAsh() {}
+ClientCertStoreAsh::~ClientCertStoreAsh() = default;
 
 void ClientCertStoreAsh::GetClientCerts(
     scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,

@@ -47,7 +47,7 @@ SVGPropertyBase* SVGNumberOptionalNumberInterpolationType::AppliedSVGValue(
   // Note: using default CSSToLengthConversionData here as it's
   // guaranteed to be a double.
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   return MakeGarbageCollected<SVGNumberOptionalNumber>(
       MakeGarbageCollected<SVGNumber>(
           To<InterpolableNumber>(list.Get(0))->Value(length_resolver)),

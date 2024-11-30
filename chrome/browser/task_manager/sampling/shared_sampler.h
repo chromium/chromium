@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -64,8 +65,7 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
 
 #if BUILDFLAG(IS_WIN)
   // Specifies a function to use in place of NtQuerySystemInformation.
-  typedef int (*QuerySystemInformationForTest)(unsigned char* buffer,
-                                               int buffer_size);
+  typedef int (*QuerySystemInformationForTest)(base::span<uint8_t> buffer);
   static void SetQuerySystemInformationForTest(
       QuerySystemInformationForTest query_system_information);
 #endif  // BUILDFLAG(IS_WIN)

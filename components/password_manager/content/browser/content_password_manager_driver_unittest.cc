@@ -181,10 +181,7 @@ class MockPasswordManager : public PasswordManager {
               OnPasswordFormCleared,
               (PasswordManagerDriver * driver, const autofill::FormData&),
               (override));
-  MOCK_METHOD(const PasswordFormCache*,
-              GetPasswordFormCache,
-              (),
-              (const override));
+  MOCK_METHOD(PasswordFormCache*, GetPasswordFormCache, (), (override));
 };
 
 class MockPasswordFormCache : public PasswordFormCache {

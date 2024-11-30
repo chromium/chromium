@@ -42,7 +42,7 @@ Encryptor::Encryptor() : key_(nullptr), mode_(CBC) {}
 Encryptor::~Encryptor() = default;
 
 bool Encryptor::Init(const SymmetricKey* key, Mode mode, std::string_view iv) {
-  return Init(key, mode, base::as_bytes(base::make_span(iv)));
+  return Init(key, mode, base::as_byte_span(iv));
 }
 
 bool Encryptor::Init(const SymmetricKey* key,
@@ -85,7 +85,7 @@ bool Encryptor::Decrypt(base::span<const uint8_t> ciphertext,
 }
 
 bool Encryptor::SetCounter(std::string_view counter) {
-  return SetCounter(base::as_bytes(base::make_span(counter)));
+  return SetCounter(base::as_byte_span(counter));
 }
 
 bool Encryptor::SetCounter(base::span<const uint8_t> counter) {
@@ -103,11 +103,10 @@ bool Encryptor::CryptString(bool do_encrypt,
                             std::string* output) {
   std::string result(MaxOutput(do_encrypt, input.size()), '\0');
   std::optional<size_t> len =
-      (mode_ == CTR)
-          ? CryptCTR(do_encrypt, base::as_bytes(base::make_span(input)),
-                     base::as_writable_bytes(base::make_span(result)))
-          : Crypt(do_encrypt, base::as_bytes(base::make_span(input)),
-                  base::as_writable_bytes(base::make_span(result)));
+      (mode_ == CTR) ? CryptCTR(do_encrypt, base::as_byte_span(input),
+                                base::as_writable_byte_span(result))
+                     : Crypt(do_encrypt, base::as_byte_span(input),
+                             base::as_writable_byte_span(result));
   if (!len)
     return false;
 

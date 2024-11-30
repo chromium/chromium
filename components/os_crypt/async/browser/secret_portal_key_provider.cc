@@ -108,64 +108,21 @@ void SecretPortalKeyProvider::OnNameHasOwnerResponse(
   read_fd_ = base::ScopedFD(fds[0]);
   base::ScopedFD write_fd(fds[1]);
 
-  dbus::MethodCall method_call(kInterfaceSecret, kMethodRetrieveSecret);
-
-  response_path_ =
-      std::make_unique<dbus::ObjectPath>(base::nix::XdgDesktopPortalRequestPath(
-          bus_->GetConnectionName(), kHandleToken));
-
-  auto* response_proxy =
-      bus_->GetObjectProxy(GetSecretServiceName(), *response_path_);
-  response_proxy->ConnectToSignal(
-      kInterfaceRequest, kSignalResponse,
-      base::BindRepeating(&SecretPortalKeyProvider::OnResponseSignal,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&SecretPortalKeyProvider::OnSignalConnected,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendFileDescriptor(write_fd.get() /* the FD gets duplicated */);
   DbusDictionary options;
   if (local_state_->HasPrefPath(kOsCryptTokenPrefName)) {
     const std::string token = local_state_->GetString(kOsCryptTokenPrefName);
     if (!token.empty()) {
-      options.Put("token", MakeDbusVariant(DbusString(token)));
+      options.PutAs("token", DbusString(token));
     }
   }
-  options.Put("handle_token", MakeDbusVariant(DbusString(kHandleToken)));
-  options.Write(&writer);
 
   auto* secret_proxy = bus_->GetObjectProxy(
       GetSecretServiceName(), dbus::ObjectPath(kObjectPathSecret));
-  secret_proxy->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&SecretPortalKeyProvider::OnRetrieveSecretResponse,
+  request_ = std::make_unique<dbus_xdg::Request>(
+      bus_, secret_proxy, kInterfaceSecret, kMethodRetrieveSecret,
+      DbusUnixFd(std::move(write_fd)), std::move(options),
+      base::BindOnce(&SecretPortalKeyProvider::OnRetrieveSecret,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SecretPortalKeyProvider::OnRetrieveSecretResponse(
-    dbus::Response* response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!response) {
-    LOG(ERROR) << "Failed to retrieve secret: No response from portal.";
-    return Finalize(InitStatus::kNoResponse);
-  }
-
-  dbus::MessageReader reader(response);
-
-  // Read the object path of the response handle.
-  dbus::ObjectPath response_path;
-  if (!reader.PopObjectPath(&response_path)) {
-    LOG(ERROR) << "Failed to retrieve secret: Invalid response format.";
-    return Finalize(InitStatus::kInvalidResponseFormat);
-  }
-  CHECK(response_path_);
-  const bool matches = response_path == *response_path_;
-  response_path_.reset();
-  if (!matches) {
-    LOG(ERROR) << "Response path does not match.";
-    return Finalize(InitStatus::kResponsePathMismatch);
-  }
 
   // Read the secret from the pipe.  This must happen asynchronously because the
   // file may not become readable until the keyring is unlocked by typing a
@@ -188,50 +145,37 @@ void SecretPortalKeyProvider::OnSignalConnected(
   }
 }
 
-void SecretPortalKeyProvider::OnResponseSignal(dbus::Signal* signal) {
+void SecretPortalKeyProvider::OnRetrieveSecret(
+    base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dbus::MessageReader reader(signal);
-  uint32_t response;
-  if (!reader.PopUint32(&response)) {
-    LOG(ERROR) << "Failed to read response from signal.";
-    return Finalize(InitStatus::kSignalReadFailed);
-  }
-  if (response != 0) {
-    LOG(ERROR) << "Keyring unlock cancelled: " << response;
-    return Finalize(InitStatus::kUserCancelledUnlock);
-  }
-  dbus::MessageReader dict_reader(nullptr);
-  if (!reader.PopArray(&dict_reader)) {
-    LOG(ERROR) << "Failed to read array.";
-    return Finalize(InitStatus::kSignalParseFailed);
+
+  if (!results.has_value()) {
+    switch (results.error()) {
+      case dbus_xdg::ResponseError::kMethodCallFailed:
+        return Finalize(InitStatus::kNoResponse);
+      case dbus_xdg::ResponseError::kSignalConnectionFailed:
+        return Finalize(InitStatus::kSignalConnectFailed);
+      case dbus_xdg::ResponseError::kInvalidMethodResponse:
+        return Finalize(InitStatus::kInvalidResponseFormat);
+      case dbus_xdg::ResponseError::kInvalidSignalResponse:
+        return Finalize(InitStatus::kSignalReadFailed);
+      case dbus_xdg::ResponseError::kRequestCancelledByUser:
+        return Finalize(InitStatus::kUserCancelledUnlock);
+      case dbus_xdg::ResponseError::kRequestCancelledOther:
+        return Finalize(InitStatus::kOtherCancelledUnlock);
+      case dbus_xdg::ResponseError::kInvalidResponseCode:
+        return Finalize(InitStatus::kInvalidResponseCode);
+    }
   }
 
-  bool got_token = false;
-  while (dict_reader.HasMoreData()) {
-    dbus::MessageReader dict_entry_reader(nullptr);
-    if (!dict_reader.PopDictEntry(&dict_entry_reader)) {
-      LOG(ERROR) << "Failed to read dict entry.";
-      return Finalize(InitStatus::kSignalParseFailed);
-    }
-    std::string key;
-    if (!dict_entry_reader.PopString(&key)) {
-      LOG(ERROR) << "Failed to read key.";
-      return Finalize(InitStatus::kSignalParseFailed);
-    }
-    if (key == "token") {
-      std::string value;
-      if (!dict_entry_reader.PopVariantOfString(&value)) {
-        LOG(ERROR) << "Failed to read value.";
-        return Finalize(InitStatus::kSignalParseFailed);
-      }
-      local_state_->SetString(kOsCryptTokenPrefName, value);
-      got_token = true;
-    }
+  auto* token = results->GetAs<DbusString>("token");
+  if (token) {
+    local_state_->SetString(kOsCryptTokenPrefName, token->value());
   }
 
   // TODO(https://crbug.com/40086962): Investigate if a token should be
   // required to continue.
-  base::UmaHistogramBoolean(kUmaGotTokenBoolean, got_token);
+  base::UmaHistogramBoolean(kUmaGotTokenBoolean, token);
 }
 
 void SecretPortalKeyProvider::OnFdReadable() {
@@ -288,7 +232,6 @@ void SecretPortalKeyProvider::Finalize(InitStatus init_status,
 
   std::move(key_callback_).Run(tag, std::move(key));
 
-  response_path_.reset();
   read_watcher_.reset();
   read_fd_.reset();
   secret_.clear();

@@ -212,7 +212,7 @@ CertificateProviderService::SSLPrivateKey::~SSLPrivateKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-CertificateProviderService::CertificateProviderService() {}
+CertificateProviderService::CertificateProviderService() = default;
 
 CertificateProviderService::~CertificateProviderService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

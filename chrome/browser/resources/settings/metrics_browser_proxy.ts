@@ -364,7 +364,8 @@ export enum AiPageInteractions {
   COMPOSE_CLICK = 2,
   TAB_ORGANIZATION_CLICK = 3,
   WALLPAPER_SEARCH_CLICK = 4,
-  MAX_VALUE = 5,
+  AUTOFILL_AI_CLICK = 5,
+  MAX_VALUE = 6,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageInteractions)
 

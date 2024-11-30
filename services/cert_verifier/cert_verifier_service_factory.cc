@@ -176,10 +176,10 @@ void ComputeCTLogInfo(
       disqualified_logs->emplace_back(log_id, log->disqualified_at.value());
     }
     certificate_transparency::OperatorHistoryEntry entry;
-    entry.current_operator_ = log->current_operator;
+    entry.current_operator = log->current_operator;
     for (const auto& previous_operator : log->previous_operators) {
-      entry.previous_operators_.emplace_back(previous_operator->name,
-                                             previous_operator->end_time);
+      entry.previous_operators.emplace_back(previous_operator->name,
+                                            previous_operator->end_time);
     }
     certificate_transparency::LogInfo info;
     info.operator_history = entry;

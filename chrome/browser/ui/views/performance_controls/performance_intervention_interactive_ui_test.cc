@@ -42,6 +42,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
@@ -54,28 +55,19 @@
 
 namespace {
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
-constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
-constexpr char kMessageTriggerResultHistogram[] =
-    "PerformanceControls.Intervention.BackgroundTab.Cpu.MessageTriggerResult";
-
-class DiscardWaiter : public resource_coordinator::TabLifecycleObserver {
+class DiscardObserver : public resource_coordinator::TabLifecycleObserver,
+                        public ui::test::StateObserver<bool> {
  public:
-  DiscardWaiter() {
-    run_loop_ = std::make_unique<base::RunLoop>(
-        base::RunLoop::Type::kNestableTasksAllowed);
+  explicit DiscardObserver(int expected_tab_discarded_count)
+      : expected_tab_discarded_count_(expected_tab_discarded_count) {
     resource_coordinator::TabLifecycleUnitExternal::AddTabLifecycleObserver(
         this);
   }
 
-  ~DiscardWaiter() override {
+  ~DiscardObserver() override {
     resource_coordinator::TabLifecycleUnitExternal::RemoveTabLifecycleObserver(
         this);
   }
-
-  void Wait() { run_loop_->Run(); }
 
   void OnTabLifecycleStateChange(
       content::WebContents* contents,
@@ -83,14 +75,27 @@ class DiscardWaiter : public resource_coordinator::TabLifecycleObserver {
       mojom::LifecycleUnitState new_state,
       std::optional<LifecycleUnitDiscardReason> discard_reason) override {
     if (new_state == mojom::LifecycleUnitState::DISCARDED) {
-      run_loop_->Quit();
+      expected_tab_discarded_count_--;
+    }
+
+    // Fire the state change event since the expected number
+    // of tabs have been discarded.
+    if (expected_tab_discarded_count_ == 0) {
+      OnStateObserverStateChanged(true);
     }
   }
 
  private:
-  std::unique_ptr<base::RunLoop> run_loop_;
+  int expected_tab_discarded_count_;
 };
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(DiscardObserver, kTabDiscardedState);
+constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
+constexpr char kMessageTriggerResultHistogram[] =
+    "PerformanceControls.Intervention.BackgroundTab.Cpu.MessageTriggerResult";
 }  // namespace
 
 class PerformanceInterventionInteractiveTest
@@ -440,7 +445,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 // The dialog should discard tabs suggested in the tab list
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        TakeSuggestedAction) {
-  auto waiter = std::make_unique<DiscardWaiter>();
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GetURL()),
       AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
@@ -448,10 +452,10 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(PerformanceInterventionBubble::
                       kPerformanceInterventionDialogDeactivateButton),
-
+      ObserveState(kTabDiscardedState, 2),
       PressButton(PerformanceInterventionBubble::
                       kPerformanceInterventionDialogDeactivateButton),
-      Do([&]() { waiter->Wait(); }), CheckTabDiscardStatus(0, false),
+      WaitForState(kTabDiscardedState, true), CheckTabDiscardStatus(0, false),
       CheckTabDiscardStatus(1, true), CheckTabDiscardStatus(2, true));
 }
 
@@ -460,7 +464,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        RemoveSuggestedTabFromList) {
   const char kTabListRow[] = "TabListRow";
   const char kSuggestedCloseButton[] = "SuggestedCloseButton";
-  auto waiter = std::make_unique<DiscardWaiter>();
 
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GetURL()),
@@ -486,9 +489,10 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                          return tab_list_row->GetCloseButtonForTesting();
                        }),
       PressButton(kSuggestedCloseButton), WaitForHide(kSuggestedCloseButton),
+      ObserveState(kTabDiscardedState, 1),
       PressButton(PerformanceInterventionBubble::
                       kPerformanceInterventionDialogDeactivateButton),
-      Do([&]() { waiter->Wait(); }), CheckTabDiscardStatus(0, false),
+      WaitForState(kTabDiscardedState, true), CheckTabDiscardStatus(0, false),
       CheckTabDiscardStatus(1, false), CheckTabDiscardStatus(2, true));
 }
 

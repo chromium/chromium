@@ -74,7 +74,7 @@ class ASH_EXPORT QuickInsertEmojiBarView
 
   void OpenMoreEmojis();
 
-  void OpenGifs();
+  void ToggleGifs(bool is_checked);
 
   int CalculateAvailableWidthForItemRow();
 

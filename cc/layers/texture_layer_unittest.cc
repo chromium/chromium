@@ -253,8 +253,14 @@ TEST_F(TextureLayerTest, CheckPropertyChangeCausesCorrectBehavior) {
 
   // Test properties that should call SetNeedsCommit.  All properties need to
   // be set to new values in order for SetNeedsCommit to be called.
-  EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetFlipped(false));
-  EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetNearestNeighbor(true));
+  EXPECT_SET_NEEDS_COMMIT(
+      1, test_layer->SetFilterQuality(PaintFlags::FilterQuality::kNone));
+  EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetDynamicRangeLimit(
+
+                                 PaintFlags::DynamicRangeLimitMixture(
+                                     PaintFlags::DynamicRangeLimit::kStandard)
+
+                                     ));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetUV(gfx::PointF(0.25f, 0.25f),
                                                gfx::PointF(0.75f, 0.75f)));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetPremultipliedAlpha(false));
@@ -501,7 +507,7 @@ class TextureLayerMailboxHolderTest : public TextureLayerTest {
   base::Thread main_thread_;
 };
 
-TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_BothReleaseThenMain) {
+TEST_F(TextureLayerMailboxHolderTest, TwoCompositorsBothReleaseThenMain) {
   scoped_refptr<TextureLayer> test_layer =
       TextureLayer::CreateForMailbox(nullptr);
   ASSERT_TRUE(test_layer.get());
@@ -554,7 +560,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_BothReleaseThenMain) {
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 }
 
-TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleaseBetween) {
+TEST_F(TextureLayerMailboxHolderTest, TwoCompositorsMainReleaseBetween) {
   scoped_refptr<TextureLayer> test_layer =
       TextureLayer::CreateForMailbox(nullptr);
   ASSERT_TRUE(test_layer.get());
@@ -608,7 +614,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleaseBetween) {
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 }
 
-TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleasedFirst) {
+TEST_F(TextureLayerMailboxHolderTest, TwoCompositorsMainReleasedFirst) {
   scoped_refptr<TextureLayer> test_layer =
       TextureLayer::CreateForMailbox(nullptr);
   ASSERT_TRUE(test_layer.get());
@@ -1000,7 +1006,6 @@ class TextureLayerNoExtraCommitForMailboxTest : public LayerTreeTest,
  public:
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
     if (layer_tree_host()->SourceFrameNumber() == 1) {
@@ -1071,7 +1076,6 @@ class TextureLayerChangeInvisibleMailboxTest : public LayerTreeTest,
 
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
     ++prepare_called_;
@@ -1233,7 +1237,6 @@ class TextureLayerReleaseResourcesBase : public LayerTreeTest,
  public:
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
     constexpr gfx::Size size(64, 64);
@@ -1449,7 +1452,6 @@ class StubTextureLayerClient : public TextureLayerClient {
  public:
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
     return false;
@@ -1859,7 +1861,6 @@ SINGLE_AND_MULTI_THREAD_TEST_F(SoftwareTextureLayerLoseFrameSinkTest);
 class TextureLayerNoResourceTest : public LayerTreeTest, TextureLayerClient {
  public:
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registar,
       viz::TransferableResource* transferable_resource,
       viz::ReleaseCallback* release_callback) override {
     return false;

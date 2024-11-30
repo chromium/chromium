@@ -11,4 +11,6 @@ BASE_DECLARE_FEATURE(kStatelessFormSuggestionController);
 
 BASE_DECLARE_FEATURE(kThrottleFormInputAccessorySuggestionRefresh);
 
+BASE_DECLARE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground);
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_FEATURES_H_

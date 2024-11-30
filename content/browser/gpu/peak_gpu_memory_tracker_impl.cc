@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "components/viz/common/resources/peak_gpu_memory_callback.h"
 #include "content/browser/gpu/gpu_process_host.h"
-#include "content/common/peak_gpu_memory_callback.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
@@ -16,8 +16,8 @@
 namespace content {
 
 // static
-std::unique_ptr<input::PeakGpuMemoryTracker>
-PeakGpuMemoryTrackerFactory::Create(input::PeakGpuMemoryTracker::Usage usage) {
+std::unique_ptr<viz::PeakGpuMemoryTracker> PeakGpuMemoryTrackerFactory::Create(
+    viz::PeakGpuMemoryTracker::Usage usage) {
   return std::make_unique<PeakGpuMemoryTrackerImpl>(usage);
 }
 
@@ -25,7 +25,7 @@ PeakGpuMemoryTrackerFactory::Create(input::PeakGpuMemoryTracker::Usage usage) {
 uint32_t PeakGpuMemoryTrackerImpl::next_sequence_number_ = 0;
 
 PeakGpuMemoryTrackerImpl::PeakGpuMemoryTrackerImpl(
-    input::PeakGpuMemoryTracker::Usage usage)
+    viz::PeakGpuMemoryTracker::Usage usage)
     : usage_(usage) {
   // Actually performs request to GPU service to begin memory tracking for
   // |sequence_number_|.
@@ -59,7 +59,7 @@ PeakGpuMemoryTrackerImpl::~PeakGpuMemoryTrackerImpl() {
   if (auto* gpu_service = host->gpu_service()) {
     gpu_service->GetPeakMemoryUsage(
         sequence_num_,
-        base::BindOnce(&PeakGpuMemoryCallback, usage_,
+        base::BindOnce(&viz::PeakGpuMemoryCallback, usage_,
                        std::move(post_gpu_service_callback_for_testing_)));
   }
 }

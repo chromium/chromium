@@ -16,6 +16,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace network {
 class TestURLLoaderFactory;
@@ -41,7 +42,7 @@ namespace signin {
 
 struct CookieParamsForTest {
   std::string email;
-  std::string gaia_id;
+  GaiaId gaia_id;
   bool signed_out = false;
 };
 
@@ -149,7 +150,7 @@ struct AccountAvailabilityOptions {
   // Gaia ID for the account to be created. if empty, the existing ID should be
   // kept for known accounts, or a new one generated from the email for totally
   // new accounts.
-  const std::string gaia_id;
+  const GaiaId gaia_id;
 
   // If present, the account to be created should be set as primary at
   // `consent_level`.
@@ -184,7 +185,7 @@ struct AccountAvailabilityOptions {
   // For complex options, prefer using `AccountAvailabilityOptionsBuilder`.
   AccountAvailabilityOptions(
       std::string_view email,
-      std::string_view gaia_id,
+      const GaiaId& gaia_id,
       std::optional<ConsentLevel> consent_level,
       std::optional<std::string> refresh_token,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -216,7 +217,7 @@ class AccountAvailabilityOptionsBuilder {
   AccountAvailabilityOptionsBuilder& AsPrimary(ConsentLevel);
 
   // Provide a custom `gaia_id` to use for the new account.
-  AccountAvailabilityOptionsBuilder& WithGaiaId(std::string_view gaia_id);
+  AccountAvailabilityOptionsBuilder& WithGaiaId(const GaiaId& gaia_id);
 
   // Whether to add the new account to the Gaia cookie. See
   // `signin::AddCookieAccount()` for more context.
@@ -249,7 +250,7 @@ class AccountAvailabilityOptionsBuilder {
   raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies_ =
       nullptr;
 
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::optional<ConsentLevel> primary_account_consent_level_;
   std::optional<std::string> refresh_token_ = std::string();
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -351,7 +352,7 @@ void SimulateAccountImageFetch(IdentityManager* identity_manager,
 void SetFreshnessOfAccountsInGaiaCookie(IdentityManager* identity_manager,
                                         bool accounts_are_fresh);
 
-std::string GetTestGaiaIdForEmail(const std::string& email);
+GaiaId GetTestGaiaIdForEmail(const std::string& email);
 
 // Returns a new `AccountInfo` object that completes the info from
 // `base_account_info` with generated extended info (the one normally obtained
@@ -395,7 +396,7 @@ void CancelAllOngoingGaiaCookieOperations(IdentityManager* identity_manager);
 void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const CoreAccountId& account_id,
                                           const std::string& email,
-                                          const std::string& gaia,
+                                          const GaiaId& gaia,
                                           const std::string& hosted_domain,
                                           const std::string& full_name,
                                           const std::string& given_name,

@@ -7,13 +7,13 @@
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/network/public/mojom/shared_storage.mojom-blink.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace mojo {
 
 template <>
-struct MODULES_EXPORT
+struct PLATFORM_EXPORT
     StructTraits<network::mojom::SharedStorageKeyArgumentDataView,
                  WTF::String> {
   static bool Read(network::mojom::SharedStorageKeyArgumentDataView data,
@@ -23,7 +23,7 @@ struct MODULES_EXPORT
 };
 
 template <>
-struct MODULES_EXPORT
+struct PLATFORM_EXPORT
     StructTraits<network::mojom::SharedStorageValueArgumentDataView,
                  WTF::String> {
   static bool Read(network::mojom::SharedStorageValueArgumentDataView data,

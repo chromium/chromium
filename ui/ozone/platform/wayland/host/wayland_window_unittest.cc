@@ -10,7 +10,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 #include <cursor-shape-v1-client-protocol.h>
-#include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <linux/input.h>
 #include <wayland-server-core.h>
 #include <xdg-shell-server-protocol.h>
@@ -34,7 +33,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -69,7 +67,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -109,8 +106,6 @@ namespace ui {
 namespace {
 
 constexpr float kDefaultCursorScale = 1.f;
-
-constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
 
 struct PopupPosition {
   gfx::Rect anchor_rect;
@@ -164,16 +159,6 @@ class MockCursorShape : public WaylandCursorShape {
   ~MockCursorShape() override = default;
 
   MOCK_METHOD(void, SetCursorShape, (uint32_t), (override));
-};
-
-class MockZcrCursorShapes : public WaylandZcrCursorShapes {
- public:
-  MockZcrCursorShapes() : WaylandZcrCursorShapes(nullptr, nullptr) {}
-  MockZcrCursorShapes(const MockZcrCursorShapes&) = delete;
-  MockZcrCursorShapes& operator=(const MockZcrCursorShapes&) = delete;
-  ~MockZcrCursorShapes() override = default;
-
-  MOCK_METHOD(void, SetCursorShape, (int32_t), (override));
 };
 
 using BoundsChange = PlatformWindowDelegate::BoundsChange;
@@ -287,19 +272,11 @@ class WaylandWindowTest : public WaylandTest {
   }
 
   MockCursorShape* InstallMockCursorShape() {
-    auto zcr_cursor_shapes = std::make_unique<MockCursorShape>();
-    MockCursorShape* mock_cursor_shapes = zcr_cursor_shapes.get();
+    auto mock_cursor_shapes = std::make_unique<MockCursorShape>();
+    MockCursorShape* mock_cursor_shapes_ptr = mock_cursor_shapes.get();
     WaylandConnectionTestApi test_api(connection_.get());
-    test_api.SetCursorShape(std::move(zcr_cursor_shapes));
-    return mock_cursor_shapes;
-  }
-
-  MockZcrCursorShapes* InstallMockZcrCursorShapes() {
-    auto zcr_cursor_shapes = std::make_unique<MockZcrCursorShapes>();
-    MockZcrCursorShapes* mock_cursor_shapes = zcr_cursor_shapes.get();
-    WaylandConnectionTestApi test_api(connection_.get());
-    test_api.SetZcrCursorShapes(std::move(zcr_cursor_shapes));
-    return mock_cursor_shapes;
+    test_api.SetCursorShape(std::move(mock_cursor_shapes));
+    return mock_cursor_shapes_ptr;
   }
 
   // Verifies and clearis expectations for a toplevel window associated with
@@ -451,7 +428,6 @@ class WaylandWindowTest : public WaylandTest {
                                     /*supports_viewporter=*/true,
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true,
-                                    kAugmentedSurfaceNotSupportedVersion,
                                     /*supports_single_pixel_buffer=*/true);
 
     const uint32_t buffer_id = ++buffer_id_gen_;
@@ -749,8 +725,11 @@ TEST_P(WaylandWindowTest, OnSequencePointClearsPreviousUnackedConfigures) {
   VerifyAndClearExpectations();
 }
 
-// This test is specifically to guard against origin being set to (0, 0)
-// thus lacros can be restored to correct display (crbug.com/1423690)
+// This test used to specifically to guard against origin being set to (0, 0)
+// thus lacros could be restored to correct display (crbug.com/1423690).
+// TODO(crbug.com/374244479) Given lacros has been deprecated, update this test
+// to ignore the origin and only verify the size as origin is not known in
+// Wayland world.
 TEST_P(WaylandWindowTest, RestoredBoundsSetWithCorrectOrigin) {
   constexpr gfx::Rect kNormalBounds{1376, 10, 500, 300};
   constexpr gfx::Rect kMaximizedBounds{1366, 0, 800, 600};
@@ -1737,64 +1716,6 @@ TEST_P(WaylandWindowTest, SetCursorDoesNotUseCursorShapeForCustomCursors) {
 
   // Custom cursors require bitmaps, so they do not use server-side cursors.
   EXPECT_CALL(*mock_cursor_shape, SetCursorShape(_)).Times(0);
-  auto custom_cursor = AsPlatformCursor(
-      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kCustom, SkBitmap(),
-                                         gfx::Point(), kDefaultCursorScale));
-  window_->SetCursor(custom_cursor.get());
-}
-
-TEST_P(WaylandWindowTest, SetCursorUsesZcrCursorShapesForCommonTypes) {
-  SetPointerFocusedWindow(window_.get());
-  MockZcrCursorShapes* mock_cursor_shapes = InstallMockZcrCursorShapes();
-
-  // Verify some commonly-used cursors.
-  EXPECT_CALL(*mock_cursor_shapes,
-              SetCursorShape(ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_POINTER));
-  auto pointer_cursor = AsPlatformCursor(
-      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kPointer));
-  window_->SetCursor(pointer_cursor.get());
-  VerifyAndClearExpectations();
-
-  EXPECT_CALL(*mock_cursor_shapes,
-              SetCursorShape(ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_HAND));
-  auto hand_cursor = AsPlatformCursor(
-      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kHand));
-  window_->SetCursor(hand_cursor.get());
-  VerifyAndClearExpectations();
-
-  EXPECT_CALL(*mock_cursor_shapes,
-              SetCursorShape(ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_IBEAM));
-  auto ibeam_cursor = AsPlatformCursor(
-      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kIBeam));
-  window_->SetCursor(ibeam_cursor.get());
-}
-
-TEST_P(WaylandWindowTest, SetCursorCallsZcrCursorShapesOncePerCursor) {
-  SetPointerFocusedWindow(window_.get());
-  MockZcrCursorShapes* mock_cursor_shapes = InstallMockZcrCursorShapes();
-  auto hand_cursor = AsPlatformCursor(
-      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kHand));
-  // Setting the same cursor twice on the client only calls the server once.
-  EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(1);
-  window_->SetCursor(hand_cursor.get());
-  window_->SetCursor(hand_cursor.get());
-}
-
-TEST_P(WaylandWindowTest, SetCursorDoesNotUseZcrCursorShapesForNoneCursor) {
-  SetPointerFocusedWindow(window_.get());
-  MockZcrCursorShapes* mock_cursor_shapes = InstallMockZcrCursorShapes();
-  EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(0);
-  auto none_cursor = AsPlatformCursor(
-      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kNone));
-  window_->SetCursor(none_cursor.get());
-}
-
-TEST_P(WaylandWindowTest, SetCursorDoesNotUseZcrCursorShapesForCustomCursors) {
-  SetPointerFocusedWindow(window_.get());
-  MockZcrCursorShapes* mock_cursor_shapes = InstallMockZcrCursorShapes();
-
-  // Custom cursors require bitmaps, so they do not use server-side cursors.
-  EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(0);
   auto custom_cursor = AsPlatformCursor(
       base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kCustom, SkBitmap(),
                                          gfx::Point(), kDefaultCursorScale));
@@ -3583,7 +3504,6 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.
@@ -3809,18 +3729,12 @@ TEST_P(WaylandWindowTest, CreatesPopupOnButtonPressSerial) {
       auto* test_popup = GetTestXdgPopupByWindow(server, surface_id);
       ASSERT_TRUE(test_popup);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       if (use_explicit_grab) {
         EXPECT_NE(test_popup->grab_serial(), button_release_serial);
         EXPECT_EQ(test_popup->grab_serial(), button_press_serial);
       } else {
         EXPECT_EQ(test_popup->grab_serial(), 0U);
       }
-#else
-      // crbug.com/1320528: Lacros uses explicit grab always.
-      EXPECT_NE(test_popup->grab_serial(), button_release_serial);
-      EXPECT_EQ(test_popup->grab_serial(), button_press_serial);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     });
   }
 }
@@ -3877,15 +3791,12 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
     PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
       auto* test_popup = GetTestXdgPopupByWindow(server, surface_id);
       ASSERT_TRUE(test_popup);
-      // crbug.com/1320528: Lacros uses explicit grab always.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       // Unless the use-wayland-explicit-grab switch is set, touch events
       // are the exception, i.e: the serial sent before the "up" event
       // (latest) cannot be used, otherwise, some compositors may dismiss
       // popups.
       if (!use_explicit_grab)
         EXPECT_EQ(test_popup->grab_serial(), 0U);
-#endif
     });
 
     popup->Hide();
@@ -3909,7 +3820,6 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
       auto* test_popup = GetTestXdgPopupByWindow(server, surface_id);
       ASSERT_TRUE(test_popup);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       uint32_t expected_serial = touch_down_serial;
       auto env = base::Environment::Create();
       if (base::nix::GetDesktopEnvironment(env.get()) ==
@@ -3922,10 +3832,6 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
       } else {
         EXPECT_EQ(test_popup->grab_serial(), 0U);
       }
-#else
-      // crbug.com/1320528: Lacros uses explicit grab always.
-      EXPECT_EQ(test_popup->grab_serial(), touch_down_serial);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     });
   }
 }
@@ -4109,7 +4015,6 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
         });
     wayland_subsurface->ConfigureAndShowSurface(
         subsurface_bounds, gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/,
-        std::nullopt /*clip_rect_px*/, gfx::OVERLAY_TRANSFORM_NONE,
         1.f /*buffer_scale*/, nullptr, nullptr);
     connection_->Flush();
 
@@ -4155,42 +4060,21 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
 
 }  // namespace
 
-// Tests integer and non integer size/position support with and without surface
-// augmenter.
-TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceInteger) {
-  ASSERT_FALSE(connection_->surface_augmenter());
-
-  constexpr std::array<std::array<gfx::RectF, 2>, 2> test_data = {
+// Tests integer and non integer size/position support. Ozone/Wayland is
+// expected to ceil the bounds.
+TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceBoundsCeil) {
+  constexpr std::array<std::array<gfx::RectF, 2>, 4> test_data = {
       {{gfx::RectF({15.12, 15.912}, {10.351, 10.742}),
         gfx::RectF({16, 16}, {11, 11})},
        {gfx::RectF({7.041, 8.583}, {13.452, 20.231}),
-        gfx::RectF({7.041, 8.583}, {13.452, 20.231})}}};
-
-  for (const auto& item : test_data) {
-    OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,
-                                   item[1] /* expected_subsurface_bounds */);
-
-    // Initialize the surface augmenter now.
-    InitializeSurfaceAugmenter();
-    ASSERT_TRUE(connection_->surface_augmenter());
-  };
-}
-
-TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceNonInteger) {
-  ASSERT_FALSE(connection_->surface_augmenter());
-
-  constexpr std::array<std::array<gfx::RectF, 2>, 2> test_data = {
-      {{gfx::RectF({15, 15}, {10, 10}), gfx::RectF({15, 15}, {10, 10})},
+        gfx::RectF({8, 9}, {14, 21})},
+       {gfx::RectF({15, 15}, {10, 10}), gfx::RectF({15, 15}, {10, 10})},
        {gfx::RectF({7, 8}, {16, 18}), gfx::RectF({7, 8}, {16, 18})}}};
 
   for (const auto& item : test_data) {
     OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,
                                    item[1] /* expected_subsurface_bounds */);
-
-    // Initialize the surface augmenter now.
-    InitializeSurfaceAugmenter();
-    ASSERT_TRUE(connection_->surface_augmenter());
-  }
+  };
 }
 
 TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
@@ -4199,9 +4083,9 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   }
   auto subsurfaces = RequestWaylandSubsurface(3);
   for (auto* subsurface : subsurfaces) {
-    subsurface->ConfigureAndShowSurface(
-        gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-        std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, nullptr);
+    subsurface->ConfigureAndShowSurface(gfx::RectF(1.f, 2.f, 10.f, 20.f),
+                                        gfx::RectF(0.f, 0.f, 800.f, 600.f), 1.f,
+                                        nullptr, nullptr);
   }
   connection_->Flush();
 
@@ -4228,15 +4112,15 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
       });
 
   // Stack subsurfaces[0] to be from bottom to top, and change its position.
-  subsurfaces[0]->ConfigureAndShowSurface(
-      gfx::RectF(0.f, 0.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, subsurfaces[2], nullptr);
-  subsurfaces[1]->ConfigureAndShowSurface(
-      gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[2]);
-  subsurfaces[2]->ConfigureAndShowSurface(
-      gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[0]);
+  subsurfaces[0]->ConfigureAndShowSurface(gfx::RectF(0.f, 0.f, 10.f, 20.f),
+                                          gfx::RectF(0.f, 0.f, 800.f, 600.f),
+                                          1.f, subsurfaces[2], nullptr);
+  subsurfaces[1]->ConfigureAndShowSurface(gfx::RectF(1.f, 2.f, 10.f, 20.f),
+                                          gfx::RectF(0.f, 0.f, 800.f, 600.f),
+                                          1.f, nullptr, subsurfaces[2]);
+  subsurfaces[2]->ConfigureAndShowSurface(gfx::RectF(1.f, 2.f, 10.f, 20.f),
+                                          gfx::RectF(0.f, 0.f, 800.f, 600.f),
+                                          1.f, nullptr, subsurfaces[0]);
   connection_->Flush();
 
   VerifyAndClearExpectations();
@@ -4251,7 +4135,6 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.

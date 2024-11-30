@@ -146,6 +146,11 @@ dictionary MLScatterSupportLimits {
   MLSupportLimits output;
 };
 
+dictionary MLSplitSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits outputs;
+};
+
 dictionary MLWhereSupportLimits {
   MLSupportLimits condition;
   MLSupportLimits trueValue;
@@ -256,7 +261,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits softmax;
   MLSingleInputSupportLimits softplus;
   MLSingleInputSupportLimits softsign;
-  MLSingleInputSupportLimits split;
+  MLSplitSupportLimits split;
   MLSingleInputSupportLimits tanh;
   MLSingleInputSupportLimits tile;
   MLSingleInputSupportLimits transpose;
@@ -264,7 +269,7 @@ dictionary MLOpSupportLimits {
   MLWhereSupportLimits where;
 };
 
-typedef record<DOMString, MLTensor> MLNamedTensors;
+typedef record<USVString, MLTensor> MLNamedTensors;
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,

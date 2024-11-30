@@ -949,8 +949,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
     map->Add<blink::mojom::MediaDevicesDispatcherHost>(
         base::BindRepeating(&MediaDevicesDispatcherHost::Create,
+                            host->GetMainFrame()->GetGlobalId(),
                             host->GetGlobalId(),
-
                             base::Unretained(media_stream_manager)),
         GetIOThreadTaskRunner({}));
 
@@ -1110,7 +1110,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                           base::Unretained(host->GetProcess())));
 #endif
 
-  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     // We take the `document_associated_data` when the callback runs because
     // RenderFrameHosts live across multiple documents. Even though the current
     // implementation of `document_associated_data` persists across documents,
@@ -1256,7 +1256,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::StorageAccessHandle>(
       base::BindRepeating(&StorageAccessHandle::Create));
 
-  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(
         base::BindRepeating(&EmptyBinderForFrame<blink::mojom::AIManager>));
   }
@@ -1386,7 +1386,7 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
       host));
 
-  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(base::BindRepeating(
         &ContentBrowserClient::BindAIManager,
         base::Unretained(GetContentClient()->browser()),
@@ -1466,7 +1466,7 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
         &SharedWorkerHost::BindPressureService, base::Unretained(host)));
   }
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(base::BindRepeating(
         &ContentBrowserClient::BindAIManager,
         base::Unretained(GetContentClient()->browser()),
@@ -1597,7 +1597,7 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
       &ServiceWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &ServiceWorkerHost::BindUsbService, base::Unretained(host)));
-  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(base::BindRepeating(
         &ServiceWorkerHost::BindAIManager, base::Unretained(host)));
   }

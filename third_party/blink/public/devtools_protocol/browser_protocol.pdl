@@ -543,6 +543,27 @@ experimental domain Audits
       SetCookie
       ReadCookie
 
+  # Represents the category of insight that a cookie issue falls under.
+  type InsightType extends string
+    enum
+      # Cookie domain has an entry in third-party cookie migration readiness
+      # list:
+      # https://github.com/privacysandbox/privacy-sandbox-dev-support/blob/main/3pc-migration-readiness.md
+      GitHubResource
+      # Cookie is exempted due to a grace period:
+      # https://developers.google.com/privacy-sandbox/cookies/temporary-exceptions/grace-period
+      GracePeriod
+      # Cookie is exempted due a heuristics-based exemptiuon:
+      # https://developers.google.com/privacy-sandbox/cookies/temporary-exceptions/heuristics-based-exception
+      Heuristics
+
+  # Information about the suggested solution to a cookie issue.
+  type CookieIssueInsight extends object
+    properties
+      InsightType type
+      # Link to table entry in third-party cookie migration readiness list.
+      optional string tableEntryUrl
+
   # This information is currently necessary, as the front-end has a difficult
   # time finding a specific cookie. With this, we can convey specific error
   # information without the cookie.
@@ -562,6 +583,8 @@ experimental domain Audits
       optional string siteForCookies
       optional string cookieUrl
       optional AffectedRequest request
+      # The recommended solution to the issue.
+      optional CookieIssueInsight insight
 
   type MixedContentResolutionStatus extends string
     enum
@@ -631,6 +654,7 @@ experimental domain Audits
       CorpNotSameOriginAfterDefaultedToSameOriginByDip
       CorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip
       CorpNotSameSite
+      SRIMessageSignatureMismatch
 
   # Details for a request that has been blocked with the BLOCKED_BY_RESPONSE
   # code. Currently only used for COEP/COOP, but may be extended to include
@@ -1370,18 +1394,21 @@ domain Browser
 
   experimental type PermissionType extends string
     enum
-      accessibilityEvents
+      ar
       audioCapture
-      backgroundSync
+      automaticFullscreen
       backgroundFetch
+      backgroundSync
+      cameraPanTiltZoom
       capturedSurfaceControl
       clipboardReadWrite
       clipboardSanitizedWrite
       displayCapture
       durableStorage
-      flash
       geolocation
+      handTracking
       idleDetection
+      keyboardLock
       localFonts
       midi
       midiSysex
@@ -1389,16 +1416,19 @@ domain Browser
       notifications
       paymentHandler
       periodicBackgroundSync
+      pointerLock
       protectedMediaIdentifier
       sensors
-      storageAccess
+      smartCard
       speakerSelection
+      storageAccess
       topLevelStorageAccess
       videoCapture
-      videoCapturePanTiltZoom
+      vr
       wakeLockScreen
       wakeLockSystem
       webAppInstallation
+      webPrinting
       windowManagement
 
   experimental type PermissionSetting extends string
@@ -2710,7 +2740,7 @@ domain DOM
     enum
       first-line
       first-letter
-      check
+      checkmark
       before
       after
       select-arrow
@@ -2726,8 +2756,7 @@ domain DOM
       first-line-inherited
       scroll-marker
       scroll-marker-group
-      scroll-next-button
-      scroll-prev-button
+      scroll-button
       scrollbar
       scrollbar-thumb
       scrollbar-button
@@ -5963,6 +5992,7 @@ domain Network
       corp-not-same-origin-after-defaulted-to-same-origin-by-dip
       corp-not-same-origin-after-defaulted-to-same-origin-by-coep-and-dip
       corp-not-same-site
+      sri-message-signature-mismatch
 
   # The reason why request was blocked.
   type CorsError extends string

@@ -88,8 +88,8 @@ AndroidAutofillClient::GetCrowdsourcingManager() {
   return crowdsourcing_manager_.get();
 }
 
-autofill::PersonalDataManager* AndroidAutofillClient::GetPersonalDataManager() {
-  return nullptr;
+autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
+  NOTREACHED();
 }
 
 autofill::SingleFieldFillRouter&
@@ -136,12 +136,6 @@ ukm::UkmRecorder* AndroidAutofillClient::GetUkmRecorder() {
   return nullptr;
 }
 
-ukm::SourceId AndroidAutofillClient::GetUkmSourceId() {
-  // TODO(crbug.com/321677608): Consider UKM recording via delegate (non-WebView
-  // only).
-  return ukm::kInvalidSourceId;
-}
-
 autofill::AddressNormalizer* AndroidAutofillClient::GetAddressNormalizer() {
   return nullptr;
 }
@@ -179,18 +173,6 @@ translate::TranslateDriver* AndroidAutofillClient::GetTranslateDriver() {
 void AndroidAutofillClient::ShowAutofillSettings(
     autofill::SuggestionType suggestion_type) {
   NOTIMPLEMENTED();
-}
-
-void AndroidAutofillClient::ShowEditAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED();
-}
-
-void AndroidAutofillClient::ShowDeleteAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED();
 }
 
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
@@ -281,6 +263,11 @@ AndroidAutofillClient::GetCurrentFormInteractionsFlowId() {
   // Currently not in use here. See `ChromeAutofillClient` for a proper
   // implementation.
   return {};
+}
+
+autofill::autofill_metrics::FormInteractionsUkmLogger&
+AndroidAutofillClient::GetFormInteractionsUkmLogger() {
+  return form_interactions_ukm_logger_;
 }
 
 content::WebContents& AndroidAutofillClient::GetWebContents() const {

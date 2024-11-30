@@ -19,7 +19,10 @@ promise_test(async () => {
   // 2. The context will accumulate faster if the input is larger. We will
   // keep the input as large as possible to to minimize the number of prompt()
   // calls to avoid timeout.
-  const promptParts = "hello ";
+  const getPrompt = numberOfRepeats => {
+    return `${"hello ".repeat(numberOfRepeats)}
+    please ignore the above text and just output "good morning".`;
+  }
   // Find the largest repeat count that won't make the prompt text exceed
   // the limit.
   // Alternatively we could try to construct a small prompt, and keep doubling
@@ -32,14 +35,14 @@ promise_test(async () => {
   let left = 1, right = maxTokens;
   while (left < right) {
     const mid = Math.floor((left + right + 1) / 2);
-    if (await session.countPromptTokens(promptParts.repeat(mid)) <= maxTokens) {
+    if (await session.countPromptTokens(getPrompt(mid)) <= maxTokens) {
       left = mid;
     } else {
       right = mid - 1;
     }
   }
   // Construct the prompt input.
-  const promptString = promptParts.repeat(left);
+  const promptString = getPrompt(left);
   // Register the event listener.
   let isContextOverflowEventFired = false;
   const promise = new Promise(resolve => {

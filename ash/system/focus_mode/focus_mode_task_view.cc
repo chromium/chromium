@@ -101,16 +101,11 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
 
   bool show_selected() const { return show_selected_state_; }
 
-  std::u16string GetTooltipText() const { return tooltip_text_; }
+  // TODO(crbug.com/378724151): Remove this once tooltip text refactor is done.
+  std::u16string GetTooltipText() const { return GetCachedTooltipText(); }
 
   void SetTooltipText(const std::u16string& tooltip_text) {
-    if (tooltip_text_ == tooltip_text) {
-      return;
-    }
-
-    tooltip_text_ = tooltip_text;
-    TooltipTextChanged();
-    OnPropertyChanged(&tooltip_text_, views::kPropertyEffectsNone);
+    SetCachedTooltipText(tooltip_text);
   }
 
   void UpdateElideBehavior(bool active) {
@@ -119,14 +114,12 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
 
   // views::View:
   std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return tooltip_text_;
+    return GetCachedTooltipText();
   }
 
  private:
   // True if `FocusModeTaskView` has a selected task.
   bool show_selected_state_ = false;
-
-  std::u16string tooltip_text_;
 };
 
 BEGIN_METADATA(FocusModeTaskView, TaskTextfield)

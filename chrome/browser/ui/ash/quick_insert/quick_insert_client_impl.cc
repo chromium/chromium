@@ -311,6 +311,7 @@ void QuickInsertClientImpl::StartCrosSearch(
     case ash::QuickInsertCategory::kLobsterWithSelectedText:
     case ash::QuickInsertCategory::kEmojisGifs:
     case ash::QuickInsertCategory::kEmojis:
+    case ash::QuickInsertCategory::kGifs:
     case ash::QuickInsertCategory::kClipboard:
     case ash::QuickInsertCategory::kDatesTimes:
     case ash::QuickInsertCategory::kUnitsMaths:
@@ -588,6 +589,7 @@ QuickInsertClientImpl::CreateSearchProviderForCategory(
     case ash::QuickInsertCategory::kLobsterWithSelectedText:
     case ash::QuickInsertCategory::kEmojisGifs:
     case ash::QuickInsertCategory::kEmojis:
+    case ash::QuickInsertCategory::kGifs:
     case ash::QuickInsertCategory::kClipboard:
     case ash::QuickInsertCategory::kDatesTimes:
     case ash::QuickInsertCategory::kUnitsMaths:

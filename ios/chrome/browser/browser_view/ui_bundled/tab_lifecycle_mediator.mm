@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
@@ -197,6 +198,12 @@
         HandlerForProtocol(_commandDispatcher, ContextualSheetCommands);
     contextualPanelTabHelper->SetContextualSheetHandler(contextualSheetHandler);
   }
+
+  EditMenuTabHelper* editMenuTabHelper =
+      EditMenuTabHelper::FromWebState(webState);
+  if (editMenuTabHelper) {
+    editMenuTabHelper->SetEditMenuBuilder(self.editMenuBuilder);
+  }
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
@@ -268,6 +275,12 @@
       ContextualPanelTabHelper::FromWebState(webState);
   if (contextualPanelTabHelper) {
     contextualPanelTabHelper->SetContextualSheetHandler(nil);
+  }
+
+  EditMenuTabHelper* editMenuTabHelper =
+      EditMenuTabHelper::FromWebState(webState);
+  if (editMenuTabHelper) {
+    editMenuTabHelper->SetEditMenuBuilder(nil);
   }
 }
 

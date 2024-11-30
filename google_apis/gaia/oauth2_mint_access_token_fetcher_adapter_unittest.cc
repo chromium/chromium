@@ -16,8 +16,10 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+#include "google_apis/gaia/token_binding_response_encryption_error.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,12 +53,6 @@ constexpr char kFetchAuthErrorHistogram[] =
     "Signin.OAuth2MintToken.BoundFetchAuthError";
 constexpr char kFetchEncryptionErrorHistogram[] =
     "Signin.OAuth2MintToken.BoundFetchEncryptionError";
-
-// Copy of an enum definition in .cc file.
-enum class EncryptionError {
-  kResponseUnexpectedlyEncrypted = 0,
-  kDecryptionFailed = 1
-};
 
 class MockOAuth2AccessTokenConsumer : public OAuth2AccessTokenConsumer {
  public:
@@ -167,7 +163,7 @@ class OAuth2MintAccessTokenFetcherAdapterTest : public testing::Test {
   std::unique_ptr<OAuth2MintAccessTokenFetcherAdapter> CreateFetcher() {
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         &mock_consumer_, url_loader_factory_.GetSafeWeakWrapper(),
-        kTestUserGaiaId, kTestRefreshToken, kTestDeviceId, kTestVersion,
+        GaiaId(kTestUserGaiaId), kTestRefreshToken, kTestDeviceId, kTestVersion,
         kTestChannel);
     fetcher->SetOAuth2MintTokenFlowFactoryForTesting(base::BindRepeating(
         &OAuth2MintAccessTokenFetcherAdapterTest::CreateMockFlow,
@@ -217,7 +213,7 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Params) {
   expected_params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
   expected_params.scopes = {kTestScope};
   expected_params.bound_oauth_token = gaia::CreateBoundOAuthToken(
-      kTestUserGaiaId, kTestRefreshToken, kAssertionSentinel);
+      GaiaId(kTestUserGaiaId), kTestRefreshToken, kAssertionSentinel);
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
 }
 
@@ -235,7 +231,7 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, ParamsWithBindingKeyAssertion) {
   expected_params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
   expected_params.scopes = {kTestScope};
   expected_params.bound_oauth_token = gaia::CreateBoundOAuthToken(
-      kTestUserGaiaId, kTestRefreshToken, kTestAssertion);
+      GaiaId(kTestUserGaiaId), kTestRefreshToken, kTestAssertion);
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
 }
 
@@ -340,9 +336,10 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, DecryptionFailure) {
       kFetchAuthErrorHistogram,
       GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE,
       /*expected_bucket_count=*/1);
-  histogram_tester().ExpectUniqueSample(kFetchEncryptionErrorHistogram,
-                                        EncryptionError::kDecryptionFailed,
-                                        /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      kFetchEncryptionErrorHistogram,
+      TokenBindingResponseEncryptionError::kDecryptionFailed,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, NoDecryptorFailure) {
@@ -362,7 +359,7 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, NoDecryptorFailure) {
       /*expected_bucket_count=*/1);
   histogram_tester().ExpectUniqueSample(
       kFetchEncryptionErrorHistogram,
-      EncryptionError::kResponseUnexpectedlyEncrypted,
+      TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted,
       /*expected_bucket_count=*/1);
 }
 

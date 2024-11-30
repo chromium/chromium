@@ -6,7 +6,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] [INTERFACES]
 [Worker] interface AI
 [Worker]     attribute @@toStringTag
-[Worker]     getter languageDetector
 [Worker]     getter languageModel
 [Worker]     getter rewriter
 [Worker]     getter summarizer
@@ -17,21 +16,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter ondownloadprogress
 [Worker]     method constructor
 [Worker]     setter ondownloadprogress
-[Worker] interface AILanguageDetector
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method destroy
-[Worker]     method detect
-[Worker] interface AILanguageDetectorCapabilities
-[Worker]     attribute @@toStringTag
-[Worker]     getter available
-[Worker]     method constructor
-[Worker]     method languageAvailable
-[Worker] interface AILanguageDetectorFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method capabilities
-[Worker]     method constructor
-[Worker]     method create
 [Worker] interface AILanguageModel : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter maxTokens
@@ -101,10 +85,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker]     method translate
-[Worker] interface AITranslatorFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method create
 [Worker] interface AIWriter
 [Worker]     attribute @@toStringTag
 [Worker]     getter sharedContext
@@ -1708,6 +1688,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method read
 [Worker]     method releaseLock
+[Worker] interface ReportBody
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method toJSON
 [Worker] interface ReportingObserver
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

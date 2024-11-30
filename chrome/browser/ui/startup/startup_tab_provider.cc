@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -42,6 +43,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -274,6 +276,21 @@ StartupTabs StartupTabProviderImpl::GetInitialPrefsTabsForState(
     for (GURL url : first_run_tabs) {
       if (url.host_piece() == kNewTabUrlHost) {
         url = GURL(chrome::kChromeUINewTabURL);
+      }
+      if (url.SchemeIs(content::kChromeUIScheme) &&
+          (url.host_piece() == chrome::kChromeUIWelcomeHost
+#if BUILDFLAG(IS_WIN)
+           || url.host_piece() == chrome::kChromeUIWelcomeWin10Host
+#endif
+           )) {
+        // These URLs are still referenced from some of the installers. As
+        // these chrome UIs are removed, avoid opening tabs pointing to
+        // invalid pages.
+        // TODO(crbug.com/379999327): Cleanup this block around Chrome M143
+        // or if it stops being reached.
+        base::UmaHistogramBoolean("Startup.StartupTabs.IsWelcomePageSkipped",
+                                  true);
+        continue;
       }
       tabs.emplace_back(url);
     }

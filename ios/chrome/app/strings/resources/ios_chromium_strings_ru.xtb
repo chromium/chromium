@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Используйте Chromium по умолчанию на iPad</translation>
 <translation id="1471084500615228555">Удалить данные о работе в браузере Chromium</translation>
 <translation id="1472013873724362412">Ваш аккаунт не поддерживается в Chromium. Обратитесь к администратору домена или войдите с помощью обычного аккаунта Google.</translation>
+<translation id="148576268809812097">Сохраняйте пароли в браузер Chromium</translation>
 <translation id="1501302548410882220">Используйте Chromium где угодно</translation>
 <translation id="1503199973012840174">Версия Chromium устарела. Обновите браузер, чтобы ваши данные оставались под надежной защитой.</translation>
 <translation id="1515748263297244785">Сделайте Chromium браузером по умолчанию для iPad</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Пароль будет сохранен в вашем аккаунте (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">Чтобы настроить персонализацию и другие функции, Chromium нужно добавить в определенные разделы (<ph name="FEATURE_NAME_1" /> и <ph name="FEATURE_NAME_2" />).</translation>
 <translation id="1838412507805038478">Данные Chromium подтверждают, что сертификат сайта выпущен компанией <ph name="ISSUER" />.</translation>
+<translation id="1839447949248872139">Открывайте по умолчанию ссылки через Chromium</translation>
 <translation id="1843424232666537147">В Chromium можно устанавливать параметры обработки данных в Интернете и скорости загрузки веб-страниц.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Карты в Chromium</translation>
@@ -160,6 +162,7 @@
 <translation id="5048795749726991615">Чтобы легко вводить сохраненные пароли в других приложениях, укажите значение Chromium для параметра "Автозаполнение".</translation>
 <translation id="5053429694249468757">Удаление данных Chromium…</translation>
 <translation id="5071749685031362629">Chromium для iOS</translation>
+<translation id="5088872414922783602">Добавьте Chromium на панель Dock для быстрого доступа.</translation>
 <translation id="5124429847818367226">Теперь можно сделать так, что при переходе по ссылкам в сообщениях, документах и других приложениях будет открываться браузер Chromium.</translation>
 <translation id="5131565040785979529">Аккаунтом, в который вы вошли, и использованием Chromium управляет ваша организация (<ph name="DOMAIN" />).</translation>
 <translation id="5224391634244552924">Сохраненных паролей нет. Чтобы браузер Chromium мог проверять пароли, сохраните их.</translation>
@@ -273,6 +276,7 @@
 <translation id="800380310260616129">Chromium можно скачать здесь.</translation>
 <translation id="8013573822802650211">Чтобы ваши вкладки всегда были доступны вам при работе с Chromium, выполните вход на всех своих устройствах.</translation>
 <translation id="8014091604604659473">Вы вышли из Chromium</translation>
+<translation id="8035379487371146621">Переместите Chromium на панель Dock</translation>
 <translation id="8104697640054703121">Выберите самую надежную защиту от опасных сайтов в Chromium.</translation>
 <translation id="8119542592987737574">Вы сможете быстрее открывать Chromium на главном экране iPhone.</translation>
 <translation id="8164086860209325020">Откройте настройки Chromium.</translation>

@@ -325,16 +325,6 @@ window.addEventListener('popstate', () => {
 });
 
 /**
- * @returns true if this route exists under the Advanced section.
- */
-export function isAdvancedRoute(route: Route|null): boolean {
-  if (!route) {
-    return false;
-  }
-  return routes.ADVANCED.contains(route);
-}
-
-/**
  * @returns true if this route exists under the Basic section (not advanced
  * section).
  */
@@ -343,16 +333,6 @@ export function isBasicRoute(route: Route|null): boolean {
     return false;
   }
   return routes.BASIC.contains(route);
-}
-
-/**
- * @returns true if this route exists under the About page
- */
-export function isAboutRoute(route: Route|null): boolean {
-  if (!route) {
-    return false;
-  }
-  return routes.ABOUT.contains(route);
 }
 
 /**

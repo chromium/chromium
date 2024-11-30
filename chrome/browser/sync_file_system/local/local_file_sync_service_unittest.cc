@@ -621,8 +621,8 @@ TEST_F(LocalFileSyncServiceTest, RecordFakeChange) {
 
 class OriginChangeMapTest : public testing::Test {
  protected:
-  OriginChangeMapTest() {}
-  ~OriginChangeMapTest() override {}
+  OriginChangeMapTest() = default;
+  ~OriginChangeMapTest() override = default;
 
   bool NextOriginToProcess(GURL* origin) {
     return map_.NextOriginToProcess(origin);

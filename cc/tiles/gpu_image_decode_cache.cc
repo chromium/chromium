@@ -1110,6 +1110,9 @@ GpuImageDecodeCache::ImageData::ImageData(
     DCHECK_EQ(info.yuva->yuvaInfo().planeConfig(),
               SkYUVAInfo::PlaneConfig::kY_U_V);
   }
+  if (base::FeatureList::IsEnabled(features::kInitImageDecodeLastUseTime)) {
+    last_use = base::TimeTicks::Now();
+  }
 }
 
 GpuImageDecodeCache::ImageData::~ImageData() {
@@ -2333,7 +2336,7 @@ void GpuImageDecodeCache::InsertTransferCacheEntry(
   if (data) {
     // TODO(crbug.com/40285824): Have MapTransferCacheEntry() return a span.
     bool succeeded = image_entry.Serialize(
-        UNSAFE_TODO(base::make_span(static_cast<uint8_t*>(data), size)));
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(data), size)));
     DCHECK(succeeded);
     context_->ContextSupport()->UnmapAndCreateTransferCacheEntry(
         image_entry.UnsafeType(), image_entry.Id());

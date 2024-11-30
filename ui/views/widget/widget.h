@@ -93,6 +93,34 @@ enum class CloseRequestResult { kCanClose, kCannotClose };
 //  Widget is a platform-independent type that communicates with a platform or
 //  context specific NativeWidget implementation.
 //
+//  All widgets should use ownership = CLIENT_OWNS_WIDGET. The client code that
+//  creates the widget should hold onto a std::unique_ptr<Widget>. The proper
+//  way to close the Widget is to reset the unique_ptr.
+//
+//  The Close() and CloseWithReason() methods are problematic because they
+//  asynchronously close the widget. This means that client code has to handle
+//  the edge case of: widget is closed, but not destroyed. Use
+//  MakeCloseSynchronous() to allow the client to intercept these calls
+//  and reset the unique_ptr. Note that the point of
+//  MakeCloseSynchronous() is to intercept calls to Close() from code in
+//  //ui that client code cannot control (such as DialogDelegate). This also
+//  allows client code to have a single destruction path for widgets, which
+//  simplifies logic for code that should be written exactly once, such as
+//  logging. If Client code does not rely on DialogDelegate or similar helpers
+//  that call Widget::Close(), then MakeCloseSynchronous is unnecessary.
+//
+//  Aside 1: Clients are responsible for handling the case where the parent
+//  widget is destroyed. There are common helpers like TabDialogManager that
+//  will do this.
+//
+//  Aside 2: There will always be the edge case of NATIVE_WIDGET destroyed while
+//  Widget is alive. This is rare and most clients do not need to handle this.
+//  For clients that do care about this, the best way to detect this right now
+//  is WidgetObserver::OnWidgetDestroying.
+//
+//  See documentation of MakeCloseSynchronous for an example.
+//
+//  Deprecated but kept for historical context --------------------------------
 //  A special note on ownership:
 //
 //    Depending on the value of the InitParams' ownership field, the Widget
@@ -725,14 +753,41 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetShape(std::unique_ptr<ShapeRects> shape);
 
   // Equivalent to CloseWithReason(ClosedReason::kUnspecified).
-  // DEPRECATED: Please use CloseWithReason() instead.
+  // DEPRECATED: Please use CLIENT_OWNS_WIDGET and reset the unique_ptr<Widget>
+  // instead. Use MakeCloseSynchronous() to intercept unexpected calls
+  // to Close().
   void Close();
 
   // Hides the widget, then closes it after a return to the message loop,
   // specifying the reason for it having been closed.
   // Note that while you can pass ClosedReason::kUnspecified, it is highly
   // discouraged and only supported for backwards-compatibility with Close().
+  // DEPRECATED: Please use CLIENT_OWNS_WIDGET and reset the unique_ptr<Widget>
+  // instead. Use MakeCloseSynchronous() to intercept unexpected calls
+  // to Close().
   void CloseWithReason(ClosedReason closed_reason);
+
+  // This method is used by clients to intercept calls to Close() from other
+  // code in //ui such as DialogDelegate. The only valid use case is to allow
+  // clients to implement a synchronous version of Close() by resetting the
+  // unique_ptr.
+  //
+  //  widget_->MakeCloseSynchronous(
+  //      base::BindOnce(&Client::CloseWidget, this));
+  //
+  //  // Called by the implementation of DialogDelegate when the user clicks the
+  //  // close/cancel buttons, or presses `esc`.
+  //  void Client::CloseWidget(Widget::CloseReason reason) {
+  //    LogExactlyOnceOnWidgetDestruction(reason);
+  //    widget_.reset();
+  //  }
+  //
+  //  // If the client wants to close the widget, it can also do so.
+  //  Client::ClientCloseWidget() {
+  //    CloseWidget(CloseReason::kUnspecified);
+  //  }
+  void MakeCloseSynchronous(
+      base::OnceCallback<void(ClosedReason)> override_close);
 
   // A UI test which tries to asynchronously examine a widget (e.g. the pixel
   // tests) will fail if the widget is closed before that.  This can happen
@@ -740,6 +795,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // in parallel, since one test's widget can be closed by the appearance of
   // another test's.  This method can be used to temporarily disable
   // Widget::Close() for such asynchronous cases.
+  //
+  // DEPRECATED. Don't use this. Avoid asynchronously closing to begin with. See
+  // MakeCloseSynchronous() for more details.
   void SetBlockCloseForTesting(bool block_close) { block_close_ = block_close; }
 
   // TODO(beng): Move off public API.
@@ -766,6 +824,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Mac browsertests do not have an activation policy so the widget may be
   // activated.
   void ShowInactive();
+
+  // Unlike Show/Hide above, this function is idempotent. Calling
+  // SetVisible(true) when IsVisible() == true is a no-op.
+  void SetVisible(bool visible);
 
   // Activates the widget, assuming it already exists and is visible.
   void Activate();
@@ -1270,7 +1332,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetY(int y);
   void SetWidth(int width);
   void SetHeight(int height);
-  void SetVisible(bool visible);
 
   // ui::ColorProviderSource:
   ui::ColorProviderKey GetColorProviderKey() const override;
@@ -1511,6 +1572,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // fullscreen. However, on macOS some child widgets logically correspond to
   // the same window. Their fullscreen state should inherit from their parents.
   bool check_parent_for_fullscreen_ = false;
+
+  // Replaces the implementation of Close() and CloseWithReason().
+  base::OnceCallback<void(ClosedReason)> override_close_;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};

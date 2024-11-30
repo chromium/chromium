@@ -248,6 +248,18 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_4},
       {"m1NoticeRowLearnMoreDescription5",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5},
+
+      // Strings for the ROW notice with the Ads API UX Enhancement.
+      {"m1NoticeLearnMoreBullet2V2",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_2_V2},
+      {"m1NoticeRowLearnMoreDesription2V2",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2_V2},
+      {"m1NoticeRowLearnMoreHeading3",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_3},
+      {"m1NoticeRowLearnMoreDescription5V2NoLink",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2_NO_LINK},
+      {"m1NoticeRowLastText", IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT},
+
       // Strings for the restricted notice dialog (kM1NoticeRestricted).
       {"m1NoticeRestrictedTitle",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_TITLE},
@@ -301,6 +313,17 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       "m1NoticeEEASiteSuggestedAdsLearnMoreBullet1Description",
       l10n_util::GetStringFUTF16(
           IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1_DESCRIPTION,
+          kPrivacyPolicyIdV2,
+          l10n_util::GetStringUTF16(
+              IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION),
+          kPrivacyPolicyFunc));
+
+  // Adding Privacy Policy Link to ROW Notice for V2 with Ads API UX
+  // Enhancements.
+  source->AddString(
+      "m1NoticeRowLearnMoreDescription5V2",
+      l10n_util::GetStringFUTF16(
+          IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2,
           kPrivacyPolicyIdV2,
           l10n_util::GetStringUTF16(
               IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION),

@@ -40,6 +40,7 @@ enum class CompositorElementIdNamespace {
   kViewTransitionSubframeRoot,
   kViewTransitionElement,
   kElementCapture,
+  kPlaceElement,
   kDOMNodeId,
   // The following values are for internal usage only.
   kMax = kDOMNodeId,

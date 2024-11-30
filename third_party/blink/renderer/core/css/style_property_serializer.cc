@@ -80,8 +80,7 @@ inline TextWrapStyle ToTextWrapStyle(const CSSValue* value) {
 
 bool IsZeroPercent(const CSSValue* value) {
   if (const auto* num = DynamicTo<CSSNumericLiteralValue>(value)) {
-    return num->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue &&
-           num->IsPercentage();
+    return num->GetValueIfKnown() == 0.0 && num->IsPercentage();
   }
 
   return false;
@@ -522,9 +521,6 @@ String StylePropertySerializer::SerializeShorthand(
   switch (property_id) {
     case CSSPropertyID::kAnimation:
       return GetLayeredShorthandValue(animationShorthand());
-    case CSSPropertyID::kAlternativeAnimationWithTimeline:
-      return GetLayeredShorthandValue(
-          alternativeAnimationWithTimelineShorthand());
     case CSSPropertyID::kAnimationRange:
       return AnimationRangeShorthandValue();
     case CSSPropertyID::kBorderSpacing:
@@ -725,13 +721,15 @@ String StylePropertySerializer::SerializeShorthand(
 // The font shorthand only allows keyword font-stretch values. Thus, we check if
 // a percentage value can be parsed as a keyword, and if so, serialize it as
 // that keyword.
+//
+// It's not very well specified what to do with calc(), so we follow the other
+// browsers here and try to stay flexible.
 const CSSValue* GetFontStretchKeyword(const CSSValue* font_stretch_value) {
   if (IsA<CSSIdentifierValue>(font_stretch_value)) {
     return font_stretch_value;
   }
-  if (auto* primitive_value =
-          DynamicTo<CSSPrimitiveValue>(font_stretch_value)) {
-    double value = primitive_value->GetDoubleValue();
+  if (auto* literal_value = DynamicTo<CSSPrimitiveValue>(font_stretch_value)) {
+    std::optional<double> value = literal_value->GetValueIfKnown();
     if (value == 50) {
       return CSSIdentifierValue::Create(CSSValueID::kUltraCondensed);
     }
@@ -977,11 +975,14 @@ std::pair<CSSValueID, double> GetTimelineRangePercent(
     name = To<CSSIdentifierValue>(list->Item(0)).GetValueID();
     if (list->length() == 2u) {
       const auto& offset = To<CSSPrimitiveValue>(list->Item(1));
-      offset_percent = offset.IsPercentage() ? offset.GetValue<double>() : -1.0;
+      offset_percent = offset.IsPercentage() ? offset.GetDoubleValue() : -1.0;
     }
   } else {
     const auto& offset = To<CSSPrimitiveValue>(list->Item(0));
-    offset_percent = offset.IsPercentage() ? offset.GetValue<double>() : -1.0;
+    offset_percent =
+        offset.IsPercentage() && offset.GetValueIfKnown().has_value()
+            ? *offset.GetValueIfKnown()
+            : -1.0;
   }
 
   return {name, offset_percent};
@@ -1192,7 +1193,7 @@ String StylePropertySerializer::FontValue() const {
   const CSSValue* first = property_set_.GetPropertyCSSValue(*longhands[0]);
   if (const auto* system_font =
           DynamicTo<cssvalue::CSSPendingSystemFontValue>(first)) {
-    for (const CSSProperty* const longhand : longhands.subspan(1)) {
+    for (const CSSProperty* const longhand : longhands.subspan<1>()) {
       const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
       if (!base::ValuesEquivalent(first, value)) {
         return g_empty_string;
@@ -1200,7 +1201,7 @@ String StylePropertySerializer::FontValue() const {
     }
     return GetCSSValueNameAs<String>(system_font->SystemFontId());
   } else {
-    for (const CSSProperty* const longhand : longhands.subspan(1)) {
+    for (const CSSProperty* const longhand : longhands.subspan<1>()) {
       const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
       if (value->IsPendingSystemFontValue()) {
         return g_empty_string;
@@ -1634,7 +1635,6 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             (ident->GetValueID() !=
              CSSAnimationData::InitialTimeline().GetKeyword()) ||
             layer > 0) {
-          DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
         omit_value = true;
@@ -1643,7 +1643,6 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
         if (!ident || (ident->GetValueID() != CSSValueID::kNormal) ||
             layer > 0) {
-          DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
         omit_value = true;
@@ -1652,7 +1651,6 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
         if (!ident || (ident->GetValueID() != CSSValueID::kNormal) ||
             layer > 0) {
-          DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
         omit_value = true;
@@ -1679,12 +1677,10 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       if (property->IDEquals(CSSPropertyID::kTransitionDelay) ||
           property->IDEquals(CSSPropertyID::kTransitionDuration)) {
         auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(value);
-        if (numeric_value &&
-            numeric_value->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue) {
+        if (numeric_value && numeric_value->GetValueIfKnown() == 0.0) {
           omit_value = true;
         }
-      } else if (property->IDEquals(
-                     CSSPropertyID::kTransitionTimingFunction)) {
+      } else if (property->IDEquals(CSSPropertyID::kTransitionTimingFunction)) {
         if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
           if (ident->GetValueID() == CSSValueID::kEase) {
             omit_value = true;

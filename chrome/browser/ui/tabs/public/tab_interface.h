@@ -9,16 +9,12 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/tabs/public/supports_handles.h"
 #include "components/tab_groups/tab_group_id.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace views {
-class WidgetDelegate;
-class Widget;
-}  // namespace views
 
 class BrowserWindowInterface;
 
@@ -41,7 +37,7 @@ class ScopedTabModalUI {
 // Ping erikchen for assistance if this class does not have the functionality
 // your feature needs. This comment will be deleted after there are 10+ features
 // in TabFeatures.
-class TabInterface {
+class TabInterface : public SupportsHandles<TabInterface> {
  public:
   // This method exists to ease the transition from WebContents to TabInterface.
   // This method should only be called on instances of WebContents that are
@@ -56,10 +52,6 @@ class TabInterface {
   // unavoidable, this method may be used. Features that live entirely above the
   // //content layer should not use this method.
   static TabInterface* MaybeGetFromContents(content::WebContents* web_contents);
-
-  // Returns the TabInterface associated with the given `handle_id`, if one
-  // exists, otherwise it returns null.
-  static TabInterface* MaybeGetFromHandle(uint32_t handle_id);
 
   // When a tab is in the background, the WebContents may be discarded to save
   // memory. When a tab is in the foreground it is guaranteed to have a
@@ -170,19 +162,15 @@ class TabInterface {
   //   that is conceptually a TabFeature and needs access to other TabFeatures.
   virtual tabs::TabFeatures* GetTabFeatures() = 0;
 
-  virtual std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
-      views::WidgetDelegate* delegate) = 0;
-
   // Return true if the tab is pinned in its tabstrip, or false otherwise.
   virtual bool IsPinned() const = 0;
 
   // Returns the id of the tab group this tab belongs to, or nullopt if the tab
   // is not grouped.
   virtual std::optional<tab_groups::TabGroupId> GetGroup() const = 0;
-
-  // An identifier that is guaranteed to be unique.
-  virtual uint32_t GetTabHandle() const = 0;
 };
+
+using TabHandle = TabInterface::Handle;
 
 }  // namespace tabs
 

@@ -20,7 +20,7 @@
 class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
                                        public views::WidgetObserver {
  public:
-  ExclusiveAccessBubbleViewsTest() {}
+  ExclusiveAccessBubbleViewsTest() = default;
 
   ExclusiveAccessBubbleViewsTest(const ExclusiveAccessBubbleViewsTest&) =
       delete;

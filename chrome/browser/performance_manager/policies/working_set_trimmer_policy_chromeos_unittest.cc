@@ -180,7 +180,7 @@ class MockWorkingSetTrimmerPolicyChromeOS
   MockWorkingSetTrimmerPolicyChromeOS& operator=(
       const MockWorkingSetTrimmerPolicyChromeOS&) = delete;
 
-  ~MockWorkingSetTrimmerPolicyChromeOS() override {}
+  ~MockWorkingSetTrimmerPolicyChromeOS() override = default;
 
   base::MemoryPressureListener& listener() {
     return memory_pressure_listener_.value();
@@ -290,7 +290,7 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
   WorkingSetTrimmerPolicyChromeOSTest& operator=(
       const WorkingSetTrimmerPolicyChromeOSTest&) = delete;
 
-  ~WorkingSetTrimmerPolicyChromeOSTest() override {}
+  ~WorkingSetTrimmerPolicyChromeOSTest() override = default;
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();

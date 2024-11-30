@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_mediator.h"
 
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_consumer.h"
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer.h"
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 
 @interface PanelContentMediator () <ChromeBroadcastObserver>
 

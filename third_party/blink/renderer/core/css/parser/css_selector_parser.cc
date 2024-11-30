@@ -97,6 +97,23 @@ void MarkAsEntireComplexSelector(base::span<CSSSelector> selectors) {
   selectors.back().SetLastInComplexSelector(true);
 }
 
+// https://drafts.csswg.org/css-overflow-5/#typedef-scroll-button-direction
+bool IsScrollButtonDirectionKeyword(const CSSParserToken& ident) {
+  switch (ident.Id()) {
+    case CSSValueID::kUp:
+    case CSSValueID::kDown:
+    case CSSValueID::kLeft:
+    case CSSValueID::kRight:
+    case CSSValueID::kBlockStart:
+    case CSSValueID::kBlockEnd:
+    case CSSValueID::kInlineStart:
+    case CSSValueID::kInlineEnd:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 // static
@@ -105,11 +122,10 @@ base::span<CSSSelector> CSSSelectorParser::ParseSelector(
     const CSSParserContext* context,
     CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
-    bool is_within_scope,
     bool semicolon_aborts_nested_selector,
     StyleSheetContents* style_sheet,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, parent_rule_for_nesting, is_within_scope,
+  CSSSelectorParser parser(context, parent_rule_for_nesting,
                            semicolon_aborts_nested_selector, style_sheet,
                            arena);
   stream.ConsumeWhitespace();
@@ -130,13 +146,12 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
     const CSSParserContext* context,
     CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
-    bool is_within_scope,
     bool semicolon_aborts_nested_selector,
     StyleSheetContents* style_sheet,
     CSSParserObserver* observer,
     HeapVector<CSSSelector>& arena,
     bool* has_visited_style) {
-  CSSSelectorParser parser(context, parent_rule_for_nesting, is_within_scope,
+  CSSSelectorParser parser(context, parent_rule_for_nesting,
                            semicolon_aborts_nested_selector, style_sheet,
                            arena);
   stream.ConsumeWhitespace();
@@ -153,10 +168,9 @@ base::span<CSSSelector> CSSSelectorParser::ParseScopeBoundary(
     const CSSParserContext* context,
     CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
-    bool is_within_scope,
     StyleSheetContents* style_sheet,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, parent_rule_for_nesting, is_within_scope,
+  CSSSelectorParser parser(context, parent_rule_for_nesting,
                            /*semicolon_aborts_nested_selector=*/false,
                            style_sheet, arena);
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
@@ -178,9 +192,9 @@ bool CSSSelectorParser::SupportsComplexSelector(
     const CSSParserContext* context) {
   stream.ConsumeWhitespace();
   HeapVector<CSSSelector> arena;
-  CSSSelectorParser parser(
-      context, /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
-      /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
+  CSSSelectorParser parser(context, /*parent_rule_for_nesting=*/nullptr,
+                           /*semicolon_aborts_nested_selector=*/false, nullptr,
+                           arena);
   parser.SetInSupportsParsing();
   ResultFlags result_flags = 0;
   base::span<CSSSelector> selectors = parser.ConsumeComplexSelector(
@@ -197,13 +211,11 @@ bool CSSSelectorParser::SupportsComplexSelector(
 
 CSSSelectorParser::CSSSelectorParser(const CSSParserContext* context,
                                      const StyleRule* parent_rule_for_nesting,
-                                     bool is_within_scope,
                                      bool semicolon_aborts_nested_selector,
                                      StyleSheetContents* style_sheet,
                                      HeapVector<CSSSelector>& output)
     : context_(context),
       parent_rule_for_nesting_(parent_rule_for_nesting),
-      is_within_scope_(is_within_scope),
       semicolon_aborts_nested_selector_(semicolon_aborts_nested_selector),
       style_sheet_(style_sheet),
       output_(output) {}
@@ -1054,7 +1066,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
           /*has_arguments=*/false, parent ? &parent->GetDocument() : nullptr);
 
       PseudoId pseudo_id = CSSSelector::GetPseudoId(pseudo_type);
-      if (pseudo_id == kPseudoIdCheck || pseudo_id == kPseudoIdBefore ||
+      if (pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
           pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdSelectArrow ||
           pseudo_id == kPseudoIdFirstLetter ||
           pseudo_id == kPseudoIdFirstLine) {
@@ -1068,13 +1080,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
       // correct or treat them as unsupported.
       if ((pseudo_type == CSSSelector::PseudoType::kPseudoWebKitCustomElement ||
            pseudo_type ==
-               CSSSelector::PseudoType::kPseudoBlinkInternalElement ||
-           (!RuntimeEnabledFeatures::
-                PseudoElementsCorrectInGetComputedStyleEnabled() &&
-            (pseudo_type == CSSSelector::PseudoType::kPseudoCue ||
-             pseudo_type == CSSSelector::PseudoType::kPseudoPlaceholder ||
-             pseudo_type ==
-                 CSSSelector::PseudoType::kPseudoFileSelectorButton))) &&
+               CSSSelector::PseudoType::kPseudoBlinkInternalElement) &&
           num_colons == 2) {
         return kPseudoIdNone;
       }
@@ -1092,7 +1098,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
   CSSSelectorParser parser(
       StrictCSSParserContext(SecureContextMode::kInsecureContext),
       /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, /*semicolon_aborts_nested_selector=*/false,
+      /*semicolon_aborts_nested_selector=*/false,
       /*style_sheet=*/nullptr, arena);
 
   ResetVectorAfterScope reset_vector(parser.output_);
@@ -1207,12 +1213,11 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoSearchText:
       return pseudo_class == CSSSelector::kPseudoCurrent;
     case CSSSelector::kPseudoScrollMarker:
-    case CSSSelector::kPseudoScrollNextButton:
-    case CSSSelector::kPseudoScrollPrevButton:
+    case CSSSelector::kPseudoScrollButton:
       // TODO(crbug.com/40824273): User action pseudos should be allowed more
       // generally after pseudo elements.
       return pseudo_class == CSSSelector::kPseudoFocus ||
-             pseudo_class == CSSSelector::kPseudoChecked;
+             pseudo_class == CSSSelector::kPseudoTargetCurrent;
     default:
       return false;
   }
@@ -1230,7 +1235,7 @@ bool IsSimpleSelectorValidAfterPseudoElement(
     case CSSSelector::kPseudoSelectArrow:
     case CSSSelector::kPseudoAfter:
     case CSSSelector::kPseudoBefore:
-    case CSSSelector::kPseudoCheck:
+    case CSSSelector::kPseudoCheckMark:
       if (simple_selector.GetPseudoType() == CSSSelector::kPseudoMarker &&
           RuntimeEnabledFeatures::CSSMarkerNestedPseudoElementEnabled()) {
         return true;
@@ -1259,11 +1264,6 @@ bool IsSimpleSelectorValidAfterPseudoElement(
       // nested selectors will be dropped if they are invalid according to
       // this function.
       return true;
-    case CSSSelector::kPseudoHas:
-      if (!RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled()) {
-        return true;
-      }
-      [[fallthrough]];
     default:
       break;
   }
@@ -1688,7 +1688,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
         return false;
       }
 
-      if (!selector_list->HasOneSelector()) {
+      if (!selector_list->IsSingleComplexSelector()) {
         if (selector.GetPseudoType() == CSSSelector::kPseudoHost) {
           return false;
         }
@@ -1776,10 +1776,6 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       return true;
     }
     case CSSSelector::kPseudoActiveViewTransitionType: {
-      if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
-        return false;
-      }
-
       Vector<AtomicString> types;
       for (;;) {
         const CSSParserToken& ident = stream.Peek();
@@ -1812,11 +1808,10 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
     case CSSSelector::kPseudoViewTransitionNew: {
       std::unique_ptr<Vector<AtomicString>> name_and_classes =
           std::make_unique<Vector<AtomicString>>();
-      if (RuntimeEnabledFeatures::CSSViewTransitionClassEnabled()) {
-        if (stream.Peek().GetType() == kDelimiterToken &&
-            stream.Peek().Delimiter() == '.') {
-          name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
-        }
+      // Is this a view transition class?
+      if (stream.Peek().GetType() == kDelimiterToken &&
+          stream.Peek().Delimiter() == '.') {
+        name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
       }
 
       if (name_and_classes->empty()) {
@@ -1835,19 +1830,17 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
 
       CHECK_EQ(name_and_classes->size(), 1ull);
 
-      if (RuntimeEnabledFeatures::CSSViewTransitionClassEnabled()) {
-        while (!stream.AtEnd() && stream.Peek().GetType() != kWhitespaceToken) {
-          if (stream.Peek().GetType() != kDelimiterToken ||
-              stream.Consume().Delimiter() != '.') {
-            return false;
-          }
-
-          if (stream.Peek().GetType() != kIdentToken) {
-            return false;
-          }
-          name_and_classes->push_back(
-              stream.Consume().Value().ToAtomicString());
+      // Parse view transition classes.
+      while (!stream.AtEnd() && stream.Peek().GetType() != kWhitespaceToken) {
+        if (stream.Peek().GetType() != kDelimiterToken ||
+            stream.Consume().Delimiter() != '.') {
+          return false;
         }
+
+        if (stream.Peek().GetType() != kIdentToken) {
+          return false;
+        }
+        name_and_classes->push_back(stream.Consume().Value().ToAtomicString());
       }
 
       stream.ConsumeWhitespace();
@@ -1924,6 +1917,22 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       }
 
       selector.SetNth(ab.first, ab.second, sub_selectors);
+      output_.push_back(std::move(selector));
+      return true;
+    }
+    case CSSSelector::kPseudoScrollButton: {
+      const CSSParserToken& ident = stream.Peek();
+      if (ident.GetType() != kIdentToken) {
+        return false;
+      }
+      if (!IsScrollButtonDirectionKeyword(ident)) {
+        return false;
+      }
+      selector.SetArgument(ident.Value().ToAtomicString());
+      stream.ConsumeIncludingWhitespace();
+      if (!stream.AtEnd()) {
+        return false;
+      }
       output_.push_back(std::move(selector));
       return true;
     }

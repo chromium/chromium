@@ -109,10 +109,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   static float MinFractionToStepWhenPaging();
   int MaxOverlapBetweenPages() const;
 
-  // Returns the amount of delta, in |granularity| units, for a direction-based
-  // (i.e. keyboard or scrollbar arrow) scroll.
-  static float DirectionBasedScrollDelta(ui::ScrollGranularity granularity);
-
   // Convert a non-finite scroll value (Infinity, -Infinity, NaN) to 0 as
   // per https://drafts.csswg.org/cssom-view/#normalize-non-finite-values.
   static float NormalizeNonFiniteScroll(float value) {
@@ -611,9 +607,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void SetSnappedQueryTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) {}
 
-  virtual void UpdateScrollMarkers(const ScrollOffset& offset) {}
-
  protected:
+  virtual void UpdateScrollMarkers() {}
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
   // instant or smooth scroll.
@@ -691,12 +686,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual int PageStep(ScrollbarOrientation) const;
   virtual int DocumentStep(ScrollbarOrientation) const;
   virtual float PixelStep(ScrollbarOrientation) const;
-
-  // This returns the amount a percent-based delta should be resolved against;
-  // which is the visible height of the scroller. This value is eventually
-  // used to scroll the incoming scroll delta, where a scroll delta of 1
-  // represents one hundred percent.
-  float PercentageStep(ScrollbarOrientation) const;
 
   // Returns true if a snap point was found.
   bool PerformSnapping(

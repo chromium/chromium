@@ -16,7 +16,7 @@
 namespace media {
 namespace {
 // Base temporal layer index.
-constexpr int kBaseLayerIndex = 0;
+constexpr size_t kBaseLayerIndex = 0;
 
 // Delta QP between layers in Fixed Delta QP mode. It is arbitrary chosen value.
 constexpr int kFixedLayerDeltaQP = 4;

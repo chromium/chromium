@@ -322,6 +322,24 @@ void ContentAutofillDriver::GetFourDigitCombinationsFromDom(
   }
 }
 
+void ContentAutofillDriver::ExtractLabeledTextNodeValue(
+    const std::u16string& value_regex,
+    const std::u16string& label_regex,
+    uint32_t number_of_ancestor_levels_to_search,
+    base::OnceCallback<void(const std::string& amount)> response_callback) {
+  if (!IsActive()) {
+    LOG(WARNING) << "Skipped Autofill message for inactive frame";
+    std::move(response_callback).Run(std::string());
+    return;
+  }
+  content::RenderFrameHost* main_rfh = render_frame_host_->GetMainFrame();
+  if (auto* main_driver = GetForRenderFrameHost(main_rfh)) {
+    main_driver->GetAutofillAgent()->ExtractLabeledTextNodeValue(
+        value_regex, label_regex, number_of_ancestor_levels_to_search,
+        std::move(response_callback));
+  }
+}
+
 // static
 ContentAutofillDriver* ContentAutofillDriver::GetForRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {
@@ -375,6 +393,18 @@ std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
     return std::nullopt;
   }
   return LocalFrameToken(remote_rfh->GetFrameToken().value());
+}
+
+ukm::SourceId ContentAutofillDriver::GetPageUkmSourceId() const {
+  if (render_frame_host_->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    // TODO(crbug.com/380129810): When `return ukm::kInvalidSourceId` is
+    // removed, FormInteractionsUkmLogger::CanLog() doesn't need to check the
+    // `ukm::SourceId` anymore.
+    NOTREACHED(base::NotFatalUntil::M134);
+    return ukm::kInvalidSourceId;
+  }
+  return render_frame_host_->GetPageUkmSourceId();
 }
 
 bool ContentAutofillDriver::IsActive() const {

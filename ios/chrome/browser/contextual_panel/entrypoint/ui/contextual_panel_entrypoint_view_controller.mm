@@ -451,8 +451,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
 #pragma mark - ContextualPanelEntrypointConsumer
 
-- (void)setEntrypointConfig:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+- (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
   if (!config) {
     return;
   }

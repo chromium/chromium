@@ -33,12 +33,10 @@ std::string VectorToString(const std::vector<T>& vec) {
 }
 
 std::vector<ColorPlaneLayout> CreatePlanes(VideoPixelFormat format,
-                                           const std::vector<int32_t>& strides,
+                                           const std::vector<size_t>& strides,
                                            const gfx::Size& coded_size) {
   std::vector<ColorPlaneLayout> planes(strides.size());
   for (size_t i = 0; i < strides.size(); i++) {
-    // TODO(crbug.com/338570700): Make strides unsigned and remove the CHECK().
-    CHECK_GE(strides[i], 0) << " plane: " << i;
     size_t rows =
         VideoFrame::PlaneSizeInSamples(format, i, coded_size).height();
     planes[i].stride = strides[i];
@@ -109,14 +107,14 @@ std::optional<VideoFrameLayout> VideoFrameLayout::Create(
     VideoPixelFormat format,
     const gfx::Size& coded_size) {
   return CreateWithStrides(format, coded_size,
-                           std::vector<int32_t>(NumPlanes(format), 0));
+                           std::vector<size_t>(NumPlanes(format), 0));
 }
 
 // static
 std::optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
-    std::vector<int32_t> strides,
+    std::vector<size_t> strides,
     size_t buffer_addr_align,
     uint64_t modifier) {
   return CreateWithPlanes(format, coded_size,

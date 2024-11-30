@@ -8,8 +8,6 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
@@ -20,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 public class TabResumptionModuleUtils {
     static final int DISPLAY_TEXT_MAX_LINES_DEFAULT = 3;
     static final int DISPLAY_TEXT_MAX_LINES_WITH_REASON = 2;
-    private static final int DEFAULT_MAX_TILES_NUMBER = 2;
 
     /** Callback to handle click on suggestion tiles. */
     public interface SuggestionClickCallback {
@@ -48,64 +45,6 @@ public class TabResumptionModuleUtils {
                     "m.youtube.com",
                     "photos.google.com",
                     "www.youtube.com");
-
-    private static final String TAB_RESUMPTION_V2_PARAM = "enable_v2";
-    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_V2 =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_V2_PARAM,
-                    false);
-
-    private static final String TAB_RESUMPTION_MAX_TILES_NUMBER_PARAM = "max_tiles_number";
-    public static final IntCachedFieldTrialParameter TAB_RESUMPTION_MAX_TILES_NUMBER =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_MAX_TILES_NUMBER_PARAM,
-                    DEFAULT_MAX_TILES_NUMBER);
-
-    private static final String TAB_RESUMPTION_USE_SALIENT_IMAGE_PARAM = "use_salient_image";
-    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_USE_SALIENT_IMAGE =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_USE_SALIENT_IMAGE_PARAM,
-                    false);
-
-    private static final String TAB_RESUMPTION_SHOW_SEE_MORE_PARAM = "show_see_more";
-    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_SHOW_SEE_MORE =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_SHOW_SEE_MORE_PARAM,
-                    false);
-
-    private static final String TAB_RESUMPTION_USE_DEFAULT_APP_FILTER_PARAM =
-            "use_default_app_filter";
-    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_USE_DEFAULT_APP_FILTER =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_USE_DEFAULT_APP_FILTER_PARAM,
-                    false);
-
-    private static final String TAB_RESUMPTION_DISABLE_BLEND_PARAM = "disable_blend";
-    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_DISABLE_BLEND =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_DISABLE_BLEND_PARAM,
-                    false);
-
-    private static final String TAB_RESUMPTION_FETCH_HISTORY_BACKEND_PARAM =
-            "fetch_history_backend";
-    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_FETCH_HISTORY_BACKEND =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_FETCH_HISTORY_BACKEND_PARAM,
-                    false);
-
-    private static final String TAB_RESUMPTION_SHOW_DEFAULT_REASON_PARAM = "show_default_reason";
-    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_SHOW_DEFAULT_REASON =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_SHOW_DEFAULT_REASON_PARAM,
-                    false);
 
     private static FakeGetCurrentTimeMs sFakeGetCurrentTimeMs;
 
@@ -140,7 +79,7 @@ public class TabResumptionModuleUtils {
      * @param url The URL of the suggestion.
      */
     static boolean shouldExcludeUrl(GURL url) {
-        return TabResumptionModuleUtils.TAB_RESUMPTION_USE_DEFAULT_APP_FILTER.getValue()
+        return ChromeFeatureList.sTabResumptionModuleAndroidUseDefaultAppFilter.getValue()
                 && sDefaultAppBlocklist.contains(url.getHost());
     }
 

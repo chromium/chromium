@@ -31,10 +31,6 @@
 
 using base::Time;
 
-// static
-constexpr char KeywordTable::kDefaultSearchProviderKey[] =
-    "Default Search Provider ID";
-
 namespace {
 
 // Keys used in the meta table.
@@ -317,16 +313,6 @@ bool KeywordTable::GetKeywords(Keywords* keywords) {
   for (auto i(bad_entries.begin()); i != bad_entries.end(); ++i)
     succeeded &= RemoveKeyword(*i);
   return succeeded;
-}
-
-bool KeywordTable::SetDefaultSearchProviderID(int64_t id) {
-  return meta_table()->SetValue(kDefaultSearchProviderKey, id);
-}
-
-int64_t KeywordTable::GetDefaultSearchProviderID() {
-  int64_t value = kInvalidTemplateURLID;
-  meta_table()->GetValue(kDefaultSearchProviderKey, &value);
-  return value;
 }
 
 bool KeywordTable::SetBuiltinKeywordDataVersion(int version) {

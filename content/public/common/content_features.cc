@@ -146,7 +146,7 @@ BASE_FEATURE(kBatterySaverModeAlignWakeUps,
 //  - kBlockInsecurePrivateNetworkRequestsFromUnknown
 BASE_FEATURE(kBlockInsecurePrivateNetworkRequests,
              "BlockInsecurePrivateNetworkRequests",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When this feature is enabled, requests to localhost initiated from non-secure
 // contexts in the `private` IP address space are blocked.
@@ -492,6 +492,12 @@ BASE_FEATURE(kFedCmMultipleIdentityProviders,
 // time.
 BASE_FEATURE(kFedCmSelectiveDisclosure,
              "FedCmSelectiveDisclosure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables showing filtered out accounts in FedCM UI after the user attempts to
+// login to an account. These accounts are shown greyed out.
+BASE_FEATURE(kFedCmShowFilteredAccounts,
+             "FedCmShowFilteredAccounts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables bypassing the well-known file enforcement.
@@ -1037,12 +1043,6 @@ BASE_FEATURE(kServiceWorkerPaymentApps,
 BASE_FEATURE(kSharedArrayBuffer,
              "SharedArrayBuffer",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// If enabled, SharedArrayBuffer is present and can be transferred on desktop
-// platforms. This flag is used only as a "kill switch" as we migrate towards
-// requiring 'crossOriginIsolated'.
-BASE_FEATURE(kSharedArrayBufferOnDesktop,
-             "SharedArrayBufferOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for creating first-party StorageKeys in
 // RenderFrameHostImpl::CalculateStorageKey for frames with extension URLs.
@@ -1104,21 +1104,21 @@ const base::FeatureParam<base::TimeDelta>
         &kSiteIsolationForCrossOriginOpenerPolicy, "expiration_timeout",
         base::Days(7)};
 
-// This feature controls whether the renderer should use SkiaFontManager to
-// fetch fonts from the Browser's SkiaFontService. It is currently scoped to
+// This feature controls whether the renderer should use FontDataManager to
+// fetch fonts from the Browser's FontDataService. It is currently scoped to
 // just Windows. See crbug.com/335680565.
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kSkiaFontService,
-             "SkiaFontService",
+BASE_FEATURE(kFontDataService,
+             "FontDataService",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<SkiaFontServiceTypefaceType>::Option
-    skia_font_service_typeface[] = {
-        {SkiaFontServiceTypefaceType::kDwrite, "DWrite"},
-        {SkiaFontServiceTypefaceType::kFreetype, "FreeType"}};
-const base::FeatureParam<SkiaFontServiceTypefaceType>
-    kSkiaFontServiceTypefaceType{&kSkiaFontService, "typeface",
-                                 SkiaFontServiceTypefaceType::kDwrite,
-                                 &skia_font_service_typeface};
+const base::FeatureParam<FontDataServiceTypefaceType>::Option
+    font_data_service_typeface[] = {
+        {FontDataServiceTypefaceType::kDwrite, "DWrite"},
+        {FontDataServiceTypefaceType::kInternal, "Internal"}};
+const base::FeatureParam<FontDataServiceTypefaceType>
+    kFontDataServiceTypefaceType{&kFontDataService, "typeface",
+                                 FontDataServiceTypefaceType::kDwrite,
+                                 &font_data_service_typeface};
 
 // Whether a utility process configured to use a "UI" message pump should also
 // initialize COM.
@@ -1320,6 +1320,16 @@ BASE_FEATURE(kWebUICodeCache,
              "WebUICodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Reports WebUI Javascript errors to the crash server on all desktop platforms.
+// Previously, this was only supported on ChromeOS and Linux.
+// Intentionally enabled by default and will be used as a kill switch in case
+// of regressions.
+BASE_FEATURE(kWebUIJSErrorReportingExtended,
+            "WebUIJSErrorReportingExtended",
+            base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Controls whether the WebUSB API is enabled:
 // https://wicg.github.io/webusb
 BASE_FEATURE(kWebUsb, "WebUSB", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1335,6 +1345,12 @@ BASE_FEATURE(kWebPermissionsApi,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// When enabled, TYPE_ANNOUNCE events will no longer be sent for live regions in
+// the web contents.
+BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
+             "AccessibilityDeprecateTypeAnnounce",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, includes the ACTION_LONG_CLICK action to all relevant nodes in
 // the web contents accessibility tree.
 BASE_FEATURE(kAccessibilityIncludeLongClickAction,
@@ -1387,12 +1403,6 @@ BASE_FEATURE(kReduceGpuPriorityOnBackground,
              "ReduceGpuPriorityOnBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, shows a dropdown menu for mouse and trackpad secondary
-// clicks (i.e. right click) with respect to text selection.
-BASE_FEATURE(kMouseAndTrackpadDropdownMenu,
-             "MouseAndTrackpadDropdownMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Apply text selection menu order correction logic for Android.
 // TODO(crbug.com/40947146) This is a kill switch landed in M122.
 // Please remove after M124.
@@ -1427,7 +1437,7 @@ BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
 // crbug.com/40060200
 BASE_FEATURE(kMacImeLiveConversionFix,
              "MacImeLiveConversionFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMacSyscallSandbox,
              "MacSyscallSandbox",
@@ -1467,11 +1477,18 @@ const base::FeatureParam<CapturingState> kNavigationCapturingDefaultState{
     &kPwaNavigationCapturing, "link_capturing_state",
     CapturingState::kReimplDefaultOn, &kNavigationCapturingParams};
 
+// The called preferred audio output device is used when the audio output
+// device for the frames are system default.
+BASE_FEATURE(kPreferredAudioOutputDevices,
+             "PreferredAudioOutputDevices",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kForcedOffCapturingAppsOnFirstNavigation{
     &kPwaNavigationCapturing, "initial_nav_forced_off_apps", ""};
 
 const base::FeatureParam<std::string> kForcedOffCapturingAppsUserSetting{
     &kPwaNavigationCapturing, "user_settings_forced_off_apps", ""};
+
 namespace {
 enum class VideoCaptureServiceConfiguration {
   kEnabledForOutOfProcess,

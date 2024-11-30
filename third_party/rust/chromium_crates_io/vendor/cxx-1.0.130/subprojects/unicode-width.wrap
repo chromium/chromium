@@ -1,0 +1,6 @@
+[wrap-file]
+directory = unicode-width-0.1.14
+source_url = https://static.crates.io/crates/unicode-width/0.1.14/download
+source_filename = unicode-width-0.1.14.tar.gz
+source_hash = 7dd6e30e90baa6f72411720665d41d89b9a3d039dc45b8faea1ddd07f617f6af
+patch_directory = unicode-width

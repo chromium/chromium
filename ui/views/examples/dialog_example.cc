@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -278,7 +279,8 @@ void DialogExample::OnCloseCallback() {
 }
 
 bool DialogExample::AllowDialogClose(bool accept) {
-  PrintStatus("Dialog closed with %s.", accept ? "Accept" : "Cancel");
+  PrintStatus(
+      base::StrCat({"Dialog closed with ", accept ? "Accept." : "Cancel."}));
   last_dialog_ = nullptr;
   last_body_label_ = nullptr;
   return true;
@@ -326,7 +328,7 @@ void DialogExample::ShowButtonPressed() {
 void DialogExample::BubbleCheckboxPressed() {
   if (bubble_->GetChecked() && GetModalType() != ui::mojom::ModalType::kChild) {
     mode_->SetSelectedIndex(static_cast<size_t>(ui::mojom::ModalType::kChild));
-    LogStatus("You nearly always want Child Modal for bubbles.");
+    PrintStatus("You nearly always want Child Modal for bubbles.");
   }
   persistent_bubble_->SetEnabled(bubble_->GetChecked());
   OnPerformAction();  // Validate the modal type.
@@ -355,7 +357,7 @@ void DialogExample::ContentsChanged(Textfield* sender,
     return;
 
   if (sender == extra_button_label_)
-    LogStatus("DialogDelegate can never refresh the extra view.");
+    PrintStatus("DialogDelegate can never refresh the extra view.");
 
   if (sender == title_) {
     last_dialog_->GetWidget()->UpdateWindowTitle();
@@ -376,10 +378,10 @@ void DialogExample::OnPerformAction() {
 #endif
   show_->SetEnabled(enable);
   if (!enable && GetModalType() == ui::mojom::ModalType::kChild) {
-    LogStatus("MODAL_TYPE_CHILD can't be used with non-bubbles.");
+    PrintStatus("MODAL_TYPE_CHILD can't be used with non-bubbles.");
   }
   if (!enable && GetModalType() == ui::mojom::ModalType::kSystem) {
-    LogStatus("MODAL_TYPE_SYSTEM isn't supported on Mac.");
+    PrintStatus("MODAL_TYPE_SYSTEM isn't supported on Mac.");
   }
 }
 

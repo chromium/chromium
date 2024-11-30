@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.webshare;
 
 import android.content.Intent;
-import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -32,9 +31,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
-
-import java.io.InputStream;
-import java.util.ArrayList;
 
 /** Test suite for Web Share (navigator.share) functionality. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -202,68 +198,5 @@ public class WebShareTest {
                 "Fail: NotAllowedError: "
                         + "Failed to execute 'share' on 'Navigator': Permission denied",
                 mUpdateWaiter.waitForUpdate());
-    }
-
-    private static void verifyDeliveredIntent(Intent intent) {
-        Assert.assertNotNull(intent);
-        Assert.assertEquals(Intent.ACTION_SEND, intent.getAction());
-        Assert.assertTrue(intent.hasExtra(Intent.EXTRA_SUBJECT));
-        Assert.assertEquals("Test Title", intent.getStringExtra(Intent.EXTRA_SUBJECT));
-        Assert.assertTrue(intent.hasExtra(Intent.EXTRA_TEXT));
-        Assert.assertEquals(
-                "Test Text https://test.url/", intent.getStringExtra(Intent.EXTRA_TEXT));
-    }
-
-    private static String getFileContents(Uri fileUri) throws Exception {
-        InputStream inputStream =
-                ApplicationProvider.getApplicationContext()
-                        .getContentResolver()
-                        .openInputStream(fileUri);
-        byte[] buffer = new byte[1024];
-        int position = 0;
-        int read;
-        while ((read = inputStream.read(buffer, position, buffer.length - position)) > 0) {
-            position += read;
-        }
-        return new String(buffer, 0, position, "UTF-8");
-    }
-
-    private static void verifyDeliveredBmpIntent(Intent intent) throws Exception {
-        Assert.assertNotNull(intent);
-        Assert.assertEquals(Intent.ACTION_SEND_MULTIPLE, intent.getAction());
-        Assert.assertEquals("image/*", intent.getType());
-        Assert.assertEquals(
-                Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        ArrayList<Uri> fileUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        Assert.assertEquals(2, fileUris.size());
-        Assert.assertEquals("B", getFileContents(fileUris.get(0)));
-        Assert.assertEquals("MP", getFileContents(fileUris.get(1)));
-    }
-
-    private static void verifyDeliveredCsvIntent(Intent intent) throws Exception {
-        Assert.assertNotNull(intent);
-        Assert.assertEquals(Intent.ACTION_SEND_MULTIPLE, intent.getAction());
-        Assert.assertEquals("text/*", intent.getType());
-        Assert.assertEquals(
-                Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        ArrayList<Uri> fileUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        Assert.assertEquals(2, fileUris.size());
-        Assert.assertEquals("1,2", getFileContents(fileUris.get(0)));
-        Assert.assertEquals("1,2,3\n4,5,6\n", getFileContents(fileUris.get(1)));
-    }
-
-    private static void verifyDeliveredOggIntent(Intent intent) throws Exception {
-        Assert.assertNotNull(intent);
-        Assert.assertEquals(Intent.ACTION_SEND, intent.getAction());
-        Assert.assertEquals("video/ogg", intent.getType());
-        Assert.assertEquals(
-                Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        Assert.assertEquals("contents", getFileContents(fileUri));
     }
 }

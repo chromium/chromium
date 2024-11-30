@@ -460,7 +460,7 @@ base::span<const uint8_t> CryptoBufferAsSpan(const CRYPTO_BUFFER* buffer) {
   // SAFETY: CRYPTO_BUFFER_data(buffer) returns a pointer to data that is
   // CRYPTO_BUFFER_len(buffer) bytes in length.
   return UNSAFE_BUFFERS(
-      base::make_span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer)));
+      base::span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer)));
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(

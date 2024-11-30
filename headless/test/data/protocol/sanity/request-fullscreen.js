@@ -31,6 +31,14 @@
 
   await dp.Page.enable();
 
+  async function logPageSize(prefix) {
+    const pageSize = (await session.evaluate(
+        'window.innerWidth + `x` + window.innerHeight'));
+    testRunner.log(prefix + pageSize);
+  }
+
+  await logPageSize('Normal page size: ');
+
   const [entered_fullscreen] = await Promise.all([
     session.evaluateAsyncWithUserGesture('window.enterFullscreen();'),
     dp.Page.onceFrameResized()
@@ -38,10 +46,13 @@
 
   testRunner.log(
       'Seen page zoom and fullscreen element: ' + entered_fullscreen);
+  await logPageSize('Zoomed page size: ');
 
   session.evaluateAsyncWithUserGesture('window.exitFullscreen();');
   await dp.Page.onceFrameResized();
+
   testRunner.log('Seen page un-zoom');
+  await logPageSize('Normal page size: ');
 
   testRunner.completeTest();
 })

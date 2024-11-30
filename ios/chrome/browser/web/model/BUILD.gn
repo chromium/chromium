@@ -4,7 +4,6 @@
 
 import("//base/allocator/allocator.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
-import("//rlz/buildflags/buildflags.gni")
 
 source_set("model") {
   sources = [
@@ -176,7 +175,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app:app_internal",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp/model",
@@ -265,7 +263,6 @@ source_set("web_internal") {
     "//components/strings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common:buildflags",
-    "//components/translate/core/browser",
     "//components/translate/ios/browser",
     "//components/url_formatter",
     "//components/variations",
@@ -275,6 +272,7 @@ source_set("web_internal") {
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/browser/application_context/model",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/browser_container/model",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/first_run/model",
@@ -282,6 +280,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/follow/model:javascript_feature",
     "//ios/chrome/browser/https_upgrades/model",
+    "//ios/chrome/browser/infobars/ui_bundled/coordinators",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/metrics/model:expired_histograms_array",
@@ -313,7 +312,6 @@ source_set("web_internal") {
     "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/translate/model",
-    "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/web/model/choose_file",
     "//ios/chrome/browser/web/model/font_size",
     "//ios/chrome/browser/web/model/image_fetch",
@@ -337,21 +335,21 @@ source_set("web_internal") {
     "//ios/web/public/find_in_page",
     "//ios/web/public/js_messaging",
     "//net",
-    "//rlz/buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//ui/base",
     "//ui/display",
     "//ui/gfx",
     "//url",
   ]
+
+  if (use_allocator_shim) {
+    deps += [ "//components/heap_profiling/in_process" ]
+  }
+
   frameworks = [
     "UIKit.framework",
     "Foundation.framework",
   ]
-
-  if (enable_rlz) {
-    deps += [ "//ios/chrome/browser/rlz" ]
-  }
 }
 
 source_set("unit_tests_internal") {
@@ -495,12 +493,12 @@ source_set("eg2_tests") {
     "//components/url_formatter",
     "//components/version_info:version_info",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
-    "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

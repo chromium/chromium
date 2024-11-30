@@ -851,6 +851,21 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseEventBasedLogUploadResult) -->
+
+<enum name="EnterpriseEventBasedLogUploadResult">
+  <summary>
+    The result of event based log upload on managed device. The values are
+    defined in
+    chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Declined"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h:EventBasedUploadStatus) -->
+
 <enum name="EnterpriseFetchSupportPacketFailureType">
   <int value="0" label="kNoFailure"/>
   <int value="1" label="kFailedOnWrongCommandPayload"/>
@@ -1805,7 +1820,6 @@ chromium-metrics-reviews@google.com.
   <int value="931" label="OnPrintEnterpriseConnector"/>
   <int value="932" label="UserAgentReduction"/>
   <int value="933" label="OriginAgentClusterDefaultEnabled"/>
-  <int value="934" label="DeviceLoginScreenWebUILazyLoading"/>
   <int value="935" label="ProjectorEnabled"/>
   <int value="936" label="PhoneHubCameraRollAllowed"/>
   <int value="937" label="EcheAllowed"/>
@@ -2182,6 +2196,7 @@ chromium-metrics-reviews@google.com.
   <int value="1315" label="GenAiLensOverlaySettings"/>
   <int value="1316" label="PasswordManagerPasskeysEnabled"/>
   <int value="1317" label="FilePickerChooseFromDriveSettings"/>
+  <int value="1318" label="LiveTranslateEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

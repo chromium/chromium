@@ -407,7 +407,7 @@ TEST_F(CalendarListModelTest, ClearCalendars) {
   EXPECT_EQ(0u, calendar_list.size());
 }
 
-TEST_F(CalendarListModelTest, RecordFetchResultHistogram_Success) {
+TEST_F(CalendarListModelTest, RecordFetchResultHistogramSuccess) {
   base::HistogramTester histogram_tester;
 
   histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Result",
@@ -423,7 +423,7 @@ TEST_F(CalendarListModelTest, RecordFetchResultHistogram_Success) {
                                      /*expected_count=*/1);
 }
 
-TEST_F(CalendarListModelTest, RecordFetchResultHistogram_Failure) {
+TEST_F(CalendarListModelTest, RecordFetchResultHistogramFailure) {
   base::HistogramTester histogram_tester;
 
   histogram_tester.ExpectBucketCount("Ash.Calendar.FetchCalendars.Result",
@@ -444,7 +444,7 @@ TEST_F(CalendarListModelTest, RecordFetchResultHistogram_Failure) {
                                      /*expected_count=*/0);
 }
 
-TEST_F(CalendarListModelTest, RecordFetchResultHistogram_Cancelled) {
+TEST_F(CalendarListModelTest, RecordFetchResultHistogramCancelled) {
   base::HistogramTester histogram_tester;
 
   // Set mock calendar list and error code in the client.

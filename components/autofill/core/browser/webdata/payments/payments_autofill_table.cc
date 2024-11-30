@@ -54,6 +54,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -246,6 +247,9 @@ constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
         {kInstrumentId, "INTEGER PRIMARY KEY NOT NULL"},
         {kSerializedValueEncrypted, "VARCHAR NOT NULL"}};
 
+constexpr std::string_view kPaymentInstrumentCreationOptionsTable =
+    "payment_instrument_creation_options";
+
 void BindEncryptedStringToColumn(sql::Statement* s,
                                  int column_index,
                                  const std::string& value,
@@ -353,6 +357,18 @@ void BindPaymentInstrumentToStatement(
   s->BindInt64(index++, payment_instrument.instrument_id());
   BindEncryptedStringToColumn(
       s, index++, payment_instrument.SerializeAsString(), encryptor);
+}
+
+void BindPaymentInstrumentCreationOptionToStatement(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option,
+    sql::Statement* s,
+    const os_crypt_async::Encryptor& encryptor) {
+  int index = 0;
+  s->BindString(index++, payment_instrument_creation_option.id());
+  BindEncryptedStringToColumn(
+      s, index++, payment_instrument_creation_option.SerializeAsString(),
+      encryptor);
 }
 
 VirtualCardUsageData GetVirtualCardUsageDataFromStatement(sql::Statement& s) {
@@ -487,7 +503,8 @@ bool PaymentsAutofillTable::CreateTablesIfNecessary() {
          InitMaskedIbansMetadataTable() &&
          InitMaskedCreditCardBenefitsTable() &&
          InitBenefitMerchantDomainsTable() &&
-         InitGenericPaymentInstrumentsTable();
+         InitGenericPaymentInstrumentsTable() &&
+         InitPaymentInstrumentCreationOptionsTable();
 }
 
 bool PaymentsAutofillTable::MigrateToVersion(int version,
@@ -577,6 +594,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 135:
       *update_compatible_version = false;
       return MigrateToVersion135AddCardInfoRetrievalEnrollmentState();
+    case 136:
+      *update_compatible_version = false;
+      return MigrateToVersion136AddPaymentInstrumentCreationOptionsTable();
   }
   return true;
 }
@@ -1597,7 +1617,8 @@ bool PaymentsAutofillTable::ClearAllServerData() {
         kOfferMerchantDomainTable, kVirtualCardUsageDataTable,
         kMaskedCreditCardBenefitsTable, kBenefitMerchantDomainsTable,
         kMaskedBankAccountsTable, kMaskedBankAccountsMetadataTable,
-        kGenericPaymentInstrumentsTable}) {
+        kGenericPaymentInstrumentsTable,
+        kPaymentInstrumentCreationOptionsTable}) {
     Delete(db(), table_name);
     changed |= db()->GetLastChangeCount() > 0;
   }
@@ -1796,6 +1817,63 @@ bool PaymentsAutofillTable::GetPaymentInstruments(
              "sync_pb::PaymentInstrument with id = "
           << instrument_id;
     }
+  }
+
+  return s.Succeeded();
+}
+
+bool PaymentsAutofillTable::SetPaymentInstrumentCreationOptions(
+    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        payment_instrument_creation_options) {
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // Delete the existing values.
+  Delete(db(), kPaymentInstrumentCreationOptionsTable);
+
+  // Insert the new values.
+  sql::Statement insert;
+  InsertBuilder(db(), insert, kPaymentInstrumentCreationOptionsTable,
+                {kId, kSerializedValueEncrypted});
+  for (const sync_pb::PaymentInstrumentCreationOption&
+           payment_instrument_creation_option :
+       payment_instrument_creation_options) {
+    BindPaymentInstrumentCreationOptionToStatement(
+        payment_instrument_creation_option, &insert, *encryptor());
+
+    // If a duplicate ID is added, the insert will fail.
+    if (!insert.Run()) {
+      return false;
+    }
+    insert.Reset(/*clear_bound_vars=*/true);
+  }
+
+  return transaction.Commit();
+}
+
+bool PaymentsAutofillTable::GetPaymentInstrumentCreationOptions(
+    std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        payment_instrument_creation_options) {
+  payment_instrument_creation_options.clear();
+
+  sql::Statement s;
+  SelectBuilder(db(), s, kPaymentInstrumentCreationOptionsTable,
+                {kId, kSerializedValueEncrypted});
+
+  while (s.Step()) {
+    int index = 0;
+    std::string id = s.ColumnString(index++);
+    std::string serialized_value =
+        DecryptStringFromColumn(s, index++, *encryptor());
+    sync_pb::PaymentInstrumentCreationOption payment_instrument_creation_option;
+    if (!payment_instrument_creation_option.ParseFromString(serialized_value) ||
+        payment_instrument_creation_option.id() != id) {
+      return false;
+    }
+    payment_instrument_creation_options.emplace_back(
+        payment_instrument_creation_option);
   }
 
   return s.Succeeded();
@@ -2089,6 +2167,13 @@ bool PaymentsAutofillTable::
                               "INTEGER DEFAULT 0");
 }
 
+bool PaymentsAutofillTable::
+    MigrateToVersion136AddPaymentInstrumentCreationOptionsTable() {
+  return CreateTable(db(), kPaymentInstrumentCreationOptionsTable,
+                     {{kId, "VARCHAR PRIMARY KEY NOT NULL"},
+                      {kSerializedValueEncrypted, "VARCHAR NOT NULL"}});
+}
+
 void PaymentsAutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK_GT(db()->transaction_nesting(), 0);
@@ -2307,6 +2392,13 @@ bool PaymentsAutofillTable::InitBenefitMerchantDomainsTable() {
 bool PaymentsAutofillTable::InitGenericPaymentInstrumentsTable() {
   return CreateTableIfNotExists(db(), kGenericPaymentInstrumentsTable,
                                 kGenericPaymentInstrumentsColumnNamesAndTypes);
+}
+
+bool PaymentsAutofillTable::InitPaymentInstrumentCreationOptionsTable() {
+  return CreateTableIfNotExists(
+      db(), kPaymentInstrumentCreationOptionsTable,
+      {{kId, "VARCHAR PRIMARY KEY NOT NULL"},
+       {kSerializedValueEncrypted, "VARCHAR NOT NULL"}});
 }
 
 }  // namespace autofill

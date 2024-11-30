@@ -241,7 +241,7 @@ void SavedDeskRegularIconView::CreateChildViews(
   }
 
   delegate->GetFaviconForUrl(
-      icon_identifier_.url_or_id, icon_identifier_.lacros_profile_id,
+      icon_identifier_.url_or_id,
       base::BindOnce(&SavedDeskRegularIconView::OnIconLoaded,
                      weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);

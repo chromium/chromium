@@ -347,6 +347,36 @@ enum PhishingDetectorResult {
   VISUAL_EXTRACTION_FAILED = 10;
 }
 
+// The referring app info that launches Chrome. Only used on Android.
+// This information may be spoofed so do not rely solely on its correctness
+// for anti-abuse purposes. For more details, see:
+// go/phishguard-referring-app-android.
+message ReferringAppInfo {
+  // The source of the referring_app_name.
+  enum ReferringAppSource {
+    REFERRING_APP_SOURCE_UNSPECIFIED = 0;
+    // The referring app is known to Chrome. If the referring app info is from
+    // this source, the referring_app_name is a hardcoded string that is
+    // predefined in Chrome.
+    KNOWN_APP_ID = 1;
+    // The referring app is unknown to Chrome. The referring app name is
+    // obtained from
+    // https://developer.android.com/reference/android/provider/Browser?hl=en#EXTRA_APPLICATION_ID.
+    // If the referring app info is from this source, the referring_app_name
+    // is volatile and can be changed by the referring app.
+    UNKNOWN_APP_ID = 2;
+    // The referring app info is obtained from
+    // https://developer.android.com/reference/android/app/Activity#getReferrer().
+    // If the referring app info is from this source, the referring_app_name
+    // is volatile and can be changed by the referring app.
+    ACTIVITY_REFERRER = 3;
+  }
+
+  optional ReferringAppSource referring_app_source = 1;
+
+  optional string referring_app_name = 2;
+}
+
 // The message is used for client request to determine whether the provided URL
 // is safe for the purposes of entering user credentials for logging in.
 message LoginReputationClientRequest {
@@ -543,36 +573,6 @@ message LoginReputationClientRequest {
     optional bool simplified_url_display_enabled = 6;
   };
   optional UrlDisplayExperiment url_display_experiment = 14;
-
-  // The referring app info that launches Chrome. Only used on Android.
-  // This information may be spoofed so do not rely solely on its correctness
-  // for anti-abuse purposes. For more details, see:
-  // go/phishguard-referring-app-android.
-  message ReferringAppInfo {
-    // The source of the referring_app_name.
-    enum ReferringAppSource {
-      REFERRING_APP_SOURCE_UNSPECIFIED = 0;
-      // The referring app is known to Chrome. If the referring app info is from
-      // this source, the referring_app_name is a hardcoded string that is
-      // predefined in Chrome.
-      KNOWN_APP_ID = 1;
-      // The referring app is unknown to Chrome. The referring app name is
-      // obtained from
-      // https://developer.android.com/reference/android/provider/Browser?hl=en#EXTRA_APPLICATION_ID.
-      // If the referring app info is from this source, the referring_app_name
-      // is volatile and can be changed by the referring app.
-      UNKNOWN_APP_ID = 2;
-      // The referring app info is obtained from
-      // https://developer.android.com/reference/android/app/Activity#getReferrer().
-      // If the referring app info is from this source, the referring_app_name
-      // is volatile and can be changed by the referring app.
-      ACTIVITY_REFERRER = 3;
-    }
-
-    optional ReferringAppSource referring_app_source = 1;
-
-    optional string referring_app_name = 2;
-  }
 
   optional ReferringAppInfo referring_app_info = 15;
 

@@ -1,5 +1,3 @@
-rockot@google.com
-
 per-file sandbox_helper_win.cc=file://sandbox/win/OWNERS
 
 # For threading and startup/shutdown sequences (ContentMainRunner, etc.)

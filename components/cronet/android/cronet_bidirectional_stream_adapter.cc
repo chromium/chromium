@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cronet/android/cronet_context_adapter.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
@@ -231,8 +232,8 @@ jboolean CronetBidirectionalStreamAdapter::WritevData(
     env->GetIntArrayRegion(pending_write_data->jwrite_buffer_limit_list.obj(),
                            i, 1, &limit);
     auto write_buffer = base::MakeRefCounted<net::WrappedIOBuffer>(
-        base::make_span(static_cast<char*>(data), static_cast<size_t>(limit))
-            .subspan(pos));
+        base::span(static_cast<char*>(data), base::checked_cast<size_t>(limit))
+            .subspan(base::checked_cast<size_t>(pos)));
     pending_write_data->write_buffer_list.push_back(write_buffer);
     pending_write_data->write_buffer_len_list.push_back(write_buffer->size());
   }

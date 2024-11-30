@@ -9,11 +9,7 @@
 
 #import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "net/base/network_delegate_impl.h"
-#include "net/cookies/cookie_inclusion_status.h"
-#include "net/cookies/cookie_setting_override.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
 
 class PrefService;
 
@@ -33,37 +29,11 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
 
   ~IOSChromeNetworkDelegate() override;
 
-  // If `cookie_settings` is null or not set, all cookies are enabled,
-  // otherwise the settings are enforced on all observed network requests.
-  // Not inlined because we assign a scoped_refptr, which requires us to include
-  // the header file. Here we just forward-declare it.
-  void set_cookie_settings(content_settings::CookieSettings* cookie_settings) {
-    cookie_settings_ = cookie_settings;
-  }
-
  private:
-  bool OnAnnotateAndMoveUserBlockedCookies(
-      const net::URLRequest& request,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
-      net::CookieAccessResultList& maybe_included_cookies,
-      net::CookieAccessResultList& excluded_cookies) override;
-  bool OnCanSetCookie(
-      const net::URLRequest& request,
-      const net::CanonicalCookie& cookie,
-      net::CookieOptions* options,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
-      net::CookieInclusionStatus* inclusion_status) override;
-  std::optional<net::cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
-      const net::URLRequest& request,
-      base::optional_ref<const net::RedirectInfo> redirect_info) const override;
-  net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
-      const net::URLRequest& request) const override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const net::URLRequest& request,
       const GURL& target_url,
       const GURL& referrer_url) const override;
-
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };
 
 #endif  // IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_NETWORK_DELEGATE_H_

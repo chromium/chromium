@@ -46,6 +46,7 @@
 #include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
+#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/metrics/desktop_platform_features_metrics_provider.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_metrics_provider.h"
@@ -661,6 +662,16 @@ base::TimeDelta ChromeMetricsServiceClient::GetStandardUploadInterval() {
   return metrics::GetUploadInterval(metrics::ShouldUseCellularUploadInterval());
 }
 
+std::optional<base::TimeDelta>
+ChromeMetricsServiceClient::GetCustomUploadInterval() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (cros_pre_consent_manager_) {
+    return cros_pre_consent_manager_->GetUploadInterval();
+  }
+#endif
+  return std::nullopt;
+}
+
 bool ChromeMetricsServiceClient::IsReportingPolicyManaged() {
   return IsMetricsReportingPolicyManaged();
 }
@@ -724,6 +735,13 @@ void ChromeMetricsServiceClient::Initialize() {
   // Set is_demo_mode_ to true in ukm_consent_state_observer if the device is
   // currently in Demo Mode.
   SetIsDemoMode(ash::DemoSession::IsDeviceInDemoMode());
+
+  // Conditionally create the CrOSPreConsentMetricsManager.
+  //
+  // See //chrome/browser/metrics/cros_pre_consent_metrics_manager.cc for all
+  // conditions.
+  cros_pre_consent_manager_ =
+      metrics::CrOSPreConsentMetricsManager::MaybeCreate();
 #endif
 }
 

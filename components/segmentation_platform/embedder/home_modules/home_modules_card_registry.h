@@ -19,6 +19,8 @@ namespace segmentation_platform::home_modules {
 #if BUILDFLAG(IS_ANDROID)
 // Immpression counter for each card.
 extern const char kDefaultBrowserPromoImpressionCounterPref[];
+// Interaction flag for each card.
+extern const char kDefaultBrowserPromoInteractedPref[];
 #endif
 
 // Registry that manages all ephemeral cards in mobile home modules.

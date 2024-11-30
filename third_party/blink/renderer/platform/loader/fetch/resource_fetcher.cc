@@ -40,6 +40,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -363,6 +364,25 @@ int CompareResourcePriorities(const ResourcePriority& a,
     return a.is_lcp_resource ? 1 : -1;
   }
   return a.intra_priority_value - b.intra_priority_value;
+}
+
+Resource* PopHighestPriorityVisibleResource(
+    HeapHashSet<WeakMember<Resource>>& resources) {
+  Resource* result = nullptr;
+  for (Resource* resource : resources) {
+    const ResourcePriority& priority = resource->LastComputedPriority();
+    if (priority.visibility != ResourcePriority::kVisible) {
+      continue;
+    }
+    if (!result || CompareResourcePriorities(
+                       priority, result->LastComputedPriority()) > 0) {
+      result = resource;
+    }
+  }
+  if (result) {
+    resources.erase(result);
+  }
+  return result;
 }
 
 }  // namespace
@@ -1103,8 +1123,8 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
       break;
 
     default:
-      CHECK(false) << "Unexpected resource status: "
-                   << (int)resource->GetStatus();
+      NOTREACHED() << "Unexpected resource status: "
+                   << static_cast<int>(resource->GetStatus());
   }
 
   AddToMemoryCacheIfNeeded(params, resource);
@@ -3165,25 +3185,19 @@ void ResourceFetcher::MaybeStartSpeculativeImageDecode() {
     return;
   }
   // Find the highest priority image to decode.
-  Resource* image_to_decode = nullptr;
-  for (Resource* resource : speculative_decode_candidate_images_) {
-    const ResourcePriority& priority = resource->LastComputedPriority();
-    if (priority.visibility != ResourcePriority::kVisible) {
-      continue;
+  while (true) {
+    Resource* image_to_decode =
+        PopHighestPriorityVisibleResource(speculative_decode_candidate_images_);
+    if (!image_to_decode) {
+      break;
     }
-    if (!image_to_decode ||
-        CompareResourcePriorities(
-            priority, image_to_decode->LastComputedPriority()) > 0) {
-      image_to_decode = resource;
+    if (Context().StartSpeculativeImageDecode(
+            image_to_decode,
+            WTF::BindOnce(&ResourceFetcher::SpeculativeImageDecodeFinished,
+                          WrapWeakPersistent(this)))) {
+      speculative_decode_in_flight_ = true;
+      break;
     }
-  }
-  if (image_to_decode) {
-    speculative_decode_candidate_images_.erase(image_to_decode);
-    Context().StartSpeculativeImageDecode(
-        image_to_decode,
-        WTF::BindOnce(&ResourceFetcher::SpeculativeImageDecodeFinished,
-                      WrapWeakPersistent(this)));
-    speculative_decode_in_flight_ = true;
   }
 }
 

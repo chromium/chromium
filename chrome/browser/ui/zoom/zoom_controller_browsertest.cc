@@ -44,8 +44,8 @@ using zoom::ZoomObserver;
 
 class ZoomControllerBrowserTest : public InProcessBrowserTest {
  public:
-  ZoomControllerBrowserTest() {}
-  ~ZoomControllerBrowserTest() override {}
+  ZoomControllerBrowserTest() = default;
+  ~ZoomControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();

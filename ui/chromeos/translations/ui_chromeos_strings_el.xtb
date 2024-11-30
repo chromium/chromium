@@ -45,7 +45,7 @@
 <translation id="134645005685694099">Η συσκευή σας δεν διαθέτει αρκετό αποθηκευτικό χώρο για να παραμείνει ενεργοποιημένος ο συγχρονισμός αρχείων. Τα νέα αρχεία δεν θα συγχρονίζονται πλέον αυτόματα.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Το αρχείο ή ο κατάλογος δεν μπορούν να χρησιμοποιηθούν.</translation>
-<translation id="1363028406613469049">Κομμάτι</translation>
+<translation id="1363028406613469049">Παρακολούθηση</translation>
 <translation id="1378727793141957596">Καλώς ήρθατε στο Google Drive!</translation>
 <translation id="1379911846207762492">Μπορείτε να καταστήσετε τα αρχεία διαθέσιμα εκτός σύνδεσης για να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
@@ -677,7 +677,7 @@
 <translation id="6096979789310008754">Έγινε κατάργηση του κειμένου αναζήτησης, εμφανίζονται όλα τα αρχεία και οι φάκελοι.</translation>
 <translation id="610101264611565198">Μετακίνηση αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Κείμενο CSV</translation>
-<translation id="6129953537138746214">Κενό</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527">Μετακίνηση αρχείου <ph name="FILE_NAME" />…</translation>
 <translation id="6133877453787250710">Ο διαχειριστής παρακολουθεί:</translation>
 <translation id="613750717151263950">Ιαπωνικά με πληκτρολόγιο ΗΠΑ</translation>

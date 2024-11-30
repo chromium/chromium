@@ -98,7 +98,7 @@ class CastDeviceProvider::DeviceListerDelegate final
                        scoped_refptr<base::SingleThreadTaskRunner> runner)
       : provider_(provider), runner_(runner) {}
 
-  virtual ~DeviceListerDelegate() {}
+  virtual ~DeviceListerDelegate() = default;
 
   void StartDiscovery() {
     // This must be called on the UI thread; ServiceDiscoverySharedClient and
@@ -157,9 +157,9 @@ class CastDeviceProvider::DeviceListerDelegate final
   base::WeakPtrFactory<DeviceListerDelegate> weak_ptr_factory_{this};
 };
 
-CastDeviceProvider::CastDeviceProvider() {}
+CastDeviceProvider::CastDeviceProvider() = default;
 
-CastDeviceProvider::~CastDeviceProvider() {}
+CastDeviceProvider::~CastDeviceProvider() = default;
 
 void CastDeviceProvider::QueryDevices(SerialsCallback callback) {
   if (!lister_delegate_) {

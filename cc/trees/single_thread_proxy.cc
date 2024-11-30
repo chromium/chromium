@@ -717,7 +717,7 @@ void SingleThreadProxy::NotifyPaintWorkletStateChange(
   NOTREACHED();
 }
 
-void SingleThreadProxy::NotifyThroughputTrackerResults(
+void SingleThreadProxy::NotifyCompositorMetricsTrackerResults(
     CustomTrackerResults results) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
@@ -726,7 +726,7 @@ void SingleThreadProxy::NotifyThroughputTrackerResults(
   // destruction. Regardless, `layer_tree_host_` should be accessed from
   // MainThread side.
   DebugScopedSetMainThread main(task_runner_provider_);
-  layer_tree_host_->NotifyThroughputTrackerResults(std::move(results));
+  layer_tree_host_->NotifyCompositorMetricsTrackerResults(std::move(results));
 }
 
 bool SingleThreadProxy::IsInSynchronousComposite() const {
@@ -1172,7 +1172,10 @@ void SingleThreadProxy::DoPainting(const viz::BeginFrameArgs& commit_args) {
 
   std::unique_ptr<BeginMainFrameMetrics> begin_main_frame_metrics =
       layer_tree_host_->TakeBeginMainFrameMetrics();
-  host_impl_->ReadyToCommit(commit_args, true, begin_main_frame_metrics.get());
+  host_impl_->ReadyToCommit(commit_args,
+                            /*scroll_and_viewport_changes_synced=*/true,
+                            begin_main_frame_metrics.get(),
+                            /*commit_timeout=*/false);
 
   // TODO(enne): SingleThreadProxy does not support cancelling commits yet,
   // search for CommitEarlyOutReason::FINISHED_NO_UPDATES inside

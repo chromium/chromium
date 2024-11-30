@@ -61,7 +61,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final DataSharingTabManager mDataSharingTabManager;
     private final @NonNull BackPressManager mBackPressManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-
+    private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private @Nullable TabSwitcherMessageManager mMessageManager;
 
     /**
@@ -82,6 +82,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      *     UI and DataSharing services.
      * @param backPressManager Manages the different back press handlers throughout the app.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     TabSwitcherPaneCoordinatorFactory(
             @NonNull Activity activity,
@@ -98,7 +99,8 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull BackPressManager backPressManager,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -121,6 +123,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                         : TabListCoordinator.TabListMode.GRID;
         mBackPressManager = backPressManager;
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
     }
 
     /**
@@ -155,7 +158,6 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mProfileProviderSupplier,
                 createTabGroupModelFilterSupplier(isIncognito),
                 mTabContentManager,
-                mTabCreatorManager,
                 mBrowserControlsStateProvider,
                 mScrimCoordinator,
                 mModalDialogManager,
@@ -258,7 +260,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mActivity.findViewById(R.id.coordinator),
                             mTabCreatorManager.getTabCreator(/* incognito= */ false),
                             mBackPressManager,
-                            mDesktopWindowStateManager);
+                            mDesktopWindowStateManager,
+                            mEdgeToEdgeSupplier);
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
                         mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());

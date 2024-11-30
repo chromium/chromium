@@ -45,6 +45,11 @@ class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
   // Initialize the observer that will report system cursor size.
   virtual void InitCursorSizeObserver(
       wm::NativeCursorManagerDelegate* delegate);
+#if BUILDFLAG(IS_WIN)
+  // Initialize the observer that will report system cursor visibility state.
+  virtual void InitSystemCursorVisibilityObserver(
+      wm::NativeCursorManagerDelegate* delegate);
+#endif
 
  private:
   // Overridden from wm::NativeCursorManager:

@@ -154,7 +154,7 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
 
   // Flag indicating that a device was intended to be used as a CFM.
   bool isMeetDevice =
-      policy::EnrollmentRequisitionManager::IsRemoraRequisition();
+      policy::EnrollmentRequisitionManager::IsMeetDevice();
   if (isMeetDevice && !device_identity_provider->GetActiveAccountId().empty()) {
     OAuth2AccessTokenManager::ScopeSet scopes;
     scopes.insert(GaiaConstants::kSupportContentOAuth2Scope);

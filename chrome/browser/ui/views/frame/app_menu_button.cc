@@ -30,6 +30,10 @@ AppMenuButton::AppMenuButton(PressedCallback callback)
   SetButtonController(std::move(menu_button_controller));
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
   SetProperty(views::kElementIdentifierKey, kToolbarAppMenuButtonElementId);
+
+  if (menu_model()) {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+  }
 }
 
 AppMenuButton::~AppMenuButton() = default;

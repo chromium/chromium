@@ -21,6 +21,7 @@ import './metrics_consent_toggle_button.js';
 import './peripheral_data_access_protection_dialog.js';
 import '../os_people_page/lock_screen_password_prompt_dialog.js';
 import '../os_people_page/os_sync_browser_proxy.js';
+import './secure_dns.js';
 
 import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
@@ -204,14 +205,6 @@ export class OsSettingsPrivacyPageElement extends
         type: Boolean,
         value: function() {
           return loadTimeData.getBoolean('showSecureDnsSetting');
-        },
-        readOnly: true,
-      },
-
-      isHatsSurveyEnabled_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('isPrivacyHubHatsEnabled');
         },
         readOnly: true,
       },

@@ -114,6 +114,30 @@ TEST_F(LensOverlayUrlBuilderTest, AppendTranslateParamsToMap) {
   EXPECT_THAT(stickiness_signals, base::test::EqualsProto(expected_proto));
 }
 
+TEST_F(LensOverlayUrlBuilderTest, AppendStickinessSignalForFormula) {
+  std::string query = "(x + 2) / 4 = 4";
+  std::string formula = "\\frac{x + 2}{4} = 4";
+  std::map<std::string, std::string> params;
+
+  lens::AppendStickinessSignalForFormula(params, formula);
+
+  lens::StickinessSignals expected_proto;
+  expected_proto.set_id_namespace(lens::StickinessSignals::EDUCATION_INPUT);
+  expected_proto.mutable_education_input_extension()
+      ->mutable_math_solver_query()
+      ->set_math_input_equation(formula);
+
+  std::string compressed_proto;
+  ASSERT_TRUE(base::Base64UrlDecode(
+      params["stick"], base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+      &compressed_proto));
+  std::string serialized_proto;
+  ASSERT_TRUE(compression::GzipUncompress(compressed_proto, &serialized_proto));
+  lens::StickinessSignals stickiness_signals;
+  ASSERT_TRUE(stickiness_signals.ParseFromString(serialized_proto));
+  EXPECT_THAT(stickiness_signals, base::test::EqualsProto(expected_proto));
+}
+
 TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURL) {
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;

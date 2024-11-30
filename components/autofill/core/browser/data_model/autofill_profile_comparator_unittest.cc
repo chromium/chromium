@@ -1278,33 +1278,6 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
             expected_difference);
 }
 
-TEST_F(AutofillProfileComparatorTest, GetProfileDifferenceMap) {
-  AutofillProfile existing_profile(AddressCountryCode("US"));
-  test::SetProfileInfo(&existing_profile, "firstName", "middleName", "lastName",
-                       "mail@mail.com", "company", "line1", "line2", "city",
-                       "state", "zip", "US", "phone");
-
-  // Change the zip code of the second profile.
-  AutofillProfile second_existing_profile = existing_profile;
-  second_existing_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"another_zip");
-
-  // There should be no difference in NAME_FULL type.
-  EXPECT_TRUE(
-      AutofillProfileComparator::GetProfileDifferenceMap(
-          existing_profile, second_existing_profile, {NAME_FULL}, kLocale)
-          .empty());
-
-  // But there should be difference in ADDRESS_HOME_ZIP type.
-  base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
-      expected_difference;
-  expected_difference.insert({ADDRESS_HOME_ZIP, {u"zip", u"another_zip"}});
-
-  EXPECT_EQ(AutofillProfileComparator::GetProfileDifferenceMap(
-                existing_profile, second_existing_profile, {ADDRESS_HOME_ZIP},
-                kLocale),
-            expected_difference);
-}
-
 TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
   AutofillProfile existing_profile(AddressCountryCode("US"));
   test::SetProfileInfo(&existing_profile, "firstName", "middleName", "lastName",
@@ -1333,37 +1306,6 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
       expected_difference.begin(),
       ProfileValueDifference{ADDRESS_HOME_CITY, u"city", u"another_city"});
   EXPECT_EQ(AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-                existing_profile, second_existing_profile, kLocale),
-            expected_difference);
-}
-
-TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifferenceMap) {
-  AutofillProfile existing_profile(AddressCountryCode("US"));
-  test::SetProfileInfo(&existing_profile, "firstName", "middleName", "lastName",
-                       "mail@mail.com", "company", "line1", "line2", "city",
-                       "state", "zip", "US", "phone");
-
-  // Make a copy of the existing profile.
-  AutofillProfile second_existing_profile = existing_profile;
-
-  // There should be no difference in the profiles.
-  EXPECT_TRUE(AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
-                  existing_profile, second_existing_profile, kLocale)
-                  .empty());
-
-  // Change the zip code of the second profile and test the difference.
-  second_existing_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"another_zip");
-  base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
-      expected_difference;
-  expected_difference.insert({ADDRESS_HOME_ZIP, {u"zip", u"another_zip"}});
-  EXPECT_EQ(AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
-                existing_profile, second_existing_profile, kLocale),
-            expected_difference);
-
-  // Change a second value and check the expectations.
-  second_existing_profile.SetRawInfo(ADDRESS_HOME_CITY, u"another_city");
-  expected_difference.insert({ADDRESS_HOME_CITY, {u"city", u"another_city"}});
-  EXPECT_EQ(AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
                 existing_profile, second_existing_profile, kLocale),
             expected_difference);
 }

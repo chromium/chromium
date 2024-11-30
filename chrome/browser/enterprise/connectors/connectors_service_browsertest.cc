@@ -845,6 +845,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(maybe_dm_token.has_value());
+    ASSERT_EQ(
+        maybe_dm_token.error(),
+        ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::kNoDmToken);
     ASSERT_EQ(REAL_TIME_CHECK_DISABLED, url_check_pref);
   } else {
     ASSERT_TRUE(maybe_dm_token.has_value());

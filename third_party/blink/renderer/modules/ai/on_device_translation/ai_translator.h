@@ -18,7 +18,9 @@ class AITranslator final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AITranslator(scoped_refptr<base::SequencedTaskRunner> task_runner);
+  explicit AITranslator(
+      mojo::PendingRemote<mojom::blink::Translator> pending_remote,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~AITranslator() override = default;
 
   mojo::PendingReceiver<blink::mojom::blink::Translator>
@@ -34,7 +36,6 @@ class AITranslator final : public ScriptWrappable {
   void destroy(ScriptState*);
 
  private:
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<blink::mojom::blink::Translator> translator_remote_{nullptr};
 };
 }  // namespace blink

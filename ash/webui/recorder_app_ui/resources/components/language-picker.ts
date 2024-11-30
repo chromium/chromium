@@ -14,7 +14,6 @@ import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {LangPackInfo, LanguageCode} from '../core/soda/language_info.js';
-import {settings} from '../core/state/settings.js';
 import {setTranscriptionLanguage} from '../core/state/transcription.js';
 import {assertExhaustive} from '../core/utils/assert.js';
 
@@ -199,7 +198,7 @@ export class LanguagePicker extends ReactiveLitElement {
   }
 
   private renderSelectedLanguage(): RenderResult {
-    const selectedLanguage = settings.value.transcriptionLanguage;
+    const selectedLanguage = this.platformHandler.getSelectedLanguage();
     if (selectedLanguage === null) {
       return html`
         <settings-row>
@@ -227,7 +226,7 @@ export class LanguagePicker extends ReactiveLitElement {
 
   private renderAvailableLanguages(): RenderResult {
     const list = this.platformHandler.getLangPackList();
-    const selectedLanguage = settings.value.transcriptionLanguage;
+    const selectedLanguage = this.platformHandler.getSelectedLanguage();
     return map(
       list,
       (langPack) => this.renderLanguageRow(langPack, selectedLanguage),

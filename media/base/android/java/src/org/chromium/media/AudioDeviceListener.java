@@ -484,11 +484,6 @@ class AudioDeviceListener {
         Log.d(TAG, msg);
     }
 
-    /** Trivial helper method for error logging */
-    private static void loge(String msg) {
-        Log.e(TAG, msg);
-    }
-
     BroadcastReceiver getWiredHeadsetReceiverForTesting() {
         return mWiredHeadsetReceiver;
     }

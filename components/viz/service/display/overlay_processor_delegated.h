@@ -21,11 +21,14 @@
 namespace viz {
 
 // OverlayProcessor subclass that attempts to promote to overlay all the draw
-// quads of the root render pass. This is currently only used by LaCros.
+// quads of the root render pass. This was only used by LaCros.
 // TODO(petermcneeley): This class and its Apple equivalent(s) will eventually
 // be refactored in merged together into a unified delegation processor.
 // Delegation will just become an extended feature of ozone and we avoid/push
 // down platform specific defines and files where possible.
+//
+// TODO(crbug.com/375523817): consider either merging that with
+// OverlayProcessorOzone or completely remove it.
 class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
     : public OverlayProcessorOzone {
  public:

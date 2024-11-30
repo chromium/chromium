@@ -17,12 +17,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 
 import java.util.Collection;
+import java.util.Set;
 
 /** Unit tests for the TypeOfflineItemFilter class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,51 +45,45 @@ public class TypeOfflineItemFilterTest {
         OfflineItem item7 = buildItem(OfflineItemFilter.PAGE, true);
         OfflineItem item8 = buildItem(OfflineItemFilter.VIDEO, true);
         Collection<OfflineItem> sourceItems =
-                CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6, item7, item8);
+                Set.of(new OfflineItem[] {item1, item2, item3, item4, item5, item6, item7, item8});
         when(mSource.getItems()).thenReturn(sourceItems);
 
         TypeOfflineItemFilter filter = new TypeOfflineItemFilter(mSource);
         filter.addObserver(mObserver);
-        Assert.assertEquals(
-                CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6),
-                filter.getItems());
+        Assert.assertEquals(Set.of(item1, item2, item3, item4, item5, item6), filter.getItems());
 
         filter.onFilterSelected(Filters.FilterType.VIDEOS);
-        verify(mObserver, times(1))
-                .onItemsRemoved(CollectionUtil.newHashSet(item1, item3, item4, item5, item6));
-        Assert.assertEquals(CollectionUtil.newHashSet(item2), filter.getItems());
+        verify(mObserver, times(1)).onItemsRemoved(Set.of(item1, item3, item4, item5, item6));
+        Assert.assertEquals(Set.of(item2), filter.getItems());
 
         filter.onFilterSelected(Filters.FilterType.MUSIC);
-        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item2));
-        verify(mObserver, times(1)).onItemsAdded(CollectionUtil.newHashSet(item3));
-        Assert.assertEquals(CollectionUtil.newHashSet(item3), filter.getItems());
+        verify(mObserver, times(1)).onItemsRemoved(Set.of(item2));
+        verify(mObserver, times(1)).onItemsAdded(Set.of(item3));
+        Assert.assertEquals(Set.of(item3), filter.getItems());
 
         filter.onFilterSelected(Filters.FilterType.IMAGES);
-        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item3));
-        verify(mObserver, times(1)).onItemsAdded(CollectionUtil.newHashSet(item4));
-        Assert.assertEquals(CollectionUtil.newHashSet(item4), filter.getItems());
+        verify(mObserver, times(1)).onItemsRemoved(Set.of(item3));
+        verify(mObserver, times(1)).onItemsAdded(Set.of(item4));
+        Assert.assertEquals(Set.of(item4), filter.getItems());
 
         filter.onFilterSelected(Filters.FilterType.SITES);
-        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item4));
-        verify(mObserver, times(1)).onItemsAdded(CollectionUtil.newHashSet(item1));
-        Assert.assertEquals(CollectionUtil.newHashSet(item1), filter.getItems());
+        verify(mObserver, times(1)).onItemsRemoved(Set.of(item4));
+        verify(mObserver, times(1)).onItemsAdded(Set.of(item1));
+        Assert.assertEquals(Set.of(item1), filter.getItems());
 
         filter.onFilterSelected(Filters.FilterType.OTHER);
-        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item1));
-        verify(mObserver, times(1)).onItemsAdded(CollectionUtil.newHashSet(item5, item6));
-        Assert.assertEquals(CollectionUtil.newHashSet(item5, item6), filter.getItems());
+        verify(mObserver, times(1)).onItemsRemoved(Set.of(item1));
+        verify(mObserver, times(1)).onItemsAdded(Set.of(item5, item6));
+        Assert.assertEquals(Set.of(item5, item6), filter.getItems());
 
         filter.onFilterSelected(Filters.FilterType.PREFETCHED);
-        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item5, item6));
-        verify(mObserver, times(1)).onItemsAdded(CollectionUtil.newHashSet(item7, item8));
-        Assert.assertEquals(CollectionUtil.newHashSet(item7, item8), filter.getItems());
+        verify(mObserver, times(1)).onItemsRemoved(Set.of(item5, item6));
+        verify(mObserver, times(1)).onItemsAdded(Set.of(item7, item8));
+        Assert.assertEquals(Set.of(item7, item8), filter.getItems());
 
         filter.onFilterSelected(Filters.FilterType.NONE);
-        verify(mObserver, times(1))
-                .onItemsAdded(CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6));
-        Assert.assertEquals(
-                CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6),
-                filter.getItems());
+        verify(mObserver, times(1)).onItemsAdded(Set.of(item1, item2, item3, item4, item5, item6));
+        Assert.assertEquals(Set.of(item1, item2, item3, item4, item5, item6), filter.getItems());
     }
 
     private static OfflineItem buildItem(@OfflineItemFilter int filter, boolean isSuggested) {

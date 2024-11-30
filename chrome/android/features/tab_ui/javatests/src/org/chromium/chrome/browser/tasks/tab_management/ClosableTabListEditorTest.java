@@ -18,7 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
@@ -56,6 +57,8 @@ public class ClosableTabListEditorTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;
     @Mock private TabListEditorCoordinator.NavigationProvider mNavigationProvider;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -74,7 +77,6 @@ public class ClosableTabListEditorTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mTabModelSelector = sActivityTestRule.getActivity().getTabModelSelector();
         mParentView = (ViewGroup) sActivityTestRule.getActivity().findViewById(R.id.coordinator);
         mSnackbarManager = sActivityTestRule.getActivity().getSnackbarManager();

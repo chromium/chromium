@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Stability.IOS.Experimental.Counts2"
     enum="IOSStabilityUserVisibleTerminationType" expires_after="2025-02-12">
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Recorded when iOS app has started after a crash caused by system signal or
@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Stability.IOS.PostCrashAction" enum="IOSPostCrashAction"
     expires_after="2025-04-06">
   <owner>justincohen@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Recorded when the app is foregrounded. Records what action is taken after an
     unclear shutdown (likely a crash).
@@ -476,8 +476,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
     expires_after="2025-04-13">
-  <owner>ajuma@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     The number of tabs opened in the previous session when the app starts after
     {Event}. Can be used to understand if there is a correlation between
@@ -499,7 +499,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Stability.IOS.UTE.AppWillTerminateWasCalledInForeground"
     enum="Boolean" expires_after="2024-10-09">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     Recorded on iOS when applicationWillTerminate callback is called when app is
     in the foreground. When this happens the app will not write clean exit
@@ -531,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.HasPossibleExplanation"
-    enum="BooleanHasPossibleExplanation" expires_after="2025-03-09">
+    enum="BooleanHasPossibleExplanation" expires_after="2025-05-25">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -612,7 +612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Crash.ExitCode"
-    enum="WindowsExitCode" expires_after="2025-02-27">
+    enum="WindowsExitCode" expires_after="2025-05-18">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -633,7 +633,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Launch.LaunchErrorCode"
-    enum="LaunchErrorCodes" expires_after="2025-02-27">
+    enum="LaunchErrorCodes" expires_after="2025-05-18">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -644,7 +644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Launch.WinLastError"
-    enum="WinGetLastError" expires_after="2025-02-27">
+    enum="WinGetLastError" expires_after="2025-05-18">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -675,7 +675,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Stability.MobileSessionShutdownType2"
     enum="MobileSessionShutdownType" expires_after="2025-04-13">
   <owner>justincohen@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Type of the shutdown. This histogram is recorded after processing Crashpad
     intermediate dumps, and is otherwise identical to

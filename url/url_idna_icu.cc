@@ -11,6 +11,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/icu/source/common/unicode/uidna.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -55,11 +56,10 @@ UIDNA* CreateIDNA(bool use_idna_non_transitional) {
   UErrorCode err = U_ZERO_ERROR;
   UIDNA* idna = uidna_openUTS46(options, &err);
   if (U_FAILURE(err)) {
-    CHECK(false) << "failed to open UTS46 data with error: " << u_errorName(err)
+    NOTREACHED() << "failed to open UTS46 data with error: " << u_errorName(err)
                  << ". If you see this error message in a test environment "
                  << "your test environment likely lacks the required data "
                  << "tables for libicu. See https://crbug.com/778929.";
-    idna = nullptr;
   }
   return idna;
 }

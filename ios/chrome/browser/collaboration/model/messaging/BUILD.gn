@@ -4,6 +4,8 @@
 
 source_set("messaging") {
   sources = [
+    "messaging_backend_service_bridge.h",
+    "messaging_backend_service_bridge.mm",
     "messaging_backend_service_factory.h",
     "messaging_backend_service_factory.mm",
   ]

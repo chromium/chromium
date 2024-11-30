@@ -15,6 +15,7 @@
 #include "ash/quick_insert/views/quick_insert_emoji_item_view.h"
 #include "ash/quick_insert/views/quick_insert_item_view.h"
 #include "ash/quick_insert/views/quick_insert_pseudo_focus.h"
+#include "ash/quick_insert/views/quick_insert_strings.h"
 #include "ash/quick_insert/views/quick_insert_style.h"
 #include "ash/quick_insert/views/quick_insert_traversable_item_container.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -148,11 +149,11 @@ class GifsButton : public views::LabelButton {
   METADATA_HEADER(GifsButton, views::LabelButton)
 
  public:
-  explicit GifsButton(base::RepeatingClosure pressed_callback) {
-    // The label is not translated to keep the width constant. Treat it as an
-    // icon.
+  // `pressed_callback` takes in whether the GIFs button is checked or not
+  // (after the press).
+  explicit GifsButton(base::RepeatingCallback<void(bool)> pressed_callback) {
     views::Builder<views::LabelButton>(this)
-        .SetText(u"GIF")
+        .SetText(GetLabelForQuickInsertCategory(QuickInsertCategory::kGifs))
         .SetCallback(base::BindRepeating(&GifsButton::OnButtonPressed,
                                          base::Unretained(this))
                          .Then(std::move(pressed_callback)))
@@ -169,6 +170,11 @@ class GifsButton : public views::LabelButton {
         this, gfx::RoundedCornersF(kGifsButtonCornerRadius));
     UpdateBackground();
     SetProperty(views::kElementIdentifierKey, kQuickInsertGifElementId);
+
+    if (base::FeatureList::IsEnabled(features::kPickerGifs)) {
+      GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+      GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
+    }
   }
   GifsButton(const GifsButton&) = delete;
   GifsButton& operator=(const GifsButton&) = delete;
@@ -184,26 +190,33 @@ class GifsButton : public views::LabelButton {
     SetBackground(views::CreateThemedRoundedRectBackground(
         GetState() == views::Button::ButtonState::STATE_HOVERED
             ? cros_tokens::kCrosSysHoverOnSubtle
-            : cros_tokens::kCrosSysSystemOnBase,
+            : (is_checked_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                           : cros_tokens::kCrosSysSystemOnBase),
         kGifsButtonCornerRadius));
   }
 
-  void OnButtonPressed() {
+  // Returns whether the GIFs button is checked or not after the button press.
+  bool OnButtonPressed() {
     if (!base::FeatureList::IsEnabled(ash::features::kPickerGifs)) {
-      return;
+      return false;
     }
 
-    toggled_ = !toggled_;
+    is_checked_ = !is_checked_;
     SetImageModel(views::Button::ButtonState::STATE_NORMAL,
-                  toggled_
+                  is_checked_
                       ? std::make_optional(ui::ImageModel::FromVectorIcon(
-                            kCheckIcon, cros_tokens::kCrosSysOnSurface, 16))
+                            kCheckIcon,
+                            cros_tokens::kCrosSysSystemOnPrimaryContainer, 16))
                       : std::nullopt);
     PreferredSizeChanged();
+    GetViewAccessibility().SetCheckedState(
+        is_checked_ ? ax::mojom::CheckedState::kTrue
+                    : ax::mojom::CheckedState::kFalse);
+    return is_checked_;
   }
 
  private:
-  bool toggled_ = false;
+  bool is_checked_ = false;
 };
 
 BEGIN_METADATA(GifsButton)
@@ -257,7 +270,7 @@ QuickInsertEmojiBarView::QuickInsertEmojiBarView(
                       // `gifs_button_`.
                       views::Builder<views::Button>(
                           std::make_unique<GifsButton>(base::BindRepeating(
-                              &QuickInsertEmojiBarView::OpenGifs,
+                              &QuickInsertEmojiBarView::ToggleGifs,
                               base::Unretained(this))))
                           .SetVisible(is_gifs_enabled)
                           .CopyAddressTo(&gifs_button_)))
@@ -375,8 +388,11 @@ void QuickInsertEmojiBarView::OpenMoreEmojis() {
   delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis);
 }
 
-void QuickInsertEmojiBarView::OpenGifs() {
-  delegate_->ToggleGifs();
+void QuickInsertEmojiBarView::ToggleGifs(bool is_checked) {
+  // `delegate_` might be null in tests.
+  if (delegate_ != nullptr) {
+    delegate_->ToggleGifs(is_checked);
+  }
 }
 
 int QuickInsertEmojiBarView::CalculateAvailableWidthForItemRow() {

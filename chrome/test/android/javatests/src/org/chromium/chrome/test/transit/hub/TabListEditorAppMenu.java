@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.transit.hub;
 
+import android.util.Pair;
+
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Transition;
@@ -11,7 +13,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AppMenuFacility;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 
 import java.util.List;
 
@@ -25,7 +29,9 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
 
     private final TabSwitcherListEditorFacility mListEditor;
     private Item<Void> mCloseMenuItem;
-    private Item<NewTabGroupDialogFacility> mGroupWithParityMenuItem;
+    private Item<NewTabGroupDialogFacility> mGroupWithDialogMenuItem;
+    private Item<Pair<TabSwitcherGroupCardFacility, UndoGroupSnackbarFacility>>
+            mGroupWithoutDialogMenuItem;
 
     public TabListEditorAppMenu(TabSwitcherListEditorFacility listEditor) {
         mListEditor = listEditor;
@@ -43,11 +49,20 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
                         itemViewMatcher("Close " + tabOrTabs),
                         itemDataMatcher(R.id.tab_list_editor_close_menu_item),
                         this::doCloseTabs);
-        mGroupWithParityMenuItem =
-            items.declareItemToFacility(
-                itemViewMatcher("Group " + tabOrTabs),
-                itemDataMatcher(R.id.tab_list_editor_group_menu_item),
-                this::doGroupTabs);
+
+        if (mListEditor.isAnyGroupSelected()) {
+            mGroupWithoutDialogMenuItem =
+                    items.declareItem(
+                            itemViewMatcher("Group " + tabOrTabs),
+                            itemDataMatcher(R.id.tab_list_editor_group_menu_item),
+                            this::doGroupTabsWithoutDialog);
+        } else {
+            mGroupWithDialogMenuItem =
+                    items.declareItem(
+                            itemViewMatcher("Group " + tabOrTabs),
+                            itemDataMatcher(R.id.tab_list_editor_group_menu_item),
+                            this::doGroupTabs);
+        }
 
         items.declareStubItem(
                 itemViewMatcher("Bookmark " + tabOrTabs),
@@ -65,12 +80,50 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
      */
     public NewTabGroupDialogFacility groupTabs() {
         assert ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled();
-        return mGroupWithParityMenuItem.scrollToAndSelect();
+        return mGroupWithDialogMenuItem.scrollToAndSelect();
     }
 
     /** Factory for the result of {@link #groupTabs()}. */
-    private NewTabGroupDialogFacility doGroupTabs() {
-        return new NewTabGroupDialogFacility(mListEditor.getTabIdsSelected());
+    private NewTabGroupDialogFacility doGroupTabs(
+            ItemOnScreenFacility<NewTabGroupDialogFacility> itemOnScreen) {
+        SoftKeyboardFacility softKeyboard =
+                new SoftKeyboardFacility(mHostStation.getActivityElement());
+        NewTabGroupDialogFacility dialog =
+                new NewTabGroupDialogFacility(mListEditor.getAllTabIdsSelected(), softKeyboard);
+        mHostStation.swapFacilitiesSync(
+                List.of(this, mListEditor, itemOnScreen),
+                List.of(dialog, softKeyboard),
+                itemOnScreen.clickTrigger());
+        return dialog;
+    }
+
+    /**
+     * Select "Group tabs" to create a new group with the selected tabs, expecting no dialog.
+     *
+     * <p>The tab creation dialog does not appear when at least one group is selected (one of the
+     * groups will be extended instead of a new group being created).
+     *
+     * @return the new group card and the undo snackbar expected to be shown.
+     */
+    public Pair<TabSwitcherGroupCardFacility, UndoGroupSnackbarFacility> groupTabsWithoutDialog() {
+        assert mListEditor.isAnyGroupSelected();
+        return mGroupWithoutDialogMenuItem.scrollToAndSelect();
+    }
+
+    /** Factory for the result of {@link #groupTabsWithoutDialog()}. */
+    private Pair<TabSwitcherGroupCardFacility, UndoGroupSnackbarFacility> doGroupTabsWithoutDialog(
+            ItemOnScreenFacility<Pair<TabSwitcherGroupCardFacility, UndoGroupSnackbarFacility>>
+                    itemOnScreen) {
+        List<Integer> tabIdsSelected = mListEditor.getAllTabIdsSelected();
+        String title = TabGroupUtil.getNumberOfTabsString(tabIdsSelected.size());
+        String snackbarMessage = TabGroupUtil.getSnackbarMessageString(tabIdsSelected.size());
+        var card = new TabSwitcherGroupCardFacility(/* cardIndex= */ null, tabIdsSelected, title);
+        var undoSnackbar = new UndoGroupSnackbarFacility(snackbarMessage);
+        mHostStation.swapFacilitiesSync(
+                List.of(this, mListEditor, itemOnScreen),
+                List.of(card, undoSnackbar),
+                itemOnScreen.clickTrigger());
+        return Pair.create(card, undoSnackbar);
     }
 
     /**

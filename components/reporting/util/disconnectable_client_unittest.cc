@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/reporting/util/status.h"
@@ -247,4 +248,87 @@ TEST_F(DisconnectableClientTest, ConnectionDroppedThenRestored) {
   EXPECT_THAT(result.value(), Eq(666));
 }
 
+TEST_F(DisconnectableClientTest, NormalConnectionBeyondLimit) {
+  client_.SetAvailability(/*is_available=*/true);
+
+  // Set jobs limit to 2 for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "EnableReportingDelegateJobsLimit<study:max_running/2", "");
+
+  test::TestEvent<StatusOr<int64_t>> res1;
+  test::TestEvent<StatusOr<int64_t>> res2;
+  test::TestEvent<StatusOr<int64_t>> res3;
+  client_.MaybeMakeCall(
+      std::make_unique<MockDelegate>(111, base::Seconds(10), res1.cb()));
+  client_.MaybeMakeCall(
+      std::make_unique<MockDelegate>(222, base::Seconds(10), res2.cb()));
+  client_.MaybeMakeCall(
+      std::make_unique<MockDelegate>(333, base::Seconds(5), res3.cb()));
+
+  // No result right after launch.
+  EXPECT_TRUE(res1.no_result());
+  EXPECT_TRUE(res2.no_result());
+  EXPECT_TRUE(res3.no_result());
+
+  // Because of the limit, only the first two delegates would be finished,
+  // even though the third one takes less time.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  auto result = res1.result();
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(222));
+  result = res2.result();
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(444));
+  EXPECT_TRUE(res3.no_result());
+
+  // Afterward the third delegate can finish.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  result = res3.result();
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(666));
+}
+
+TEST_F(DisconnectableClientTest, ConnectionGoingDownBeyondLimit) {
+  client_.SetAvailability(/*is_available=*/true);
+
+  // Set jobs limit to 2 for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "EnableReportingDelegateJobsLimit<study:max_running/2", "");
+
+  test::TestEvent<StatusOr<int64_t>> res1;
+  test::TestEvent<StatusOr<int64_t>> res2;
+  test::TestEvent<StatusOr<int64_t>> res3;
+  client_.MaybeMakeCall(
+      std::make_unique<MockDelegate>(111, base::Seconds(10), res1.cb()));
+  client_.MaybeMakeCall(
+      std::make_unique<MockDelegate>(222, base::Seconds(10), res2.cb()));
+  client_.MaybeMakeCall(
+      std::make_unique<MockDelegate>(333, base::Seconds(5), res3.cb()));
+
+  // No result right after launch.
+  EXPECT_TRUE(res1.no_result());
+  EXPECT_TRUE(res2.no_result());
+  EXPECT_TRUE(res3.no_result());
+
+  // Because of the limit, only the first two delegates would be finished,
+  // even though the third one takes less time.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  auto result = res1.result();
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(222));
+  result = res2.result();
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(444));
+  EXPECT_TRUE(res3.no_result());
+
+  // Afterward the third delegate can start, but connection is down.
+  client_.SetAvailability(/*is_available=*/false);
+  task_environment_.FastForwardBy(base::Seconds(5));
+  result = res3.result();
+  ASSERT_FALSE(result.has_value());
+  ASSERT_THAT(result.error().error_code(), Eq(error::UNAVAILABLE))
+      << result.error();
+}
 }  // namespace reporting

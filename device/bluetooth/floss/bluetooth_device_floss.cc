@@ -716,7 +716,9 @@ BluetoothDeviceFloss::BluetoothDeviceFloss(
 }
 
 BluetoothDeviceFloss::~BluetoothDeviceFloss() {
-  FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
+  if (floss::FlossDBusManager::IsInitialized()) {
+    FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
+  }
 }
 
 bool BluetoothDeviceFloss::IsBondedImpl() const {

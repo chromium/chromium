@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -35,7 +36,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -113,7 +113,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
         initWithBaseViewController:nil
                            browser:browser_.get()];
     coordinator_.signinCompletion =
-        ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+        ^(SigninCoordinatorResult, id<SystemIdentity>) {
           signinCompletion();
         };
     [coordinator_ start];
@@ -153,7 +153,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     // `stop` should not be called directly. Instead, the SigninCoordinator is
     // closed inderectly through `runCompletion`. We ensure to close it by
     // simulating that the mediator request to dismiss the coordinator.
-    OCMStub(mediator_.signinCompletionInfo).andReturn(nil);
+    OCMStub(mediator_.signinCompletionIdentity).andReturn(nil);
     OCMStub(mediator_.signinCoordinatorResult)
         .andReturn(
             SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser);

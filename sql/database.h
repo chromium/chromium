@@ -33,6 +33,7 @@
 #include "base/strings/cstring_view.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
@@ -275,14 +276,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // is called.
   explicit Database(DatabaseOptions options);
 
-  // This constructor is deprecated.
-  //
-  // When transitioning away from this default constructor, consider setting
-  // DatabaseOptions::explicit_locking to true. For historical reasons, this
-  // constructor results in DatabaseOptions::explicit_locking set to false.
-  //
-  // TODO(crbug.com/40148370): Remove this constructor after migrating all
-  //                          uses to the explicit constructor below.
+  // Convenience constructor for callers that use default options.
   Database();
 
   Database(const Database&) = delete;
@@ -336,6 +330,7 @@ class COMPONENT_EXPORT(SQL) Database {
   void set_histogram_tag(const std::string& histogram_tag) {
     DCHECK(!is_open());
     histogram_tag_ = histogram_tag;
+    tracing_track_name_ = "Database: " + histogram_tag;
   }
 
   const std::string& histogram_tag() const { return histogram_tag_; }
@@ -944,6 +939,19 @@ class COMPONENT_EXPORT(SQL) Database {
   // This method must only be called while the database is successfully opened.
   sqlite3_file* GetSqliteVfsFile();
 
+  // Records a histogram named `name_prefix` suffixed with this database's
+  // histogram tag (or "NoTag" if the tag isn't set). For instance,
+  // `RecordTimingHistogram("Foo.", ...)` called on a database with the tag
+  // "Bar" will record into "Foo.Bar". This function chooses reasonable
+  // bucketing parameters for typical database operations timing and reports in
+  // microseconds.
+  void RecordTimingHistogram(std::string_view name_prefix,
+                             base::TimeDelta timing) const;
+
+  // Returns the name of the track in which to record this database's events
+  // based on its histogram tag.
+  perfetto::NamedTrack GetTracingNamedTrack() const;
+
   void SetEnableVirtualTablesForTesting(bool enable) {
     enable_virtual_tables_ = enable;
   }
@@ -1017,6 +1025,10 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Developer-friendly database ID used in logging output and memory dumps.
   std::string histogram_tag_;
+
+  // Persist the track name as a member since perfetto needs the original string
+  // for the name to remain alive (without taking ownership of it).
+  std::string tracing_track_name_;
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;

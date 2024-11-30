@@ -77,16 +77,11 @@ void OomScorePolicyChromeOS::HandlePageNodeEvents() {
   candidates.reserve(all_page_nodes.size());
 
   for (const PageNode* page_node : all_page_nodes) {
-    PageDiscardingHelper::CanDiscardResult can_discard_result =
-        discarding_helper->CanDiscard(
-            page_node, PageDiscardingHelper::DiscardReason::URGENT);
-    bool is_marked =
-        (can_discard_result == PageDiscardingHelper::CanDiscardResult::kMarked);
-    bool is_protected = (can_discard_result ==
-                         PageDiscardingHelper::CanDiscardResult::kProtected);
+    CanDiscardResult can_discard_result = discarding_helper->CanDiscard(
+        page_node, PageDiscardingHelper::DiscardReason::URGENT);
     bool is_visible = page_node->IsVisible();
     bool is_focused = page_node->IsFocused();
-    candidates.emplace_back(page_node, is_marked, is_visible, is_protected,
+    candidates.emplace_back(page_node, can_discard_result, is_visible,
                             is_focused,
                             page_node->GetTimeSinceLastVisibilityChange());
   }

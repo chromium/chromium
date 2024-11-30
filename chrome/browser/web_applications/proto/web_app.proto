@@ -51,11 +51,6 @@ message WebAppProtocolHandler {
   optional string url = 2;       // Required.
 }
 
-message WebAppUrlHandlerProto {
-  optional string origin = 1;             // Required.
-  optional bool has_origin_wildcard = 2;  // Required.
-}
-
 message WebAppScopeExtensionProto {
   optional string origin = 1;             // Required.
   optional bool has_origin_wildcard = 2;  // Required.
@@ -186,7 +181,7 @@ message GeneratedIconFix {
 message WebAppProto {
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
-      "run_on_os_login_os_integration_state";
+      "run_on_os_login_os_integration_state", "url_handlers";
   // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
@@ -290,7 +285,7 @@ message WebAppProto {
 
   optional string launch_query_params = 26;
 
-  repeated WebAppUrlHandlerProto url_handlers = 27;
+  reserved 27;
 
   optional ClientDataProto client_data = 28;
 

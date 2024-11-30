@@ -83,7 +83,7 @@ QuitWithAppsController::QuitWithAppsController() {
   }
 }
 
-QuitWithAppsController::~QuitWithAppsController() {}
+QuitWithAppsController::~QuitWithAppsController() = default;
 
 void QuitWithAppsController::OnProfileManagerDestroying() {
   // Set `notification_profile_` to null to avoid danling pointer detection when

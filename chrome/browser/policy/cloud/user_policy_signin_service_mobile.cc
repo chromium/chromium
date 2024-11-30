@@ -64,7 +64,7 @@ UserPolicySigninService::UserPolicySigninService(
     profile_manager_observation_.Observe(profile_manager);
 }
 
-UserPolicySigninService::~UserPolicySigninService() {}
+UserPolicySigninService::~UserPolicySigninService() = default;
 
 void UserPolicySigninService::ShutdownCloudPolicyManager() {
   CancelPendingRegistration();

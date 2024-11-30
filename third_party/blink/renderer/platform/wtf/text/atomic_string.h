@@ -120,10 +120,10 @@ class WTF_EXPORT AtomicString {
 
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
-  // platform features.
-  wtf_size_t FindIgnoringCase(const StringView& value,
-                              wtf_size_t start = 0) const {
-    return string_.FindIgnoringCase(value, start);
+  // platform features.  See crbug.com/40476285.
+  wtf_size_t DeprecatedFindIgnoringCase(const StringView& value,
+                                        wtf_size_t start = 0) const {
+    return string_.DeprecatedFindIgnoringCase(value, start);
   }
 
   // ASCII case insensitive string matching.
@@ -165,6 +165,12 @@ class WTF_EXPORT AtomicString {
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return string_.EndsWith(suffix, case_sensitivity);
   }
+  // Unicode aware case insensitive string matching. Non-ASCII characters might
+  // match to ASCII characters. This function is rarely used to implement web
+  // platform features.  See crbug.com/40476285.
+  bool DeprecatedEndsWithIgnoringCase(const StringView& suffix) const {
+    return string_.DeprecatedEndsWithIgnoringCase(suffix);
+  }
   bool EndsWith(UChar character) const { return string_.EndsWith(character); }
 
   // Returns a lowercase/uppercase version of the string.
@@ -198,8 +204,7 @@ class WTF_EXPORT AtomicString {
 #endif
   // AtomicString::fromUTF8 will return a null string if
   // the input data contains invalid UTF-8 sequences.
-  // NOTE: Passing a zero size means use the whole string.
-  static AtomicString FromUTF8(const char*, size_t length);
+  static AtomicString FromUTF8(base::span<const uint8_t>);
   static AtomicString FromUTF8(const char*);
   static AtomicString FromUTF8(std::string_view);
 

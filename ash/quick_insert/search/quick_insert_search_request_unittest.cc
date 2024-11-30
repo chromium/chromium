@@ -31,6 +31,9 @@
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
@@ -41,6 +44,7 @@ namespace ash {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::ElementsAre;
@@ -76,15 +80,14 @@ using MockSearchResultsCallback =
 
 class QuickInsertSearchRequestTest : public testing::Test {
  protected:
-  base::test::SingleThreadTaskEnvironment& task_environment() {
-    return task_environment_;
-  }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   MockSearchQuickInsertClient& client() { return client_; }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  network::TestURLLoaderFactory test_factory_;
   NiceMock<MockSearchQuickInsertClient> client_;
 };
 
@@ -1122,6 +1125,71 @@ INSTANTIATE_TEST_SUITE_P(
                        QuickInsertSearchSource::kLobsterWithNoSelectedText),
         std::make_pair(QuickInsertCategory::kLobsterWithSelectedText,
                        QuickInsertSearchSource::kLobsterWithSelectedText)));
+
+TEST_F(QuickInsertSearchRequestTest,
+       PublishesGifResultsWhenGifCategorySelected) {
+  network::TestURLLoaderFactory test_url_loader_factory;
+  ON_CALL(client(), GetSharedURLLoaderFactory)
+      .WillByDefault([&test_url_loader_factory]() {
+        return test_url_loader_factory.GetSafeWeakWrapper();
+      });
+  base::test::TestFuture<void> future;
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(QuickInsertSearchSource::kGifs,
+           ElementsAre(VariantWith<QuickInsertGifResult>(AllOf(
+               Field("preview_url", &QuickInsertGifResult::preview_url,
+                     GURL("https://tenor.com/preview.gif")),
+               Field("preview_image_url",
+                     &QuickInsertGifResult::preview_image_url,
+                     GURL("https://tenor.com/preview.png")),
+               Field("preview_dimensions",
+                     &QuickInsertGifResult::preview_dimensions,
+                     gfx::Size(100, 50)),
+               Field("full_url", &QuickInsertGifResult::full_url,
+                     GURL("https://tenor.com/full.gif")),
+               Field("full_dimensions", &QuickInsertGifResult::full_dimensions,
+                     gfx::Size(200, 100)),
+               Field("content_description",
+                     &QuickInsertGifResult::content_description, u"a cat")))),
+           /*has_more_results=*/false))
+      .WillOnce([&future]() { future.SetValue(); });
+
+  QuickInsertSearchRequest request(
+      u"cat", QuickInsertCategory::kGifs,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      base::DoNothing(), &client(), kAllCategories);
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      GURL(), network::URLLoaderCompletionStatus(net::OK),
+      network::CreateURLResponseHead(net::HTTP_OK), R"json({
+          "results": [
+            {
+              "id": "0",
+              "content_description": "a cat",
+              "media_formats": {
+                "gif": {
+                  "dims": [200, 100],
+                  "url": "https://tenor.com/full.gif"
+                },
+                "tinygif": {
+                  "dims": [100, 50],
+                  "url": "https://tenor.com/preview.gif"
+                },
+                "tinygifpreview": {
+                  "url": "https://tenor.com/preview.png"
+                }
+              }
+            }
+          ]
+        })json",
+      static_cast<network::TestURLLoaderFactory::ResponseMatchFlags>(
+          network::TestURLLoaderFactory::kUrlMatchPrefix |
+          network::TestURLLoaderFactory::kWaitForRequest));
+  ASSERT_TRUE(future.Wait());
+}
 
 TEST_F(QuickInsertSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
   // This actually calls category search.

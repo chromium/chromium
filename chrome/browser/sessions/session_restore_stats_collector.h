@@ -145,12 +145,12 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
 // An abstract reporting delegate is used as a testing seam.
 class SessionRestoreStatsCollector::StatsReportingDelegate {
  public:
-  StatsReportingDelegate() {}
+  StatsReportingDelegate() = default;
 
   StatsReportingDelegate(const StatsReportingDelegate&) = delete;
   StatsReportingDelegate& operator=(const StatsReportingDelegate&) = delete;
 
-  virtual ~StatsReportingDelegate() {}
+  virtual ~StatsReportingDelegate() = default;
 
   // Called when TabLoader has completed its work.
   virtual void ReportTabLoaderStats(const TabLoaderStats& tab_loader_stats) = 0;
@@ -166,7 +166,7 @@ class SessionRestoreStatsCollector::UmaStatsReportingDelegate
   UmaStatsReportingDelegate& operator=(const UmaStatsReportingDelegate&) =
       delete;
 
-  ~UmaStatsReportingDelegate() override {}
+  ~UmaStatsReportingDelegate() override = default;
 
   // StatsReportingDelegate:
   void ReportTabLoaderStats(const TabLoaderStats& tab_loader_stats) override;

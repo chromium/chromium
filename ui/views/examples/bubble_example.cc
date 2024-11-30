@@ -148,7 +148,7 @@ void BubbleExample::ShowBubble(raw_ptr<Button>* button,
 
   BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
 
-  LogStatus(
+  PrintStatus(
       "Click with optional modifiers: [Ctrl] for set_arrow(NONE), "
       "[Alt] for set_arrow(FLOAT), or [Shift] to reverse the arrow iteration.");
 }

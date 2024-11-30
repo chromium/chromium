@@ -27,7 +27,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -48,7 +47,6 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     @Mock SecurityStateModel.Natives mSecurityStateMocks;
     @Mock public CustomTabToolbarCoordinator mToolbarCoordinator;
     @Mock public CloseButtonVisibilityManager mCloseButtonVisibilityManager;
-    @Mock public BaseCustomTabActivity mActivity;
 
     @Mock TrustedWebActivityBrowserControlsVisibilityManager mController;
 
@@ -56,9 +54,6 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
-        when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
-        when(mActivity.getTabObserverRegistrar()).thenReturn(mTabObserverRegistrar);
-        when(mActivity.getCloseButtonVisibilityManager()).thenReturn(mCloseButtonVisibilityManager);
         when(mTabProvider.getTab()).thenReturn(mTab);
         doReturn(Tab.INVALID_TAB_ID).when(mTab).getParentId();
         setTabSecurityLevel(ConnectionSecurityLevel.NONE);
@@ -138,10 +133,13 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
 
     private TrustedWebActivityBrowserControlsVisibilityManager buildController(
             BrowserServicesIntentDataProvider intentDataProvider) {
-        when(mActivity.getIntentDataProvider()).thenReturn(intentDataProvider);
         return spy(
                 new TrustedWebActivityBrowserControlsVisibilityManager(
-                        mActivity, mToolbarCoordinator));
+                        mTabObserverRegistrar,
+                        mTabProvider,
+                        mToolbarCoordinator,
+                        mCloseButtonVisibilityManager,
+                        intentDataProvider));
     }
 
     /** Returns the current browser controls state. */

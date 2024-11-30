@@ -184,7 +184,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.HTTPErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-23">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-25">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -196,7 +196,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.HTTPResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-23">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-25">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -324,7 +324,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.UploadSize" units="bytes"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>

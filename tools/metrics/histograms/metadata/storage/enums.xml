@@ -56,6 +56,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:AdProtoDecompressionOutcome) -->
 
+<enum name="AllowedByStorageAccessType">
+  <int value="0"
+      label="kNone: The cookie was not accessible through
+             TopLevelStorageAccess or StorageAccess."/>
+  <int value="1"
+      label="kTopLevelOnly: The cookie was accessible via
+             TopLevelStorageAccess."/>
+  <int value="2"
+      label="kStorageAccessOnly: The cookie was accessible via StorageAccess."/>
+  <int value="3"
+      label="kTopLevelAndStorageAccess: The cookie was accessible via
+             TopLevelStorageAccess and StorageAccess"/>
+</enum>
+
 <enum name="AutograntViaFedCmOutcome">
   <int value="0" label="Allowed"/>
   <int value="1" label="Denied by permissions policy"/>
@@ -416,20 +430,19 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="AddModuleNonWebVisibleMulipleWorkletsDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:
     browser received message from renderer trying to create multiple worklets
-    when &quot;SharedStorageAPIM125&quot; feature disabled.
+    when &quot;SharedStorageAPI&quot; feature disabled.
   </int>
   <int value="8" label="AddModuleNonWebVisibleCrossOriginWorkletsDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:
     browser received message from renderer trying to cross-origin worklet when
-    &quot;SharedStorageAPIM125&quot; feature disabled.
+    &quot;SharedStorageAPI&quot; feature disabled.
   </int>
-  <int value="9"
-      label="kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled">
+  <int value="9" label="AddModuleNonWebVisibleCrossOriginSharedStorageDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:
     cross-origin worklet cannot be created because shared storage is disabled
     for the origin's site.
   </int>
-  <int value="10" label="kAddModuleNonWebVisibleOther">
+  <int value="10" label="AddModuleNonWebVisibleOther">
     Other errors in `addModule()` or `createWorklet()` not visible to the
     document.
   </int>
@@ -539,6 +552,11 @@ chromium-metrics-reviews@google.com.
     Error in `selectURL()` not visible to the document: browser received message
     from renderer with invalid filtering ID byte size.
   </int>
+  <int value="38" label="AddModuleNonWebVisibleCustomDataOriginDisabled">
+    Error in `addModule()` or `createWorklet()` not visible to the document:
+    custom data origin worklet cannot be created because
+    SharedStorageCreateWorkletCustomDataOrigin is disabled.
+  </int>
 </enum>
 
 <enum name="SqlRecoveryResult">
@@ -597,8 +615,10 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Storage access allowed by 3PCD metadata grants content settings"/>
   <int value="7" label="Temporary storage access allowed by 3PCD heuristics"/>
-  <int value="8" label="Storage access allowed due to CORS opt in"/>
+  <int value="8"
+      label="Storage access allowed due to CORS opt in (deprecated)"/>
   <int value="9" label="Storage access allowed by top-level 3PCD setting"/>
+  <int value="10" label="Storage access allowed by first-party URL scheme"/>
 </enum>
 
 <!-- LINT.IfChange(StorageAccessStatusOutcome) -->

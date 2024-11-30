@@ -232,7 +232,8 @@ static int GetGridPositionInteger(const CSSValue& value) {
   DCHECK_EQ(list.length(), static_cast<size_t>(1));
   const auto& primitive_value = To<CSSPrimitiveValue>(list.Item(0));
   DCHECK(primitive_value.IsNumber());
-  return primitive_value.ComputeInteger(CSSToLengthConversionData());
+  return primitive_value.ComputeInteger(
+      CSSToLengthConversionData(/*element=*/nullptr));
 }
 
 TEST(CSSPropertyParserTest, GridPositionLimit1) {

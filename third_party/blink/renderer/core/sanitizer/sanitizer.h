@@ -11,8 +11,9 @@
 
 namespace blink {
 
+class Element;
 class ExceptionState;
-class ExecutionContext;
+class Node;
 class QualifiedName;
 class SanitizerConfig;
 class SanitizerElementNamespace;
@@ -25,11 +26,10 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
 
  public:
   // Called by JS constructor, new Sanitizer(config).
-  static Sanitizer* Create(ExecutionContext*,
-                           const SanitizerConfig*,
-                           ExceptionState&);
+  static Sanitizer* Create(const SanitizerConfig*, ExceptionState&);
   Sanitizer() = default;
   ~Sanitizer() override = default;
+  Sanitizer(const Sanitizer&) = delete;  // Use MakeGarbageCollected + setFrom.
 
   // This constructor is meant to be used by generated code to build up the
   // Sanitizer builtins. You probably don't want to use it in regular code.
@@ -76,10 +76,19 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   bool allow_data_attrs() const { return allow_data_attrs_; }
   bool allow_comments() const { return allow_comments_; }
 
+  // The core methods (not directly exposed to the API): Recursively sanitize
+  // the node according to the current config.
+  void SanitizeSafe(Node* node) const;
+  void SanitizeUnsafe(Node* node) const;
+
  private:
+  // Helper for Sanitize: Sanitize a single element in the allow-element case.
+  void SanitizeElement(Element* element) const;
+
   // Helper for copy constructor and Create: Convert from IDL representation
   // to internal.
   bool setFrom(const SanitizerConfig*);
+  void setFrom(const Sanitizer&);
 
   // Helpers for get(): Convert from internal to IDL representation.
   QualifiedName getFrom(const String& name, const String& namespaceURI) const;

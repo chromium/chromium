@@ -165,7 +165,7 @@ AutofillCountry::address_format_extensions() const {
   base::span<const AddressFormatExtension> fr_extensions_span =
       base::FeatureList::IsEnabled(features::kAutofillUseFRAddressModel)
           ? fr_extensions
-          : base::span(fr_extensions).subspan(/*offset=*/0, /*count=*/1);
+          : base::span(fr_extensions).first(1u);  // first<1>() => type mismatch
   overrides.emplace_back("FR", fr_extensions_span);
   if (base::FeatureList::IsEnabled(features::kAutofillUseDEAddressModel)) {
     overrides.emplace_back("DE", de_extensions);

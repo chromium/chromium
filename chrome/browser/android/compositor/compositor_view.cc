@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/command_line.h"
 #include "base/containers/id_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -41,6 +42,12 @@
 using base::android::JavaParamRef;
 
 namespace android {
+
+namespace {
+BASE_FEATURE(kIgnoreExcessiveSurfaceSizeKillSwitch,
+             "IgnoreExcessiveSurfaceSizeKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}
 
 jlong JNI_CompositorView_Init(
     JNIEnv* env,
@@ -178,6 +185,19 @@ std::optional<int> CompositorView::SurfaceChanged(
     bool can_be_used_with_surface_control,
     const JavaParamRef<jobject>& surface,
     const JavaParamRef<jobject>& browser_input_token) {
+  // Java View layout sometimes unexpectedly cause CompositorView to be sized so
+  // large that it exceeds the max texture size and memory on the device. This
+  // then subsequently causes the GPU process to crash loop. See
+  // crbug.com/369374760. Ignore these which is probably less bad than crashing
+  // the GPU process.
+  constexpr int kExcessiveSurfaceSize = 1000000;
+  if (base::FeatureList::IsEnabled(kIgnoreExcessiveSurfaceSizeKillSwitch) &&
+      (width >= kExcessiveSurfaceSize || height >= kExcessiveSurfaceSize)) {
+    LOG(WARNING) << "Ignoring excessive surface size " << width << "x"
+                 << height;
+    return std::nullopt;
+  }
+
   std::optional<int> surface_handle = std::nullopt;
   DCHECK(surface);
   if (current_surface_format_ != format) {
@@ -384,11 +404,11 @@ void CompositorView::OnTabChanged(
   if (!compositor_) {
     return;
   }
-  std::unique_ptr<input::PeakGpuMemoryTracker> tracker =
+  std::unique_ptr<viz::PeakGpuMemoryTracker> tracker =
       content::PeakGpuMemoryTrackerFactory::Create(
-          input::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
+          viz::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
   compositor_->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-      [](std::unique_ptr<input::PeakGpuMemoryTracker> tracker,
+      [](std::unique_ptr<viz::PeakGpuMemoryTracker> tracker,
          const viz::FrameTimingDetails& frame_timing_details) {
         // This callback will be ran once the content::Compositor presents the
         // next frame. The destruction of |tracker| will get the peak GPU memory

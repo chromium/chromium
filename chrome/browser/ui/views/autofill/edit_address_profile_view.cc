@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_view.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -28,25 +30,77 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace autofill {
 
-AutofillBubbleBase* ShowEditAddressProfileDialogView(
+namespace {
+
+class AutofillBubbleUI : public AutofillBubbleBase {
+ public:
+  AutofillBubbleUI(std::unique_ptr<views::Widget> dialog,
+                   EditAddressProfileView* profile_view);
+  AutofillBubbleUI(const AutofillBubbleUI&) = delete;
+  AutofillBubbleUI& operator=(const AutofillBubbleUI&) = delete;
+  ~AutofillBubbleUI() override;
+
+ private:
+  // Overrides from AutofillBubbleBase:
+  void Hide() override;
+
+  void CloseWidget(views::Widget::ClosedReason closed_reason);
+
+  std::unique_ptr<views::Widget> dialog_;
+  raw_ptr<EditAddressProfileView> profile_view_ = nullptr;
+};
+
+AutofillBubbleUI::AutofillBubbleUI(std::unique_ptr<views::Widget> dialog,
+                                   EditAddressProfileView* profile_view)
+    : dialog_(std::move(dialog)), profile_view_(profile_view) {
+  dialog_->MakeCloseSynchronous(
+      base::BindOnce(&AutofillBubbleUI::CloseWidget, base::Unretained(this)));
+}
+
+AutofillBubbleUI::~AutofillBubbleUI() = default;
+
+void AutofillBubbleUI::Hide() {
+  dialog_->Close();
+}
+
+void AutofillBubbleUI::CloseWidget(views::Widget::ClosedReason closed_reason) {
+  // We need to hold the dialog here so it remains alive long enough for the
+  // stack to be cleaned up from the WidgetClosed() call. This keeps potential
+  // dangling pointer checks from triggering as the stack unwinds.
+  auto dialog = std::move(dialog_);
+  profile_view_->WidgetClosed();
+  dialog.reset();
+}
+
+}  // namespace
+
+std::unique_ptr<AutofillBubbleBase> ShowEditAddressProfileDialogView(
     content::WebContents* web_contents,
     EditAddressProfileDialogController* controller) {
   auto* dialog = new EditAddressProfileView(controller);
   dialog->ShowForWebContents(web_contents);
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::GetFromContents(web_contents);
-  tab_interface->CreateAndShowTabScopedWidget(dialog).release();
+  auto widget = tab_interface->GetTabFeatures()
+                    ->tab_dialog_manager()
+                    ->CreateShowDialogAndBlockTabInteraction(dialog);
   dialog->RequestFocus();
-  return dialog;
+  return std::make_unique<AutofillBubbleUI>(std::move(widget), dialog);
 }
 
 EditAddressProfileView::EditAddressProfileView(
     EditAddressProfileDialogController* controller)
     : controller_(controller) {
   DCHECK(controller);
+
+  // TODO(crbug.com/338254375): Remove the following two lines once this is the
+  // default state for widgets and the delegates.
+  SetOwnedByWidget(false);
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
              static_cast<int>(ui::mojom::DialogButton::kCancel));
@@ -109,24 +163,20 @@ void EditAddressProfileView::ShowForWebContents(
   }
 }
 
-void EditAddressProfileView::Hide() {
-  controller_ = nullptr;
-  GetWidget()->Close();
-}
-
 views::View* EditAddressProfileView::GetInitiallyFocusedView() {
   return address_editor_view_ ? address_editor_view_->initial_focus_view()
                               : nullptr;
 }
 
-void EditAddressProfileView::WindowClosing() {
+void EditAddressProfileView::WidgetClosed() {
   if (controller_) {
-    controller_->OnDialogClosed(
-        decision_,
-        decision_ == AutofillClient::AddressPromptUserDecision::kEditAccepted
-            ? base::optional_ref(address_editor_view_->GetAddressProfile())
-            : std::nullopt);
-    controller_ = nullptr;
+    std::exchange(controller_, nullptr)
+        ->OnDialogClosed(
+            decision_,
+            decision_ ==
+                    AutofillClient::AddressPromptUserDecision::kEditAccepted
+                ? base::optional_ref(address_editor_view_->GetAddressProfile())
+                : std::nullopt);
   }
 }
 

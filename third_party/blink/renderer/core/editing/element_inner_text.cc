@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/text_visitor.h"
@@ -278,7 +277,7 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
 
   // 3. If node's computed value of 'visibility' is not 'visible', then return
   // items.
-  const ComputedStyle* style = node.GetComputedStyleForElementOrLayoutObject();
+  const ComputedStyle* style = GetComputedStyleForElementOrLayoutObject(node);
   if (style && style->Visibility() != EVisibility::kVisible) {
     return ProcessChildren(node);
   }

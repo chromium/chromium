@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
@@ -51,6 +50,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -383,17 +383,17 @@ const LayoutObject* GetPositionAnchorObject(
   return nullptr;
 }
 
-gfx::Vector2dF GetAnchorOffset(const BlockNode& node,
+PhysicalOffset GetAnchorOffset(const BlockNode& node,
                                const ComputedStyle& style,
                                const LogicalAnchorQuery* anchor_query) {
   if (const LayoutObject* anchor_object =
           GetPositionAnchorObject(node, style, anchor_query)) {
     if (const AnchorPositionScrollData* data =
             To<Element>(node.GetDOMNode())->GetAnchorPositionScrollData()) {
-      return data->TotalOffset(*anchor_object);
+      return data->TotalOffset(anchor_object);
     }
   }
-  return gfx::Vector2dF();
+  return PhysicalOffset();
 }
 
 // Updates `node`'s associated `PaintLayer` for `position-visibility`. See:
@@ -662,13 +662,38 @@ void OutOfFlowLayoutPart::HandleFragmentation() {
 OutOfFlowLayoutPart::ContainingBlockInfo
 OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
     const PositionAreaOffsets& offsets,
+    PhysicalOffset default_anchor_scroll_shift,
     const OutOfFlowLayoutPart::ContainingBlockInfo& container_info) const {
   ContainingBlockInfo adjusted_container_info(container_info);
+
+  // If one inset for an axis is tethered to the default anchor, and the other
+  // one is tethered to the original containing block, and if the two tethering
+  // points live in different scroll contexts, the IMCB is affected by the
+  // default anchor scroll shift (so that where the anchor actually appears on
+  // screen determines the size of the IMCB). If none or both are tethered to
+  // the default anchor, this shift has no effect. Reset it in that case.
+  if (offsets.top.has_value() == offsets.bottom.has_value()) {
+    default_anchor_scroll_shift.top = LayoutUnit();
+  }
+  if (offsets.left.has_value() == offsets.right.has_value()) {
+    default_anchor_scroll_shift.left = LayoutUnit();
+  }
+  const LayoutUnit top_origin = default_anchor_scroll_shift.top;
+  const LayoutUnit right_origin = -default_anchor_scroll_shift.left;
+  const LayoutUnit bottom_origin = -default_anchor_scroll_shift.top;
+  const LayoutUnit left_origin = default_anchor_scroll_shift.left;
+
   PhysicalToLogical converter(container_info.writing_direction,
-                              offsets.top.value_or(LayoutUnit()),
-                              offsets.right.value_or(LayoutUnit()),
-                              offsets.bottom.value_or(LayoutUnit()),
-                              offsets.left.value_or(LayoutUnit()));
+                              offsets.top.value_or(top_origin),
+                              offsets.right.value_or(right_origin),
+                              offsets.bottom.value_or(bottom_origin),
+                              offsets.left.value_or(left_origin));
+
+#if DCHECK_IS_ON()
+  PhysicalToLogical origin_converter(container_info.writing_direction,
+                                     top_origin, right_origin, bottom_origin,
+                                     left_origin);
+#endif
 
   // Reduce the container size and adjust the offset based on the position-area.
   adjusted_container_info.rect.ContractEdges(
@@ -681,10 +706,12 @@ OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
   // ContractEdges above might have created a negative size if the position-area
   // is aligned with an anchor side outside the containing block.
   if (adjusted_container_info.rect.size.inline_size < LayoutUnit()) {
-    DCHECK(converter.InlineStart() == LayoutUnit() ||
-           converter.InlineEnd() == LayoutUnit())
+#if DCHECK_IS_ON()
+    DCHECK(converter.InlineStart() == origin_converter.InlineStart() ||
+           converter.InlineEnd() == origin_converter.InlineEnd())
         << "If aligned to both anchor edges, the size should never be "
            "negative.";
+#endif
     // Collapse the inline size to 0 and align with the single anchor edge
     // defined by the position-area.
     if (converter.InlineStart() == LayoutUnit()) {
@@ -695,10 +722,12 @@ OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
     adjusted_container_info.rect.size.inline_size = LayoutUnit();
   }
   if (adjusted_container_info.rect.size.block_size < LayoutUnit()) {
-    DCHECK(converter.BlockStart() == LayoutUnit() ||
-           converter.BlockEnd() == LayoutUnit())
+#if DCHECK_IS_ON()
+    DCHECK(converter.BlockStart() == origin_converter.BlockStart() ||
+           converter.BlockEnd() == origin_converter.BlockEnd())
         << "If aligned to both anchor edges, the size should never be "
            "negative.";
+#endif
     // Collapse the block size to 0 and align with the single anchor edge
     // defined by the position-area.
     if (converter.BlockStart() == LayoutUnit()) {
@@ -1462,14 +1491,14 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   // to add the fixed-positioned elements to those as well.
   wtf_size_t previous_repeaded_fixedpos_resume_idx = WTF::kNotFound;
 
-  while (descendants->size() > 0) {
+  while (!descendants->empty()) {
     ComputeInlineContainingBlocksForFragmentainer(*descendants);
 
     // When there are anchor queries, each containing block should be laid out
     // separately. This loop chunks |descendants| by their containing blocks, if
     // they have anchor queries.
     base::span<LogicalOofNodeForFragmentation> descendants_span =
-        base::make_span(*descendants);
+        base::span(*descendants);
     for (;;) {
       bool has_new_descendants_span = false;
       // The CSS containing block of the last descendant, to group |descendants|
@@ -2108,15 +2137,32 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   DCHECK(base::ValuesEquivalent(node_info.node.Style().PositionAnchor(),
                                 candidate_style.PositionAnchor()));
 
-  const ContainingBlockInfo container_info = ([&]() -> ContainingBlockInfo {
-    ContainingBlockInfo container_info = node_info.base_container_info;
-    if (const std::optional<PositionAreaOffsets> offsets =
-            candidate_style.PositionAreaOffsets()) {
-      container_info =
-          ApplyPositionAreaOffsets(offsets.value(), container_info);
+  ContainingBlockInfo container_info = node_info.base_container_info;
+  if (const std::optional<PositionAreaOffsets> offsets =
+          candidate_style.PositionAreaOffsets()) {
+    PhysicalOffset default_anchor_scroll_shift;
+    if (RuntimeEnabledFeatures::CSSAnchorPositionAreaVisualPositionEnabled()) {
+      Element* elm = To<Element>(node_info.node.GetDOMNode());
+
+      if (const OutOfFlowData* oof_data = elm->GetOutOfFlowData()) {
+        default_anchor_scroll_shift =
+            oof_data->DefaultAnchorScrollShift().value_or(PhysicalOffset());
+      }
+
+      if (offsets->top.has_value() != offsets->bottom.has_value() ||
+          offsets->left.has_value() != offsets->right.has_value()) {
+        // When one inset for an axis is tethered to the default anchor, and the
+        // other one is tethered to the original containing block, the IMCB is
+        // affected by the default anchor scroll shift. Schedule for calculation
+        // of the default scroll shift.
+        elm->EnsureOutOfFlowData();
+        StyleEngine& style_engine = elm->GetDocument().GetStyleEngine();
+        style_engine.MarkForDefaultAnchorScrollShift(*elm);
+      }
     }
-    return container_info;
-  })();
+    container_info = ApplyPositionAreaOffsets(
+        *offsets, default_anchor_scroll_shift, container_info);
+  }
 
   const WritingDirectionMode candidate_writing_direction =
       candidate_style.GetWritingDirection();

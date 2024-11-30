@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -68,6 +69,12 @@ enum class SuggestionType;
 // ContentAutofillClient. This ensures that tests can inject different
 // implementations of ContentAutofillClient without causing invalid casts to
 // ChromeAutofillClient.
+//
+// BEWARE OF SUBCLASSING in tests: virtual function calls during construction
+// may lead to very surprising behavior. The class is not `final` because a few
+// tests derive from it. Member functions should be final unless they need to be
+// mocked or overridden in subclasses and you have verified that they are not
+// called, directly or indirectly, from the constructor.
 class ChromeAutofillClient : public ContentAutofillClient,
                              public content::WebContentsObserver {
  public:
@@ -92,114 +99,111 @@ class ChromeAutofillClient : public ContentAutofillClient,
   ~ChromeAutofillClient() override;
 
   // AutofillClient:
-  base::WeakPtr<AutofillClient> GetWeakPtr() override;
-  const std::string& GetAppLocale() const override;
-  version_info::Channel GetChannel() const override;
-  bool IsOffTheRecord() const override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
-  AutofillOptimizationGuide* GetAutofillOptimizationGuide() const override;
+  base::WeakPtr<AutofillClient> GetWeakPtr() final;
+  const std::string& GetAppLocale() const final;
+  version_info::Channel GetChannel() const final;
+  bool IsOffTheRecord() const final;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
+  AutofillCrowdsourcingManager* GetCrowdsourcingManager() final;
+  AutofillOptimizationGuide* GetAutofillOptimizationGuide() const final;
   FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
-      override;
+      final;
   FieldClassificationModelHandler*
-  GetPasswordManagerFieldClassificationModelHandler() override;
-  PersonalDataManager* GetPersonalDataManager() override;
-  SingleFieldFillRouter& GetSingleFieldFillRouter() override;
-  AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
-  AutofillComposeDelegate* GetComposeDelegate() override;
-  AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
-  AutofillAiDelegate* GetAutofillAiDelegate() override;
+  GetPasswordManagerFieldClassificationModelHandler() final;
+  PersonalDataManager& GetPersonalDataManager() final;
+  SingleFieldFillRouter& GetSingleFieldFillRouter() final;
+  AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
+  AutofillComposeDelegate* GetComposeDelegate() final;
+  AutofillPlusAddressDelegate* GetPlusAddressDelegate() final;
+  AutofillAiDelegate* GetAutofillAiDelegate() final;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 bool is_manual_fallback,
-                                PlusAddressCallback callback) override;
+                                PlusAddressCallback callback) final;
   void ShowPlusAddressError(PlusAddressErrorDialogType error_dialog_type,
-                            base::OnceClosure on_accepted) override;
+                            base::OnceClosure on_accepted) final;
   void ShowPlusAddressAffiliationError(std::u16string affiliated_domain,
                                        std::u16string affiliated_plus_address,
-                                       base::OnceClosure on_accepted) override;
-  PrefService* GetPrefs() override;
-  const PrefService* GetPrefs() const override;
-  syncer::SyncService* GetSyncService() override;
-  signin::IdentityManager* GetIdentityManager() override;
-  const signin::IdentityManager* GetIdentityManager() const override;
-  FormDataImporter* GetFormDataImporter() override;
-  payments::ChromePaymentsAutofillClient* GetPaymentsAutofillClient() override;
-  StrikeDatabase* GetStrikeDatabase() override;
-  ukm::UkmRecorder* GetUkmRecorder() override;
-  ukm::SourceId GetUkmSourceId() override;
-  AddressNormalizer* GetAddressNormalizer() override;
-  const GURL& GetLastCommittedPrimaryMainFrameURL() const override;
-  url::Origin GetLastCommittedPrimaryMainFrameOrigin() const override;
-  security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
-  const translate::LanguageState* GetLanguageState() override;
-  translate::TranslateDriver* GetTranslateDriver() override;
-  GeoIpCountryCode GetVariationConfigCountryCode() const override;
-  profile_metrics::BrowserProfileType GetProfileType() const override;
-  FastCheckoutClient* GetFastCheckoutClient() override;
-  void ShowAutofillSettings(SuggestionType suggestion_type) override;
-  void ShowEditAddressProfileDialog(
-      const AutofillProfile& profile,
-      AddressProfileSavePromptCallback on_user_decision_callback) override;
-  void ShowDeleteAddressProfileDialog(
-      const AutofillProfile& profile,
-      AddressProfileDeleteDialogCallback delete_dialog_callback) override;
+                                       base::OnceClosure on_accepted) final;
+  PrefService* GetPrefs() final;
+  const PrefService* GetPrefs() const final;
+  syncer::SyncService* GetSyncService() final;
+  signin::IdentityManager* GetIdentityManager() final;
+  const signin::IdentityManager* GetIdentityManager() const final;
+  FormDataImporter* GetFormDataImporter() final;
+  payments::ChromePaymentsAutofillClient* GetPaymentsAutofillClient() final;
+  StrikeDatabase* GetStrikeDatabase() final;
+  ukm::UkmRecorder* GetUkmRecorder() final;
+  AddressNormalizer* GetAddressNormalizer() final;
+  const GURL& GetLastCommittedPrimaryMainFrameURL() const final;
+  url::Origin GetLastCommittedPrimaryMainFrameOrigin() const final;
+  security_state::SecurityLevel GetSecurityLevelForUmaHistograms() final;
+  const translate::LanguageState* GetLanguageState() final;
+  translate::TranslateDriver* GetTranslateDriver() final;
+  GeoIpCountryCode GetVariationConfigCountryCode() const final;
+  profile_metrics::BrowserProfileType GetProfileType() const final;
+  FastCheckoutClient* GetFastCheckoutClient() final;
+  void ShowAutofillSettings(SuggestionType suggestion_type) final;
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
       bool is_migration_to_account,
-      AddressProfileSavePromptCallback callback) override;
+      AddressProfileSavePromptCallback callback) final;
+  // Not called during construction -- safe to override in tests.
   SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
   void ShowPlusAddressEmailOverrideNotification(
       const std::string& original_email,
-      EmailOverrideUndoCallback email_override_undo_callback) override;
+      EmailOverrideUndoCallback email_final) final;
   void UpdateAutofillDataListValues(
-      base::span<const SelectOption> datalist) override;
-  base::span<const Suggestion> GetAutofillSuggestions() const override;
-  void PinAutofillSuggestions() override;
-  std::optional<PopupScreenLocation> GetPopupScreenLocation() const override;
+      base::span<const SelectOption> datalist) final;
+  base::span<const Suggestion> GetAutofillSuggestions() const final;
+  void PinAutofillSuggestions() final;
+  std::optional<PopupScreenLocation> GetPopupScreenLocation() const final;
   std::optional<SuggestionUiSessionId>
-  GetSessionIdForCurrentAutofillSuggestions() const override;
+  GetSessionIdForCurrentAutofillSuggestions() const final;
   void UpdateAutofillSuggestions(
       const std::vector<Suggestion>& suggestions,
       FillingProduct main_filling_product,
-      AutofillSuggestionTriggerSource trigger_source) override;
-  void HideAutofillSuggestions(SuggestionHidingReason reason) override;
+      AutofillSuggestionTriggerSource trigger_source) final;
+  void HideAutofillSuggestions(SuggestionHidingReason reason) final;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,
-      const std::map<std::string, std::string>& field_filling_stats_data)
-      override;
-  bool IsAutofillEnabled() const override;
-  bool IsAutofillProfileEnabled() const override;
-  bool IsAutofillPaymentMethodsEnabled() const override;
-  bool IsAutocompleteEnabled() const override;
-  bool IsPasswordManagerEnabled() const override;
+      const std::map<std::string, std::string>& field_filling_stats_data) final;
+  bool IsAutofillEnabled() const final;
+  bool IsAutofillProfileEnabled() const final;
+  bool IsAutofillPaymentMethodsEnabled() const final;
+  bool IsAutocompleteEnabled() const final;
+  bool IsPasswordManagerEnabled() const final;
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
-                            bool is_refill) override;
-  bool IsContextSecure() const override;
-  LogManager* GetLogManager() const override;
-  const AutofillAblationStudy& GetAblationStudy() const override;
+                            bool is_refill) final;
+  bool IsContextSecure() const final;
+  LogManager* GetLogManager() const final;
+  autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
+      final;
+
+  const AutofillAblationStudy& GetAblationStudy() const final;
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification
   // on Android.
-  AutofillSnackbarControllerImpl* GetAutofillSnackbarController() override;
+  AutofillSnackbarControllerImpl* GetAutofillSnackbarController() final;
 #endif
-  FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
+  FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
-      override;
-  bool ShowAutofillFieldIphForFeature(
-      const FormFieldData& field,
-      AutofillClient::IphFeature feature) override;
-  void HideAutofillFieldIph() override;
-  void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) override;
-  void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
-  base::span<const AutofillProfile> GetTestAddresses() const override;
+      final;
+  bool ShowAutofillFieldIphForFeature(const FormFieldData& field,
+                                      AutofillClient::IphFeature feature) final;
+  void HideAutofillFieldIph() final;
+  void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) final;
+  void set_test_addresses(std::vector<AutofillProfile> test_addresses) final;
+  base::span<const AutofillProfile> GetTestAddresses() const final;
   PasswordFormClassification ClassifyAsPasswordForm(
       AutofillManager& manager,
       FormGlobalId form_id,
-      FieldGlobalId field_id) const override;
+      FieldGlobalId field_id) const final;
+  void TriggerPlusAddressUserPerceptionSurvey(
+      plus_addresses::hats::SurveyType survey_type) final;
 
   // TODO(crbug.com/320634151): Create a test API.
   base::WeakPtr<AutofillSuggestionController>
@@ -231,7 +235,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // ContentAutofillClient:
   std::unique_ptr<AutofillManager> CreateManager(
       base::PassKey<ContentAutofillDriver> pass_key,
-      ContentAutofillDriver& driver) override;
+      ContentAutofillDriver& driver) final;
 
  protected:
   explicit ChromeAutofillClient(content::WebContents* web_contents);
@@ -245,6 +249,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
 
   std::unique_ptr<LogManager> log_manager_;
+  autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
+      this};
 
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.

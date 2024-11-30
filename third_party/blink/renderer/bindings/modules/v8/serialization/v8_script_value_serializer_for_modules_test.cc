@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_serializer_for_modules.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -363,7 +364,7 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
           std::move(function)),
       MakeGarbageCollected<WebCryptoResultAdapter<IDLAny, DOMException*>>(
           WTF::BindRepeating([](DOMException* exception) {
-            CHECK(false) << "crypto operation failed";
+            NOTREACHED() << "crypto operation failed";
           })));
   return result->Result();
 }

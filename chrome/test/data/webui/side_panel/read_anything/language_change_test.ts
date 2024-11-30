@@ -86,6 +86,10 @@ suite('LanguageChanged', () => {
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;
     setVoices(app, speechSynthesis, voices);
+    for (const v of voices) {
+      setInstalled(v.lang);
+      enableLangs(v.lang);
+    }
   });
 
   test('updates toolbar fonts', () => {
@@ -99,23 +103,6 @@ suite('LanguageChanged', () => {
     assertTrue(updatedFontsOnToolbar);
   });
 
-  test('without flag does not update selected voice', () => {
-    const startingVoice = app.getSpeechSynthesisVoice();
-
-    chrome.readingMode.getStoredVoice = () => otherVoice.name;
-    app.languageChanged();
-    assertEquals(startingVoice, app.getSpeechSynthesisVoice());
-  });
-
-  suite('with flag updates selected voice', () => {
-    setup(() => {
-      chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
-
-      for (const v of voices) {
-        setInstalled(v.lang);
-        enableLangs(v.lang);
-      }
-    });
 
     test('to the stored voice for this language if there is one', () => {
       chrome.readingMode.getStoredVoice = () => otherVoice.name;
@@ -296,72 +283,73 @@ suite('LanguageChanged', () => {
         });
       });
     });
-  });
 
-  suite('with flag tries to install voice pack', () => {
-    let sentRequest: boolean;
+    suite('tries to install voice pack', () => {
+      let sentRequest: boolean;
 
-    setup(() => {
-      sentRequest = false;
-      chrome.readingMode.sendGetVoicePackInfoRequest = () => {
-        sentRequest = true;
-      };
+      setup(() => {
+        sentRequest = false;
+        chrome.readingMode.sendGetVoicePackInfoRequest = () => {
+          sentRequest = true;
+        };
+      });
+
+      test('but doesn\'t if the language is unsupported', () => {
+        chrome.readingMode.baseLanguageForSpeech = 'zh';
+
+        app.languageChanged();
+
+        // Use this check to ensure this stays updated if the supported
+        // languages changes.
+        assertFalse(PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(
+            chrome.readingMode.baseLanguageForSpeech));
+        assertFalse(sentRequest);
+      });
+
+      test(
+          'if the language is unsupported but has valid voice pack code',
+          () => {
+            chrome.readingMode.baseLanguageForSpeech = 'bn';
+
+            app.languageChanged();
+
+            // Use this check to ensure this stays updated if the supported
+            // languages changes.
+            assertTrue(PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(
+                chrome.readingMode.baseLanguageForSpeech));
+            assertFalse(AVAILABLE_GOOGLE_TTS_LOCALES.has(
+                chrome.readingMode.baseLanguageForSpeech));
+            assertTrue(sentRequest);
+          });
+
+      test('but doesn\'t if the language is already installing', () => {
+        const lang = 'bn-bd';
+        const voicePackLang = convertLangOrLocaleForVoicePackManager(lang);
+        assertTrue(voicePackLang !== undefined);
+
+        app.updateVoicePackStatus(lang, 'kInstalling');
+        app.languageChanged();
+
+        assertFalse(sentRequest);
+      });
+
+      test('and gets voice pack info if no status yet', () => {
+        const lang = 'bn-bd';
+        chrome.readingMode.baseLanguageForSpeech = lang;
+
+        app.languageChanged();
+
+        assertTrue(sentRequest);
+      });
+
+      test('and gets voice pack info if we know it exists', () => {
+        const lang = 'de-de';
+        chrome.readingMode.baseLanguageForSpeech = lang;
+
+        app.languageChanged();
+
+        assertTrue(sentRequest);
+      });
     });
-
-    test('but doesn\'t if the language is unsupported', () => {
-      chrome.readingMode.baseLanguageForSpeech = 'zh';
-
-      app.languageChanged();
-
-      // Use this check to ensure this stays updated if the supported languages
-      // changes.
-      assertFalse(PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(
-          chrome.readingMode.baseLanguageForSpeech));
-      assertFalse(sentRequest);
-    });
-
-    test('if the language is unsupported but has valid voice pack code', () => {
-      chrome.readingMode.baseLanguageForSpeech = 'bn';
-
-      app.languageChanged();
-
-      // Use this check to ensure this stays updated if the supported
-      // languages changes.
-      assertTrue(PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(
-          chrome.readingMode.baseLanguageForSpeech));
-      assertFalse(AVAILABLE_GOOGLE_TTS_LOCALES.has(
-          chrome.readingMode.baseLanguageForSpeech));
-      assertTrue(sentRequest);
-    });
-
-    test('but doesn\'t if the language is already installing', () => {
-      const lang = 'bn-bd';
-      const voicePackLang = convertLangOrLocaleForVoicePackManager(lang);
-      assertTrue(voicePackLang !== undefined);
-
-      app.updateVoicePackStatus(lang, 'kInstalling');
-      app.languageChanged();
-
-      assertFalse(sentRequest);
-    });
-
-    test('and gets voice pack info if no status yet', () => {
-      const lang = 'bn-bd';
-      chrome.readingMode.baseLanguageForSpeech = lang;
-
-      app.languageChanged();
-
-      assertTrue(sentRequest);
-    });
-
-    test('and gets voice pack info if we know it exists', () => {
-      const lang = 'de-de';
-      chrome.readingMode.baseLanguageForSpeech = lang;
-
-      app.languageChanged();
-
-      assertTrue(sentRequest);
-    });
-  });
 
 });

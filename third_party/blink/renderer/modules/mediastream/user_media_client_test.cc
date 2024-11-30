@@ -257,6 +257,11 @@ class MediaDevicesDispatcherHostMock
   }
 #endif
 
+  void SetPreferredSinkId(const String& sink_id,
+                          SetPreferredSinkIdCallback callback) override {
+    NOTREACHED();
+  }
+
   void GetAllVideoInputDeviceFormats(
       const String& device_id,
       GetAllVideoInputDeviceFormatsCallback callback) override {
@@ -381,6 +386,11 @@ class MockMediaDevicesDispatcherHost
   }
 
   void SetCaptureHandleConfig(mojom::blink::CaptureHandleConfigPtr) override {
+    NOTREACHED();
+  }
+
+  void SetPreferredSinkId(const String& sink_id,
+                          SetPreferredSinkIdCallback callback) override {
     NOTREACHED();
   }
 
@@ -1102,10 +1112,8 @@ TEST_F(UserMediaClientTest, DefaultConstraintsPropagate) {
       audio_capture_settings.audio_processing_properties();
   EXPECT_EQ(EchoCancellationType::kEchoCancellationAec3,
             properties.echo_cancellation_type);
-  EXPECT_FALSE(properties.goog_audio_mirroring);
   EXPECT_TRUE(properties.auto_gain_control);
   EXPECT_TRUE(properties.noise_suppression);
-  EXPECT_TRUE(properties.goog_highpass_filter);
 
   EXPECT_TRUE(video_capture_settings.HasValue());
   EXPECT_EQ(video_capture_settings.Width(),
@@ -1155,10 +1163,8 @@ TEST_F(UserMediaClientTest, DefaultTabCapturePropagate) {
       audio_capture_settings.audio_processing_properties();
   EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
             properties.echo_cancellation_type);
-  EXPECT_FALSE(properties.goog_audio_mirroring);
   EXPECT_FALSE(properties.auto_gain_control);
   EXPECT_FALSE(properties.noise_suppression);
-  EXPECT_FALSE(properties.goog_highpass_filter);
 
   EXPECT_TRUE(video_capture_settings.HasValue());
   EXPECT_EQ(video_capture_settings.Width(), blink::kDefaultScreenCastWidth);
@@ -1206,10 +1212,8 @@ TEST_F(UserMediaClientTest, DefaultDesktopCapturePropagate) {
       audio_capture_settings.audio_processing_properties();
   EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
             properties.echo_cancellation_type);
-  EXPECT_FALSE(properties.goog_audio_mirroring);
   EXPECT_FALSE(properties.auto_gain_control);
   EXPECT_FALSE(properties.noise_suppression);
-  EXPECT_FALSE(properties.goog_highpass_filter);
 
   EXPECT_TRUE(video_capture_settings.HasValue());
   EXPECT_EQ(video_capture_settings.Width(), blink::kDefaultScreenCastWidth);
@@ -1240,7 +1244,6 @@ TEST_F(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
   factory.basic().disable_local_echo.SetExact(true);
   factory.basic().render_to_associated_sink.SetExact(true);
   factory.basic().echo_cancellation.SetExact(false);
-  factory.basic().goog_audio_mirroring.SetExact(true);
   MediaConstraints audio_constraints = factory.CreateMediaConstraints();
   // Request contains only audio
   UserMediaRequest* request =
@@ -1271,10 +1274,8 @@ TEST_F(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
       audio_capture_settings.audio_processing_properties();
   EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
             properties.echo_cancellation_type);
-  EXPECT_TRUE(properties.goog_audio_mirroring);
   EXPECT_FALSE(properties.auto_gain_control);
   EXPECT_FALSE(properties.noise_suppression);
-  EXPECT_FALSE(properties.goog_highpass_filter);
 }
 
 TEST_F(UserMediaClientTest, CreateWithMandatoryInvalidAudioDeviceId) {

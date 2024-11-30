@@ -8,7 +8,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -216,11 +215,11 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   primary_plane.color_space = gfx::ColorSpace::CreateSRGB();
   candidates[0].color_space = gfx::ColorSpace::CreateHDR10();
   processor.CheckOverlaySupport(&primary_plane, &candidates);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(candidates.at(0).overlay_handled);
 #else
   EXPECT_TRUE(candidates.at(0).overlay_handled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   candidates[0] = candidate;
 

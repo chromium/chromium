@@ -80,7 +80,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "media/mojo/buildflags.h"
-#include "net/base/features.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -637,8 +636,7 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   context_params->enforce_chrome_ct_policy = false;
 
   context_params->enable_brotli = true;
-  context_params->enable_zstd =
-      base::FeatureList::IsEnabled(net::features::kZstdContentEncoding);
+  context_params->enable_zstd = true;
 
   context_params->check_clear_text_permitted =
       AwContentBrowserClient::get_check_cleartext_permitted();

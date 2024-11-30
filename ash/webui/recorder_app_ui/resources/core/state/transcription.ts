@@ -1,14 +1,12 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {createTranscriptionModelDownloadPerf} from '../events_sender.js';
 import {usePlatformHandler} from '../lit/context.js';
 import {LanguageCode} from '../soda/language_info.js';
 import {assertExhaustive} from '../utils/assert.js';
 
-import {
-  settings,
-  TranscriptionEnableState,
-} from './settings.js';
+import {settings, TranscriptionEnableState} from './settings.js';
 
 /**
  * Disables transcription.
@@ -23,16 +21,31 @@ export function disableTranscription(firstTime = false): void {
   });
 }
 
+function installSoda(language: LanguageCode) {
+  const platformHandler = usePlatformHandler();
+  // Records download events initiated from UI download buttons.
+  if (platformHandler.getSodaState(language).value.kind === 'notInstalled') {
+    platformHandler.perfLogger.start(
+      createTranscriptionModelDownloadPerf(language),
+    );
+  }
+  // TODO: b/375306309 -  Install only if the state is `notInstalled` after the
+  // `OnSodaUninstalled` event is implemented and there's no inconsistent soda
+  // state.
+  void platformHandler.installSoda(language);
+}
+
 /**
- * Enables transcription.
+ * Wrapper that installs Soda and starts download perf event.
  */
-export function enableTranscription(): void {
+export function enableTranscriptionSkipConsentCheck(): void {
   settings.mutate((s) => {
     s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
   });
-  const selectedLanguage = settings.value.transcriptionLanguage;
+  const platformHandler = usePlatformHandler();
+  const selectedLanguage = platformHandler.getSelectedLanguage();
   if (selectedLanguage !== null) {
-    void usePlatformHandler().installSoda(selectedLanguage);
+    installSoda(selectedLanguage);
   }
 }
 
@@ -43,18 +56,7 @@ export function setTranscriptionLanguage(language: LanguageCode): void {
   settings.mutate((s) => {
     s.transcriptionLanguage = language;
   });
-  void usePlatformHandler().installSoda(language);
-}
-
-/**
- * Reset transcription language to null or default language.
- *
- * This should be called when the selected language is not available.
- */
-export function resetTranscriptionLanguage(resetToDefault: boolean): void {
-  settings.mutate((s) => {
-    s.transcriptionLanguage = resetToDefault ? LanguageCode.EN_US : null;
-  });
+  installSoda(language);
 }
 
 /**
@@ -71,7 +73,30 @@ export function toggleTranscriptionEnabled(): boolean {
       disableTranscription();
       return true;
     case TranscriptionEnableState.DISABLED:
-      enableTranscription();
+      enableTranscriptionSkipConsentCheck();
+      return true;
+    case TranscriptionEnableState.UNKNOWN:
+    case TranscriptionEnableState.DISABLED_FIRST:
+      return false;
+    default:
+      assertExhaustive(settings.value.transcriptionEnabled);
+  }
+}
+
+/**
+ * Enables transcription if the user consent is already given.
+ *
+ * Returns false if the transcription hasn't been enabled before and needs to
+ * ask for user consent before enabling.
+ *
+ * @return Boolean indicating whether `TranscriptionEnabled` is enabled.
+ */
+export function enableTranscription(): boolean {
+  switch (settings.value.transcriptionEnabled) {
+    case TranscriptionEnableState.ENABLED:
+      return true;
+    case TranscriptionEnableState.DISABLED:
+      enableTranscriptionSkipConsentCheck();
       return true;
     case TranscriptionEnableState.UNKNOWN:
     case TranscriptionEnableState.DISABLED_FIRST:

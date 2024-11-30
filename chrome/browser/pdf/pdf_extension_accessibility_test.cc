@@ -78,7 +78,12 @@
 
 // Fake ScreenAI library returns empty results for all queries, so testing with
 // it is not helpful.
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
+// The tests are disabled on Linux due to the flakiness of notifications on
+// Linux screen reader (crbug.com/348626870).
+// TODO(crbug.com/360803943): Try to enable on Linux with pdf-searchify without
+// relying on notifications.
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && \
+    !BUILDFLAG(USE_FAKE_SCREEN_AI) && !BUILDFLAG(IS_LINUX)
 #define PDF_OCR_INTEGRATION_TEST_ENABLED
 #endif
 
@@ -225,23 +230,11 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
     find_criteria.role = ax::mojom::Role::kPdfRoot;
     ui::AXPlatformNodeDelegate* pdf_root =
         content::FindAccessibilityNode(web_contents, find_criteria);
-    if (!pdf_root) {
-      return ui::AXTreeUpdate();
-    }
     ui::AXTreeID pdf_tree_id = pdf_root->GetTreeData().tree_id;
     EXPECT_NE(pdf_tree_id, ui::AXTreeIDUnknown());
     EXPECT_EQ(pdf_root->GetTreeData().focus_id, pdf_root->GetId());
 
     return content::GetAccessibilityTreeSnapshotFromId(pdf_tree_id);
-  }
-
-  std::string GetAccesssibilitTreeDump() {
-    ui::AXTreeUpdate ax_tree =
-        GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
-    if (ax_tree.nodes.empty()) {
-      return "";
-    }
-    return DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
   }
 
   void EnableScreenReader(bool enabled) {
@@ -1435,23 +1428,15 @@ class PdfOcrIntegrationTest
         base::StrCat({"/pdf/accessibility/", pdf_file}));
     ASSERT_TRUE(LoadPdf(test_file_url));
 
+    WaitForTreeStatus(status_message_id);
+
+    ui::AXTreeUpdate ax_tree =
+        GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
+    std::string ax_tree_dump =
+        DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
     std::string expected_tree_dump = GetExpectedAXTreeDumpForPdf(
         test_pdf_path, IsOcrAvailable(), IsSearchifyEnabled());
     ASSERT_NE("", expected_tree_dump);
-
-    std::string ax_tree_dump;
-#if BUILDFLAG(IS_LINUX)
-    // Notifications are flaky on Linux screen reader (crbug.com/348626870),
-    // therefore instead of waiting for the correct notification, keep checking
-    // the size of the accessibility tree dump, until it becomes expected.
-    do {
-      WaitForAccessibilityTreeToChange(GetActiveWebContents());
-      ax_tree_dump = GetAccesssibilitTreeDump();
-    } while (ax_tree_dump.size() != expected_tree_dump.size());
-#else
-    WaitForTreeStatus(status_message_id);
-    ax_tree_dump = GetAccesssibilitTreeDump();
-#endif
 
     ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
   }

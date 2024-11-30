@@ -34,8 +34,7 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   SearchResultsPanel& operator=(const SearchResultsPanel&) = delete;
   ~SearchResultsPanel() override;
 
-  static views::UniqueWidgetPtr CreateWidget(aura::Window* const root,
-                                             const gfx::Rect& bounds);
+  static views::UniqueWidgetPtr CreateWidget(aura::Window* const root);
 
   AshWebView* search_results_view() const { return search_results_view_; }
   views::Button* close_button() const { return close_button_; }

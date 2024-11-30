@@ -19,31 +19,46 @@ class FileSystemChangeRecord : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static FileSystemChangeRecord* Create(
+      FileSystemHandle* root,
+      FileSystemHandle* changed_handle,
+      Vector<String> relative_path_components,
+      V8FileSystemChangeType type,
+      std::optional<Vector<String>> relative_path_moved_from = std::nullopt);
+
+  FileSystemChangeRecord(
+      FileSystemHandle* root,
+      FileSystemHandle* changed_handle,
+      Vector<String> relative_path_components,
+      V8FileSystemChangeType type,
+      std::optional<Vector<String>> relative_path_moved_from);
+
   FileSystemChangeRecord(FileSystemHandle* root,
                          FileSystemHandle* changed_handle,
-                         const Vector<String>& relative_path,
+                         const Vector<String>& relative_path_components,
                          mojom::blink::FileSystemAccessChangeTypePtr type);
 
   const FileSystemHandle* root() const { return root_.Get(); }
   const FileSystemHandle* changedHandle() const {
-    if (type_->is_disappeared() || type_->is_errored() || type_->is_unknown()) {
-      return nullptr;
-    }
     return changed_handle_.Get();
   }
   const Vector<String>& relativePathComponents() const {
     return relative_path_components_;
   }
-  V8FileSystemChangeType type() const;
-  std::optional<Vector<String>> relativePathMovedFrom() const;
+  const V8FileSystemChangeType& type() const { return type_; }
+  const std::optional<Vector<String>>& relativePathMovedFrom() const {
+    return relative_path_moved_from_;
+  }
 
   void Trace(Visitor* visitor) const override;
 
  private:
+  const V8FileSystemChangeType type_;
+
   const Member<FileSystemHandle> root_;
   const Member<FileSystemHandle> changed_handle_;
   const Vector<String> relative_path_components_;
-  const mojom::blink::FileSystemAccessChangeTypePtr type_;
+  const std::optional<Vector<String>> relative_path_moved_from_;
 };
 
 }  // namespace blink

@@ -23,7 +23,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /** Mediator for the folder picker activity. */
 class BookmarkFolderPickerMediator {
@@ -136,12 +135,18 @@ class BookmarkFolderPickerMediator {
         // TODO(crbug.com/324303006): Assert that the bookmark model is loaded instead.
         mBookmarkModel.finishLoadingBookmarkModel(
                 () -> {
-                    mCanMoveAllToReadingList =
-                            bookmarkItems.stream()
-                                    .map(item -> item.getUrl())
-                                    .allMatch(ReadingListUtils::isReadingListSupported);
+                    mCanMoveAllToReadingList = allItemsSupportReadingList(bookmarkItems);
                     populateFoldersForParentId(bookmarkIdToShow);
                 });
+    }
+
+    private static boolean allItemsSupportReadingList(List<BookmarkItem> bookmarkItems) {
+        for (BookmarkItem item : bookmarkItems) {
+            if (!ReadingListUtils.isReadingListSupported(item.getUrl())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     void destroy() {
@@ -157,29 +162,18 @@ class BookmarkFolderPickerMediator {
 
         List<BookmarkListEntry> children =
                 mQueryHandler.buildBookmarkListForFolderSelect(parentItem.getId());
-        children =
-                children.stream().filter(this::filterMovingBookmarks).collect(Collectors.toList());
 
         mModelList.clear();
-        for (int i = 0; i < children.size(); i++) {
-            BookmarkListEntry child = children.get(i);
-            @ViewType int viewType = child.getViewType();
-            if (viewType == ViewType.SECTION_HEADER) {
-                mModelList.add(createSectionHeaderRow(child));
-            } else {
-                mModelList.add(createFolderPickerRow(child));
+        for (BookmarkListEntry child : children) {
+            BookmarkItem item = child.getBookmarkItem();
+            // Allow non-bookmarks.
+            if (item == null || !mBookmarkIds.contains(item.getId())) {
+                mModelList.add(
+                        child.getViewType() == ViewType.SECTION_HEADER
+                                ? createSectionHeaderRow(child)
+                                : createFolderPickerRow(child));
             }
         }
-    }
-
-    private boolean filterMovingBookmarks(BookmarkListEntry entry) {
-        BookmarkItem item = entry.getBookmarkItem();
-        // Allow non-bookmarks.
-        if (item == null) {
-            return true;
-        }
-
-        return !mBookmarkIds.contains(item.getId());
     }
 
     ListItem createSectionHeaderRow(BookmarkListEntry entry) {

@@ -799,12 +799,6 @@ class CORE_EXPORT ConstraintSpace final {
                          : MarginStrut();
   }
 
-  // The effective `text-box-edge` may not match the one in the `ComputedStyle`
-  // due to the propagation.
-  TextBoxEdge EffectiveTextBoxEdge() const {
-    return HasRareData() ? TextBoxEdge(rare_data_->effective_text_box_edge)
-                         : TextBoxEdge();
-  }
   // Return true if `text-box-trim:trim-start` is in effect at the beginning of
   // a node.
   bool ShouldTextBoxTrimNodeStart() const {
@@ -1432,8 +1426,6 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned should_text_box_trim_node_end : 1 = false;
     unsigned should_text_box_trim_fragmentainer_start : 1 = false;
     unsigned should_text_box_trim_fragmentainer_end : 1 = false;
-    unsigned effective_text_box_edge : TextBoxEdge::kBits =
-                                           static_cast<unsigned>(TextBoxEdge());
     unsigned should_force_text_box_trim_end : 1 = false;
     unsigned should_text_box_trim_inside_when_line_clamp : 1 = false;
     unsigned decoration_percentage_resolution_type : 1 = static_cast<unsigned>(
@@ -1745,9 +1737,6 @@ class CORE_EXPORT ConstraintSpace final {
     EnsureRareData()->is_monolithic_overflow_propagation_disabled = true;
   }
 
-  void SetEffectiveTextBoxEdge(TextBoxEdge value) {
-    EnsureRareData()->effective_text_box_edge = static_cast<unsigned>(value);
-  }
   void SetShouldForceTextBoxTrimEnd(bool value = true) {
     EnsureRareData()->should_force_text_box_trim_end = value;
   }

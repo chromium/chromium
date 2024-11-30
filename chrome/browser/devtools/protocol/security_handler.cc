@@ -243,7 +243,7 @@ SecurityHandler::SecurityHandler(content::WebContents* web_contents,
   protocol::Security::Dispatcher::wire(dispatcher, this);
 }
 
-SecurityHandler::~SecurityHandler() {}
+SecurityHandler::~SecurityHandler() = default;
 
 protocol::Response SecurityHandler::Enable() {
   if (enabled_)

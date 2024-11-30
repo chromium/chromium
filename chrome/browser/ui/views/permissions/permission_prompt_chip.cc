@@ -112,7 +112,6 @@ views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
 void PermissionPromptChip::PreemptivelyResolvePermissionRequest(
     content::WebContents* web_contents,
     Delegate* delegate) {
-  if (base::FeatureList::IsEnabled(permissions::features::kFailFastQuietChip)) {
     DCHECK(delegate->ShouldCurrentRequestUseQuietUI());
 
     bool is_subscribed_to_permission_change_event = true;
@@ -141,7 +140,6 @@ void PermissionPromptChip::PreemptivelyResolvePermissionRequest(
       is_subscribed_to_permission_change_event &=
           permission_controller->IsSubscribedToPermissionChangeEvent(
               permission_type, rfh);
-    }
 
     if (is_subscribed_to_permission_change_event) {
       // This will resolve a promise so an origin is not waiting for the user's

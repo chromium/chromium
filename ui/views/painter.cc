@@ -304,6 +304,19 @@ std::unique_ptr<Painter> Painter::CreateRoundRectWith1PxBorderPainter(
 }
 
 // static
+std::unique_ptr<Painter> Painter::CreateRoundRectWith1PxBorderPainter(
+    SkColor bg_color,
+    SkColor stroke_color,
+    gfx::RoundedCornersF radii,
+    SkBlendMode blend_mode,
+    bool antialias,
+    bool should_border_scale) {
+  return std::make_unique<SolidRoundRectPainter>(
+      bg_color, stroke_color, radii, gfx::Insets(), blend_mode, antialias,
+      should_border_scale);
+}
+
+// static
 std::unique_ptr<Painter> Painter::CreateImagePainter(
     const gfx::ImageSkia& image,
     const gfx::Insets& insets) {

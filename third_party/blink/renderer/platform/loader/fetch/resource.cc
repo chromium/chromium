@@ -55,7 +55,9 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
+#include "third_party/blink/renderer/platform/loader/identity_digest.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -144,15 +146,7 @@ Resource::Resource(const ResourceRequestHead& request,
                    ResourceType type,
                    const ResourceLoaderOptions& options)
     : type_(type),
-      status_(ResourceStatus::kNotStarted),
-      encoded_size_(0),
-      decoded_size_(0),
       cache_identifier_(MemoryCache::DefaultCacheIdentifier()),
-      link_preload_(false),
-      is_alive_(false),
-      is_add_remove_client_prohibited_(false),
-      revalidation_status_(RevalidationStatus::kNoRevalidatingOrFailed),
-      integrity_disposition_(ResourceIntegrityDisposition::kNotChecked),
       options_(options),
       response_timestamp_(Now()),
       resource_request_(request),
@@ -198,10 +192,20 @@ void Resource::CheckResourceIntegrity() {
   }
 
   // Loading error occurred? Then result is uncheckable.
-  integrity_report_info_.Clear();
+  integrity_report_.Clear();
   if (ErrorOccurred()) {
     CHECK(!Data());
     integrity_disposition_ = ResourceIntegrityDisposition::kNetworkError;
+    return;
+  }
+
+  // Check `Identity-Digest` headers. If the digest doesn't match, fail.
+  // Otherwise, fall through to validating SRI.
+  auto identity_digest = GetResponse().IdentityDigest();
+  if (identity_digest.has_value() && !identity_digest->DoesMatch(Data())) {
+    DCHECK(RuntimeEnabledFeatures::IdentityDigestEnabled());
+    integrity_disposition_ =
+        ResourceIntegrityDisposition::kFailedIdentityDigest;
     return;
   }
 
@@ -212,7 +216,7 @@ void Resource::CheckResourceIntegrity() {
   }
 
   if (SubresourceIntegrity::CheckSubresourceIntegrity(
-          IntegrityMetadata(), Data(), Url(), *this, integrity_report_info_)) {
+          IntegrityMetadata(), Data(), Url(), *this, integrity_report_)) {
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
     integrity_disposition_ =
@@ -392,6 +396,10 @@ void Resource::Finish(base::TimeTicks load_response_end,
 
 AtomicString Resource::HttpContentType() const {
   return GetResponse().HttpContentType();
+}
+
+bool Resource::ForceIntegrityChecks() const {
+  return IsLinkPreload() || GetResponse().IdentityDigest().has_value();
 }
 
 bool Resource::MustRefetchDueToIntegrityMetadata(
@@ -977,7 +985,7 @@ void Resource::RevalidationFailed() {
   SECURITY_CHECK(redirect_chain_.empty());
   ClearData();
   integrity_disposition_ = ResourceIntegrityDisposition::kNotChecked;
-  integrity_report_info_.Clear();
+  integrity_report_.Clear();
   DestroyDecodedDataForFailedRevalidation();
   revalidation_status_ = RevalidationStatus::kNoRevalidatingOrFailed;
 }

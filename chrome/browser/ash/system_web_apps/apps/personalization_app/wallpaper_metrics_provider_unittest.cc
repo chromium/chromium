@@ -17,6 +17,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/hash/hash.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
@@ -132,8 +133,7 @@ TEST_F(WallpaperMetricsProviderTest, RecordsImageSettledWithEmptyCollectionId) {
   histogram_tester.ExpectTotalCount("Ash.Wallpaper.Collection.Settled", 0);
 }
 
-// TODO(crbug.com/347294904): Re-enable this test
-TEST_F(WallpaperMetricsProviderTest, DISABLED_RecordsSeaPenTemplateSettled) {
+TEST_F(WallpaperMetricsProviderTest, RecordsSeaPenTemplateSettled) {
   SimulateUserLogin(kAccountId);
   AccountId account_id =
       ash::Shell::Get()->session_controller()->GetActiveAccountId();
@@ -160,7 +160,14 @@ TEST_F(WallpaperMetricsProviderTest, DISABLED_RecordsSeaPenTemplateSettled) {
 
   wallpaper_metrics_provider().ProvideCurrentSessionData(nullptr);
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  wallpaper_metrics_provider().SetGetTemplateIdCallbackForTesting(
+      base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
   histogram_tester.ExpectUniqueSample(
       "Ash.Wallpaper.SeaPen.Template.Settled",
       static_cast<int>(

@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/client/shared_image_pool.h"
 
+#include "base/atomic_sequence_num.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 
 namespace {
@@ -15,6 +16,8 @@ gpu::ImageInfo GetImageInfo(scoped_refptr<gpu::ClientImage> image) {
       shared_image->color_space(), shared_image->surface_origin(),
       shared_image->alpha_type(), shared_image->buffer_usage());
 }
+
+base::AtomicSequenceNumber g_pool_id;
 
 }  // namespace
 
@@ -44,12 +47,17 @@ void ClientImage::SetReleaseSyncToken(SyncToken release_sync_token) {
   sync_token_ = std::move(release_sync_token);
 }
 
+int ClientImage::GetPoolIdForTesting() const {
+  return pool_id_;
+}
+
 SharedImagePoolBase::SharedImagePoolBase(
     const ImageInfo& image_info,
     const scoped_refptr<SharedImageInterface> sii,
     std::optional<uint8_t> max_pool_size,
     std::optional<base::TimeDelta> unused_resource_expiration_time)
-    : image_info_(image_info),
+    : pool_id_(g_pool_id.GetNext()),
+      image_info_(image_info),
       sii_(std::move(sii)),
       max_pool_size_(std::move(max_pool_size)),
       unused_resource_expiration_time_(
@@ -103,6 +111,10 @@ void SharedImagePoolBase::ReleaseImageInternal(
   if (!image || (GetImageInfo(image) != image_info_)) {
     return;
   }
+
+  // Ensure that the |image| belongs to |this| pool.
+  CHECK_EQ(image->pool_id_, pool_id_);
+
   // Ensure that there is only one reference which the current |image| and
   // clients are not accidentally keeping more references alive while releasing
   // this |image|.

@@ -178,10 +178,12 @@ TEST_F(PopOutHandlerTest, PopOutAndEndPopOut) {
   auto test_delegate = std::make_unique<TestDelegate>();
 
   MockToolbarController toolbar_controller(
-      std::vector<ToolbarController::ResponsiveElementInfo>(
-          {{ToolbarController::ElementIdInfo{
-                kDummyButton, 0, &vector_icons::kErrorIcon, kDummyActivateView},
-            false, kDummyObservedView}}),
+      std::vector<ToolbarController::ResponsiveElementInfo>{
+          ToolbarController::ResponsiveElementInfo(
+              ToolbarController::ElementIdInfo(
+                  kDummyButton, 0, &vector_icons::kErrorIcon,
+                  kDummyActivateView, kDummyObservedView),
+              false)},
       std::vector<ui::ElementIdentifier>({kDummyButton}), 1, container_view(),
       overflow_button(), test_delegate.get());
 
@@ -274,19 +276,22 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
     overflow_button_->SetVisible(false);
     test_delegate_ = std::make_unique<TestDelegate>();
     toolbar_controller_ = std::make_unique<TestToolbarController>(
-        std::vector<ToolbarController::ResponsiveElementInfo>(
-            {{ToolbarController::ElementIdInfo{kDummyButton1, 0,
-                                               &vector_icons::kErrorIcon,
-                                               kDummyActivateView},
-              false, kDummyObservedView},
-             {ToolbarController::ElementIdInfo{kDummyButton2, 0,
-                                               &vector_icons::kErrorIcon,
-                                               kDummyActivateView},
-              true, kDummyObservedView},
-             {ToolbarController::ElementIdInfo{kDummyButton3, 0,
-                                               &vector_icons::kErrorIcon,
-                                               kDummyActivateView},
-              true, kDummyObservedView}}),
+        std::vector<ToolbarController::ResponsiveElementInfo>{
+            {ToolbarController::ResponsiveElementInfo(
+                 ToolbarController::ElementIdInfo(
+                     kDummyButton1, 0, &vector_icons::kErrorIcon,
+                     kDummyActivateView, kDummyObservedView),
+                 false),
+             ToolbarController::ResponsiveElementInfo(
+                 ToolbarController::ElementIdInfo(
+                     kDummyButton2, 0, &vector_icons::kErrorIcon,
+                     kDummyActivateView, kDummyObservedView),
+                 true),
+             ToolbarController::ResponsiveElementInfo(
+                 ToolbarController::ElementIdInfo(
+                     kDummyButton3, 0, &vector_icons::kErrorIcon,
+                     kDummyActivateView, kDummyObservedView),
+                 true)}},
         std::vector<ui::ElementIdentifier>(
             {kDummyButton3, kDummyButton2, kDummyButton1}),
         kElementFlexOrderStart, toolbar_container_view_, overflow_button_,
@@ -475,18 +480,21 @@ TEST_F(ToolbarControllerUnitTest, InValidFirstSectionAddsNoLeadingSeparator) {
   std::unique_ptr<ToolbarController> test_controller =
       std::make_unique<TestToolbarController>(
           std::vector<ToolbarController::ResponsiveElementInfo>(
-              {{ToolbarController::ElementIdInfo{kDummyButton1, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                true},
-               {ToolbarController::ElementIdInfo{kDummyButton2, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                true},
-               {ToolbarController::ElementIdInfo{kDummyButton3, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                true}}),
+              {ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton1, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   true),
+               ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton2, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   true),
+               ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton3, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   true)}),
           std::vector<ui::ElementIdentifier>(
               {kDummyButton3, kDummyButton2, kDummyButton1}),
           kElementFlexOrderStart, toolbar_container_view(),
@@ -523,18 +531,21 @@ TEST_F(ToolbarControllerUnitTest, InValidSectionInMiddleAddsNoExtraSeparator) {
   std::unique_ptr<ToolbarController> test_controller =
       std::make_unique<TestToolbarController>(
           std::vector<ToolbarController::ResponsiveElementInfo>(
-              {{ToolbarController::ElementIdInfo{kDummyButton1, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                true},
-               {ToolbarController::ElementIdInfo{kDummyButton2, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                true},
-               {ToolbarController::ElementIdInfo{kDummyButton3, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                true}}),
+              {ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton1, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   true),
+               ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton2, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   true),
+               ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton3, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   true)}),
           std::vector<ui::ElementIdentifier>(
               {kDummyButton1, kDummyButton3, kDummyButton2}),
           kElementFlexOrderStart, toolbar_container_view(),
@@ -571,18 +582,21 @@ TEST_F(ToolbarControllerUnitTest, InValidLastSectionAddsNoTrailingSeparator) {
   std::unique_ptr<ToolbarController> test_controller =
       std::make_unique<TestToolbarController>(
           std::vector<ToolbarController::ResponsiveElementInfo>(
-              {{ToolbarController::ElementIdInfo{kDummyButton1, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                true},
-               {ToolbarController::ElementIdInfo{kDummyButton2, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                true},
-               {ToolbarController::ElementIdInfo{kDummyButton3, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                true}}),
+              {ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton1, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   true),
+               ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton2, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   true),
+               ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton3, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   true)}),
           std::vector<ui::ElementIdentifier>(
               {kDummyButton1, kDummyButton2, kDummyButton3}),
           kElementFlexOrderStart, toolbar_container_view(),
@@ -710,18 +724,21 @@ TEST_F(ToolbarControllerUnitTest, ButtonsOverflowLeftToRightInContainer) {
   std::unique_ptr<ToolbarController> dummy_controller =
       std::make_unique<TestToolbarController>(
           std::vector<ToolbarController::ResponsiveElementInfo>(
-              {{ToolbarController::ElementIdInfo{kDummyButton1, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                false},
-               {ToolbarController::ElementIdInfo{kDummyButton2, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                false},
-               {ToolbarController::ElementIdInfo{kDummyButton3, 0,
-                                                 &vector_icons::kErrorIcon,
-                                                 kDummyActivateView},
-                false}}),
+              {ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton1, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   false),
+               ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton2, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   false),
+               ToolbarController::ResponsiveElementInfo(
+                   ToolbarController::ElementIdInfo{kDummyButton3, 0,
+                                                    &vector_icons::kErrorIcon,
+                                                    kDummyActivateView},
+                   false)}),
           std::vector<ui::ElementIdentifier>(
               {kDummyButton1, kDummyButton2, kDummyButton3}),
           kElementFlexOrderStart, toolbar_container_view(),
@@ -891,9 +908,12 @@ TEST_F(ToolbarControllerUnitTest, SupportActionIds) {
   auto test_delegate = std::make_unique<TestDelegate>();
   auto test_controller = std::make_unique<ToolbarController>(
       std::vector<ToolbarController::ResponsiveElementInfo>(
-          {{test_delegate->get_action_ids()[0]},
-           {test_delegate->get_action_ids()[1]},
-           {test_delegate->get_action_ids()[2]}}),
+          {ToolbarController::ResponsiveElementInfo(
+               test_delegate->get_action_ids()[0]),
+           ToolbarController::ResponsiveElementInfo(
+               test_delegate->get_action_ids()[1]),
+           ToolbarController::ResponsiveElementInfo(
+               test_delegate->get_action_ids()[2])}),
       std::vector<ui::ElementIdentifier>(), kElementFlexOrderStart,
       toolbar_container_view(), const_cast<OverflowButton*>(overflow_button()),
       test_delegate.get());
@@ -927,9 +947,12 @@ TEST_F(ToolbarControllerUnitTest, StatusIndicatorVisibilityUpdates) {
   auto test_delegate = std::make_unique<TestDelegate>();
   auto test_controller = std::make_unique<ToolbarController>(
       std::vector<ToolbarController::ResponsiveElementInfo>(
-          {{test_delegate->get_action_ids()[0]},
-           {test_delegate->get_action_ids()[1]},
-           {test_delegate->get_action_ids()[2]}}),
+          {ToolbarController::ResponsiveElementInfo(
+               test_delegate->get_action_ids()[0]),
+           ToolbarController::ResponsiveElementInfo(
+               test_delegate->get_action_ids()[1]),
+           ToolbarController::ResponsiveElementInfo(
+               test_delegate->get_action_ids()[2])}),
       std::vector<ui::ElementIdentifier>(), kElementFlexOrderStart,
       toolbar_container_view(), const_cast<OverflowButton*>(overflow_button()),
       test_delegate.get());

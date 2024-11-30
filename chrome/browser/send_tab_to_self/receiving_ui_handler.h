@@ -20,8 +20,8 @@ class SendTabToSelfEntry;
 // ReceivingUIRegistry.
 class ReceivingUiHandler {
  public:
-  ReceivingUiHandler() {}
-  virtual ~ReceivingUiHandler() {}
+  ReceivingUiHandler() = default;
+  virtual ~ReceivingUiHandler() = default;
 
   // Display the new entries passed in as an argument. The entries are owned by
   // the model and should not be modified.

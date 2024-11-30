@@ -109,7 +109,7 @@ void VerifyRendererExitCodeIsSignal(
 // clear to me how to test that.
 class MetricsServiceBrowserTest : public InProcessBrowserTest {
  public:
-  MetricsServiceBrowserTest() {}
+  MetricsServiceBrowserTest() = default;
 
   MetricsServiceBrowserTest(const MetricsServiceBrowserTest&) = delete;
   MetricsServiceBrowserTest& operator=(const MetricsServiceBrowserTest&) =
@@ -225,13 +225,10 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
 // TerminateWithHeapCorruption() isn't expected to work there.
 // See: https://crbug.com/1054423
 #if BUILDFLAG(IS_WIN)
-#if defined(ARCH_CPU_ARM64)
-#define MAYBE_HeapCorruptionInRenderer DISABLED_HeapCorruptionInRenderer
-#else
-#define MAYBE_HeapCorruptionInRenderer HeapCorruptionInRenderer
-#endif
+// TODO(crbug.com/380550755): Unfortuntely, it's flaky on non-arm64.
+// Previously, this was turned off only if defined(ARCH_CPU_ARM64).
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
-                       MAYBE_HeapCorruptionInRenderer) {
+                       DISABLED_HeapCorruptionInRenderer) {
   base::HistogramTester histogram_tester;
 
   OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIHeapCorruptionCrashURL);
@@ -341,7 +338,7 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
   using super = InProcessBrowserTest;
 
  public:
-  MetricsServiceBrowserFilesTest() {}
+  MetricsServiceBrowserFilesTest() = default;
 
   MetricsServiceBrowserFilesTest(const MetricsServiceBrowserFilesTest&) =
       delete;
@@ -432,7 +429,7 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
 class MetricsServiceBrowserDoUploadTest
     : public MetricsServiceBrowserFilesTest {
  public:
-  MetricsServiceBrowserDoUploadTest() {}
+  MetricsServiceBrowserDoUploadTest() = default;
 
   MetricsServiceBrowserDoUploadTest(const MetricsServiceBrowserDoUploadTest&) =
       delete;
@@ -459,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserDoUploadTest, FilesRemain) {
 class MetricsServiceBrowserNoUploadTest
     : public MetricsServiceBrowserFilesTest {
  public:
-  MetricsServiceBrowserNoUploadTest() {}
+  MetricsServiceBrowserNoUploadTest() = default;
 
   MetricsServiceBrowserNoUploadTest(const MetricsServiceBrowserNoUploadTest&) =
       delete;
@@ -490,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest, FilesRemoved) {
 class MetricsServiceBrowserSampledOutTest
     : public MetricsServiceBrowserFilesTest {
  public:
-  MetricsServiceBrowserSampledOutTest() {}
+  MetricsServiceBrowserSampledOutTest() = default;
 
   MetricsServiceBrowserSampledOutTest(
       const MetricsServiceBrowserSampledOutTest&) = delete;

@@ -11,7 +11,7 @@ import {Destination, DestinationOrigin, PrinterType} from './destination.js';
 // <if expr="is_chromeos">
 import {DestinationProvisionalType} from './destination.js';
 import type {PrinterStatus} from './printer_status_cros.js';
-
+import type {ManagedPrintOptions} from './managed_print_options_cros.ts';
 // </if>
 
 interface ObjectMap {
@@ -26,6 +26,7 @@ export interface LocalDestinationInfo {
   printerOptions?: ObjectMap;
   // <if expr="is_chromeos">
   printerStatus?: PrinterStatus;
+  managedPrintOptions?: ManagedPrintOptions;
   // </if>
 }
 
@@ -78,6 +79,12 @@ function parseLocalDestination(destinationInfo: LocalDestinationInfo):
       }
     }
   }
+  // <if expr="is_chromeos">
+  if (destinationInfo.managedPrintOptions) {
+    options.managedPrintOptions = destinationInfo.managedPrintOptions;
+  }
+  // </if>
+
   return new Destination(
       destinationInfo.deviceName,
       isChromeOS ? DestinationOrigin.CROS : DestinationOrigin.LOCAL,

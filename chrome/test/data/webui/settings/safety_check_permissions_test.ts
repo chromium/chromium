@@ -314,21 +314,6 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
         'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown'));
   });
 
-  test('unusedSitePermissionsModuleFeatureDisabled', async () => {
-    loadTimeData.overrideValues(
-        {safetyCheckUnusedSitePermissionsEnabled: false});
-    await createPageForUnusedSitePermissions(unusedSiteMockData);
-
-    assertFalse(
-        isVisible(page.shadowRoot!.querySelector(unusedSiteElementName)));
-    assertFalse(await metricsBrowserProxy.whenCalled(
-        'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown'));
-
-    // Re-enable the unused site permissions feature.
-    loadTimeData.overrideValues(
-        {safetyCheckUnusedSitePermissionsEnabled: true});
-  });
-
   test('unusedSitePermissionsModuleEmptyList', async () => {
     await createPageForUnusedSitePermissions([]);
 

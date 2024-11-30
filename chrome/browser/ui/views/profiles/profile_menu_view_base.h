@@ -95,7 +95,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     base::RepeatingClosure edit_action;
   };
 
-  // Size of the large identity image in the Sync info section.
+  // Size of the large identity image in the Sync info section (deprecated).
   static constexpr int kIdentityImageSize = 64;
   // Size of the large identity image in the identity info section.
   static constexpr int kIdentityInfoImageSize = 56;
@@ -103,6 +103,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // managed. This can be the business icon or a logo set by the
   // `EnterpriseLogoUrl` policy.
   static constexpr int kManagementBadgeSize = 24;
+  // Size of the small identity image shown inside the signin button.
+  static constexpr int kIdentityImageSizeForButton = 22;
 
   ProfileMenuViewBase(views::Button* anchor_button,
                       Browser* browser);
@@ -174,8 +176,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void AddProfileManagementShortcutFeatureButton(const gfx::VectorIcon& icon,
                                                  const std::u16string& text,
                                                  base::RepeatingClosure action);
-  void AddProfileManagementManagedHint(const gfx::VectorIcon& icon,
-                                       const std::u16string& text);
   void AddProfileManagementFeaturesSeparator();
   void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,
                                          const std::u16string& text,

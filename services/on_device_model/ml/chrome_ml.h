@@ -16,39 +16,6 @@
 
 namespace ml {
 
-COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-base::FilePath GetChromeMLPath(
-    const std::optional<std::string>& library_name = std::nullopt);
-
-// A ChromeMLHolder object encapsulates a reference to the ChromeML shared
-// library, exposing the library's API functions to callers and ensuring that
-// the library remains loaded and usable throughout the object's lifetime.
-class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeMLHolder {
- public:
-  ChromeMLHolder(base::PassKey<ChromeMLHolder>,
-                 base::ScopedNativeLibrary library,
-                 const ChromeMLAPI* api);
-  ~ChromeMLHolder();
-
-  ChromeMLHolder(const ChromeMLHolder& other) = delete;
-  ChromeMLHolder& operator=(const ChromeMLHolder& other) = delete;
-
-  ChromeMLHolder(ChromeMLHolder&& other) = default;
-  ChromeMLHolder& operator=(ChromeMLHolder&& other) = default;
-
-  // Creates an instance of ChromeMLHolder. May return nullopt if the underlying
-  // library could not be loaded.
-  static std::unique_ptr<ChromeMLHolder> Create(
-      const std::optional<std::string>& library_name = std::nullopt);
-
-  // Exposes the raw ChromeMLAPI functions defined by the library.
-  const ChromeMLAPI& api() const { return *api_; }
-
- private:
-  base::ScopedNativeLibrary library_;
-  raw_ptr<const ChromeMLAPI> api_;
-};
-
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
  public:
   explicit ChromeML(const ChromeMLAPI* api);

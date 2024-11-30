@@ -92,7 +92,7 @@ class ChromeNavigationBrowserTest : public InProcessBrowserTest {
   ChromeNavigationBrowserTest& operator=(const ChromeNavigationBrowserTest&) =
       delete;
 
-  ~ChromeNavigationBrowserTest() override {}
+  ~ChromeNavigationBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Backgrounded renderer processes run at a lower priority, causing the
@@ -1484,7 +1484,7 @@ class SignInIsolationBrowserTest : public ChromeNavigationBrowserTest {
   SignInIsolationBrowserTest& operator=(const SignInIsolationBrowserTest&) =
       delete;
 
-  ~SignInIsolationBrowserTest() override {}
+  ~SignInIsolationBrowserTest() override = default;
 
   void SetUp() override {
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
@@ -1551,7 +1551,7 @@ class WebstoreIsolationBrowserTest : public ChromeNavigationBrowserTest {
   WebstoreIsolationBrowserTest& operator=(const WebstoreIsolationBrowserTest&) =
       delete;
 
-  ~WebstoreIsolationBrowserTest() override {}
+  ~WebstoreIsolationBrowserTest() override = default;
 
   void SetUp() override {
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data");

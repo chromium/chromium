@@ -50,7 +50,8 @@ public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
     }
 
     private void onLearnMoreClicked(View view) {
-        openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+        getCustomTabLauncher()
+                .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 
     @Override

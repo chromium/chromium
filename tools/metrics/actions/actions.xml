@@ -7003,6 +7003,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Commerce.AddToCart">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>Triggered when the user adds a product to cart.</description>
@@ -7656,6 +7657,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Commerce.Purchase">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>Triggered when the user makes the purchase.</description>
@@ -7686,12 +7688,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Commerce.VisitCart">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>Triggered when the user visits the cart page.</description>
 </action>
 
 <action name="Commerce.VisitCheckout">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>Triggered when ther user visits the checkout page.</description>
@@ -27588,6 +27592,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.AcceptDiscountConsent">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27598,6 +27603,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.DisableDiscount">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27607,6 +27613,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.DismissDiscountConsent">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27618,6 +27625,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.DismissLastCartHidesModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27628,6 +27636,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.EnableDiscount">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27637,6 +27646,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.HideModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27647,6 +27657,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.LeftScrollClick">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27657,6 +27668,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.RejectDiscountConsent">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27667,6 +27679,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.RemoveModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27677,6 +27690,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.RestoreLastCartRestoresModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27687,6 +27701,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.RightScrollClick">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27697,6 +27712,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.ShowInterestInDiscountConsent">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27706,6 +27722,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.UndoHideModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27715,6 +27732,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.UndoRemoveModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -32462,6 +32480,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.ManageOptionOnSettingsSelected">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    The user tapped on &quot;Manage plus addresses&quot; in Chrome Settings.
+  </description>
+</action>
+
 <action name="PlusAddresses.ManualFallbackDesktopContextManualFallbackSelected">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>
@@ -32508,6 +32534,15 @@ should be able to be added at any place in this file.
   <description>
     User clicked on &quot;cancel&quot; in the plus address dialog or bottomsheet
     after receiving a reserve error.
+  </description>
+</action>
+
+<action name="PlusAddresses.ReserveErrorTryAgainClicked">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User tried again reserving a plus address after receiving a reserve error.
+    Only available on Mobile platforms.
   </description>
 </action>
 
@@ -34347,6 +34382,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.AiPage.AutofillAIEntryPointClick">
+  <owner>brunobraga@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Reported when user clicks on the Auofill AI row in the chrome://settings/ai
+    page.
+  </description>
+</action>
+
 <action name="Settings.AiPage.Compare.FeatureLinkClicked">
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>
@@ -34655,15 +34700,6 @@ should be able to be added at any place in this file.
   <owner>treib@chromium.org</owner>
   <description>
     Reported when the user navigates to &quot;Notifications&quot; in settings.
-    iOS only.
-  </description>
-</action>
-
-<action name="Settings.PlusAddresses">
-  <owner>mreichhoff@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <description>
-    Reported when the user navigates to &quot;Plus Addresses&quot; in settings.
     iOS only.
   </description>
 </action>
@@ -35268,6 +35304,14 @@ should be able to be added at any place in this file.
   <owner>kartoffel-core@google.com</owner>
   <description>
     User opened settings from the Privacy Sandbox notice.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Notice.PrivacyPolicyLinkClicked">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User clicked on the Privacy Policy Link in the Privacy Sandbox Notice.
   </description>
 </action>
 
@@ -37002,6 +37046,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.MerchantTrust.Shown">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Recorded when the merchant trust side panel entry is shown.
+  </description>
+</action>
+
 <action name="SidePanel.Performance.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>agale@chromium.org</owner>
@@ -37163,6 +37215,18 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user closes the tab or exits the browser without choosing
     any of the other options on the sync confirmation modal.
+  </description>
+</action>
+
+<action name="Signin_Abort_Signin_UINotAvailable">
+  <owner>jlebel@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the sign-in process is aborted as the user started it when the
+    UI was not available to present the sign-in screen. Logged only on iOS.
+    Needed in crash report for debugging, which is why it’s not marked as
+    `not_user_triggered`.
   </description>
 </action>
 
@@ -42356,6 +42420,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.CloseTab.Abort">
+  <obsolete>Merged with CloseTabFullGroup.Abort.</obsolete>
   <owner>zheliooo@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42365,6 +42430,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.CloseTab.Proceed">
+  <obsolete>Merged with CloseTabFullGroup.Proceed.</obsolete>
   <owner>zheliooo@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42374,6 +42440,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.CloseTab.StopShowing">
+  <obsolete>Merged with CloseTabFullGroup.StopShowing.</obsolete>
   <owner>zheliooo@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42528,6 +42595,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.RemoveTab.Abort">
+  <obsolete>Merged with RemoveTabFullGroup.Abort.</obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42536,6 +42604,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.RemoveTab.Proceed">
+  <obsolete>Merged with RemoveTabFullGroup.Proceed.</obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42544,6 +42613,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.RemoveTab.StopShowing">
+  <obsolete>Merged with RemoveTabFullGroup.StopShowing.</obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -46736,6 +46806,8 @@ should be able to be added at any place in this file.
       label="For AutoDarkUserEducationMessage feature."/>
   <suffix name="AutoDarkUserEducationMessageOptIn"
       label="For AutoDarkUserEducationMessageOptIn feature."/>
+  <suffix name="AutofillCardInfoRetrievalSuggestion"
+      label="For AutofillCardInfoRetrievalSuggestion feature."/>
   <suffix name="AutofillCreditCardBenefit"
       label="For Autofill credit card benefit message."/>
   <suffix name="AutofillDisabledVirtualCardSuggestion"
@@ -46979,6 +47051,8 @@ should be able to be added at any place in this file.
       label="For iOSReplaceSyncPromosWithSignInPromos feature"/>
   <suffix name="iOSSavedTabGroupClosed"
       label="For Saved Tab Group closed for the first time."/>
+  <suffix name="iOSSharedTabGroupForeground"
+      label="For Shared Tab Group reminder on foreground."/>
   <suffix name="iOSSwipeBackForwardFeature"
       label="For iOSSwipeBackForwardFeature feature"/>
   <suffix name="iOSSwipeToolbarToChangeTabFeature"
@@ -47063,8 +47137,6 @@ should be able to be added at any place in this file.
       label="For Android PWA install menu."/>
   <suffix name="PwaQuietNotification"
       label="In product help for the PWA quiet notification icon."/>
-  <suffix name="QuietNotificationPrompts"
-      label="For the quiet notification prompts feature."/>
   <suffix name="ReadAloudAppMenuFeature" label="For ReadAloudAppMenu feature."/>
   <suffix name="ReadAloudExpandedPlayerFeature"
       label="For ReadAloud expanded player feature."/>
@@ -47887,6 +47959,20 @@ should be able to be added at any place in this file.
 
 <action-suffix separator="." ordering="suffix">
   <suffix name="AddedToComparisonTable" label="Added to comparison table"/>
+  <affected-action name="Toast.ActionButtonClicked"/>
+  <affected-action name="Toast.CloseButtonClicked"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="SyncEsbOn"
+      label="Enhanced Protection setting has been synced to On"/>
+  <affected-action name="Toast.ActionButtonClicked"/>
+  <affected-action name="Toast.CloseButtonClicked"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="SyncEsbOff"
+      label="Enhanced Protection setting has been synced to Off"/>
   <affected-action name="Toast.ActionButtonClicked"/>
   <affected-action name="Toast.CloseButtonClicked"/>
 </action-suffix>

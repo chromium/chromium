@@ -125,7 +125,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
                        HostedDomainCallback callback) final;
   NSString* GetCachedHostedDomainForIdentity(id<SystemIdentity> identity) final;
   void FetchCapabilities(id<SystemIdentity> identity,
-                         const std::set<std::string>& names,
+                         const std::vector<std::string>& names,
                          FetchCapabilitiesCallback callback) final;
   bool HandleMDMNotification(id<SystemIdentity> identity,
                              NSArray<id<SystemIdentity>>* active_identities,
@@ -155,7 +155,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
 
   // Helper used to implement the asynchronous part of `GetHostedDomain`.
   void FetchCapabilitiesAsync(id<SystemIdentity> identity,
-                              const std::set<std::string>& names,
+                              const std::vector<std::string>& names,
                               FetchCapabilitiesCallback callback);
 
   // Posts `closure` to be executed asynchronously on the current sequence

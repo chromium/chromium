@@ -23,6 +23,11 @@ class PasswordsLeakDialogDelegate {
   virtual void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) = 0;
 
+  // Starts password change with a given `url`, `username` and `password`.
+  virtual void ChangePassword(const GURL& url,
+                              const std::u16string& username,
+                              const std::u16string& password) = 0;
+
  protected:
   virtual ~PasswordsLeakDialogDelegate() = default;
 };

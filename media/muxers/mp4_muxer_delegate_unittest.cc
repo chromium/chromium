@@ -18,6 +18,7 @@
 #include "base/containers/span_reader.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -1168,7 +1169,8 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 1u);  // sample number.
   EXPECT_EQ(base::span(total_written_data)
-                .subspan(moof_offset, third_moof_written_data.size()),
+                .subspan(base::checked_cast<size_t>(moof_offset),
+                         third_moof_written_data.size()),
             third_moof_written_data);
 
   // Fourth entry.
@@ -1187,7 +1189,8 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 1u);  // sample number.
   EXPECT_EQ(base::span(total_written_data)
-                .subspan(fourth_moof_offset, fourth_moof_written_data.size()),
+                .subspan(base::checked_cast<size_t>(fourth_moof_offset),
+                         fourth_moof_written_data.size()),
             fourth_moof_written_data);
 }
 

@@ -64,9 +64,9 @@ class ServerCertificateDatabaseService : public KeyedService {
   // Register a callback to be run every time the database is changed.
   base::CallbackListSubscription AddObserver(base::RepeatingClosure callback);
 
-  // Add or update user settings with the included certificate.
-  void AddOrUpdateUserCertificate(
-      net::ServerCertificateDatabase::CertInformation cert_info,
+  // Add or update user settings with the included certificates.
+  void AddOrUpdateUserCertificates(
+      std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos,
       base::OnceCallback<void(bool)> callback);
 
   // Read all certificates from the database.

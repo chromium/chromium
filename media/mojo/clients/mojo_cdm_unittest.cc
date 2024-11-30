@@ -389,49 +389,49 @@ class MojoCdmTest : public ::testing::Test {
 #endif
 };
 
-TEST_F(MojoCdmTest, Create_Success) {
+TEST_F(MojoCdmTest, CreateSuccess) {
   Initialize(SUCCESS);
 }
 
-TEST_F(MojoCdmTest, Create_Failure) {
+TEST_F(MojoCdmTest, CreateFailure) {
   Initialize(FAILURE);
 }
 
-TEST_F(MojoCdmTest, Create_ConnectionErrorBefore) {
+TEST_F(MojoCdmTest, CreateConnectionErrorBefore) {
   Initialize(CONNECTION_ERROR_BEFORE);
 }
 
-TEST_F(MojoCdmTest, SetServerCertificate_Success) {
+TEST_F(MojoCdmTest, SetServerCertificateSuccess) {
   const std::vector<uint8_t> certificate = {0, 1, 2};
   Initialize(SUCCESS);
   SetServerCertificateAndExpect(certificate, SUCCESS);
 }
 
-TEST_F(MojoCdmTest, SetServerCertificate_Failure) {
+TEST_F(MojoCdmTest, SetServerCertificateFailure) {
   const std::vector<uint8_t> certificate = {1, 2, 3, 4, 5};
   Initialize(SUCCESS);
   SetServerCertificateAndExpect(certificate, FAILURE);
 }
 
-TEST_F(MojoCdmTest, SetServerCertificate_Pending) {
+TEST_F(MojoCdmTest, SetServerCertificatePending) {
   const std::vector<uint8_t> certificate = {1, 2, 3, 4, 5};
   Initialize(SUCCESS);
   SetServerCertificateAndExpect(certificate, PENDING);
 }
 
-TEST_F(MojoCdmTest, SetServerCertificate_ConnectionErrorBefore) {
+TEST_F(MojoCdmTest, SetServerCertificateConnectionErrorBefore) {
   const std::vector<uint8_t> certificate = {3, 4};
   Initialize(SUCCESS);
   SetServerCertificateAndExpect(certificate, CONNECTION_ERROR_BEFORE);
 }
 
-TEST_F(MojoCdmTest, SetServerCertificate_ConnectionErrorDuring) {
+TEST_F(MojoCdmTest, SetServerCertificateConnectionErrorDuring) {
   const std::vector<uint8_t> certificate = {10, 11, 12};
   Initialize(SUCCESS);
   SetServerCertificateAndExpect(certificate, CONNECTION_ERROR_DURING);
 }
 
-TEST_F(MojoCdmTest, CreateSession_Success) {
+TEST_F(MojoCdmTest, CreateSessionSuccess) {
   const std::string session_id = "create1";
   Initialize(SUCCESS);
   CreateSessionAndExpect(session_id, SUCCESS);
@@ -442,145 +442,145 @@ TEST_F(MojoCdmTest, CreateSession_Success) {
       OnSessionClosed(session_id, CdmSessionClosedReason::kInternalError));
 }
 
-TEST_F(MojoCdmTest, CreateSession_Failure) {
+TEST_F(MojoCdmTest, CreateSessionFailure) {
   const std::string session_id = "create2";
   Initialize(SUCCESS);
   CreateSessionAndExpect(session_id, FAILURE);
 }
 
-TEST_F(MojoCdmTest, CreateSession_Pending) {
+TEST_F(MojoCdmTest, CreateSessionPending) {
   const std::string session_id = "create2";
   Initialize(SUCCESS);
   CreateSessionAndExpect(session_id, PENDING);
 }
 
-TEST_F(MojoCdmTest, CreateSession_ConnectionErrorBefore) {
+TEST_F(MojoCdmTest, CreateSessionConnectionErrorBefore) {
   const std::string session_id = "create3";
   Initialize(SUCCESS);
   CreateSessionAndExpect(session_id, CONNECTION_ERROR_BEFORE);
 }
 
-TEST_F(MojoCdmTest, CreateSession_ConnectionErrorDuring) {
+TEST_F(MojoCdmTest, CreateSessionConnectionErrorDuring) {
   const std::string session_id = "create4";
   Initialize(SUCCESS);
   CreateSessionAndExpect(session_id, CONNECTION_ERROR_DURING);
 }
 
-TEST_F(MojoCdmTest, LoadSession_Success) {
+TEST_F(MojoCdmTest, LoadSessionSuccess) {
   const std::string session_id = "load1";
   Initialize(SUCCESS);
   LoadSessionAndExpect(session_id, SUCCESS);
 }
 
-TEST_F(MojoCdmTest, LoadSession_Failure) {
+TEST_F(MojoCdmTest, LoadSessionFailure) {
   const std::string session_id = "load2";
   Initialize(SUCCESS);
   LoadSessionAndExpect(session_id, FAILURE);
 }
 
-TEST_F(MojoCdmTest, LoadSession_Pending) {
+TEST_F(MojoCdmTest, LoadSessionPending) {
   const std::string session_id = "load2";
   Initialize(SUCCESS);
   LoadSessionAndExpect(session_id, PENDING);
 }
 
-TEST_F(MojoCdmTest, LoadSession_ConnectionErrorBefore) {
+TEST_F(MojoCdmTest, LoadSessionConnectionErrorBefore) {
   const std::string session_id = "load3";
   Initialize(SUCCESS);
   LoadSessionAndExpect(session_id, CONNECTION_ERROR_BEFORE);
 }
 
-TEST_F(MojoCdmTest, LoadSession_ConnectionErrorDuring) {
+TEST_F(MojoCdmTest, LoadSessionConnectionErrorDuring) {
   const std::string session_id = "load4";
   Initialize(SUCCESS);
   LoadSessionAndExpect(session_id, CONNECTION_ERROR_DURING);
 }
 
-TEST_F(MojoCdmTest, UpdateSession_Success) {
+TEST_F(MojoCdmTest, UpdateSessionSuccess) {
   const std::string session_id = "update1";
   Initialize(SUCCESS);
   UpdateSessionAndExpect(session_id, SUCCESS);
 }
 
-TEST_F(MojoCdmTest, UpdateSession_Failure) {
+TEST_F(MojoCdmTest, UpdateSessionFailure) {
   const std::string session_id = "update2";
   Initialize(SUCCESS);
   UpdateSessionAndExpect(session_id, FAILURE);
 }
 
-TEST_F(MojoCdmTest, UpdateSession_Pending) {
+TEST_F(MojoCdmTest, UpdateSessionPending) {
   const std::string session_id = "update2";
   Initialize(SUCCESS);
   UpdateSessionAndExpect(session_id, PENDING);
 }
 
-TEST_F(MojoCdmTest, UpdateSession_ConnectionErrorBefore) {
+TEST_F(MojoCdmTest, UpdateSessionConnectionErrorBefore) {
   const std::string session_id = "update3";
   Initialize(SUCCESS);
   UpdateSessionAndExpect(session_id, CONNECTION_ERROR_BEFORE);
 }
 
-TEST_F(MojoCdmTest, UpdateSession_ConnectionErrorDuring) {
+TEST_F(MojoCdmTest, UpdateSessionConnectionErrorDuring) {
   const std::string session_id = "update4";
   Initialize(SUCCESS);
   UpdateSessionAndExpect(session_id, CONNECTION_ERROR_DURING);
 }
 
-TEST_F(MojoCdmTest, CloseSession_Success) {
+TEST_F(MojoCdmTest, CloseSessionSuccess) {
   const std::string session_id = "close1";
   Initialize(SUCCESS);
   CloseSessionAndExpect(session_id, SUCCESS);
 }
 
-TEST_F(MojoCdmTest, CloseSession_Failure) {
+TEST_F(MojoCdmTest, CloseSessionFailure) {
   const std::string session_id = "close2";
   Initialize(SUCCESS);
   CloseSessionAndExpect(session_id, FAILURE);
 }
 
-TEST_F(MojoCdmTest, CloseSession_Pending) {
+TEST_F(MojoCdmTest, CloseSessionPending) {
   const std::string session_id = "close2";
   Initialize(SUCCESS);
   CloseSessionAndExpect(session_id, PENDING);
 }
 
-TEST_F(MojoCdmTest, CloseSession_ConnectionErrorBefore) {
+TEST_F(MojoCdmTest, CloseSessionConnectionErrorBefore) {
   const std::string session_id = "close3";
   Initialize(SUCCESS);
   CloseSessionAndExpect(session_id, CONNECTION_ERROR_BEFORE);
 }
 
-TEST_F(MojoCdmTest, CloseSession_ConnectionErrorDuring) {
+TEST_F(MojoCdmTest, CloseSessionConnectionErrorDuring) {
   const std::string session_id = "close4";
   Initialize(SUCCESS);
   CloseSessionAndExpect(session_id, CONNECTION_ERROR_DURING);
 }
 
-TEST_F(MojoCdmTest, RemoveSession_Success) {
+TEST_F(MojoCdmTest, RemoveSessionSuccess) {
   const std::string session_id = "remove1";
   Initialize(SUCCESS);
   RemoveSessionAndExpect(session_id, SUCCESS);
 }
 
-TEST_F(MojoCdmTest, RemoveSession_Failure) {
+TEST_F(MojoCdmTest, RemoveSessionFailure) {
   const std::string session_id = "remove2";
   Initialize(SUCCESS);
   RemoveSessionAndExpect(session_id, FAILURE);
 }
 
-TEST_F(MojoCdmTest, RemoveSession_Pending) {
+TEST_F(MojoCdmTest, RemoveSessionPending) {
   const std::string session_id = "remove2";
   Initialize(SUCCESS);
   RemoveSessionAndExpect(session_id, PENDING);
 }
 
-TEST_F(MojoCdmTest, RemoveSession_ConnectionErrorBefore) {
+TEST_F(MojoCdmTest, RemoveSessionConnectionErrorBefore) {
   const std::string session_id = "remove3";
   Initialize(SUCCESS);
   RemoveSessionAndExpect(session_id, CONNECTION_ERROR_BEFORE);
 }
 
-TEST_F(MojoCdmTest, RemoveSession_ConnectionErrorDuring) {
+TEST_F(MojoCdmTest, RemoveSessionConnectionErrorDuring) {
   const std::string session_id = "remove4";
   Initialize(SUCCESS);
   RemoveSessionAndExpect(session_id, CONNECTION_ERROR_DURING);
@@ -589,7 +589,7 @@ TEST_F(MojoCdmTest, RemoveSession_ConnectionErrorDuring) {
 // Note that MojoCdm requires a session to exist when SessionClosedCB is called,
 // so it is currently tested in the success cases for CreateSession/LoadSession.
 
-TEST_F(MojoCdmTest, SessionMessageCB_Success) {
+TEST_F(MojoCdmTest, SessionMessageCBSuccess) {
   const std::string session_id = "message";
   const CdmMessageType message_type = CdmMessageType::LICENSE_REQUEST;
   const std::vector<uint8_t> message = {0, 1, 2};
@@ -599,7 +599,7 @@ TEST_F(MojoCdmTest, SessionMessageCB_Success) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MojoCdmTest, SessionExpirationChangeCB_Success) {
+TEST_F(MojoCdmTest, SessionExpirationChangeCBSuccess) {
   const std::string session_id = "expiration";
   const base::Time time = base::Time::Now();
   Initialize(SUCCESS);
@@ -608,7 +608,7 @@ TEST_F(MojoCdmTest, SessionExpirationChangeCB_Success) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MojoCdmTest, SessionKeysChangeCB_Success) {
+TEST_F(MojoCdmTest, SessionKeysChangeCBSuccess) {
   const std::string session_id = "change";
   bool has_additional_usable_key = true;
   CdmKeysInfo keys_info;

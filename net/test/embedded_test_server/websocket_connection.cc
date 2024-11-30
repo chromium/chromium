@@ -10,6 +10,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/byte_conversions.h"
@@ -27,8 +28,22 @@
 namespace net::test_server {
 
 WebSocketConnection::WebSocketConnection(std::unique_ptr<StreamSocket> socket,
-                                         std::string_view sec_websocket_key)
-    : stream_socket_(std::move(socket)) {
+                                         std::string_view sec_websocket_key,
+                                         EmbeddedTestServer* server)
+    : stream_socket_(std::move(socket)),
+      // Register a shutdown closure to safely disconnect this connection when
+      // the
+      // server shuts down. base::Unretained is safe here because:
+      // 1. The shutdown closure is registered during the construction of the
+      //    WebSocketConnection object, ensuring `this` is fully initialized.
+      // 2. The lifetime of the closure is tied to the `WebSocketConnection`
+      //    object via `shutdown_subscription_`, which ensures that the closure
+      //    is automatically unregistered when the object is destroyed.
+      // 3. DisconnectImmediately() ensures safe cleanup by resetting the socket
+      //    and marking the connection state as closed.
+      shutdown_subscription_(server->RegisterShutdownClosure(
+          base::BindOnce(&WebSocketConnection::DisconnectImmediately,
+                         base::Unretained(this)))) {
   CHECK(stream_socket_);
 
   response_headers_.emplace_back("Upgrade", "websocket");
@@ -132,27 +147,28 @@ void WebSocketConnection::DisconnectAfterAnyWritesDone() {
     return;
   }
 
-  if (pending_buffer_ == nullptr) {
+  if (!pending_buffer_) {
     DisconnectImmediately();
     return;
   }
 
-  handler_.reset();
   should_disconnect_after_write_ = true;
   state_ = WebSocketState::kDisconnectingSoon;
+  handler_.reset();
 }
 
 void WebSocketConnection::DisconnectImmediately() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!stream_socket_) {
     DVLOG(3) << "Socket is already disconnected.";
+    handler_.reset();
     return;
   }
-  handler_.reset();
 
   // Intentionally not calling Disconnect(), as it doesn't work with
   // SSLServerSocket. Resetting the socket here is sufficient to disconnect.
   ResetStreamSocket();
+  handler_.reset();
 }
 
 void WebSocketConnection::ResetStreamSocket() {
@@ -199,7 +215,7 @@ void WebSocketConnection::PerformWrite()
   const int result = stream_socket_->Write(
       pending_buffer_.get(), pending_buffer_->BytesRemaining(),
       base::BindOnce(&WebSocketConnection::OnWriteComplete,
-                     base::Unretained(this)),
+                     base::WrapRefCounted(this)),
       DefineNetworkTrafficAnnotation(
           "test", "Traffic annotation for unit, browser and other tests"));
 
@@ -234,16 +250,17 @@ void WebSocketConnection::OnWriteComplete(int result)
   }
 
   if (should_disconnect_after_write_) {
-    ResetStreamSocket();
+    DisconnectImmediately();
   }
 }
 
 void WebSocketConnection::Read() VALID_CONTEXT_REQUIRED(sequence_checker_) {
   read_buffer_ = base::MakeRefCounted<IOBufferWithSize>(4096);
 
-  const int result = stream_socket_->Read(
-      read_buffer_.get(), read_buffer_->size(),
-      base::BindOnce(&WebSocketConnection::OnReadComplete, this));
+  const int result =
+      stream_socket_->Read(read_buffer_.get(), read_buffer_->size(),
+                           base::BindOnce(&WebSocketConnection::OnReadComplete,
+                                          base::WrapRefCounted(this)));
   if (result != ERR_IO_PENDING) {
     OnReadComplete(result);
   }
@@ -368,7 +385,14 @@ void WebSocketConnection::SendHandshakeResponse() {
 
   Read();
 
-  handler_->OnHandshakeComplete();
+  // A nullptr check is performed because the connection may have been closed
+  // within Read().
+  if (handler_) {
+    handler_->OnHandshakeComplete();
+  } else {
+    DVLOG(2)
+        << "Handler is null after starting Read. Connection likely closed.";
+  }
 }
 
 scoped_refptr<IOBufferWithSize> CreateTextFrame(std::string_view message) {

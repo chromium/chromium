@@ -27,6 +27,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -34,6 +35,7 @@
 #include "base/ranges/algorithm.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
@@ -87,13 +89,6 @@ using network::mojom::ContentSecurityPolicyType;
 
 namespace {
 
-enum ContentSecurityPolicyHashAlgorithm {
-  kContentSecurityPolicyHashAlgorithmNone = 0,
-  kContentSecurityPolicyHashAlgorithmSha256 = 1 << 2,
-  kContentSecurityPolicyHashAlgorithmSha384 = 1 << 3,
-  kContentSecurityPolicyHashAlgorithmSha512 = 1 << 4
-};
-
 // Returns true if the given `header_type` should be checked given
 // `check_header_type` and `reporting_disposition`.
 bool CheckHeaderTypeMatches(
@@ -120,17 +115,6 @@ bool CheckHeaderTypeMatches(
       }
   }
   NOTREACHED();
-}
-
-int32_t HashAlgorithmsUsed(
-    const network::mojom::blink::CSPSourceList* source_list) {
-  int32_t hash_algorithms_used = 0;
-  if (!source_list)
-    return hash_algorithms_used;
-  for (const auto& hash : source_list->hashes) {
-    hash_algorithms_used |= static_cast<int32_t>(hash->algorithm);
-  }
-  return hash_algorithms_used;
 }
 
 // 3. If request’s destination is "fencedframe", and this directive’s value does
@@ -237,8 +221,6 @@ static WebFeature GetUseCounterType(ContentSecurityPolicyType type) {
 ContentSecurityPolicy::ContentSecurityPolicy()
     : delegate_(nullptr),
       override_inline_style_allowed_(false),
-      script_hash_algorithms_used_(kContentSecurityPolicyHashAlgorithmNone),
-      style_hash_algorithms_used_(kContentSecurityPolicyHashAlgorithmNone),
       sandbox_mask_(network::mojom::blink::WebSandboxFlags::kNone),
       require_trusted_types_(false),
       insecure_request_policy_(
@@ -446,26 +428,51 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
   }
 
   for (const auto& directive : csp.directives) {
+    // This might cause marginal performance overhead, insofar as it combines
+    // the hashing algorithms used by script and style directives. If this is
+    // a bottleneck in the future, we can split things out into script and
+    // style hash algorithms independently.
     switch (directive.key) {
+      // These directives control scripts and stylesheets, so their algorithms
+      // are the ones that matter.
       case CSPDirectiveName::DefaultSrc:
-        // TODO(mkwst) It seems unlikely that developers would use different
-        // algorithms for scripts and styles. We may want to combine the
-        // usesScriptHashAlgorithms() and usesStyleHashAlgorithms.
-        UsesScriptHashAlgorithms(HashAlgorithmsUsed(directive.value.get()));
-        UsesStyleHashAlgorithms(HashAlgorithmsUsed(directive.value.get()));
-        break;
       case CSPDirectiveName::ScriptSrc:
       case CSPDirectiveName::ScriptSrcAttr:
       case CSPDirectiveName::ScriptSrcElem:
-        UsesScriptHashAlgorithms(HashAlgorithmsUsed(directive.value.get()));
-        break;
       case CSPDirectiveName::StyleSrc:
       case CSPDirectiveName::StyleSrcAttr:
       case CSPDirectiveName::StyleSrcElem:
-        UsesStyleHashAlgorithms(HashAlgorithmsUsed(directive.value.get()));
+        for (const auto& hash_source : directive.value->hashes) {
+          UsesHashAlgorithm(hash_source->algorithm);
+        }
         break;
-      default:
+      // Images, fonts, etc. do not support integrity checks, so we can skip
+      // them here.
+      case CSPDirectiveName::BaseURI:
+      case CSPDirectiveName::BlockAllMixedContent:
+      case CSPDirectiveName::ChildSrc:
+      case CSPDirectiveName::ConnectSrc:
+      case CSPDirectiveName::FencedFrameSrc:
+      case CSPDirectiveName::FontSrc:
+      case CSPDirectiveName::FormAction:
+      case CSPDirectiveName::FrameAncestors:
+      case CSPDirectiveName::FrameSrc:
+      case CSPDirectiveName::ImgSrc:
+      case CSPDirectiveName::ManifestSrc:
+      case CSPDirectiveName::MediaSrc:
+      case CSPDirectiveName::ObjectSrc:
+      case CSPDirectiveName::ReportTo:
+      case CSPDirectiveName::ReportURI:
+      case CSPDirectiveName::RequireTrustedTypesFor:
+      case CSPDirectiveName::Sandbox:
+      case CSPDirectiveName::TreatAsPublicAddress:
+      case CSPDirectiveName::TrustedTypes:
+      case CSPDirectiveName::UpgradeInsecureRequests:
+      case CSPDirectiveName::WorkerSrc:
         break;
+
+      case CSPDirectiveName::Unknown:
+        NOTREACHED();
     }
   }
 }
@@ -477,31 +484,30 @@ void ContentSecurityPolicy::SetOverrideAllowInlineStyle(bool value) {
 // static
 void ContentSecurityPolicy::FillInCSPHashValues(
     const String& source,
-    uint8_t hash_algorithms_used,
+    WTF::HashSet<IntegrityAlgorithm> hash_algorithms_used,
     Vector<network::mojom::blink::CSPHashSourcePtr>& csp_hash_values) {
   // Any additions or subtractions from this struct should also modify the
   // respective entries in the kSupportedPrefixes array in
   // SourceListDirective::parseHash().
   static const struct {
-    network::mojom::blink::CSPHashAlgorithm csp_hash_algorithm;
+    IntegrityAlgorithm csp_hash_algorithm;
     HashAlgorithm algorithm;
-  } kAlgorithmMap[] = {
-      {network::mojom::blink::CSPHashAlgorithm::SHA256, kHashAlgorithmSha256},
-      {network::mojom::blink::CSPHashAlgorithm::SHA384, kHashAlgorithmSha384},
-      {network::mojom::blink::CSPHashAlgorithm::SHA512, kHashAlgorithmSha512}};
+  } kAlgorithmMap[] = {{IntegrityAlgorithm::kSha256, kHashAlgorithmSha256},
+                       {IntegrityAlgorithm::kSha384, kHashAlgorithmSha384},
+                       {IntegrityAlgorithm::kSha512, kHashAlgorithmSha512}};
 
   // Only bother normalizing the source/computing digests if there are any
   // checks to be done.
-  if (hash_algorithms_used == kContentSecurityPolicyHashAlgorithmNone)
+  if (hash_algorithms_used.empty()) {
     return;
+  }
 
   StringUTF8Adaptor utf8_source(
       source, kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD);
 
   for (const auto& algorithm_map : kAlgorithmMap) {
     DigestValue digest;
-    if (static_cast<int32_t>(algorithm_map.csp_hash_algorithm) &
-        hash_algorithms_used) {
+    if (hash_algorithms_used.Contains(algorithm_map.csp_hash_algorithm)) {
       bool digest_success = ComputeDigest(
           algorithm_map.algorithm, base::as_byte_span(utf8_source), digest);
       if (digest_success) {
@@ -542,10 +548,7 @@ bool ContentSecurityPolicy::AllowInline(
   }
 
   Vector<network::mojom::blink::CSPHashSourcePtr> csp_hash_values;
-  FillInCSPHashValues(
-      content,
-      is_script ? script_hash_algorithms_used_ : style_hash_algorithms_used_,
-      csp_hash_values);
+  FillInCSPHashValues(content, hash_algorithms_used_, csp_hash_values);
 
   // Step 2. Let result be "Allowed". [spec text]
   bool is_allowed = true;
@@ -792,12 +795,8 @@ bool ContentSecurityPolicy::AllowRequest(
                          integrity_metadata, parser_disposition);
 }
 
-void ContentSecurityPolicy::UsesScriptHashAlgorithms(uint8_t algorithms) {
-  script_hash_algorithms_used_ |= algorithms;
-}
-
-void ContentSecurityPolicy::UsesStyleHashAlgorithms(uint8_t algorithms) {
-  style_hash_algorithms_used_ |= algorithms;
+void ContentSecurityPolicy::UsesHashAlgorithm(IntegrityAlgorithm algorithm) {
+  hash_algorithms_used_.insert(algorithm);
 }
 
 bool ContentSecurityPolicy::AllowFromSource(

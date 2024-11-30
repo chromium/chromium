@@ -281,6 +281,9 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void OnMouseDown(Node&) override;
   void DidUpdateBrowserControls() const override;
 
+  void DidUpdateMaxSafeAreaInsets(
+      const gfx::Insets& max_safe_area_insets) const override;
+
   gfx::Vector2dF ElasticOverscroll() const override;
 
   void RegisterPopupOpeningObserver(PopupOpeningObserver*) override;

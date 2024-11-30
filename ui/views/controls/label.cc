@@ -133,6 +133,14 @@ void Label::SetText(const std::u16string& new_text) {
     }
   }
 
+  // If we were previously using the label's text as the tooltip text,
+  // we must make sure to update it. The existing behavior is to call
+  // SetTooltipText with an empty string if we want to use the default
+  // behavior of using the label's text as the tooltip text.
+  if (current_text == GetCachedTooltipText()) {
+    SetTooltipText(std::u16string());
+  }
+
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   MaybeRefreshAccessibleTextOffsets();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
@@ -442,6 +450,8 @@ void Label::SetObscured(bool obscured) {
   if (obscured)
     SetSelectable(false);
 
+  UpdateTooltipText();
+
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&full_text_, kLabelObscured),
       kPropertyEffectsPreferredSizeChanged);
@@ -519,16 +529,34 @@ void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
 }
 
 std::u16string Label::GetTooltipText() const {
-  return tooltip_text_;
+  return GetCachedTooltipText();
 }
 
 void Label::SetTooltipText(const std::u16string& tooltip_text) {
-  DCHECK(handles_tooltips_);
-  if (tooltip_text_ == tooltip_text)
-    return;
-  tooltip_text_ = tooltip_text;
-  TooltipTextChanged();
-  OnPropertyChanged(&tooltip_text_, kPropertyEffectsNone);
+  custom_tooltip_text_ = tooltip_text;
+
+  UpdateTooltipText();
+}
+
+void Label::UpdateTooltipText() {
+  if (GetHandlesTooltips()) {
+    if (GetObscured()) {
+      SetCachedTooltipText(std::u16string());
+      return;
+    }
+
+    if (!custom_tooltip_text_.empty()) {
+      SetCachedTooltipText(custom_tooltip_text_);
+      return;
+    }
+
+    if (ShouldShowDefaultTooltip()) {
+      SetCachedTooltipText(full_text_->GetDisplayText());
+      return;
+    }
+  }
+
+  SetCachedTooltipText(std::u16string());
 }
 
 bool Label::GetHandlesTooltips() const {
@@ -539,6 +567,8 @@ void Label::SetHandlesTooltips(bool enabled) {
   if (handles_tooltips_ == enabled)
     return;
   handles_tooltips_ = enabled;
+
+  UpdateTooltipText();
   OnPropertyChanged(&handles_tooltips_, kPropertyEffectsNone);
 }
 
@@ -783,7 +813,7 @@ int Label::GetLabelHeightForWidth(int w) const {
 
 View* Label::GetTooltipHandlerForPoint(const gfx::Point& point) {
   if (!handles_tooltips_ ||
-      (tooltip_text_.empty() && !ShouldShowDefaultTooltip())) {
+      (GetCachedTooltipText().empty() && !ShouldShowDefaultTooltip())) {
     return nullptr;
   }
 
@@ -799,15 +829,7 @@ WordLookupClient* Label::GetWordLookupClient() {
 }
 
 std::u16string Label::GetTooltipText(const gfx::Point& p) const {
-  if (handles_tooltips_) {
-    if (!tooltip_text_.empty())
-      return tooltip_text_;
-
-    if (ShouldShowDefaultTooltip())
-      return full_text_->GetDisplayText();
-  }
-
-  return std::u16string();
+  return GetCachedTooltipText();
 }
 
 std::unique_ptr<gfx::RenderText> Label::CreateRenderText() const {
@@ -904,6 +926,7 @@ void Label::PaintText(gfx::Canvas* canvas) {
 void Label::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   ClearDisplayText();
 
+  UpdateTooltipText();
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   MaybeRefreshAccessibleTextOffsets();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
@@ -1289,6 +1312,8 @@ void Label::Init(const std::u16string& text,
   // This allows the BrowserView to pass the copy command from the Chrome menu
   // to the Label.
   AddAccelerator(ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN));
+
+  UpdateTooltipText();
 }
 
 void Label::MaybeBuildDisplayText() const {

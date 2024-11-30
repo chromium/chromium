@@ -74,6 +74,23 @@ message ContentMetaData {
 
   // Password for an encrypted archive.
   optional bytes decryption_key = 12;
+
+  // Contains copied text source details for text paste event.
+  message CopiedTextSource {
+    // Holds URL from where data was copied.
+    optional string url = 1;
+
+    enum CopiedTextSourceType {
+      UNSPECIFIED = 0;
+      INCOGNITO = 1;
+      CLIPBOARD = 2;
+      OTHER_PROFILE = 3;
+      SAME_PROFILE = 4;
+    }
+    // Holds Chrome context of copied data.
+    optional CopiedTextSourceType context = 2;
+  }
+  optional CopiedTextSource copied_text_source = 13;
 }
 
 message ClientMetadata {

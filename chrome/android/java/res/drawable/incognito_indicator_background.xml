@@ -6,6 +6,6 @@ found in the LICENSE file.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
      android:shape="rectangle">
-     <solid android:color="@color/incognito_tab_bg_color"/>
+     <solid android:color="@color/toolbar_text_box_background_incognito"/>
      <corners android:radius="@dimen/modern_toolbar_background_corner_radius" />
 </shape>

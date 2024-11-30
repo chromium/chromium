@@ -228,6 +228,8 @@ if (enable_pdf) {
         "pdf_ink_cursor.cc",
         "pdf_ink_cursor.h",
         "pdf_ink_ids.h",
+        "pdf_ink_metrics_handler.cc",
+        "pdf_ink_metrics_handler.h",
         "pdf_ink_module.cc",
         "pdf_ink_module.h",
         "pdf_ink_module_client.h",

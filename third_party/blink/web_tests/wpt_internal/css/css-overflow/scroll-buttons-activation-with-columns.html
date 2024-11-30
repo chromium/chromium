@@ -43,7 +43,7 @@
     width: 40px;
   }
 
-  #scroller::scroll-next-button {
+  #scroller::scroll-button(right) {
     content: ">";
     background: blue;
     display: flex;
@@ -70,9 +70,15 @@
   <div></div>
 </div>
 <script>
+  /*
+    Double click as recommended scroll amount is 85% of the page, so
+    to make sure all browsers reach the end.
+  */
   promise_test(async t => {
     actions_promise = new test_driver.Actions()
     .pointerMove(5, 5)
+    .pointerDown()
+    .pointerUp()
     .pointerDown()
     .pointerUp()
     .send();

@@ -875,7 +875,8 @@ void CorsURLLoader::StartRequest() {
             request_.url, request_.site_for_cookies,
             isolation_info_.top_frame_origin(),
             network::URLLoader::CalculateCookieSettingOverrides(
-                factory_cookie_setting_overrides_, request_)) ==
+                factory_cookie_setting_overrides_, request_,
+                /*emit_metrics=*/false)) ==
             net::cookie_util::StorageAccessStatus::kInactive) {
       // Lower layers will add the Sec-Fetch-Storage-Access header, and the
       // server may respond with a "retry" header. The server needs to know the
@@ -1465,7 +1466,16 @@ bool CorsURLLoader::
 
   GURL data_origin_url(*request_header);
   CHECK(data_origin_url.is_valid());
-  CHECK(url::Origin::Create(data_origin_url).IsSameOriginWith(request_.url));
+
+  if (!url::Origin::Create(data_origin_url).IsSameOriginWith(request_.url)) {
+    // The data origin used is not the worklet script's origin, so we don't
+    // require the "Shared-Storage-Cross-Origin-Worklet-Allowed" response
+    // header. Instead, a separate request is sent in parallel to the origin of
+    // `data_origin_url`, with path
+    // "/.well-known/shared-storage/trusted-origins", to confirm whether or not
+    // this worklet script is allowed to process that origin's data.
+    return true;
+  }
 
   std::optional<std::string> response_header =
       GetHeaderString(response, "Shared-Storage-Cross-Origin-Worklet-Allowed");

@@ -77,6 +77,11 @@ void CurrentThread::EnableMessagePumpTimeKeeperMetrics(
       thread_name, wall_time_based_metrics_enabled_for_testing);
 }
 
+IOWatcher* CurrentThread::GetIOWatcher() {
+  DCHECK(current_->IsBoundToCurrentThread());
+  return current_->GetMessagePump()->GetIOWatcher();
+}
+
 void CurrentThread::AddTaskObserver(TaskObserver* task_observer) {
   DCHECK(current_->IsBoundToCurrentThread());
   current_->AddTaskObserver(task_observer);

@@ -180,7 +180,7 @@ public class TabSuspensionTest {
         mActivityTestRule.loadUrl(mStartingUrl);
         final int originalTabIndex =
                 mActivity.getTabModelSelector().getCurrentModel().indexOf(mTab);
-        Tab tab2 = mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
+        mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         ThreadUtils.runOnUiThreadBlocking(

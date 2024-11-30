@@ -42,8 +42,6 @@ UserCloudPolicyStoreBase::CreateValidator(
 }
 
 void UserCloudPolicyStoreBase::InstallPolicy(
-    std::unique_ptr<enterprise_management::PolicyFetchResponse>
-        policy_fetch_response,
     std::unique_ptr<enterprise_management::PolicyData> policy_data,
     std::unique_ptr<enterprise_management::CloudPolicySettings> payload,
     const std::string& policy_signature_public_key) {
@@ -71,7 +69,7 @@ void UserCloudPolicyStoreBase::InstallPolicy(
         {policy_data->device_affiliation_ids().begin(),
          policy_data->device_affiliation_ids().end()});
   }
-  SetPolicy(std::move(policy_fetch_response), std::move(policy_data));
+  SetPolicy(std::move(policy_data));
   policy_signature_public_key_ = policy_signature_public_key;
 }
 

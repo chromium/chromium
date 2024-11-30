@@ -159,11 +159,8 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
   bool AppExists(const ManifestId& manifest_id) {
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     CHECK(provider);
-    return provider->registrar_unsafe().IsInstallState(
-        web_app::GenerateAppIdFromManifestId(manifest_id),
-        {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-         web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-         web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+    return !provider->registrar_unsafe().IsNotInRegistrar(
+        web_app::GenerateAppIdFromManifestId(manifest_id));
   }
 
   void InstallFromManifest() {

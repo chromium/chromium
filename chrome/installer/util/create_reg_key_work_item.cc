@@ -29,7 +29,7 @@ void UpOneDirectoryOrEmpty(std::wstring* dir) {
 
 }  // namespace
 
-CreateRegKeyWorkItem::~CreateRegKeyWorkItem() {}
+CreateRegKeyWorkItem::~CreateRegKeyWorkItem() = default;
 
 CreateRegKeyWorkItem::CreateRegKeyWorkItem(HKEY predefined_root,
                                            const std::wstring& path,

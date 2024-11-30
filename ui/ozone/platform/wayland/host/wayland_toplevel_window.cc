@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
@@ -41,10 +40,6 @@
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window_delegate.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/cpp/crosapi_constants.h"
-#endif
 
 namespace ui {
 
@@ -81,11 +76,7 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  shell_toplevel_->SetAppId(window_unique_id_);
-#else
   shell_toplevel_->SetAppId(app_id_);
-#endif
   shell_toplevel_->SetTitle(window_title_);
   SetSizeConstraints();
   TriggerStateChanges(GetPlatformWindowState());
@@ -111,11 +102,9 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
     shell_toplevel_->SurfaceResize(connection(), hittest);
 
   connection()->Flush();
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/40917147): Revisit to resolve the correct impl.
   connection()->event_source()->ReleasePressedPointerButtons(this,
                                                              EventTimeForNow());
-#endif
 }
 
 void WaylandToplevelWindow::Show(bool inactive) {
@@ -295,10 +284,7 @@ void WaylandToplevelWindow::Activate() {
   }
 
   // This is required as the high level activation might not get a flush for
-  // a while. Example: Ash calls OpenURL in Lacros, which activates a window
-  // but nothing more happens (until the user moves the mouse over a Lacros
-  // window in which case events will start and the activation will come
-  // through).
+  // a while.
   connection()->Flush();
 
   WaylandWindow::Activate();
@@ -337,11 +323,7 @@ ZOrderLevel WaylandToplevelWindow::GetZOrderLevel() const {
 }
 
 std::string WaylandToplevelWindow::GetWindowUniqueId() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return window_unique_id_;
-#else
   return app_id_;
-#endif
 }
 
 void WaylandToplevelWindow::SetUseNativeFrame(bool use_native_frame) {
@@ -442,7 +424,6 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   bool prev_suspended = is_suspended_;
   is_suspended_ = window_states.is_suspended;
 
-#if BUILDFLAG(IS_LINUX)
   // The tiled state affects the window geometry, so apply it here.
   if (window_states.tiled_edges != tiled_state_) {
     // This configure changes the decoration insets.  We should adjust the
@@ -450,7 +431,6 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
     tiled_state_ = window_states.tiled_edges;
     delegate()->OnWindowTiledStateChanged(window_states.tiled_edges);
   }
-#endif  // IS_LINUX || IS_CHROMEOS_LACROS
 
   pending_configure_state_.window_state = window_state;
 
@@ -532,13 +512,7 @@ bool WaylandToplevelWindow::OnInitialize(
     PlatformWindowDelegate::State* state) {
   state->window_state = PlatformWindowState::kNormal;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto token = base::UnguessableToken::Create();
-  window_unique_id_ =
-      std::string(crosapi::kLacrosAppIdPrefix) + token.ToString();
-#else
   app_id_ = properties.wayland_app_id;
-#endif
   SetWaylandToplevelExtension(this, this);
   SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
   SetWorkspaceExtension(this, static_cast<WorkspaceExtension*>(this));
@@ -553,11 +527,6 @@ bool WaylandToplevelWindow::OnInitialize(
   } else if (properties.visible_on_all_workspaces) {
     workspace_ = kVisibleOnAllWorkspaces;
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (properties.display_id.has_value()) {
-    initial_display_id_ = *properties.display_id;
-  }
-#endif
   SetSystemModalExtension(this, static_cast<SystemModalExtension*>(this));
   return true;
 }

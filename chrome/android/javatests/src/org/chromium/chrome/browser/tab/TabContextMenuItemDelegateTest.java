@@ -123,8 +123,7 @@ public class TabContextMenuItemDelegateTest {
                                     ephemeralTabCoordinatorSupplier,
                                     mContextMenuCopyLinkObserver,
                                     snackbarManagerSupplier,
-                                    bottomSheetControllerSupplier,
-                                    () -> mModalDialogManager);
+                                    bottomSheetControllerSupplier);
                 });
         assertNotNull(mContextMenuDelegate);
     }

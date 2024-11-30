@@ -41,16 +41,12 @@ NetworkTrayView::~NetworkTrayView() {
 }
 
 std::u16string NetworkTrayView::GetAccessibleNameString() const {
-  return tooltip_;
+  return GetCachedTooltipText();
 }
 
 views::View* NetworkTrayView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   return GetLocalBounds().Contains(point) ? this : nullptr;
-}
-
-std::u16string NetworkTrayView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_;
 }
 
 void NetworkTrayView::HandleLocaleChange() {
@@ -111,11 +107,12 @@ void NetworkTrayView::UpdateNetworkStateHandlerIcon() {
 void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
   std::u16string prev_accessible_name = GetViewAccessibility().GetCachedName();
   std::u16string accessible_name;
+  std::u16string tooltip;
   Shell::Get()
       ->system_tray_model()
       ->active_network_icon()
       ->GetConnectionStatusStrings(type_, &accessible_name,
-                                   &accessible_description_, &tooltip_);
+                                   &accessible_description_, &tooltip);
   GetViewAccessibility().SetName(accessible_name);
   if (notify_a11y && !accessible_name.empty() &&
       accessible_name != prev_accessible_name) {
@@ -127,6 +124,8 @@ void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
   } else {
     GetViewAccessibility().RemoveDescription();
   }
+
+  SetCachedTooltipText(tooltip);
 }
 
 network_icon::IconType NetworkTrayView::GetIconType() {

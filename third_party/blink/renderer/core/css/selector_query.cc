@@ -105,6 +105,7 @@ inline bool SelectorMatches(const CSSSelector& selector,
   SelectorChecker::SelectorCheckingContext context(&element);
   context.selector = &selector;
   context.scope = &root_node;
+  context.tree_scope = &root_node.GetTreeScope();
   return checker.Match(context);
 }
 
@@ -615,8 +616,8 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           document, document.BaseURL(), true /* origin_clean */, Referrer()),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr, selectors, arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      selectors, arena);
 
   if (selector_vector.empty()) {
     exception_state.ThrowDOMException(

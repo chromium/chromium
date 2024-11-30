@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
@@ -47,7 +48,9 @@ class FakeSeedStore : public VariationsSeedStore {
                             /*signature_verification_enabled=*/true,
                             std::make_unique<VariationsSafeSeedStoreLocalState>(
                                 local_state,
-                                /*seed_file_dir=*/base::FilePath()),
+                                /*seed_file_dir=*/base::FilePath(),
+                                version_info::Channel::UNKNOWN,
+                                /*entropy_providers=*/nullptr),
                             version_info::Channel::UNKNOWN,
                             /*seed_file_dir=*/base::FilePath(),
                             /*entropy_provider=*/nullptr) {

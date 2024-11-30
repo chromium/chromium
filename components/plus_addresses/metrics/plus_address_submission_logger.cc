@@ -136,7 +136,7 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
           const std::unique_ptr<autofill::AutofillField>& field) {
         return field->renderer_form_id() == renderer_form_id;
       });
-  Record record(manager.client().GetUkmSourceId(),
+  Record record(manager.driver().GetPageUkmSourceId(),
                 field_count_in_renderer_form == 1,
                 /*is_first_time_user=*/plus_address_count == 0);
   record.ukm_builder

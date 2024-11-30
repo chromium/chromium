@@ -5,25 +5,25 @@
 #include "chrome/renderer/extensions/api/chrome_extensions_renderer_api_provider.h"
 
 #include "chrome/grit/renderer_resources.h"
+#include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/notifications_native_handler.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/module_system.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "build/chromeos_buildflags.h"
 #include "chrome/renderer/extensions/api/app_hooks_delegate.h"
-#include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/identity_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/media_galleries_custom_bindings.h"
 #include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
 #include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
 #include "chrome/renderer/extensions/api/tabs_hooks_delegate.h"
-#include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/lazy_background_page_native_handler.h"
-#include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_handler.h"
 #include "extensions/renderer/script_context.h"
 #include "printing/buildflags/buildflags.h"
@@ -90,15 +90,16 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
 void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
     Dispatcher* dispatcher,
     NativeExtensionBindingsSystem* bindings_system) const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/356905053): Move bindings supported on desktop android here.
   APIBindingsSystem* bindings = bindings_system->api_system();
+  bindings->RegisterHooksDelegate(
+      "extension", std::make_unique<extensions::ExtensionHooksDelegate>(
+                       bindings_system->messaging_service()));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   bindings->RegisterHooksDelegate(
       "app", std::make_unique<extensions::AppHooksDelegate>(
                  dispatcher, bindings->request_handler(),
                  bindings_system->GetIPCMessageSender()));
-  bindings->RegisterHooksDelegate(
-      "extension", std::make_unique<extensions::ExtensionHooksDelegate>(
-                       bindings_system->messaging_service()));
   bindings->RegisterHooksDelegate(
       "tabs", std::make_unique<extensions::TabsHooksDelegate>(
                   bindings_system->messaging_service()));

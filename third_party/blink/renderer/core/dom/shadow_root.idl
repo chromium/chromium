@@ -40,11 +40,6 @@ interface ShadowRoot : DocumentFragment {
     [RuntimeEnabled=ScopedCustomElementRegistry]
     readonly attribute CustomElementRegistry? registry;
 
-    // Declarative Shadow DOM getInnerHTML() function. This version should be
-    // considered deprecated, as we work to standardize the version below,
-    // getHTML().
-    [Affects=Nothing, MeasureAs=ElementGetInnerHTML, RuntimeEnabled=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
-
     // Declarative Shadow DOM getHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] HTMLString getHTML(optional GetHTMLOptions options = {});
 

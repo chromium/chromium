@@ -11,5 +11,10 @@ mojom("mojo_bindings") {
   sources = [ "glic.mojom" ]
   webui_module_path = "/"
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
 }

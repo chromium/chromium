@@ -9,9 +9,12 @@
 
 #include "media/mojo/mojom/video_frame_mojom_traits.h"
 
+#include <algorithm>
+
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -19,6 +22,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_layout.h"
 #include "media/mojo/mojom/traits_test_service.mojom.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -109,7 +113,7 @@ TEST_F(VideoFrameStructTraitsTest, MappableVideoFrame) {
         frame = media::VideoFrame::CreateFrame(format, kCodedSize, kVisibleRect,
                                                kNaturalSize, kTimestamp);
       } else {
-        std::vector<int32_t> strides =
+        std::vector<size_t> strides =
             VideoFrame::ComputeStrides(format, kCodedSize);
         size_t aggregate_size = 0;
         size_t sizes[3] = {};
@@ -168,7 +172,7 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
 
   scoped_refptr<media::VideoFrame> frame;
 
-  std::vector<int32_t> strides = VideoFrame::ComputeStrides(format, kCodedSize);
+  std::vector<size_t> strides = VideoFrame::ComputeStrides(format, kCodedSize);
   ASSERT_EQ(strides[1], strides[2]);
 
   size_t aggregate_size = 0;
@@ -189,7 +193,7 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
   // Setup memory layout where U and V planes occupy the same space, but have
   // interleaving Y and V rows. This is achieved by doubling the stride.
   auto u_plane = region_span.subspan(sizes[0]);
-  int32_t normal_stride = strides[1];
+  size_t normal_stride = strides[1];
   auto v_plane = u_plane.subspan(normal_stride);
   strides[1] = strides[2] = normal_stride * 2;
 

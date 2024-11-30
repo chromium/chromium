@@ -68,9 +68,9 @@ void OnGetClientCapabilitiesComplete(
   for (const auto& capability : capabilities) {
     results.emplace_back(std::move(capability->name), capability->supported);
   }
-  // Add renderer computed capabilities.
-  // TODO(crbug.com/360327828): Update when supported.
-  results.emplace_back(kConditionalCreateCapability, false);
+  results.emplace_back(
+      kConditionalCreateCapability,
+      RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled());
 
   const bool report_enabled =
       RuntimeEnabledFeatures::CredentialManagerReportEnabled();

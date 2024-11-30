@@ -144,7 +144,7 @@ struct ShowAutofillSuggestionsParams {
     return test->SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN, std::move(exp),
                                       p.timeout);
   };
-  auto Backspace = [&]() {
+  auto Backspace = [&] {
     return test->SendKeyToPageAndWait(ui::DomKey::BACKSPACE, {}, p.timeout);
   };
   auto Char = [&](const std::string& code, std::list<ObservedUiEvents> exp) {

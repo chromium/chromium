@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -38,10 +39,12 @@ on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
 OnDeviceInternalsPageHandler::OnDeviceInternalsPageHandler(
     mojo::PendingReceiver<mojom::OnDeviceInternalsPageHandler> receiver,
     mojo::PendingRemote<mojom::OnDeviceInternalsPage> page,
-    OptimizationGuideLogger* optimization_guide_logger)
+    OptimizationGuideKeyedService* optimization_guide_keyed_service)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      optimization_guide_logger_(optimization_guide_logger) {
+      optimization_guide_logger_(
+          optimization_guide_keyed_service->GetOptimizationGuideLogger()),
+      optimization_guide_keyed_service_(optimization_guide_keyed_service) {
   if (optimization_guide_logger_) {
     optimization_guide_logger_->AddObserver(this);
   }
@@ -130,4 +133,10 @@ void OnDeviceInternalsPageHandler::OnLogMessageAdded(
       optimization_guide_common::mojom::LogSource::MODEL_EXECUTION) {
     page_->OnLogMessageAdded(event_time, source_file, source_line, message);
   }
+}
+
+void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
+    OnDeviceInternalsPageHandler::GetOnDeviceInternalsDataCallback callback) {
+  std::move(callback).Run(
+      optimization_guide_keyed_service_->GetOnDeviceInternalsModelData());
 }

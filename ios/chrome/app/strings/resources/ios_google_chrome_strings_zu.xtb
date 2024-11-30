@@ -38,6 +38,7 @@ Izinto okumelwe uzicabangele:
 <translation id="1646463005043273333">Vula Amasethingi eChrome ukuze usethe iChrome njengebhrawuza evuleka ngokuzenzekela.</translation>
 <translation id="1670609221633730681">Ithiphu yeChromium: Khetha isikhundla sakho sebha lekheli</translation>
 <translation id="1759842336958782510">I-Chrome</translation>
+<translation id="1784567647421309104">Londoloza Amaphasiwedi Akho kuChrome</translation>
 <translation id="1790080846677398234">Ifaka ama-URL afakiwe kumabhukhimakhi akho ku-Chrome.</translation>
 <translation id="1799920918471566157">Amathiphu e-Chrome</translation>
 <translation id="1830634592642484976">Leli kheli okwamanje lilondolozwa ku-Chrome. Ukuze uyisebenzise emikhiqizweni ye-Google, yilondoloze ku-Google Account yakho, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Zama ukulinda imizuzu embalwa ngaphambi kokuphuma. Uma uphuma ngemvume manje, le
 <translation id="3655656110921623717">Lokhu kusho ukuthi i-Chrome izocela isayithi yeselula ngaso sonke isikhathi</translation>
 <translation id="3740397331642243698">Ivula ama-URL afakiwe ku-Google Chrome ku-Incognito.</translation>
 <translation id="3741995255368156336">Ivula Uhlu Lokufunda lwe-Chrome.</translation>
+<translation id="3808570423967020928">Finyelela kuChrome ngokushesha ukusuka kuDokhi yakho Yesikrini Sasekhaya.</translation>
 <translation id="3827545470516145620">Uthola ukuvikeleka okujwayelekile kule divayisi</translation>
 <translation id="384394811301901750">I-Google Chrome ayikwazi ukusebenzisa ikhamera yakho khona manje</translation>
 <translation id="3863841106411295595">Ifaka ama-URL afakiwe ohlwini lwakho lokufunda ku-Chrome.</translation>
@@ -219,9 +221,11 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 
 Ukuze uthole amasethingi engeziwe asebenzisa idatha ukuthuthukisa ukuzizwisa kwakho kwe-Chrome, iya <ph name="BEGIN_LINK" />Kumasevisi e-Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Sula idatha yokubhrawuza kuChrome.</translation>
+<translation id="6924922227983877439">Vula amalinki kuChrome Ngokuzenzakalelayo</translation>
 <translation id="6975725306479268850">Khetha i-Chrome Yokugcwalisa Okuzenzakalelayo</translation>
 <translation id="7056826488869329999">Ivula futhi Iqalise Ukuhlola Kokuphepha ku-Chrome.</translation>
 <translation id="7061455974939528301">Cindezela futhi ubambe isithonjana seChrome bese uchofoza okuthi "Hlela isikrini sasekhaya"</translation>
+<translation id="7065813315247345131">Hambisa iChrome Kudokhi</translation>
 <translation id="7124339256045485976">Gcina i-Chrome isesikhathini</translation>
 <translation id="7161390184744336561">I-Google Chrome iphelelwe yisikhathi</translation>
 <translation id="7165736900384873061">Qala ukusebenzisa iskena se-Google Chrome QR</translation>

@@ -85,7 +85,7 @@ class H264EncoderFixture : public ::testing::Test {
   H264EncoderFixture& operator=(const H264EncoderFixture&) = delete;
 
  protected:
-  void OnError() {
+  void OnError(const media::EncoderStatus& error_status) {
     DVLOG(4) << __func__ << " is called";
     on_error_called_ = true;
   }

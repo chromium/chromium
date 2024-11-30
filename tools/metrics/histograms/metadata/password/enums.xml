@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Manual fallback address"/>
   <int value="11" label="Manual fallback payments"/>
   <int value="12" label="Manual fallback passwords"/>
-  <int value="13" label="Manual fallback plus addresses"/>
+  <int value="13" label="(Deprecated in M133) Manual fallback plus addresses"/>
   <int value="14" label="Show prompt after dialog closed non manual fallback"/>
   <int value="15" label="Compose dialog lost focus"/>
   <int value="16" label="Compose elayed proactive nudge"/>
@@ -539,12 +539,18 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Passkey updated confirmation bubble"/>
   <int value="26" label="Passkey not accepted confirmation bubble"/>
   <int value="27" label="Password access loss warning"/>
+  <int value="28" label="Passkey upgrade bubble"/>
 </enum>
 
 <enum name="OutdatedGMSDialogDismissalReason">
   <int value="0" label="Other"/>
   <int value="1" label="Accepted"/>
   <int value="2" label="Rejected"/>
+</enum>
+
+<enum name="PasskeysMigration">
+  <int value="0" label="Passkey created"/>
+  <int value="1" label="Passkey updated"/>
 </enum>
 
 <enum name="PasswordAccessLossWarningType">
@@ -1411,6 +1417,8 @@ chromium-metrics-reviews@google.com.
   <int value="11016" label="EXTERNAL_API_EXCEPTION"/>
   <int value="11017" label="EXTERNAL_INVALID_LOCAL_KEYS"/>
   <int value="11018" label="DATABASE_ERROR"/>
+  <int value="11019" label="EMPTY_SECURITY_DOMAIN"/>
+  <int value="11020" label="IRRETRIEVABLE_SECURITY_DOMAIN"/>
   <int value="43502" label="CHROME_SYNC_API_CALL_ERROR"/>
   <int value="43504" label="ERROR_WHILE_DOING_LEAK_CHECK_SERVICE_GRPC"/>
   <int value="43507" label="REQUIRED_SYNCED_ACCOUNT_MISSING"/>
@@ -1473,9 +1481,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="AuthErrorResolvable"/>
   <int value="2" label="AuthErrorUnresolvable"/>
   <int value="3" label="KeychainError"/>
-  <int value="4" label="kKeyRetrievalRequired"/>
-  <int value="5" label="kGMSCoreOutdatedSavingDisabled"/>
-  <int value="6" label="kGMSCoreOutdatedSavingPossible"/>
+  <int value="4" label="KeyRetrievalRequired"/>
+  <int value="5" label="GMSCoreOutdatedSavingDisabled"/>
+  <int value="6" label="GMSCoreOutdatedSavingPossible"/>
+  <int value="7" label="EmptySecurityDomain"/>
+  <int value="8" label="IrretrievableSecurityDomain"/>
 </enum>
 
 <enum name="PasswordSubmissionEvent">
@@ -1738,6 +1748,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="HTML based classifier"/>
   <int value="3" label="'autocomplete' attribute"/>
   <int value="4" label="Server-side prediction"/>
+  <int value="5" label="Client-side model prediction"/>
 </enum>
 
 <enum name="UseUpmLocalAndSeparateStoresState">

@@ -97,12 +97,6 @@ void WaylandZwpRelativePointerManager::OnRelativeMotion(
       static_cast<float>(wl_fixed_to_double(dx_unaccel)),
       static_cast<float>(wl_fixed_to_double(dy_unaccel))};
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The unit of timestamp should be same as unit used in event events, which is
-  // one uint32_t (it is CPU clock time in milliseconds). ChromeOS is using only
-  // using utime_lo, and utime_hi should always be zero.
-  CHECK(!utime_hi);
-#endif
   self->delegate_->OnRelativePointerMotion(
       delta, wl::EventMillisecondsToTimeTicks(utime_lo));
 }

@@ -153,8 +153,4 @@ public final class FeedFeatures {
         // latter at least for some of the restore logic atlernatives.
         getPrefService(profile).setInteger(Pref.LAST_SEEN_FEED_TYPE, tabId);
     }
-
-    private static @StreamTabId int getLastSeenFeedTabId(Profile profile) {
-        return getPrefService(profile).getInteger(Pref.LAST_SEEN_FEED_TYPE);
-    }
 }

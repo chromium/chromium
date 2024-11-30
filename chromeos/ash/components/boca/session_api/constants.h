@@ -41,6 +41,9 @@ inline constexpr char kJoinTachyonGroupUrlTemplate[] =
 
 inline constexpr char kJoinSessionUrlTemplate[] = "v1/students/$1/session:join";
 
+inline constexpr char kVewScreenUrlTemplate[] =
+    "v1/sessions/$1/viewScreen:initiate";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";
@@ -79,6 +82,7 @@ inline constexpr char kDevices[] = "devices";
 inline constexpr char kDeviceId[] = "deviceId";
 inline constexpr char kActivity[] = "activity";
 inline constexpr char kUsers[] = "users";
+inline constexpr char kUser[] = "user";
 inline constexpr char kTachyonGroupId[] = "tachyonGroupId";
 inline constexpr char kJoinCode[] = "joinCode";
 inline constexpr char kJoinCodeEnabled[] = "enabled";
@@ -87,6 +91,8 @@ inline constexpr char kSessionJoinCode[] = "sessionJoinCode";
 inline constexpr char kDeviceInfo[] = "deviceInfo";
 inline constexpr char kStudent[] = "student";
 inline constexpr char kGroupSource[] = "groupSource";
+inline constexpr char kTeacherClientDevice[] = "teacherClientDevice";
+inline constexpr char kHostDevice[] = "hostDevice";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(

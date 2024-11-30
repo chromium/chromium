@@ -44,8 +44,9 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class DigitalCredentialProviderTest {
-    private static final String TEST_PAGE = "/chrome/test/data/android/fedcm_mdocs.html";
+    private static final String TEST_PAGE = "/chrome/test/data/android/dc_mdocs.html";
     private static final String EXPECTED_MDOC = "test-mdoc";
+    private static final String EXPECTED_CREATION_RESPONSE = "test-response";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -83,6 +84,31 @@ public class DigitalCredentialProviderTest {
                                         "document.getElementById('log').textContent");
                         String expected = "\"" + EXPECTED_MDOC + "\"";
                         Criteria.checkThat("mdoc string is not as expected.", mdoc, is(expected));
+                    } catch (Exception e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS_CREATION)
+    public void testCreate() throws TimeoutException {
+        when(mDelegate.create(any(), any(), any()))
+                .thenAnswer(input -> Promise.fulfilled(EXPECTED_CREATION_RESPONSE));
+
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "create_button");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String response =
+                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        mActivityTestRule.getWebContents(),
+                                        "document.getElementById('log').textContent");
+                        String expected = "\"" + EXPECTED_CREATION_RESPONSE + "\"";
+                        Criteria.checkThat(
+                                "Response string is not as expected.", response, is(expected));
                     } catch (Exception e) {
                         throw new CriteriaNotSatisfiedException(e);
                     }

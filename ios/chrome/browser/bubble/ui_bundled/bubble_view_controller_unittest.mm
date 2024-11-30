@@ -98,7 +98,7 @@ TEST_F(BubbleViewControllerTest, BubbleTypeRichContent) {
                                        alignment:alignment_
                                   bubbleViewType:BubbleViewTypeRich
                                         delegate:nil];
-  ExpectBubbleViewContent(bubble_view_controller, false, true, true, false);
+  ExpectBubbleViewContent(bubble_view_controller, false, true, false, false);
 }
 
 // Tests that with BubbleViewTypeRichWithSnooze, bubble view contains the
@@ -112,7 +112,7 @@ TEST_F(BubbleViewControllerTest, BubbleTypeRichWithSnoozeContent) {
                                        alignment:alignment_
                                   bubbleViewType:BubbleViewTypeRichWithSnooze
                                         delegate:nil];
-  ExpectBubbleViewContent(bubble_view_controller, false, true, true, true);
+  ExpectBubbleViewContent(bubble_view_controller, false, true, false, true);
 }
 
 // Tests that with kRichBubbleWithoutImage enabled, BubbleViewTypeRich's bubble

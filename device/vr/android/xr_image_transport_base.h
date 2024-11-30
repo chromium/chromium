@@ -122,12 +122,6 @@ class XrImageTransportBase {
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 
  private:
-  // Used to disable UseSharedBuffer on platforms where the feature is available
-  // but unusable due to driver bugs. Must be mutable so that it can be switched
-  // to true persistently before retrying session creation, so it can't be
-  // constexpr or inline.
-  static bool disable_shared_buffer_;
-
   void ResizeSurface(const gfx::Size& size);
   void OnMailboxBridgeReady(XrInitStatusCallback callback);
   void OnFrameAvailable();

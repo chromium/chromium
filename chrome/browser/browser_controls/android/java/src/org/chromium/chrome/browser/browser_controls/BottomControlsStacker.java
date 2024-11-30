@@ -121,6 +121,11 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     private int mTotalHeightFromSetter = INVALID_HEIGHT;
     private int mTotalMinHeightFromSetter = INVALID_HEIGHT;
 
+    // The default state is used before any visibility constraint changes occur (ex. reopening
+    // chrome after it has been closed.) It must be set to SHOWN to allow the browser to initialize
+    // the UI models with the correct y offsets.
+    private @BrowserControlsState int mBrowserControlsState = BrowserControlsState.SHOWN;
+
     /**
      * Construct the coordination class that's used to position different UIs into the bottom
      * controls.
@@ -171,6 +176,12 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     /** Returns the calculated total min height of all visible layers. */
     public int getTotalMinHeight() {
         return mTotalMinHeight;
+    }
+
+    /** Returns if viz is able to move the browser controls now. */
+    public boolean isMoveableByViz() {
+        return ChromeFeatureList.sBcivBottomControls.isEnabled()
+                && mBrowserControlsState == BrowserControlsState.BOTH;
     }
 
     /**
@@ -296,6 +307,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             @BrowserControlsState int constraints) {
+        mBrowserControlsState = constraints;
         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
             for (int layerType : STACK_ORDER) {
                 BottomControlsLayer layer = mLayers.get(layerType);

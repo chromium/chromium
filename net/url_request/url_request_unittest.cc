@@ -621,7 +621,7 @@ class OCSPErrorTestDelegate : public TestDelegate {
     return on_ssl_certificate_error_called_;
   }
 
-  SSLInfo ssl_info() { return ssl_info_; }
+  const SSLInfo& ssl_info() { return ssl_info_; }
 
  private:
   bool on_ssl_certificate_error_called_ = false;
@@ -2143,7 +2143,7 @@ TEST_F(URLRequestTest, DoNotSaveCookies) {
   }
 }
 
-TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
+TEST_F(URLRequestTest, DoNotSendCookiesViaPolicy) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2204,11 +2204,11 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
 
 // TODO(crbug.com/41225288) This test is flaky on iOS.
 #if BUILDFLAG(IS_IOS)
-#define MAYBE_DoNotSaveCookies_ViaPolicy FLAKY_DoNotSaveCookies_ViaPolicy
+#define MAYBE_DoNotSaveCookiesViaPolicy FLAKY_DoNotSaveCookiesViaPolicy
 #else
-#define MAYBE_DoNotSaveCookies_ViaPolicy DoNotSaveCookies_ViaPolicy
+#define MAYBE_DoNotSaveCookiesViaPolicy DoNotSaveCookiesViaPolicy
 #endif
-TEST_F(URLRequestTest, MAYBE_DoNotSaveCookies_ViaPolicy) {
+TEST_F(URLRequestTest, MAYBE_DoNotSaveCookiesViaPolicy) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2287,7 +2287,7 @@ TEST_F(URLRequestTest, DoNotSaveEmptyCookies) {
   }
 }
 
-TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy_Async) {
+TEST_F(URLRequestTest, DoNotSendCookiesViaPolicyAsync) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2337,7 +2337,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy_Async) {
   }
 }
 
-TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy_Async) {
+TEST_F(URLRequestTest, DoNotSaveCookiesViaPolicyAsync) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2631,7 +2631,7 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies) {
   }
 }
 
-TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies_Redirect) {
+TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookiesRedirect) {
   EmbeddedTestServer http_server;
   RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -3219,7 +3219,7 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookiesSpecialScheme) {
   }
 }
 
-TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies_Redirect) {
+TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookiesRedirect) {
   EmbeddedTestServer http_server;
   RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -4743,7 +4743,7 @@ TEST_F(URLRequestTestHTTP, UnexpectedServerAuthTest) {
   }
 }
 
-TEST_F(URLRequestTestHTTP, GetTest_NoCache) {
+TEST_F(URLRequestTestHTTP, GetTestNoCache) {
   ASSERT_TRUE(http_test_server()->Start());
 
   TestDelegate d;
@@ -7068,7 +7068,7 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect) {
   }
 }
 
-TEST_F(URLRequestTestHTTP, DeferredRedirect_ModifiedHeaders) {
+TEST_F(URLRequestTestHTTP, DeferredRedirectModifiedHeaders) {
   test_server::HttpRequest http_request;
   int num_observed_requests = 0;
   http_test_server()->RegisterRequestMonitor(
@@ -7120,7 +7120,7 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect_ModifiedHeaders) {
   }
 }
 
-TEST_F(URLRequestTestHTTP, DeferredRedirect_RemovedHeaders) {
+TEST_F(URLRequestTestHTTP, DeferredRedirectRemovedHeaders) {
   test_server::HttpRequest http_request;
   int num_observed_requests = 0;
   http_test_server()->RegisterRequestMonitor(
@@ -10456,7 +10456,7 @@ class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
       TestDelegate* delegate,
       SSLInfo* out_ssl_info) {
     // Always overwrite |out_ssl_info|.
-    out_ssl_info->Reset();
+    *out_ssl_info = SSLInfo();
 
     EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
     test_server.SetSSLConfig(cert_config);
@@ -13608,7 +13608,7 @@ class StorageAccessHeaderRetryURLRequestTest
     : public StorageAccessHeaderURLRequestTest,
       public testing::WithParamInterface<StorageAccessHeaderRetryData> {};
 
-TEST_P(StorageAccessHeaderRetryURLRequestTest, StorageAccessHeaderRetry) {
+TEST_P(StorageAccessHeaderRetryURLRequestTest, Retry) {
   const StorageAccessHeaderRetryData test = GetParam();
   set_activate_storage_access_value(test.activate_storage_access_value);
 
@@ -13759,8 +13759,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          StorageAccessHeaderRetryURLRequestTest,
                          testing::ValuesIn(storage_access_header_retry_tests));
 
-TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_RedirectPrioritizesRetryHeader) {
+TEST_F(StorageAccessHeaderURLRequestTest, RedirectPrioritizesRetryHeader) {
   set_response_sequence({ResponseKind::kRedirect, ResponseKind::kRedirect});
 
   auto context_builder = CreateTestURLRequestContextBuilder();
@@ -13808,8 +13807,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   EXPECT_EQ(req->url().path(), "/echo");
 }
 
-TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_AuthChallengeIgnoresRetryHeader) {
+TEST_F(StorageAccessHeaderURLRequestTest, AuthChallengeIgnoresRetryHeader) {
   set_response_sequence({ResponseKind::kAuthChallenge,
                          ResponseKind::kExpectAuthCredentials,
                          ResponseKind::kOk});
@@ -13854,7 +13852,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
 }
 
 TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_AuthWithoutChallengeHonorsRetryHeader) {
+       AuthWithoutChallengeHonorsRetryHeader) {
   set_response_sequence(
       {ResponseKind::kAuthWithoutChallenge, ResponseKind::kOk});
 
@@ -13893,8 +13891,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   EXPECT_FALSE(d.auth_required_called());
 }
 
-TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_SurvivesPostAuthRetries) {
+TEST_F(StorageAccessHeaderURLRequestTest, SurvivesPostAuthRetries) {
   set_response_sequence({ResponseKind::kOk, ResponseKind::kAuthChallenge,
                          ResponseKind::kExpectAuthCredentials});
   auto context_builder = CreateTestURLRequestContextBuilder();
@@ -13936,8 +13933,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   EXPECT_TRUE(d.auth_required_called());
 }
 
-TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_NoRetryWhenDisabled) {
+TEST_F(StorageAccessHeaderURLRequestTest, NoRetryWhenDisabled) {
   set_response_sequence({ResponseKind::kOk});
 
   auto context_builder = CreateTestURLRequestContextBuilder();

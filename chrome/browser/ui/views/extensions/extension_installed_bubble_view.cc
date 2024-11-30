@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/platform_util.h"
@@ -223,6 +224,8 @@ void ExtensionInstalledBubbleView::OnSignIn(const AccountInfo& account) {
     signin_ui_util::SignInFromSingleAccountPromo(
         browser_->profile(), account,
         signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE);
+    extensions::AccountExtensionTracker::Get(browser_->profile())
+        ->OnSignInInitiatedFromExtensionPromo(model_->extension_id());
   } else {
     signin_ui_util::EnableSyncFromSingleAccountPromo(
         browser_->profile(), account,

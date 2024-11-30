@@ -17,9 +17,8 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
-import dagger.Lazy;
-
 import org.chromium.base.Log;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -28,43 +27,42 @@ import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVeri
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.NavigationEntry;
 
-import javax.inject.Inject;
-
 /**
  * Implements {@link SessionHandler} for the given instance of Custom Tab activity; registers and
  * unregisters itself in {@link SessionDataHolder}.
  */
-@ActivityScope
 public class CustomTabSessionHandler implements SessionHandler, StartStopWithNativeObserver {
 
     private static final String TAG = "CctSessionHandler";
 
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
-    private final Lazy<CustomTabToolbarCoordinator> mToolbarCoordinator;
-    private final Lazy<CustomTabBottomBarDelegate> mBottomBarDelegate;
+    private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
+    private final Supplier<CustomTabBottomBarDelegate> mBottomBarDelegate;
     private final CustomTabIntentHandler mIntentHandler;
     private final Activity mActivity;
 
-    @Inject
     public CustomTabSessionHandler(
-            Lazy<CustomTabToolbarCoordinator> toolbarCoordinator,
-            Lazy<CustomTabBottomBarDelegate> bottomBarDelegate,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabActivityTabProvider tabProvider,
+            Supplier<CustomTabToolbarCoordinator> toolbarCoordinator,
+            Supplier<CustomTabBottomBarDelegate> bottomBarDelegate,
             CustomTabIntentHandler intentHandler,
-            BaseCustomTabActivity activity) {
-        mIntentDataProvider = activity.getIntentDataProvider();
-        mTabProvider = activity.getCustomTabActivityTabProvider();
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mIntentDataProvider = intentDataProvider;
+        mTabProvider = tabProvider;
         mToolbarCoordinator = toolbarCoordinator;
         mBottomBarDelegate = bottomBarDelegate;
         mIntentHandler = intentHandler;
         mActivity = activity;
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
 
         // The active handler will also get set in onStartWithNative, but since native may take some
         // time to initialize, we eagerly set it here to catch any messages the Custom Tabs Client

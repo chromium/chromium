@@ -63,7 +63,7 @@ class TestSearchResult : public ChromeSearchResult {
   TestSearchResult(const TestSearchResult&) = delete;
   TestSearchResult& operator=(const TestSearchResult&) = delete;
 
-  ~TestSearchResult() override {}
+  ~TestSearchResult() override = default;
 
   // ChromeSearchResult overrides:
   void Open(int event_flags) override {}
@@ -85,7 +85,7 @@ class TestSearchProvider : public app_list::SearchProvider {
   TestSearchProvider(const TestSearchProvider&) = delete;
   TestSearchProvider& operator=(const TestSearchProvider&) = delete;
 
-  ~TestSearchProvider() override {}
+  ~TestSearchProvider() override = default;
 
   // SearchProvider overrides:
   void Start(const std::u16string& query) override {

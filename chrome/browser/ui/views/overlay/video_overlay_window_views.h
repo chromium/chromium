@@ -198,6 +198,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   }
 
   void ForceControlsVisibleForTesting(bool visible);
+  void StopForcingControlsVisibleForTesting();
 
   void set_overlay_view_cb_for_testing(GetOverlayViewCb get_overlay_view_cb) {
     get_overlay_view_cb_ = std::move(get_overlay_view_cb);
@@ -364,6 +365,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<views::View> window_background_view_ = nullptr;
   raw_ptr<views::View> video_view_ = nullptr;
   raw_ptr<views::View> controls_scrim_view_ = nullptr;
+  raw_ptr<views::View> controls_top_scrim_view_ = nullptr;
+  raw_ptr<views::View> controls_bottom_scrim_view_ = nullptr;
   raw_ptr<views::View> controls_container_view_ = nullptr;
   raw_ptr<views::ImageView> favicon_view_ = nullptr;
   raw_ptr<views::Label> origin_ = nullptr;

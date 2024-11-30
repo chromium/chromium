@@ -139,8 +139,7 @@ public class TabSwitcherSearchTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
 
-        SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // ZPS for open tabs only shows the most recent 4 tabs.
         verifySuggestions(urlsToOpen, /* includePrefix= */ true);
@@ -221,22 +220,18 @@ public class TabSwitcherSearchTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
 
-        SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // ZPS for open tabs only shows the most recent 4 tabs.
-        ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
         verifySuggestions(urlsToOpen, /* includePrefix= */ true);
 
         // Check the header text.
         onView(withText("Last open tabs")).check(matches(isCompletelyDisplayed()));
 
         closeSearchAndVerify();
-        searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // ZPS for open tabs only shows the most recent 4 tabs.
-        suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
         verifySuggestions(urlsToOpen, /* includePrefix= */ true);
 
         // Check the header text.
@@ -271,8 +266,7 @@ public class TabSwitcherSearchTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
 
-        SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // Tab URLs will be de-duped.
         verifySuggestions(urlsToOpen, /* includePrefix= */ true);

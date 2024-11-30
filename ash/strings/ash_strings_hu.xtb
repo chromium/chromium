@@ -1268,7 +1268,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5297704307811127955">Ki</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5302048478445481009">Nyelv</translation>
-<translation id="5302531370473608800">A YouTube Music használatához frissítse a(z) <ph name="DEVICE_TYPE" /> alkalmazást</translation>
+<translation id="5302531370473608800">A YouTube Music használatához frissítse a <ph name="DEVICE_TYPE" /> eszközt</translation>
 <translation id="5303319262469238330">Az akkumulátor töltöttségi szintje: <ph name="PERCENTAGE" />%.
 Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozottan használhatók.</translation>
 <translation id="5308380583665731573">Csatlakozás</translation>
@@ -2125,6 +2125,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8142699993796781067">Privát hálózat</translation>
 <translation id="8144760705599030999">Mentse <ph name="NAME" /> eszközét a fiókjába (<ph name="EMAIL" />) a többi eszközével való gyorsabb párosítás érdekében</translation>
 <translation id="8144914663975476336">Felvételi formátum kiválasztása</translation>
+<translation id="8145272500474066209">A generatív AI hibázhat (többek között személyekkel kapcsolatban is), ezért ellenőrizze a válaszait. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Bluetooth-beállítások megjelenítése. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">A bezáráshoz nyomja meg a Ctrl + W billentyűkódot.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatikus kiegészítés</translation>

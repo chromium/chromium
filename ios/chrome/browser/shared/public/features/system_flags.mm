@@ -70,8 +70,6 @@ NSString* const kInactiveTabsTestMode = @"InactiveTabsTestMode";
 
 namespace experimental_flags {
 
-NSString* const kDisplaySwitchProfile = @"DisplaySwitchProfile";
-
 bool AlwaysDisplayFirstRun() {
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kFirstRunForceEnabled];
@@ -287,13 +285,6 @@ bool SimulatePostDeviceRestore() {
 bool ShouldIgnoreHistorySyncDeclineLimits() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kShouldIgnoreHistorySyncDeclineLimits];
-}
-
-bool DisplaySwitchProfile() {
-  int switchProfileCount = [[NSUserDefaults standardUserDefaults]
-      integerForKey:kDisplaySwitchProfile];
-
-  return switchProfileCount > 0;
 }
 
 std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications() {

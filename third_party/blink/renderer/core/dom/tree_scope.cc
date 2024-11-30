@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -36,7 +37,6 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -383,20 +383,19 @@ void TreeScope::OnAdoptedStyleSheetSet(
     ScriptState* script_state,
     V8ObservableArrayCSSStyleSheet& observable_array,
     uint32_t index,
-    Member<CSSStyleSheet>& sheet,
-    ExceptionState& exception_state) {
+    Member<CSSStyleSheet>& sheet) {
   if (!sheet->IsConstructed()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Can't adopt non-constructed stylesheets.");
+    V8ThrowDOMException::Throw(script_state->GetIsolate(),
+                               DOMExceptionCode::kNotAllowedError,
+                               "Can't adopt non-constructed stylesheets.");
     return;
   }
   TreeScope* self = reinterpret_cast<TreeScope*>(tree_scope);
   Document* document = sheet->ConstructorDocument();
   if (document && *document != self->GetDocument()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                      "Sharing constructed stylesheets in "
-                                      "multiple documents is not allowed");
+    V8ThrowDOMException::Throw(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "Sharing constructed stylesheets in multiple documents is not allowed");
     return;
   }
   self->StyleSheetWasAdded(sheet.Get());
@@ -409,8 +408,7 @@ void TreeScope::OnAdoptedStyleSheetDelete(
     GarbageCollectedMixin* tree_scope,
     ScriptState* script_state,
     V8ObservableArrayCSSStyleSheet& observable_array,
-    uint32_t index,
-    ExceptionState& exception_state) {
+    uint32_t index) {
   TreeScope* self = reinterpret_cast<TreeScope*>(tree_scope);
   self->StyleSheetWasRemoved(self->adopted_style_sheets_->at(index));
 }

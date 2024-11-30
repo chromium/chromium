@@ -272,7 +272,7 @@ suite('<settings-crostini-subpage>', () => {
       setCrostiniPrefs(false);
 
       await flushTasks();
-      assertEquals(routes.CROSTINI, Router.getInstance().currentRoute);
+      assertEquals(routes.ABOUT, Router.getInstance().currentRoute);
 
       const crostiniSettingsCard =
           crostiniPage.shadowRoot!.querySelector('crostini-settings-card');

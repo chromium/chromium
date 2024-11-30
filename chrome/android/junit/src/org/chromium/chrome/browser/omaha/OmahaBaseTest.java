@@ -49,6 +49,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("UnusedMethod")
 public class OmahaBaseTest {
     private static class TimestampPair {
         public long timestampNextRequest;

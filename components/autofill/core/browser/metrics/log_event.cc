@@ -62,7 +62,6 @@ bool AreCollapsible(const FillFieldLogEvent& event1,
          event1.was_autofilled_before_security_policy ==
              event2.was_autofilled_before_security_policy &&
          event1.had_value_after_filling == event2.had_value_after_filling &&
-         event1.filling_method == event2.filling_method &&
          event1.filling_prevented_by_iframe_security_policy ==
              event2.filling_prevented_by_iframe_security_policy &&
          event1.was_refill == event2.was_refill;

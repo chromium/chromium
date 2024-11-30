@@ -200,7 +200,7 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
   MetadataDatabaseTest(const MetadataDatabaseTest&) = delete;
   MetadataDatabaseTest& operator=(const MetadataDatabaseTest&) = delete;
 
-  virtual ~MetadataDatabaseTest() {}
+  virtual ~MetadataDatabaseTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());

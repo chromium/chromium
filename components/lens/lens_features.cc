@@ -34,18 +34,6 @@ BASE_FEATURE(kEnableImageTranslate,
              "LensEnableImageTranslate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableImageSearchSidePanelFor3PDse,
-             "EnableImageSearchSidePanelFor3PDse",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensRegionSearchStaticPage,
-             "LensRegionSearchStaticPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableContextMenuInLensSidePanel,
-             "EnableContextMenuInLensSidePanel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlay,
              "LensOverlay",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -74,6 +62,10 @@ BASE_FEATURE(kLensOverlayContextualSearchbox,
 BASE_FEATURE(kLensOverlayLatencyOptimizations,
              "LensOverlayLatencyOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensOverlayRoutingInfo,
+             "LensOverlayRoutingInfo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlaySurvey,
              "LensOverlaySurvey",
@@ -157,9 +149,6 @@ const base::FeatureParam<bool> kUseLensOverlayForImageSearch{
 const base::FeatureParam<bool> kUseLensOverlayForVideoFrameSearch{
     &kLensOverlay, "use-for-video-frame-search", true};
 
-const base::FeatureParam<bool> kIsFindInPageEntryPointEnabled{
-    &kLensOverlay, "find-in-page-entry-point", false};
-
 const base::FeatureParam<bool> kIsOmniboxEntryPointEnabled{
     &kLensOverlay, "omnibox-entry-point", true};
 
@@ -241,9 +230,6 @@ const base::FeatureParam<bool> kLensOverlayEnableInFullscreen{
 constexpr base::FeatureParam<int> kLensOverlaySegmentationMaskCornerRadius{
     &kLensOverlay, "segmentation-mask-corner-radius", 12};
 
-constexpr base::FeatureParam<int> kLensOverlayFindBarStringsVariant{
-    &kLensOverlay, "find-bar-strings-variant", 0};
-
 constexpr base::FeatureParam<bool>
     kLensOverlayImageContextMenuActionsEnableCopyAsImage{
         &kLensOverlayImageContextMenuActions, "enable-copy-as-image", false};
@@ -256,9 +242,17 @@ constexpr base::FeatureParam<int>
     kLensOverlayImageContextMenuActionsTextReceivedTimeout{
         &kLensOverlayImageContextMenuActions, "text-received-timeout", 2000};
 
+constexpr base::FeatureParam<bool> kEnableClusterInfoOptimization{
+    &kLensOverlayLatencyOptimizations, "enable-cluster-info-optimization",
+    true};
+
 constexpr base::FeatureParam<bool> kEnableEarlyInteractionOptimization{
     &kLensOverlayLatencyOptimizations, "enable-early-interaction-optimization",
     true};
+
+constexpr base::FeatureParam<bool> kEnableEarlyStartQueryFlowOptimization{
+    &kLensOverlayLatencyOptimizations,
+    "enable-early-start-query-flow-optimization", true};
 
 constexpr base::FeatureParam<bool> kUsePdfsAsContext{
     &kLensOverlayContextualSearchbox, "use-pdfs-as-context", false};
@@ -285,9 +279,6 @@ constexpr base::FeatureParam<bool>
     kUseVideoContextForMultimodalLensOverlayRequests{
         &kLensOverlayContextualSearchbox,
         "use-video-context-for-multimodal-requests", false};
-
-constexpr base::FeatureParam<bool> kUseOptimizedRequestFlow{
-    &kLensOverlayContextualSearchbox, "use-optimized-request-flow", false};
 
 constexpr base::FeatureParam<std::string> kLensOverlayClusterInfoEndpointUrl{
     &kLensOverlayContextualSearchbox, "cluster-info-endpoint-url",
@@ -368,24 +359,6 @@ constexpr base::FeatureParam<std::string> kHomepageURLForLens{
 constexpr base::FeatureParam<bool> kEnableLensHtmlRedirectFix{
     &kLensStandalone, "lens-html-redirect-fix", false};
 
-constexpr base::FeatureParam<bool>
-    kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame{
-        &kLensStandalone,
-        "dismiss-loading-state-on-document-on-load-completed-in-primary-main-"
-        "frame",
-        false};
-
-constexpr base::FeatureParam<bool> kDismissLoadingStateOnDomContentLoaded{
-    &kLensStandalone, "dismiss-loading-state-on-dom-content-loaded", false};
-
-constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishNavigation{
-    &kLensStandalone, "dismiss-loading-state-on-did-finish-navigation", false};
-
-constexpr base::FeatureParam<bool>
-    kDismissLoadingStateOnNavigationEntryCommitted{
-        &kLensStandalone, "dismiss-loading-state-on-navigation-entry-committed",
-        true};
-
 constexpr base::FeatureParam<bool> kShouldIssuePreconnectForLens{
     &kLensStandalone, "lens-issue-preconnect", true};
 
@@ -394,12 +367,6 @@ constexpr base::FeatureParam<std::string> kPreconnectKeyForLens{
 
 constexpr base::FeatureParam<bool> kShouldIssueProcessPrewarmingForLens{
     &kLensStandalone, "lens-issue-process-prewarming", true};
-
-constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad{
-    &kLensStandalone, "dismiss-loading-state-on-did-finish-load", false};
-
-constexpr base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged{
-    &kLensStandalone, "dismiss-loading-state-on-primary-page-changed", false};
 
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
     &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
@@ -417,50 +384,10 @@ bool GetEnableLensHtmlRedirectFix() {
   return kEnableLensHtmlRedirectFix.Get();
 }
 
-bool GetDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame() {
-  return kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame.Get();
-}
-
-bool GetDismissLoadingStateOnDomContentLoaded() {
-  return kDismissLoadingStateOnDomContentLoaded.Get();
-}
-
-bool GetDismissLoadingStateOnDidFinishNavigation() {
-  return kDismissLoadingStateOnDidFinishNavigation.Get();
-}
-
-bool GetDismissLoadingStateOnNavigationEntryCommitted() {
-  return kDismissLoadingStateOnNavigationEntryCommitted.Get();
-}
-
-bool GetDismissLoadingStateOnDidFinishLoad() {
-  return kDismissLoadingStateOnDidFinishLoad.Get();
-}
-
-bool GetDismissLoadingStateOnPrimaryPageChanged() {
-  return kDismissLoadingStateOnPrimaryPageChanged.Get();
-}
-
-bool GetEnableImageSearchUnifiedSidePanelFor3PDse() {
-  return base::FeatureList::IsEnabled(kEnableImageSearchSidePanelFor3PDse);
-}
-
 bool IsLensFullscreenSearchEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
          kEnableLensFullscreenSearch.Get();
-}
-
-bool IsLensSidePanelEnabled() {
-  return base::FeatureList::IsEnabled(kLensStandalone);
-}
-
-bool IsLensRegionSearchStaticPageEnabled() {
-  return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
-}
-
-bool GetEnableContextMenuInLensSidePanel() {
-  return base::FeatureList::IsEnabled(kEnableContextMenuInLensSidePanel);
 }
 
 bool GetShouldIssuePreconnectForLens() {
@@ -595,10 +522,6 @@ bool UseVideoContextForMultimodalLensOverlayRequests() {
   return kUseVideoContextForMultimodalLensOverlayRequests.Get();
 }
 
-bool UseOptimizedRequestFlow() {
-  return kUseOptimizedRequestFlow.Get();
-}
-
 std::string GetLensOverlayClusterInfoEndpointUrl() {
   return kLensOverlayClusterInfoEndpointUrl.Get();
 }
@@ -699,10 +622,6 @@ bool UseLensOverlayForVideoFrameSearch() {
   return kUseLensOverlayForVideoFrameSearch.Get();
 }
 
-bool IsFindInPageEntryPointEnabled() {
-  return kIsFindInPageEntryPointEnabled.Get();
-}
-
 bool IsOmniboxEntryPointEnabled() {
   return kIsOmniboxEntryPointEnabled.Get();
 }
@@ -787,10 +706,6 @@ int GetLensOverlaySegmentationMaskCornerRadius() {
   return kLensOverlaySegmentationMaskCornerRadius.Get();
 }
 
-int GetLensOverlayFindBarStringsVariant() {
-  return kLensOverlayFindBarStringsVariant.Get();
-}
-
 bool IsLensOverlayTranslateButtonEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayTranslateButton);
 }
@@ -813,9 +728,19 @@ bool IsLensOverlayContextualSearchboxEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox);
 }
 
+bool IsLensOverlayClusterInfoOptimizationEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayLatencyOptimizations) &&
+         kEnableClusterInfoOptimization.Get();
+}
+
 bool IsLensOverlayEarlyInteractionOptimizationEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayLatencyOptimizations) &&
          kEnableEarlyInteractionOptimization.Get();
+}
+
+bool IsLensOverlayEarlyStartQueryFlowOptimizationEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayLatencyOptimizations) &&
+         kEnableEarlyStartQueryFlowOptimization.Get();
 }
 
 base::TimeDelta GetLensOverlaySurveyResultsTime() {
@@ -852,6 +777,10 @@ bool ShowContextualSearchboxSearchSuggest() {
 
 int GetLensOverlayTranslateRecentLanguagesAmount() {
   return kRecentLanguagesAmount.Get();
+}
+
+bool IsLensOverlayRoutingInfoEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayRoutingInfo);
 }
 
 }  // namespace lens::features

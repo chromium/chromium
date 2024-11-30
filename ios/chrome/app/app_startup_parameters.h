@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <map>
-#include <string>
 #include <vector>
 
 // Input format for the `TabOpening` protocol.
@@ -49,6 +47,20 @@ enum TabOpeningPostOpeningAction {
   EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS,
 };
 
+// Represents the status of a request to change the application mode.
+enum class ApplicationModeRequestStatus {
+  // TODO(crbug.com/374935368): Move to a separate file.
+  kUnavailable,
+  kRequested,
+  kAvailable,
+};
+
+// Type of the block invoked when an application mode request completes. It is
+// invoked asynchronously with the status of the operation as
+// `application_mode`.
+using AppModeRequestBlock =
+    void (^)(ApplicationModeForTabOpening application_mode);
+
 class GURL;
 
 // This class stores all the parameters relevant to the app startup in case
@@ -70,24 +82,14 @@ class GURL;
 // as `externalURL`.
 @property(nonatomic, readonly, assign) const std::vector<GURL>& URLs;
 
-// The URL query string parameters in the case that the app was launched as a
-// result of Universal Link navigation. The map associates query string
-// parameters with their corresponding value.
-@property(nonatomic, assign) std::map<std::string, std::string>
-    externalURLParams;
-
 // The list of inputted URLs to process. These URLs aren't automatically opened.
 // Used in the context of Siri shortcuts that allow URL inputs that are not
 // meant to be opened in new tabs automatically.
 @property(nonatomic, readwrite, strong) NSArray<NSURL*>* inputURLs;
 
-// The mode in which the tab must be opened. Defaults to UNDETERMINED.
-@property(nonatomic, assign) ApplicationModeForTabOpening applicationMode;
 // Action to be taken after loading the URL.
 @property(nonatomic, readwrite, assign)
     TabOpeningPostOpeningAction postOpeningAction;
-// Boolean to track if a Payment Request response is requested at startup.
-@property(nonatomic, readwrite, assign) BOOL completePaymentRequest;
 // When this flag is set, attempt to open `externalURL` in an existing tab.
 @property(nonatomic, readwrite, assign) BOOL openExistingTab;
 // Text query that should be executed on startup.
@@ -113,10 +115,25 @@ class GURL;
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                         completeURL:(const GURL&)completeURL
                     applicationMode:(ApplicationModeForTabOpening)mode
+               forceApplicationMode:(BOOL)forceApplicationMode
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithURLs:(const std::vector<GURL>&)URLs
-             applicationMode:(ApplicationModeForTabOpening)mode;
+             applicationMode:(ApplicationModeForTabOpening)mode
+        forceApplicationMode:(BOOL)forceApplicationMode;
+
+// Initiate the request for application mode if needed and invoke `block` when
+// the it becomes `kAvailable`.
+- (void)requestApplicationModeWithBlock:(AppModeRequestBlock)block;
+
+// Sets the application mode. The application mode will be forced if
+// `forceApplicationMode` is YES.
+- (void)setApplicationMode:(ApplicationModeForTabOpening)applicationMode
+      forceApplicationMode:(BOOL)forceApplicationMode;
+
+// A temporary getter for the `applicationMode`. Note: This getter will be
+// removed once the async version is fully launched.
+- (ApplicationModeForTabOpening)applicationMode;
 
 @end
 

@@ -1677,6 +1677,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsScrollMarkerGroup() const;
   bool IsScrollMarkerGroupBefore() const;
   LayoutObject* GetScrollMarkerGroup() const;
+  LayoutBlock* ScrollerFromScrollMarkerGroup() const;
 
   // Returns true if this object represents ::marker for the first SUMMARY
   // child of a DETAILS, and list-style-type is disclosure-*.
@@ -4159,7 +4160,7 @@ inline bool LayoutObject::DocumentBeingDestroyed() const {
 }
 
 inline bool LayoutObject::IsCheckContent() const {
-  if (StyleRef().StyleType() != kPseudoIdCheck) {
+  if (StyleRef().StyleType() != kPseudoIdCheckMark) {
     return false;
   }
   // Text nodes don't have their own styles, so ignore the style on a text node.

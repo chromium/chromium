@@ -58,14 +58,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_action.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
-#include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
-#include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
-#include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -132,11 +129,6 @@ constexpr base::TimeDelta kDailyLaunchModeTimeDelta = base::Minutes(30);
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
-bool IsKeepAliveDisabledForTesting() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kDisableLacrosKeepAliveForTesting);
-}
-
 bool RemoveLacrosUserDataDir() {
   const base::FilePath lacros_data_dir = browser_util::GetUserDataDir();
 
@@ -162,11 +154,6 @@ void PrepareLacrosPolicies(BrowserManager* manager) {
     core->AddObserver(manager);
     if (core->refresh_scheduler()) {
       core->refresh_scheduler()->AddObserver(manager);
-    }
-
-    policy::CloudPolicyStore* store = core->store();
-    if (store && store->policy_fetch_response()) {
-      store->AddObserver(manager);
     }
   }
 
@@ -203,33 +190,12 @@ BrowserManager::BrowserManager(
     session_manager::SessionManager::Get()->AddObserver(this);
   }
 
-  if (CrosapiManager::IsInitialized()) {
-    CrosapiManager::Get()
-        ->crosapi_ash()
-        ->browser_service_host_ash()
-        ->AddObserver(this);
-  } else {
+  if (!CrosapiManager::IsInitialized()) {
     CHECK_IS_TEST();
-  }
-
-  std::string socket_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ash::switches::kLacrosMojoSocketForTesting);
-  if (!socket_path.empty()) {
-    test_mojo_connection_manager_ =
-        std::make_unique<crosapi::TestMojoConnectionManager>(
-            base::FilePath(socket_path));
   }
 }
 
 BrowserManager::~BrowserManager() {
-  if (CrosapiManager::IsInitialized()) {
-    CrosapiManager::Get()
-        ->crosapi_ash()
-        ->browser_service_host_ash()
-        ->RemoveObserver(this);
-  }
-
   // Unregister, just in case the manager is destroyed before
   // OnUserSessionStarted() is called.
   if (session_manager::SessionManager::Get()) {
@@ -240,70 +206,11 @@ BrowserManager::~BrowserManager() {
   g_instance = nullptr;
 }
 
-bool BrowserManager::IsRunning() const {
-  return false;
-}
-
-void BrowserManager::NewWindow(bool incognito,
-                               bool should_trigger_session_restore) {
-  int64_t target_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  PerformOrEnqueue(BrowserAction::NewWindow(
-      incognito, should_trigger_session_restore, target_display_id,
-      ash::desks_util::GetActiveDeskLacrosProfileId()));
-}
-
-void BrowserManager::NewGuestWindow() {
-  int64_t target_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  PerformOrEnqueue(BrowserAction::NewGuestWindow(target_display_id));
-}
-
-void BrowserManager::Launch() {
-  int64_t target_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  PerformOrEnqueue(BrowserAction::Launch(
-      target_display_id, ash::desks_util::GetActiveDeskLacrosProfileId()));
-}
-
-void BrowserManager::OpenUrl(
-    const GURL& url,
-    crosapi::mojom::OpenUrlFrom from,
-    crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
-    NavigateParams::PathBehavior path_behavior) {
-  PerformOrEnqueue(
-      BrowserAction::OpenUrl(url, disposition, from, path_behavior));
-}
-
-void BrowserManager::OpenCaptivePortalSignin(const GURL& url) {
-  PerformOrEnqueue(BrowserAction::OpenCaptivePortalSignin(url));
-}
-
 void BrowserManager::SwitchToTab(const GURL& url,
                                  NavigateParams::PathBehavior path_behavior) {
   PerformOrEnqueue(BrowserAction::OpenUrl(
       url, crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab,
       crosapi::mojom::OpenUrlFrom::kUnspecified, path_behavior));
-}
-
-void BrowserManager::CreateBrowserWithRestoredData(
-    const std::vector<GURL>& urls,
-    const gfx::Rect& bounds,
-    const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
-    ui::mojom::WindowShowState show_state,
-    int32_t active_tab_index,
-    int32_t first_non_pinned_tab_index,
-    const std::string& app_name,
-    int32_t restore_window_id,
-    uint64_t lacros_profile_id) {
-  PerformOrEnqueue(BrowserAction::CreateBrowserWithRestoredData(
-      urls, bounds, tab_group_infos, show_state, active_tab_index,
-      first_non_pinned_tab_index, app_name, restore_window_id,
-      lacros_profile_id));
-}
-
-void BrowserManager::OpenProfileManager() {
-  PerformOrEnqueue(BrowserAction::OpenProfileManager());
 }
 
 void BrowserManager::InitializeAndStartIfNeeded() {
@@ -323,15 +230,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   ClearLacrosData();
 }
 
-void BrowserManager::GetBrowserInformation(
-    const std::string& window_unique_id,
-    GetBrowserInformationCallback callback) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->desk_template_ash()
-      ->GetBrowserInformation(window_unique_id, std::move(callback));
-}
-
 void BrowserManager::AddObserver(BrowserManagerObserver* observer) {
   observers_.AddObserver(observer);
 }
@@ -341,10 +239,6 @@ void BrowserManager::RemoveObserver(BrowserManagerObserver* observer) {
 }
 
 void BrowserManager::Shutdown() {
-  // Lacros KeepAlive should be disabled once Shutdown() has been signalled.
-  // Further calls to `UpdateKeepAliveInBrowserIfNecessary()` will no-op after
-  // `shutdown_requested_` has been set.
-  UpdateKeepAliveInBrowserIfNecessary(false);
   shutdown_requested_ = true;
   pending_actions_.Clear();
 }
@@ -358,37 +252,6 @@ void BrowserManager::SetState(State state) {
   for (auto& observer : observers_) {
     observer.OnStateChanged();
   }
-}
-
-std::unique_ptr<BrowserManagerScopedKeepAlive> BrowserManager::KeepAlive(
-    Feature feature) {
-  // Using new explicitly because BrowserManagerScopedKeepAlive's
-  // constructor is private.
-  return base::WrapUnique(new BrowserManagerScopedKeepAlive(this, feature));
-}
-
-BrowserManager::BrowserServiceInfo::BrowserServiceInfo(
-    mojo::RemoteSetElementId mojo_id,
-    mojom::BrowserService* service,
-    uint32_t interface_version)
-    : mojo_id(mojo_id),
-      service(service),
-      interface_version(interface_version) {}
-
-BrowserManager::BrowserServiceInfo::BrowserServiceInfo(
-    const BrowserServiceInfo&) = default;
-BrowserManager::BrowserServiceInfo&
-BrowserManager::BrowserServiceInfo::operator=(const BrowserServiceInfo&) =
-    default;
-BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
-
-void BrowserManager::PerformAction(std::unique_ptr<BrowserAction> action) {
-  BrowserAction* action_raw = action.get();  // We're `move`ing action below.
-  action_raw->Perform(
-      {browser_service_.value().service.get(),
-       browser_service_.value().interface_version},
-      base::BindOnce(&BrowserManager::OnActionPerformed,
-                     weak_factory_.GetWeakPtr(), std::move(action)));
 }
 
 void BrowserManager::ClearLacrosData() {
@@ -446,24 +309,6 @@ void BrowserManager::OnLacrosUserDataDirRemoved(bool cleared) {
   web_app::UserUninstalledPreinstalledWebAppPrefs(pref_service).ClearAllApps();
 }
 
-void BrowserManager::OnBrowserServiceConnected(
-    CrosapiId id,
-    mojo::RemoteSetElementId mojo_id,
-    mojom::BrowserService* browser_service,
-    uint32_t browser_service_version) {
-  NOTREACHED();
-}
-
-void BrowserManager::OnBrowserServiceDisconnected(
-    CrosapiId id,
-    mojo::RemoteSetElementId mojo_id) {
-  NOTREACHED();
-}
-
-void BrowserManager::OnBrowserRelaunchRequested(CrosapiId id) {
-  NOTREACHED();
-}
-
 void BrowserManager::OnCoreConnected(policy::CloudPolicyCore* core) {}
 
 void BrowserManager::OnRefreshSchedulerStarted(policy::CloudPolicyCore* core) {
@@ -491,34 +336,8 @@ void BrowserManager::OnSessionStateChanged() {
   }
 }
 
-void BrowserManager::OnStoreLoaded(policy::CloudPolicyStore* store) {
-  DCHECK(store);
-
-  // A new policy got installed for the current user, so we need to pass it to
-  // the Lacros browser.
-  std::string policy_blob;
-  if (store->policy_fetch_response()) {
-    const bool success =
-        store->policy_fetch_response()->SerializeToString(&policy_blob);
-    DCHECK(success);
-  }
-  SetDeviceAccountPolicy(policy_blob);
-}
-
-void BrowserManager::OnStoreError(policy::CloudPolicyStore* store) {
-  // Policy store failed, Lacros will use stale policy as well as Ash.
-}
-
-void BrowserManager::OnStoreDestruction(policy::CloudPolicyStore* store) {
-  store->RemoveObserver(this);
-}
-
 void BrowserManager::OnComponentPolicyUpdated(
     const policy::ComponentPolicyMap& component_policy) {
-  if (browser_service_.has_value()) {
-    browser_service_->service->UpdateComponentPolicy(
-        policy::CopyComponentPolicyMap(component_policy));
-  }
 }
 
 void BrowserManager::OnComponentPolicyServiceDestruction(
@@ -528,9 +347,6 @@ void BrowserManager::OnComponentPolicyServiceDestruction(
 
 void BrowserManager::OnFetchAttempt(
     policy::CloudPolicyRefreshScheduler* scheduler) {
-  if (browser_service_.has_value()) {
-    browser_service_->service->NotifyPolicyFetchAttempt();
-  }
 }
 
 void BrowserManager::OnRefreshSchedulerDestruction(
@@ -538,54 +354,7 @@ void BrowserManager::OnRefreshSchedulerDestruction(
   scheduler->RemoveObserver(this);
 }
 
-void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
-  if (browser_service_.has_value()) {
-    browser_service_->service->UpdateDeviceAccountPolicy(
-        std::vector<uint8_t>(policy_blob.begin(), policy_blob.end()));
-  }
-}
-
-void BrowserManager::StartKeepAlive(Feature feature) {
-  DCHECK(browser_util::IsLacrosEnabled());
-
-  if (IsKeepAliveDisabledForTesting()) {
-    return;
-  }
-
-  auto insertion = keep_alive_features_.insert(feature);
-  // Features should never be double registered.
-  // TODO(b/278643115): Replace if-statement with a (D)CHECK once browser tests
-  // no longer use multiple user managers.
-  if (!insertion.second) {
-    CHECK_IS_TEST();
-  }
-
-  // If this is first KeepAlive instance, update the keep-alive in the browser.
-  if (keep_alive_features_.size() == 1) {
-    UpdateKeepAliveInBrowserIfNecessary(true);
-  }
-}
-
-void BrowserManager::StopKeepAlive(Feature feature) {
-  keep_alive_features_.erase(feature);
-  if (!IsKeepAliveEnabled()) {
-    UpdateKeepAliveInBrowserIfNecessary(false);
-  }
-}
-
-bool BrowserManager::IsKeepAliveEnabled() const {
-  return !keep_alive_features_.empty();
-}
-
-void BrowserManager::UpdateKeepAliveInBrowserIfNecessary(bool enabled) {
-  if (shutdown_requested_ || !browser_service_.has_value()) {
-    // Shutdown has started or the browser is not running now. Just give up.
-    return;
-  }
-  CHECK_GE(browser_service_->interface_version,
-           crosapi::mojom::BrowserService::kUpdateKeepAliveMinVersion);
-  browser_service_->service->UpdateKeepAlive(enabled);
-}
+void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {}
 
 void BrowserManager::SetLacrosLaunchMode() {
   LacrosLaunchMode lacros_mode;

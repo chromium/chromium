@@ -1528,12 +1528,15 @@ void PdfViewWebPlugin::SetSelectionBounds(const gfx::PointF& base,
 
 void PdfViewWebPlugin::GetPdfBytes(uint32_t size_limit,
                                    GetPdfBytesCallback callback) {
+  uint32_t page_count = engine_->GetNumberOfPages();
   if (engine_->GetLoadedByteSize() > size_limit) {
-    std::move(callback).Run(GetPdfBytesStatus::kSizeLimitExceeded, {});
+    std::move(callback).Run(GetPdfBytesStatus::kSizeLimitExceeded, {},
+                            page_count);
     return;
   }
 
-  std::move(callback).Run(GetPdfBytesStatus::kSuccess, engine_->GetSaveData());
+  std::move(callback).Run(GetPdfBytesStatus::kSuccess, engine_->GetSaveData(),
+                          page_count);
 }
 
 bool PdfViewWebPlugin::IsValid() const {

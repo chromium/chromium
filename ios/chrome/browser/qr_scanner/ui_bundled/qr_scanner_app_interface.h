@@ -8,7 +8,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/ui/scanner/camera_state.h"
+#include "ios/chrome/browser/scanner/ui_bundled/camera_state.h"
 
 @interface QRScannerAppInterface : NSObject
 

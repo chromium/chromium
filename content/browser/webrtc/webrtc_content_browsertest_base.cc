@@ -30,12 +30,8 @@ namespace content {
 
 void WebRtcContentBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnforceWebRtcIPPermissionCheck);
-
   // Loopback interface is the non-default local address. They should only be in
-  // the candidate list if the ip handling policy is "default" AND the media
-  // permission is granted.
+  // the candidate list if the the media permission is granted.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kAllowLoopbackInPeerConnection);
 }

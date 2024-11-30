@@ -37,13 +37,13 @@ class RendererEventInjectionTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<const char*> {
  public:
-  RendererEventInjectionTest() {}
+  RendererEventInjectionTest() = default;
 
   RendererEventInjectionTest(const RendererEventInjectionTest&) = delete;
   RendererEventInjectionTest& operator=(const RendererEventInjectionTest&) =
       delete;
 
-  ~RendererEventInjectionTest() override {}
+  ~RendererEventInjectionTest() override = default;
 
   // InProcessBrowserTest:
   void SetUp() override {

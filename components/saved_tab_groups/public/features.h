@@ -35,6 +35,8 @@ BASE_DECLARE_FEATURE(kForceRemoveClosedTabGroupsOnStartup);
 
 BASE_DECLARE_FEATURE(kEnableTabTitleSanitization);
 
+BASE_DECLARE_FEATURE(kEnableUrlRestriction);
+
 extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();
@@ -55,6 +57,7 @@ extern bool ShouldForceRemoveClosedTabGroupsOnStartup();
 
 extern bool IsTabTitleSanitizationEnabled();
 
+extern bool IsUrlRestrictionEnabled();
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_FEATURES_H_

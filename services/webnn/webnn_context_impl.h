@@ -29,6 +29,7 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_object_impl.h"
@@ -36,7 +37,6 @@
 
 namespace webnn {
 
-class WebNNConstantOperand;
 class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 

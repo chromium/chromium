@@ -71,7 +71,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -199,6 +199,83 @@ ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+void LaunchPlusAddressUserPerceptionSurvey(
+    content::WebContents* web_contents,
+    HatsService* hats_service,
+    AutofillPlusAddressDelegate* delegate,
+    plus_addresses::hats::SurveyType survey_type) {
+  std::string survey_trigger;
+  switch (survey_type) {
+    case plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
+        return;
+      }
+      survey_trigger = kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate;
+      break;
+    case plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey)) {
+        return;
+      }
+      survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
+      break;
+    case plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::
+                  kPlusAddressUserCreatedMultiplePlusAddressesSurvey)) {
+        return;
+      }
+      survey_trigger =
+          kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses;
+      break;
+    case plus_addresses::hats::SurveyType::kCreatedPlusAddressViaManualFallback:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::
+                  kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey)) {
+        return;
+      }
+      survey_trigger =
+          kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback;
+      break;
+    case plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::
+                  kPlusAddressUserDidChoosePlusAddressOverEmailSurvey)) {
+        return;
+      }
+      survey_trigger =
+          kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey;
+      break;
+    case plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::
+                  kPlusAddressUserDidChooseEmailOverPlusAddressSurvey)) {
+        return;
+      }
+      survey_trigger =
+          kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey;
+      break;
+    case plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::
+                  kPlusAddressFilledPlusAddressViaManualFallbackSurvey)) {
+        return;
+      }
+      survey_trigger =
+          kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback;
+      break;
+  }
+
+  hats_service->LaunchSurveyForWebContents(
+      survey_trigger, web_contents,
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/
+      delegate->GetPlusAddressHatsData(),
+      /*success_callback=*/base::DoNothing(),
+      /*failure_callback=*/base::DoNothing());
+}
+
 }  // namespace
 
 // static
@@ -290,9 +367,9 @@ ChromeAutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
   return nullptr;
 }
 
-PersonalDataManager* ChromeAutofillClient::GetPersonalDataManager() {
-  return PersonalDataManagerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
+PersonalDataManager& ChromeAutofillClient::GetPersonalDataManager() {
+  return CHECK_DEREF(PersonalDataManagerFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext()));
 }
 
 SingleFieldFillRouter& ChromeAutofillClient::GetSingleFieldFillRouter() {
@@ -428,10 +505,6 @@ ukm::UkmRecorder* ChromeAutofillClient::GetUkmRecorder() {
   return ukm::UkmRecorder::Get();
 }
 
-ukm::SourceId ChromeAutofillClient::GetUkmSourceId() {
-  return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-}
-
 AddressNormalizer* ChromeAutofillClient::GetAddressNormalizer() {
   return AddressNormalizerFactory::GetInstance();
 }
@@ -546,53 +619,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromeAutofillClient::ShowEditAddressProfileDialog(
-    const AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-#if !BUILDFLAG(IS_ANDROID)
-  EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
-  EditAddressProfileDialogControllerImpl* controller =
-      EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
-  CHECK(controller);
-
-  std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
-      web_contents()->GetBrowserContext());
-  CHECK(account);
-  std::u16string footer_message =
-      profile.IsAccountProfile()
-          ? l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
-                base::ASCIIToUTF16(account->email))
-          : u"";
-  controller->OfferEdit(
-      /*profile=*/profile,
-      /*title_override=*/u"", footer_message,
-      /*is_editing_existing_address=*/false,
-      /*is_migration_to_account=*/false,
-      /*on_user_decision_callback=*/std::move(on_user_decision_callback));
-#else
-  // Edit address profile dialog is only available is desktop.
-  NOTREACHED();
-#endif
-}
-
-void ChromeAutofillClient::ShowDeleteAddressProfileDialog(
-    const AutofillProfile& profile,
-    AddressProfileDeleteDialogCallback delete_dialog_callback) {
-#if !BUILDFLAG(IS_ANDROID)
-  DeleteAddressProfileDialogControllerImpl::CreateForWebContents(
-      web_contents());
-  DeleteAddressProfileDialogControllerImpl* controller =
-      DeleteAddressProfileDialogControllerImpl::FromWebContents(web_contents());
-  controller->OfferDelete(
-      profile.IsAccountProfile(),
-      /*delete_dialog_callback=*/std::move(delete_dialog_callback));
-#else
-  // Delete address profile dialog is only available is desktop.
-  NOTREACHED();
-#endif
 }
 
 void ChromeAutofillClient::ConfirmSaveAddressProfile(
@@ -817,6 +843,11 @@ LogManager* ChromeAutofillClient::GetLogManager() const {
   return log_manager_.get();
 }
 
+autofill_metrics::FormInteractionsUkmLogger&
+ChromeAutofillClient::GetFormInteractionsUkmLogger() {
+  return form_interactions_ukm_logger_;
+}
+
 const AutofillAblationStudy& ChromeAutofillClient::GetAblationStudy() const {
   return ablation_study_;
 }
@@ -990,6 +1021,19 @@ PasswordFormClassification ChromeAutofillClient::ClassifyAsPasswordForm(
     FormGlobalId form_id,
     FieldGlobalId field_id) const {
   return password_manager::ClassifyAsPasswordForm(manager, form_id, field_id);
+}
+
+void ChromeAutofillClient::TriggerPlusAddressUserPerceptionSurvey(
+    plus_addresses::hats::SurveyType survey_type) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* delegate = GetPlusAddressDelegate();
+  CHECK(delegate);
+  LaunchPlusAddressUserPerceptionSurvey(
+      web_contents(),
+      HatsServiceFactory::GetForProfile(profile,
+                                        /*create_if_necessary=*/true),
+      delegate, survey_type);
 }
 
 }  // namespace autofill

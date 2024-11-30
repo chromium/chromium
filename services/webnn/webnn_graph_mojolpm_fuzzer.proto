@@ -9,6 +9,7 @@ syntax = "proto2";
 package services.fuzzing.webnn_graph.proto;
 
 import "services/webnn/public/mojom/webnn_graph.mojom.mojolpm.proto";
+import "services/webnn/public/mojom/webnn_context_provider.mojom.mojolpm.proto";
 
 // GraphInfo mojo struct describe an entire WebNN graph
 message CreateGraphAction {
@@ -18,9 +19,11 @@ message CreateGraphAction {
 // Actions that can be performed by the fuzzer.
 message Action {
   required CreateGraphAction create_graph = 1;
+  required mojolpm.webnn.mojom.CreateContextOptions.Device device = 2;
 }
 
 // Testcase is the top-level message type interpreted by the fuzzer.
 message Testcase {
   repeated Action actions = 1;
+  required uint32 seed_for_input_data = 2;
 }

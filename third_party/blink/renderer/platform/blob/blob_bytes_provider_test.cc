@@ -272,7 +272,7 @@ TEST_F(BlobBytesProviderTest, RequestAsFile_MultipleChunks) {
         base::BindOnce([](std::optional<base::Time> last_modified) {
           EXPECT_TRUE(last_modified);
         }));
-    auto combined_bytes_chunk = base::span(combined_bytes_).subspan(i, 16);
+    auto combined_bytes_chunk = base::span(combined_bytes_).subspan(i, 16u);
     expected_data.insert(0, combined_bytes_chunk.data(),
                          combined_bytes_chunk.size());
   }

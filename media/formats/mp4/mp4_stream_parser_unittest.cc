@@ -335,7 +335,7 @@ TEST_F(MP4StreamParserTest, Reinitialization) {
   EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
 }
 
-TEST_F(MP4StreamParserTest, UnknownDuration_V0_AllBitsSet) {
+TEST_F(MP4StreamParserTest, UnknownDurationV0AllBitsSet) {
   InitializeParser();
   // 32 bit duration field in mvhd box, all bits set.
   ParseMP4File(
@@ -344,7 +344,7 @@ TEST_F(MP4StreamParserTest, UnknownDuration_V0_AllBitsSet) {
       512);
 }
 
-TEST_F(MP4StreamParserTest, AVC_KeyAndNonKeyframeness_Match_Container) {
+TEST_F(MP4StreamParserTest, AVCKeyAndNonKeyframenessMatchContainer) {
   // Both AVC video frames' keyframe-ness metadata matches the MP4:
   // Frame 0: AVC IDR, trun.first_sample_flags: sync sample that doesn't
   //          depend on others.
@@ -361,7 +361,7 @@ TEST_F(MP4StreamParserTest, AVC_KeyAndNonKeyframeness_Match_Container) {
   ParseMP4File("bear-640x360-v-2frames_frag.mp4", 512);
 }
 
-TEST_F(MP4StreamParserTest, AVC_Keyframeness_Mismatches_Container) {
+TEST_F(MP4StreamParserTest, AVCKeyframenessMismatchesContainer) {
   // The first AVC video frame's keyframe-ness metadata mismatches the MP4:
   // Frame 0: AVC IDR, trun.first_sample_flags: NOT sync sample, DEPENDS on
   //          others.
@@ -381,7 +381,7 @@ TEST_F(MP4StreamParserTest, AVC_Keyframeness_Mismatches_Container) {
                512);
 }
 
-TEST_F(MP4StreamParserTest, AVC_NonKeyframeness_Mismatches_Container) {
+TEST_F(MP4StreamParserTest, AVCNonKeyframenessMismatchesContainer) {
   // The second AVC video frame's keyframe-ness metadata mismatches the MP4:
   // Frame 0: AVC IDR, trun.first_sample_flags: sync sample that doesn't
   //          depend on others.
@@ -401,7 +401,7 @@ TEST_F(MP4StreamParserTest, AVC_NonKeyframeness_Mismatches_Container) {
                512);
 }
 
-TEST_F(MP4StreamParserTest, MPEG2_AAC_LC) {
+TEST_F(MP4StreamParserTest, MPEG2AACLC) {
   InSequence s;
   base::flat_set<int> audio_object_types;
   audio_object_types.insert(kISO_13818_7_AAC_LC);
@@ -424,7 +424,7 @@ TEST_F(MP4StreamParserTest, ParsingAACLCNoAudioTypeStrictness) {
   EXPECT_EQ(audio_decoder_config_.profile(), AudioCodecProfile::kUnknown);
 }
 
-TEST_F(MP4StreamParserTest, MPEG4_XHE_AAC) {
+TEST_F(MP4StreamParserTest, MPEG4XHEAAC) {
   InSequence s;  // The keyframeness sequence matters for this test.
   base::flat_set<int> audio_object_types;
   audio_object_types.insert(kISO_14496_3);
@@ -454,7 +454,7 @@ TEST_F(MP4StreamParserTest, NoMoovAfterFlush) {
   EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
   parser_->Flush();
 
-  const int kFirstMoofOffset = 1307;
+  static constexpr size_t kFirstMoofOffset = 1307;
   EXPECT_TRUE(AppendAllDataThenParseInPieces(
       buffer->AsSpan().subspan(kFirstMoofOffset,
                                buffer->size() - kFirstMoofOffset),
@@ -491,7 +491,7 @@ TEST_F(MP4StreamParserTest, VideoSamplesStartWithAUDs) {
   ParseMP4File("bear-1280x720-av_with-aud-nalus_frag.mp4", 512);
 }
 
-TEST_F(MP4StreamParserTest, HEVC_in_MP4_container) {
+TEST_F(MP4StreamParserTest, HEVCInMP4Container) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   bool expect_success = true;
 #else

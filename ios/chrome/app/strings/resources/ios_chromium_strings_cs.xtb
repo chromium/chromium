@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Používejte na iPadu Chromium jako výchozí prohlížeč</translation>
 <translation id="1471084500615228555">Vymazat údaje o prohlížení v prohlížeči Chromium</translation>
 <translation id="1472013873724362412">Váš účet v prohlížeči Chromium nefunguje. Kontaktujte administrátora domény nebo se přihlaste pomocí běžného účtu Google.</translation>
+<translation id="148576268809812097">Ukládejte si v Chromiu hesla</translation>
 <translation id="1501302548410882220">Používejte Chromium všude</translation>
 <translation id="1503199973012840174">Váš prohlížeč Chromium je zastaralý. Aktualizujte ho, abyste byli v bezpečí.</translation>
 <translation id="1515748263297244785">Používejte Chromium pro iPad jako výchozí prohlížeč</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Heslo bude uloženo do vašeho účtu (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">Pokud chcete získat personalizaci a další funkce, zahrňte Chromium do: <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Prohlížeč Chromium ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
+<translation id="1839447949248872139">Otevírejte odkazy v Chromiu ve výchozím nastavení</translation>
 <translation id="1843424232666537147">Chromium obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Mapy v prohlížeči Chromium</translation>
 <translation id="1867772173333403444">4. Vyberte Chromium.</translation>
@@ -159,6 +161,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="5048795749726991615">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, používejte Chromium k automatickému vyplňování</translation>
 <translation id="5053429694249468757">Mazání dat prohlížeče Chromium…</translation>
 <translation id="5071749685031362629">Chromium pro iOS</translation>
+<translation id="5088872414922783602">Získejte rychlejší přístup k prohlížeči Chromium z Docku na ploše.</translation>
 <translation id="5124429847818367226">Nyní můžete Chromium použít při každém procházení a pokaždé, když klepnete na odkazy ve zprávách, dokumentech a jiných aplikacích.</translation>
 <translation id="5131565040785979529">Účet, ke kterému jste přihlášeni, a způsob používání prohlížeče Chromium spravuje doména <ph name="DOMAIN" />.</translation>
 <translation id="5224391634244552924">Nemáte žádná uložená hesla. Chromium může hesla zkontrolovat, pouze když si je uložíte.</translation>
@@ -272,6 +275,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="800380310260616129">Chromium si můžete stáhnout zde.</translation>
 <translation id="8013573822802650211">Chcete-li mít své karty k dispozici všude, kde používáte Chromium, na všech zařízeních se přihlaste</translation>
 <translation id="8014091604604659473">Prohlížeč Chromium je odhlášen</translation>
+<translation id="8035379487371146621">Přesuňte Chromium do doku</translation>
 <translation id="8104697640054703121">Získejte nejsilnější zabezpečení prohlížeče Chromium před nebezpečnými weby</translation>
 <translation id="8119542592987737574">Získejte rychlejší přístup k prohlížeči Chromium z Docku na ploše iPhonu.</translation>
 <translation id="8164086860209325020">Přejděte do Nastavení prohlížeče Chromium</translation>

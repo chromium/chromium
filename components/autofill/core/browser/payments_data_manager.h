@@ -316,7 +316,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Called to indicate `credit_card` was used (to fill in a form).
   // Updates the database accordingly.
-  virtual void RecordUseOfCard(const CreditCard* card);
+  virtual void RecordUseOfCard(const CreditCard& card);
 
   // Called to indicate `iban` was used (to fill in a form). Updates the
   // database accordingly.

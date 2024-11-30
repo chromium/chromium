@@ -72,7 +72,7 @@ class MockRealtimeCrashReportingClient : public RealtimeReportingClient {
   }
 
   MOCK_METHOD4(ReportPastEvent,
-               void(const std::string&,
+               void(const std::string& name,
                     const ReportingSettings& settings,
                     base::Value::Dict event,
                     const base::Time& time));

@@ -83,6 +83,8 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
     return &children_;
   }
 
+  void DidInvalidatePaintForPlacedElement(Element* placedElement);
+
  private:
   LayoutObjectChildList* VirtualChildren() final {
     NOT_DESTROYED();

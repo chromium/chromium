@@ -356,15 +356,10 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location,
   if (state_ == State::kAttaching)
     return;
 
-  // Forward cursor location update info to the input handling delegate.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  should_process_drag_motion_events_ = false;
-#else
-  // non-lacros platforms never use global coordinates so they always process
-  // drag events.
+  // Always process drag events.
   should_process_drag_motion_events_ = true;
-#endif
 
+  // Forward cursor location update info to the input handling delegate.
   pointer_location_ = location;
 
   if (*drag_source_ == DragEventSource::kMouse) {
@@ -551,14 +546,7 @@ uint32_t WaylandWindowDragController::DispatchEvent(
        event->type() == EventType::kMouseDragged ||
        event->type() == EventType::kTouchMoved)) {
     HandleMotionEvent(event->AsLocatedEvent());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (event->type() != EventType::kTouchMoved) {
-      // Pass through touch so that touch position will be updated.
-      return POST_DISPATCH_STOP_PROPAGATION;
-    }
-#else
     return POST_DISPATCH_STOP_PROPAGATION;
-#endif
   }
   return POST_DISPATCH_PERFORM_DEFAULT;
 }

@@ -45,11 +45,7 @@ CollaborationServiceFactory::~CollaborationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 CollaborationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!context) {
-    return nullptr;
-  }
-
-  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   bool isFeatureEnabled = base::FeatureList::IsEnabled(
                               data_sharing::features::kDataSharingFeature) ||
@@ -66,6 +62,13 @@ CollaborationServiceFactory::BuildServiceInstanceFor(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto* sync_service = SyncServiceFactory::GetForProfile(profile);
+
+  // Sync service might be null in testing environment or explicitly disabled
+  // in command line. In the case sync service does not exist,
+  // CollaborationService is not usable.
+  if (!sync_service) {
+    return std::make_unique<EmptyCollaborationService>();
+  }
 
   return std::make_unique<CollaborationServiceImpl>(
       tab_group_sync_service, data_sharing_service, identity_manager,

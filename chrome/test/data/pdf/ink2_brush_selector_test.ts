@@ -7,7 +7,7 @@ import type {InkBrushSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeo
 import {assert} from 'chrome://resources/js/assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {setupMockMetricsPrivate} from './test_util.js';
+import {assertLabels, setupMockMetricsPrivate} from './test_util.js';
 
 const mockMetricsPrivate = setupMockMetricsPrivate();
 
@@ -87,6 +87,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.PEN);
+    assertLabels(selector.$.pen, 'Pen');
     assertSelectedBrush(selector, AnnotationBrushType.PEN);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_PEN, 0);
     chrome.test.succeed();
@@ -99,6 +100,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.HIGHLIGHTER);
+    assertLabels(selector.$.highlighter, 'Highlighter');
     assertSelectedBrush(selector, AnnotationBrushType.HIGHLIGHTER);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_HIGHLIGHTER, 1);
     chrome.test.succeed();
@@ -111,6 +113,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.ERASER);
+    assertLabels(selector.$.eraser, 'Eraser');
     assertSelectedBrush(selector, AnnotationBrushType.ERASER);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_ERASER, 1);
     chrome.test.succeed();
@@ -126,6 +129,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.PEN);
+    assertLabels(selector.$.pen, 'Pen');
     assertSelectedBrush(selector, AnnotationBrushType.PEN);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_ERASER, 1);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_PEN, 1);

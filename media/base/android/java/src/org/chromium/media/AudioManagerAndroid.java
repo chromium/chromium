@@ -410,11 +410,6 @@ class AudioManagerAndroid {
         mAudioManager.setMicrophoneMute(on);
     }
 
-    /** Gets  the current microphone mute state. */
-    private boolean isMicrophoneMute() {
-        return mAudioManager.isMicrophoneMute();
-    }
-
     /** Checks if the process has as specified permission or not. */
     private boolean hasPermission(String permission) {
         return ContextUtils.getApplicationContext().checkSelfPermission(permission)
@@ -455,11 +450,6 @@ class AudioManagerAndroid {
     /** Trivial helper method for debug logging */
     private static void logd(String msg) {
         Log.d(TAG, msg);
-    }
-
-    /** Trivial helper method for error logging */
-    private static void loge(String msg) {
-        Log.e(TAG, msg);
     }
 
     /** Start thread which observes volume changes on the voice stream. */

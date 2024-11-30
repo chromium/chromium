@@ -15,8 +15,8 @@ export function getHtml(this: BatchUploadAppElement) {
     <div id="subtitle">${this.dialogSubtitle_}</div>
 
     <div id="account-info-row">
-      <img id="account-icon" alt="Account icon"
-        src="${this.accountInfo_.dataPictureUrl}">
+      <img id="account-icon" alt=""
+          src="${this.accountInfo_.dataPictureUrl}">
       <div id="email">${this.accountInfo_.email}</div>
     </div>
   </div>

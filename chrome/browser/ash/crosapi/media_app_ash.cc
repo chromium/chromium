@@ -6,7 +6,7 @@
 
 namespace crosapi {
 
-MediaAppAsh::MediaAppAsh() {}
+MediaAppAsh::MediaAppAsh() = default;
 MediaAppAsh::~MediaAppAsh() = default;
 
 void MediaAppAsh::BindRemote(mojo::PendingRemote<mojom::MediaApp> remote) {

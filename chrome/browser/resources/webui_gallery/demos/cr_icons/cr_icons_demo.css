@@ -5,8 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=../demo.css.js
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #scheme=relative
- * #include=demo
+ * #include=demo cr-icons-lit
  * #css_wrapper_metadata_end */
 
 .icons {

@@ -60,8 +60,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // Metrics mediator used to check and update the metrics accordingly to the
   // user preferences.
   MetricsMediator* _metricsMediator;
-  // Container for startup information.
-  id<StartupInformation> _startupInformation;
 }
 
 // YES if application:didFinishLaunchingWithOptions: was called. Used to
@@ -82,9 +80,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
     _mainController = [[MainController alloc] init];
     _metricsMediator = [[MetricsMediator alloc] init];
     [_mainController setMetricsMediator:_metricsMediator];
-    _startupInformation = _mainController;
-    _appState =
-        [[AppState alloc] initWithStartupInformation:_startupInformation];
+    _appState = [[AppState alloc] initWithStartupInformation:_mainController];
     _pushNotificationDelegate =
         [[PushNotificationDelegate alloc] initWithAppState:_appState];
     [_mainController setAppState:_appState];
@@ -345,7 +341,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 
   // Register if it's a cold start or when bringing Chrome to foreground with
   // Content Push Notifications available.
-  if (_startupInformation.isColdStart ||
+  if (_mainController.isColdStart ||
       [self provisionalNotificationTypesEnabled]) {
     [PushNotificationUtil
         registerDeviceWithAPNSWithProvisionalNotificationsAvailable:

@@ -481,8 +481,8 @@ void ContentSettingBubbleContents::Init() {
             },
             this),
         GetSiteSettingsIcon(), bubble_content.manage_text,
-        /*secondary_text=*/std::u16string(), bubble_content.manage_tooltip,
         /*subtitle_text=*/std::u16string(), GetLaunchIcon());
+    site_settings_link->SetTooltipText(bubble_content.manage_tooltip);
     rows.push_back({std::move(site_settings_link), LayoutRowType::FULL_WIDTH});
   }
 

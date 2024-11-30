@@ -133,6 +133,11 @@ inline constexpr char kNewTabPageLocationOverride[] =
 // determine the state of the profile icon for icon format changes.
 inline constexpr char kProfileIconVersion[] = "profile.icon_version";
 
+// A boolean that keeps track of whether or not the profile icon was constructed
+// with the Windows 11 compatible badging location (badge in the upper right
+// instead of lower right on the icon).
+inline constexpr char kProfileIconWin11Format[] = "profile.icon_win11_format";
+
 // A string pref whose values is one of the values defined by
 // |ProfileImpl::kPrefExitTypeXXX|. Set to |kPrefExitTypeCrashed| on startup and
 // one of |kPrefExitTypeNormal| or |kPrefExitTypeSessionEnded| during
@@ -876,16 +881,6 @@ inline constexpr char kHatsGeneralCameraPrioritizedIsSelected[] =
 // most recent prioritized general camera survey.
 inline constexpr char kHatsGeneralCameraPrioritizedLastInteractionTimestamp[] =
     "hats_general_camera_prioritized_last_interaction_timestamp";
-
-// A boolean pref. Indicated if the device is selected for the Privacy Hub
-// post launch survey.
-inline constexpr char kHatsPrivacyHubPostLaunchIsSelected[] =
-    "hats_privacy_hub_postlaunch_is_selected";
-
-// An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicated the end of the most recent Privacy Hub post launch cycle.
-inline constexpr char kHatsPrivacyHubPostLaunchCycleEndTs[] =
-    "hats_privacy_hub_postlaunch_end_timestamp";
 
 // A boolean pref. Indicated if the device is selected for the Borealis games
 // survey.
@@ -1922,18 +1917,6 @@ inline constexpr char kNaviOnboardGroup[] = "browser.navi_onboard_group";
 inline constexpr char kHadThreeConsecutiveNotificationPermissionDenies[] =
     "profile.content_settings.had_three_consecutive_denies.notifications";
 
-// Boolean indicating whether to show a promo for the quiet notification
-// permission UI.
-inline constexpr char kQuietNotificationPermissionShouldShowPromo[] =
-    "profile.content_settings.quiet_permission_ui_promo.should_show."
-    "notifications";
-
-// Boolean indicating whether the promo was shown for the quiet notification
-// permission UI.
-inline constexpr char kQuietNotificationPermissionPromoWasShown[] =
-    "profile.content_settings.quiet_permission_ui_promo.was_shown."
-    "notifications";
-
 // Boolean indicating whether support for Data URLs in SVGUseElement should be
 // removed.
 inline constexpr char kDataUrlInSvgUseEnabled[] =
@@ -1996,14 +1979,12 @@ inline constexpr char kProactiveNudgeDisabledSitesWithTime[] =
     "compose.proactive_nudge_disabled_sites_with_time";
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
 // Integer value controlling the data region to store covered data from Chrome.
 // By default, no preference is selected.
 // - 0: No preference
 // - 1: United States
 // - 2: Europe
 inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Network annotations that are expected to be disabled based on policy values.
 // Stored as a dict with annotation hash codes as keys.
@@ -2698,6 +2679,14 @@ inline constexpr char kBasicAuthOverHttpEnabled[] =
 inline constexpr char kIsolatedWebAppInstallForceList[] =
     "profile.isolated_web_app.install.forcelist";
 
+// An integer pref that remembers how many force install initializations are
+// pending. If more than `kIsolatedWebAppForceInstallMaxRetryTreshold`
+// initializations are pending, the initialization is delayed for
+// `kIsolatedWebAppForceInstallEmergencyDelay` time (More details in
+// go/iwa-install-emergency-mechanism).
+inline constexpr char kIsolatedWebAppPendingInitializationCount[] =
+    "profile.isolated_web_app.install.pending_initialization_count";
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 // Boolean that specifies whether OK-AS-DELEGATE flag from KDC is respected
 // along with kAuthNegotiateDelegateAllowlist.
@@ -2713,14 +2702,6 @@ inline constexpr char kNtlmV2Enabled[] = "auth.ntlm_v2_enabled";
 #if BUILDFLAG(IS_CHROMEOS)
 // Boolean whether Kerberos functionality is enabled.
 inline constexpr char kKerberosEnabled[] = "kerberos.enabled";
-
-// An integer pref that remembers how many force install initializations are
-// pending. If more than `kIsolatedWebAppForceInstallMaxRetryTreshold`
-// initializations are pending, the initialization is delayed for
-// `kIsolatedWebAppForceInstallEmergencyDelay` time (More details in
-// go/iwa-install-emergency-mechanism).
-inline constexpr char kIsolatedWebAppPendingInitializationCount[] =
-    "profile.isolated_web_app.install.pending_initialization_count";
 
 // Holds URL patterns that specify origins that will be allowed to call
 // `subApps.{add|remove|list}())` without prior user gesture and that will skip
@@ -3257,6 +3238,12 @@ inline constexpr char kOsUpdateHandlerEnabled[] = "os_update_handler_enabled";
 inline constexpr char kFeatureNotificationsEnabled[] =
     "feature_notifications_enabled";
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+inline constexpr char kInternalOnlyUisEnabled[] = "internal_only_uis_enabled";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
@@ -3865,6 +3852,7 @@ inline constexpr char kSignedHTTPExchangeEnabled[] =
 // Controlled by ClientCertificateManagementAllowed policy.
 inline constexpr char kClientCertificateManagementAllowed[] =
     "client_certificate_management_allowed";
+#endif
 
 // Enum that specifies CA certificate management permissions for user. It
 // can have one of the following values.
@@ -3874,7 +3862,6 @@ inline constexpr char kClientCertificateManagementAllowed[] =
 // Controlled by CACertificateManagementAllowed policy.
 inline constexpr char kCACertificateManagementAllowed[] =
     "ca_certificate_management_allowed";
-#endif
 
 // Dictionary that contains all of the Hats Survey Metadata for desktop surveys.
 inline constexpr char kHatsSurveyMetadata[] = "hats.survey_metadata";
@@ -3985,59 +3972,6 @@ inline constexpr char kSecurityTokenSessionNotificationSeconds[] =
 inline constexpr char kSecurityTokenSessionNotificationScheduledDomain[] =
     "security_token_session_notification_scheduled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_ANDROID)
-// Boolean pref indicating whether user has hidden the cart module on NTP.
-inline constexpr char kCartModuleHidden[] = "cart_module_hidden";
-// An integer that keeps track of how many times welcome surface has shown in
-// cart module.
-inline constexpr char kCartModuleWelcomeSurfaceShownTimes[] =
-    "cart_module_welcome_surface_shown_times";
-// Boolean pref indicating whether user has reacted to the consent for
-// rule-based discount in cart module.
-inline constexpr char kCartDiscountAcknowledged[] =
-    "cart_discount_acknowledged";
-// Boolean pref indicating whether user has enabled rule-based discount in cart
-// module.
-inline constexpr char kCartDiscountEnabled[] = "cart_discount_enabled";
-// Map pref recording the discounts used by users.
-inline constexpr char kCartUsedDiscounts[] = "cart_used_discounts";
-// A time pref indicating the timestamp of when last cart discount fetch
-// happened.
-inline constexpr char kCartDiscountLastFetchedTime[] =
-    "cart_discount_last_fetched_time";
-// Boolean pref indicating whether the consent for discount has ever shown or
-// not.
-inline constexpr char kCartDiscountConsentShown[] =
-    "cart_discount_consent_shown";
-// Integer pref indicating in which variation the user has made their decision,
-// accept or reject the consent.
-inline constexpr char kDiscountConsentDecisionMadeIn[] =
-    "discount_consent_decision_made_in";
-// Integer pref indicating in which variation the user has dismissed the
-// consent. Only the Inline and Dialog variation applies.
-inline constexpr char kDiscountConsentDismissedIn[] =
-    "discount_consent_dismissed_in";
-// A time pref indicating the timestamp of when user last explicitly dismissed
-// the discount consent.
-inline constexpr char kDiscountConsentLastDimissedTime[] =
-    "discount_consent_last_dimissed_time";
-// Integer pref indicating the last consent was shown in which variation.
-inline constexpr char kDiscountConsentLastShownInVariation[] =
-    "discount_consent_last_shown_in";
-// An integer pref that keeps track of how many times user has explicitly
-// dismissed the disount consent.
-inline constexpr char kDiscountConsentPastDismissedCount[] =
-    "discount_consent_dismissed_count";
-// Boolean pref indicating whether the user has shown interest in the consent,
-// e.g. if the use has clicked the 'continue' button.
-inline constexpr char kDiscountConsentShowInterest[] =
-    "discount_consent_show_interest";
-// Integer pref indicating in which variation the user has shown interest to the
-// consent, they has clicked the 'continue' button.
-inline constexpr char kDiscountConsentShowInterestIn[] =
-    "discount_consent_show_interest_in";
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 // Boolean pref controlling whether immersive AR sessions are enabled

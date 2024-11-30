@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -369,8 +370,7 @@ void ImageResourceContent::UpdateToLoadedContentStatus(
       break;
 
     case ResourceStatus::kNotStarted:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 
   // Updates the status.
@@ -381,8 +381,7 @@ void ImageResourceContent::NotifyStartLoad() {
   // Checks ImageResourceContent's previous status.
   switch (GetContentStatus()) {
     case ResourceStatus::kPending:
-      CHECK(false);
-      break;
+      NOTREACHED();
 
     case ResourceStatus::kNotStarted:
       // Normal load start.

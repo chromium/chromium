@@ -29,6 +29,7 @@
 #include "components/variations/cros_evaluate_seed/early_boot_enabled_state_provider.h"
 #include "components/variations/cros_evaluate_seed/early_boot_feature_visitor.h"
 #include "components/variations/cros_evaluate_seed/early_boot_safe_seed.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/service/variations_service.h"
@@ -63,9 +64,6 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
 
   CrosVariationsServiceClient client;
 
-  std::unique_ptr<CrOSVariationsFieldTrialCreator> field_trial_creator =
-      std::move(get_creator).Run(local_state.get(), &client, safe_seed_details);
-
   EarlyBootEnabledStateProvider enabled_state_provider;
 
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
@@ -76,6 +74,16 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
           /*user_data_dir=*/base::FilePath(),
           metrics::StartupVisibility::kForeground);
   metrics_state_manager->InstantiateFieldTrialList();
+
+  // TODO(crbug.com/380435316): Verify it is okay to not enable limited entropy
+  // mode here.
+  std::unique_ptr<const variations::EntropyProviders> entropy_providers =
+      metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false);
+  std::unique_ptr<CrOSVariationsFieldTrialCreator> field_trial_creator =
+      std::move(get_creator)
+          .Run(local_state.get(), &client, safe_seed_details,
+               entropy_providers.get());
 
   auto feature_list = std::make_unique<base::FeatureList>();
 
@@ -96,9 +104,7 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false,
-      *metrics_state_manager->CreateEntropyProviders(
-          /*enable_limited_entropy_mode=*/false));
+      /*add_entropy_source_to_variations_ids=*/false, *entropy_providers);
 
   if (used_seed) {
     if (seed_type == SeedType::kRegularSeed) {
@@ -253,18 +259,21 @@ std::optional<SafeSeed> GetSafeSeedData(FILE* stream) {
 std::unique_ptr<CrOSVariationsFieldTrialCreator> GetFieldTrialCreator(
     PrefService* local_state,
     CrosVariationsServiceClient* client,
-    const std::optional<featured::SeedDetails>& safe_seed_details) {
+    const std::optional<featured::SeedDetails>& safe_seed_details,
+    const variations::EntropyProviders* entropy_providers) {
   std::unique_ptr<VariationsSafeSeedStore> safe_seed;
   if (safe_seed_details.has_value()) {
     safe_seed = std::make_unique<EarlyBootSafeSeed>(safe_seed_details.value());
   } else {
     safe_seed = std::make_unique<VariationsSafeSeedStoreLocalState>(
-        local_state, client->GetVariationsSeedFileDir());
+        local_state, client->GetVariationsSeedFileDir(),
+        client->GetChannelForVariations(), entropy_providers);
   }
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,
       /*signature_verification_enabled=*/true, std::move(safe_seed),
-      client->GetChannelForVariations(), client->GetVariationsSeedFileDir());
+      client->GetChannelForVariations(), client->GetVariationsSeedFileDir(),
+      entropy_providers);
 
   return std::make_unique<CrOSVariationsFieldTrialCreator>(
       client, std::move(seed_store));

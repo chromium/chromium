@@ -18,7 +18,6 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_snapshot.h"
@@ -197,12 +196,12 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
 
   SkColorSpacePrimaries output_primaries =
       display_snapshot.color_info().edid_primaries;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not allow display_snapshot and connector property state to go out of
   // sync. HDR capability is determined in
   // gfx::DisplayUtil::GetColorSpaceFromEdid
   if (display_snapshot.color_space() == gfx::ColorSpace::CreateHDR10()) {
-    output_primaries = SkNamedPrimariesExt::kRec2020;
+    output_primaries = SkNamedPrimaries::kRec2020;
     SetColorspaceProperty(display_snapshot.color_space());
     SetHdrOutputMetadata(display_snapshot.color_space());
   } else {
@@ -460,7 +459,6 @@ gfx::HDRStaticMetadata::Eotf DrmDisplay::GetEotf(
     case gfx::ColorSpace::TransferID::SRGB_HDR:
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
     case gfx::ColorSpace::TransferID::CUSTOM_HDR:
-    case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
     case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
       return gfx::HDRStaticMetadata::Eotf::kGammaHdrRange;
     default:

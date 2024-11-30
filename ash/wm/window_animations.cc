@@ -154,7 +154,7 @@ class CrossFadeObserver : public aura::WindowObserver,
     window_->AddObserver(this);
 
     smoothness_tracker_ =
-        layer_->GetCompositor()->RequestNewThroughputTracker();
+        layer_->GetCompositor()->RequestNewCompositorMetricsTracker();
     smoothness_tracker_->Start(
         metrics_util::ForSmoothnessV3(base::BindRepeating(
             [](const std::optional<std::string>& histogram_name,

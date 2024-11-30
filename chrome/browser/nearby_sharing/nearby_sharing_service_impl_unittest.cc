@@ -561,9 +561,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     service_ = CreateService();
     SetFakeFastInitiationAdvertiserFactory(/*should_succeed_on_start=*/true);
 
-    // Visibility timer starts on |service_| creation because default visibility
-    // is 'Your Devices'.
-    EXPECT_TRUE(IsVisibilityReminderTimerRunning());
+    EXPECT_FALSE(IsVisibilityReminderTimerRunning());
 
     service_->set_free_disk_space_for_testing(kFreeDiskSpace);
 
@@ -2187,7 +2185,6 @@ TEST_P(NearbySharingServiceImplTest,
   prefs_.SetBoolean(prefs::kNearbySharingEnabledPrefName, false);
   service_->FlushMojoForTesting();
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
-  EXPECT_TRUE(fake_nearby_connections_manager_->is_shutdown());
 }
 
 TEST_P(NearbySharingServiceImplTest, UnregisterSendSurfaceStopsDiscovering) {
@@ -2204,6 +2201,10 @@ TEST_P(NearbySharingServiceImplTest, UnregisterSendSurfaceStopsDiscovering) {
       NearbySharingService::StatusCodes::kOk,
       service_->UnregisterSendSurface(&transfer_callback, &discovery_callback));
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+  EXPECT_TRUE(IsBoundToProcess());
+  FireProcessShutdownIfRunning();
+  EXPECT_FALSE(IsBoundToProcess());
 }
 
 TEST_P(NearbySharingServiceImplTest,
@@ -2226,8 +2227,6 @@ TEST_P(NearbySharingServiceImplTest,
 }
 
 TEST_P(NearbySharingServiceImplTest, UnregisterSendSurfaceNeverRegistered) {
-  // Set visibility to Hidden to stop advertising.
-  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
   MockTransferUpdateCallback transfer_callback;
@@ -2744,8 +2743,6 @@ TEST_P(NearbySharingServiceImplTest,
 }
 
 TEST_P(NearbySharingServiceImplTest, UnregisterReceiveSurfaceStopsAdvertising) {
-  // Set visibility to Hidden to stop advertising.
-  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
@@ -2780,8 +2777,6 @@ TEST_P(NearbySharingServiceImplTest,
 }
 
 TEST_P(NearbySharingServiceImplTest, UnregisterReceiveSurfaceNeverRegistered) {
-  // Set visibility to Hidden to stop advertising.
-  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
   MockTransferUpdateCallback callback;
@@ -5093,10 +5088,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Range<size_t>(0, 1 << kTestFeatures.size())));
 
 TEST_P(NearbySharingServiceImplTest, ProcessShutdownTimerDoesNotRestart) {
-  // Set visibility to Hidden to deactivate advertising to start the process
-  // shutdown timer.
-  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
-
   EXPECT_TRUE(IsBoundToProcess());
   EXPECT_TRUE(IsProcessShutdownTimerRunning());
 
@@ -5124,9 +5115,9 @@ TEST_P(NearbySharingServiceImplTest, ProcessShutdownTimerDoesNotRestart) {
 }
 
 TEST_P(NearbySharingServiceImplTest, NoShutdownTimerWithoutProcessRef) {
+  EXPECT_TRUE(IsBoundToProcess());
+  EXPECT_TRUE(IsProcessShutdownTimerRunning());
   FireProcessShutdownIfRunning();
-  // Reset process reference.
-  SetIsEnabled(false);
   EXPECT_FALSE(IsBoundToProcess());
   EXPECT_FALSE(IsProcessShutdownTimerRunning());
 

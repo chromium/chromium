@@ -422,9 +422,10 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityForeground) {
   [user_activity setWebpageURL:net::NSURLWithGURL(gurl)];
 
   AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-      initWithExternalURL:gurl
-              completeURL:gurl
-          applicationMode:ApplicationModeForTabOpening::NORMAL];
+       initWithExternalURL:gurl
+               completeURL:gurl
+           applicationMode:ApplicationModeForTabOpening::NORMAL
+      forceApplicationMode:NO];
   [connection_information_ setStartupParameters:startup_params];
 
   // Action.
@@ -626,8 +627,9 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityIntentForeground) {
   }
 
   AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-         initWithURLs:URLs
-      applicationMode:ApplicationModeForTabOpening::NORMAL];
+              initWithURLs:URLs
+           applicationMode:ApplicationModeForTabOpening::NORMAL
+      forceApplicationMode:NO];
   [connection_information_ setStartupParameters:startup_params];
 
   // Action.
@@ -650,9 +652,10 @@ TEST_F(UserActivityBrowserAgentTest, HandleStartupParamsWithExternalFile) {
   GURL complete_url("file://test.pdf");
 
   AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-      initWithExternalURL:external_url
-              completeURL:complete_url
-          applicationMode:ApplicationModeForTabOpening::INCOGNITO];
+       initWithExternalURL:external_url
+               completeURL:complete_url
+           applicationMode:ApplicationModeForTabOpening::INCOGNITO
+      forceApplicationMode:NO];
   [connection_information_ setStartupParameters:startup_params];
 
   // Action.

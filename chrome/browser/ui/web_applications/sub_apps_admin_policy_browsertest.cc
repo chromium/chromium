@@ -73,7 +73,11 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
             browser()->profile(), iwa_dev_server_->GetOrigin());
     parent_app_id_ = parent_app.app_id();
 
-    EXPECT_THAT(provider().registrar_unsafe().IsInstalled(parent_app_id_),
+    EXPECT_THAT(provider().registrar_unsafe().IsInstallState(
+                    parent_app_id_,
+                    {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}),
                 IsTrue());
     EXPECT_THAT(provider().registrar_unsafe().IsIsolated(parent_app_id_),
                 IsTrue());

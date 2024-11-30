@@ -1379,7 +1379,18 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Any time the tooltip text that a View is displaying changes, it must
   // invoke TooltipTextChanged.
   // |p| provides the coordinates of the mouse (relative to this view).
+  // TODO(crbug.com/378724151): Remove this implementation and all its overrides
+  // once the refactor is done.
   virtual std::u16string GetTooltipText(const gfx::Point& p) const;
+
+  // Gets the cached tooltip for this View. If the View does not have a tooltip,
+  // the returned value should be empty.
+  // Any time the tooltip text that a View is displaying changes, it must
+  // invoke TooltipTextChanged.
+  // TODO(crbug.com/378724151): When the refator is done, rename this method to
+  // GetTooltipText and remove the other GetTooltipText method.
+  const std::u16string& GetCachedTooltipText() const;
+  void SetCachedTooltipText(const std::u16string& text);
 
   // Views will normally display tooltips (if any) when they are focused
   // (which usually happens via a keyboard event). Because they are both
@@ -1946,6 +1957,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   void OnPropertyChanged(ui::metadata::PropertyKey property,
                          PropertyEffects property_effects);
+
+  // TODO(crbug.com/378724151): Once refactor is done, rename this member to
+  // `tooltip_text_`.
+  std::u16string cached_tooltip_text_;
 
  private:
   friend class internal::PreEventDispatchHandler;

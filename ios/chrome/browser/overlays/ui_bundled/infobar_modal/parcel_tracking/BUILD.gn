@@ -12,6 +12,7 @@ source_set("parcel_tracking") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/infobars/ui_bundled/modals/parcel_tracking",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:mediators",
@@ -19,7 +20,6 @@ source_set("parcel_tracking") {
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/infobars/modals/parcel_tracking",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
   ]
 }

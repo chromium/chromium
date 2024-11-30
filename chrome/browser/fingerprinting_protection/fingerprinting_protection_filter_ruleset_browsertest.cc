@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   histogram_tester.ExpectTotalCount(kIndexRulesetWallDurationHistogram, 1);
   histogram_tester.ExpectUniqueSample(
       kIndexRulesetWriteRulesetResultHistogram,
-      subresource_filter::RulesetService::IndexAndWriteRulesetResult::SUCCESS,
+      subresource_filter::RulesetService::IndexAndWriteRulesetResult::kSuccess,
       1);
 }
 

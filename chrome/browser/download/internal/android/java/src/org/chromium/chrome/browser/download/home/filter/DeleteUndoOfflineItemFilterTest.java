@@ -18,13 +18,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Unit tests for the DeleteUndoOfflineItemFilter class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,7 +45,7 @@ public class DeleteUndoOfflineItemFilterTest {
         OfflineItem item1 = buildItem(id1);
         OfflineItem item2 = buildItem(id2);
         OfflineItem item3 = buildItem(id3);
-        Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2, item3);
+        HashSet<OfflineItem> sourceItems = new HashSet<>(Set.of(item1, item2, item3));
         when(mSource.getItems()).thenReturn(sourceItems);
 
         DeleteUndoOfflineItemFilter filter = new DeleteUndoOfflineItemFilter(mSource);
@@ -53,37 +53,37 @@ public class DeleteUndoOfflineItemFilterTest {
         Assert.assertEquals(sourceItems, filter.getItems());
 
         // Test removing items.
-        filter.addPendingDeletions(CollectionUtil.newHashSet(item1, item2));
-        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item1, item2));
-        Assert.assertEquals(CollectionUtil.newHashSet(item3), filter.getItems());
+        filter.addPendingDeletions(Set.of(item1, item2));
+        verify(mObserver, times(1)).onItemsRemoved(Set.of(item1, item2));
+        Assert.assertEquals(Set.of(item3), filter.getItems());
 
         // Test removing more items.
-        filter.addPendingDeletions(CollectionUtil.newHashSet(item3));
-        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item3));
+        filter.addPendingDeletions(Set.of(item3));
+        verify(mObserver, times(1)).onItemsRemoved(Set.of(item3));
         Assert.assertEquals(Collections.emptySet(), filter.getItems());
 
         // Test undoing items across removals.
-        filter.removePendingDeletions(CollectionUtil.newHashSet(item1, item3));
-        verify(mObserver, times(1)).onItemsAdded(CollectionUtil.newHashSet(item1, item3));
-        Assert.assertEquals(CollectionUtil.newHashSet(item1, item3), filter.getItems());
+        filter.removePendingDeletions(Set.of(item1, item3));
+        verify(mObserver, times(1)).onItemsAdded(Set.of(item1, item3));
+        Assert.assertEquals(Set.of(item1, item3), filter.getItems());
 
         // Test undoing another removal.
-        filter.removePendingDeletions(CollectionUtil.newHashSet(item2));
-        verify(mObserver, times(1)).onItemsAdded(CollectionUtil.newHashSet(item2));
+        filter.removePendingDeletions(Set.of(item2));
+        verify(mObserver, times(1)).onItemsAdded(Set.of(item2));
         Assert.assertEquals(sourceItems, filter.getItems());
 
         // Test removing a pending item has no effect.
-        filter.addPendingDeletions(CollectionUtil.newHashSet(item1));
-        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item1));
+        filter.addPendingDeletions(Set.of(item1));
+        verify(mObserver, times(1)).onItemsRemoved(Set.of(item1));
 
         sourceItems.remove(item1);
-        filter.onItemsRemoved(CollectionUtil.newHashSet(item1));
+        filter.onItemsRemoved(Set.of(item1));
 
         // Test adding and removing an item that is not in the list.
         ContentId id4 = new ContentId("test", "4");
         OfflineItem item4 = buildItem(id4);
-        filter.addPendingDeletions(CollectionUtil.newHashSet(item4));
-        filter.removePendingDeletions(CollectionUtil.newHashSet(item4));
+        filter.addPendingDeletions(Set.of(item4));
+        filter.removePendingDeletions(Set.of(item4));
 
         verifyNoMoreInteractions(mObserver);
     }

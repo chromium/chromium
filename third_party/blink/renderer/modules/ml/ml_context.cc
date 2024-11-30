@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_quantize_dequantize_linear_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_scatter_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_single_input_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h"
@@ -869,10 +870,10 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.softsign_input));
   op_support_limits->setSoftsign(softsign);
 
-  MLSingleInputSupportLimits* split = MLSingleInputSupportLimits::Create();
+  MLSplitSupportLimits* split = MLSplitSupportLimits::Create();
   split->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.split_input));
-  split->setOutput(
+  split->setOutputs(
       SupportedDataTypesToSupportLimits(data_type_limits.split_input));
   op_support_limits->setSplit(split);
 

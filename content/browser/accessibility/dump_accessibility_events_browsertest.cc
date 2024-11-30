@@ -82,6 +82,9 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
                                     "KeyboardFocusableScrollers");
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "ShadowRootReferenceTarget");
+    // Enable AOMAriaRelationshipProperties
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AOMAriaRelationshipProperties");
     DumpAccessibilityTestBase::SetUpCommandLine(command_line);
   }
 
@@ -218,6 +221,20 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DumpAccessibilityEventsTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     DumpAccessibilityEventsTestExceptUIA);
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    AccessibilityEventsAriaActivedescendantIdAndTreeChanges) {
+  RunEventTest(
+      FILE_PATH_LITERAL("aria-activedescendant-id-and-tree-changes.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    AccessibilityEventsAriaActivedescendantElementTreeChanges) {
+  RunEventTest(
+      FILE_PATH_LITERAL("aria-activedescendant-element-tree-changes.html"));
+}
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaAtomicChanged) {
@@ -923,6 +940,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsReparentElementWithActiveDescendant) {
   RunEventTest(
       FILE_PATH_LITERAL("reparent-element-with-active-descendant.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    AccessibilityEventsReparentElementWithActiveDescendantElement) {
+  RunEventTest(
+      FILE_PATH_LITERAL("reparent-element-with-activedescendant-element.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,

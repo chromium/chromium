@@ -17,6 +17,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -115,6 +116,13 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   bool IsCmdDown() const;
   bool IsFunctionDown() const;
   bool IsRepeat() const;
+
+#if BUILDFLAG(USE_BLINK)
+  // Returns true if the specified accelerator is one of the following
+  // multimedia keys: Next Track key, Previous Track key, Stop Media key,
+  // Play/Pause Media key, without any modifiers.
+  bool IsMediaKey() const;
+#endif
 
   // Returns a string with the localized shortcut if any.
   std::u16string GetShortcutText() const;

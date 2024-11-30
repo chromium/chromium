@@ -5,76 +5,23 @@
 package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.Intent;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.offline_items_collection.LaunchLocation;
-import org.chromium.components.offline_items_collection.LegacyHelpers;
-import org.chromium.components.offline_items_collection.OpenParams;
 
 /** Class for displaying a snackbar when a download completes. */
 public class DownloadSnackbarController implements SnackbarManager.SnackbarController {
     public static final int INVALID_NOTIFICATION_ID = -1;
     private static final int SNACKBAR_DURATION_MS = 7000;
 
-    private static class ActionDataInfo {
-        public final DownloadInfo downloadInfo;
-        public final int notificationId;
-        public final long systemDownloadId;
-        public final boolean usesAndroidDownloadManager;
-
-        ActionDataInfo(
-                DownloadInfo downloadInfo,
-                int notificationId,
-                long systemDownloadId,
-                boolean usesAndroidDownloadManager) {
-            this.downloadInfo = downloadInfo;
-            this.notificationId = notificationId;
-            this.systemDownloadId = systemDownloadId;
-            this.usesAndroidDownloadManager = usesAndroidDownloadManager;
-        }
-    }
-
     @Override
     public void onAction(Object actionData) {
-        if (!(actionData instanceof ActionDataInfo)) {
-            DownloadManagerService.openDownloadsPage(
-                    /* otrProfileId= */ null, DownloadOpenSource.SNACK_BAR);
-            return;
-        }
-
-        DownloadManagerService manager = DownloadManagerService.getDownloadManagerService();
-        final ActionDataInfo download = (ActionDataInfo) actionData;
-        if (LegacyHelpers.isLegacyDownload(download.downloadInfo.getContentId())) {
-            if (download.usesAndroidDownloadManager) {
-                ContextUtils.getApplicationContext()
-                        .startActivity(
-                                new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
-                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            } else {
-                manager.openDownloadedContent(
-                        download.downloadInfo,
-                        download.systemDownloadId,
-                        DownloadOpenSource.SNACK_BAR);
-            }
-        } else {
-            OfflineContentAggregatorNotificationBridgeUiFactory.instance()
-                    .openItem(
-                            new OpenParams(LaunchLocation.PROGRESS_BAR),
-                            download.downloadInfo.getContentId());
-        }
-
-        if (download.notificationId != INVALID_NOTIFICATION_ID) {
-            manager.getDownloadNotifier()
-                    .removeDownloadNotification(download.notificationId, download.downloadInfo);
-        }
+        DownloadManagerService.openDownloadsPage(
+                /* otrProfileId= */ null, DownloadOpenSource.SNACK_BAR);
     }
 
     @Override

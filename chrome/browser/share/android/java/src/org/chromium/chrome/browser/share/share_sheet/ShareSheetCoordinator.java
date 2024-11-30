@@ -396,7 +396,6 @@ public class ShareSheetCoordinator
             long shareStartTime,
             Profile profile) {
         recordShareMetrics(featureName, linkGenerationStatus, linkToggleMetricsDetails, profile);
-        recordTimeToShare(shareStartTime);
         if (shareActionType != ShareCustomAction.INVALID) {
             ShareMetricsUtils.recordShareUserAction(shareActionType, shareStartTime);
         }
@@ -423,12 +422,6 @@ public class ShareSheetCoordinator
 
         ShareSheetLinkToggleMetricsHelper.recordLinkToggleSharedStateMetric(
                 linkToggleMetricsDetails);
-    }
-
-    private static void recordTimeToShare(long shareStartTime) {
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Sharing.SharingHubAndroid.TimeToShare",
-                System.currentTimeMillis() - shareStartTime);
     }
 
     protected void disableFirstPartyFeaturesForTesting() {

@@ -137,12 +137,14 @@ suite('ProductSpecificationsTableTest', () => {
                 title: '',
                 faviconUrl: {url: ''},
                 thumbnailUrl: {url: ''},
+                previewText: '',
               },
               {
                 url: {url: 'http://example.com/citation2'},
                 title: '',
                 faviconUrl: {url: ''},
                 thumbnailUrl: {url: ''},
+                previewText: '',
               },
             ],
           }],
@@ -172,6 +174,7 @@ suite('ProductSpecificationsTableTest', () => {
                 title: '',
                 faviconUrl: {url: ''},
                 thumbnailUrl: {url: ''},
+                previewText: '',
               },
             ],
           }],
@@ -332,6 +335,32 @@ suite('ProductSpecificationsTableTest', () => {
     const openTabButton = $$<HTMLElement>(tableElement, '.open-tab-button');
     assertTrue(!!openTabButton);
     openTabButton!.click();
+
+    // Assert.
+    assertEquals(1, shoppingServiceApi.getCallCount('switchToOrOpenTab'));
+    assertEquals(
+        testUrl, shoppingServiceApi.getArgs('switchToOrOpenTab')[0].url);
+  });
+
+  test('opens tab when product image is clicked', async () => {
+    // Arrange
+    const testUrl = 'https://example.com';
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: testUrl,
+          imageUrl: 'https://example.com/image',
+        },
+        productDetails: [],
+      },
+    ];
+    await waitAfterNextRender(tableElement);
+
+    // Act
+    const productImage = $$<HTMLElement>(tableElement, '.main-image');
+    assertTrue(!!productImage);
+    productImage!.click();
 
     // Assert.
     assertEquals(1, shoppingServiceApi.getCallCount('switchToOrOpenTab'));

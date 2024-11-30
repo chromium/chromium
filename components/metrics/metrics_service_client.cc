@@ -5,6 +5,7 @@
 #include "components/metrics/metrics_service_client.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -138,7 +139,19 @@ base::TimeDelta MetricsServiceClient::GetUploadInterval() {
     LOG(DFATAL) << "Malformed value for --metrics-upload-interval. "
                 << "Expected int, got: " << switch_value;
   }
+
+  // Use a custom interval if available.
+  if (auto custom_interval = GetCustomUploadInterval();
+      custom_interval.has_value()) {
+    return *custom_interval;
+  }
+
   return GetStandardUploadInterval();
+}
+
+std::optional<base::TimeDelta> MetricsServiceClient::GetCustomUploadInterval()
+    const {
+  return std::nullopt;
 }
 
 bool MetricsServiceClient::ShouldStartUpFastForTesting() const {

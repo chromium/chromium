@@ -82,11 +82,6 @@ void RecordUmaPreSubmitBufferingDelay(bool is_media_stream,
     base::UmaHistogramTimes(
         "Media.VideoFrameSubmitter.Video.PreSubmitBuffering", delay);
   }
-
-  // TODO(crbug.com/364352012): This will be removed once expired, kept for now
-  // due to internal dependencies.
-  base::UmaHistogramTimes("Media.VideoFrameSubmitter.PreSubmitBuffering",
-                          delay);
 }
 
 }  // namespace
@@ -229,8 +224,6 @@ VideoFrameSubmitter::~VideoFrameSubmitter() {
     shared_image_interface_->gpu_channel()->RemoveObserver(this);
   }
 
-  // Release VideoFrameResourceProvider early since its destruction will make
-  // calls back into this class via the viz::SharedBitmapReporter interface.
   resource_provider_.reset();
 }
 
@@ -590,32 +583,29 @@ void VideoFrameSubmitter::ReclaimResources(
   resource_provider_->ReceiveReturnsFromParent(std::move(resources));
 }
 
-void VideoFrameSubmitter::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(compositor_frame_sink_);
-  compositor_frame_sink_->DidAllocateSharedBitmap(std::move(region), id);
-}
-
-void VideoFrameSubmitter::DidDeleteSharedBitmap(const viz::SharedBitmapId& id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(compositor_frame_sink_);
-  compositor_frame_sink_->DidDeleteSharedBitmap(id);
-}
-
 void VideoFrameSubmitter::OnReceivedContextProvider(
     bool use_gpu_compositing,
     scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  constexpr base::TimeDelta kGetContextProviderRetryTimeout =
+      base::Milliseconds(150);
 
   if (!use_gpu_compositing) {
     shared_image_interface_ = std::move(shared_image_interface);
-    if (shared_image_interface_) {
-      shared_image_interface_->gpu_channel()->AddObserver(this);
+    if (!shared_image_interface_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              context_provider_callback_, context_provider_,
+              base::BindOnce(&VideoFrameSubmitter::OnReceivedContextProvider,
+                             weak_ptr_factory_.GetWeakPtr())),
+          kGetContextProviderRetryTimeout);
+      return;
     }
-    resource_provider_->Initialize(nullptr, this, shared_image_interface_);
+
+    shared_image_interface_->gpu_channel()->AddObserver(this);
+    resource_provider_->Initialize(nullptr, shared_image_interface_);
     if (frame_sink_id_.is_valid()) {
       StartSubmitting();
     }
@@ -623,8 +613,6 @@ void VideoFrameSubmitter::OnReceivedContextProvider(
   }
 
   if (!MaybeAcceptContextProvider(std::move(context_provider))) {
-    constexpr base::TimeDelta kGetContextProviderRetryTimeout =
-        base::Milliseconds(150);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -636,7 +624,7 @@ void VideoFrameSubmitter::OnReceivedContextProvider(
   }
 
   context_provider_->AddObserver(this);
-  resource_provider_->Initialize(context_provider_.get(), nullptr,
+  resource_provider_->Initialize(context_provider_.get(),
                                  /*shared_image_interface*/ nullptr);
 
   if (frame_sink_id_.is_valid())
@@ -846,7 +834,10 @@ bool VideoFrameSubmitter::SubmitFrame(
   const auto& quad_list = compositor_frame.render_pass_list.back()->quad_list;
   if (!quad_list.empty()) {
     DCHECK_EQ(quad_list.size(), 1u);
-    resources.Assign(quad_list.front()->resources);
+    auto resource_id = quad_list.front()->resource_id;
+    if (resource_id != viz::kInvalidResourceId) {
+      resources.push_back(resource_id);
+    }
   }
 
   WebVector<viz::TransferableResource> resource_list;

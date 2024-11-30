@@ -11,7 +11,7 @@
 <div id="test"></div>
 <script>
     const div = document.querySelector("#test");
-    const expected = '-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(0, 171, 235)), to(rgb(255, 255, 255)), color-stop(0.5, rgb(255, 255, 255)))'
+    const expected = '-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(0, 171, 235)), to(rgb(255, 255, 255)), color-stop(calc(50%), rgb(255, 255, 255)))'
     test(function() {
         assert_equals(getComputedStyle(div).backgroundImage, expected);
     }, "calc() in webkit-gradient");

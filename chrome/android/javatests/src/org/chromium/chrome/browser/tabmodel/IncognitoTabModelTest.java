@@ -70,7 +70,9 @@ public class IncognitoTabModelTest {
     private class CloseAllDuringAddTabTabModelObserver implements TabModelObserver {
         @Override
         public void willAddTab(Tab tab, @TabLaunchType int type) {
-            mIncognitoTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+            mIncognitoTabModel
+                    .getTabRemover()
+                    .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
         }
     }
 

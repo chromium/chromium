@@ -3743,6 +3743,15 @@ be describing additional metrics about the same event.
       `kFederatedIdentityAutoReauthnEmbargoDuration`).
     </summary>
   </metric>
+  <metric name="Button.AccountChooserResult" enum="FedCmAccountChooserResult">
+    <summary>
+      Records the outcome of the first account chooser the user sees in a button
+      flow. Recorded at most once per button flow. For example, if the user
+      selects an account on the account chooser, one sample is recorded. If the
+      user clicks on the back button in the next dialog, an account chooser is
+      shown again and leaving would not record a second sample.
+    </summary>
+  </metric>
   <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
     <summary>
       Records the type of frame that invokes disconnect(). Records once for each
@@ -3960,6 +3969,16 @@ be describing additional metrics about the same event.
       when the id token response is received.
     </summary>
   </metric>
+  <metric name="UseOtherAccountResult" enum="FedCmUseOtherAccountResult">
+    <summary>
+      Records the outcome of the user clicking on the &quot;use other
+      account&quot; button in FedCM. Recorded once per API call when the user
+      attempts to login with a new account via the &quot;use other account&quot;
+      button, when the request is fulfilled (either resolved or rejected). Only
+      considers the last &quot;use other account&quot; button clicked if there
+      are multiple attempts.
+    </summary>
+  </metric>
 </event>
 
 <event name="Blink.FedCmIdp">
@@ -4139,6 +4158,16 @@ be describing additional metrics about the same event.
     <summary>
       Records the overall time (in milliseconds) from when the API is called to
       when the id token response is received.
+    </summary>
+  </metric>
+  <metric name="UseOtherAccountResult" enum="FedCmUseOtherAccountResult">
+    <summary>
+      Records the outcome of the user clicking on the &quot;use other
+      account&quot; button in FedCM. Recorded once per API call when the user
+      attempts to login with a new account via the &quot;use other account&quot;
+      button, when the request is fulfilled (either resolved or rejected). Only
+      considers the last &quot;use other account&quot; button clicked if there
+      are multiple attempts.
     </summary>
   </metric>
 </event>
@@ -8073,6 +8102,61 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FacilitatedPayments.Pix.FopSelectorResult">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged when the FoP selector UI for Pix is closed.
+  </summary>
+  <metric name="Result" enum="Boolean">
+    <summary>
+      Set to true after user accepted the FoP selector UI and selected a FoP to
+      use, and to false after user rejected/dismissed the FoP selector UI.
+    </summary>
+  </metric>
+</event>
+
+<event name="FacilitatedPayments.Pix.FopSelectorShown">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged after the FoP selector UI is shown.
+  </summary>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      Always set to true. So acts as a counter for the number of times a FoP
+      selector is shown for Pix.
+    </summary>
+  </metric>
+</event>
+
+<event name="FacilitatedPayments.Pix.InitiatePurchaseActionResult">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged after getting response from the
+    InitiatePurchaseAction call to the server.
+  </summary>
+  <metric name="Result" enum="FacilitatedPayments.InitiatePurchaseActionResult">
+    <summary>
+      The result of the InitiatePurchaseAction call.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="FacilitatedPayments.Pix.Transaction">
   <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>
@@ -8104,6 +8188,23 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+</event>
+
+<event name="FacilitatedPayments.PixCodeCopied">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged after a likely Pix code is copied to the clipboard
+    on an allowlisted website.
+  </summary>
+  <metric name="PixCodeCopied" enum="Boolean">
+    <summary>
+      Always set to true. So acts as a counter for the number of times a likely
+      Pix code is copied.
+    </summary>
   </metric>
 </event>
 
@@ -11481,6 +11582,326 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Lens.Overlay.ContextualSearchbox.FocusedInSession">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by page
+    content type. Records whether the contextual searchbox was focused at least
+    once in sessions in which it was shown.
+  </summary>
+  <metric name="AllPageContentTypes" enum="Boolean">
+    <summary>
+      Focused in session for all page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Html" enum="Boolean">
+    <summary>
+      Focused in session for html page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Pdf" enum="Boolean">
+    <summary>
+      Focused in session for pdf page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PlainText" enum="Boolean">
+    <summary>
+      Focused in session for plain text page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Unknown" enum="Boolean">
+    <summary>
+      Focused in session for unspecified page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Lens.Overlay.ContextualSearchBox.Shown">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the contextual searchbox is shown to the user. Measures
+    if it was shown and the document type it was shown on.
+  </summary>
+  <metric name="DocumentType" enum="MimeType">
+    <summary>
+      The type of document the contextual searchbox was shown on.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WasShown" enum="Boolean">
+    <summary>
+      Whether the search box was shown.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Lens.Overlay.ContextualSuggest.QueryIssuedInSession">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by page
+    content type. Records whether at least one contextual query was issued in
+    sessions in which the contextual searchbox was shown (includes zero prefix
+    suggest queries and typed queries). The page content type is the intial page
+    type when the lens overlay is invoked, not necessarily the same as the page
+    type as when ZPS is shown.
+  </summary>
+  <metric name="AllPageContentTypes" enum="Boolean">
+    <summary>
+      Query issued in session for all page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Html" enum="Boolean">
+    <summary>
+      Query issued in session for html page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Pdf" enum="Boolean">
+    <summary>
+      Query issued in session for pdf page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PlainText" enum="Boolean">
+    <summary>
+      Query issued in session for web page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Unknown" enum="Boolean">
+    <summary>
+      Query issued in session for unknown page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Lens.Overlay.ContextualSuggest.ZPS.ShownInSession">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by page
+    content type. Records whether any zero prefix contextual suggestions were
+    shown in sessions in which the contextual searchbox was shown. The document
+    type is the intial document type when the lens overlay is invoked, not
+    necessarily the same as the document type as when ZPS is shown.
+  </summary>
+  <metric name="AllPageContentTypes" enum="Boolean">
+    <summary>
+      ZPS shown in session for all page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Html" enum="Boolean">
+    <summary>
+      ZPS shown in session for html page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Pdf" enum="Boolean">
+    <summary>
+      ZPS shown in session for pdf page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PlainText" enum="Boolean">
+    <summary>
+      ZPS shown in session for plain text page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Unknown" enum="Boolean">
+    <summary>
+      ZPS shown in session for unknown page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by document
+    type. Records whether at least one contextual zero prefix suggestion was
+    used in sessions in which the contextual searchbox was shown. The document
+    type is the intial document type when the lens overlay is invoked, not
+    necessarily the same as the document type as when ZPS suggestion was used.
+  </summary>
+  <metric name="AllPageContentTypes" enum="Boolean">
+    <summary>
+      ZPS used in session for all page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Html" enum="Boolean">
+    <summary>
+      ZPS used in session for html text page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Pdf" enum="Boolean">
+    <summary>
+      ZPS used in session for pdf page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PlainText" enum="Boolean">
+    <summary>
+      ZPS used in session for plain text page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Unknown" enum="Boolean">
+    <summary>
+      ZPS used in session for unknown page content types.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Lens.Overlay.Overlay.UserAction">
   <owner>jdonnelly@google.com</owner>
   <owner>lens-chrome@google.com</owner>
@@ -11517,6 +11938,18 @@ be describing additional metrics about the same event.
       searches are also opened in a new tab. Additionally the user can open tabs
       in the background through the web context menu.
     </summary>
+  </metric>
+  <metric name="InvocationDocumentType" enum="MimeType">
+    <summary>
+      The type of document the Lens Overlay was invoked on.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="InvocationResultedInSearch" enum="Boolean">
     <summary>
@@ -14862,6 +15295,14 @@ be describing additional metrics about the same event.
   <summary>
     Recorded when the user first interacts in a pop-up with opener access.
   </summary>
+  <metric name="InteractionType" enum="CookieHeuristicInteractionType">
+    <summary>
+      Records the source of the interaction with the popup.
+      &quot;Authentication&quot; for web authentications,
+      &quot;UserActivation&quot; for mouse clicks, touch events, etc., and
+      &quot;NoInteraction&quot; for when there was no user interaction.
+    </summary>
+  </metric>
   <metric name="OpenerHasSameSiteIframe" enum="HasSameSiteIframe">
     <summary>
       &quot;True&quot; iff the opener page contains an iframe whose URL belongs
@@ -14904,6 +15345,14 @@ be describing additional metrics about the same event.
       The number of hours since the user last interacted with the site, until
       the pop-up was opened. Clamped to 720 hours at most, and rounded down to
       the nearest exponential bucket (out of 50 buckets).
+    </summary>
+  </metric>
+  <metric name="InteractionType" enum="CookieHeuristicInteractionType">
+    <summary>
+      Records the source of the interaction with the popup.
+      &quot;Authentication&quot; for web authentications,
+      &quot;UserActivation&quot; for mouse clicks, touch events, etc., and
+      &quot;NoInteraction&quot; for when there was no user interaction.
     </summary>
   </metric>
   <metric name="OpenerHasSameSiteIframe" enum="HasSameSiteIframe">
@@ -20446,79 +20895,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Shopping.AddToCartDetection">
-  <owner>wychen@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <summary>
-    Metrics related to DOM-based AddToCart button detection in ChromeCart.
-  </summary>
-  <metric name="HeuristicsExecutionTime">
-    <summary>
-      Logged when DOM-based AddToCart button detection heuristic is executed and
-      records the execution time. This is expressed in microseconds.
-    </summary>
-  </metric>
-</event>
-
-<event name="Shopping.CartExtraction">
-  <owner>wychen@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <summary>
-    Metrics related to performance of cart content extraction in ChromeCart.
-  </summary>
-  <metric name="ExtractionElapsedTime">
-    <summary>
-      Logged when cart content extraction is executed for ChromeCart and records
-      the elapsed time within the JavaScript, so script parsing/compilation time
-      is excluded. Shopping.CartExtraction.ExtractionExecutionTime is measured
-      in native, and is the end-to-end elapsed time. This is expressed in
-      milliseconds.
-    </summary>
-  </metric>
-  <metric name="ExtractionExecutionTime">
-    <summary>
-      Logged when cart content extraction is executed for ChromeCart and records
-      the elapsed time between the start and the end of the extraction
-      JavaScript request execution. This includes script parsing/compilation
-      time and sleeping time. This is expressed in milliseconds.
-    </summary>
-  </metric>
-  <metric name="ExtractionLongestTaskTime">
-    <summary>
-      Logged when cart content extraction is executed for ChromeCart and records
-      the time span of the longest task blocking the main thread of the renderer
-      process. This is expressed in milliseconds.
-    </summary>
-  </metric>
-  <metric name="ExtractionTimedOut" enum="Boolean">
-    <summary>
-      Logged when cart content extraction is executed for ChromeCart and records
-      whether the cart content extraction has timed out.
-    </summary>
-  </metric>
-  <metric name="ExtractionTotalTasksTime">
-    <summary>
-      Logged when cart content extraction is executed for ChromeCart and records
-      the time spent on execution, excluding sleeping time. This is expressed in
-      milliseconds.
-    </summary>
-  </metric>
-</event>
-
-<event name="Shopping.ChromeCart">
-  <owner>wychen@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <summary>
-    Metrics related to Chrome cart module in Chrome NTP.
-  </summary>
-  <metric name="VisitCart" enum="Boolean">
-    <summary>
-      Always true. Recorded when users have visited cart page from Chrome cart
-      module.
-    </summary>
-  </metric>
-</event>
-
 <event name="Shopping.Compare.ClusterIdenfitiedByClient">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping-eng@google.com</owner>
@@ -20556,20 +20932,6 @@ be describing additional metrics about the same event.
       Whether the eligible popup bubble was suppressed. This is controlled by a
       feature flag. Logging the feature flag value to create two groups for data
       analysis.
-    </summary>
-  </metric>
-</event>
-
-<event name="Shopping.FormSubmitted">
-  <owner>wychen@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <summary>
-    Recorded when user submits a form.
-  </summary>
-  <metric name="IsTransaction" enum="Boolean">
-    <summary>
-      Whether the form submission is a shopping transaction. This has 50% chance
-      randomized.
     </summary>
   </metric>
 </event>
@@ -20757,20 +21119,6 @@ be describing additional metrics about the same event.
     <summary>
       Which, if any, contextual shopping feature is promoted in expanded state
       or in-product highlight.
-    </summary>
-  </metric>
-</event>
-
-<event name="Shopping.WillSendRequest">
-  <owner>wychen@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <summary>
-    Recorded when an XHR is about to be sent.
-  </summary>
-  <metric name="IsAddToCart" enum="Boolean">
-    <summary>
-      Whether the XHR is to add a product to a shopping cart. This has 50%
-      chance randomized.
     </summary>
   </metric>
 </event>

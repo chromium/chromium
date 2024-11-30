@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
+  "+ios/chrome/browser/commerce/model/shopping_service_factory.h",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/price_insights",
+  "+ios/chrome/browser/push_notification/model",
+  "+ios/chrome/browser/tabs/model/tab_title_util.h",
+]

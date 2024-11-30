@@ -82,6 +82,7 @@ void AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved(
       std::make_move_iterator(user_annotations.begin()),
       std::make_move_iterator(user_annotations.end())};
 
+  SetLatestRequestForDebugging(request);
   model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, request,
       kExecutionTimeout.Get(),
@@ -103,17 +104,19 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     return;
   }
 
-  std::optional<optimization_guide::proto::FormsPredictionsResponse>
-      maybe_response = optimization_guide::ParsedAnyMetadata<
+  SetLatestResponseForDebugging(
+      optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::FormsPredictionsResponse>(
-          execution_result.response.value());
-  if (!maybe_response) {
+          execution_result.response.value()));
+
+  if (!GetLatestResponse()) {
     std::move(callback).Run(base::unexpected(false), execution_id);
     return;
   }
 
   std::move(callback).Run(
-      ExtractPredictions(form_data, maybe_response->form_data()), execution_id);
+      ExtractPredictions(form_data, GetLatestResponse()->form_data()),
+      execution_id);
 }
 
 // static
@@ -184,6 +187,30 @@ AutofillAiModelExecutorImpl::ExtractPredictions(
                                         std::move(label), field.IsFocusable()});
   }
   return predictions;
+}
+
+void AutofillAiModelExecutorImpl::SetLatestRequestForDebugging(
+    optimization_guide::proto::FormsPredictionsRequest request) {
+  // Reset `latest_response_` to ensure it always matches `latest_request_`, if
+  // it exists.
+  latest_response_.reset();
+  latest_request_ = std::move(request);
+}
+
+void AutofillAiModelExecutorImpl::SetLatestResponseForDebugging(
+    std::optional<optimization_guide::proto::FormsPredictionsResponse>
+        response) {
+  latest_response_ = std::move(response);
+}
+
+const std::optional<optimization_guide::proto::FormsPredictionsRequest>&
+AutofillAiModelExecutorImpl::GetLatestRequest() const {
+  return latest_request_;
+}
+
+const std::optional<optimization_guide::proto::FormsPredictionsResponse>&
+AutofillAiModelExecutorImpl::GetLatestResponse() const {
+  return latest_response_;
 }
 
 }  // namespace autofill_ai

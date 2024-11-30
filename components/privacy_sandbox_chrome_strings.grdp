@@ -2235,9 +2235,6 @@
   </message>
 
   <!-- Tracking Protection -->
-  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_TITLE" desc="Title of the Tracking Protection settings page." formatter_data="android_java">
-    Tracking Protection
-  </message>
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_DESCRIPTION" desc="Describes how Tracking Protection in Chrome works. Part of the Tracking Protection settings page." formatter_data="android_java">
     Chrome limits the amount of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
   </message>
@@ -2262,12 +2259,6 @@
   </message>
   <message name="IDS_TRACKING_PROTECTION_BLOCK_COOKIES_TOGGLE_SUMMARY" desc="Description of the toggle to block all third-party cookies on the Tracking Protection page." formatter_data="android_java">
     Features on some sites may not work
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_DNT_TOGGLE_TITLE" desc="Title of the toggle to enable 'Do Not Track' on the Tracking Protection page." formatter_data="android_java">
-    Send a “Do Not Track” request with your browsing traffic
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_DNT_TOGGLE_SUMMARY" desc="Description of the toggle to enable 'Do Not Track' on the Tracking Protection page." formatter_data="android_java">
-    Sites use their discretion when responding to this request
   </message>
   <message name="IDS_TRACKING_PROTECTION_ALLOWED_GROUP_TITLE" desc="Title of the list of exceptions for sites that are allowed to use third-party cookies on the Tracking Protection page." formatter_data="android_java">
     Sites allowed to use third-party cookies

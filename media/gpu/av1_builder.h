@@ -19,6 +19,7 @@ class MEDIA_GPU_EXPORT AV1BitstreamBuilder {
  public:
   struct SequenceHeader;
   struct FrameHeader;
+  static constexpr uint32_t kMaxTemporalLayerNum = 3;
 
   AV1BitstreamBuilder();
   ~AV1BitstreamBuilder();
@@ -35,8 +36,9 @@ class MEDIA_GPU_EXPORT AV1BitstreamBuilder {
   void WriteBool(bool val);
   // Spec 5.3.2.
   void WriteOBUHeader(libgav1::ObuType type,
-                      bool extension_flag,
-                      bool has_size);
+                      bool has_size,
+                      bool extension_flag = false,
+                      std::optional<uint8_t> temporal_id = std::nullopt);
   // Writes a value encoded in LEB128. Spec 4.10.5.
   void WriteValueInLeb128(uint32_t value,
                           std::optional<int> fixed_size = std::nullopt);
@@ -56,8 +58,9 @@ class MEDIA_GPU_EXPORT AV1BitstreamBuilder {
 // Parameters used to build OBUs.
 struct AV1BitstreamBuilder::SequenceHeader {
   uint32_t profile;
-  uint32_t level;
-  uint32_t tier;
+  uint32_t operating_points_cnt_minus_1;
+  uint32_t level[kMaxTemporalLayerNum];
+  uint32_t tier[kMaxTemporalLayerNum];
   uint32_t frame_width_bits_minus_1;
   uint32_t frame_height_bits_minus_1;
   uint32_t width;

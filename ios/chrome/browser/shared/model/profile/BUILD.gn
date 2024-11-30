@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//components/keyed_service/core",
     "//components/prefs:test_support",
     "//components/variations/net",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//testing/gtest",

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
@@ -478,6 +479,13 @@ void SavedTabGroupBar::OnTabGroupRemoved(const base::Uuid& sync_id,
   SavedTabGroupRemoved(sync_id);
 }
 
+void SavedTabGroupBar::OnTabGroupMigrated(const SavedTabGroup& new_group,
+                                          const base::Uuid& old_sync_id,
+                                          TriggerSource source) {
+  SavedTabGroupRemoved(old_sync_id);
+  UpsertSavedTabGroupButton(new_group.saved_guid());
+}
+
 void SavedTabGroupBar::OnTabGroupsReordered(TriggerSource source) {
   SavedTabGroupReordered();
 }
@@ -720,10 +728,19 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
   bool left_mouse_button_pressed = event.flags() & ui::EF_LEFT_MOUSE_BUTTON;
 
   if (left_mouse_button_pressed || space_pressed) {
+    const bool will_open_shared_group =
+        group->is_shared_tab_group() && !group->local_group_id().has_value();
+
     tab_group_service_->OpenTabGroup(
         group->saved_guid(),
         std::make_unique<TabGroupActionContextDesktop>(
             browser_, OpeningSource::kOpenedFromRevisitUi));
+
+    if (will_open_shared_group) {
+      saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
+          saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+              kOpenedFromBookmarksBar);
+    }
   }
 }
 

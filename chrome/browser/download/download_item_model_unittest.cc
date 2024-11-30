@@ -166,7 +166,7 @@ class DownloadItemModelTest : public testing::Test {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
-  ~DownloadItemModelTest() override {}
+  ~DownloadItemModelTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());

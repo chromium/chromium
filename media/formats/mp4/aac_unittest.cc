@@ -89,7 +89,7 @@ TEST_F(AACTest, ExtensionTest) {
 // Mono channel layout should only be reported if SBR is not
 // specified. Otherwise stereo should be reported.
 // See ISO 14496-3:2005 Section 1.6.5.3 for details about this special casing.
-TEST_F(AACTest, ImplicitSBR_ChannelConfig0) {
+TEST_F(AACTest, ImplicitSBRChannelConfig0) {
   uint8_t buffer[] = {0x13, 0x08};
   std::vector<uint8_t> data;
 
@@ -109,7 +109,7 @@ TEST_F(AACTest, ImplicitSBR_ChannelConfig0) {
 }
 
 // Tests implicit SBR with a stereo channel config.
-TEST_F(AACTest, ImplicitSBR_ChannelConfig1) {
+TEST_F(AACTest, ImplicitSBRChannelConfig1) {
   uint8_t buffer[] = {0x13, 0x10};
   std::vector<uint8_t> data;
 
@@ -244,7 +244,7 @@ TEST_F(AACTest, UnsupportedExFrequencyIndexTest) {
   EXPECT_TRUE(Parse(data));
 }
 
-TEST_F(AACTest, XHE_AAC) {
+TEST_F(AACTest, XHEAAC) {
   InSequence s;
   uint8_t buffer[] = {0xf9, 0x46, 0x43, 0x22, 0x2c, 0xc0, 0x4c, 0x00,
                       0x85, 0xa0, 0x01, 0x13, 0x84, 0x00, 0x20, 0x00,

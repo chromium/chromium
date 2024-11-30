@@ -17,6 +17,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -26,6 +27,8 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #endif
 
 namespace signin {
@@ -33,33 +36,21 @@ namespace signin {
 namespace {
 
 constexpr int kMaxFetcherRetries = 3;
-
-std::string FindTokenForAccount(
-    const std::vector<OAuthMultiloginHelper::AccountIdGaiaIdPair>& accounts,
-    const base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse>& tokens,
-    const std::string& gaia_id) {
-  auto account_it = std::ranges::find_if(
-      accounts, [&gaia_id](const auto& account_id_gaia_id_pair) {
-        return account_id_gaia_id_pair.second == gaia_id;
-      });
-  if (account_it == accounts.end()) {
-    return std::string();
-  }
-  auto token_it = tokens.find(account_it->first);
-  if (token_it == tokens.end()) {
-    return std::string();
-  }
-  return token_it->second.oauth_token();
-}
+static_assert(kMaxFetcherRetries > 1, "Must have at least one retry attempt");
 
 CoreAccountId FindAccountIdForGaiaId(
     const std::vector<OAuthMultiloginHelper::AccountIdGaiaIdPair>& accounts,
-    const std::string& gaia_id) {
-  for (const auto& account : accounts) {
-    if (gaia_id == account.second)
-      return account.first;
-  }
-  return CoreAccountId();
+    const GaiaId& gaia_id) {
+  auto it = std::ranges::find(
+      accounts, gaia_id, &OAuthMultiloginHelper::AccountIdGaiaIdPair::second);
+  return it != accounts.end() ? it->first : CoreAccountId();
+}
+
+std::string FindTokenForAccountId(
+    const base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse>& tokens,
+    const CoreAccountId& account_id) {
+  auto it = tokens.find(account_id);
+  return it != tokens.end() ? it->second.oauth_token() : std::string();
 }
 
 }  // namespace
@@ -104,15 +95,49 @@ OAuthMultiloginHelper::OAuthMultiloginHelper(
 
 OAuthMultiloginHelper::~OAuthMultiloginHelper() = default;
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+void OAuthMultiloginHelper::SetEphemeralKeyForTesting(
+    HybridEncryptionKey ephemeral_key) {
+  ephemeral_key_ = std::move(ephemeral_key);
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 void OAuthMultiloginHelper::StartFetchingTokens() {
   DCHECK(!token_fetcher_);
   DCHECK(tokens_.empty());
-  std::vector<CoreAccountId> account_ids;
-  for (const auto& account : accounts_)
-    account_ids.push_back(account.first);
+  std::vector<OAuthMultiloginTokenFetcher::AccountParams> account_params;
+  for (const auto& account : accounts_) {
+    const CoreAccountId& account_id = account.first;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    auto challenge_it = token_binding_challenges_.find(account_id);
+    bool has_challenge = challenge_it != token_binding_challenges_.end();
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    account_params.push_back(
+        {.account_id = account_id
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+         ,
+         .token_binding_challenge =
+             has_challenge ? challenge_it->second : std::string()
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+        });
+  }
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::string ephemeral_public_key;
+  if (!token_binding_challenges_.empty()) {
+    // Create a new key if we don't have one.
+    if (!ephemeral_key_.has_value()) {
+      ephemeral_key_.emplace();
+    }
+    ephemeral_public_key = ephemeral_key_->ExportPublicKey();
+  }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   token_fetcher_ = std::make_unique<OAuthMultiloginTokenFetcher>(
-      signin_client_, token_service_, account_ids,
+      signin_client_, token_service_, std::move(account_params),
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      std::move(ephemeral_public_key),
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       base::BindOnce(&OAuthMultiloginHelper::OnMultiloginTokensSuccess,
                      base::Unretained(this)),
       base::BindOnce(&OAuthMultiloginHelper::OnMultiloginTokensFailure,
@@ -156,10 +181,21 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
                                         std::move(token_binding_assertion));
   }
 
+  OAuthMultiloginResult::CookieDecryptor decryptor;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (ephemeral_key_.has_value()) {
+    decryptor = base::BindRepeating(&DecryptValueWithEphemeralKey,
+                                    std::move(ephemeral_key_).value());
+    // std::move() above doesn't invalidate `ephemeral_key_`, so call reset()
+    // explicitly.
+    ephemeral_key_.reset();
+  }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   gaia_auth_fetcher_ = partition_delegate_->CreateGaiaAuthFetcherForPartition(
       this, gaia_source_);
-  gaia_auth_fetcher_->StartOAuthMultilogin(mode_, multilogin_credentials,
-                                           external_cc_result_);
+  gaia_auth_fetcher_->StartOAuthMultilogin(
+      mode_, multilogin_credentials, external_cc_result_, std::move(decryptor));
 }
 
 void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
@@ -182,25 +218,49 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
     return;
   }
 
-  // If Gaia responded with kInvalidTokens, we have to mark tokens as invalid.
-  if (result.status() == OAuthMultiloginResponseStatus::kInvalidTokens) {
-    for (const std::string& failed_gaia_id : result.failed_gaia_ids()) {
-      std::string failed_token =
-          FindTokenForAccount(accounts_, tokens_, failed_gaia_id);
-      if (failed_token.empty()) {
-        LOG(ERROR)
-            << "Unexpected failed token for account not present in request: "
-            << failed_gaia_id;
+  // If Gaia responded with kInvalidTokens or kRetryWithTokenBindingChallenge,
+  // we have to mark tokens without recovery method as invalid.
+  if (result.status() == OAuthMultiloginResponseStatus::kInvalidTokens ||
+      result.status() ==
+          OAuthMultiloginResponseStatus::kRetryWithTokenBindingChallenge) {
+    for (const OAuthMultiloginResult::FailedAccount& failed_account :
+         result.failed_accounts()) {
+      CoreAccountId failed_account_id =
+          FindAccountIdForGaiaId(accounts_, failed_account.gaia_id);
+      if (failed_account_id.empty()) {
+        LOG(ERROR) << "Unexpected failed gaia id for an account not present in "
+                      "request: "
+                   << failed_account.gaia_id;
         continue;
       }
-      token_service_->InvalidateTokenForMultilogin(
-          FindAccountIdForGaiaId(accounts_, failed_gaia_id), failed_token);
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      if (!failed_account.token_binding_challenge.empty()) {
+        auto [_, inserted] = token_binding_challenges_.insert(
+            {failed_account_id, failed_account.token_binding_challenge});
+        if (inserted) {
+          // If an account haven't received a token binding challenge before,
+          // try to recover by providing a token binding assertion.
+          continue;
+        }
+      }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+      std::string failed_token =
+          FindTokenForAccountId(tokens_, failed_account_id);
+      CHECK(!failed_token.empty());
+      token_service_->InvalidateTokenForMultilogin(failed_account_id,
+                                                   failed_token);
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      token_binding_challenges_.erase(failed_account_id);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     }
   }
 
   bool is_transient_error =
       result.status() == OAuthMultiloginResponseStatus::kInvalidTokens ||
-      result.status() == OAuthMultiloginResponseStatus::kRetry;
+      result.status() == OAuthMultiloginResponseStatus::kRetry ||
+      result.status() ==
+          OAuthMultiloginResponseStatus::kRetryWithTokenBindingChallenge;
 
   if (is_transient_error && ++fetcher_retries_ < kMaxFetcherRetries) {
     tokens_.clear();

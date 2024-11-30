@@ -332,16 +332,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
           : read_anything::mojom::HighlightGranularity::kDefaultValue;
   base::Value::Dict voices = base::Value::Dict();
   if (features::IsReadAnythingReadAloudEnabled()) {
-    if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
-      voices =
-          prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
-    } else {
-      std::string voice_name =
-          prefs->GetString(prefs::kAccessibilityReadAnythingVoiceName);
-      if (!voice_name.empty()) {
-        voices.Set("", voice_name);
-      }
-    }
+    voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
   }
 
   page_->OnSettingsRestoredFromPrefs(
@@ -609,13 +600,9 @@ void ReadAnythingUntrustedPageHandler::OnSpeechRateChange(double rate) {
 void ReadAnythingUntrustedPageHandler::OnVoiceChange(const std::string& voice,
                                                      const std::string& lang) {
   PrefService* prefs = profile_->GetPrefs();
-  if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
-    ScopedDictPrefUpdate update(prefs,
-                                prefs::kAccessibilityReadAnythingVoiceName);
-    update->Set(lang, voice);
-  } else {
-    prefs->SetString(prefs::kAccessibilityReadAnythingVoiceName, voice);
-  }
+  ScopedDictPrefUpdate update(prefs,
+                              prefs::kAccessibilityReadAnythingVoiceName);
+  update->Set(lang, voice);
 }
 
 void ReadAnythingUntrustedPageHandler::OnLanguagePrefChange(
@@ -625,7 +612,9 @@ void ReadAnythingUntrustedPageHandler::OnLanguagePrefChange(
   ScopedListPrefUpdate update(
       prefs, prefs::kAccessibilityReadAnythingLanguagesEnabled);
   if (enabled) {
-    update->Append(lang);
+    if (!base::Contains(update.Get(), lang)) {
+      update->Append(lang);
+    }
   } else {
     update->EraseValue(base::Value(lang));
   }

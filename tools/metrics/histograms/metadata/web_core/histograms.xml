@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Document.execCommand" enum="MappedEditingCommands"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaApi"
     enum="FullscreenLockState" expires_after="2025-04-20">
-  <owner>takumif@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records whether keyboard/pointer locks are engaged each time a
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaBrowserUi"
     enum="FullscreenLockState" expires_after="2025-04-20">
-  <owner>takumif@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records whether keyboard/pointer locks are engaged each time the
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebCore.Fullscreen.WebsiteStateAtApiRequest"
     enum="WebsiteStateAtFullscreenRequest" expires_after="2025-04-13">
-  <owner>takumif@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records the state of the website origin when it requests to
@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.RequestDuration2.{RequestType}.Foreground"
-    units="ms" expires_after="2025-01-29">
+    units="ms" expires_after="2025-05-18">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -525,7 +525,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2.Foreground"
-    units="ms" expires_after="2025-01-29">
+    units="ms" expires_after="2025-05-18">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -555,7 +555,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeQueued.Foreground"
-    units="ms" expires_after="2025-01-29">
+    units="ms" expires_after="2025-05-18">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -745,7 +745,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Scripts.V8CrowdsourcedCompileHints.ModelQuality"
-    enum="V8CompileHintsModelQuality" expires_after="2025-03-23">
+    enum="V8CompileHintsModelQuality" expires_after="2025-05-25">
   <owner>marja@chromium.org</owner>
   <owner>v8-loading@google.com</owner>
   <owner>chrome-intelligence-core@google.com</owner>

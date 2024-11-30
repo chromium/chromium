@@ -27,7 +27,7 @@ class ToolbarActionViewDelegateViews : public ToolbarActionViewDelegate {
   virtual views::Button* GetReferenceButtonForPopup() = 0;
 
  protected:
-  ~ToolbarActionViewDelegateViews() override {}
+  ~ToolbarActionViewDelegateViews() override = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_VIEW_DELEGATE_VIEWS_H_

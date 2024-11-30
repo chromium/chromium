@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
@@ -1239,14 +1238,14 @@ TEST_F(ElementTest, ColumnPseudoElements) {
   EXPECT_EQ(element->GetColumnPseudoElements()->size(), 0u);
 }
 
-TEST_F(ElementTest, TheCheckPseudoElement) {
+TEST_F(ElementTest, TheCheckMarkPseudoElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #a-div::check {
+      #a-div::checkmark {
         content: "*";
       }
 
-      #target::check {
+      #target::checkmark {
         content: "*";
       }
     </style>
@@ -1262,14 +1261,15 @@ TEST_F(ElementTest, TheCheckPseudoElement) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   Element* div = GetElementById("a-div");
-  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdCheck));
+  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdCheckMark));
 
   Element* target = GetElementById("target");
-  EXPECT_EQ(nullptr, target->GetPseudoElement(kPseudoIdCheck));
+  EXPECT_EQ(nullptr, target->GetPseudoElement(kPseudoIdCheckMark));
 
-  // The `::check` pseudo element should only be created for option elements.
+  // The `::checkmark` pseudo element should only be created for option
+  // elements.
   Element* target_option = GetElementById("target-option");
-  EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheck));
+  EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheckMark));
 }
 
 TEST_F(ElementTest, TheSelectArrowPseudoElement) {
@@ -1304,6 +1304,31 @@ TEST_F(ElementTest, TheSelectArrowPseudoElement) {
 
   Element* target_option = GetElementById("target-option");
   EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdSelectArrow));
+}
+
+TEST_F(ElementTest, GenerateScrollMarkerGroup) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id="test-style">
+      #scroller {
+        scroll-marker-group: before;
+        overflow: scroll;
+      }
+      #non-scroller {
+        scroll-marker-group: before;
+      }
+    </style>
+    <div id="scroller"></div>
+    <div id="non-scroller"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* scroller = GetElementById("scroller");
+  Element* non_scroller = GetElementById("non-scroller");
+
+  EXPECT_TRUE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  EXPECT_FALSE(
+      non_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
 }
 
 }  // namespace blink

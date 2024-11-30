@@ -3,8 +3,8 @@ AXWebArea
 ++++AXStaticText AXValue='State'
 ++AXComboBox AXAutocompleteValue='list' AXLinkedUIElements=[:5] AXTitle='State'
 ++AXList
-++++AXStaticText AXValue='Alabama'
-++++AXStaticText AXFocused=1 AXValue='Alaska'
+++++AXMenuItem AXValue='Alabama'
+++++AXMenuItem AXFocused=1 AXValue='Alaska'
 ++AXComboBox AXLinkedUIElements=[:9]
 ++AXTable
 ++++AXRow AXTitle='Grid row'

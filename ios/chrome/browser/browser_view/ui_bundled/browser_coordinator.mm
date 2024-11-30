@@ -42,6 +42,9 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_coordinator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
+#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_coordinator.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
@@ -95,6 +98,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -126,11 +130,28 @@
 #import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/presenters/ui_bundled/vertical_animation_container.h"
+#import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_view_coordinator.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator.h"
+#import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator_delegate.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator_delegate.h"
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_coordinator.h"
+#import "ios/chrome/browser/safe_browsing/ui_bundled/safe_browsing_coordinator.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
@@ -190,6 +211,9 @@
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
@@ -201,6 +225,7 @@
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h"
@@ -209,41 +234,17 @@
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_coordinator_delegate.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_presenter.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
-#import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
-#import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
-#import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
-#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_coordinator.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
-#import "ios/chrome/browser/ui/sharing/sharing_params.h"
-#import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
-#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_coordinator.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -309,6 +310,7 @@ enum class ToolbarKind {
     DefaultBrowserGenericPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
     DriveFilePickerCommands,
+    EditMenuBuilder,
     EnterprisePromptCoordinatorDelegate,
     FormInputAccessoryCoordinatorNavigator,
     MiniMapCommands,
@@ -1151,25 +1153,27 @@ enum class ToolbarKind {
 }
 
 - (void)updateViewControllerDependencies {
-  _bookmarksCoordinator.baseViewController = self.viewController;
+  BrowserViewController* viewController = self.viewController;
+  _bookmarksCoordinator.baseViewController = viewController;
 
-  _toolbarAccessoryPresenter.baseViewController = self.viewController;
+  _toolbarAccessoryPresenter.baseViewController = viewController;
 
-  self.qrScannerCoordinator.baseViewController = self.viewController;
+  self.qrScannerCoordinator.baseViewController = viewController;
   [self.qrScannerCoordinator start];
 
-  self.popupMenuCoordinator.baseViewController = self.viewController;
+  self.popupMenuCoordinator.baseViewController = viewController;
 
   // The Lens coordinator needs to be started before the primary toolbar
   // coordinator so that the LensCommands dispatcher is correctly registered in
   // time.
-  _lensCoordinator.baseViewController = self.viewController;
-  _lensCoordinator.delegate = self.viewController;
+  _lensCoordinator.baseViewController = viewController;
+  _lensCoordinator.delegate = viewController;
   [_lensCoordinator start];
 
-  _toolbarCoordinator.omniboxFocusDelegate = self.viewController;
-  _toolbarCoordinator.popupPresenterDelegate = self.viewController;
-  _toolbarCoordinator.toolbarHeightDelegate = self.viewController;
+  _toolbarCoordinator.baseViewController = viewController;
+  _toolbarCoordinator.omniboxFocusDelegate = viewController;
+  _toolbarCoordinator.popupPresenterDelegate = viewController;
+  _toolbarCoordinator.toolbarHeightDelegate = viewController;
   [_toolbarCoordinator start];
 
   _loadQueryCommandsHandler =
@@ -1180,12 +1184,12 @@ enum class ToolbarKind {
   _keyCommandsProvider.omniboxHandler = _omniboxCommandsHandler;
   _viewController.omniboxCommandsHandler = _omniboxCommandsHandler;
 
-  _legacyTabStripCoordinator.baseViewController = self.viewController;
-  _tabStripCoordinator.baseViewController = self.viewController;
-  _NTPCoordinator.baseViewController = self.viewController;
-  _bubblePresenterCoordinator.baseViewController = self.viewController;
+  _legacyTabStripCoordinator.baseViewController = viewController;
+  _tabStripCoordinator.baseViewController = viewController;
+  _NTPCoordinator.baseViewController = viewController;
+  _bubblePresenterCoordinator.baseViewController = viewController;
 
-  [_dispatcher startDispatchingToTarget:self.viewController
+  [_dispatcher startDispatchingToTarget:viewController
                             forProtocol:@protocol(BrowserCommands)];
 }
 
@@ -1610,6 +1614,7 @@ enum class ToolbarKind {
   tabLifecycleMediator.snapshotGeneratorDelegate = self;
   tabLifecycleMediator.overscrollActionsDelegate = self;
   tabLifecycleMediator.appLauncherBrowserPresentationProvider = self;
+  tabLifecycleMediator.editMenuBuilder = self;
 
   self.tabLifecycleMediator = tabLifecycleMediator;
 }
@@ -2212,10 +2217,10 @@ enum class ToolbarKind {
 #pragma mark - ContextualPanelEntrypointIPHCommands
 
 - (BOOL)maybeShowContextualPanelEntrypointIPHWithConfig:
-            (base::WeakPtr<ContextualPanelItemConfiguration>)config
+            (ContextualPanelItemConfiguration*)config
                                             anchorPoint:(CGPoint)anchorPoint
                                         isBottomOmnibox:(BOOL)isBottomOmnibox {
-  ContextualPanelItemConfiguration& config_ref = CHECK_DEREF(config.get());
+  ContextualPanelItemConfiguration& config_ref = CHECK_DEREF(config);
 
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(
@@ -2226,13 +2231,15 @@ enum class ToolbarKind {
   }
 
   __weak __typeof(self) weakSelf = self;
-  CallbackWithIPHDismissalReasonType dismissalCallback =
-      ^(IPHDismissalReasonType IPHDismissalReasonType,
-        feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        [weakSelf contextualPanelEntrypointIPHDidDismissWithConfig:config
-                                                   dismissalReason:
-                                                       IPHDismissalReasonType];
-      };
+  base::WeakPtr<ContextualPanelItemConfiguration> config_weak_ptr =
+      config_ref.weak_ptr_factory.GetWeakPtr();
+  CallbackWithIPHDismissalReasonType dismissalCallback = ^(
+      IPHDismissalReasonType IPHDismissalReasonType,
+      feature_engagement::Tracker::SnoozeAction snoozeAction) {
+    [weakSelf contextualPanelEntrypointIPHDidDismissWithConfig:config_weak_ptr
+                                               dismissalReason:
+                                                   IPHDismissalReasonType];
+  };
 
   UIImage* image =
       [UIImage imageNamed:base::SysUTF8ToNSString(config_ref.iph_image_name)];
@@ -2495,9 +2502,11 @@ enum class ToolbarKind {
   auto* helper = FindTabHelper::FromWebState(activeWebState);
 
   if (!helper->IsFindUIActive()) {
-    // Hide the Omnibox if possible, so as not to confuse the user as to what
-    // text field is currently focused.
-    _fullscreenController->EnterFullscreen();
+    // Hide the Omnibox to avoid user's confusion about which text field is
+    // currently focused. The mode is force to avoid the bottom Omnibox
+    // appearing above the find in page collapsed toolbar when scrolling.
+    _fullscreenController->EnterForceFullscreenMode(
+        /* insets_update_enabled */ true);
     helper->SetFindUIActive(true);
   }
 
@@ -3260,6 +3269,13 @@ enum class ToolbarKind {
                                  completion:(void (^)())completion {
   [self.nonModalPromoCoordinator dismissInfobarBannerAnimated:animated
                                                    completion:completion];
+}
+
+#pragma mark - EditMenuBuilder
+
+- (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  return [self.browserContainerCoordinator.editMenuBuilder
+      buildEditMenuWithBuilder:builder];
 }
 
 #pragma mark - EnterprisePromptCoordinatorDelegate

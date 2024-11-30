@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.display.DisplayAndroidManager;
 
@@ -63,17 +62,11 @@ import java.util.Locale;
 /**
  * Utilities for detecting multi-window/multi-instance support.
  *
- * Thread-safe: This class may be accessed from any thread.
+ * <p>Thread-safe: This class may be accessed from any thread.
  */
 public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_INSTANCE_ID = TabWindowManager.INVALID_WINDOW_INDEX;
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
-    public static final IntCachedFieldTrialParameter
-            BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS =
-                    ChromeFeatureList.newIntCachedFieldTrialParameter(
-                            ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH,
-                            "activity_creation_timestamp_diff_threshold_ms",
-                            1000);
 
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
             "Android.MultiInstance.NumActivities.DesktopWindow";

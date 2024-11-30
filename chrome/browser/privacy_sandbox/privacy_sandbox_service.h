@@ -18,6 +18,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
 
@@ -187,14 +188,25 @@ class PrivacySandboxService : public KeyedService {
 
   // Returns whether a Privacy Sandbox prompt is currently open for |browser|.
   virtual bool IsPromptOpenForBrowser(Browser* browser) = 0;
+
+  // The following methods call directly into the product messaging controller.
+  virtual bool IsNoticeQueued() = 0;
+  virtual bool IsHoldingHandle() = 0;
+  // If the notice is in the queue, it will unqueue it. Otherwise, if the handle
+  // is being held, it will release the handle.
+  virtual void MaybeUnqueueNotice() = 0;
+  // If a prompt is required and we are not already in the queue or holding the
+  // handle, will add the notice to the product messaging controller queue.
+  virtual void MaybeQueueNotice() = 0;
+  // Triggered by product messaging code when our turn in queue has arrived.
+  // Moves the handle to temporary location to hold it.
+  virtual void HoldQueueHandle(user_education::RequiredNoticePriorityHandle
+                                   messaging_priority_handle) = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // If set to true, this treats the testing environment as that of a branded
   // Chrome build.
   virtual void ForceChromeBuildForTests(bool force_chrome_build) = 0;
-
-  // Emits startup histograms relating to the user's sign in status.
-  virtual void EmitPrivacySandboxAccountPromptStartupMetrics() = 0;
 
   // Returns whether the Privacy Sandbox is currently restricted for the
   // profile. UI code should consult this to ensure that when restricted,
@@ -315,6 +327,10 @@ class PrivacySandboxService : public KeyedService {
   TopicsConsentLastUpdateSource() const = 0;
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
+
+  // Temporary flag signifying not to requeue if the prompt has been suppressed.
+  // TODO(crbug.com/370804492): When we add DMA notice to queue, remove this.
+  bool suppress_queue = false;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_

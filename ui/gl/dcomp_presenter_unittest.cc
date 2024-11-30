@@ -962,6 +962,80 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
 #endif  // DCHECK_IS_ON()
 }
 
+// `SwapChainPresenter` internally tries to allocates a swap chain that is the
+// size of the onscreen size. This is because some Intel devices do not support
+// scaling overlays in HW. We do not account for the clip rect in the onscreen
+// size calculation, so a clipped video can end up with a very large "onscreen"
+// size even though most of it is not visible.
+TEST_P(DCompPresenterTest, VeryLargeOnscreenSize) {
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      GetDirectCompositionD3D11Device();
+
+  gfx::Size texture_size(50, 50);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size);
+  ASSERT_NE(texture, nullptr);
+
+  {
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    params->quad_rect = gfx::Rect(1, 1);
+
+    // This transform will make us have an onscreen size with a dimension larger
+    // than the D3D11 max texture size.
+    params->transform =
+        gfx::Transform::MakeScale(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1, 10);
+
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    presenter_->ScheduleDCLayer(std::move(params));
+  }
+
+  {
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    params->quad_rect = gfx::Rect(1, 1);
+
+    // This transform will make us have an onscreen size with a dimension larger
+    // than the D3D11 max texture size.
+    params->transform =
+        gfx::Transform::MakeScale(10, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1);
+
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    presenter_->ScheduleDCLayer(std::move(params));
+  }
+
+  EXPECT_FALSE(presenter_->GetLayerSwapChainForTesting(0));
+  EXPECT_FALSE(presenter_->GetLayerSwapChainForTesting(1));
+
+  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+
+  auto ExpectSwapChainAndMaintainsAspectRatio = [&](size_t index,
+                                                    gfx::SizeF expected_size) {
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+        presenter_->GetLayerSwapChainForTesting(index);
+    EXPECT_TRUE(swap_chain);
+
+    DXGI_SWAP_CHAIN_DESC1 desc;
+    EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
+
+    const gfx::SizeF swap_chain_size = gfx::SizeF(desc.Width, desc.Height);
+
+    // Calculate the closeness based on the magnitude of the aspect ratios.
+    // `SwapChainPresenter` can slightly adjust the swap chain size, so the
+    // aspect ratios will never be exact. In this test, it can also be very
+    // large or very small.
+    EXPECT_NEAR(std::log10(expected_size.AspectRatio()),
+                std::log10(swap_chain_size.AspectRatio()), 0.00003);
+  };
+
+  // Maintaining the aspect ratio is not a requirement for the video to appear,
+  // but doing so will improve the quality of the resulting image.
+  ExpectSwapChainAndMaintainsAspectRatio(
+      0, gfx::SizeF(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1, 10));
+  ExpectSwapChainAndMaintainsAspectRatio(
+      1, gfx::SizeF(10, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1));
+}
+
 INSTANTIATE_TEST_SUITE_P(DCompPresenterTest,
                          DCompPresenterTest,
                          testing::Bool());

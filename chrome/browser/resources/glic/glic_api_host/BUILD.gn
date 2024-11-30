@@ -1,0 +1,77 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+# The primary purpose of this directory is to build the API
+# provided to the Glic web client. It needs to be built into a
+# single js file and sent to the Glic web client at runtime.
+
+# These are TS deps used in the injected API as well as the outer
+# Chrome code.
+ts_library("request_types") {
+  root_dir = "."
+  in_files = [ "request_types.ts" ]
+  composite = true
+  deps = [ "//chrome/browser/resources/glic:glic_api" ]
+
+  path_mappings = [ "//glic/glic_api/*|" +
+                    rebase_path("$root_gen_dir/chrome/browser/resources/glic/*",
+                                target_gen_dir) ]
+}
+
+ts_library("post_message_transport") {
+  root_dir = "."
+  in_files = [ "post_message_transport.ts" ]
+  composite = true
+  deps = [ ":request_types" ]
+}
+
+# Build a js bundle for glic_api_impl to be injected and used by the Glic client.
+
+# Build the TS library.
+ts_library("glic_api_impl") {
+  root_dir = "."
+  in_files = [ "glic_api_impl.ts" ]
+  deps = [
+    ":post_message_transport",
+    ":request_types",
+    "//chrome/browser/resources/glic:glic_api",
+  ]
+}
+
+# Create a single js file for bundling the TS library.
+bundle_js("glic_api_impl_bundle") {
+  host = "_ignored_"
+  input = rebase_path("${target_gen_dir}", root_build_dir)
+  out_folder = "${target_gen_dir}/bundles"
+  js_module_in_files = [ "glic_api_impl.js" ]
+  deps = [
+    ":glic_api_impl",
+    ":post_message_transport",
+  ]
+}
+
+# Embed the js file into a resource file, for loading at runtime.
+generate_grd("glic_api_grdp") {
+  deps = [ ":glic_api_impl_bundle" ]
+  grd_prefix = "generated"
+  input_files_base_dir = rebase_path("$target_gen_dir/bundles", root_build_dir)
+  input_files = [ "glic_api_impl.rollup.js" ]
+  out_grd = "$root_gen_dir/chrome/browser/resources/glic/glic_generated.grdp"
+}
+
+# Add js code shared by glic_api_impl and the WebUI to resources,
+# so it can be loaded by the WebUI.
+generate_grd("glic_api_shared_grdp") {
+  deps = [ ":post_message_transport" ]
+  grd_prefix = "generated"
+  input_files_base_dir = rebase_path("$target_gen_dir", root_build_dir)
+  input_files = [ "post_message_transport.js" ]
+  out_grd = "$root_gen_dir/chrome/browser/resources/glic/glic_api_shared.grdp"
+  resource_path_prefix = "glic_api_host"
+}

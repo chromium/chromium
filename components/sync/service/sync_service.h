@@ -158,6 +158,12 @@ class SyncService : public KeyedService {
     // Sync is paused because there is a persistent auth error (e.g. user signed
     // out on the web on desktop), and the engine is inactive.
     PAUSED,
+
+    // States above require user action to resolve.
+    // States below should usually eventually lead to ACTIVE without any further
+    // user action. (Exception: PENDING_DESIRED_CONFIGURATION, i.e. the advanced
+    // setup flow for Sync-the-feature, still requires a user confirmation.)
+
     // Sync's startup was deferred, so that it doesn't slow down browser
     // startup. Once the deferral time (usually 10s) expires, or something
     // requests immediate startup, Sync will actually start.
@@ -185,32 +191,39 @@ class SyncService : public KeyedService {
   // displayed to the user.
   // TODO(crbug.com/40890809): Add new cases that are missing, ideally unify
   // with other enums like AvatarSyncErrorType.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(UserActionableError)
   enum class UserActionableError {
-    // No errors.
-    kNone,
+    // No errors. This value does not exist in the histograms enum.
+    kNone = 0,
     // There is a persistent auth error and the user needs to sign in for sync
     // to resume (affects all datatypes).
-    kSignInNeedsUpdate,
+    kSignInNeedsUpdate = 1,
     // The user needs to enter a passphrase in order to decrypt the data. This
     // can only happen to custom passphrase users and users in analogous legacy
     // encryption states. It affects most datatypes (all datatypes except the
     // ones that are never encrypted).
-    kNeedsPassphrase,
+    kNeedsPassphrase = 2,
     // The user needs to take action, usually go through a reauth challenge, in
     // order to get access to encryption keys. It affects datatypes that can be
     // branded to the user as 'passwords'.
-    kNeedsTrustedVaultKeyForPasswords,
+    kNeedsTrustedVaultKeyForPasswords = 3,
     // Same as above, but for the case where the encryption key is required to
     // sync all encryptable datatypes.
-    kNeedsTrustedVaultKeyForEverything,
+    kNeedsTrustedVaultKeyForEverything = 4,
     // Recoverability degraded means sync actually works normally, but there is
     // a risk that the user may end up locked out and effectively lose access to
     // passwords stored in the Sync server.
-    kTrustedVaultRecoverabilityDegradedForPasswords,
+    kTrustedVaultRecoverabilityDegradedForPasswords = 5,
     // Same as above, but for the case where data loss may affect all
     // encryptable datatypes.
-    kTrustedVaultRecoverabilityDegradedForEverything,
+    kTrustedVaultRecoverabilityDegradedForEverything = 6,
+    kMaxValue = kTrustedVaultRecoverabilityDegradedForEverything,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:UserActionableError)
 
   enum class DataTypeDownloadStatus {
     // State is unknown or there are updates to download from the server. Data

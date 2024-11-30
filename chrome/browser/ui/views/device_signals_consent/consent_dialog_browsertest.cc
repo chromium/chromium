@@ -27,7 +27,7 @@
 
 class ConsentDialogUiTest : public InProcessBrowserTest {
  public:
-  ConsentDialogUiTest() {}
+  ConsentDialogUiTest() = default;
 
   ConsentDialogUiTest(const ConsentDialogUiTest&) = delete;
   ConsentDialogUiTest& operator=(const ConsentDialogUiTest&) = delete;

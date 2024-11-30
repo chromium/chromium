@@ -1,0 +1,51 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.task_manager.ui;
+
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/**
+ * Entrypoint of the task manager UI. This activity instantiates the underlying model, the mediator
+ * that keeps updating the model, and binds the model and the view.
+ */
+public class TaskManagerActivity extends AppCompatActivity {
+    private static final int REFRESH_TIME_MS = 1000;
+    private final PropertyModel mHeaderModel =
+            new PropertyModel(TaskManagerProperties.HEADER_PROPERTY_KEYS);
+    private final ModelList mTasksModel = new ModelList();
+    private final TaskManagerMediator mMediator =
+            new TaskManagerMediator(
+                    REFRESH_TIME_MS,
+                    mHeaderModel,
+                    mTasksModel,
+                    TaskManagerProperties.TASK_NAME,
+                    TaskManagerProperties.MEMORY_FOOTPRINT,
+                    TaskManagerProperties.CPU,
+                    TaskManagerProperties.PROCESS_ID);
+    private TaskManagerCoordinator mCoordinator;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.task_manager_activity);
+
+        mCoordinator =
+                new TaskManagerCoordinator(
+                        findViewById(android.R.id.content), mHeaderModel, mTasksModel, mMediator);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mCoordinator.destroy();
+    }
+}

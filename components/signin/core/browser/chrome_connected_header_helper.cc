@@ -17,6 +17,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -75,7 +76,7 @@ ChromeConnectedHeaderHelper::ChromeConnectedHeaderHelper(
 // static
 std::string ChromeConnectedHeaderHelper::BuildRequestCookieIfPossible(
     const GURL& url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
     int profile_mode_mask) {
@@ -189,7 +190,7 @@ bool ChromeConnectedHeaderHelper::IsUrlEligibleForRequestHeader(
 std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
     bool is_header_request,
     const GURL& url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     Tribool is_child_account,
     int profile_mode_mask,
     const std::string& source,
@@ -231,8 +232,8 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
   if (!gaia_id.empty() &&
       IsUrlEligibleToIncludeGaiaId(url, is_header_request)) {
     // Only set the Gaia ID on domains that actually require it.
-    parts.push_back(
-        base::StringPrintf("%s=%s", kGaiaIdAttrName, gaia_id.c_str()));
+    parts.push_back(base::StringPrintf("%s=%s", kGaiaIdAttrName,
+                                       gaia_id.ToString().c_str()));
   }
   parts.push_back(
       base::StringPrintf("%s=%s", kProfileModeAttrName,

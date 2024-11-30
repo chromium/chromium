@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_RANKING_MODEL_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_RANKING_MODEL_DELEGATE_H_
 
+#import "base/ios/block_types.h"
+
 @class MagicStackRankingModel;
 @class MagicStackModule;
 
@@ -25,9 +27,11 @@
                 didReplaceItem:(MagicStackModule*)oldItem
                       withItem:(MagicStackModule*)item;
 
-// Indicates that `item` should be removed.
+// Indicates that `item` should be removed. The `completion` will be
+// executed after the item is removed.
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model
-                 didRemoveItem:(MagicStackModule*)item;
+                 didRemoveItem:(MagicStackModule*)item
+                withCompletion:(ProceduralBlock)completion;
 
 // Indicates that `item` should be reconfigured.
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model

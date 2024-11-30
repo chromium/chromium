@@ -47,7 +47,7 @@ namespace ash {
 class AlwaysOnVpnPreConnectUrlAllowlistServiceTest
     : public InProcessBrowserTest {
  public:
-  AlwaysOnVpnPreConnectUrlAllowlistServiceTest() {}
+  AlwaysOnVpnPreConnectUrlAllowlistServiceTest() = default;
   AlwaysOnVpnPreConnectUrlAllowlistServiceTest(
       const AlwaysOnVpnPreConnectUrlAllowlistServiceTest&) = delete;
   AlwaysOnVpnPreConnectUrlAllowlistServiceTest& operator=(
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(AlwaysOnVpnPreConnectUrlAllowlistServiceTest,
 class AlwaysOnVpnPreConnectUrlAllowlistServiceManagedProfileTest
     : public AlwaysOnVpnPreConnectUrlAllowlistServiceTest {
  public:
-  AlwaysOnVpnPreConnectUrlAllowlistServiceManagedProfileTest() {}
+  AlwaysOnVpnPreConnectUrlAllowlistServiceManagedProfileTest() = default;
   AlwaysOnVpnPreConnectUrlAllowlistServiceManagedProfileTest(
       const AlwaysOnVpnPreConnectUrlAllowlistServiceManagedProfileTest&) =
       delete;

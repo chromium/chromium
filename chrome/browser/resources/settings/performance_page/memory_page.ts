@@ -10,9 +10,11 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './memory_page.html.js';
 import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';
@@ -78,6 +80,11 @@ export class SettingsMemoryPageElement extends SettingsMemoryPageElementBase {
 
   private isMemorySaverModeEnabled_(value: number): boolean {
     return value !== MemorySaverModeState.DISABLED;
+  }
+
+  private onMemorySaverLearnMoreLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('memorySaverLearnMoreUrl'));
   }
 }
 

@@ -44,7 +44,7 @@ class UnauthenticatedHttpFetcherTest : public testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
 };
 
-TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequest_Success) {
+TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequestSuccess) {
   GURL url(kTestUrl);
   std::string body(kBody);
   auto head = network::mojom::URLResponseHead::New();
@@ -64,7 +64,7 @@ TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequest_Success) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequest_Failure) {
+TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequestFailure) {
   url_loader_factory_.AddResponse(kTestUrl, "",
                                   net::HTTP_INTERNAL_SERVER_ERROR);
 
@@ -80,7 +80,7 @@ TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequest_Failure) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequest_Failure_NoUrlLoader) {
+TEST_F(UnauthenticatedHttpFetcherTest, ExecuteGetRequestFailureNoUrlLoader) {
   ON_CALL(*browser_delegate_, GetURLLoaderFactory())
       .WillByDefault(testing::Return(nullptr));
 

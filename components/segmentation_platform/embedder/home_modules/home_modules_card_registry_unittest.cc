@@ -129,10 +129,10 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
   std::vector<std::string> signalKeys =
       GetSignalKeys(signal_map, kDefaultBrowserPromo);
-  EXPECT_THAT(
-      signalKeys,
-      Contains("has_default_browser_promo_reached_limit_in_role_manager"));
-  EXPECT_THAT(signalKeys, Contains("is_default_browser_chrome"));
+  EXPECT_THAT(signalKeys,
+              Contains("should_show_non_role_manager_default_browser_promo"));
+  EXPECT_THAT(signalKeys,
+              Contains("has_default_browser_promo_shown_in_other_surface"));
 #endif
 }
 
@@ -158,8 +158,10 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
       GetSignalKeys(signal_map, kDefaultBrowserPromo);
   EXPECT_THAT(
       signalKeys,
-      Not(Contains("has_default_browser_promo_reached_limit_in_role_manager")));
-  EXPECT_THAT(signalKeys, Not(Contains("is_default_browser_chrome")));
+      Not(Contains("should_show_non_role_manager_default_browser_promo")));
+  EXPECT_THAT(
+      signalKeys,
+      Not(Contains("has_default_browser_promo_shown_in_other_surface")));
 #endif
 }
 

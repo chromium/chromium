@@ -145,6 +145,7 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
       std::unique_ptr<viz::CopyOutputRequest> request) override;
   void SetNeedsAnimate() override;
   viz::FrameSinkId GetFrameSinkId() override;
+  gpu::SurfaceHandle GetSurfaceHandle() override;
   void AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) override;
   void RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) override;
   bool IsDrawingFirstVisibleFrame() const override;

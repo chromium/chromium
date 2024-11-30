@@ -38,6 +38,7 @@ Svarīga informācija
 <translation id="1646463005043273333">Atver Chrome iestatījumu, ar kuru var iestatīt pārlūku Chrome par noklusējuma pārlūku.</translation>
 <translation id="1670609221633730681">Chrome padoms: izvēlieties adreses joslas pozīciju</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Paroļu saglabāšana pārlūkā Chrome</translation>
 <translation id="1790080846677398234">Ievadītie URL tiek pievienoti jūsu grāmatzīmēm pārlūkā Chrome.</translation>
 <translation id="1799920918471566157">Chrome padomi</translation>
 <translation id="1830634592642484976">Šī adrese pašlaik ir saglabāta pārlūkā Chrome. Lai izmantotu šo adresi citos Google produktos, saglabājiet to savā Google kontā (<ph name="USER_EMAIL" />).</translation>
@@ -109,6 +110,7 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="3655656110921623717">Tas nozīmē, ka Chrome katru reizi pieprasīs mobilajām ierīcēm paredzēto vietni.</translation>
 <translation id="3740397331642243698">Atver ievadītos vietrāžus URL inkognito režīmā pārlūkā Chrome.</translation>
 <translation id="3741995255368156336">Tiek atvērts Chrome lasīšanas saraksts.</translation>
+<translation id="3808570423967020928">Ātrāk piekļūstiet pārlūkam Chrome no sākuma ekrāna lietotņu sadaļas.</translation>
 <translation id="3827545470516145620">Jūs saņemat standarta drošības aizsardzību šajā ierīcē.</translation>
 <translation id="384394811301901750">Google Chrome pašlaik nevar izmantot kameru.</translation>
 <translation id="3863841106411295595">Ievadītie URL tiek pievienoti jūsu lasīšanas sarakstam pārlūkā Chrome.</translation>
@@ -219,9 +221,11 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 
 Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas iespēju uzlabošanai, pārejiet uz sadaļu <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Pārlūkošanas datu dzēšana pārlūkā Chrome.</translation>
+<translation id="6924922227983877439">Atvērt saites pārlūkā Chrome pēc noklusējuma</translation>
 <translation id="6975725306479268850">Izvēlieties Chrome automātiskajai aizpildei</translation>
 <translation id="7056826488869329999">Tiek atvērta un veikta drošības pārbaude pārlūkā Chrome.</translation>
 <translation id="7061455974939528301">Nospiediet un turiet Chrome ikonu un noklikšķiniet uz vienuma “Rediģēt sākuma ekrānu”</translation>
+<translation id="7065813315247345131">Pārlūka Chrome pārvietošana uz doku</translation>
 <translation id="7124339256045485976">Jaunākās Chrome iespējas</translation>
 <translation id="7161390184744336561">Pārlūka Google Chrome versija ir novecojusi.</translation>
 <translation id="7165736900384873061">Darba sākšana ar Google Chrome QR skeneri</translation>

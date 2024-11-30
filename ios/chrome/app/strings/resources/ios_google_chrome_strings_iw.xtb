@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">‏פתיחה של הגדרות Chrome כדי להגדיר את Chrome כדפדפן ברירת המחדל.</translation>
 <translation id="1670609221633730681">‏טיפ ל-Chrome: אפשר לבחור את המיקום של סרגל הכתובות</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">‏שמירת הסיסמאות ב-Chrome</translation>
 <translation id="1790080846677398234">‏הוספה של כתובות ה-URL שהוזנו לסימניות ב-Chrome.</translation>
 <translation id="1799920918471566157">‏טיפים ל-Chrome</translation>
 <translation id="1830634592642484976">‏הכתובת הזו שמורה ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">‏כלומר, Chrome תמיד יבקש את האתר לנייד.</translation>
 <translation id="3740397331642243698">‏פתיחת כתובות ה-URL שהוזנו ב-Google Chrome במצב אנונימי.</translation>
 <translation id="3741995255368156336">‏פתיחה של רשימת הקריאה ב-Chrome.</translation>
+<translation id="3808570423967020928">‏אפשר לגשת מהר יותר ל-Chrome דרך ה-Dock במסך הבית</translation>
 <translation id="3827545470516145620">במכשיר הזה יש אבטחה ברמה רגילה</translation>
 <translation id="384394811301901750">‏Google Chrome לא יכול להשתמש עכשיו במצלמה</translation>
 <translation id="3863841106411295595">‏הוספה של כתובות ה-URL שהוזנו לרשימת הקריאה ב-Chrome.</translation>
@@ -219,9 +221,11 @@
 
 כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chrome, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">‏מחיקה של נתוני הגלישה ב-Chrome.</translation>
+<translation id="6924922227983877439">‏פתיחת קישורים ב-Chrome כברירת מחדל</translation>
 <translation id="6975725306479268850">‏בחירת Chrome למילוי אוטומטי</translation>
 <translation id="7056826488869329999">‏פתיחה והפעלה של 'טיימר לדיווח על מצב מסוכן' ב-Chrome.</translation>
 <translation id="7061455974939528301">‏לוחצים לחיצה ארוכה על סמל Chrome ואז לוחצים על 'עריכה של מסך הבית'</translation>
+<translation id="7065813315247345131">‏העברת Chrome ל-Dock</translation>
 <translation id="7124339256045485976">‏Chrome יתעדכן באופן קבוע</translation>
 <translation id="7161390184744336561">‏Google Chrome אינו מעודכן</translation>
 <translation id="7165736900384873061">‏התחלת השימוש בסורק ה-QR של Google Chrome</translation>

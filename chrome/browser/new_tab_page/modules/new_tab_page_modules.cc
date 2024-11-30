@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -24,62 +25,66 @@
 
 namespace ntp {
 
-const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
-    bool is_managed_profile,
-    Profile* profile) {
-  std::vector<std::pair<const std::string, int>> details;
+const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
+                                                      Profile* profile) {
+  std::vector<ModuleIdDetail> details;
 
   if (IsGoogleCalendarModuleEnabled(is_managed_profile)) {
-    details.emplace_back("google_calendar",
+    details.emplace_back(ntp_modules::kGoogleCalendarModuleId,
                          IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE);
   }
 
   if (IsOutlookCalendarModuleEnabled(is_managed_profile)) {
-    details.emplace_back("outlook_calendar",
+    details.emplace_back(ntp_modules::kOutlookCalendarModuleId,
                          IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE);
   }
 
   if (IsDriveModuleEnabledForProfile(is_managed_profile, profile)) {
-    details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_NAME);
+    details.emplace_back(ntp_modules::kDriveModuleId,
+                         IDS_NTP_MODULES_DRIVE_NAME);
   }
 
   // TODO(crbug.com/372722777): Implement something similar to
   // `IsDriveModuleEnabledForProfile()` that limits who can see the sharepoint
   // module.
   if (base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule)) {
-    details.emplace_back("sharepoint", IDS_NTP_MODULES_SHAREPOINT_NAME);
+    details.emplace_back(ntp_modules::kSharepointModuleId,
+                         IDS_NTP_MODULES_SHAREPOINT_NAME);
   }
 
   // TODO(crbug.com/377888363): Add conditional display logic.
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpMicrosoftAuthenticationModule)) {
-    details.emplace_back("microsoft_authentication",
-                         IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME);
+    details.emplace_back(
+        ntp_modules::kMicrosoftAuthenticationModuleId,
+        IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME,
+        IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION);
   }
 
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpMostRelevantTabResumptionModule)) {
-    details.emplace_back("tab_resumption",
+    details.emplace_back(ntp_modules::kMostRelevantTabResumptionModuleId,
                          IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {
-    details.emplace_back("feed", IDS_NTP_MODULES_FEED_TITLE);
+    details.emplace_back(ntp_modules::kFeedModuleId,
+                         IDS_NTP_MODULES_FEED_TITLE);
   }
 
 #if !defined(OFFICIAL_BUILD)
   if (base::FeatureList::IsEnabled(ntp_features::kNtpDummyModules)) {
-    details.emplace_back("dummy", IDS_NTP_MODULES_DUMMY_TITLE);
+    details.emplace_back(ntp_modules::kDummyModuleId,
+                         IDS_NTP_MODULES_DUMMY_TITLE);
   }
 #endif
 
   return details;
 }
 
-bool HasModulesEnabled(
-    std::vector<std::pair<const std::string, int>> module_id_names,
-    signin::IdentityManager* identity_manager) {
-  return !module_id_names.empty() &&
+bool HasModulesEnabled(const std::vector<ModuleIdDetail> module_id_details,
+                       signin::IdentityManager* identity_manager) {
+  return !module_id_details.empty() &&
          !base::FeatureList::IsEnabled(ntp_features::kNtpModulesLoad) &&
          (base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kSignedOutNtpModulesSwitch) ||

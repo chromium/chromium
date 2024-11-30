@@ -301,7 +301,7 @@ TEST_F(ArcTimerTest, CheckMultipleCreateTimersTest) {
   EXPECT_TRUE(CreateTimers(clocks));
 }
 
-TEST_F(ArcTimerTest, SetTimeTest_RequestedTimeIsInvalid) {
+TEST_F(ArcTimerTest, SetTimeTestRequestedTimeIsInvalid) {
   // Time::Now() + 25 hours should be rejected.
   base::Time time_to_set =
       base::Time::Now() + kArcSetTimeMaxTimeDelta + base::Hours(1);
@@ -316,7 +316,7 @@ TEST_F(ArcTimerTest, SetTimeTest_RequestedTimeIsInvalid) {
   EXPECT_EQ(future2.Get(), mojom::ArcTimerResult::FAILURE);
 }
 
-TEST_F(ArcTimerTest, SetTimeTest_RequestedTimeIsValid) {
+TEST_F(ArcTimerTest, SetTimeTestRequestedTimeIsValid) {
   // Time::Now() + 23 hours should be accepted.
   const base::Time time_to_set =
       base::Time::Now() + kArcSetTimeMaxTimeDelta - base::Hours(1);
@@ -338,7 +338,7 @@ TEST_F(ArcTimerTest, SetTimeTest_RequestedTimeIsValid) {
   EXPECT_EQ(future.Get(), mojom::ArcTimerResult::SUCCESS);
 }
 
-TEST_F(ArcTimerTest, SetTimeTest_UpstartJobFails) {
+TEST_F(ArcTimerTest, SetTimeTestUpstartJobFails) {
   const base::Time time_to_set =
       base::Time::Now() + kArcSetTimeMaxTimeDelta - base::Hours(1);
 

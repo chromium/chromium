@@ -14,37 +14,10 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.JankTrackerExperiment;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
-import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
-import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
-import org.chromium.chrome.browser.latency_injection.StartupLatencyInjector;
-import org.chromium.chrome.browser.logo.LogoUtils;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
-import org.chromium.chrome.browser.notifications.TrampolineActivityTracker;
-import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
-import org.chromium.chrome.browser.omaha.VersionNumberGetter;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.searchwidget.SearchActivity;
-import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
-import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
-import org.chromium.chrome.browser.tabbed_mode.TabbedSystemUiCoordinator;
-import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
-import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
-import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogFeatureMap;
 import org.chromium.components.cached_flags.CachedFieldTrialParameter;
 import org.chromium.components.cached_flags.CachedFlag;
@@ -58,6 +31,13 @@ import java.util.List;
 /** Caches the flags that Chrome might require before native is loaded in a later next run. */
 public class ChromeCachedFlags {
     private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
+    static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_FULL_BROWSER =
+            List.of(
+                    ChromeFeatureList.sFlagsCachedFullBrowser,
+                    OmniboxFeatures.getFieldTrialsToCache(),
+                    ModalDialogFeatureMap.sCachedFlags);
+    static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER =
+            List.of(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
 
     private boolean mIsFinishedCachingNativeFlags;
 
@@ -85,81 +65,13 @@ public class ChromeCachedFlags {
         if (mIsFinishedCachingNativeFlags) return;
         FirstRunUtils.cacheFirstRunPrefs();
 
-        CachedFlagUtils.cacheNativeFlags(
-                ChromeFeatureList.sFlagsCachedFullBrowser,
-                OmniboxFeatures.getFieldTrialsToCache(),
-                ModalDialogFeatureMap.sCachedFlags);
+        CachedFlagUtils.cacheNativeFlags(LISTS_OF_CACHED_FLAGS_FULL_BROWSER);
         cacheAdditionalNativeFlags();
 
-        List<CachedFieldTrialParameter<?>> fieldTrialParamsToCache =
-                List.of(
-                        AuthTabVerifier.VERIFICATION_TIMEOUT_MS,
-                        AuxiliarySearchUtils.CONTENT_TTL_HOURS,
-                        AuxiliarySearchUtils.SCHEDULE_DELAY_TIME_MS,
-                        AuxiliarySearchUtils.USE_LARGE_FAVICON,
-                        AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER,
-                        ChimeFeatures.ALWAYS_REGISTER,
-                        TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM,
-                        CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,
-                        CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST,
-                        CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,
-                        CustomTabIntentDataProvider.DENYLIST_ENTRIES,
-                        CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
-                        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES,
-                        DseNewTabUrlManager.SWAP_OUT_NTP,
-                        BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST,
-                        BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE,
-                        BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE,
-                        BottomBarConfigCreator
-                                .GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE,
-                        BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED,
-                        EdgeToEdgeUtils.DISABLE_CCT_MEDIA_VIEWER_E2E,
-                        EdgeToEdgeUtils.DISABLE_HUB_E2E,
-                        EdgeToEdgeUtils.DISABLE_INCOGNITO_NTP_E2E,
-                        EdgeToEdgeUtils.DISABLE_NTP_E2E,
-                        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST,
-                        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS,
-                        HubFieldTrial.ALTERNATIVE_FAB_COLOR,
-                        JankTrackerExperiment.JANK_TRACKER_DELAYED_START_MS,
-                        MinimizedFeatureUtils.ICON_VARIANT,
-                        MinimizedFeatureUtils.MANUFACTURER_EXCLUDE_LIST,
-                        MultiWindowUtils.BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS,
-                        OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE,
-                        SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID,
-                        ShoppingPersistedTabDataService
-                                .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
-                        ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS,
-                        LogoUtils.LOGO_POLISH_LARGE_SIZE,
-                        LogoUtils.LOGO_POLISH_MEDIUM_SIZE,
-                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_PATH,
-                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_QUERY,
-                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_REF,
-                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_SCHEME_HOST,
-                        StartupLatencyInjector.CLANK_STARTUP_LATENCY_PARAM_MS,
-                        TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
-                        HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
-                        HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
-                        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING,
-                        TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND,
-                        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND,
-                        TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER,
-                        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON,
-                        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_SEE_MORE,
-                        TabResumptionModuleUtils.TAB_RESUMPTION_USE_DEFAULT_APP_FILTER,
-                        TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE,
-                        TabResumptionModuleUtils.TAB_RESUMPTION_V2,
-                        TabStateFileManager.MIGRATE_STALE_TABS_CACHED_PARAM,
-                        TrampolineActivityTracker.IMMEDIATE_JOB_DURATION_VALUE,
-                        TrampolineActivityTracker.NORMAL_JOB_DURATION_VALUE,
-                        TrampolineActivityTracker.LONG_JOB_DURATION_VALUE,
-                        TrampolineActivityTracker.TIMEOUT_PRIOR_NATIVE_INIT_VALUE,
-                        VersionNumberGetter.MIN_SDK_VERSION,
-                        WebappLauncherActivity.MIN_SHELL_APK_VERSION);
-
         tryToCatchMissingParameters(
-                fieldTrialParamsToCache, OmniboxFeatures.getFieldTrialParamsToCache());
+                ChromeFeatureList.sParamsCached, OmniboxFeatures.getFieldTrialParamsToCache());
         CachedFlagUtils.cacheFieldTrialParameters(
-                fieldTrialParamsToCache, OmniboxFeatures.getFieldTrialParamsToCache());
+                ChromeFeatureList.sParamsCached, OmniboxFeatures.getFieldTrialParamsToCache());
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mIsFinishedCachingNativeFlags = true;
@@ -197,7 +109,7 @@ public class ChromeCachedFlags {
      */
     public void cacheMinimalBrowserFlags() {
         cacheMinimalBrowserFlagsTimeFromNativeTime();
-        CachedFlagUtils.cacheNativeFlags(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
+        CachedFlagUtils.cacheNativeFlags(LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER);
         CachedFlagUtils.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
     }
 

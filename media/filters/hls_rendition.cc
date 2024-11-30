@@ -21,10 +21,10 @@ std::optional<base::TimeDelta> GetPlaylistDuration(
 
   auto segments = playlist->GetSegments();
   // Usually manifests use an Endlist tag to end a live playback, but its
-  // also fairly common to see these on VOD content where the first media
-  // sequence is id 0 or 1.
+  // also fairly common to see these on VOD content that was clipped from
+  // live content.
   if (playlist->IsEndList()) {
-    if (!segments.empty() && segments[0]->GetMediaSequenceNumber() < 2) {
+    if (!segments.empty()) {
       return playlist->GetComputedDuration();
     }
   }

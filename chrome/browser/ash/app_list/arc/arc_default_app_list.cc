@@ -356,4 +356,4 @@ ArcDefaultAppList::AppInfo::AppInfo(const std::string& name,
       oem(oem),
       app_path(app_path) {}
 
-ArcDefaultAppList::AppInfo::~AppInfo() {}
+ArcDefaultAppList::AppInfo::~AppInfo() = default;

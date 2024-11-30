@@ -37,11 +37,11 @@ namespace disk_cache {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Flaky on ChromeOS: https://crbug.com/1156795
-#define MAYBE_BlockFiles_Grow DISABLED_BlockFiles_Grow
+#define MAYBE_BlockFilesGrow DISABLED_BlockFilesGrow
 #else
-#define MAYBE_BlockFiles_Grow BlockFiles_Grow
+#define MAYBE_BlockFilesGrow BlockFilesGrow
 #endif
-TEST_F(DiskCacheTest, MAYBE_BlockFiles_Grow) {
+TEST_F(DiskCacheTest, MAYBE_BlockFilesGrow) {
   ASSERT_TRUE(CleanupCacheDir());
   ASSERT_TRUE(base::CreateDirectory(cache_path_));
 
@@ -74,7 +74,7 @@ TEST_F(DiskCacheTest, MAYBE_BlockFiles_Grow) {
 }
 
 // We should be able to delete empty block files.
-TEST_F(DiskCacheTest, BlockFiles_Shrink) {
+TEST_F(DiskCacheTest, BlockFilesShrink) {
   ASSERT_TRUE(CleanupCacheDir());
   ASSERT_TRUE(base::CreateDirectory(cache_path_));
 
@@ -97,7 +97,7 @@ TEST_F(DiskCacheTest, BlockFiles_Shrink) {
 }
 
 // Handling of block files not properly closed.
-TEST_F(DiskCacheTest, BlockFiles_Recover) {
+TEST_F(DiskCacheTest, BlockFilesRecover) {
   ASSERT_TRUE(CleanupCacheDir());
   ASSERT_TRUE(base::CreateDirectory(cache_path_));
 
@@ -174,7 +174,7 @@ TEST_F(DiskCacheTest, BlockFiles_Recover) {
 }
 
 // Handling of truncated files.
-TEST_F(DiskCacheTest, BlockFiles_ZeroSizeFile) {
+TEST_F(DiskCacheTest, BlockFilesZeroSizeFile) {
   ASSERT_TRUE(CleanupCacheDir());
   ASSERT_TRUE(base::CreateDirectory(cache_path_));
 
@@ -195,7 +195,7 @@ TEST_F(DiskCacheTest, BlockFiles_ZeroSizeFile) {
 }
 
 // Handling of truncated files (non empty).
-TEST_F(DiskCacheTest, BlockFiles_TruncatedFile) {
+TEST_F(DiskCacheTest, BlockFilesTruncatedFile) {
   ASSERT_TRUE(CleanupCacheDir());
   ASSERT_TRUE(base::CreateDirectory(cache_path_));
 
@@ -218,7 +218,7 @@ TEST_F(DiskCacheTest, BlockFiles_TruncatedFile) {
 }
 
 // Tests detection of out of sync counters.
-TEST_F(DiskCacheTest, BlockFiles_Counters) {
+TEST_F(DiskCacheTest, BlockFilesCounters) {
   ASSERT_TRUE(CleanupCacheDir());
   ASSERT_TRUE(base::CreateDirectory(cache_path_));
 
@@ -273,7 +273,7 @@ TEST_F(DiskCacheTest, BlockFiles_Counters) {
 }
 
 // An invalid file can be detected after init.
-TEST_F(DiskCacheTest, BlockFiles_InvalidFile) {
+TEST_F(DiskCacheTest, BlockFilesInvalidFile) {
   ASSERT_TRUE(CleanupCacheDir());
   ASSERT_TRUE(base::CreateDirectory(cache_path_));
 

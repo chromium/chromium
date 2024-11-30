@@ -70,7 +70,7 @@
   dispatch_async(priorityQueue, ^{
     self.allCredentials = [self fetchAllCredentials];
 
-    self.suggestedCredentials = [self.UIHandler isRequestingPasskey]
+    self.suggestedCredentials = [self.UIHandler relyingPartyIdentifier]
                                     ? [self filterPasskeyCredentials]
                                     : [self filterPasswordCredentials];
 
@@ -139,20 +139,27 @@
 // Returns all credentials from the credential store, filtered by request type
 // and sorted by service name.
 - (NSArray<id<Credential>>*)fetchAllCredentials {
-  BOOL isRequestingPasskey = [self.UIHandler isRequestingPasskey];
+  NSString* relyingPartyIdentifier = [self.UIHandler relyingPartyIdentifier];
   // Only use passwords or passkeys, depending on what's requested.
   NSArray<id<Credential>>* credentials = [self.credentialStore.credentials
       filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
                                                    id<Credential> credential,
                                                    NSDictionary* bindings) {
-        return credential.isPasskey == isRequestingPasskey;
+        if (relyingPartyIdentifier) {
+          return credential.isPasskey &&
+                 [credential.rpId isEqualToString:relyingPartyIdentifier];
+        } else {
+          return !credential.isPasskey;
+        }
       }]];
 
-  credentials = [credentials sortedArrayUsingComparator:^NSComparisonResult(
-                                 id<Credential> obj1, id<Credential> obj2) {
-    return isRequestingPasskey ? [obj1.rpId compare:obj2.rpId]
-                               : [obj1.serviceName compare:obj2.serviceName];
-  }];
+  if (!relyingPartyIdentifier) {
+    credentials = [credentials sortedArrayUsingComparator:^NSComparisonResult(
+                                   id<Credential> obj1, id<Credential> obj2) {
+      return [obj1.serviceName compare:obj2.serviceName];
+    }];
+  }
+
   return credentials;
 }
 
@@ -200,7 +207,7 @@
 - (void)presentCredentials {
   // TODO(crbug.com/40215043): Remove the serviceIdentifier check once the
   // new password screen properly supports user url entry.
-  BOOL canCreatePassword = ![self.UIHandler isRequestingPasskey] &&
+  BOOL canCreatePassword = ![self.UIHandler relyingPartyIdentifier] &&
                            IsPasswordCreationUserEnabled() &&
                            self.serviceIdentifiers.count > 0;
   if (!canCreatePassword && !self.allCredentials.count) {

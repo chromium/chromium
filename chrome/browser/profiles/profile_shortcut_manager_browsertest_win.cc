@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_os_info_override_win.h"
 #include "base/test/scoped_path_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -114,4 +115,74 @@ IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
   // badged_icon might have been created with a default avatar image and then
   // updated with GAIA picture.
   EXPECT_EQ(badged_icon, badged_icon_with_gaia_picture);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
+                       ProfileIconWin10VersionPrefTest) {
+  base::test::ScopedOSInfoOverride os(
+      base::test::ScopedOSInfoOverride::Type::kWin10Pro);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  g_browser_process->profile_manager()
+      ->profile_shortcut_manager()
+      ->CreateOrUpdateProfileIcon(browser()->profile()->GetPath());
+  content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kProfileIconWin11Format));
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
+                       ProfileIconWin11VersionPrefTest) {
+  base::test::ScopedOSInfoOverride os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  g_browser_process->profile_manager()
+      ->profile_shortcut_manager()
+      ->CreateOrUpdateProfileIcon(browser()->profile()->GetPath());
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kProfileIconWin11Format));
+}
+
+class ProfileIconUpgradeBrowserTest : public ProfileShortcutManagerBrowserTest {
+ public:
+  ProfileIconUpgradeBrowserTest() = default;
+  ~ProfileIconUpgradeBrowserTest() override = default;
+  ProfileIconUpgradeBrowserTest(const ProfileIconUpgradeBrowserTest&) = delete;
+  ProfileIconUpgradeBrowserTest& operator=(
+      const ProfileIconUpgradeBrowserTest&) = delete;
+
+  void SetUp() override {
+    os_override_ = std::make_unique<base::test::ScopedOSInfoOverride>(
+        GetTestPreCount() > 0
+            ? base::test::ScopedOSInfoOverride::Type::kWin10Pro
+            : base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+    ProfileShortcutManagerBrowserTest::SetUp();
+  }
+
+ protected:
+  // Initialized in SetUp() to Win10 for PRE_ test and Win11 for test.
+  std::unique_ptr<base::test::ScopedOSInfoOverride> os_override_;
+};
+
+// The PRE test creates a profile icon in Win 10 format.
+IN_PROC_BROWSER_TEST_F(ProfileIconUpgradeBrowserTest,
+                       PRE_UpgradeWin10ToWin11Test) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Force icon to be Win10 format.
+  g_browser_process->profile_manager()
+      ->profile_shortcut_manager()
+      ->CreateOrUpdateProfileIcon(browser()->profile()->GetPath());
+  content::RunAllTasksUntilIdle();
+  LOG(INFO) << "finished running all tasks";
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kProfileIconWin11Format));
+}
+
+// This test forces the OS version to Win 11, and checks that the profile
+// icon was migrated to Win 11.
+IN_PROC_BROWSER_TEST_F(ProfileIconUpgradeBrowserTest, UpgradeWin10ToWin11Test) {
+  // Loading the profile should trigger a migration of the profile icon, and
+  // a corresponding set of the icon format pref.
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kProfileIconWin11Format));
 }

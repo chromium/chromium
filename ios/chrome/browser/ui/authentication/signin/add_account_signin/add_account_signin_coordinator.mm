@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_manager.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -84,7 +85,7 @@ using signin_metrics::PromoAction;
   // When interrupting `self.postSigninManagerCoordinator` or
   // `self.historySyncPopupCoordinator` below, the signinCompletion is called.
   // This callback is in charge to call `[self
-  // runCompletionWithSigninResult: completionInfo:]`.
+  // runCompletionWithSigninResult: completionIdentity:]`.
   if (self.postSigninManagerCoordinator) {
     DCHECK(!self.addAccountSigninManager);
     [self.postSigninManagerCoordinator interruptWithAction:action
@@ -207,6 +208,17 @@ using signin_metrics::PromoAction;
 
 #pragma mark - Private
 
+- (void)stopHistorySyncPopupCoordinator {
+  [self.historySyncPopupCoordinator stop];
+  self.historySyncPopupCoordinator.delegate = nil;
+  self.historySyncPopupCoordinator = nil;
+}
+
+- (void)stopPostSigninManagerCoordinator {
+  [self.postSigninManagerCoordinator stop];
+  self.postSigninManagerCoordinator = nil;
+}
+
 // Continues the sign-in workflow according to the sign-in intent
 - (void)continueAddAccountFlowWithSigninResult:
             (SigninCoordinatorResult)signinResult
@@ -266,10 +278,9 @@ using signin_metrics::PromoAction;
   // `identity` is set, only and only if the sign-in is successful.
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) && identity) ||
          ((signinResult != SigninCoordinatorResultSuccess) && !identity));
-  SigninCompletionInfo* completionInfo =
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
+  id<SystemIdentity> completionIdentity = identity;
   [self runCompletionWithSigninResult:signinResult
-                       completionInfo:completionInfo];
+                   completionIdentity:completionIdentity];
 }
 
 // Presents the extra screen with `identity` pre-selected.
@@ -287,21 +298,21 @@ using signin_metrics::PromoAction;
   __weak AddAccountSigninCoordinator* weakSelf = self;
   self.postSigninManagerCoordinator.signinCompletion = ^(
       SigninCoordinatorResult signinResult,
-      SigninCompletionInfo* signinCompletionInfo) {
-    [weakSelf postSigninManagerCoordinatorDoneWithResult:signinResult
-                                    signinCompletionInfo:signinCompletionInfo];
+      id<SystemIdentity> signinCompletionIdentity) {
+    [weakSelf
+        postSigninManagerCoordinatorDoneWithResult:signinResult
+                          signinCompletionIdentity:signinCompletionIdentity];
   };
   [self.postSigninManagerCoordinator start];
 }
 
 - (void)postSigninManagerCoordinatorDoneWithResult:
             (SigninCoordinatorResult)result
-                              signinCompletionInfo:(SigninCompletionInfo*)info {
-  [self.postSigninManagerCoordinator stop];
-  self.postSigninManagerCoordinator = nil;
-
+                          signinCompletionIdentity:
+                              (id<SystemIdentity>)resultIdentity {
+  [self stopPostSigninManagerCoordinator];
   if (result != SigninCoordinatorResultSuccess) {
-    [self addAccountDoneWithSigninResult:result identity:info.identity];
+    [self addAccountDoneWithSigninResult:result identity:resultIdentity];
     return;
   }
 
@@ -320,8 +331,7 @@ using signin_metrics::PromoAction;
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
                 didFinishWithResult:(SigninCoordinatorResult)result {
-  [self.historySyncPopupCoordinator stop];
-  self.historySyncPopupCoordinator = nil;
+  [self stopHistorySyncPopupCoordinator];
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(

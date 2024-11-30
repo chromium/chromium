@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -18,9 +19,8 @@
 namespace autofill::autofill_metrics {
 
 // This is defined in the prediction_quality_metrics.cc implementation file.
-int GetFieldTypeGroupPredictionQualityMetric(
-    FieldType field_type,
-    autofill_metrics::FieldTypeQualityMetric metric);
+int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
+                                             FieldTypeQualityMetric metric);
 
 namespace {
 
@@ -195,6 +195,19 @@ TEST_F(PredictionQualityMetricsTest,
     LogHeuristicPredictionQualityPerLabelSourceMetric(field);
     histogram_tester.ExpectTotalCount(kMetricName, 0);
   }
+}
+
+TEST_F(PredictionQualityMetricsTest, LogLocalHeuristicMatchedAttribute) {
+  base::HistogramTester histogram_tester;
+  LogLocalHeuristicMatchedAttribute({});  // None
+  LogLocalHeuristicMatchedAttribute(
+      {MatchAttribute::kLabel, MatchAttribute::kName});  // Ambiguous
+  LogLocalHeuristicMatchedAttribute({MatchAttribute::kLabel});
+  LogLocalHeuristicMatchedAttribute({MatchAttribute::kName});
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.LocalHeuristics.MatchedAttribute"),
+              BucketsAre(Bucket(0 /* None */, 1), Bucket(1 /* Ambiguous */, 1),
+                         Bucket(2 /* Label */, 1), Bucket(3 /* Name */, 1)));
 }
 
 }  // namespace

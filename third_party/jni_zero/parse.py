@@ -291,13 +291,13 @@ _NON_PROXY_NATIVES_REGEX = re.compile(
     r'\(\"(?P<native_class_name>\S*?)\"\)\s+)?'
     r'(?P<qualifiers>\w+\s\w+|\w+|\s+)\s*native\s+'
     r'(?P<return_type>\S*)\s+'
-    r'(?P<name>native\w+)\((?P<params>.*?)\);', re.DOTALL)
+    r'native(?P<name>\w+)\((?P<params>.*?)\);', re.DOTALL)
 
 
 def _parse_non_proxy_natives(type_resolver, contents):
   ret = []
   for match in _NON_PROXY_NATIVES_REGEX.finditer(contents):
-    name = match.group('name').replace('native', '')
+    name = match.group('name')
     return_type = _parse_type(type_resolver, match.group('return_type'))
     params = _parse_param_list(type_resolver, match.group('params'))
     signature = java_types.JavaSignature.from_params(return_type, params)

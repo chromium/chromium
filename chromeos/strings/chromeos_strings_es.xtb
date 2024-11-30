@@ -959,7 +959,7 @@
 <translation id="5655283760733841251">Aumentar el brillo del teclado</translation>
 <translation id="5655296450510165335">Registro de dispositivos</translation>
 <translation id="5655776422854483175">No hay trabajos de impresión</translation>
-<translation id="5659593005791499971">Correo</translation>
+<translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5662240986744577912">activar o desactivar pantalla de privacidad</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -1044,6 +1044,7 @@
 <translation id="6058625436358447366">Para finalizar, introduce tu contraseña anterior y la nueva</translation>
 <translation id="6061772781719867950">Solicitudes HTTPS con errores</translation>
 <translation id="6073292342939316679">reducir brillo del teclado</translation>
+<translation id="6074752328838739425">Ocultar resumen</translation>
 <translation id="6075872808778243331">(Android) Latencia de HTTP</translation>
 <translation id="6078323886959318429">Acceso directo</translation>
 <translation id="6091080061796993741">amarillo</translation>
@@ -1233,6 +1234,7 @@
 <translation id="6866732840889595464">Margarita</translation>
 <translation id="6871256179359663621">morado claro</translation>
 <translation id="6889786074662672253">Mientras se reinicia, no desconectes este dispositivo externo ni apagues el ordenador. Puedes minimizar esta ventana. Este proceso puede tardar unos minutos y es posible que tu dispositivo externo no funcione durante ese tiempo.</translation>
+<translation id="6899460405678814458">Mostrar resumen</translation>
 <translation id="6900701049656042631">Este álbum no tiene ninguna foto. Para añadir fotos, visita <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Crear fondo con IA</translation>
 <translation id="6905163627763043954">Probar</translation>

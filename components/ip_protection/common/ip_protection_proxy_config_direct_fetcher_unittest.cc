@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,11 +17,9 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/base/features.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
@@ -50,7 +49,7 @@ class MockIpProtectionProxyConfigRetriever
       : IpProtectionProxyConfigDirectFetcher::Retriever(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
             kServiceType,
-            IpProtectionProxyConfigDirectFetcher::AuthenticateCallback()),
+            nullptr),
         get_proxy_config_(get_proxy_config) {}
 
   // Construct a mock retriever that always returns the same response.
@@ -77,25 +76,27 @@ class MockIpProtectionProxyConfigRetriever
 
 }  // namespace
 
-class IpProtectionProxyConfigDirectFetcherRetrieverTest : public testing::Test {
+class IpProtectionProxyConfigDirectFetcherRetrieverTest
+    : public testing::Test,
+      public IpProtectionProxyConfigDirectFetcher::Delegate {
  protected:
   void SetUp() override {
     retriever_ =
         std::make_unique<IpProtectionProxyConfigDirectFetcher::Retriever>(
             test_url_loader_factory_.GetSafeWeakWrapper(), "test_service_type",
-            base::BindRepeating(
-                &IpProtectionProxyConfigDirectFetcherRetrieverTest::
-                    AuthenticateCallback,
-                base::Unretained(this)));
+            this);
     token_server_get_proxy_config_url_ = GURL(base::StrCat(
         {net::features::kIpPrivacyTokenServer.Get(),
          net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()}));
     ASSERT_TRUE(token_server_get_proxy_config_url_.is_valid());
   }
 
-  void AuthenticateCallback(
+  // IpProtectionProxyConfigDirectFetcher::Delegate implementation.
+  bool IsProxyConfigFetchEnabled() override { return true; }
+  void AuthenticateRequest(
       std::unique_ptr<network::ResourceRequest> resource_request,
-      IpProtectionProxyConfigDirectFetcher::AuthenticateDoneCallback callback) {
+      IpProtectionProxyConfigDirectFetcher::Delegate::
+          AuthenticateRequestCallback callback) override {
     resource_request->headers.SetHeader("AuthenticationHeader", "Added");
     std::move(callback).Run(authenticate_callback_result_,
                             std::move(resource_request));
@@ -209,11 +210,22 @@ TEST_F(IpProtectionProxyConfigDirectFetcherRetrieverTest, GetProxyConfigFails) {
   ASSERT_FALSE(result.has_value());
 }
 
-class IpProtectionProxyConfigDirectFetcherTest : public testing::Test {
+class IpProtectionProxyConfigDirectFetcherTest
+    : public testing::Test,
+      public IpProtectionProxyConfigDirectFetcher::Delegate {
+  // IpProtectionProxyConfigDirectFetcher::Delegate implementation.
+  bool IsProxyConfigFetchEnabled() override { return true; }
+  void AuthenticateRequest(
+      std::unique_ptr<network::ResourceRequest> resource_request,
+      IpProtectionProxyConfigDirectFetcher::Delegate::
+          AuthenticateRequestCallback callback) override {
+    NOTREACHED();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
-  base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
-                         const std::optional<GeoHint>&>
+  base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>,
+                         const std::optional<GeoHint>>
       proxy_list_future_;
 };
 
@@ -233,14 +245,14 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest, GetProxyConfigProxyChains) {
   response.mutable_geo_hint()->set_city_name(kGeoHint.city_name);
 
   IpProtectionProxyConfigDirectFetcher fetcher(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response), this);
   base::Time initial_no_get_proxy_config_until_ =
-      fetcher.GetNoGetProxyConfigUntilTime();
+      fetcher.GetNoGetProxyConfigUntilTimeForTesting();
 
   fetcher.GetProxyConfig(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
   // This is a successful response. Backoff should be reset.
-  EXPECT_EQ(fetcher.GetNoGetProxyConfigUntilTime(),
+  EXPECT_EQ(fetcher.GetNoGetProxyConfigUntilTimeForTesting(),
             initial_no_get_proxy_config_until_);
   EXPECT_EQ(
       fetcher.GetNextGetProxyConfigBackoffForTesting(),
@@ -281,7 +293,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
   response.mutable_geo_hint()->set_city_name(kGeoHint.city_name);
 
   IpProtectionProxyConfigDirectFetcher fetcher(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response), this);
 
   fetcher.GetProxyConfig(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
@@ -325,7 +337,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest, GetProxyConfigProxyInvalid) {
   response.mutable_geo_hint()->set_city_name(kGeoHint.city_name);
 
   IpProtectionProxyConfigDirectFetcher fetcher(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response), this);
 
   fetcher.GetProxyConfig(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
@@ -357,7 +369,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
   response.mutable_geo_hint()->set_city_name(kGeoHint.city_name);
 
   IpProtectionProxyConfigDirectFetcher fetcher(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response), this);
 
   fetcher.GetProxyConfig(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
@@ -393,7 +405,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
   response.mutable_geo_hint()->set_country_code("US");
 
   IpProtectionProxyConfigDirectFetcher fetcher(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response), this);
 
   fetcher.GetProxyConfig(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
@@ -433,9 +445,10 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
   chain->set_chain_id(2);
 
   IpProtectionProxyConfigDirectFetcher fetcher(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(response), this);
   // No backoff set yet.
-  EXPECT_LT(fetcher.GetNoGetProxyConfigUntilTime(), base::Time::Now());
+  EXPECT_LT(fetcher.GetNoGetProxyConfigUntilTimeForTesting(),
+            base::Time::Now());
 
   fetcher.GetProxyConfig(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
@@ -444,7 +457,8 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
   // It is impossible to get `Time::Now()` in the runtime. But since
   // test duration is much less than kGetProxyConfigFailureTimeout
   // (1min), safe to compare with the `Time::Now()` from the test harness.
-  EXPECT_GT(fetcher.GetNoGetProxyConfigUntilTime(), base::Time::Now());
+  EXPECT_GT(fetcher.GetNoGetProxyConfigUntilTimeForTesting(),
+            base::Time::Now());
   EXPECT_EQ(
       fetcher.GetNextGetProxyConfigBackoffForTesting(),
       IpProtectionProxyConfigDirectFetcher::kGetProxyConfigFailureTimeout * 2);

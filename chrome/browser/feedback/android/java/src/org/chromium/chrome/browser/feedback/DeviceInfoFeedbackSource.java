@@ -5,10 +5,8 @@
 package org.chromium.chrome.browser.feedback;
 
 import android.os.Build;
-import android.util.Pair;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -39,7 +37,6 @@ class DeviceInfoFeedbackSource implements FeedbackSource {
             type = TYPE_PHONE;
         }
 
-        return CollectionUtil.newHashMap(
-                Pair.create(DEVICE_NAME_KEY, name), Pair.create(DEVICE_TYPE_KEY, type));
+        return Map.of(DEVICE_NAME_KEY, name, DEVICE_TYPE_KEY, type);
     }
 }

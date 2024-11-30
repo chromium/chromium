@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Pair;
@@ -19,12 +17,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -46,11 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 /** Handles the Custom Tab specific behaviors of tab persistence. */
-@ActivityScope
 public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     private static final String TAG = "tabmodel";
 
@@ -69,12 +61,9 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     private SequencedTaskRunner mTaskRunner;
     private boolean mDestroyed;
 
-    @Inject
-    public CustomTabTabPersistencePolicy(
-            Activity activity,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
+    public CustomTabTabPersistencePolicy(Activity activity, Bundle savedInstanceState) {
         mTaskId = activity.getTaskId();
-        mShouldRestore = (savedInstanceStateSupplier.get() != null);
+        mShouldRestore = savedInstanceState != null;
     }
 
     /**
@@ -82,7 +71,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
      *
      * @param taskId The task ID that the owning Custom Tab is in.
      * @param shouldRestore Whether an attempt to restore tab state information should be done on
-     *                      startup.
+     *     startup.
      */
     @VisibleForTesting
     CustomTabTabPersistencePolicy(int taskId, boolean shouldRestore) {

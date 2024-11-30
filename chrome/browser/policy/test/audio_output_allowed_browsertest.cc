@@ -17,7 +17,7 @@ namespace {
 class TestAudioObserver : public ash::CrasAudioHandler::AudioObserver {
  public:
   TestAudioObserver() : output_mute_changed_count_(0) {}
-  ~TestAudioObserver() override {}
+  ~TestAudioObserver() override = default;
 
   TestAudioObserver(const TestAudioObserver&) = delete;
   TestAudioObserver& operator=(const TestAudioObserver&) = delete;

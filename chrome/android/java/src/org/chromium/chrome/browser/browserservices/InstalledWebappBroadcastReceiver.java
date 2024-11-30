@@ -19,30 +19,28 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 /**
  * A {@link android.content.BroadcastReceiver} that detects when an installed webapp (TWA or WebAPK)
  * has been uninstalled or has had its data cleared. When this happens we clear Chrome's data
  * corresponding to that app.
  *
- * Trusted Web Activities are registered to an origin (eg https://www.example.com), however because
- * cookies can be scoped more loosely, at eTLD+1 (or domain) level (eg *.example.com) [1], we need
- * to clear data at that level. This unfortunately can lead to too much data getting cleared - for
- * example if the https://maps.google.com TWA is cleared, you'll loose cookies for
+ * <p>Trusted Web Activities are registered to an origin (eg https://www.example.com), however
+ * because cookies can be scoped more loosely, at eTLD+1 (or domain) level (eg *.example.com) [1],
+ * we need to clear data at that level. This unfortunately can lead to too much data getting cleared
+ * - for example if the https://maps.google.com TWA is cleared, you'll loose cookies for
  * https://mail.google.com too (since they both share the google.com domain).
  *
- * We find this acceptable for two reasons:
+ * <p>We find this acceptable for two reasons: <br>
  * - The alternative is *not* clearing some related data - eg a TWA linked to
- *   https://maps.google.com sets a cookie with Domain=google.com. The TWA is uninstalled and
- *   reinstalled and it can access the cookie it stored before.
+ * https://maps.google.com sets a cookie with Domain=google.com. The TWA is uninstalled and
+ * reinstalled and it can access the cookie it stored before. <br>
  * - We ask the user before clearing the data and while doing so display the scope of data we're
- *   going to wipe.
+ * going to wipe.
  *
- * [1] https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Scope_of_cookies
+ * <p>[1] https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Scope_of_cookies
  *
- * Lifecycle: The lifecycle of this class is managed by Android.
- * Thread safety: {@link #onReceive} will be called on the UI thread.
+ * <p>Lifecycle: The lifecycle of this class is managed by Android. Thread safety: {@link
+ * #onReceive} will be called on the UI thread.
  */
 public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "IWBroadcastReceiver";
@@ -70,7 +68,6 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
     private final ClearDataStrategy mClearDataStrategy;
 
     /** Constructor with default dependencies for Android. */
-    @Inject
     public InstalledWebappBroadcastReceiver() {
         this(new ClearDataStrategy());
     }

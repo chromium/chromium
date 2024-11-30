@@ -314,14 +314,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                             mCnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
         }
 
-        public void simulateUserChangeAutofilledField() throws Throwable {
-            mTest.executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
-            mTest.dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
-            mCnt +=
-                    mTest.waitForCallbackAndVerifyTypes(
-                            mCnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
-        }
-
         public void submitForm() throws Throwable {
             mTest.executeJavaScriptAndWaitForResult("document.getElementById('formid').submit();");
             mCnt +=
@@ -427,10 +419,6 @@ public class AwAutofillTest extends AwParameterizedTest {
         mAutofillProvider = mAwContents.getAutofillProviderForTesting();
 
         ThreadUtils.runOnUiThreadBlocking(() -> histograms.assertExpected());
-    }
-
-    private void setUpAwGNotCurrent() throws Exception {
-        doSetUp(/* isAwGCurrentAutofillService= */ false);
     }
 
     @After
@@ -629,9 +617,6 @@ public class AwAutofillTest extends AwParameterizedTest {
         clearChangedValues();
         invokeAutofill(values);
 
-        // Autofilling the select control will move the focus on it, and triggers a value change
-        // callback, so we get additional AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED and
-        // AUTOFILL_VALUE_CHANGED events at the end.
         waitForCallbackAndVerifyTypes(
                 cnt,
                 new Integer[] {
@@ -639,9 +624,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                     AUTOFILL_VALUE_CHANGED,
                     AUTOFILL_VALUE_CHANGED,
                     AUTOFILL_VALUE_CHANGED,
-                    AUTOFILL_VIEW_EXITED,
-                    AUTOFILL_VIEW_ENTERED,
-                    AUTOFILL_VALUE_CHANGED
                 });
 
         // Verify form filled by Javascript

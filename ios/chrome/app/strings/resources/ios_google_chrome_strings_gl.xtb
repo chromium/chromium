@@ -38,6 +38,7 @@ Cuestións que debes ter en conta:
 <translation id="1646463005043273333">Abre a configuración de Chrome para definilo como navegador predeterminado.</translation>
 <translation id="1670609221633730681">Consello de Chrome: Escolle a posición da barra de enderezos</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Garda os contrasinais en Chrome</translation>
 <translation id="1790080846677398234">Engade os URL introducidos aos teus marcadores de Chrome.</translation>
 <translation id="1799920918471566157">Consellos de Chrome</translation>
 <translation id="1830634592642484976">Este enderezo está gardado en Chrome. Para usalo nos diferentes produtos de Google, gárdao na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
@@ -109,6 +110,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="3655656110921623717">En consecuencia, Chrome sempre solicitará abrir o sitio para móbiles.</translation>
 <translation id="3740397331642243698">Abre os URL escritos en Google Chrome no modo de incógnito.</translation>
 <translation id="3741995255368156336">Abre a lista de lectura de Chrome.</translation>
+<translation id="3808570423967020928">Accede a Chrome máis rápido desde a barra de aplicacións da pantalla de inicio.</translation>
 <translation id="3827545470516145620">Contas con protección de seguranza estándar neste dispositivo</translation>
 <translation id="384394811301901750">Google Chrome non pode usar a cámara neste momento</translation>
 <translation id="3863841106411295595">Engade os URL introducidos á túa lista de lectura en Chrome.</translation>
@@ -219,9 +221,11 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 
 Se queres ver máis opcións de configuración que usen datos para mellorar a túa experiencia con Chrome, vai a <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Elimina os datos de navegación en Chrome.</translation>
+<translation id="6924922227983877439">Abre ligazóns en Chrome de forma predeterminada</translation>
 <translation id="6975725306479268850">Escolle Chrome para autocompletar</translation>
 <translation id="7056826488869329999">Abre e executa Comprobación de seguranza en Chrome.</translation>
 <translation id="7061455974939528301">Mantén premida a icona de Chrome e fai clic en na opción Edit Home Screen (Editar pantalla de inicio)</translation>
+<translation id="7065813315247345131">Move Chrome á barra de aplicacións</translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7161390184744336561">A versión de Google Chrome está desactualizada</translation>
 <translation id="7165736900384873061">Comeza a usar o escáner de códigos QR de Google Chrome</translation>

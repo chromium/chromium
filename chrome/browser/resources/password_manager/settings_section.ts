@@ -444,6 +444,14 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     return this.isAccountStoreUser && this.passwordsOnDevice_.length > 0;
   }
 
+  private getAriaLabelMovePasswordsButton_(): string {
+    return [
+      this.movePasswordsLabel_,
+      this.i18n('movePasswordsInSettingsSubLabel'),
+      this.i18n('moveSinglePasswordButton'),
+    ].join('. ');
+  }
+
   // This updates the local password count coming from the Sync Service API.
   private async updateLocalPasswordCount_(localPasswordCount: number) {
     this.localPasswordCount_ = localPasswordCount;

@@ -894,6 +894,29 @@ LayoutObject* LayoutObject::GetScrollMarkerGroup() const {
   return nullptr;
 }
 
+LayoutBlock* LayoutObject::ScrollerFromScrollMarkerGroup() const {
+  NOT_DESTROYED();
+  DCHECK(IsScrollMarkerGroup());
+  auto* pseudo_element = DynamicTo<PseudoElement>(GetNode());
+  if (const Element* originating_element = pseudo_element->parentElement()) {
+    if (LayoutObject* object = originating_element->GetLayoutObject()) {
+      if (object->IsFieldset()) {
+        object = To<LayoutFieldset>(object)->FindAnonymousFieldsetContentBox();
+        if (!object) {
+          return nullptr;
+        }
+      }
+      if (!object->IsScrollContainer()) {
+        // TODO(crbug.com/381444307): This shouldn't happen. If there's a scroll
+        // marker group, the originating element should be a scroll container.
+        return nullptr;
+      }
+      return DynamicTo<LayoutBlock>(object);
+    }
+  }
+  return nullptr;
+}
+
 bool LayoutObject::IsListMarkerForSummary() const {
   if (!IsListMarker()) {
     return false;
@@ -2647,7 +2670,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
                                          bool match_parent_size) {
   NOT_DESTROYED();
   const ComputedStyle* pseudo_style = owner.Style();
-  DCHECK(pseudo_style->StyleType() == kPseudoIdCheck ||
+  DCHECK(pseudo_style->StyleType() == kPseudoIdCheckMark ||
          pseudo_style->StyleType() == kPseudoIdBefore ||
          pseudo_style->StyleType() == kPseudoIdAfter ||
          pseudo_style->StyleType() == kPseudoIdSelectArrow ||
@@ -2656,9 +2679,10 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
          pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
          pseudo_style->IsPageMarginBox() ||
          pseudo_style->StyleType() == kPseudoIdScrollMarker ||
-         pseudo_style->StyleType() == kPseudoIdColumnScrollMarker ||
-         pseudo_style->StyleType() == kPseudoIdScrollNextButton ||
-         pseudo_style->StyleType() == kPseudoIdScrollPrevButton);
+         pseudo_style->StyleType() == kPseudoIdScrollUpButton ||
+         pseudo_style->StyleType() == kPseudoIdScrollDownButton ||
+         pseudo_style->StyleType() == kPseudoIdScrollLeftButton ||
+         pseudo_style->StyleType() == kPseudoIdScrollRightButton);
 
   InheritIsInDetachedNonDomTree(owner);
 
@@ -4302,7 +4326,7 @@ const ComputedStyle* LayoutObject::GetCachedPseudoElementStyle(
     PseudoId pseudo) const {
   NOT_DESTROYED();
   DCHECK_NE(pseudo, kPseudoIdBefore);
-  DCHECK_NE(pseudo, kPseudoIdCheck);
+  DCHECK_NE(pseudo, kPseudoIdCheckMark);
   DCHECK_NE(pseudo, kPseudoIdAfter);
   DCHECK_NE(pseudo, kPseudoIdSelectArrow);
   if (!GetNode())
@@ -4319,7 +4343,7 @@ const ComputedStyle* LayoutObject::GetUncachedPseudoElementStyle(
     const StyleRequest& request) const {
   NOT_DESTROYED();
   DCHECK_NE(request.pseudo_id, kPseudoIdBefore);
-  DCHECK_NE(request.pseudo_id, kPseudoIdCheck);
+  DCHECK_NE(request.pseudo_id, kPseudoIdCheckMark);
   DCHECK_NE(request.pseudo_id, kPseudoIdAfter);
   DCHECK_NE(request.pseudo_id, kPseudoIdSelectArrow);
   if (!GetNode())

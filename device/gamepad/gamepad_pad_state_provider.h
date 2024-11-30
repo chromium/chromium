@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 #include "device/gamepad/public/cpp/gamepad.h"
@@ -126,7 +127,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadPadStateProvider {
                                  bool sanitize);
 
   // Tracks the state of each gamepad slot.
-  std::unique_ptr<PadState[]> pad_states_;
+  base::HeapArray<PadState> pad_states_;
 
  private:
   // Calls the DisconnectUnrecognizedGamepad method on the data fetcher

@@ -12,6 +12,8 @@
 #import "base/scoped_observation.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -25,10 +27,10 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/ui_bundled/requirements/tab_strip_highlighting.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/side_swipe_toolbar_interacting.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
-#import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_interacting.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -589,6 +591,16 @@ const CGFloat kIpadTabSwipeDistance = 100;
   // If the previous page is an NTP, enable leading edge swipe.
   std::vector<web::NavigationItem*> backItems =
       webState->GetNavigationManager()->GetBackwardItems();
+
+  if (IsLensOverlayAvailable()) {
+    LensOverlayTabHelper* lensOverlayTabHelper =
+        LensOverlayTabHelper::FromWebState(webState);
+    if (backItems.size() > 0 &&
+        lensOverlayTabHelper->IsLensOverlayInvokedOnItem(backItems[0])) {
+      self.leadingEdgeNavigationEnabled = YES;
+    }
+  }
+
   if (backItems.size() > 0 && UseNativeSwipe(backItems[0])) {
     self.leadingEdgeNavigationEnabled = YES;
   }

@@ -28,7 +28,7 @@ const char kTestPageURL[] = "/sharing/tel.html";
 // Browser tests for the Shared Clipboard feature.
 class SharedClipboardBrowserTestBase : public SharingBrowserTest {
  public:
-  SharedClipboardBrowserTestBase() {}
+  SharedClipboardBrowserTestBase() = default;
 
   SharedClipboardBrowserTestBase(const SharedClipboardBrowserTestBase&) =
       delete;

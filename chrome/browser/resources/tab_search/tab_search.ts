@@ -4,6 +4,7 @@
 
 import './app.js';
 
+export {getInstance as getAnnouncerInstance, TIMEOUT_MS} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {TabSearchAppElement} from './app.js';
 export {AutoTabGroupsPageElement} from './auto_tab_groups/auto_tab_groups_page.js';
@@ -16,7 +17,7 @@ export {getHostname, getTabGroupTitle, getTitle, ItemData, TabData, TabItemType}
 export {Color as TabGroupColor} from './tab_group_types.mojom-webui.js';
 export {TabOrganizationSelectorElement} from './tab_organization_selector.js';
 export {TabOrganizationSelectorButtonElement} from './tab_organization_selector_button.js';
-export {PageCallbackRouter, PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, SwitchToTabInfo, Tab, TabGroup, TabOrganizationError, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, TabOrganizationState, TabSearchSection, TabsRemovedInfo, TabUpdateInfo, UserFeedback, Window} from './tab_search.mojom-webui.js';
+export {PageCallbackRouter, PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, SwitchToTabInfo, Tab, TabGroup, TabOrganizationError, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, TabOrganizationState, TabSearchSection, TabsRemovedInfo, TabUpdateInfo, UnusedTabInfo, UserFeedback, Window} from './tab_search.mojom-webui.js';
 export {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 export {TabSearchGroupItemElement} from './tab_search_group_item.js';
 export {TabSearchItemElement} from './tab_search_item.js';

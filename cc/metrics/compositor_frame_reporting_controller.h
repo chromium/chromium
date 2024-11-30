@@ -151,7 +151,10 @@ class CC_EXPORT CompositorFrameReportingController {
   std::unique_ptr<CompositorFrameReporter> RestoreReporterAtBeginImpl(
       const viz::BeginFrameId& id);
   CompositorFrameReporter::SmoothThread GetSmoothThread() const;
+  CompositorFrameReporter::SmoothEffectDrivingThread GetScrollingThread() const;
   CompositorFrameReporter::SmoothThread GetSmoothThreadAtTime(
+      base::TimeTicks timestamp) const;
+  CompositorFrameReporter::SmoothEffectDrivingThread GetScrollThreadAtTime(
       base::TimeTicks timestamp) const;
 
   // Checks whether there are reporters containing updates from the main
@@ -200,6 +203,10 @@ class CC_EXPORT CompositorFrameReportingController {
   // from timestamp of element i-1 until timestamp of element i.
   std::map<base::TimeTicks, CompositorFrameReporter::SmoothThread>
       smooth_thread_history_;
+  // Sorted history of scrollthread. Element i indicating the smooththread
+  // from timestamp of element i-1 until timestamp of element i.
+  std::map<base::TimeTicks, CompositorFrameReporter::SmoothEffectDrivingThread>
+      scroll_thread_history_;
 
   // Must outlive `reporters_` and `submitted_compositor_frames_` (which also
   // have reporters), since destroying the reporters can flush frames to

@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">‏يؤدي هذا الاختصار إلى فتح إعدادات Chrome حتى يتمّ ضبطه كمتصفِّح تلقائي.</translation>
 <translation id="1670609221633730681">‏نصيحة بشأن Chrome: اختَر مكان شريط العناوين</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">‏حفظ كلمات المرور في Chrome</translation>
 <translation id="1790080846677398234">‏يُضيف هذا الاختصار عناوين URL التي تم إدخالها إلى الإشارات المرجعية في Chrome.</translation>
 <translation id="1799920918471566157">‏معلومات بشأن استخدام متصفِّح Chrome</translation>
 <translation id="1830634592642484976">‏هذا العنوان محفوظ حاليًا في Chrome. لاستخدامه في جميع منتجات Google، عليك حفظه في حسابك على Google‏، <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">‏يعني هذا أنّ Chrome سيطلب دائمًا استخدام الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة.</translation>
 <translation id="3740397331642243698">‏فتح عناوين URL التي تم إدخالها في Google Chrome في وضع التصفُّح المتخفي</translation>
 <translation id="3741995255368156336">‏فتح قائمة القراءة في Chrome.</translation>
+<translation id="3808570423967020928">‏يمكنك الوصول إلى Chrome بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية.</translation>
 <translation id="3827545470516145620">يتم توفير حماية أمنية عادية على هذا الجهاز.</translation>
 <translation id="384394811301901750">‏يتعذر على Google Chrome استخدام الكاميرا في الوقت الحالي</translation>
 <translation id="3863841106411295595">‏يُضيف هذا الاختصار عناوين URL التي تم إدخالها إلى "قائمة القراءة" في Chrome.</translation>
@@ -219,9 +221,11 @@
 
 وللوصول إلى الإعدادات الإضافية التي تستخدم البيانات لتحسين تجربة استخدام Chrome، انتقِل إلى <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">‏يؤدي هذا الاختصار إلى حذف بيانات التصفّح في Chrome.</translation>
+<translation id="6924922227983877439">‏فتح الروابط في Chrome تلقائيًا</translation>
 <translation id="6975725306479268850">‏اختيار Chrome للاستفادة من ميزة "الملء التلقائي"</translation>
 <translation id="7056826488869329999">‏يؤدي هذا الاختصار إلى فتح صفحة "التحقّق من الأمان" وإجرائه في Chrome.</translation>
 <translation id="7061455974939528301">‏اضغط مع الاستمرار على رمز Chrome وانقر على "تعديل الشاشة الرئيسية" (Edit home screen)</translation>
+<translation id="7065813315247345131">‏نقل Chrome إلى "شريط التطبيقات" (Dock)</translation>
 <translation id="7124339256045485976">‏تحديث متصفِّح Chrome باستمرار</translation>
 <translation id="7161390184744336561">‏إصدار Google Chrome قديم.</translation>
 <translation id="7165736900384873061">‏بدء استخدام الماسح الضوئي للاستجابة السريعة في Google Chrome</translation>

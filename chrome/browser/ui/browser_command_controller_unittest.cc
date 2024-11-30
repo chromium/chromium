@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -290,7 +289,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   FullscreenTestBrowserWindow& operator=(const FullscreenTestBrowserWindow&) =
       delete;
 
-  ~FullscreenTestBrowserWindow() override {}
+  ~FullscreenTestBrowserWindow() override = default;
 
   // TestBrowserWindow overrides:
   bool ShouldHideUIForFullscreen() const override { return fullscreen_; }
@@ -618,10 +617,6 @@ class CreateShortcutBrowserCommandControllerTest
     return extension;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kShortcutsNotApps};
 };
 
 TEST_F(CreateShortcutBrowserCommandControllerTest, BrowserNoSiteNotEnabled) {

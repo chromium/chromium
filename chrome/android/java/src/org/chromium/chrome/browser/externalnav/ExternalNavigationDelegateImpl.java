@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
@@ -130,7 +131,11 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public void closeTab() {
         if (!hasValidTab()) return;
         if (!mTabModelSelectorSupplier.hasValue()) return;
-        mTabModelSelectorSupplier.get().closeTab(mTab);
+        mTabModelSelectorSupplier
+                .get()
+                .tryCloseTab(
+                        TabClosureParams.closeTab(mTab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
     }
 
     @Override

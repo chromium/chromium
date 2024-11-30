@@ -38,7 +38,7 @@ const char16_t kIgnoreButtonMessage[] =
 
 class TestGrammarServiceClient : public GrammarServiceClient {
  public:
-  TestGrammarServiceClient() {}
+  TestGrammarServiceClient() = default;
   ~TestGrammarServiceClient() override = default;
 
   bool RequestTextCheck(Profile* profile,

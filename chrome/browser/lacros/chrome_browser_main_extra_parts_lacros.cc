@@ -32,7 +32,6 @@
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_native_message_host_bridge_lacros.h"
-#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/full_restore_client_lacros.h"
@@ -261,8 +260,6 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 
   web_app_provider_bridge_ =
       std::make_unique<crosapi::WebAppProviderBridgeLacros>();
-
-  EmbeddedA11yManagerLacros::GetInstance()->Init();
 
   // Construct ArcIconCache and set it to provider.
   arc_icon_cache_ = std::make_unique<ArcIconCache>();

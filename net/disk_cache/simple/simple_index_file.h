@@ -161,11 +161,11 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
   static void SerializeFinalData(base::Time cache_modified,
                                  base::Pickle* pickle);
 
-  // Given the contents of an index file |data| of length |data_len|, returns
-  // the corresponding EntrySet. Returns NULL on error.
+  // Given the contents of an index file `data`, returns the corresponding
+  // EntrySet and associated metadata. `out_result->did_load` will return
+  // whether successful or not.
   static void Deserialize(net::CacheType cache_type,
-                          const char* data,
-                          int data_len,
+                          base::span<const uint8_t> data,
                           base::Time* out_cache_last_modified,
                           SimpleIndexLoadResult* out_result);
 

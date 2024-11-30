@@ -13,6 +13,7 @@
 
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
@@ -36,6 +37,8 @@ namespace webnn::dml {
 using Microsoft::WRL::ComPtr;
 
 namespace {
+
+ContextImplDml::BackendForTesting* g_backend_for_testing = nullptr;
 
 void HandleTensorCreationFailure(
     const std::string& error_message,
@@ -503,12 +506,24 @@ base::WeakPtr<WebNNContextImpl> ContextImplDml::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+// static
+void ContextImplDml::SetBackendForTesting(
+    BackendForTesting* backend_for_testing) {
+  g_backend_for_testing = backend_for_testing;
+}
+
 void ContextImplDml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     WebNNContextImpl::CreateGraphImplCallback callback) {
+  if (g_backend_for_testing) {
+    g_backend_for_testing->CreateGraphImpl(
+        this, std::move(compute_resource_info), std::move(callback));
+    return;
+  }
+
   GraphImplDml::CreateAndBuild(
       adapter_, weak_factory_.GetWeakPtr(), std::move(graph_info),
       std::move(compute_resource_info), std::move(constant_operands),
@@ -521,6 +536,12 @@ void ContextImplDml::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     CreateTensorImplCallback callback) {
+  if (g_backend_for_testing) {
+    g_backend_for_testing->CreateTensorImpl(
+        this, std::move(receiver), std::move(tensor_info), std::move(callback));
+    return;
+  }
+
   // DML requires resources to be in multiple of 4 bytes.
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
   constexpr uint64_t kDMLBufferAlignment = 4ull;
@@ -664,7 +685,7 @@ void ContextImplDml::OnReadbackComplete(
     return;
   }
 
-  mojo_base::BigBuffer dst_buffer(base::make_span(
+  mojo_base::BigBuffer dst_buffer(base::span(
       static_cast<const uint8_t*>(mapped_download_data), read_byte_size));
 
   download_buffer->Unmap(0, nullptr);
@@ -814,6 +835,16 @@ void ContextImplDml::HandleContextLostOrCrash(std::string_view message_for_log,
 
   OnLost(base::StrCat({"WebNN context is lost due to ", message_for_promise}));
   CHECK(hr == E_OUTOFMEMORY || hr == DXGI_ERROR_DEVICE_RESET);
+}
+
+void ContextImplDml::RemoveDeviceForTesting() {
+  CHECK_IS_TEST();
+
+  ComPtr<ID3D12Device5> d3d12_device_5;
+  CHECK_EQ(
+      adapter_->d3d12_device()->QueryInterface(IID_PPV_ARGS(&d3d12_device_5)),
+      S_OK);
+  d3d12_device_5->RemoveDevice();
 }
 
 }  // namespace webnn::dml

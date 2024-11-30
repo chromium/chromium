@@ -556,17 +556,14 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
 
   CreateEndButtonContainer();
 
-  if (IsSunfishAllowedAndEnabled()) {
-    views::ImageButton* sunfish_button =
-        CreateSunfishButton(base::BindRepeating(
-            &SearchBoxView::SunfishButtonPressed, base::Unretained(this)));
-    sunfish_button->SetFlipCanvasOnPaintForRTLUI(false);
-    // TODO(http://b/361850292): Upload label for translation.
-    std::u16string sunfish_button_label(u"Select to search");
-    sunfish_button->GetViewAccessibility().SetName(sunfish_button_label);
-    sunfish_button->SetTooltipText(sunfish_button_label);
-    SetShowSunfishButton(search_box_model->show_sunfish_button());
-  }
+  views::ImageButton* sunfish_button = CreateSunfishButton(base::BindRepeating(
+      &SearchBoxView::SunfishButtonPressed, base::Unretained(this)));
+  sunfish_button->SetFlipCanvasOnPaintForRTLUI(false);
+  // TODO(http://b/361850292): Upload label for translation.
+  std::u16string sunfish_button_label(u"Select to search");
+  sunfish_button->GetViewAccessibility().SetName(sunfish_button_label);
+  sunfish_button->SetTooltipText(sunfish_button_label);
+  SetShowSunfishButton(search_box_model->show_sunfish_button());
 
   views::ImageButton* assistant_button =
       CreateAssistantButton(base::BindRepeating(

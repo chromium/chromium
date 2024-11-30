@@ -5,21 +5,30 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_REGION_OVERLAY_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_CAPTURE_REGION_OVERLAY_CONTROLLER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/scanner/scanner_text.h"
+#include "ui/gfx/animation/throb_animation.h"
 
 namespace gfx {
+class AnimationDelegate;
 class Canvas;
 class Rect;
+class ThrobAnimation;
 }  // namespace gfx
+
+namespace ui {
+class ColorProvider;
+class Layer;
+}  // namespace ui
 
 namespace ash {
 
 // Controls the overlay shown on the capture region to indicate detected text,
-// translations, etc.
+// translations, a glow animation while processing, etc.
 class ASH_EXPORT CaptureRegionOverlayController {
  public:
   CaptureRegionOverlayController();
@@ -28,6 +37,12 @@ class ASH_EXPORT CaptureRegionOverlayController {
   CaptureRegionOverlayController& operator=(
       const CaptureRegionOverlayController&) = delete;
   ~CaptureRegionOverlayController();
+
+  // Invalidates the area of `layer` needed to paint glow.
+  // `region_bounds_in_layer` specifies the bounds of the region in `layer`
+  // which will be surrounded by the glow.
+  static void SchedulePaintForGlow(ui::Layer* layer,
+                                   const gfx::Rect& region_bounds_in_layer);
 
   // Notifies the controller of text detected on the capture region. The
   // controller will track `detected_text`, e.g. to paint later if needed.
@@ -47,6 +62,26 @@ class ASH_EXPORT CaptureRegionOverlayController {
       gfx::Canvas& canvas,
       const gfx::Rect& region_bounds_in_canvas) const;
 
+  // Starts a glow animation to be shown around the capture region.
+  void StartGlowAnimation(gfx::AnimationDelegate* animation_delegate);
+
+  // Pauses the glow animation around the capture region at minimum glow, or
+  // does nothing if there is no current glow animation.
+  void PauseGlowAnimation();
+
+  // Removes the glow animation if it exists.
+  void RemoveGlowAnimation();
+
+  // Paints the current glow state onto `canvas`. `region_bounds_in_canvas`
+  // specifies the coordinates of `canvas` to paint the glow around.
+  void PaintCurrentGlowState(gfx::Canvas& canvas,
+                             const gfx::Rect& region_bounds_in_canvas,
+                             const ui::ColorProvider* color_provider) const;
+
+  const gfx::ThrobAnimation* glow_animation_for_testing() const {
+    return glow_animation_.get();
+  }
+
  private:
   // Paints detected text regions in the overlay. `region_bounds_in_canvas`
   // specifies the coordinates of `canvas` which should contain the overlay.
@@ -61,6 +96,9 @@ class ASH_EXPORT CaptureRegionOverlayController {
   std::optional<ScannerText> detected_text_;
 
   std::optional<ScannerText> translated_text_;
+
+  // Used to animate a pulsating glow around the capture region.
+  std::unique_ptr<gfx::ThrobAnimation> glow_animation_;
 };
 
 }  // namespace ash

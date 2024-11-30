@@ -719,11 +719,8 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
     }
     const std::vector<uint8_t>* bucket = contribution_dict->FindBlob("bucket");
     std::optional<int> value = contribution_dict->FindInt("value");
-    std::optional<uint64_t> filtering_id;
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPrivateAggregationApiFilteringIds)) {
-      filtering_id = contribution_dict->FindInt("filteringId");
-    }
+    std::optional<uint64_t> filtering_id =
+        contribution_dict->FindInt("filteringId");
     if (!bucket || bucket->size() > 16 || !value.has_value() ||
         (filtering_id.has_value() && !IsValidFilteringId(filtering_id))) {
       continue;

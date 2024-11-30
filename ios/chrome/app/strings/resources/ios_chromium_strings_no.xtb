@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Bruk Chromium på iPad som standard</translation>
 <translation id="1471084500615228555">Slett nettlesingsdata i Chromium</translation>
 <translation id="1472013873724362412">Kontoen din fungerer ikke i Chromium. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
+<translation id="148576268809812097">Lagre passordene dine i Chromium</translation>
 <translation id="1501302548410882220">Bruk Chromium overalt</translation>
 <translation id="1503199973012840174">Chromium er utdatert. Oppdater den for å holde deg trygg.</translation>
 <translation id="1515748263297244785">Bruk Chromium for iPad som standard</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Passordet blir lagret i kontoen din (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">For å få personlig tilpasning og andre funksjoner må du inkludere Chromium i <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium har bekreftet at sertifikatet for dette nettstedet er utstedt av <ph name="ISSUER" />.</translation>
+<translation id="1839447949248872139">Åpne linker i Chromium som standard</translation>
 <translation id="1843424232666537147">Chromium har funksjoner som hjelper deg med å administrere Internett-dataene dine og hvor fort du kan laste inn nettsider.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps i Chromium</translation>
@@ -160,6 +162,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="5048795749726991615">Bruk Chromium for autofyll for å enkelt få tilgang til de lagrede passordene dine i de andre appene dine.</translation>
 <translation id="5053429694249468757">Sletter Chromium-data …</translation>
 <translation id="5071749685031362629">Chromium for iOS</translation>
+<translation id="5088872414922783602">Få raskere tilgang til Chromium fra dokken på Hjem-skjermen.</translation>
 <translation id="5124429847818367226">Nå kan du bruke Chromium når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="5131565040785979529">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du er logget på, og hvordan Chromium brukes.</translation>
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
@@ -273,6 +276,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="800380310260616129">Last ned Chromium her.</translation>
 <translation id="8013573822802650211">For å se fanene dine overalt hvor du bruker Chromium, logg på alle enhetene dine</translation>
 <translation id="8014091604604659473">Chromium er logget av</translation>
+<translation id="8035379487371146621">Flytt Chromium til dokken</translation>
 <translation id="8104697640054703121">Få den sterkeste beskyttelsen mot farlige nettsteder i Chromium</translation>
 <translation id="8119542592987737574">Få raskere tilgang til Chromium fra dokken på Hjem-skjermen på iPhone.</translation>
 <translation id="8164086860209325020">Gå til Chromium-innstillingene</translation>

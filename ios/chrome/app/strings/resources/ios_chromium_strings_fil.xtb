@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Gamitin ang Chromium sa iPad bilang Default</translation>
 <translation id="1471084500615228555">I-delete ang data mula sa pag-browse sa Chromium</translation>
 <translation id="1472013873724362412">Hindi gumagana ang iyong account sa Chromium. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
+<translation id="148576268809812097">I-save ang Iyong Mga Password sa Chromium</translation>
 <translation id="1501302548410882220">Gamitin ang Chromium sa lahat ng lugar</translation>
 <translation id="1503199973012840174">Luma na ang iyong Chromium. I-update ito para manatiling ligtas.</translation>
 <translation id="1515748263297244785">Gamitin ang Chromium para sa iPad bilang default</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Ise-save sa iyong Account (<ph name="EMAIL" />) ang password mo.</translation>
 <translation id="1811860791247653035">Para makuha ang pag-personalize at iba pang feature, isama ang Chromium sa <ph name="FEATURE_NAME_1" /> at <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Na-verify ng Chromium na ang <ph name="ISSUER" /> ang nag-isyu ng certificate ng website na ito.</translation>
+<translation id="1839447949248872139">Buksan ang mga link sa Chromium bilang Default</translation>
 <translation id="1843424232666537147">Ang Chromium ay may mga feature na nakakatulong sa iyong pamahalaan ang iyong data sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps sa Chromium</translation>
@@ -160,6 +162,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="5048795749726991615">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, gamitin ang Chromium para sa AutoFill</translation>
 <translation id="5053429694249468757">Dine-delete ang data sa Chromium…</translation>
 <translation id="5071749685031362629">Chromium para sa iOS</translation>
+<translation id="5088872414922783602">Mas mabilis na i-access ang Chromium mula sa Dock ng iyong Home Screen.</translation>
 <translation id="5124429847818367226">Magagamit mo na ngayon ang Chromium sa tuwing magba-browse o magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="5131565040785979529">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka naka-sign in at kung paano ginagamit ang Chromium.</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
@@ -273,6 +276,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="800380310260616129">I-download ang Chromium dito.</translation>
 <translation id="8013573822802650211">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, mag-sign in sa lahat ng device mo</translation>
 <translation id="8014091604604659473">Naka-sign out ang Chromium</translation>
+<translation id="8035379487371146621">Ilipat ang Chromium sa Dock</translation>
 <translation id="8104697640054703121">Kunin ang pinakamaigting na seguridad ng Chromium mula sa mga mapanganib na site</translation>
 <translation id="8119542592987737574">Mas mabilis na i-access ang Chromium mula sa dock ng home screen ng iyong iPhone.</translation>
 <translation id="8164086860209325020">Pumunta sa Mga Setting ng Chromium</translation>

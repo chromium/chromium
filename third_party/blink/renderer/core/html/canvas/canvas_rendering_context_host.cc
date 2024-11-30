@@ -180,9 +180,9 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       // try a passthrough provider.
       DCHECK(LowLatencyEnabled());
       provider = CanvasResourceProvider::CreatePassThroughProvider(
-          resource_info, FilterQuality(),
-          SharedGpuContext::ContextProviderWrapper(), dispatcher,
-          RenderingContext()->IsOriginTopLeft(), this);
+          Size(), resource_info.colorType(), resource_info.alphaType(),
+          resource_info.refColorSpace(), FilterQuality(),
+          SharedGpuContext::ContextProviderWrapper(), this);
     }
     if (!provider) {
       // If PassThrough failed, try a SharedImage with usage display enabled,
@@ -219,14 +219,17 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   // If either of the other modes failed and / or it was not possible to do, we
   // will backup with a SharedBitmap, and if that was not possible with a Bitmap
   // provider.
-  if (!provider) {
+  if (!provider && dispatcher) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, dispatcher,
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, this);
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
+        this);
   }
 
   ReplaceResourceProvider(std::move(provider));
@@ -258,8 +261,9 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     // If we can use the gpu and low latency is enabled, we will try to use a
     // SwapChain if possible.
     provider = CanvasResourceProvider::CreateSwapChainProvider(
-        resource_info, FilterQuality(), kShouldInitialize,
-        SharedGpuContext::ContextProviderWrapper(), dispatcher, this);
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
+        SharedGpuContext::ContextProviderWrapper(), this);
     // If SwapChain failed or it was not possible, we will try a SharedImage
     // with a set of flags trying to add Usage Display and Usage Scanout and
     // Concurrent Read and Write if possible.
@@ -306,14 +310,20 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   // If either of the other modes failed and / or it was not possible to do, we
   // will backup with a SharedBitmap, and if that was not possible with a Bitmap
   // provider.
-  if (!provider) {
+  // If dispatcher is null and go for CreateSharedBitmapProvider, there will be
+  // an error message. "ERROR:texture_layer_impl.cc(92)] Gpu compositor has
+  // software resource in TextureLayer". blink_web_tests would fail.
+  if (!provider && dispatcher) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, dispatcher,
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, this);
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
+        this);
   }
 
   ReplaceResourceProvider(std::move(provider));

@@ -6,15 +6,23 @@
 
 #import "base/check.h"
 #import "base/memory/weak_ptr.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/app/application_context.h"
 
-WebViewSafeBrowsingClient::WebViewSafeBrowsingClient() = default;
+WebViewSafeBrowsingClient::WebViewSafeBrowsingClient(PrefService* prefs)
+    : prefs_(prefs) {
+  DCHECK(prefs_);
+}
 
 WebViewSafeBrowsingClient::~WebViewSafeBrowsingClient() = default;
 
 base::WeakPtr<SafeBrowsingClient> WebViewSafeBrowsingClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+PrefService* WebViewSafeBrowsingClient::GetPrefs() {
+  return prefs_;
 }
 
 SafeBrowsingService* WebViewSafeBrowsingClient::GetSafeBrowsingService() {

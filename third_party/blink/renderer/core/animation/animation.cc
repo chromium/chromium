@@ -123,15 +123,17 @@ bool SupportedTimeValue(double time_in_ms) {
 
 enum class PseudoPriority {
   kNone,
-  kScrollPrevButton,
   kScrollMarkerGroupBefore,
   kMarker,
   kScrollMarker,
+  kScrollUpButton,
+  kScrollDownButton,
+  kScrollLeftButton,
+  kScrollRightButton,
   kBefore,
   kOther,
   kAfter,
   kScrollMarkerGroupAfter,
-  kScrollNextButton,
 };
 
 unsigned NextSequenceNumber() {
@@ -142,9 +144,6 @@ unsigned NextSequenceNumber() {
 PseudoPriority ConvertPseudoIdtoPriority(const PseudoId& pseudo) {
   if (pseudo == kPseudoIdNone)
     return PseudoPriority::kNone;
-  if (pseudo == kPseudoIdScrollPrevButton) {
-    return PseudoPriority::kScrollPrevButton;
-  }
   if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
     return PseudoPriority::kScrollMarkerGroupBefore;
   }
@@ -153,15 +152,24 @@ PseudoPriority ConvertPseudoIdtoPriority(const PseudoId& pseudo) {
   if (pseudo == kPseudoIdScrollMarker) {
     return PseudoPriority::kScrollMarker;
   }
+  if (pseudo == kPseudoIdScrollUpButton) {
+    return PseudoPriority::kScrollUpButton;
+  }
+  if (pseudo == kPseudoIdScrollDownButton) {
+    return PseudoPriority::kScrollDownButton;
+  }
+  if (pseudo == kPseudoIdScrollLeftButton) {
+    return PseudoPriority::kScrollLeftButton;
+  }
+  if (pseudo == kPseudoIdScrollRightButton) {
+    return PseudoPriority::kScrollRightButton;
+  }
   if (pseudo == kPseudoIdBefore)
     return PseudoPriority::kBefore;
   if (pseudo == kPseudoIdAfter)
     return PseudoPriority::kAfter;
   if (pseudo == kPseudoIdScrollMarkerGroupAfter) {
     return PseudoPriority::kScrollMarkerGroupAfter;
-  }
-  if (pseudo == kPseudoIdScrollNextButton) {
-    return PseudoPriority::kScrollNextButton;
   }
   return PseudoPriority::kOther;
 }
@@ -627,7 +635,7 @@ std::optional<AnimationTimeDelta> Animation::UnlimitedCurrentTime() const {
              : CalculateCurrentTime();
 }
 
-std::optional<double> Animation::progress() const {
+std::optional<double> Animation::overallProgress() const {
   std::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
   if (!effect() || !current_time) {
     return std::nullopt;
@@ -1008,12 +1016,6 @@ AnimationTimeline* Animation::timeline() {
 
 void Animation::setTimeline(AnimationTimeline* timeline) {
   // https://www.w3.org/TR/web-animations-1/#setting-the-timeline
-
-  // Unfortunately cannot mark the setter only as being conditionally enabled
-  // via a feature flag. Conditionally making the feature a no-op is nearly
-  // equivalent.
-  if (!RuntimeEnabledFeatures::ScrollTimelineEnabled())
-    return;
 
   // 1. Let the old timeline be the current timeline of the animation, if any.
   AnimationTimeline* old_timeline = timeline_;

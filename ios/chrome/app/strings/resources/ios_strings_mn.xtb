@@ -402,6 +402,7 @@
 <translation id="2721190673959776287">Хам сэдэвт түр зуурын самбарт зориулсан, өдөрт олон удаа гарч ирэх ёстой бүтээгдэхүүн дэх жишээгээр баялаг тусламж.</translation>
 <translation id="2747003861858887689">Өмнөх талбар</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" />-г дагаж байна</translation>
+<translation id="2755485474385016903">Хийсэн өөрчлөлтийг бүлэг дэх хүн бүр хардаг</translation>
 <translation id="2755595981383829244">Та одоо контентын мэдэгдлүүд хүлээн авна</translation>
 <translation id="2761788987260570878">Хайлтынхаа зургийг авна уу</translation>
 <translation id="2762000892062317888">дөнгөж сая</translation>
@@ -431,6 +432,7 @@
 <translation id="288902476966286676">Илгээгч рүү буцаах</translation>
 <translation id="2893168226686371498">Стандарт веб хөтөч</translation>
 <translation id="2894757982205307093">Бүлэг доторх шинэ таб</translation>
+<translation id="2902312830803030883">Бусад үйлдэл</translation>
 <translation id="2905479111267140204">Танд аюулгүй байдлыг тань эрсдэлд оруулж болох дахин ашигласан <ph name="NUMBER_OF_PASSWORDS" /> нууц үг танд байна.</translation>
 <translation id="291754862089661335">Энэ хүрээнд QR код, эсвэл баркод байршуулах</translation>
 <translation id="2918688092312652908">Уншаагүй гэж тэмдэглэх</translation>
@@ -553,6 +555,7 @@
 <translation id="3549391962818677448">Хүргэхээр оролдсон. Дахин оролдоно</translation>
 <translation id="3557336313807607643">Харилцагчид нэмэх</translation>
 <translation id="355765753469272474">Болих</translation>
+<translation id="3562379378751492229">Танд хамгийн сайн тохирох байрлалыг сонгоно уу.</translation>
 <translation id="3565930036634619844">Таб. <ph name="NUMBER_OF_TABS" />-н <ph name="TAB_INDEX" />.</translation>
 <translation id="3570693105179140209">Бусад нууц үгийг авах бол хоёр товшино уу.</translation>
 <translation id="3572607909481582402">Таны Google Бүртгэлд</translation>
@@ -829,6 +832,7 @@
 <translation id="484280513275854557">Таныг гаргасан; интернэтээр үзсэн өгөгдлийг устгасан</translation>
 <translation id="4850886885716139402">Харах</translation>
 <translation id="4860895144060829044">Дуудлага</translation>
+<translation id="4861953997778766866">Хүн бүр таны хуваалцсан табын бүлэгт өөрчлөлт хийх боломжтой</translation>
 <translation id="4869146460927742717">Хаяг оруулах хэсгийн байрлал</translation>
 <translation id="4870911314065352661">Бүх табыг хаах уу?</translation>
 <translation id="4872664437015695612">Татаж авсан файлын фолдерт нээх</translation>
@@ -907,7 +911,7 @@
 <translation id="5200894869889836319">Зөвшөөрөл тохируулах сонголтууд</translation>
 <translation id="5203051773066903947">Оруулах</translation>
 <translation id="5206453674369664567">Гараад, өгөгдлийг арилгах</translation>
-<translation id="5210365745912300556">Цонхыг хаа</translation>
+<translation id="5210365745912300556">Табыг хаах</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />"-д таны <ph name="PERMISSION" />-г ашиглахыг зөвшөөрөх үү?</translation>
 <translation id="5217245356412073535">Та сайтын өгөгдмөл харагдах байдлыг Тохиргоо &gt; Контентын тохиргоонд дэлгэц болгож өөрчлөх боломжтой</translation>
 <translation id="5217329997012062137">Таныг Google Lens-г ашиглах үед хуудасны дэлгэцийн агшныг Google-д илгээдэг.</translation>
@@ -967,6 +971,7 @@
 <translation id="5506763544823940561">Зургийг дараахад хадгалах…</translation>
 <translation id="5511959326926949696">Таны хөтчид зориулсан нэмэлт дээд зэргийн хамгаалалт. Үүнийг зөвхөн та маш нарийн төвөгтэй кибер халдлагын бай болсон гэж үзэж байвал ашиглах хэрэгтэй.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> цагийн өмнө</translation>
+<translation id="5524590039848017563">Хураасан үндсэн самбарын товч</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{Сул {COUNT} нууц үг}other{Сул {COUNT} нууц үг}}</translation>
 <translation id="5532545557415295622">Идэвхгүй хугацааны харилцах цонх</translation>
 <translation id="5548760955356983418">Handoff нь танд энэ төхөөрөмж дээр веб хуудсыг ачаалж, дараа нь Mac дээр хялбархан үргэжлүүлэн ажиллах боломжийг олгодог. Одоо нээлттэй байгаа вебсайт таны Mac-ийн Dock дотор гарч ирнэ.
@@ -991,6 +996,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5611398002774823980">Бүртгэлд хадгалах</translation>
 <translation id="5613297089029360427">Сүүлийн үеийнхээр нь эрэмбэлэх</translation>
 <translation id="5614553682702429503">Нууц үгийг хадгалах уу?</translation>
+<translation id="5614805397884895755">Үндсэн нүүрнээсээ илүү хурдан хандах эрх аваарай.</translation>
 <translation id="5619871095170816857">Энэ карт сүүлийн 24 цагийн дотор таны синк хийсэн бүх төхөөрөмж дээрх сүүлд ашигласан нээлттэй табыг харуулна.</translation>
 <translation id="5624120631404540903">Нууц үгийг удирдах</translation>
 <translation id="5624637933505983014">Синк хийхийг бүү асаа</translation>
@@ -1495,6 +1501,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7812377703891978671">Та <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />-г сонгосноор хөтчийн бүх түүхдээ хандах боломжтой.</translation>
 <translation id="78146569776629510">Татаж авсан файл</translation>
 <translation id="7815852444315004084">Одоохондоо нуух</translation>
+<translation id="7831876841288640403">Танд хамгийн сайн тохирох хаяг оруулах хэсгийн байрлалыг сонгоно уу.</translation>
 <translation id="7839994177130598711">Танай гэр бүлийн гишүүд одоо Google Password Manager-г ашиглан <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-д нэвтрэх үедээ таны хэрэглэгчийн нэр болон нууц үгийг ашиглах боломжтой.</translation>
 <translation id="7840771868269352570">Таны сонгосон зүйлсийг устгах болно.</translation>
 <translation id="7841180087127694526">Хуулсан текстийг хайх</translation>

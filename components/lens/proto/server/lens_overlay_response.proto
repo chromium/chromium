@@ -38,6 +38,10 @@ message LensOverlaySuggestInputs {
   // Whether or not to include the visual search interaction log data
   // in Lens query flow suggest requests in the "vsint" param.
   optional bool send_vsint_for_lens_suggest = 7;
+
+  // The visual input type value to be included in the "vit" param for
+  // contextual suggest requests.
+  optional string contextual_visual_input_type = 8;
 }
 
 message LensOverlayUrlResponse {

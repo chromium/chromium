@@ -704,11 +704,6 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::Depth32FloatStencil8;
     case V8GPUFeatureName::Enum::kIndirectFirstInstance:
       return wgpu::FeatureName::IndirectFirstInstance;
-    case V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups:
-      return wgpu::FeatureName::ChromiumExperimentalSubgroups;
-    case V8GPUFeatureName::Enum::
-        kChromiumExperimentalSubgroupUniformControlFlow:
-      return wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow;
     case V8GPUFeatureName::Enum::kRg11B10UfloatRenderable:
       return wgpu::FeatureName::RG11B10UfloatRenderable;
     case V8GPUFeatureName::Enum::kBgra8UnormStorage:
@@ -819,38 +814,56 @@ wgpu::VertexStepMode AsDawnEnum(const V8GPUVertexStepMode& webgpu_enum) {
 
 wgpu::VertexFormat AsDawnEnum(const V8GPUVertexFormat& webgpu_enum) {
   switch (webgpu_enum.AsEnum()) {
+    case V8GPUVertexFormat::Enum::kUint8:
+      return wgpu::VertexFormat::Uint8;
     case V8GPUVertexFormat::Enum::kUint8X2:
       return wgpu::VertexFormat::Uint8x2;
     case V8GPUVertexFormat::Enum::kUint8X4:
       return wgpu::VertexFormat::Uint8x4;
+    case V8GPUVertexFormat::Enum::kSint8:
+      return wgpu::VertexFormat::Sint8;
     case V8GPUVertexFormat::Enum::kSint8X2:
       return wgpu::VertexFormat::Sint8x2;
     case V8GPUVertexFormat::Enum::kSint8X4:
       return wgpu::VertexFormat::Sint8x4;
+    case V8GPUVertexFormat::Enum::kUnorm8:
+      return wgpu::VertexFormat::Unorm8;
     case V8GPUVertexFormat::Enum::kUnorm8X2:
       return wgpu::VertexFormat::Unorm8x2;
     case V8GPUVertexFormat::Enum::kUnorm8X4:
       return wgpu::VertexFormat::Unorm8x4;
+    case V8GPUVertexFormat::Enum::kSnorm8:
+      return wgpu::VertexFormat::Snorm8;
     case V8GPUVertexFormat::Enum::kSnorm8X2:
       return wgpu::VertexFormat::Snorm8x2;
     case V8GPUVertexFormat::Enum::kSnorm8X4:
       return wgpu::VertexFormat::Snorm8x4;
+    case V8GPUVertexFormat::Enum::kUint16:
+      return wgpu::VertexFormat::Uint16;
     case V8GPUVertexFormat::Enum::kUint16X2:
       return wgpu::VertexFormat::Uint16x2;
     case V8GPUVertexFormat::Enum::kUint16X4:
       return wgpu::VertexFormat::Uint16x4;
+    case V8GPUVertexFormat::Enum::kSint16:
+      return wgpu::VertexFormat::Sint16;
     case V8GPUVertexFormat::Enum::kSint16X2:
       return wgpu::VertexFormat::Sint16x2;
     case V8GPUVertexFormat::Enum::kSint16X4:
       return wgpu::VertexFormat::Sint16x4;
+    case V8GPUVertexFormat::Enum::kUnorm16:
+      return wgpu::VertexFormat::Unorm16;
     case V8GPUVertexFormat::Enum::kUnorm16X2:
       return wgpu::VertexFormat::Unorm16x2;
     case V8GPUVertexFormat::Enum::kUnorm16X4:
       return wgpu::VertexFormat::Unorm16x4;
+    case V8GPUVertexFormat::Enum::kSnorm16:
+      return wgpu::VertexFormat::Snorm16;
     case V8GPUVertexFormat::Enum::kSnorm16X2:
       return wgpu::VertexFormat::Snorm16x2;
     case V8GPUVertexFormat::Enum::kSnorm16X4:
       return wgpu::VertexFormat::Snorm16x4;
+    case V8GPUVertexFormat::Enum::kFloat16:
+      return wgpu::VertexFormat::Float16;
     case V8GPUVertexFormat::Enum::kFloat16X2:
       return wgpu::VertexFormat::Float16x2;
     case V8GPUVertexFormat::Enum::kFloat16X4:
@@ -881,6 +894,8 @@ wgpu::VertexFormat AsDawnEnum(const V8GPUVertexFormat& webgpu_enum) {
       return wgpu::VertexFormat::Sint32x4;
     case V8GPUVertexFormat::Enum::kUnorm1010102:
       return wgpu::VertexFormat::Unorm10_10_10_2;
+    case V8GPUVertexFormat::Enum::kUnorm8X4Bgra:
+      return wgpu::VertexFormat::Unorm8x4BGRA;
   }
   NOTREACHED();
 }

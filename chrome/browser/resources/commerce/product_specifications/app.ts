@@ -43,7 +43,7 @@ import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import type {TableElement} from './table.js';
-import type {UrlListEntry} from './utils.js';
+import {isValidLowercaseUuid, type UrlListEntry} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 interface AggregatedProductData {
@@ -108,6 +108,7 @@ enum AppState {
   SYNC_SCREEN = 2,
   TABLE_POPULATED = 3,
   LOADING = 4,
+  NO_CONTENT = 5,
 }
 
 function getProductDetails(
@@ -224,7 +225,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     };
   }
 
-  private appState_: AppState = AppState.LOADING;
+  private appState_: AppState = AppState.NO_CONTENT;
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
   private setName_: string|null = null;
   private showTableDataUnavailableContainer_: boolean;
@@ -235,6 +236,7 @@ export class ProductSpecificationsElement extends PolymerElement {
   private id_: Uuid|null = null;
   private listenerIds_: number[] = [];
   private minLoadingAnimationMs_: number = 500;
+  private pendingSetUpdate_: (() => void)|null = null;
   private productSpecificationsFeatureState_: ProductSpecificationsFeatureState;
   private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
       ProductSpecificationsBrowserProxyImpl.getInstance();
@@ -264,8 +266,16 @@ export class ProductSpecificationsElement extends PolymerElement {
       const {state} =
           await this.shoppingApi_.getProductSpecificationsFeatureState();
       if (!state || areStatesEqual(previousState, state)) {
+        if (this.pendingSetUpdate_) {
+          this.pendingSetUpdate_();
+          this.pendingSetUpdate_ = null;
+        }
         return;
       }
+
+      // If there is a set update, the new set will be fetched when the table
+      // is reloaded.
+      this.pendingSetUpdate_ = null;
 
       // States have changed, so we need to reload the table.
       // Update the featureState after loadTable_(), so that the loading
@@ -321,7 +331,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     const router = Router.getInstance();
     const params = new URLSearchParams(router.getCurrentQuery());
     const idParam = params.get('id');
-    if (idParam) {
+    if (idParam && isValidLowercaseUuid(idParam)) {
       this.id_ = {value: idParam};
       const {set} = await this.shoppingApi_.getProductSpecificationsSetByUuid(
           {value: idParam});
@@ -376,7 +386,12 @@ export class ProductSpecificationsElement extends PolymerElement {
       }
       return AppState.TABLE_POPULATED;
     }
-    return AppState.ERROR;
+
+    if (this.isOffline_) {
+      return AppState.ERROR;
+    }
+
+    return AppState.NO_CONTENT;
   }
 
   private isAppStateError_() {
@@ -399,10 +414,20 @@ export class ProductSpecificationsElement extends PolymerElement {
     return this.appState_ === AppState.LOADING;
   }
 
+  private isAppStateNoContent_() {
+    return this.appState_ === AppState.NO_CONTENT;
+  }
+
   private computeShowTableDataUnavailableContainer_() {
     return this.appState_ === AppState.ERROR ||
         this.appState_ === AppState.TABLE_EMPTY ||
         this.appState_ === AppState.SYNC_SCREEN;
+  }
+
+  private canShowFooter_(
+      showTableDataUnavailableContainer: boolean, appState: AppState) {
+    return !(
+        showTableDataUnavailableContainer || appState === AppState.NO_CONTENT);
   }
 
   private canShowFeedbackButtons_() {
@@ -690,6 +715,18 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private onSetUpdated_(set: ProductSpecificationsSet) {
+    // If the page does not have focus, schedule the update for later in case a
+    // newer update is received before the tab is focused. This prevents all
+    // updates from triggering at the same time, which may cause a flicker.
+    if (!document.hasFocus()) {
+      this.pendingSetUpdate_ = this.updateSet_.bind(this, set);
+      return;
+    }
+
+    this.updateSet_(set);
+  }
+
+  private updateSet_(set: ProductSpecificationsSet) {
     if (set.uuid.value !== this.id_?.value) {
       return;
     }
@@ -798,8 +835,12 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   // Resolves upon updating the loading state.
   private async enterLoadingState_(urlCount: number): Promise<void> {
-    if ([AppState.ERROR, AppState.SYNC_SCREEN, AppState.LOADING].includes(
-            this.appState_)) {
+    if ([
+          AppState.ERROR,
+          AppState.SYNC_SCREEN,
+          AppState.LOADING,
+          AppState.NO_CONTENT,
+        ].includes(this.appState_)) {
       this.loadingState_ = {loading: true, urlCount};
       this.dispatchLoadingStartEvent_();
       return Promise.resolve();

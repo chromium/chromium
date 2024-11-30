@@ -4,6 +4,7 @@
 
 module font_data_service.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 
 enum TypefaceSlant {
@@ -28,9 +29,18 @@ struct VariationPosition {
     uint16 coordinateCount;
 };
 
+// Represents the different type of data that can recreate the typeface.
+union TypefaceData {
+  // Font data mapped to a shared memory region.
+  mojo_base.mojom.ReadOnlySharedMemoryRegion region;
+
+  // A file handle to the font.
+  mojo_base.mojom.ReadOnlyFile font_file;
+};
+
 struct MatchFamilyNameResult {
   // The data used to recreate the typeface.
-  mojo_base.mojom.ReadOnlySharedMemoryRegion region;
+  TypefaceData typeface_data;
 
   // The index of the matching typeface, or zero if typeface is not a
   // collection.

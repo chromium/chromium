@@ -109,6 +109,10 @@ public class BackPressMetrics {
     public static void recordPredictiveGestureNav(
             boolean transition, @PredictiveGestureNavPhase int phase) {
         RecordHistogram.recordEnumeratedHistogram(
+                "Android.PredictiveGestureNavigation",
+                phase,
+                PredictiveGestureNavPhase.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
                 transition
                         ? "Android.PredictiveGestureNavigation.WithTransition"
                         : "Android.PredictiveGestureNavigation.WithoutTransition",

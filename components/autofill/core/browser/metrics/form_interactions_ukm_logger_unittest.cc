@@ -372,7 +372,7 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
       const auto* const entry = field_entries[i].get();
 
       FieldFillingSkipReason status =
-          i == 2 ? FieldFillingSkipReason::kNoFillableGroup
+          i == 2 ? FieldFillingSkipReason::kFieldTypeUnrelated
                  : FieldFillingSkipReason::kNotSkipped;
       DenseSet<AutofillStatus> autofill_status_vector;
       int field_log_events_count = 0;
@@ -1738,7 +1738,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
           form, first_field.global_id(),
           *personal_data().payments_data_manager().GetCreditCardByGUID(
               "10000000-0000-0000-0000-000000000001"),
-          {.trigger_source = AutofillTriggerSource::kPopup});
+          AutofillTriggerSource::kPopup);
     } else {
       // Autofill should not be simulated on a field that is not autofillable.
       ASSERT_TRUE(false);
@@ -1828,9 +1828,9 @@ TEST_F(FieldLogUkmMetricTest,
       TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kTrue});
   // No typing on field 5.
 
-  FormInteractionsUkmLogger logger(autofill_client_.get(),
-                                   &test_ukm_recorder());
-  logger.LogAutofillFormWithExperimentalFieldsCountAtFormRemove(form_structure);
+  FormInteractionsUkmLogger logger(autofill_client_.get());
+  logger.LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
+      autofill_driver_->GetPageUkmSourceId(), form_structure);
 
   auto ukm_entries = test_ukm_recorder().GetEntriesByName(
       UkmSubmittedFormWithExperimentalFieldsType::kEntryName);

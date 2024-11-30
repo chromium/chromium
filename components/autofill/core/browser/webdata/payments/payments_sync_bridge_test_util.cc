@@ -169,4 +169,35 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForEwalletAccount(
   return wallet_specifics;
 }
 
+sync_pb::AutofillWalletSpecifics
+CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
+                                                 std::string issuer_id,
+                                                 std::string currency,
+                                                 int price_lower_bound,
+                                                 int price_upper_bound) {
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  wallet_specifics.set_type(
+      sync_pb::AutofillWalletSpecifics_WalletInfoType::
+          AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT);
+
+  sync_pb::PaymentInstrument* payment_instrument_specifics =
+      wallet_specifics.mutable_payment_instrument();
+
+  payment_instrument_specifics->set_instrument_id(instrument_id);
+
+  sync_pb::BnplIssuerDetails* bnpl_issuer_details =
+      payment_instrument_specifics->mutable_bnpl_issuer_details();
+  bnpl_issuer_details->set_issuer_id(std::move(issuer_id));
+  sync_pb::EligiblePriceRange* eligible_price_range =
+      bnpl_issuer_details->add_eligible_price_range();
+  eligible_price_range->set_currency(currency);
+  eligible_price_range->set_min_price_in_micros(0);
+  eligible_price_range->set_max_price_in_micros(35);
+
+  payment_instrument_specifics->add_supported_rails(
+      sync_pb::PaymentInstrument_SupportedRail::
+          PaymentInstrument_SupportedRail_CARD_NUMBER);
+  return wallet_specifics;
+}
+
 }  // namespace autofill

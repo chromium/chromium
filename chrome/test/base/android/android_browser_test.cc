@@ -32,15 +32,29 @@ void AndroidBrowserTest::SetUpDefaultCommandLine(
       command_line, /*open_about_blank_on_launch=*/true);
 }
 
-void AndroidBrowserTest::PreRunTestOnMainThread() {
-}
+void AndroidBrowserTest::PreRunTestOnMainThread() {}
 
 void AndroidBrowserTest::PostRunTestOnMainThread() {
   for (TabModel* model : TabModelList::models()) {
-    while (model->GetTabCount())
-      model->CloseTabAt(0);
+    if (model->GetTabCount()) {
+      model->ForceCloseAllTabs();
+    }
+    ASSERT_EQ(0, model->GetTabCount());
   }
 
   // Run any shutdown events from closing tabs.
   content::RunAllPendingInMessageLoop();
+}
+
+// static
+size_t AndroidBrowserTest::GetTestPreCount() {
+  constexpr std::string_view kPreTestPrefix = "PRE_";
+  std::string_view test_name =
+      testing::UnitTest::GetInstance()->current_test_info()->name();
+  size_t count = 0;
+  while (base::StartsWith(test_name, kPreTestPrefix)) {
+    ++count;
+    test_name = test_name.substr(kPreTestPrefix.size());
+  }
+  return count;
 }

@@ -56,7 +56,7 @@ TEST_F(QuickStartRequestTest, CBOREncodeGetAssertionRequest) {
   std::optional<cbor::Value> cbor;
   const base::span<const uint8_t> ctap_request_span =
       base::make_span(cbor_encoded_request);
-  cbor = cbor::Reader::Read(ctap_request_span.subspan(1));
+  cbor = cbor::Reader::Read(ctap_request_span.subspan<1>());
   ASSERT_TRUE(cbor);
   ASSERT_TRUE(cbor->is_map());
   const cbor::Value::MapValue& cbor_map = cbor->GetMap();

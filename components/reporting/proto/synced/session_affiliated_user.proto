@@ -6,9 +6,9 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package reporting;
+
+option optimize_for = LITE_RUNTIME;
 
 // Used for annotating sensitive fields in google3.
 // ${COPYBARA_DATAPOL_IMPORT}
@@ -23,11 +23,18 @@ message SessionUnaffiliatedUser {
   // String user id is deprecated because it was filled using a cryptographic
   // hash which generated a non-readable byte string. The ID must be human
   // readable since it's displayed in a UI.
-  // ${COPYBARA_DATAPOL_ST_NOT_REQUIRED}
-  optional string user_id = 1 [deprecated = true];
+  optional string user_id = 1 [
+    // copybara:datapol_begin
+    // (datapol.semantic_type) = ST_NOT_REQUIRED,
+    // copybara:datapol_end
+    deprecated = true
+  ];
 
   // Unique per-device user id. Used to track unaffiliated user activity on a
   // given device without revealing the identity of the user.
-  // ${COPYBARA_DATAPOL_ST_NOT_REQUIRED}
-  optional uint32 user_id_num = 2;
+  optional int64 user_id_num = 2
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_NOT_REQUIRED]
+      // copybara:datapol_end
+      ;
 }

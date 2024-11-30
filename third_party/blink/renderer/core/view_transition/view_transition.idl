@@ -32,5 +32,5 @@
   // This will return a ViewTransitionTypeSet that represents the active list of types
   // for this transition. These types are selectable using the
   // :active-view-transition-type pseudo-class.
-  [RuntimeEnabled=ViewTransitionTypes] readonly attribute ViewTransitionTypeSet types;
+  readonly attribute ViewTransitionTypeSet types;
 };

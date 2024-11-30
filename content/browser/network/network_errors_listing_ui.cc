@@ -86,8 +86,7 @@ NetworkErrorsListingUI::NetworkErrorsListingUI(WebUI* web_ui)
 
   // Add required resources.
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(
-      base::make_span(kNetworkErrorsResources, kNetworkErrorsResourcesSize));
+  html_source->AddResourcePaths(kNetworkErrorsResources);
   html_source->SetDefaultResource(
       IDR_NETWORK_ERRORS_NETWORK_ERRORS_LISTING_HTML);
   html_source->SetRequestFilter(

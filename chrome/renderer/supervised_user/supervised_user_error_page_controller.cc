@@ -53,7 +53,8 @@ SupervisedUserErrorPageController::SupervisedUserErrorPageController(
     content::RenderFrame* render_frame)
     : delegate_(delegate), render_frame_(render_frame) {}
 
-SupervisedUserErrorPageController::~SupervisedUserErrorPageController() {}
+SupervisedUserErrorPageController::~SupervisedUserErrorPageController() =
+    default;
 
 void SupervisedUserErrorPageController::GoBack() {
   if (delegate_)

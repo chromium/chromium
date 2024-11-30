@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -624,8 +623,7 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
 void HTMLInputElement::SubtreeHasChanged() {
   input_type_view_->SubtreeHasChanged();
 
-  if (HasDirectionAuto() ||
-      !RuntimeEnabledFeatures::TextInputNotAlwaysDirAutoEnabled()) {
+  if (HasDirectionAuto()) {
     // When typing in an input field, childrenChanged is not called, so we
     // need to force the directionality check.
     CalculateAndAdjustAutoDirectionality();
@@ -2259,7 +2257,6 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
 bool HTMLInputElement::IsLastInputElementInForm() {
   DCHECK(GetDocument().GetPage());
   return !GetDocument()
@@ -2276,7 +2273,6 @@ void HTMLInputElement::DispatchSimulatedEnter() {
 
   EventDispatcher::DispatchSimulatedEnterEvent(*this);
 }
-#endif
 
 bool HTMLInputElement::IsInteractiveContent() const {
   return input_type_->IsInteractiveContent();

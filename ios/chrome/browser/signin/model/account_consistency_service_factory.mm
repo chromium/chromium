@@ -8,7 +8,6 @@
 #import "base/no_destructor.h"
 #import "components/content_settings/core/browser/cookie_settings.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
-#import "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -20,7 +19,6 @@ AccountConsistencyServiceFactory::AccountConsistencyServiceFactory()
                                     ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(ios::AccountReconcilorFactory::GetInstance());
-  DependsOn(ios::CookieSettingsFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -54,7 +52,6 @@ AccountConsistencyServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<AccountConsistencyService>(
       std::move(cookie_manager_callback),
       ios::AccountReconcilorFactory::GetForProfile(profile),
-      ios::CookieSettingsFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile));
 }
 

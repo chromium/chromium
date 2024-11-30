@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -60,7 +62,7 @@ public class TabRemoverImplUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGroupModelFilterInternal mTabGroupModelFilter;
     @Mock private TabModelRemover mTabModelRemover;
     @Mock private Runnable mUndoRunnable;
     @Mock private TabRemover mMockTabRemover;
@@ -105,14 +107,62 @@ public class TabRemoverImplUnitTest {
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
         TabClosureParams params = TabClosureParams.closeAllTabs().build();
 
-        mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
-        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
+        mTabRemoverImpl.closeTabs(params, /* allowDialog= */ false, mListener);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(false));
         TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
 
         GroupsPendingDestroy groupsPendingDestroy = handler.computeGroupsPendingDestroy();
         assertTrue(groupsPendingDestroy.isEmpty());
 
         // No placeholder created.
+
+        handler.performAction();
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+        verify(mTabGroupModelFilter).closeTabs(eq(params));
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verifyNoMoreInteractions(mListener);
+    }
+
+    @Test
+    public void testCloseTabsHandler_SkipDialog() {
+        int id = 0;
+        Tab tab0 = mTabModel.addTab(id);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        TabClosureParams params = TabClosureParams.closeAllTabs().build();
+
+        mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
+        TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
+
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = id;
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = TAB_GROUP_ID;
+        savedTabGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID});
+        when(mTabGroupSyncService.getGroup(SYNC_ID)).thenReturn(savedTabGroup);
+
+        GroupsPendingDestroy groupsPendingDestroy = handler.computeGroupsPendingDestroy();
+        assertFalse(groupsPendingDestroy.isEmpty());
+        assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
+        assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
+
+        when(mActionConfirmationManager.willSkipCloseTabAttempt()).thenReturn(true);
+
+        // No placeholder tabs created.
+
+        handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
+        verify(mActionConfirmationManager).processCloseTabAttempt(mOnResultCaptor.capture());
+        mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         handler.performAction();
         verify(mTabGroupModelFilter).closeTabs(eq(params));
@@ -149,9 +199,13 @@ public class TabRemoverImplUnitTest {
         assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
         assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
 
+        when(mActionConfirmationManager.willSkipDeleteGroupAttempt()).thenReturn(true);
+
         // No placeholder tabs created.
 
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
         verify(mActionConfirmationManager).processDeleteGroupAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verify(mListener)
@@ -192,6 +246,8 @@ public class TabRemoverImplUnitTest {
         // No placeholder tabs created.
 
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager).processCloseTabAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
         verify(mListener)
@@ -234,6 +290,9 @@ public class TabRemoverImplUnitTest {
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
         handler.showCollaborationKeepDialog(MemberRole.OWNER, TITLE, mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(
+                        DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager)
                 .processCollaborationOwnerRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
@@ -277,6 +336,9 @@ public class TabRemoverImplUnitTest {
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
         handler.showCollaborationKeepDialog(MemberRole.MEMBER, TITLE, mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(
+                        DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager)
                 .processCollaborationMemberRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
@@ -362,6 +424,30 @@ public class TabRemoverImplUnitTest {
 
         newParams.undoRunnable.run();
         verify(mUndoRunnable).run();
+        verify(mMockTabRemover)
+                .forceCloseTabs(
+                        argThat(
+                                (TabClosureParams placeholderCloseParams) -> {
+                                    return placeholderCloseParams.tabs.equals(placeholderTabs);
+                                }));
+    }
+
+    @Test
+    public void testUpdateTabClosureParams_Placeholder_CloseTab_NullUndoRunnable() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        Tab tab1 = mTabModel.addTab(/* id= */ 1);
+        TabClosureParams params = TabClosureParams.closeTab(tab0).allowUndo(true).build();
+        List<Tab> placeholderTabs = List.of(tab1);
+        TabClosureParams newParams =
+                TabRemoverImpl.fixupTabClosureParams(
+                        mTabModel, params, placeholderTabs, /* preventUndo= */ false);
+        assertNotEquals(params, newParams);
+        assertEquals(params.tabCloseType, newParams.tabCloseType);
+        assertEquals(params.tabs, newParams.tabs);
+        assertNotNull(newParams.undoRunnable);
+
+        newParams.undoRunnable.run();
+        verify(mUndoRunnable, never()).run();
         verify(mMockTabRemover)
                 .forceCloseTabs(
                         argThat(
@@ -460,6 +546,8 @@ public class TabRemoverImplUnitTest {
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
         handler.performAction();
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         verify(mTabModel).removeTab(tab0);
         verify(mListener)
                 .onConfirmationDialogResult(

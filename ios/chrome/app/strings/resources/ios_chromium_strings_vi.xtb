@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Sử dụng Chromium trên iPad theo mặc định</translation>
 <translation id="1471084500615228555">Xoá dữ liệu duyệt web trong Chromium</translation>
 <translation id="1472013873724362412">Tài khoản của bạn không hoạt động trên Chromium. Vui lòng liên hệ với quản trị viên miền của bạn hoặc sử dụng Tài khoản Google thông thường để đăng nhập.</translation>
+<translation id="148576268809812097">Lưu mật khẩu của bạn trong Chromium</translation>
 <translation id="1501302548410882220">Sử dụng Chromium ở mọi nơi</translation>
 <translation id="1503199973012840174">Phiên bản Chromium bạn đang sử dụng đã lỗi thời. Hãy cập nhật để đảm bảo an toàn.</translation>
 <translation id="1515748263297244785">Sử dụng Chromium cho iPad theo mặc định</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Mật khẩu của bạn sẽ được lưu trong Tài khoản (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">Để sử dụng chế độ cá nhân hoá và các tính năng khác, hãy thêm Chromium vào <ph name="FEATURE_NAME_1" /> và <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium xác minh rằng <ph name="ISSUER" /> đã cấp chứng chỉ của trang web này.</translation>
+<translation id="1839447949248872139">Mở đường liên kết trong Chromium theo mặc định</translation>
 <translation id="1843424232666537147">Chromium có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Google Maps trên Chromium</translation>
@@ -160,6 +162,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="5048795749726991615">Để dễ dàng sử dụng mật khẩu đã lưu trong các ứng dụng khác, hãy dùng Chromium làm dịch vụ tự động điền</translation>
 <translation id="5053429694249468757">Đang xoá dữ liệu trên Chromium…</translation>
 <translation id="5071749685031362629">Chromium cho iOS</translation>
+<translation id="5088872414922783602">Truy cập Chromium nhanh hơn từ thanh Dock trên Màn hình chính.</translation>
 <translation id="5124429847818367226">Giờ đây, bạn có thể dùng Chromium mỗi khi duyệt web hoặc nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="5131565040785979529">Tổ chức <ph name="DOMAIN" /> của bạn sẽ quản lý tài khoản bạn đăng nhập và cách sử dụng Chromium.</translation>
 <translation id="5224391634244552924">Bạn chưa lưu mật khẩu nào. Chromium có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
@@ -273,6 +276,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="800380310260616129">Tải Chromium xuống tại đây.</translation>
 <translation id="8013573822802650211">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị</translation>
 <translation id="8014091604604659473">Đã đăng xuất khỏi Chromium</translation>
+<translation id="8035379487371146621">Đưa Chromium vào thanh Dock</translation>
 <translation id="8104697640054703121">Bảo vệ bạn khỏi các trang web nguy hiểm với chế độ bảo mật mạnh nhất của Chromium</translation>
 <translation id="8119542592987737574">Truy cập Chromium nhanh hơn từ thanh dock trên màn hình chính của iPhone.</translation>
 <translation id="8164086860209325020">Chuyển đến phần cài đặt Chromium</translation>

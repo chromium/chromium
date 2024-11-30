@@ -59,8 +59,6 @@ class CORE_EXPORT CSSPositionTryDescriptors
   String justifySelf() { return Get(CSSPropertyID::kJustifySelf); }
   String positionAnchor() { return Get(CSSPropertyID::kPositionAnchor); }
   String positionArea() { return Get(CSSPropertyID::kPositionArea); }
-  // TODO(crbug.com/352360007): this can be removed when inset-area is removed.
-  String insetArea() { return Get(CSSPropertyID::kInsetArea); }
 
   void setMargin(const ExecutionContext* execution_context,
                  const String& value,
@@ -273,14 +271,6 @@ class CORE_EXPORT CSSPositionTryDescriptors
     Set(execution_context, CSSPropertyID::kPositionArea, value,
         exception_state);
   }
-  // TODO(crbug.com/352360007): this can be removed when inset-area is removed.
-  void setInsetArea(const ExecutionContext* execution_context,
-                    const String& value,
-                    ExceptionState& exception_state) {
-    DCHECK(RuntimeEnabledFeatures::CSSInsetAreaPropertyEnabled());
-    Set(execution_context, CSSPropertyID::kInsetArea, value, exception_state);
-  }
-
   void Trace(Visitor*) const override;
 
  private:

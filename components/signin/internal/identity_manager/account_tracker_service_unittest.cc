@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/signin/internal/identity_manager/account_tracker_service.h"
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -25,7 +27,6 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
-#include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
@@ -38,6 +39,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -149,7 +151,7 @@ class TrackingEvent {
  public:
   TrackingEvent(TrackingEventType type,
                 const CoreAccountId& account_id,
-                const std::string& gaia_id,
+                const GaiaId& gaia_id,
                 const std::string& email)
       : type_(type),
         account_id_(account_id),
@@ -170,12 +172,13 @@ class TrackingEvent {
     }
     return base::StringPrintf(
         "{ type: %s, account_id: %s, gaia: %s, email: %s }", typestr,
-        account_id_.ToString().c_str(), gaia_id_.c_str(), email_.c_str());
+        account_id_.ToString().c_str(), gaia_id_.ToString().c_str(),
+        email_.c_str());
   }
 
   TrackingEventType type_;
   CoreAccountId account_id_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::string email_;
 };
 
@@ -411,6 +414,7 @@ class AccountTrackerServiceTest : public testing::Test {
   }
 
   void DeleteAccountTracker() {
+    fake_account_capabilities_fetcher_factory_ = nullptr;
     account_fetcher_.reset();
     account_tracker_.reset();
     // Allow residual |account_tracker_| posted tasks to run.
@@ -422,8 +426,8 @@ class AccountTrackerServiceTest : public testing::Test {
   FakeProfileOAuth2TokenService fake_oauth2_token_service_;
   std::unique_ptr<AccountFetcherService> account_fetcher_;
   std::unique_ptr<AccountTrackerService> account_tracker_;
-  raw_ptr<FakeAccountCapabilitiesFetcherFactory, DanglingUntriaged>
-      fake_account_capabilities_fetcher_factory_ = nullptr;
+  raw_ptr<FakeAccountCapabilitiesFetcherFactory>
+      fake_account_capabilities_fetcher_factory_;
   std::vector<TrackingEvent> account_tracker_events_;
 };
 
@@ -884,12 +888,12 @@ TEST_F(AccountTrackerServiceTest, FindAccountInfoByGaiaId) {
   SimulateTokenAvailable(kAccountKeyAlpha);
   ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
 
-  const std::string gaia_id_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+  const GaiaId gaia_id_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   AccountInfo info = account_tracker()->FindAccountInfoByGaiaId(gaia_id_alpha);
   EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.account_id);
   EXPECT_EQ(gaia_id_alpha, info.gaia);
 
-  const std::string gaia_id_beta = AccountKeyToGaiaId(kAccountKeyBeta);
+  const GaiaId gaia_id_beta = AccountKeyToGaiaId(kAccountKeyBeta);
   info = account_tracker()->FindAccountInfoByGaiaId(gaia_id_beta);
   EXPECT_TRUE(info.account_id.empty());
 }
@@ -1037,7 +1041,7 @@ TEST_F(AccountTrackerServiceTest, Persistence_DeleteEmpty) {
 TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {
   EXPECT_TRUE(account_tracker()->GetAccounts().empty());
 
-  const std::string gaia_id = AccountKeyToGaiaId(kAccountKeyFooBar);
+  const GaiaId gaia_id = AccountKeyToGaiaId(kAccountKeyFooBar);
   const std::string email = AccountKeyToEmail(kAccountKeyFooBar);
   const std::string email_dotted = AccountKeyToEmail(kAccountKeyFooDotBar);
   const CoreAccountId account_id =

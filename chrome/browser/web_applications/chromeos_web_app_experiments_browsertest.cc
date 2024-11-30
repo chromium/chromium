@@ -379,6 +379,30 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
             extended_scope_page_);
 }
 
+// Test that clicking a noreferrer noopener target=_blank link to an
+// out-of-scope URL results in opening a browser tab.
+IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+                       NoopenerNoreferrerBlankLinkToOutOfScope) {
+  ASSERT_TRUE(https_server().Start());
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  content::WebContents* app_web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  const GURL target_url = https_server().GetURL("/empty.html");
+  auto observer = GetTestNavigationObserver(target_url);
+  ClickLink(app_web_contents, target_url, LinkTarget::BLANK,
+            /*rel=*/"noreferrer noopener");
+  observer->Wait();
+
+  // A browser tab is opened for the target URL.
+  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_FALSE(AppBrowserController::IsForWebApp(active_browser, app_id_));
+  EXPECT_EQ(active_browser->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            target_url);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

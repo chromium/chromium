@@ -203,7 +203,7 @@ CastMediaSinkServiceImpl::CastMediaSinkServiceImpl(
     const OnSinksDiscoveredCallback& callback,
     cast_channel::CastSocketService* cast_socket_service,
     DiscoveryNetworkMonitor* network_monitor,
-    MediaSinkServiceBase* dial_media_sink_service,
+    DialMediaSinkServiceImpl* dial_media_sink_service,
     bool allow_all_ips)
     : MediaSinkServiceBase(callback),
       cast_socket_service_(cast_socket_service),
@@ -622,7 +622,6 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
   DCHECK(socket);
   CastAnalytics::RecordCastChannelConnectResult(
       MediaRouterChannelConnectResults::SUCCESS);
-  CastAnalytics::RecordDeviceNameLength(cast_sink.sink().name().size());
   CastSinkExtraData& extra_data = cast_sink.cast_data();
   // Manually set device capabilities for sinks discovered via DIAL as DIAL
   // discovery does not provide capability info.

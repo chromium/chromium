@@ -19,6 +19,7 @@
 #include "base/debug/profiler.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -347,7 +348,7 @@ void DataRace() {
   EXPECT_TRUE(*shared);
   delete shared;
   // We're in a death test - crash.
-  CHECK(0);
+  NOTREACHED();
 }
 #endif
 

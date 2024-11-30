@@ -11,7 +11,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,16 +29,6 @@ public class LogoUtils {
         int MEDIUM = 1;
         int LARGE = 2;
     }
-
-    private static final String LOGO_POLISH_LARGE_SIZE_PARAM = "polish_logo_size_large";
-    public static final BooleanCachedFieldTrialParameter LOGO_POLISH_LARGE_SIZE =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_LARGE_SIZE_PARAM, false);
-
-    private static final String LOGO_POLISH_MEDIUM_SIZE_PARAM = "polish_logo_size_medium";
-    public static final BooleanCachedFieldTrialParameter LOGO_POLISH_MEDIUM_SIZE =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_MEDIUM_SIZE_PARAM, true);
 
     /** Returns whether logo polish flag is enabled in the given context. */
     public static boolean isLogoPolishEnabled() {
@@ -60,11 +49,11 @@ public class LogoUtils {
      * return value should be invalid.
      */
     public static @LogoSizeForLogoPolish int getLogoSizeForLogoPolish() {
-        if (LOGO_POLISH_LARGE_SIZE.getValue()) {
+        if (ChromeFeatureList.sLogoPolishLargeSize.getValue()) {
             return LogoSizeForLogoPolish.LARGE;
         }
 
-        if (LOGO_POLISH_MEDIUM_SIZE.getValue()) {
+        if (ChromeFeatureList.sLogoPolishMediumSize.getValue()) {
             return LogoSizeForLogoPolish.MEDIUM;
         }
 

@@ -24,8 +24,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link TabRemover} for the regular tab model. Uses a {@link TabModelRemover}
@@ -84,7 +82,7 @@ public class TabRemoverImpl implements TabRemover {
     }
 
     private static class CloseTabsHandler implements TabModelRemoverFlowHandler {
-        private final TabGroupModelFilter mTabGroupModelFilter;
+        private final TabGroupModelFilterInternal mTabGroupModelFilter;
         private final ActionConfirmationManager mActionConfirmationManager;
         private final TabClosureParams mOriginalTabClosureParams;
         private @Nullable TabModelActionListener mListener;
@@ -92,7 +90,7 @@ public class TabRemoverImpl implements TabRemover {
         private boolean mPreventUndo;
 
         CloseTabsHandler(
-                @NonNull TabGroupModelFilter tabGroupModelFilter,
+                @NonNull TabGroupModelFilterInternal tabGroupModelFilter,
                 @NonNull ActionConfirmationManager actionConfirmationManager,
                 @NonNull TabClosureParams originalTabClosureParams,
                 @Nullable TabModelActionListener listener) {
@@ -115,8 +113,17 @@ public class TabRemoverImpl implements TabRemover {
 
         @Override
         public void showTabGroupDeletionConfirmationDialog(@NonNull Callback<Integer> onResult) {
-            var adaptedCallback = adaptOnResultCallback(onResult, DialogType.SYNC, takeListener());
-            if (mOriginalTabClosureParams.isTabGroup) {
+            boolean isTabGroup = mOriginalTabClosureParams.isTabGroup;
+            @Nullable TabModelActionListener listener = takeListener();
+            if (listener != null) {
+                boolean willSkipDialog =
+                        isTabGroup
+                                ? mActionConfirmationManager.willSkipDeleteGroupAttempt()
+                                : mActionConfirmationManager.willSkipCloseTabAttempt();
+                listener.willPerformActionOrShowDialog(DialogType.SYNC, willSkipDialog);
+            }
+            var adaptedCallback = adaptOnResultCallback(onResult, DialogType.SYNC, listener);
+            if (isTabGroup) {
                 mActionConfirmationManager.processDeleteGroupAttempt(adaptedCallback);
             } else {
                 mActionConfirmationManager.processCloseTabAttempt(adaptedCallback);
@@ -126,8 +133,13 @@ public class TabRemoverImpl implements TabRemover {
         @Override
         public void showCollaborationKeepDialog(
                 @MemberRole int memberRole, @NonNull String title, Callback<Integer> onResult) {
+            @Nullable TabModelActionListener listener = takeListener();
+            if (listener != null) {
+                listener.willPerformActionOrShowDialog(
+                        DialogType.COLLABORATION, /* willSkipDialog= */ false);
+            }
             var adaptedCallback =
-                    adaptOnResultCallback(onResult, DialogType.COLLABORATION, takeListener());
+                    adaptOnResultCallback(onResult, DialogType.COLLABORATION, listener);
             if (memberRole == MemberRole.OWNER) {
                 mActionConfirmationManager.processCollaborationOwnerRemoveLastTab(
                         title, adaptedCallback);
@@ -150,9 +162,13 @@ public class TabRemoverImpl implements TabRemover {
                             mPreventUndo);
             if (newTabClosureParams == null) return;
 
+            @Nullable TabModelActionListener listener = takeListener();
+            if (listener != null) {
+                listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+            }
             PassthroughTabRemover.doCloseTabs(mTabGroupModelFilter, newTabClosureParams);
-            if (mListener != null) {
-                mListener.onConfirmationDialogResult(
+            if (listener != null) {
+                listener.onConfirmationDialogResult(
                         DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
             }
         }
@@ -233,9 +249,13 @@ public class TabRemoverImpl implements TabRemover {
             if (tabModel.getTabById(mTabToRemove.getId()) == null || mTabToRemove.isClosing()) {
                 return;
             }
+            @Nullable TabModelActionListener listener = mListener;
+            if (listener != null) {
+                listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+            }
             PassthroughTabRemover.doRemoveTab(tabModel, mTabToRemove);
-            if (mListener != null) {
-                mListener.onConfirmationDialogResult(
+            if (listener != null) {
+                listener.onConfirmationDialogResult(
                         DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
             }
         }
@@ -269,11 +289,8 @@ public class TabRemoverImpl implements TabRemover {
         // and asserts. Any tabs that are closing or cannot be found in the tab model need to be
         // skipped.
         tabsToClose =
-                tabsToClose.stream()
-                        .map((tab) -> tabModel.getTabById(tab.getId()))
-                        .filter(Objects::nonNull)
-                        .filter(tab -> !tab.isClosing())
-                        .collect(Collectors.toList());
+                TabModelUtils.getTabsById(
+                        TabModelUtils.getTabIds(tabsToClose), tabModel, /* allowClosing= */ false);
 
         // If no tabs remain we will just no-op. This may leave placeholder tabs behind; however,
         // those placeholder tabs may be the only tabs left in the group so do not pre-emptively
@@ -286,7 +303,9 @@ public class TabRemoverImpl implements TabRemover {
         if (createdPlaceholders) {
             undoRunnable =
                     () -> {
-                        params.undoRunnable.run();
+                        if (params.undoRunnable != null) {
+                            params.undoRunnable.run();
+                        }
                         tabModel.getTabRemover()
                                 .forceCloseTabs(
                                         TabClosureParams.closeTabs(placeholderTabs)

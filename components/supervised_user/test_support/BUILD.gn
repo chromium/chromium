@@ -7,8 +7,8 @@ import("//third_party/protobuf/proto_library.gni")
 source_set("test_support") {
   testonly = true
   sources = [
-    "browser_state_management.cc",
-    "browser_state_management.h",
+    "family_link_settings_state_management.cc",
+    "family_link_settings_state_management.h",
     "kids_chrome_management_test_utils.cc",
     "kids_chrome_management_test_utils.h",
     "kids_management_api_server_mock.cc",

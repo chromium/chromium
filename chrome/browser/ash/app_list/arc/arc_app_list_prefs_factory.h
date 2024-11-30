@@ -34,7 +34,7 @@ class ArcAppListPrefsFactory : public ProfileKeyedServiceFactory {
   ArcAppListPrefsFactory& operator=(const ArcAppListPrefsFactory&) = delete;
   ~ArcAppListPrefsFactory() override;
 
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   static bool is_sync_test_;

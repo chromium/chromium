@@ -50,27 +50,16 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
-        <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
-          <cr-link-row id="trackingProtectionLinkRow"
-              start-icon="settings:visibility-off"
-              class="hr" label="$i18n{trackingProtectionLinkRowLabel}"
-              sub-label="$i18n{trackingProtectionLinkRowSubLabel}"
-              on-click="onTrackingProtectionClick_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
-          <cr-link-row id="thirdPartyCookiesLinkRow"
-              start-icon="privacy:cookie"
-              class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
-              sub-label="[[computeThirdPartyCookiesSublabel_(
-                  prefs.profile.cookie_controls_mode.*,
-                  prefs.tracking_protection.block_all_3pc_toggle_enabled.*
-                  )]]"
-              on-click="onCookiesClick_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
+        <cr-link-row id="thirdPartyCookiesLinkRow"
+            start-icon="privacy:cookie"
+            class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
+            sub-label="[[computeThirdPartyCookiesSublabel_(
+                prefs.profile.cookie_controls_mode.*,
+                prefs.tracking_protection.block_all_3pc_toggle_enabled.*
+                )]]"
+            on-click="onCookiesClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
         <template is="dom-if" if=
             "[[shouldShowAdPrivacy_(
                 isPrivacySandboxRestricted_,
@@ -375,35 +364,18 @@
           </category-setting-exceptions>
         </settings-subpage>
       </template>
-      <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
-        <template is="dom-if" route-path="/trackingProtection">
-          <settings-subpage id="trackingProtection"
-              page-title="$i18n{trackingProtectionPageTitle}"
-              learn-more-url="$i18n{trackingProtectionHelpCenterURL}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}"
-              associated-control="[[$$('#trackingProtectionLinkRow')]]">
-            <settings-cookies-page prefs="{{prefs}}"
-                focus-config="[[focusConfig_]]"
-                search-term="[[searchFilter_]]">
-            </settings-cookies-page>
-          </settings-subpage>
-        </template>
-      </template>
-      <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
-        <template is="dom-if" route-path="/cookies">
-          <settings-subpage id="cookies"
-              page-title="$i18n{thirdPartyCookiesPageTitle}"
-              learn-more-url="$i18n{cookiesSettingsHelpCenterURL}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}"
-              associated-control="[[$$('#thirdPartyCookiesLinkRow')]]">
-            <settings-cookies-page prefs="{{prefs}}"
-                focus-config="[[focusConfig_]]"
-                search-term="[[searchFilter_]]">
-            </settings-cookies-page>
-          </settings-subpage>
-        </template>
+      <template is="dom-if" route-path="/cookies">
+        <settings-subpage id="cookies"
+            page-title="$i18n{thirdPartyCookiesPageTitle}"
+            learn-more-url="$i18n{cookiesSettingsHelpCenterURL}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}"
+            associated-control="[[$$('#thirdPartyCookiesLinkRow')]]">
+          <settings-cookies-page prefs="{{prefs}}"
+              focus-config="[[focusConfig_]]"
+              search-term="[[searchFilter_]]">
+          </settings-cookies-page>
+        </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/images" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryImages}"
@@ -1365,16 +1337,19 @@
           </settings-subpage>
        </template>
       </template>
-      <template is="dom-if" if="[[enableSmartCardReadersContentSetting_]]">
-        <template is="dom-if" route-path="/content/smartCardReaders" no-search>
-          <settings-subpage page-title="$i18n{siteSettingsSmartCardReaders}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-            <settings-smart-card-readers-page filter="[[searchFilter_]]">
-            </settings-smart-card-readers-page>
-          </settings-subpage>
-       </template>
-      </template>
+      <if expr="is_chromeos">
+        <template is="dom-if" if="[[enableSmartCardReadersContentSetting_]]">
+          <template is="dom-if"
+                route-path="/content/smartCardReaders" no-search>
+            <settings-subpage page-title="$i18n{siteSettingsSmartCardReaders}"
+                search-label="$i18n{siteSettingsAllSitesSearch}"
+                search-term="{{searchFilter_}}">
+              <settings-smart-card-readers-page filter="[[searchFilter_]]">
+              </settings-smart-card-readers-page>
+            </settings-subpage>
+        </template>
+        </template>
+      </if>
       <template is="dom-if" if="[[enableAutomaticFullscreenContentSetting_]]">
         <template is="dom-if" route-path="/content/automaticFullScreen"
             no-search>

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -26,6 +27,10 @@ class GlicButton : public TabStripControlButton {
 
   // TabStripControlsButton:
   void NotifyClick(const ui::Event& event) final;
+
+ private:
+  // Tab strip that contains this button.
+  raw_ptr<TabStripController> tab_strip_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_BUTTON_H_

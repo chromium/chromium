@@ -8,7 +8,7 @@ INCLUDE PERFETTO MODULE slices.with_context;
 -- to the GPU but are recorded on a different data source (and track group).
 CREATE PERFETTO FUNCTION _get_process_id_for_surfaceflinger()
 -- The process id for surfaceflinger.
-RETURNS INT AS
+RETURNS LONG AS
 SELECT
  upid
 FROM process
@@ -76,7 +76,7 @@ CREATE PERFETTO FUNCTION _get_process_id_by_type(
 )
 RETURNS TABLE (
     -- The process id for the process type.
-    upid INT
+    upid JOINID(process.id)
 ) AS
 SELECT
   upid
@@ -88,10 +88,10 @@ WHERE name = _get_process_name($type)
 -- occurred on. This is the Renderer process.
 CREATE PERFETTO FUNCTION _get_renderer_upid_for_event_latency(
   -- The slice id for an EventLatency slice.
-  id INT
+  id LONG
 )
 -- The process id for an EventLatency slice. This is the Renderer process.
-RETURNS INT AS
+RETURNS LONG AS
 SELECT
   upid
 FROM process_slice
@@ -106,9 +106,9 @@ CREATE PERFETTO FUNCTION _processes_by_type_for_event_latency(
   -- The name of the thread.
   thread STRING,
   -- The slice id of an EventLatency slice.
-  event_latency_id INT)
+  event_latency_id LONG)
 RETURNS TABLE (
-    upid INT
+    upid JOINID(process.id)
 ) AS
 WITH all_upids AS (
   -- Renderer process upids
@@ -146,7 +146,7 @@ FROM all_upids;
 -- upid/thread combination refers to a cause of Scroll Jank.
 CREATE PERFETTO FUNCTION chrome_select_scroll_jank_cause_thread(
   -- The slice id of an EventLatency slice.
-  event_latency_id INT,
+  event_latency_id LONG,
   -- The process type that the thread is on: one of 'Browser', 'Renderer' or
   -- 'GPU'.
   process_type STRING,
@@ -154,7 +154,7 @@ CREATE PERFETTO FUNCTION chrome_select_scroll_jank_cause_thread(
   thread_name STRING)
 RETURNS TABLE (
   -- The utid associated with |thread| on the process with |upid|.
-  utid INT
+  utid JOINID(thread.id)
 ) AS
 WITH threads AS (
   SELECT

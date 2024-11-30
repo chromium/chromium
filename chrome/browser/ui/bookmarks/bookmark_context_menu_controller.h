@@ -25,7 +25,7 @@ class BookmarkMergedSurfaceService;
 // menu for the controller.
 class BookmarkContextMenuControllerDelegate {
  public:
-  virtual ~BookmarkContextMenuControllerDelegate() {}
+  virtual ~BookmarkContextMenuControllerDelegate() = default;
 
   // Closes the bookmark context menu.
   virtual void CloseMenu() = 0;
@@ -47,18 +47,19 @@ class BookmarkContextMenuController
       public ui::SimpleMenuModel::Delegate {
  public:
   // Creates the bookmark context menu.
-  // |browser| is used to open the bookmark manager and is null in tests.
-  // |profile| is used for opening urls as well as enabling 'open incognito'.
+  // `browser` is used to open the bookmark manager and is null in tests.
+  // `profile` is used for opening urls as well as enabling 'open incognito'.
   // Uses a callback since this can be asynchronous. See crbug.com/1161144
-  // |parent| is the parent for newly created nodes if |selection| is empty.
-  // |selection| is the nodes the context menu operates on and may be empty.
+  // The parent for newly created nodes is `selection[0]` if
+  // `selection` has one element and it is a folder, otherwise it is
+  // `selection[0]->parent`.
+  // `selection` is the nodes the context menu operates on and may be empty.
   BookmarkContextMenuController(
       gfx::NativeWindow parent_window,
       BookmarkContextMenuControllerDelegate* delegate,
       Browser* browser,
       Profile* profile,
       BookmarkLaunchLocation opened_from,
-      const bookmarks::BookmarkNode* parent,
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
                                 VectorExperimental>>& selection);
 
@@ -70,6 +71,14 @@ class BookmarkContextMenuController
 
   ui::SimpleMenuModel* menu_model() { return menu_model_.get(); }
 
+  // Public for testing.
+  // Returns the parent for newly created folders/bookmarks. If `selection` has
+  // one element and it is a folder, `selection[0]` is returned, otherwise
+  // `selection[0]->parent` is returned.
+  static const bookmarks::BookmarkNode* GetParentForNewNodes(
+      const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+                                VectorExperimental>>& selection);
+
   // ui::SimpleMenuModel::Delegate implementation:
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
@@ -77,6 +86,10 @@ class BookmarkContextMenuController
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsItemForCommandIdDynamic(int command_id) const override;
   std::u16string GetLabelForCommandId(int command_id) const override;
+
+  // Public for testing.
+  // Returns index at which the newly added nodes will be added.
+  size_t GetIndexForNewNodes() const;
 
  private:
   void BuildMenu();
@@ -99,11 +112,11 @@ class BookmarkContextMenuController
   const raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
   const BookmarkLaunchLocation opened_from_;
-  raw_ptr<const bookmarks::BookmarkNode> parent_;
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
       selection_;
   const raw_ptr<BookmarkMergedSurfaceService> bookmark_service_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  const raw_ptr<const bookmarks::BookmarkNode> new_nodes_parent_;
   // Used to detect deletion of |this| executing a command.
   base::WeakPtrFactory<BookmarkContextMenuController> weak_factory_{this};
 };

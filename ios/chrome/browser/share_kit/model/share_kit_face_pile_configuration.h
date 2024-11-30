@@ -12,11 +12,13 @@
 
 // Shared group ID.
 @property(nonatomic, copy) NSString* collabID;
-// The completion block to be called when the share button is tapped. CollabID
-// is the ID of the group that the user is invited to. IsSignedIn is YES if the
-// user is signed in.
-@property(nonatomic, copy) void (^completionBlock)
-    (NSString* collabID, BOOL isSignedIn);
+
+// Whether the face pile should be visible when the group is empty (not shared
+// or shared with no members).
+@property(nonatomic, assign) BOOL showsEmptyState;
+
+// The preferred size in points for the avatar icons.
+@property(nonatomic, assign) CGFloat avatarSize;
 
 @end
 

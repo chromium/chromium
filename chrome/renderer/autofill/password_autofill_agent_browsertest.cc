@@ -2762,9 +2762,6 @@ TEST_F(PasswordAutofillAgentTest,
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
   autofill_agent_->TriggerSuggestions(
       form_util::GetFieldRendererId(username_element_),
-      AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  autofill_agent_->TriggerSuggestions(
-      form_util::GetFieldRendererId(username_element_),
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
   autofill_agent_->TriggerSuggestions(
       form_util::GetFieldRendererId(username_element_),
@@ -5313,6 +5310,23 @@ TEST_F(PasswordAutofillAgentTest, JSFieldModificationUnrelatedField) {
       R"(document.getElementById('random_field').value = 'js-set-whatever';)");
   fake_driver_.Flush();
 
+  EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
+}
+
+// Test that password manager is not notified about JS inputs in fields that are
+// no longer text inputs.
+TEST_F(PasswordAutofillAgentTest, JSFieldModificationNonTextInput) {
+  ASSERT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Simulate JS changing the field type to hide the field from the user.
+  ExecuteJavaScriptForTests(
+      R"(document.getElementById('username').type = 'hidden';)");
+
+  ExecuteJavaScriptForTests(
+      R"(document.getElementById('username').value = 'js-set-whatever';)");
+  fake_driver_.Flush();
   EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
 }
 

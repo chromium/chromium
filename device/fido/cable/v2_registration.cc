@@ -10,6 +10,7 @@
 #include "device/fido/cable/v2_registration.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/cbor/reader.h"
@@ -50,13 +51,13 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
     // number of new registrations with the FCM service. Thus this code does not
     // compile on other platforms. Check with //components/gcm_driver owners
     // before changing this.
-#if !BUILDFLAG(IS_ANDROID)
-    CHECK(false) << "Do not use outside of Android.";
-#endif
-
+#if BUILDFLAG(IS_ANDROID)
     gcm::GCMDriver* const gcm_driver = instance_id_->gcm_driver();
     CHECK(gcm_driver->GetAppHandler(app_id()) == nullptr);
     instance_id_->gcm_driver()->AddAppHandler(app_id(), this);
+#else
+    NOTREACHED() << "Do not use outside of Android.";
+#endif
   }
 
   ~FCMHandler() override {

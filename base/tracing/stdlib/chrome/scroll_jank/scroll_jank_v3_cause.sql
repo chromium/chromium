@@ -12,9 +12,9 @@ RETURNS TABLE(
   -- Alias for `slice.type`.
   type STRING,
   -- Alias for `slice.ts`.
-  ts LONG,
+  ts TIMESTAMP,
   -- Alias for `slice.dur`.
-  dur LONG,
+  dur DURATION,
   -- Alias for `slice.category`.
   category LONG,
   -- Alias for `slice.name`.
@@ -28,7 +28,7 @@ RETURNS TABLE(
   -- Alias for `slice.arg_set_id`.
   arg_set_id LONG,
   -- Alias for `slice.thread_ts`.
-  thread_ts LONG,
+  thread_ts TIMESTAMP,
   -- Alias for `slice.thread_dur`.
   thread_dur LONG
 ) AS

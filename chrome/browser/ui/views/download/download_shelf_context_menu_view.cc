@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
+
+#include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
-#include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_commands.h"
+#include "chrome/browser/download/download_shelf_context_menu.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/views/download/download_item_view.h"
-#include "components/download/public/common/download_item.h"
-#include "content/public/browser/page_navigator.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/gfx/geometry/point.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_types.h"
 
 DownloadShelfContextMenuView::DownloadShelfContextMenuView(
     DownloadItemView* download_item_view)

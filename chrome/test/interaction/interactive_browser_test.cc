@@ -4,8 +4,6 @@
 
 #include "chrome/test/interaction/interactive_browser_test.h"
 
-#include <ostream>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <variant>
@@ -15,6 +13,7 @@
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/values.h"
@@ -101,12 +100,8 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::Screenshot(
     ElementSpecifier element,
     const std::string& screenshot_name,
     const std::string& baseline_cl) {
-  const auto desc =
-      base::StringPrintf("Screenshot( \"%s\", \"%s\" )",
-                         screenshot_name.c_str(), baseline_cl.c_str());
-
   StepBuilder builder;
-  builder.SetDescription(desc);
+  builder.SetDescription("Compare Screenshot");
   ui::test::internal::SpecifyElement(builder, element);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveBrowserTestApi* test, std::string screenshot_name,
@@ -118,7 +113,10 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::Screenshot(
       },
       base::Unretained(this), screenshot_name, baseline_cl));
 
-  return Steps(MaybeWaitForPaint(element, desc), std::move(builder));
+  auto steps = Steps(MaybeWaitForPaint(element), std::move(builder));
+  AddDescriptionPrefix(steps, base::StrCat({"Screenshot( \"", screenshot_name,
+                                            "\", \"", baseline_cl, "\" )"}));
+  return steps;
 }
 
 InteractiveBrowserTestApi::MultiStep
@@ -126,12 +124,8 @@ InteractiveBrowserTestApi::ScreenshotSurface(
     ElementSpecifier element_in_surface,
     const std::string& screenshot_name,
     const std::string& baseline_cl) {
-  const auto desc =
-      base::StringPrintf("ScreenshotSurface( \"%s\", \"%s\" )",
-                         screenshot_name.c_str(), baseline_cl.c_str());
-
   StepBuilder builder;
-  builder.SetDescription(desc);
+  builder.SetDescription("Compare Surface Screenshot");
   ui::test::internal::SpecifyElement(builder, element_in_surface);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveBrowserTestApi* test, std::string screenshot_name,
@@ -144,7 +138,11 @@ InteractiveBrowserTestApi::ScreenshotSurface(
       },
       base::Unretained(this), screenshot_name, baseline_cl));
 
-  return Steps(MaybeWaitForPaint(element_in_surface, desc), std::move(builder));
+  auto steps = Steps(MaybeWaitForPaint(element_in_surface), std::move(builder));
+  AddDescriptionPrefix(
+      steps, base::StrCat({"ScreenshotSurface( \"", screenshot_name, "\", \"",
+                           baseline_cl, "\" )"}));
+  return steps;
 }
 
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::InstrumentTab(
@@ -152,26 +150,23 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::InstrumentTab(
     std::optional<int> tab_index,
     BrowserSpecifier in_browser,
     bool wait_for_ready) {
-  const auto desc =
-      base::StringPrintf("InstrumentTab( %s, %d, %d )", id.GetName().c_str(),
-                         tab_index.value_or(-1), wait_for_ready);
-  auto steps = Steps(std::move(
-      WithElement(ui::test::internal::kInteractiveTestPivotElementId,
-                  base::BindLambdaForTesting([this, id, tab_index, in_browser](
-                                                 ui::TrackedElement* el) {
-                    Browser* const browser =
-                        GetBrowserFor(el->context(), in_browser);
-                    CHECK(browser)
-                        << "InstrumentTab(): a specific browser is required.";
-                    test_impl().AddInstrumentedWebContents(
-                        WebContentsInteractionTestUtil::ForExistingTabInBrowser(
-                            browser, id, tab_index));
-                  }))
-          .SetDescription(base::StrCat({desc, ": Instrument"}))));
+  auto steps = Steps(WithElement(
+      ui::test::internal::kInteractiveTestPivotElementId,
+      base::BindLambdaForTesting([this, id, tab_index,
+                                  in_browser](ui::TrackedElement* el) {
+        Browser* const browser = GetBrowserFor(el->context(), in_browser);
+        CHECK(browser) << "InstrumentTab(): a specific browser is required.";
+        test_impl().AddInstrumentedWebContents(
+            WebContentsInteractionTestUtil::ForExistingTabInBrowser(browser, id,
+                                                                    tab_index));
+      })));
   if (wait_for_ready) {
-    steps.emplace_back(std::move(WaitForWebContentsReady(id).FormatDescription(
-        base::StrCat({desc, ": %s"}))));
+    steps.push_back(WaitForWebContentsReady(id));
   }
+  AddDescriptionPrefix(
+      steps,
+      base::StringPrintf("InstrumentTab( %s, %d, %d )", id.GetName().c_str(),
+                         tab_index.value_or(-1), wait_for_ready));
   return steps;
 }
 
@@ -191,8 +186,8 @@ InteractiveBrowserTestApi::InstrumentNextTab(ui::ElementIdentifier id,
                     : WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(
                           id));
           }))
-          .SetDescription(
-              base::StringPrintf("InstrumentTab( %s )", id.GetName().c_str())));
+          .AddDescriptionPrefix(
+              base::StrCat({"InstrumentTab( ", id.GetName(), " )"})));
 }
 
 InteractiveBrowserTestApi::MultiStep
@@ -200,52 +195,45 @@ InteractiveBrowserTestApi::AddInstrumentedTab(ui::ElementIdentifier id,
                                               GURL url,
                                               std::optional<int> at_index,
                                               BrowserSpecifier in_browser) {
-  const auto desc = base::StringPrintf("AddInstrumentedTab( %s, %s, %d, )",
-                                       id.GetName().c_str(), url.spec().c_str(),
-                                       at_index.value_or(-1));
-  return Steps(
-      std::move(
-          InstrumentNextTab(id, in_browser)
-              .SetDescription(base::StrCat({desc, ": Instrument Next Tab"}))),
-      std::move(
-          WithElement(
-              ui::test::internal::kInteractiveTestPivotElementId,
-              base::BindLambdaForTesting([this, url, at_index,
-                                          in_browser](ui::TrackedElement* el) {
-                Browser* const browser =
-                    GetBrowserFor(el->context(), in_browser);
-                CHECK(browser)
-                    << "AddInstrumentedTab(): a browser is required.";
-                NavigateParams navigate_params(
-                    browser, url, ui::PageTransition::PAGE_TRANSITION_TYPED);
-                navigate_params.tabstrip_index = at_index.value_or(-1);
-                navigate_params.disposition =
-                    WindowOpenDisposition::NEW_FOREGROUND_TAB;
-                CHECK(Navigate(&navigate_params));
-              }))
-              .SetDescription(base::StrCat({desc, ": Navigate"}))),
-      std::move(WaitForWebContentsReady(id).FormatDescription(
-          base::StrCat({desc, ": %s"}))));
+  auto steps = Steps(
+      InstrumentNextTab(id, in_browser),
+      WithElement(
+          ui::test::internal::kInteractiveTestPivotElementId,
+          base::BindLambdaForTesting([this, url, at_index,
+                                      in_browser](ui::TrackedElement* el) {
+            Browser* const browser = GetBrowserFor(el->context(), in_browser);
+            CHECK(browser) << "AddInstrumentedTab(): a browser is required.";
+            NavigateParams navigate_params(
+                browser, url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+            navigate_params.tabstrip_index = at_index.value_or(-1);
+            navigate_params.disposition =
+                WindowOpenDisposition::NEW_FOREGROUND_TAB;
+            CHECK(Navigate(&navigate_params));
+          })),
+      WaitForWebContentsReady(id));
+  AddDescriptionPrefix(
+      steps, base::StringPrintf("AddInstrumentedTab( %s, %s, %d, )",
+                                id.GetName().c_str(), url.spec().c_str(),
+                                at_index.value_or(-1)));
+  return steps;
 }
 
 InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::InstrumentNonTabWebView(ui::ElementIdentifier id,
                                                    ElementSpecifier web_view,
                                                    bool wait_for_ready) {
-  const auto desc = base::StringPrintf("InstrumentNonTabWebView( %s, %d, )",
-                                       id.GetName().c_str(), wait_for_ready);
-  auto steps = Steps(std::move(
-      AfterShow(web_view,
-                base::BindLambdaForTesting([this, id](ui::TrackedElement* el) {
-                  test_impl().AddInstrumentedWebContents(
-                      WebContentsInteractionTestUtil::ForNonTabWebView(
-                          AsView<views::WebView>(el), id));
-                }))
-          .SetDescription(base::StrCat({desc, ": Instrument WebView"}))));
+  auto steps = Steps(AfterShow(
+      web_view, base::BindLambdaForTesting([this, id](ui::TrackedElement* el) {
+        test_impl().AddInstrumentedWebContents(
+            WebContentsInteractionTestUtil::ForNonTabWebView(
+                AsView<views::WebView>(el), id));
+      })));
   if (wait_for_ready) {
-    steps.emplace_back(std::move(WaitForWebContentsReady(id).FormatDescription(
-        base::StrCat({desc, ": %s"}))));
+    steps.push_back(WaitForWebContentsReady(id));
   }
+  AddDescriptionPrefix(
+      steps, base::StringPrintf("InstrumentNonTabWebView( %s, %d, )",
+                                id.GetName().c_str(), wait_for_ready));
   return steps;
 }
 
@@ -254,12 +242,13 @@ InteractiveBrowserTestApi::InstrumentNonTabWebView(
     ui::ElementIdentifier id,
     AbsoluteViewSpecifier web_view,
     bool wait_for_ready) {
-  constexpr char kTemporaryElementName[] =
+  static constexpr char kTemporaryElementName[] =
       "__InstrumentNonTabWebViewTemporaryElementName__";
-  return Steps(
-      std::move(NameView(kTemporaryElementName, std::move(web_view))
-                    .FormatDescription("InstrumentNonTabWebView(): %s")),
-      InstrumentNonTabWebView(id, kTemporaryElementName, wait_for_ready));
+  auto steps =
+      Steps(NameView(kTemporaryElementName, std::move(web_view)),
+            InstrumentNonTabWebView(id, kTemporaryElementName, wait_for_ready));
+  AddDescriptionPrefix(steps, "InstrumentNonTabWebView()");
+  return steps;
 }
 
 // static
@@ -388,7 +377,7 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
   auto wait_step = WaitForEvent(webcontents_id,
                                 TrackedElementWebContents::kFirstNonEmptyPaint);
   wait_step.SetMustBeVisibleAtStart(false);
-  wait_step.SetDescription("WaitForWebContentsPainted()");
+  wait_step.AddDescriptionPrefix("WaitForWebContentsPainted()");
 
 #if BUILDFLAG(IS_MAC)
   const bool requires_workaround = true;
@@ -441,18 +430,17 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
   //
   // Note: this could also be done with a custom `StateObserver` and
   // `WaitForState()` but this approach requires the fewest steps.
-  return std::move(
-      IfElement(
-          webcontents_id,
-          [](const ui::TrackedElement* el) {
-            // If the page is not ready (i.e. no element) or not painted,
-            // execute the wait step; otherwise skip it.
-            return !el || !el->AsA<TrackedElementWebContents>()
-                               ->owner()
-                               ->HasPageBeenPainted();
-          },
-          std::move(wait_step))
-          .SetDescription("WaitForWebContentsPainted() - IfElement()"));
+  return std::move(IfElement(
+                       webcontents_id,
+                       [](const ui::TrackedElement* el) {
+                         // If the page is not ready (i.e. no element) or not
+                         // painted, execute the wait step; otherwise skip it.
+                         return !el || !el->AsA<TrackedElementWebContents>()
+                                            ->owner()
+                                            ->HasPageBeenPainted();
+                       },
+                       std::move(wait_step))
+                       .AddDescriptionPrefix("WaitForWebContentsPainted()"));
 }
 
 // static
@@ -460,11 +448,9 @@ InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::NavigateWebContents(
     ui::ElementIdentifier webcontents_id,
     GURL target_url) {
-  const auto desc = base::StringPrintf("NavigateWebContents( %s )",
-                                       target_url.spec().c_str());
-  return Steps(
+  auto steps = Steps(
       std::move(StepBuilder()
-                    .SetDescription(base::StrCat({desc, ": Navigate"}))
+                    .SetDescription("Navigate")
                     .SetElementID(webcontents_id)
                     .SetContext(kDefaultWebContentsContextMode)
                     .SetStartCallback(base::BindOnce(
@@ -482,8 +468,10 @@ InteractiveBrowserTestApi::NavigateWebContents(
                           owner->LoadPage(url);
                         },
                         target_url))),
-      std::move(WaitForWebContentsNavigation(webcontents_id, target_url)
-                    .FormatDescription(base::StrCat({desc, ": %s"}))));
+      WaitForWebContentsNavigation(webcontents_id, target_url));
+  AddDescriptionPrefix(
+      steps, base::StrCat({"NavigateWebContents( ", target_url.spec(), " )"}));
+  return steps;
 }
 
 InteractiveBrowserTestApi::StepBuilder
@@ -548,12 +536,9 @@ InteractiveBrowserTestApi::WaitForStateChange(
   ui::CustomElementEventType event_type =
       expect_timeout ? state_change.timeout_event : state_change.event;
   CHECK(event_type);
-  std::ostringstream desc;
-  desc << "WaitForStateChange( " << state_change << ", "
-       << (expect_timeout ? "true" : "false") << " )";
   const bool fail_on_close = !state_change.continue_across_navigation;
   StepBuilder step1;
-  step1.SetDescription(base::StrCat({desc.str(), ": Queue Event"}))
+  step1.SetDescription("Queue Event")
       .SetElementID(webcontents_id)
       .SetContext(kDefaultWebContentsContextMode)
       .SetMustRemainVisible(fail_on_close)
@@ -570,17 +555,20 @@ InteractiveBrowserTestApi::WaitForStateChange(
     step1.SetStepStartMode(ui::InteractionSequence::StepStartMode::kImmediate);
   }
 
-  return Steps(
+  auto steps = Steps(
       std::move(step1),
-      std::move(
-          StepBuilder()
-              .SetDescription(base::StrCat({desc.str(), ": Wait For Event"}))
-              .SetElementID(webcontents_id)
-              .SetContext(
-                  ui::InteractionSequence::ContextMode::kFromPreviousStep)
-              .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                       event_type)
-              .SetMustBeVisibleAtStart(fail_on_close)));
+      std::move(StepBuilder()
+                    .SetDescription("Wait For Event")
+                    .SetElementID(webcontents_id)
+                    .SetContext(
+                        ui::InteractionSequence::ContextMode::kFromPreviousStep)
+                    .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                             event_type)
+                    .SetMustBeVisibleAtStart(fail_on_close)));
+  AddDescriptionPrefix(
+      steps, base::StrCat({"WaitForStateChange( ", base::ToString(state_change),
+                           ", ", (expect_timeout ? "true" : "false"), " )"}));
+  return steps;
 }
 
 // static
@@ -739,19 +727,22 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::MoveMouseTo(
     ui::ElementIdentifier web_contents,
     const DeepQuery& where) {
-  return Steps(std::move(WaitForWebContentsPainted(web_contents)
-                             .FormatDescription("MoveMouseTo( %s )")),
-               MoveMouseTo(web_contents, DeepQueryToRelativePosition(where)));
+  auto steps =
+      Steps(WaitForWebContentsPainted(web_contents),
+            MoveMouseTo(web_contents, DeepQueryToRelativePosition(where)));
+  AddDescriptionPrefix(steps, "MoveMouseTo()");
+  return steps;
 }
 
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::DragMouseTo(
     ui::ElementIdentifier web_contents,
     const DeepQuery& where,
     bool release) {
-  return Steps(
-      std::move(WaitForWebContentsPainted(web_contents)
-                    .FormatDescription("DragMouseTo( %s )")),
+  auto steps = Steps(
+      WaitForWebContentsPainted(web_contents),
       DragMouseTo(web_contents, DeepQueryToRelativePosition(where), release));
+  AddDescriptionPrefix(steps, "DragMouseTo()");
+  return steps;
 }
 
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ScrollIntoView(
@@ -856,8 +847,7 @@ InteractiveBrowserTestApi::DeepQueryToRelativePosition(const DeepQuery& query) {
 
 // static
 InteractiveBrowserTestApi::MultiStep
-InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element,
-                                             const std::string& desc) {
+InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element) {
   // Only wait if `element` is actually a `WebContents`.
   //
   // WebContents are typically only referred to via their assigned IDs.

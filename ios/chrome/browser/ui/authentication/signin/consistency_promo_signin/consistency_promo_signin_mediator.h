@@ -15,7 +15,6 @@ class AuthenticationService;
 class ChromeAccountManagerService;
 @class ConsistencyPromoSigninMediator;
 class PrefService;
-@class SigninCompletionInfo;
 @protocol SystemIdentity;
 
 namespace signin {

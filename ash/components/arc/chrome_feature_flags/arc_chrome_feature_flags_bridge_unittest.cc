@@ -70,7 +70,7 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly) {
   EXPECT_TRUE(instance()->flags_called_value()->jelly_colors);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Enabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompatEnabled) {
   scoped_feature_list()->InitAndEnableFeature(kRoundedWindowCompat);
   Connect();
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
@@ -98,14 +98,14 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest,
             mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Disabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompatDisabled) {
   scoped_feature_list()->InitAndDisableFeature(kRoundedWindowCompat);
   Connect();
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
             mojom::RoundedWindowCompatStrategy::kDisabled);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Enabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowsEnabled) {
   scoped_feature_list()->InitWithFeaturesAndParameters(
       {{chromeos::features::kFeatureManagementRoundedWindows, {}},
        {chromeos::features::kRoundedWindows,
@@ -115,76 +115,52 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Enabled) {
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 8);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Disabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowsDisabled) {
   scoped_feature_list()->InitAndDisableFeature(
       chromeos::features::kRoundedWindows);
   Connect();
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 0);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Enabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResizeEnabled) {
   scoped_feature_list()->InitAndEnableFeature(
       ash::features::kPipDoubleTapToResize);
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->enable_pip_double_tap);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Disabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResizeDisabled) {
   scoped_feature_list()->InitAndDisableFeature(
       ash::features::kPipDoubleTapToResize);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->enable_pip_double_tap);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Enabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompatEnabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kResizeCompat);
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->resize_compat);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Disabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompatDisabled) {
   scoped_feature_list()->InitAndDisableFeature(arc::kResizeCompat);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->resize_compat);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyIgnoreHoverEventAnr_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(arc::kIgnoreHoverEventAnr);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->ignore_hover_event_anr);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyIgnoreHoverEventAnr_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(arc::kIgnoreHoverEventAnr);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->ignore_hover_event_anr);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendInputAnrTimeout_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(arc::kExtendInputAnrTimeout);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->extend_input_anr_timeout);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendInputAnrTimeout_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(arc::kExtendInputAnrTimeout);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->extend_input_anr_timeout);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeout_Enabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeoutEnabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kExtendIntentAnrTimeout);
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->extend_intent_anr_timeout);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeout_Disabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeoutDisabled) {
   scoped_feature_list()->InitAndDisableFeature(arc::kExtendIntentAnrTimeout);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->extend_intent_anr_timeout);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendServiceAnrTimeout_Enabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendServiceAnrTimeoutEnabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kExtendServiceAnrTimeout);
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->extend_service_anr_timeout);

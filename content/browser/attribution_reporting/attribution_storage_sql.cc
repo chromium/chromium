@@ -2884,6 +2884,9 @@ AttributionStorageSql::GetAllDataKeys() {
   get_data_keys(null_reports_statement);
 
   rate_limit_table_.AppendRateLimitDataKeys(&db_, keys);
+
+  aggregatable_debug_rate_limit_table_.AppendRateLimitDataKeys(&db_, keys);
+
   return keys;
 }
 

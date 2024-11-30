@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/disk_cache_test_util.h"
 
 #include "base/check_op.h"
@@ -24,13 +19,13 @@ using base::Time;
 
 std::string GenerateKey(bool same_length) {
   char key[200];
-  CacheTestFillBuffer(key, sizeof(key), same_length);
+  CacheTestFillBuffer(base::as_writable_byte_span(key), same_length);
 
   key[199] = '\0';
   return std::string(key);
 }
 
-void CacheTestFillBuffer(char* buffer, size_t len, bool no_nulls) {
+void CacheTestFillBuffer(base::span<uint8_t> buffer, bool no_nulls) {
   static bool called = false;
   if (!called) {
     called = true;
@@ -38,20 +33,21 @@ void CacheTestFillBuffer(char* buffer, size_t len, bool no_nulls) {
     srand(seed);
   }
 
-  for (size_t i = 0; i < len; i++) {
+  for (size_t i = 0; i < buffer.size(); i++) {
     buffer[i] = static_cast<char>(rand());
     if (!buffer[i] && no_nulls)
       buffer[i] = 'g';
   }
-  if (len && !buffer[0])
+  if (buffer.size() && !buffer[0]) {
     buffer[0] = 'g';
+  }
 }
 
 scoped_refptr<net::IOBufferWithSize> CacheTestCreateAndFillBuffer(
     size_t len,
     bool no_nulls) {
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(len);
-  CacheTestFillBuffer(buffer->data(), len, no_nulls);
+  CacheTestFillBuffer(buffer->span(), no_nulls);
   return buffer;
 }
 

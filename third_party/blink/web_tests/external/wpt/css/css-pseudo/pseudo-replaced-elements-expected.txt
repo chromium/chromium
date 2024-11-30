@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] INPUT  date
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT  time
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT  datetime-local
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT  checkbox
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT  radio
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT  file
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT  range
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT  color
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT appearance: none; checkbox
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT appearance: none; radio
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT appearance: none; date
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT appearance: none; time
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT appearance: none; datetime-local
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT appearance: none; file
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT appearance: none; range
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+[FAIL] INPUT appearance: none; color
+  assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
+Harness: the test ran to completion.
+

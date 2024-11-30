@@ -70,8 +70,7 @@ class TestCSSParserObserver : public CSSParserObserver {
       unsigned start_offset,
       CSSAtRuleID id,
       const Vector<CSSPropertyID, 2>& invalid_properties) override {}
-  void ObserveNestedDeclarations(wtf_size_t insert_rule_index) override {
-  }
+  void ObserveNestedDeclarations(wtf_size_t insert_rule_index) override {}
 
   bool IsAtTargetLevel() const {
     return target_nesting_level_ == kEverything ||
@@ -110,8 +109,7 @@ class TestCSSParserImpl {
                               bool nested,
                               bool& invalid_rule_error) {
     return impl_.ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting,
-                                  /* is_within_scope */ false, nested,
-                                  invalid_rule_error);
+                                  nested, invalid_rule_error);
   }
 
  private:
@@ -485,57 +483,6 @@ TEST(CSSParserImplTest, NestedRulesInsideMediaQueries) {
           media_query->ChildRules()[0].Get());
   ASSERT_NE(nullptr, child0);
   EXPECT_EQ("color: navy; font-size: 12px;", child0->Properties().AsText());
-
-  const StyleRule* child1 =
-      DynamicTo<StyleRule>(media_query->ChildRules()[1].Get());
-  ASSERT_NE(nullptr, child1);
-  EXPECT_EQ("color: red;", child1->Properties().AsText());
-  EXPECT_EQ("& + #foo", child1->SelectorsText());
-}
-
-// A version of NestedRulesInsideMediaQueries where CSSNestedDeclarations
-// is disabled. Can be removed when the CSSNestedDeclarations is removed.
-TEST(CSSParserImplTest,
-     NestedRulesInsideMediaQueries_CSSNestedDeclarationsDisabled) {
-  ScopedCSSNestedDeclarationsForTest nested_declarations_enabled(false);
-
-  test::TaskEnvironment task_environment;
-  String sheet_text = R"CSS(
-    .element {
-      color: green;
-      @media (width < 1000px) {
-        color: navy;
-        font-size: 12px;
-        & + #foo { color: red; }
-      }
-    }
-    )CSS";
-
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
-  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
-
-  ASSERT_EQ(1u, sheet->ChildRules().size());
-  StyleRule* parent = DynamicTo<StyleRule>(sheet->ChildRules()[0].Get());
-  ASSERT_NE(nullptr, parent);
-  EXPECT_EQ("color: green;", parent->Properties().AsText());
-  EXPECT_EQ(".element", parent->SelectorsText());
-
-  ASSERT_NE(nullptr, parent->ChildRules());
-  ASSERT_EQ(1u, parent->ChildRules()->size());
-  const StyleRuleMedia* media_query =
-      DynamicTo<StyleRuleMedia>((*parent->ChildRules())[0].Get());
-  ASSERT_NE(nullptr, media_query);
-
-  ASSERT_EQ(2u, media_query->ChildRules().size());
-
-  // Implicit & {} rule around the properties.
-  const StyleRule* child0 =
-      DynamicTo<StyleRule>(media_query->ChildRules()[0].Get());
-  ASSERT_NE(nullptr, child0);
-  EXPECT_EQ("color: navy; font-size: 12px;", child0->Properties().AsText());
-  EXPECT_EQ("&", child0->SelectorsText());
 
   const StyleRule* child1 =
       DynamicTo<StyleRule>(media_query->ChildRules()[1].Get());
@@ -1112,8 +1059,9 @@ TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
   ASSERT_EQ("testFamily", parsed->GetFontFamily()->CssText());
-  ASSERT_EQ(0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
-                   ->ComputeInteger(CSSToLengthConversionData()));
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
+             ->ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
   ASSERT_TRUE(parsed->GetOverrideColors()->IsValueList());
   ASSERT_EQ(2u, DynamicTo<CSSValueList>(parsed->GetOverrideColors())->length());
 }
@@ -1133,8 +1081,9 @@ TEST(CSSParserImplTest, FontPaletteValuesMultipleFamiliesParsing) {
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
   ASSERT_EQ("testFamily1, testFamily2", parsed->GetFontFamily()->CssText());
-  ASSERT_EQ(0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
-                   ->ComputeInteger(CSSToLengthConversionData()));
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
+             ->ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 // Font-family descriptor inside @font-palette-values should not contain generic
@@ -1155,8 +1104,9 @@ TEST(CSSParserImplTest, FontPaletteValuesGenericFamiliesNotParsing) {
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
   ASSERT_FALSE(parsed->GetFontFamily());
-  ASSERT_EQ(0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
-                   ->ComputeInteger(CSSToLengthConversionData()));
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
+             ->ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST(CSSParserImplTest, FontFeatureValuesRuleParsing) {

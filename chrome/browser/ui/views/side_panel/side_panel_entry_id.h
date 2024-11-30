@@ -37,6 +37,7 @@
     "ShoppingInsights")                                                       \
   V(kLensOverlayResults, kActionSidePanelShowLensOverlayResults,              \
     "LensOverlayResults")                                                     \
+  V(kMerchantTrust, kActionSidePanelShowMerchantTrust, "MerchantTrust")       \
   /* Extensions (nothing more should be added below here) */                  \
   V(kExtension, std::nullopt, "Extension")
 

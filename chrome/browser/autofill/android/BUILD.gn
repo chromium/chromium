@@ -148,6 +148,7 @@ android_resources("java_resources") {
     "java/res/layout/autofill_editor_base_buttons.xml",
     "java/res/layout/autofill_local_card_editor.xml",
     "java/res/layout/autofill_local_iban_editor.xml",
+    "java/res/layout/autofill_vcn_enroll_bottom_sheet_content.xml",
     "java/res/layout/editable_option_editor_footer.xml",
     "java/res/layout/payment_request_editor.xml",
     "java/res/layout/payment_request_editor_dropdown.xml",

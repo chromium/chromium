@@ -16,7 +16,7 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 
 namespace content {
 RaceNetworkRequestReadBufferManager::RaceNetworkRequestReadBufferManager(
@@ -60,14 +60,14 @@ RaceNetworkRequestReadBufferManager::ReadData() {
     // here to avoid receiving |MOJO_RESULT_INVALID_ARGUMENT| from
     // DataPipe::ReadData(), which happens if the |num_bytes| is zero.
     if (num_bytes == 0) {
-      num_bytes = network::features::GetDataPipeDefaultAllocationSize();
+      num_bytes = network::GetDataPipeDefaultAllocationSize();
       CHECK_GT(num_bytes, 0u);
     }
   } else {
     num_bytes = base::GetFieldTrialParamByFeatureAsInt(
         features::kServiceWorkerAutoPreload, "read_buffer_size",
-        network::features::GetDataPipeDefaultAllocationSize(
-            network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
+        network::GetDataPipeDefaultAllocationSize(
+            network::DataPipeAllocationSize::kLargerSizeIfPossible));
   }
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(num_bytes);

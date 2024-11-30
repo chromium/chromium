@@ -95,7 +95,7 @@ source_set("push_notification_service") {
     "//components/search_engines",
     "//components/send_tab_to_self",
     "//components/sync_device_info",
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/commerce/model/push_notification",

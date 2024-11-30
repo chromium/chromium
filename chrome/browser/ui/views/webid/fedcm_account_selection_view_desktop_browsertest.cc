@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
@@ -61,7 +62,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     ShowUi("");
   }
 
-  base::WeakPtr<views::Widget> GetDialog() {
+  views::Widget* GetDialog() {
     return account_selection_view_->GetDialogWidget();
   }
 
@@ -301,8 +302,48 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   EXPECT_TRUE(dialog_view->GetEnabled());
 }
 
+// Helper methods shared by FedCmBrowserTest and
+// FedCmAccountSelectionViewPopupTest.
+class FedCmMixin {
+ public:
+  // In a bubble view.
+  void ShowAccounts(Browser* browser) {
+    delegate_ = std::make_unique<FakeDelegate>(
+        browser->GetActiveTabInterface()->GetContents());
+    account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
+        delegate_.get(), browser->GetActiveTabInterface());
+
+    Account::SignInMode mode = Account::SignInMode::kExplicit;
+    idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
+        "idp-example.com", content::IdentityProviderMetadata(),
+        content::ClientMetadata(GURL(), GURL(), GURL()),
+        blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+        /*has_login_status_mismatch=*/false)};
+    accounts_ = {base::MakeRefCounted<Account>(
+        "id", "email", "name", "given_name", GURL(),
+        /*login_hints=*/std::vector<std::string>(),
+        /*domain_hints=*/std::vector<std::string>(),
+        /*labels=*/std::vector<std::string>())};
+    accounts_[0]->identity_provider = idps_[0];
+    account_selection_view_->Show(
+        "rp-example.com", idps_, accounts_, mode,
+        blink::mojom::RpMode::kPassive,
+        /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
+  }
+
+  void Reset() {
+    account_selection_view_.reset();
+    delegate_.reset();
+  }
+
+  std::unique_ptr<FakeDelegate> delegate_;
+  std::vector<IdentityProviderDataPtr> idps_;
+  std::vector<IdentityRequestAccountPtr> accounts_;
+  std::unique_ptr<FedCmAccountSelectionView> account_selection_view_;
+};
+
 // These are normal browser tests. Add more of these.
-class FedCmBrowserTest : public InProcessBrowserTest {
+class FedCmBrowserTest : public InProcessBrowserTest, public FedCmMixin {
  public:
   void ShowModalLoadingDialog() {
     delegate_ = std::make_unique<FakeDelegate>(
@@ -313,11 +354,9 @@ class FedCmBrowserTest : public InProcessBrowserTest {
         "rp-example.com", "idp_etld_plus_one.com",
         blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive);
   }
-  std::unique_ptr<FakeDelegate> delegate_;
-  std::unique_ptr<FedCmAccountSelectionView> account_selection_view_;
 };
 
-IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputDisabled) {
+IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputDisabledForModalDialog) {
   // Check that input is enabled by default.
   EXPECT_FALSE(browser()
                    ->GetActiveTabInterface()
@@ -355,4 +394,70 @@ IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputDisabled) {
                    ->GetActiveTabInterface()
                    ->GetContents()
                    ->ShouldIgnoreInputEventsForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputEnabledForBubbleDialog) {
+  // Check that input is enabled by default.
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
+
+  // Show a bubble dialog.
+  ShowAccounts(browser());
+
+  // Check that input is still enabled.
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
+}
+
+class FedCmAccountSelectionViewPopupTest : public PopupTestBase,
+                                           public FedCmMixin {};
+
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewPopupTest,
+                       CanFitInWebContents) {
+  // Normal size popup should work fine.
+  {
+    Browser* popup = OpenPopup(
+        browser(), "open('.', '', 'left=0,top=0,width=1000,height=1000')");
+    ShowAccounts(popup);
+    EXPECT_TRUE(account_selection_view_->CanFitInWebContents());
+
+    auto* bubble = static_cast<AccountSelectionBubbleView*>(
+        account_selection_view_->account_selection_view());
+    EXPECT_TRUE(
+        popup->GetActiveTabInterface()->GetContents()->GetViewBounds().Contains(
+            bubble->GetBubbleBounds()));
+    Reset();
+  }
+
+  // Too small vertically. Popups have a minimum vertical height so the actual
+  // height will be larger, but that's still too small.
+  {
+    Browser* popup = OpenPopup(
+        browser(), "open('.', '', 'left=0,top=0,width=1000,height=10')");
+    ShowAccounts(popup);
+    EXPECT_FALSE(account_selection_view_->CanFitInWebContents());
+    Reset();
+  }
+
+  // Too small horizontally.
+  {
+    Browser* popup = OpenPopup(
+        browser(), "open('.', '', 'left=0,top=0,width=10,height=1000')");
+    ShowAccounts(popup);
+    EXPECT_FALSE(account_selection_view_->CanFitInWebContents());
+    Reset();
+  }
+
+  // Too small in both directions.
+  {
+    Browser* popup = OpenPopup(
+        browser(), "open('.', '', 'left=0,top=0,width=10,height=10')");
+    ShowAccounts(popup);
+    EXPECT_FALSE(account_selection_view_->CanFitInWebContents());
+    Reset();
+  }
 }

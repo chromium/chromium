@@ -453,6 +453,15 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   std::vector<SupportedVideoDecoderConfig> supported;
 
+#ifdef ARCH_CPU_X86_FAMILY
+  constexpr gfx::Size kMinSize(16, 16);
+#else
+  constexpr gfx::Size kMinSize(64, 64);
+#endif
+
+  constexpr gfx::Size kLegacyMaxSize(4096, 4096);
+  constexpr gfx::Size kModernMaxSize(8192, 8192);
+
   // TODO(crbug.com/40227557): Test support for other H.264 profiles.
   // TODO(crbug.com/40227557): Exclude resolutions that are not accelerated.
   // TODO(crbug.com/40227557): Check if higher resolutions are supported.
@@ -460,8 +469,8 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
     supported.emplace_back(
         /*profile_min=*/H264PROFILE_BASELINE,
         /*profile_max=*/H264PROFILE_HIGH,
-        /*coded_size_min=*/gfx::Size(16, 16),
-        /*coded_size_max=*/gfx::Size(4096, 4096),
+        /*coded_size_min=*/kMinSize,
+        /*coded_size_max=*/kLegacyMaxSize,
         /*allow_encrypted=*/false,
         /*require_encrypted=*/false);
   }
@@ -470,16 +479,16 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
     supported.emplace_back(
         /*profile_min=*/VP9PROFILE_PROFILE0,
         /*profile_max=*/VP9PROFILE_PROFILE0,
-        /*coded_size_min=*/gfx::Size(16, 16),
-        /*coded_size_max=*/gfx::Size(4096, 4096),
+        /*coded_size_min=*/kMinSize,
+        /*coded_size_max=*/kLegacyMaxSize,
         /*allow_encrypted=*/false,
         /*require_encrypted=*/false);
     if (!gpu_workarounds.disable_accelerated_vp9_profile2_decode) {
       supported.emplace_back(
           /*profile_min=*/VP9PROFILE_PROFILE2,
           /*profile_max=*/VP9PROFILE_PROFILE2,
-          /*coded_size_min=*/gfx::Size(16, 16),
-          /*coded_size_max=*/gfx::Size(4096, 4096),
+          /*coded_size_min=*/kMinSize,
+          /*coded_size_max=*/kLegacyMaxSize,
           /*allow_encrypted=*/false,
           /*require_encrypted=*/false);
     }
@@ -489,26 +498,30 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
     supported.emplace_back(
         /*profile_min=*/AV1PROFILE_PROFILE_MAIN,
         /*profile_max=*/AV1PROFILE_PROFILE_MAIN,
-        /*coded_size_min=*/gfx::Size(16, 16),
-        /*coded_size_max=*/gfx::Size(8192, 8192),
+        /*coded_size_min=*/kMinSize,
+        /*coded_size_max=*/kModernMaxSize,
         /*allow_encrypted=*/false,
         /*require_encrypted=*/false);
   }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (!gpu_workarounds.disable_accelerated_hevc_decode && SupportsHEVC()) {
+    // HEVC hardware decoding is limited to kMinSize, but because we allow the
+    // OS software decoder we report the minimum possible HEVC encode size.
+    constexpr gfx::Size kHevcMinSize(16, 16);
+
     supported.emplace_back(
         /*profile_min=*/HEVCPROFILE_MIN,
         /*profile_max=*/HEVCPROFILE_MAX,
-        /*coded_size_min=*/gfx::Size(16, 16),
-        /*coded_size_max=*/gfx::Size(8192, 8192),
+        /*coded_size_min=*/kHevcMinSize,
+        /*coded_size_max=*/kModernMaxSize,
         /*allow_encrypted=*/false,
         /*require_encrypted=*/false);
     supported.emplace_back(
         /*profile_min=*/HEVCPROFILE_REXT,
         /*profile_max=*/HEVCPROFILE_REXT,
-        /*coded_size_min=*/gfx::Size(16, 16),
-        /*coded_size_max=*/gfx::Size(8192, 8192),
+        /*coded_size_min=*/kHevcMinSize,
+        /*coded_size_max=*/kModernMaxSize,
         /*allow_encrypted=*/false,
         /*require_encrypted=*/false);
   }

@@ -40,7 +40,7 @@ class WebGPUContextProviderForTest
   static WebGPUContextProviderForTest* From(
       scoped_refptr<DawnControlClientHolder>& dawn_control_client) {
     return static_cast<WebGPUContextProviderForTest*>(
-        dawn_control_client->GetContextProviderWeakPtr()->ContextProvider());
+        &(dawn_control_client->GetContextProviderWeakPtr()->ContextProvider()));
   }
 
   void ClearDestructionCallback() { destruction_callback_ = nullptr; }
@@ -126,9 +126,9 @@ TEST_F(WebGPUContextLostTest, GPULostContext) {
   EXPECT_NE(context_provider_weak_ptr, nullptr);
 
   // Clear the destruction callback since it is stack-allocated in this frame.
-  static_cast<WebGPUContextProviderForTest*>(
+  static_cast<WebGPUContextProviderForTest&>(
       context_provider_weak_ptr->ContextProvider())
-      ->ClearDestructionCallback();
+      .ClearDestructionCallback();
 }
 
 // Test that the GPU lost context callback marks the context lost, and then when
@@ -184,9 +184,9 @@ TEST_F(WebGPUContextLostTest, RecreatedAfterGPULostContext) {
   testing::Mock::VerifyAndClear(&destruction_callback);
 
   // Clear the destruction callback since it is stack-allocated in this frame.
-  static_cast<WebGPUContextProviderForTest*>(
+  static_cast<WebGPUContextProviderForTest&>(
       dawn_control_client2->GetContextProviderWeakPtr()->ContextProvider())
-      ->ClearDestructionCallback();
+      .ClearDestructionCallback();
 }
 
 // Test that ContextDestroyed lifecycle event destructs the context.

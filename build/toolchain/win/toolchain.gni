@@ -263,8 +263,9 @@ template("msvc_toolchain") {
             # Flip the slashes so that copy/paste of the command works.
             ml = string_replace(ml, "/", "\\")
           }
-          ml += " -c -o{{output}}"
+          ml += " -c -o{{output}} $show_includes"
           is_msvc_assembler = false
+          depsformat = "msvc"
         } else {
           # Only affects Arm builds with is_clang = false, implemented for
           # building V8 for Windows on Arm systems with the MSVC toolchain.

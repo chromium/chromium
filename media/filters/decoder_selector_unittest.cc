@@ -409,7 +409,7 @@ TYPED_TEST_SUITE(DecoderSelectorTest, DecoderSelectorTestParams);
 // Tests for clear streams. CDM will not be used for clear streams so
 // DecryptorCapability doesn't really matter.
 
-TYPED_TEST(DecoderSelectorTest, ClearStream_NoDecoders) {
+TYPED_TEST(DecoderSelectorTest, ClearStreamNoDecoders) {
   this->UseClearDecoderConfig();
   this->CreateDecoderSelector();
 
@@ -417,7 +417,7 @@ TYPED_TEST(DecoderSelectorTest, ClearStream_NoDecoders) {
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, ClearStream_NoClearDecoder) {
+TYPED_TEST(DecoderSelectorTest, ClearStreamNoClearDecoder) {
   this->AddDecryptingDecoder();
   this->UseClearDecoderConfig();
   this->CreateDecoderSelector();
@@ -426,7 +426,7 @@ TYPED_TEST(DecoderSelectorTest, ClearStream_NoClearDecoder) {
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, ClearStream_OneClearDecoder) {
+TYPED_TEST(DecoderSelectorTest, ClearStreamOneClearDecoder) {
   this->AddMockDecoder(kDecoder1, kClearOnly);
   this->UseClearDecoderConfig();
   this->CreateDecoderSelector();
@@ -435,7 +435,7 @@ TYPED_TEST(DecoderSelectorTest, ClearStream_OneClearDecoder) {
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, ClearStream_InternalFallback) {
+TYPED_TEST(DecoderSelectorTest, ClearStreamInternalFallback) {
   this->AddMockDecoder(kDecoder1, kAlwaysFail);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->UseClearDecoderConfig();
@@ -445,7 +445,7 @@ TYPED_TEST(DecoderSelectorTest, ClearStream_InternalFallback) {
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, ClearStream_ExternalFallback) {
+TYPED_TEST(DecoderSelectorTest, ClearStreamExternalFallback) {
   this->AddMockDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->UseClearDecoderConfig();
@@ -461,7 +461,7 @@ TYPED_TEST(DecoderSelectorTest, ClearStream_ExternalFallback) {
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, ClearStream_FinalizeDecoderSelection) {
+TYPED_TEST(DecoderSelectorTest, ClearStreamFinalizeDecoderSelection) {
   this->AddMockDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->UseClearDecoderConfig();
@@ -477,7 +477,7 @@ TYPED_TEST(DecoderSelectorTest, ClearStream_FinalizeDecoderSelection) {
 }
 
 // Tests the production predicate for `DecoderSelector<DemuxerStream::VIDEO>`
-TEST_F(VideoDecoderSelectorTest, ClearStream_PrioritizeSoftwareDecoders) {
+TEST_F(VideoDecoderSelectorTest, ClearStreamPrioritizeSoftwareDecoders) {
   this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
@@ -502,7 +502,7 @@ TEST_F(VideoDecoderSelectorTest, ClearStream_PrioritizeSoftwareDecoders) {
 }
 
 // Tests the production predicate for `DecoderSelector<DemuxerStream::VIDEO>`
-TEST_F(VideoDecoderSelectorTest, ClearStream_PrioritizePlatformDecoders) {
+TEST_F(VideoDecoderSelectorTest, ClearStreamPrioritizePlatformDecoders) {
   this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
@@ -550,7 +550,7 @@ TYPED_TEST(DecoderSelectorTest,
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_NoDecryptor_OneClearDecoder) {
+TYPED_TEST(DecoderSelectorTest, EncryptedStreamNoDecryptorOneClearDecoder) {
   this->AddMockDecoder(kDecoder1, kClearOnly);
   this->CreateCdmContext(kNoDecryptor);
   this->UseEncryptedDecoderConfig();
@@ -560,7 +560,7 @@ TYPED_TEST(DecoderSelectorTest, EncryptedStream_NoDecryptor_OneClearDecoder) {
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_NoDecryptor_InternalFallback) {
+TYPED_TEST(DecoderSelectorTest, EncryptedStreamNoDecryptorInternalFallback) {
   this->AddMockDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kEncryptedOnly);
   this->CreateCdmContext(kNoDecryptor);
@@ -571,7 +571,7 @@ TYPED_TEST(DecoderSelectorTest, EncryptedStream_NoDecryptor_InternalFallback) {
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_NoDecryptor_ExternalFallback) {
+TYPED_TEST(DecoderSelectorTest, EncryptedStreamNoDecryptorExternalFallback) {
   this->AddMockDecoder(kDecoder1, kEncryptedOnly);
   this->AddMockDecoder(kDecoder2, kEncryptedOnly);
   this->CreateCdmContext(kNoDecryptor);
@@ -602,7 +602,7 @@ TYPED_TEST(DecoderSelectorTest,
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_DecryptOnly_NoDecoder) {
+TYPED_TEST(DecoderSelectorTest, EncryptedStreamDecryptOnlyNoDecoder) {
   this->CreateCdmContext(kDecryptOnly);
   this->UseEncryptedDecoderConfig();
   this->CreateDecoderSelector();
@@ -611,7 +611,7 @@ TYPED_TEST(DecoderSelectorTest, EncryptedStream_DecryptOnly_NoDecoder) {
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_DecryptOnly_OneClearDecoder) {
+TYPED_TEST(DecoderSelectorTest, EncryptedStreamDecryptOnlyOneClearDecoder) {
   this->AddMockDecoder(kDecoder1, kClearOnly);
   this->CreateCdmContext(kDecryptOnly);
   this->UseEncryptedDecoderConfig();
@@ -622,7 +622,7 @@ TYPED_TEST(DecoderSelectorTest, EncryptedStream_DecryptOnly_OneClearDecoder) {
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_DecryptOnly_InternalFallback) {
+TYPED_TEST(DecoderSelectorTest, EncryptedStreamDecryptOnlyInternalFallback) {
   this->AddMockDecoder(kDecoder1, kAlwaysFail);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->CreateCdmContext(kDecryptOnly);
@@ -659,7 +659,7 @@ TYPED_TEST(DecoderSelectorTest,
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, EncryptedStream_DecryptAndDecode) {
+TYPED_TEST(DecoderSelectorTest, EncryptedStreamDecryptAndDecode) {
   this->AddDecryptingDecoder();
   this->AddMockDecoder(kDecoder1, kClearOnly);
   this->CreateCdmContext(kDecryptAndDecode);
@@ -710,7 +710,7 @@ TYPED_TEST(DecoderSelectorTest,
   this->SelectNextDecoder();
 }
 
-TYPED_TEST(DecoderSelectorTest, ClearToEncryptedStream_DecryptOnly) {
+TYPED_TEST(DecoderSelectorTest, ClearToEncryptedStreamDecryptOnly) {
   this->AddMockDecoder(kDecoder1, kClearOnly);
   this->CreateCdmContext(kDecryptOnly);
   this->UseClearDecoderConfig();
@@ -728,7 +728,7 @@ TYPED_TEST(DecoderSelectorTest, ClearToEncryptedStream_DecryptOnly) {
 }
 
 // Tests the production predicate for `DecoderSelector<DemuxerStream::VIDEO>`
-TEST_F(VideoDecoderSelectorTest, EncryptedStream_PrioritizeSoftwareDecoders) {
+TEST_F(VideoDecoderSelectorTest, EncryptedStreamPrioritizeSoftwareDecoders) {
   this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
@@ -749,7 +749,7 @@ TEST_F(VideoDecoderSelectorTest, EncryptedStream_PrioritizeSoftwareDecoders) {
 }
 
 // Tests the production predicate for `DecoderSelector<DemuxerStream::VIDEO>`
-TEST_F(VideoDecoderSelectorTest, EncryptedStream_PrioritizePlatformDecoders) {
+TEST_F(VideoDecoderSelectorTest, EncryptedStreamPrioritizePlatformDecoders) {
   this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
   this->AddMockDecoder(kDecoder2, kClearOnly);
   this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);

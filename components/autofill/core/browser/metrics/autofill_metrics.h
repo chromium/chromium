@@ -40,10 +40,6 @@
 
 class GURL;
 
-namespace ukm::builders {
-class Autofill_CreditCardFill;
-}
-
 namespace autofill {
 
 class AutofillField;
@@ -722,8 +718,13 @@ class AutofillMetrics {
                                   int popup_level,
                                   PopupInteraction action);
 
-  // Logs the number of days since an Autocomplete suggestion was last used.
+  // Logs the number of days since an accepted Autocomplete suggestion was last
+  // used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
+
+  // Logs the number of days since an unaccepted Autocomplete suggestion was
+  // last used.
+  static void LogUnacceptedAutocompleteSuggestionDaysSinceLastUse(size_t days);
 
   // Logs the fact that an autocomplete popup was shown.
   static void OnAutocompleteSuggestionsShown();
@@ -741,12 +742,15 @@ class AutofillMetrics {
   static void LogAutofillPerfectFilling(bool is_address, bool perfect_filling);
 
   struct LogCreditCardSeamlessnessParam {
-    const raw_ref<autofill_metrics::FormEventLoggerBase> event_logger;
-    const raw_ref<const FormStructure> form;
-    const raw_ref<const AutofillField> field;
-    const raw_ref<const base::flat_set<FieldGlobalId>> newly_filled_fields;
-    const raw_ref<const base::flat_set<FieldGlobalId>> safe_fields;
-    const raw_ref<ukm::builders::Autofill_CreditCardFill> builder;
+    STACK_ALLOCATED();  // So that the members don't have to be raw_ref/raw_ptr.
+   public:
+    ukm::UkmRecorder* ukm_recorder;
+    const ukm::SourceId source_id;
+    autofill_metrics::FormEventLoggerBase& event_logger;
+    const FormStructure& form;
+    const AutofillField& field;
+    const base::flat_set<FieldGlobalId>& newly_filled_fields;
+    const base::flat_set<FieldGlobalId>& safe_fields;
   };
 
   // Logs several metrics about seamlessness. These are qualitative and bitmask
@@ -818,7 +822,8 @@ class AutofillMetrics {
 
   // Records if an autofilled field of a specific type was edited by the user.
   static void LogEditedAutofilledFieldAtSubmission(
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      autofill_metrics::FormInteractionsUkmLogger& form_interactions_ukm_logger,
+      ukm::SourceId source_id,
       const FormStructure& form,
       const AutofillField& field);
 

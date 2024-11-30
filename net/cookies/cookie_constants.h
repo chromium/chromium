@@ -118,6 +118,19 @@ enum class CookieAccessSemantics {
   LEGACY,
 };
 
+// When the Scope is LEGACY, Origin-Bound Cookies behavior are disabled. When
+// the Scpope is UNKNOWN, the behavior may or may not depend on
+// base::Features::PortBoundCookies and base::Features::SchemeBoundCookies.
+enum class CookieLegacyScope {
+  // Has not been checked yet or there is no way to check.
+  UNKNOWN = -1,
+  // Has been checked and the cookie should *not* be subject to legacy scope
+  // rules
+  NONLEGACY = 0,
+  // Has been checked and the cookie should be subject to legacy scope rules
+  LEGACY,
+};
+
 // What scheme was used in the setting of a cookie.
 // Do not renumber.
 enum class CookieSourceScheme {

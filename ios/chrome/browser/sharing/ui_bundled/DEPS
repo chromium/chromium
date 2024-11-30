@@ -1,0 +1,9 @@
+include_rules = [
+  "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
+  "+ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h",
+  "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
+  "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
+  "+ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h",
+  "+ios/chrome/browser/tabs/model/tab_title_util.h",
+  "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
+]

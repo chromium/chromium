@@ -80,6 +80,11 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
         this.getPref<number>(BATTERY_SAVER_MODE_PREF).value);
   }
 
+  private onBatterySaverLearnMoreLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('batterySaverLearnMoreUrl'));
+  }
+
   // <if expr="is_chromeos">
   private openOsPowerSettings_() {
     OpenWindowProxyImpl.getInstance().openUrl(

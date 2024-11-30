@@ -54,7 +54,7 @@ export function getHtml(this: DeclutterPageElement) {
                   html`
           <div id="duplicateTabList" class="tabList">
             ${
-                      this.getDuplicateTabDataList_().map(
+                      this.duplicateTabDatas_.map(
                           (item) => getTabSearchItem.bind(this)(
                               item, DeclutterType.DUPLICATE_TABS))}
           </div>
@@ -79,8 +79,8 @@ function getTabSearchItem(
         role="option"
         @keydown="${this.onTabKeyDown_}"
         @close="${
-      declutterType === DeclutterType.STALE_TABS ? this.onStaleTabRemove_ :
-                                                   this.onDuplicateTabRemove_}"
+      declutterType === DeclutterType.STALE_TABS ? this.onStaleTabExclude_ :
+                                                   this.onDuplicateTabExclude_}"
         @focus="${this.onTabFocus_}"
         @blur="${this.onTabBlur_}"
         hide-url>

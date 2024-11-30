@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ash/login/profile_auth_data.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -87,32 +91,48 @@ void ImportCookies(base::RepeatingClosure completion_callback,
 }
 
 // Callback that receives the contents of `from_partition`'s cookie jar.
-// Transfers the necessary cookies to `to_partition`'s cookie jar.
+// Transfers the necessary cookies to `to_profile`'s cookie jar.
 void OnCookiesToTransferRetrieved(base::RepeatingClosure completion_callback,
-                                  content::StoragePartition* to_partition,
+                                  Profile* to_profile,
                                   bool first_login,
                                   const net::CookieList& cookies) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (first_login) {
-    ImportCookies(completion_callback, to_partition, cookies);
-  } else {
-    net::CookieList non_gaia_cookies;
-    for (const auto& cookie : cookies) {
-      if (!IsGAIACookie(cookie))
-        non_gaia_cookies.push_back(cookie);
+  net::CookieList non_gaia_cookies;
+  ash::floating_sso::FloatingSsoService* floating_sso_service =
+      ash::features::IsFloatingSsoAllowed()
+          ? ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(
+                to_profile)
+          : nullptr;
+  for (const auto& cookie : cookies) {
+    if (!IsGAIACookie(cookie)) {
+      non_gaia_cookies.push_back(cookie);
+      if (floating_sso_service) {
+        // When Floating SSO is enabled, we want to prevent it from overriding
+        // SAML cookies transferred here with entities from Sync server. No need
+        // to do it for Gaia cookies, as those are always excluded from Floating
+        // SSO.
+        floating_sso_service->MarkToNotOverride(cookie);
+      }
     }
-    ImportCookies(completion_callback, to_partition, non_gaia_cookies);
+  }
+
+  if (first_login) {
+    ImportCookies(completion_callback, to_profile->GetDefaultStoragePartition(),
+                  cookies);
+  } else {
+    ImportCookies(completion_callback, to_profile->GetDefaultStoragePartition(),
+                  non_gaia_cookies);
   }
 }
 
-// Callback that receives the content of `to_partition`'s cookie jar. Checks
+// Callback that receives the content of `to_profile`'s cookie jar. Checks
 // whether this is the user's first login, based on the state of the cookie
 // jar, and starts retrieval of the data that should be transfered.
 void OnTargetCookieJarContentsRetrieved(
     base::RepeatingClosure completion_callback,
     content::StoragePartition* from_partition,
-    content::StoragePartition* to_partition,
+    Profile* to_profile,
     bool transfer_auth_cookies_on_first_login,
     bool transfer_saml_auth_cookies_on_subsequent_login,
     const net::CookieList& target_cookies) {
@@ -141,24 +161,25 @@ void OnTargetCookieJarContentsRetrieved(
       from_partition->GetCookieManagerForBrowserProcess();
   from_manager->GetAllCookies(
       base::BindOnce(&OnCookiesToTransferRetrieved, completion_callback,
-                     base::Unretained(to_partition), first_login));
+                     base::Unretained(to_profile), first_login));
 }
 
 // Starts the process of transferring cookies from `from_partition` to
 // `to_partition`.
 void TransferCookies(base::RepeatingClosure completion_callback,
                      content::StoragePartition* from_partition,
-                     content::StoragePartition* to_partition,
+                     Profile* to_profile,
                      bool transfer_auth_cookies_on_first_login,
                      bool transfer_saml_auth_cookies_on_subsequent_login) {
   if (transfer_auth_cookies_on_first_login ||
       transfer_saml_auth_cookies_on_subsequent_login) {
-    // Retrieve the contents of `to_partition_`'s cookie jar.
+    // Retrieve the contents of `to_profile`'s cookie jar.
     network::mojom::CookieManager* to_manager =
-        to_partition->GetCookieManagerForBrowserProcess();
+        to_profile->GetDefaultStoragePartition()
+            ->GetCookieManagerForBrowserProcess();
     to_manager->GetAllCookies(base::BindOnce(
         &OnTargetCookieJarContentsRetrieved, completion_callback,
-        base::Unretained(from_partition), base::Unretained(to_partition),
+        base::Unretained(from_partition), base::Unretained(to_profile),
         transfer_auth_cookies_on_first_login,
         transfer_saml_auth_cookies_on_subsequent_login));
   } else {
@@ -179,7 +200,7 @@ void TransferHttpAuthCacheToSystemNetworkContext(
 
 void ProfileAuthData::Transfer(
     content::StoragePartition* from_partition,
-    content::StoragePartition* to_partition,
+    Profile* to_profile,
     bool transfer_auth_cookies_on_first_login,
     bool transfer_saml_auth_cookies_on_subsequent_login,
     base::OnceClosure completion_callback) {
@@ -194,9 +215,9 @@ void ProfileAuthData::Transfer(
   // If the user was required to authenticate with a proxy during login, this
   // authentication information will be transferred into the user's session.
   TransferHttpAuthCacheProxyEntries(task_completion_callback, from_partition,
-                                    to_partition);
+                                    to_profile->GetDefaultStoragePartition());
 
-  TransferCookies(task_completion_callback, from_partition, to_partition,
+  TransferCookies(task_completion_callback, from_partition, to_profile,
                   transfer_auth_cookies_on_first_login,
                   transfer_saml_auth_cookies_on_subsequent_login);
 }

@@ -340,7 +340,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
 
   // This test should pass on all platforms, including on a ChromeOS
   // guest session.
-  EXPECT_TRUE(test_provider->registrar_unsafe().IsInstalled(app_id));
+  EXPECT_TRUE(test_provider->registrar_unsafe().IsInstallState(
+      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // This waits until ExternallyManagedAppManager::SynchronizeInstalledApps()
@@ -350,7 +353,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
   WebAppProvider* guest_provider = WebAppProvider::GetForTest(guest_profile);
   DCHECK(guest_provider);
   test::WaitUntilWebAppProviderAndSubsystemsReady(guest_provider);
-  EXPECT_FALSE(guest_provider->registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(guest_provider->registrar_unsafe().IsInstallState(
+      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 #endif
 }
 

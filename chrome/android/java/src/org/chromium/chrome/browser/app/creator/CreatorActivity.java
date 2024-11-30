@@ -105,7 +105,7 @@ public class CreatorActivity extends SnackbarActivity {
                         false,
                         intentRequestTracker,
                         getInsetObserver(),
-                        /* trackOcclusion= */ false);
+                        /* trackOcclusion= */ true);
 
         TabShareDelegateImpl tabshareDelegate =
                 new TabShareDelegateImpl(

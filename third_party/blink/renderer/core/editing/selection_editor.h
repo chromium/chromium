@@ -86,6 +86,7 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
 
   void DidFinishTextChange(const Position& anchor, const Position& focus);
   void DidFinishDOMMutation();
+  void DidInsertNode(const Node&);
 
   // Implementation of |SynchronousMutationObsderver| member functions.
   void ContextDestroyed() final;

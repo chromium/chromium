@@ -39,7 +39,6 @@ constexpr size_t kHeight = 10;
 
 struct TestParams {
   bool context_alpha;
-  bool vertical_flip;
 };
 
 viz::ResourceId NextId(viz::ResourceId id) {
@@ -74,9 +73,8 @@ class CanvasResourceDispatcherTest
     scoped_refptr<CanvasResource> canvas_resource =
         resource_provider_->ProduceCanvasResource(FlushReason::kTesting);
     auto canvas_resource_extra = canvas_resource;
-    dispatcher_->DispatchFrame(
-        std::move(canvas_resource), base::TimeTicks(), SkIRect::MakeEmpty(),
-        false /* needs_vertical_flip */, false /* is-opaque */);
+    dispatcher_->DispatchFrame(std::move(canvas_resource), base::TimeTicks(),
+                               SkIRect::MakeEmpty(), /*is_opaque=*/false);
     return canvas_resource_extra;
   }
 
@@ -112,10 +110,9 @@ class CanvasResourceDispatcherTest
 
     dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>();
     resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-        SkImageInfo::MakeN32Premul(kWidth, kHeight),
-        cc::PaintFlags::FilterQuality::kLow,
+        gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
+        SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kLow,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
-        dispatcher_->GetWeakPtr(),
         test_web_shared_image_interface_provider_.get());
   }
 
@@ -258,15 +255,14 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   platform->RunUntilIdle();
 
   auto canvas_resource = CanvasResourceSharedBitmap::Create(
-      GetSize(), kN32_SkColorType, kPremul_SkAlphaType,
-      /*sk_color_space=*/nullptr,
+      GetSize(), viz::SinglePlaneFormat::kRGBA_8888, kPremul_SkAlphaType,
+      gfx::ColorSpace::CreateSRGB(),
       /*provider=*/nullptr, shared_image_interface_provider(),
       cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
   EXPECT_EQ(canvas_resource->Size(), GetSize());
 
   const bool context_alpha = GetParam().context_alpha;
-  const bool vertical_flip = GetParam().vertical_flip;
 
   constexpr size_t kDamageWidth = 8;
   constexpr size_t kDamageHeight = 6;
@@ -298,23 +294,19 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
             EXPECT_TRUE(texture_quad->premultiplied_alpha);
             EXPECT_EQ(texture_quad->uv_top_left, gfx::PointF(0.0f, 0.0f));
             EXPECT_EQ(texture_quad->uv_bottom_right, gfx::PointF(1.0f, 1.0f));
-            // |y_flipped| should follow |vertical_flip| on GPU compositing; but
-            // we don't have that in unit tests, so it's always false.
-            EXPECT_FALSE(texture_quad->y_flipped);
+
+            // CanvasResourceSharedBitmap origin is top-left.
+            EXPECT_EQ(frame->resource_list.front().origin,
+                      kTopLeft_GrSurfaceOrigin);
           })));
 
   constexpr SkIRect damage_rect = SkIRect::MakeWH(kDamageWidth, kDamageHeight);
   Dispatcher()->DispatchFrame(canvas_resource, base::TimeTicks::Now(),
-                              damage_rect, vertical_flip,
-                              !context_alpha /* is_opaque */);
+                              damage_rect, !context_alpha /* is_opaque */);
   platform->RunUntilIdle();
 }
 
-const TestParams kTestCases[] = {
-    {false /* context_alpha */, false /* vertical_flip */},
-    {false, true},
-    {true, false},
-    {true, true}};
+const TestParams kTestCases[] = {{false /* context_alpha */}, {true}};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CanvasResourceDispatcherTest,

@@ -89,19 +89,27 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void WillShowModalDialog();
 
-  // This method creates a PerformanceEventTiming and if needed creates a
-  // presentation promise to calculate the |duration| attribute when such
-  // promise is resolved.
-  void RegisterEventTiming(const Event& event,
-                           EventTarget* event_target,
-                           base::TimeTicks start_time,
-                           base::TimeTicks processing_start,
-                           base::TimeTicks processing_end);
+  // EventTimingProcessingStart and EventTimingProcessingEnd are together used
+  // to measure the processing duration of a new Event Timing.
+  // There might be nested events being dispatched (e.g. `input` event nested
+  // inside a raw pointer event), but the RAII class `EventTiming` uses the
+  // stack to manage calling these functions (from constructor/destructor).
+  // This means that calls to End will be in LIFO often with Start.
+  //
+  // Will create a `PerformanceEventTiming`, and if needed, requests the next
+  // presentation time to calculate the full |duration| to next paint.
+  void EventTimingProcessingStart(const Event& event,
+                                  base::TimeTicks processing_start,
+                                  EventTarget* hit_test_target);
+  void EventTimingProcessingEnd(const Event& event,
+                                base::TimeTicks processing_end);
 
   // Set commit finish time for all pending events that have finished processing
   // and are watiting for presentation promise to resolve.
   void SetCommitFinishTimeStampForPendingEvents(
       base::TimeTicks commit_finish_time);
+
+  void UpdatePendingEventTimingsWithFallbackTime(base::TimeTicks fallback_time);
 
   void OnPaintFinished();
 
@@ -152,9 +160,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void NotifyPotentialDrag(PointerId pointer_id);
 
-  void SetCurrentEventTimingEvent(const Event* event) {
-    current_event_ = event;
-  }
   const Event* GetCurrentEventTimingEvent() { return current_event_.Get(); }
 
   void CreateNavigationTimingInstance(
@@ -198,9 +203,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // timing buffer if needed.
   void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
 
-  // If a fallback time should be used in calculating an event duration, set
-  // the fallback value in the PerformanceEventTiming::EventTimingReportingInfo.
-  void SetFallbackTime(PerformanceEventTiming* entry);
+  void ReportFirstInputTiming(PerformanceEventTiming* event_timing_entry);
 
   // The last time the page visibility was changed.
   base::TimeTicks last_hidden_timestamp_;
@@ -214,6 +217,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // Counts the total number of presentation promises we've registered for
   // events' presentation feedback since the beginning.
   uint64_t event_presentation_promise_count_ = 0;
+
   // Store all event timing and latency related data, including
   // PerformanceEventTiming, presentation_index, keycode and pointerId.
   // We use the data to calculate events latencies.
@@ -223,7 +227,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   mutable Member<PerformanceNavigation> navigation_;
   mutable Member<PerformanceTiming> timing_;
   mutable Member<PerformanceTimingForReporting> timing_for_reporting_;
-  DOMHighResTimeStamp pending_pointer_down_start_time_;
+  base::TimeTicks pending_pointer_down_start_time_;
   std::optional<base::TimeDelta> pending_pointer_down_processing_time_;
   std::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
 

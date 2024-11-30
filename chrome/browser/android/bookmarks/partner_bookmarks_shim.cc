@@ -200,7 +200,7 @@ PartnerBookmarksShim::NodeRenamingMapKey::NodeRenamingMapKey(
     const std::u16string& provider_title)
     : url_(url), provider_title_(provider_title) {}
 
-PartnerBookmarksShim::NodeRenamingMapKey::~NodeRenamingMapKey() {}
+PartnerBookmarksShim::NodeRenamingMapKey::~NodeRenamingMapKey() = default;
 
 bool operator<(const PartnerBookmarksShim::NodeRenamingMapKey& a,
                const PartnerBookmarksShim::NodeRenamingMapKey& b) {

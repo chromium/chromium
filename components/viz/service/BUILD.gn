@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
@@ -274,7 +273,6 @@ viz_component("service") {
 
   deps = [
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//cc/animation",
     "//cc/base",
     "//cc/paint",
@@ -337,7 +335,7 @@ viz_component("service") {
     "//ui/latency",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "display_embedder/output_surface_unified.cc",
       "display_embedder/output_surface_unified.h",
@@ -421,8 +419,6 @@ viz_component("service") {
       "frame_sinks/external_begin_frame_source_android.h",
       "gl/throw_uncaught_exception.cc",
       "gl/throw_uncaught_exception.h",
-      "input/android_input_callback.cc",
-      "input/android_input_callback.h",
       "input/render_input_router_support_android.cc",
       "input/render_input_router_support_android.h",
     ]
@@ -615,7 +611,6 @@ viz_source_set("unit_tests") {
     ":viz_debugger",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
     "//components/input",

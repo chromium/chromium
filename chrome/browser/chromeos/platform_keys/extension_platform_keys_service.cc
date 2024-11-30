@@ -500,7 +500,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   void OnCanUseKeyForSigningKnown(bool allowed) {
     if (!allowed) {
       std::move(callback_).Run(/*signature=*/std::vector<uint8_t>(),
-                               KeystoreError::kKeyNotAllowedForSigning);
+                               KeystoreError::kKeyNotAllowedForOperation);
       next_step_ = Step::DONE;
       DoStep();
       return;

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webapps;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -42,7 +43,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -174,12 +175,13 @@ public class WebApkUpdateManagerTest {
         private boolean mAcceptDialogIfAppears;
 
         public TestWebApkUpdateManager(
-                AsyncInitializationActivity activity,
+                Activity activity,
                 CallbackHelper waiter,
                 CallbackHelper complete,
                 ActivityTabProvider tabProvider,
+                ActivityLifecycleDispatcher lifecycleDispatcher,
                 boolean acceptDialogIfAppears) {
-            super(activity, tabProvider);
+            super(activity, tabProvider, lifecycleDispatcher);
             mWaiter = waiter;
             mCompleteCallback = complete;
             mLastUpdateReasons = new ArrayList<>();
@@ -338,6 +340,7 @@ public class WebApkUpdateManagerTest {
                                     waiter,
                                     completeCallback,
                                     mActivity.getActivityTabProvider(),
+                                    mActivity.getLifecycleDispatcher(),
                                     acceptDialogIfAppears);
                     WebappDataStorage storage =
                             WebappRegistry.getInstance().getWebappDataStorage(WEBAPK_ID);

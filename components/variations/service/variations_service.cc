@@ -363,7 +363,9 @@ VariationsService::VariationsService(
               /*signature_verification_enabled=*/true,
               std::make_unique<VariationsSafeSeedStoreLocalState>(
                   local_state,
-                  client_.get()->GetVariationsSeedFileDir()),
+                  client_.get()->GetVariationsSeedFileDir(),
+                  client_.get()->GetChannelForVariations(),
+                  entropy_providers_.get()),
               client_.get()->GetChannelForVariations(),
               client_.get()->GetVariationsSeedFileDir(),
               entropy_providers_.get()),

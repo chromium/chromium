@@ -352,11 +352,6 @@ class CrosAudioConfigImplTest : public testing::Test {
     return cras_audio_handler_->GetVoiceIsolationState();
   }
 
-  void RefreshVoiceIsolationState() {
-    cras_audio_handler_->RefreshVoiceIsolationState();
-    base::RunLoop().RunUntilIdle();
-  }
-
   uint32_t GetVoiceIsolationPreferredEffectPref() {
     return audio_pref_handler_->GetVoiceIsolationPreferredEffect();
   }
@@ -369,11 +364,6 @@ class CrosAudioConfigImplTest : public testing::Test {
 
   uint32_t GetVoiceIsolationPreferredEffect() {
     return cras_audio_handler_->GetVoiceIsolationPreferredEffect();
-  }
-
-  void RefreshVoiceIsolationPreferredEffect() {
-    cras_audio_handler_->RefreshVoiceIsolationPreferredEffect();
-    base::RunLoop().RunUntilIdle();
   }
 
   bool GetNoiseCancellationState() {
@@ -786,12 +776,18 @@ TEST_F(CrosAudioConfigImplTest, SetVoiceIsolationState) {
   // By default voice isolation is disabled and not supported in this test.
   ASSERT_FALSE(GetVoiceIsolationStatePref());
   ASSERT_FALSE(GetVoiceIsolationState());
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kVoiceIsolationEnabledChangeSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 0);
 
   // Simulate trying to set voice isolation.
   SetVoiceIsolationStatePref(/*enabled=*/true);
   SimulateRefreshVoiceIsolationState();
   ASSERT_TRUE(GetVoiceIsolationStatePref());
   ASSERT_TRUE(GetVoiceIsolationState());
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kVoiceIsolationEnabledChangeSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 1);
 
   // Change active node does not change voice isolation state.
   SetActiveInputNodes({kUsbMicId});
@@ -802,6 +798,9 @@ TEST_F(CrosAudioConfigImplTest, SetVoiceIsolationState) {
   SimulateRefreshVoiceIsolationState();
   ASSERT_FALSE(GetVoiceIsolationStatePref());
   ASSERT_FALSE(GetVoiceIsolationState());
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kVoiceIsolationEnabledChangeSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
 }
 
 TEST_F(CrosAudioConfigImplTest, RefreshVoiceIsolationPreferredEffect) {
@@ -812,12 +811,22 @@ TEST_F(CrosAudioConfigImplTest, RefreshVoiceIsolationPreferredEffect) {
   ASSERT_EQ(GetVoiceIsolationPreferredEffect(), 0u);
 
   // Simulate trying to set voice isolation preferred effect.
-  const uint32_t kExpectedEffect =
-      static_cast<uint32_t>(cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER);
-  SetVoiceIsolationPreferredEffectPref(/*effect=*/kExpectedEffect);
-  SimulateRefreshVoiceIsolationPreferredEffect();
-  ASSERT_EQ(GetVoiceIsolationPreferredEffectPref(), kExpectedEffect);
-  ASSERT_EQ(GetVoiceIsolationPreferredEffect(), kExpectedEffect);
+  const uint32_t kExpectedEffects[] = {
+      static_cast<uint32_t>(cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER),
+      static_cast<uint32_t>(cras::AudioEffectType::EFFECT_TYPE_BEAMFORMING),
+  };
+  for (auto expected_effect : kExpectedEffects) {
+    histogram_tester_.ExpectBucketCount(
+        CrasAudioHandler::kVoiceIsolationPreferredEffectChangeHistogramName,
+        expected_effect, 0);
+    SetVoiceIsolationPreferredEffectPref(/*effect=*/expected_effect);
+    SimulateRefreshVoiceIsolationPreferredEffect();
+    ASSERT_EQ(GetVoiceIsolationPreferredEffectPref(), expected_effect);
+    ASSERT_EQ(GetVoiceIsolationPreferredEffect(), expected_effect);
+    histogram_tester_.ExpectBucketCount(
+        CrasAudioHandler::kVoiceIsolationPreferredEffectChangeHistogramName,
+        expected_effect, 1);
+  }
 }
 
 TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {

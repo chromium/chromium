@@ -1020,10 +1020,6 @@ crbug.com/1043285 [ Linux Release ] http/tests/devtools/elements/styles/selector
 crbug.com/1043285 [ Mac11 Release ] http/tests/devtools/elements/styles/selector-line.js [ Slow ]
 crbug.com/1043285 [ Mac12 Release ] http/tests/devtools/elements/styles/selector-line.js [ Slow ]
 crbug.com/1043285 [ Release Win ] http/tests/devtools/elements/styles/selector-line.js [ Slow ]
-crbug.com/1043453 [ Release Win ] virtual/threaded/external/wpt/css/css-animations/idlharness.html [ Slow ]
-crbug.com/1043453 [ Mac11 Release ] virtual/threaded/external/wpt/css/css-animations/idlharness.html [ Slow ]
-crbug.com/1043453 [ Mac12 Release ] virtual/threaded/external/wpt/css/css-animations/idlharness.html [ Slow ]
-crbug.com/1043453 [ Mac13 Release ] virtual/threaded/external/wpt/css/css-animations/idlharness.html [ Slow ]
 crbug.com/1043454 [ Linux Release ] http/tests/devtools/console-xhr-logging-async.js [ Slow ]
 crbug.com/1043454 [ Mac11 Release ] http/tests/devtools/console-xhr-logging-async.js [ Slow ]
 crbug.com/1043454 [ Mac12 Release ] http/tests/devtools/console-xhr-logging-async.js [ Slow ]
@@ -1320,13 +1316,6 @@ crbug.com/1381545 [ Release Win ] virtual/wasm-code-caching/http/tests/wasm/cach
 crbug.com/1410608 http/tests/inspector-protocol/storage/dom-storage-set-items-by-storage-key.js [ Slow ]
 crbug.com/349636595 inspector-protocol/layout-fonts/generic-font-families.js [ Slow ]
 
-crbug.com/1376679 [ Mac12 Release ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
-crbug.com/1450858 virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
-crbug.com/1450858 [ Debug Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
-crbug.com/1450858 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
-crbug.com/1450858 [ Mac Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
-crbug.com/1450858 [ Release Win ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
-
 crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-set-items-by-storage-key.js [ Slow ]
 
 crbug.com/1412278 [ Debug Linux ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
@@ -1364,14 +1353,6 @@ crbug.com/1310326 [ Release Win ] http/tests/misc/transforms-usecounter-3d-scene
 
 crbug.com/1307741 external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Slow ]
 
-crbug.com/626703 [ Mac Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Slow ]
-crbug.com/1376679 [ Mac11 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
-crbug.com/1376679 [ Mac11-arm64 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
-crbug.com/1376679 [ Mac12 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
-crbug.com/1376679 [ Mac12-arm64 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
-crbug.com/1376679 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
-crbug.com/1376679 [ Mac13-arm64 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
-
 crbug.com/1271091 http/tests/security/frameNavigation/xss-ALLOWED-same-etld-plus-1-top-navigation-without-user-gesture.html [ Slow ]
 
 crbug.com/1453341 fast/frames/frame-limit.html [ Slow ]
@@ -1406,14 +1387,7 @@ crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-1.any.work
 crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.html [ Slow ]
 crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.worker.html [ Slow ]
 
-crbug.com/1488860 [ Debug Linux ] virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
-crbug.com/1488860 [ Debug Mac13 ] virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
-crbug.com/1488860 [ Release ] virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
-crbug.com/1488860 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Slow ]
 crbug.com/1493194 external/wpt/css/cssom/insert-dir-rule-in-iframe-crash.html [ Slow ]
-
-crbug.com/1465046 [ Debug Mac13 ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Slow ]
-crbug.com/1465046 [ Mac Release ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Slow ]
 
 # Slow Private Network Access tests
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/private-network-access/mixed-content-fetch.tentative.https.window.html [ Slow ]
@@ -1488,3 +1462,5 @@ crbug.com/374045525 [ Debug Mac14 ] webaudio/AudioParam/audioparam-rate-change-3
 
 # Gardener 2024-10-24
 crbug.com/375337253 external/wpt/shadow-dom/reference-target/tentative/property-reflection.html [ Slow ]
+
+crbug.com/378325771 [ Mac ] wpt_internal/css/css-overflow/scroll-markers-updated-by-user-scroll.html [ Slow ]

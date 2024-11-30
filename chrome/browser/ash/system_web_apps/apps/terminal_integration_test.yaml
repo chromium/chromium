@@ -8,7 +8,6 @@ name: "AshIntegrationTest"
 harness: "crosier"
 category: "integration"
 owners:
-  - email: "brettw@chromium.org"
   - email: "jamescook@chromium.org"
   - email: "chromeos-sw-engprod@google.com"
 hw_agnostic: True

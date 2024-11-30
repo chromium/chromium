@@ -19,11 +19,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -61,7 +58,6 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @DisableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
     public void testAllMenuItems() throws Exception {
         openTabSwitcher();
         ThreadUtils.runOnUiThreadBlocking(
@@ -91,24 +87,6 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
-    public void testQuickDeleteMenuItem_Shown() throws Exception {
-        openTabSwitcher();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppMenuTestSupport.showAppMenu(
-                            mActivityTestRule.getAppMenuCoordinator(), null, false);
-                });
-
-        assertNotNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
     public void testQuickDeleteTabSwitcherMenu_entryFromTabSwitcherMenuItemHistogram() {
         openTabSwitcher();
         HistogramWatcher histogramWatcher =
@@ -171,6 +149,9 @@ public class OverviewAppMenuTest {
                         mActivityTestRule.getAppMenuCoordinator(), R.id.menu_select_tabs));
         assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
                         mActivityTestRule.getAppMenuCoordinator(), R.id.preferences_id));
 
         assertNull(
@@ -180,7 +161,7 @@ public class OverviewAppMenuTest {
 
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
-        assertEquals(5, menuItemsModelList.size());
+        assertEquals(6, menuItemsModelList.size());
     }
 
     private void verifyTabSwitcherMenuIncognito() {

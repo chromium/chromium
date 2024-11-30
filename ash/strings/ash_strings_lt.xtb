@@ -1529,7 +1529,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6121838516699723042">„<ph name="FILENAME" />“ atsisiuntimo patvirtinimas</translation>
 <translation id="612734058257491180">„Google Assistant“ nepasiekiamas svečio sesijoje.</translation>
 <translation id="6127395413317891856">Esate neprisijungę. Patikrinkite ryšį ir bandykite dar kartą.</translation>
-<translation id="6129953537138746214">Tarpas</translation>
+<translation id="6129953537138746214">Tarpo klavišas</translation>
 <translation id="6137566720514957455">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> pašalinimo dialogo langą</translation>
 <translation id="6141205840878048728">Į ką norite sutelkti dėmesį?</translation>
 <translation id="6141988275892716286">Atsisiuntimo patvirtinimas</translation>
@@ -2124,6 +2124,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8142699993796781067">Privatus tinklas</translation>
 <translation id="8144760705599030999">Išsaugokite „<ph name="NAME" />“ paskyroje (<ph name="EMAIL" />), kad galėtumėte sparčiau susieti su kitais įrenginiais</translation>
 <translation id="8144914663975476336">Pasirinkite įrašo formatą</translation>
+<translation id="8145272500474066209">Generatyvinis DI gali klysti, įskaitant su žmonėmis susijusias klaidas, todėl patikrinkite dar kartą. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Rodyti „Bluetooth“ nustatymus. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Paspauskite „Ctrl“ + W, kad uždarytumėte.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatinis užbaigimas</translation>

@@ -37,14 +37,6 @@ class RedirectHeuristicTabHelper
  public:
   ~RedirectHeuristicTabHelper() override;
 
-  // this enum should match CookieHeuristicInteractionType in
-  // tools/metrics/ukm/ukm.xml
-  enum class InteractionType {
-    Authentication = 0,
-    UserActivation = 1,
-    NoInteraction = 2,
-  };
-
   static std::set<std::string> AllSitesFollowingFirstParty(
       content::WebContents* web_contents,
       const GURL& first_party_url);
@@ -66,7 +58,7 @@ class RedirectHeuristicTabHelper
       const content::CookieAccessDetails& details,
       const size_t sites_passed_count,
       bool is_current_interaction,
-      bool is_user_activation_interaction,
+      DIPSInteractionType interaction_type,
       std::optional<base::Time> last_user_interaction_time);
 
   // Create all eligible RedirectHeuristic grants for the current redirect

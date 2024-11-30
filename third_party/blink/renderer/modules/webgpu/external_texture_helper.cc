@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgpu/external_texture_helper.h"
 
 #include "media/base/video_frame.h"
@@ -95,13 +90,14 @@ ColorSpaceConversionConstants GetColorSpaceConversionConstants(
   skcms_Matrix3x3 transform_matrix = skcms_Matrix3x3_concat(
       &dst_primary_matrix_from_XYZD50, &src_primary_matrix_to_XYZD50);
   // From row major matrix to col major matrix
+  // SAFETY: skcms_Matrix3x3_concat always creates 3x3 array
   color_space_conversion_constants.gamut_conversion_matrix =
-      std::array<float, 9>{
+      UNSAFE_BUFFERS(std::array<float, 9>{
           transform_matrix.vals[0][0], transform_matrix.vals[1][0],
           transform_matrix.vals[2][0], transform_matrix.vals[0][1],
           transform_matrix.vals[1][1], transform_matrix.vals[2][1],
           transform_matrix.vals[0][2], transform_matrix.vals[1][2],
-          transform_matrix.vals[2][2]};
+          transform_matrix.vals[2][2]});
 
   // Set constants for source transfer function.
   skcms_TransferFunction src_transfer_fn;
@@ -249,15 +245,6 @@ ExternalTexture CreateExternalTexture(
          visible_rect.width() >= 0 && visible_rect.height() >= 0);
   DCHECK(natural_size.width() >= 0 && natural_size.height() >= 0);
 
-  // TODO(377574981): Remove once Dawn starts using cropSize/Origin and
-  // apparentSize;
-  external_texture_desc.visibleOrigin = {
-      static_cast<uint32_t>(visible_rect.x()),
-      static_cast<uint32_t>(visible_rect.y())};
-  external_texture_desc.visibleSize = {
-      static_cast<uint32_t>(visible_rect.width()),
-      static_cast<uint32_t>(visible_rect.height())};
-
   // The visible_rect denotes the part of the coded image that's visible when
   // displaying the frame. For Dawn it is considered as a crop rectangle applied
   // in plane0 (and adapted for plane1 if present).
@@ -346,8 +333,9 @@ ExternalTexture CreateExternalTexture(
   // If the context is lost, the resource provider would be invalid.
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   if (!context_provider_wrapper ||
-      context_provider_wrapper->ContextProvider()->IsContextLost())
+      context_provider_wrapper->ContextProvider().IsContextLost()) {
     return external_texture;
+  }
 
   // In 0-copy path, uploading shares the whole frame into dawn and apply
   // visible rect and sample from it. For 1-copy path, we should obey the
@@ -357,7 +345,7 @@ ExternalTexture CreateExternalTexture(
   // - Reset origin of visible rect in ExternalTextureDesc and use internal
   // shader to
   //   handle visible rect.
-  external_texture_desc.visibleOrigin = {};
+  external_texture_desc.cropOrigin = {};
 
   std::unique_ptr<media::PaintCanvasVideoRenderer> local_video_renderer;
   if (!video_renderer) {
@@ -406,9 +394,8 @@ ExternalTexture CreateExternalTexture(
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 
-  viz::RasterContextProvider* raster_context_provider = nullptr;
-  if (auto* context_provider = context_provider_wrapper->ContextProvider())
-    raster_context_provider = context_provider->RasterContextProvider();
+  viz::RasterContextProvider* raster_context_provider =
+      context_provider_wrapper->ContextProvider().RasterContextProvider();
 
   if (use_copy_to_shared_image) {
     // We don't need to specify a sync token since both CanvasResourceProvider

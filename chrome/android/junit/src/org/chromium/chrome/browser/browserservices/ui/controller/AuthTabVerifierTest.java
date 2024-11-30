@@ -13,7 +13,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier.VERIFICATION_TIMEOUT_MS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs;
 
 import android.app.Activity;
 
@@ -37,7 +37,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
@@ -64,7 +63,7 @@ public class AuthTabVerifierTest {
     @Mock AuthTabIntentDataProvider mIntentDataProvider;
     @Mock ChromeOriginVerifier mOriginVerifier;
     @Mock CustomTabActivityTabProvider mActivityTabProvider;
-    @Mock BaseCustomTabActivity mActivity;
+    @Mock Activity mActivity;
 
     private AuthTabVerifier mDelegate;
     private Runnable mDelayedTask;
@@ -77,11 +76,10 @@ public class AuthTabVerifierTest {
         when(mIntentDataProvider.getAuthRedirectPath()).thenReturn(REDIRECT_PATH);
         when(mIntentDataProvider.getClientPackageName()).thenReturn("org.chromium.authtab");
         ChromeOriginVerifierFactory.setInstanceForTesting(mOriginVerifier);
-        when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mActivityTabProvider);
-        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
-        when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
 
-        mDelegate = new AuthTabVerifier(mActivity);
+        mDelegate =
+                new AuthTabVerifier(
+                        mActivity, mLifecycleDispatcher, mIntentDataProvider, mActivityTabProvider);
     }
 
     void simulateVerificationResultFromNetwork(String url, boolean success) {
@@ -196,7 +194,9 @@ public class AuthTabVerifierTest {
         verify(mActivity, never()).setResult(anyInt(), any());
         verify(mActivity, never()).finish();
 
-        ShadowSystemClock.advanceBy(VERIFICATION_TIMEOUT_MS.getValue(), TimeUnit.MILLISECONDS);
+        ShadowSystemClock.advanceBy(
+                sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs.getValue(),
+                TimeUnit.MILLISECONDS);
         // Simulate timeout.
         mDelayedTask.run();
 

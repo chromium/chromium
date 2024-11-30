@@ -27,8 +27,12 @@ public class OffTheRecordOfflineItemFilter extends OfflineItemFilter {
         // Always show downloads from regular mode.
         if (!item.isOffTheRecord) return false;
 
-        // Only show downloads from primary OTR profile if mIncludeOffTheRecordItems is true.
-        boolean isPrimaryOtr = OtrProfileId.deserialize(item.otrProfileId).isPrimaryOtrId();
-        return !(mIncludeOffTheRecordItems && isPrimaryOtr);
+        try {
+            // Only show downloads from primary OTR profile if mIncludeOffTheRecordItems is true.
+            boolean isPrimaryOtr = OtrProfileId.deserialize(item.otrProfileId).isPrimaryOtrId();
+            return !(mIncludeOffTheRecordItems && isPrimaryOtr);
+        } catch (IllegalStateException e) {
+            return true;
+        }
     }
 }

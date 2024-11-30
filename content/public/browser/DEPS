@@ -21,6 +21,7 @@ include_rules = [
   "+services/resource_coordinator/public",
   "+services/tracing/public/mojom",
   "+services/video_capture/public/mojom",
+  "+services/video_effects/public/cpp/buildflags.h",
   "+services/video_effects/public/mojom",
   "+services/viz/public/mojom",
   "+third_party/jni_zero",

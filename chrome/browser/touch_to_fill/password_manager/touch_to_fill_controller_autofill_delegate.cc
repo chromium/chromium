@@ -316,9 +316,10 @@ void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
       password_manager_util::GetLoginMatchType::kGrouped) {
     std::string current_origin =
         GetDisplayOrigin(url::Origin::Create(GetFrameUrl()));
-    std::string credential_origin = GetDisplayOrigin(credential.origin());
+    // Use `cred->display_name()` instead of origin here to correctly display
+    // credentials saved for android apps.
     grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
-        std::move(current_origin), std::move(credential_origin),
+        std::move(current_origin), credential.display_name(),
         web_contents_->GetTopLevelNativeWindow(),
         base::BindOnce(
             &TouchToFillControllerAutofillDelegate::
@@ -329,13 +330,18 @@ void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
     return;
   }
 
-  OnVerificationBeforeFillingFinished(credential, /*success=*/true);
+  // TODO (crbug.com/377215451): Refactor the code so that this call is only
+  // made for a grouped credential.
+  OnVerificationBeforeFillingFinished(
+      credential,
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
 }
 
 void TouchToFillControllerAutofillDelegate::OnVerificationBeforeFillingFinished(
     const UiCredential& credential,
-    bool success) {
-  if (!success) {
+    AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason) {
+  if (dismiss_reason !=
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept) {
     // TODO(crbug.com/372635361): Introduce new bucket to report
     // grouped credential filling metric.
     CleanUpFillerAndReportOutcome(TouchToFillOutcome::kSheetDismissed,

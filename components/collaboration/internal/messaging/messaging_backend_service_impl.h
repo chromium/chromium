@@ -15,6 +15,10 @@
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
+namespace collaboration::messaging {
+class MessagingBackendStore;
+}
+
 namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
@@ -69,6 +73,9 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.
   std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier_;
+
+  // Store for reading and writing messages:
+  std::unique_ptr<MessagingBackendStore> store_;
 
   // Whether the TabGroupChangeNotifier has been initialized.
   bool tab_group_change_notifier_initialized_ = false;

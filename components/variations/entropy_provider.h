@@ -61,8 +61,8 @@ struct ValueInRange {
 class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider final
     : public base::FieldTrial::EntropyProvider {
  public:
-  // Creates a provider with |entropy_value| in the range of possible values.
-  explicit NormalizedMurmurHashEntropyProvider(ValueInRange entropy_value);
+  // Creates a provider with `entropy_source` in the range of possible values.
+  explicit NormalizedMurmurHashEntropyProvider(ValueInRange entropy_source);
 
   NormalizedMurmurHashEntropyProvider(
       const NormalizedMurmurHashEntropyProvider&) = default;
@@ -73,11 +73,11 @@ class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider final
   double GetEntropyForTrial(std::string_view trial_name,
                             uint32_t randomization_seed) const override;
 
-  uint32_t entropy_value() const { return entropy_value_.value; }
-  uint32_t entropy_domain() const { return entropy_value_.range; }
+  uint32_t entropy_source() const { return entropy_source_.value; }
+  uint32_t entropy_domain() const { return entropy_source_.range; }
 
  private:
-  const ValueInRange entropy_value_;
+  const ValueInRange entropy_source_;
 };
 
 class SessionEntropyProvider : public base::FieldTrial::EntropyProvider {
@@ -93,16 +93,16 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
  public:
   // Construct providers from the given entropy sources. Note:
   //  - If `high_entropy_source` is empty, no high entropy provider is created.
-  //  - A limited entropy provider is created when `limited_entropy_value` is a
-  //    non-empty string. `limited_entropy_value` is a 128-bit GUID as a string.
+  //  - A limited entropy provider is created when `limited_entropy_source` is a
+  //    non-empty string. `limited_entropy_source` is a 128-bit GUID string.
   //    It is used to randomize any study that is constrained to a layer with
   //    LIMITED entropy mode.
   //  - The value of `enable_benchmarking` will be returned by
   //    benchmarking_enabled(). If true, the caller should suppress
   //    randomization.
-  EntropyProviders(std::string_view high_entropy_value,
-                   ValueInRange low_entropy_value,
-                   std::string_view limited_entropy_value,
+  EntropyProviders(std::string_view high_entropy_source,
+                   ValueInRange low_entropy_source,
+                   std::string_view limited_entropy_source,
                    bool enable_benchmarking = false);
 
   EntropyProviders(const EntropyProviders&) = delete;
@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
   // Returns the limited entropy provider.
   // NOTE: the caller should call has_limited_entropy() before calling this to
   // ensure the limited entropy provider is available. The limited entropy
-  // provider can be constructed by supplying `limited_entropy_value` in the
+  // provider can be constructed by supplying `limited_entropy_source` in the
   // constructor.
   virtual const base::FieldTrial::EntropyProvider& limited_entropy() const;
 
@@ -133,7 +133,7 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
   // parameter.
   bool has_limited_entropy() const { return limited_entropy_.has_value(); }
 
-  size_t low_entropy_value() const { return low_entropy_.entropy_value(); }
+  size_t low_entropy_source() const { return low_entropy_.entropy_source(); }
   size_t low_entropy_domain() const { return low_entropy_.entropy_domain(); }
 
   bool benchmarking_enabled() const { return benchmarking_enabled_; }

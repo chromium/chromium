@@ -41,6 +41,7 @@ LayoutUnit ResolveInlineLengthInternal(
   const Length& length =
       original_length.IsAuto() && auto_length ? *auto_length : original_length;
   switch (length.GetType()) {
+    case Length::kFillAvailable:
     case Length::kStretch: {
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
@@ -154,6 +155,7 @@ LayoutUnit ResolveBlockLengthInternal(
   const Length& length =
       original_length.IsAuto() && auto_length ? *auto_length : original_length;
   switch (length.GetType()) {
+    case Length::kFillAvailable:
     case Length::kStretch: {
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
@@ -165,6 +167,9 @@ LayoutUnit ResolveBlockLengthInternal(
                    : kIndefiniteSize;
       }
       DCHECK_GE(available_size, LayoutUnit());
+      // TODO(https://crbug.com/41253915): This is where 'stretch' and
+      // '-webkit-fill-available' will be different. We won't always subtract
+      // both margins for 'stretch'.
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       return std::max(border_padding.BlockSum(),
                       available_size - margins.BlockSum());
@@ -505,13 +510,13 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
       return Length::MinContent();
     }
     if (space.InlineAutoBehavior() == AutoSizeBehavior::kStretchExplicit) {
-      return Length::Stretch();
+      return Length::FillAvailable();
     }
     if (may_apply_aspect_ratio) {
       return Length::FitContent();
     }
     if (space.InlineAutoBehavior() == AutoSizeBehavior::kStretchImplicit) {
-      return Length::Stretch();
+      return Length::FillAvailable();
     }
     DCHECK_EQ(space.InlineAutoBehavior(), AutoSizeBehavior::kFitContent);
     return Length::FitContent();
@@ -772,13 +777,13 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
       return Length::FitContent();
     }
     if (space.BlockAutoBehavior() == AutoSizeBehavior::kStretchExplicit) {
-      return Length::Stretch();
+      return Length::FillAvailable();
     }
     if (may_apply_aspect_ratio) {
       return Length::FitContent();
     }
     if (space.BlockAutoBehavior() == AutoSizeBehavior::kStretchImplicit) {
-      return Length::Stretch();
+      return Length::FillAvailable();
     }
     DCHECK_EQ(space.BlockAutoBehavior(), AutoSizeBehavior::kFitContent);
     return Length::FitContent();
@@ -1014,7 +1019,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
                (space.IsBlockAutoBehaviorStretch() &&
                 space.AvailableSize().block_size != kIndefiniteSize)) {
       const Length& block_length_to_resolve =
-          block_length.HasAuto() ? Length::Stretch() : block_length;
+          block_length.HasAuto() ? Length::FillAvailable() : block_length;
 
       const LayoutUnit main_percentage_resolution_size =
           space.ReplacedPercentageResolutionBlockSize();
@@ -1051,7 +1056,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
       size = ResolveMainInlineLength(
           space, style, border_padding,
           [](SizeType) -> MinMaxSizesResult { NOTREACHED(); },
-          Length::Stretch(), /* auto_length */ nullptr,
+          Length::FillAvailable(), /* auto_length */ nullptr,
           /* override_available_size */ kIndefiniteSize);
     }
 
@@ -1110,7 +1115,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
                (space.IsInlineAutoBehaviorStretch() &&
                 space.AvailableSize().inline_size != kIndefiniteSize)) {
       const Length& auto_length = space.IsInlineAutoBehaviorStretch()
-                                      ? Length::Stretch()
+                                      ? Length::FillAvailable()
                                       : Length::FitContent();
       const LayoutUnit inline_size =
           ResolveMainInlineLength(space, style, border_padding, MinMaxSizesFunc,

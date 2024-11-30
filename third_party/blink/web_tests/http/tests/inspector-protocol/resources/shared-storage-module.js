@@ -6,7 +6,7 @@ class TestOperation {
     await sharedStorage.set(
         'key2-set-from-worklet', 'value2', {ignoreIfPresent: true});
     await sharedStorage.append('key1-set-from-worklet', 'value1');
-    await sharedStorage.delete('key2-set-from-worklet', 'value2');
+    await sharedStorage.delete('key2-set-from-worklet');
     console.log(await sharedStorage.length());
     console.log(await sharedStorage.remainingBudget());
     for await (const key of sharedStorage.keys()) {

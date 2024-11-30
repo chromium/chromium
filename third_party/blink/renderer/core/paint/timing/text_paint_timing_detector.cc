@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -274,7 +273,7 @@ void LargestTextPaintManager::MaybeUpdateLargestIgnoredText(
     // queued for paint, we'll set the appropriate |frame_index_|.
     largest_ignored_text_ = MakeGarbageCollected<TextRecord>(
         *object.GetNode(), size, gfx::RectF(), frame_visual_rect,
-        root_visual_rect, 0u);
+        root_visual_rect, 0u, false /* is_needed_for_element_timing */);
   }
 }
 
@@ -297,8 +296,9 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
       continue;
     }
     record->paint_time = timestamp;
-    if (can_report_element_timing)
+    if (can_report_element_timing && record->is_needed_for_element_timing_) {
       text_element_timing_->OnTextObjectPainted(*record);
+    }
 
     if (ltp_manager_ && (record->recorded_size > 0u) &&
         !(record->node_ &&
@@ -318,22 +318,27 @@ void TextPaintTimingDetector::MaybeRecordTextRecord(
     const gfx::RectF& root_visual_rect) {
   Node* node = object.GetNode();
   DCHECK(node);
+
+  bool is_needed_for_element_timing =
+      TextElementTiming::NeededForElementTiming(*node);
   // If the node is not required by LCP and not required by ElementTiming, we
   // can bail out early.
   if ((visual_size == 0u || !IsRecordingLargestTextPaint()) &&
-      !TextElementTiming::NeededForElementTiming(*node)) {
+      !is_needed_for_element_timing) {
     return;
   }
   TextRecord* record;
   if (visual_size == 0u) {
     record = MakeGarbageCollected<TextRecord>(
-        *node, 0, gfx::RectF(), gfx::Rect(), gfx::RectF(), frame_index_);
+        *node, 0, gfx::RectF(), gfx::Rect(), gfx::RectF(), frame_index_,
+        is_needed_for_element_timing);
   } else {
     record = MakeGarbageCollected<TextRecord>(
         *object.GetNode(), visual_size,
         TextElementTiming::ComputeIntersectionRect(
             object, frame_visual_rect, property_tree_state, frame_view_),
-        frame_visual_rect, root_visual_rect, frame_index_);
+        frame_visual_rect, root_visual_rect, frame_index_,
+        is_needed_for_element_timing);
   }
   QueueToMeasurePaintTime(object, record);
 }

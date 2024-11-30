@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_common.h"
@@ -29,7 +30,6 @@
 #include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/buildflags.h"
-
 
 namespace ui {
 
@@ -432,8 +432,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
       CHECK(!ax_tree()->error().empty())
           << "A failed serialization didn't supply the error via "
              "AXTree::RecordError().";
-      if (!delegate_)
-        CHECK(false) << ax_tree()->error();
+      CHECK(delegate_) << ax_tree()->error();
       return false;
     }
 
@@ -941,11 +940,11 @@ void BrowserAccessibilityManager::Decrement(const BrowserAccessibility& node) {
 
 void BrowserAccessibilityManager::DoDefaultAction(
     const BrowserAccessibility& node) {
-  DCHECK(node.node()->data().GetDefaultActionVerb() !=
-         ax::mojom::DefaultActionVerb::kNone);
+  DCHECK(node.HasDefaultAction());
 
-  if (!delegate_)
+  if (!delegate_) {
     return;
+  }
 
   base::RecordAction(
       base::UserMetricsAction("Accessibility.NativeApi.DoDefault"));
@@ -1439,7 +1438,7 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
     const BrowserAccessibility& start_object,
     const BrowserAccessibility& end_object) {
   return GetTextForRange(start_object, 0, end_object,
-                         end_object.GetTextContentUTF16().length());
+                         end_object.GetTextContentLengthUTF16());
 }
 
 // static
@@ -1456,9 +1455,9 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
       std::swap(start_offset, end_offset);
 
     if (start_offset >=
-            static_cast<int>(start_object.GetTextContentUTF16().length()) ||
+            static_cast<int>(start_object.GetTextContentLengthUTF16()) ||
         end_offset >
-            static_cast<int>(start_object.GetTextContentUTF16().length())) {
+            static_cast<int>(start_object.GetTextContentLengthUTF16())) {
       return std::u16string();
     }
 
@@ -1478,9 +1477,9 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
 
     const BrowserAccessibility* text_object = text_only_objects[0];
     if (start_offset <
-            static_cast<int>(text_object->GetTextContentUTF16().length()) &&
+            static_cast<int>(text_object->GetTextContentLengthUTF16()) &&
         end_offset <=
-            static_cast<int>(text_object->GetTextContentUTF16().length())) {
+            static_cast<int>(text_object->GetTextContentLengthUTF16())) {
       return text_object->GetTextContentUTF16().substr(
           start_offset, end_offset - start_offset);
     }
@@ -1509,7 +1508,7 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
 
   const BrowserAccessibility* end_text_object = text_only_objects.back();
   if (end_offset <=
-      static_cast<int>(end_text_object->GetTextContentUTF16().length())) {
+      static_cast<int>(end_text_object->GetTextContentLengthUTF16())) {
     text += end_text_object->GetTextContentUTF16().substr(0, end_offset);
   } else {
     text += end_text_object->GetTextContentUTF16();
@@ -1532,9 +1531,9 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
       std::swap(start_offset, end_offset);
 
     if (start_offset >=
-            static_cast<int>(start_object.GetTextContentUTF16().length()) ||
+            static_cast<int>(start_object.GetTextContentLengthUTF16()) ||
         end_offset >
-            static_cast<int>(start_object.GetTextContentUTF16().length())) {
+            static_cast<int>(start_object.GetTextContentLengthUTF16())) {
       return gfx::Rect();
     }
 
@@ -1561,7 +1560,7 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
   const BrowserAccessibility* current = first;
   do {
     if (current->IsText()) {
-      int len = static_cast<int>(current->GetTextContentUTF16().size());
+      int len = static_cast<int>(current->GetTextContentLengthUTF16());
       int start_char_index = 0;
       int end_char_index = len;
       if (current == first)

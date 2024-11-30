@@ -64,9 +64,9 @@ bool operator<(const ParentIDAndTitle& left, const ParentIDAndTitle& right) {
          std::tie(right.parent_id, right.title);
 }
 
-DatabaseContents::DatabaseContents() {}
+DatabaseContents::DatabaseContents() = default;
 
-DatabaseContents::~DatabaseContents() {}
+DatabaseContents::~DatabaseContents() = default;
 
 namespace {
 
@@ -244,7 +244,7 @@ void MetadataDatabaseIndex::Initialize(
 }
 
 MetadataDatabaseIndex::MetadataDatabaseIndex(LevelDBWrapper* db) : db_(db) {}
-MetadataDatabaseIndex::~MetadataDatabaseIndex() {}
+MetadataDatabaseIndex::~MetadataDatabaseIndex() = default;
 
 void MetadataDatabaseIndex::RemoveUnreachableItems() {
   // Do nothing. MetadataDatabaseIndex is behind a private flag and will be

@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">ເປີດການຕັ້ງຄ່າ Chrome ເພື່ອຕັ້ງຄ່າ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ.</translation>
 <translation id="1670609221633730681">ເຄັດລັບສຳລັບ Chrome: ເລືອກຕຳແໜ່ງຂອງແຖບທີ່ຢູ່ຂອງທ່ານ</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">ບັນທຶກລະຫັດຜ່ານຂອງທ່ານໃນ Chrome</translation>
 <translation id="1790080846677398234">ເພີ່ມ URL ທີ່ປ້ອນເຂົ້າໃສ່ບຸກມາກຂອງທ່ານໃນ Chrome.</translation>
 <translation id="1799920918471566157">ເຄັດລັບກ່ຽວກັບ Chrome</translation>
 <translation id="1830634592642484976">ປັດຈຸບັນທີ່ຢູ່ນີ້ຖືກບັນທຶກໃສ່ Chrome ແລ້ວ. ເພື່ອໃຊ້ມັນທົ່ວຜະລິດຕະພັນ Google, ໃຫ້ບັນທຶກມັນໃສ່ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">ນີ້ໝາຍຄວາມວ່າ Chrome ຈະຮ້ອງຂໍເວັບໄຊເດັສທັອບທຸກເທື່ອ.</translation>
 <translation id="3740397331642243698">ເປີດ URL ທີ່ປ້ອນເຂົ້າໃນ Google Chrome ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="3741995255368156336">ເປີດລາຍຊື່ການອ່ານ Chrome.</translation>
+<translation id="3808570423967020928">ເຂົ້າເຖິງ Chrome ໄດ້ໄວຂຶ້ນຈາກດັອກໂຮມສະກຣີນຂອງທ່ານ.</translation>
 <translation id="3827545470516145620">ທ່ານຈະໄດ້ຮັບການປົກປ້ອງຄວາມປອດໄພມາດຕະຖານຢູ່ອຸປະກອນນີ້</translation>
 <translation id="384394811301901750">Google Chrome ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ໃນຂະນະນີ້</translation>
 <translation id="3863841106411295595">ເພີ່ມ URL ທີ່ປ້ອນເຂົ້າໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານໃນ Chrome.</translation>
@@ -219,9 +221,11 @@
 
 ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ໃຊ້ຂໍ້ມູນເພື່ອປັບປຸງປະສົບການ Chrome ຂອງທ່ານ, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />ບໍລິການ Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">ລຶບຂໍ້ມູນການທ່ອງເວັບໃນ Chrome.</translation>
+<translation id="6924922227983877439">ເປີດລິ້ງໃນ Chrome ຕາມຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="6975725306479268850">ເລືອກ Chrome ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="7056826488869329999">ເປີດ ແລະ ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພໃນ Chrome.</translation>
 <translation id="7061455974939528301">ກົດໄອຄອນ Chrome ຄ້າງໄວ້ ແລ້ວຄລິກ "ແກ້ໄຂໂຮມສະກຣີນ"</translation>
+<translation id="7065813315247345131">ຍ້າຍ Chrome ໄປຫາດັອກ</translation>
 <translation id="7124339256045485976">ຮັກສາໃຫ້ Chrome ໃໝ່ຫຼ້າສຸດ</translation>
 <translation id="7161390184744336561">Google Chrome ເກົ່າແລ້ວ</translation>
 <translation id="7165736900384873061">ເລີ່ມໃຊ້ເຄື່ອງສະແກນ QR ຂອງ Google Chrome</translation>

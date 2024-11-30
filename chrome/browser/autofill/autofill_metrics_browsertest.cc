@@ -47,13 +47,13 @@ bool ContainsHost(
 
 class AutofillMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  AutofillMetricsBrowserTest() {}
+  AutofillMetricsBrowserTest() = default;
 
   AutofillMetricsBrowserTest(const AutofillMetricsBrowserTest&) = delete;
   AutofillMetricsBrowserTest& operator=(const AutofillMetricsBrowserTest&) =
       delete;
 
-  ~AutofillMetricsBrowserTest() override {}
+  ~AutofillMetricsBrowserTest() override = default;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -204,14 +204,14 @@ IN_PROC_BROWSER_TEST_F(
 class SitePerProcessAutofillMetricsBrowserTest
     : public AutofillMetricsBrowserTest {
  public:
-  SitePerProcessAutofillMetricsBrowserTest() {}
+  SitePerProcessAutofillMetricsBrowserTest() = default;
 
   SitePerProcessAutofillMetricsBrowserTest(
       const SitePerProcessAutofillMetricsBrowserTest&) = delete;
   SitePerProcessAutofillMetricsBrowserTest& operator=(
       const SitePerProcessAutofillMetricsBrowserTest&) = delete;
 
-  ~SitePerProcessAutofillMetricsBrowserTest() override {}
+  ~SitePerProcessAutofillMetricsBrowserTest() override = default;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {

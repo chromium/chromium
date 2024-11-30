@@ -451,7 +451,7 @@ Status LaunchRemoteChromeSession(
       browser_info, capabilities.window_types,
       std::move(devtools_websocket_client), std::move(devtools_event_listeners),
       capabilities.mobile_device, capabilities.page_load_strategy,
-      !capabilities.web_socket_url);
+      !capabilities.web_socket_url, capabilities.enable_extension_targets);
   return Status(kOk);
 }
 
@@ -690,7 +690,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
       status = CheckVersion(browser_info, capabilities, ChromeType::Desktop);
     }
     if (status.IsOk()) {
-      status = target_utils::WaitForPage(*devtools_websocket_client, timeout);
+      status = target_utils::WaitForTab(*devtools_websocket_client, timeout);
     }
     Status close_child_enpoints_status = pipe_builder.CloseChildEndpoints();
     if (status.IsOk()) {
@@ -766,13 +766,15 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(process), command,
           &user_data_dir_temp_dir, &extension_dir,
-          capabilities.network_emulation_enabled, !capabilities.web_socket_url);
-  if (!capabilities.extension_load_timeout.is_zero()) {
+          capabilities.network_emulation_enabled, !capabilities.web_socket_url,
+          capabilities.enable_extension_targets);
+  if (capabilities.enable_extension_targets &&
+      !capabilities.extension_load_timeout.is_zero()) {
     for (const std::string& url : extension_bg_pages) {
       VLOG(0) << "Waiting for extension bg page load: " << url;
       std::unique_ptr<WebView> web_view;
-      status = chrome_desktop->WaitForPageToLoad(
-          url, capabilities.extension_load_timeout, &web_view, w3c_compliant);
+      status = chrome_desktop->WaitForExtensionPageToLoad(
+          url, capabilities.extension_load_timeout, w3c_compliant);
       if (status.IsError()) {
         return Status(
             kSessionNotCreated,
@@ -852,7 +854,8 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
       browser_info, capabilities.window_types,
       std::move(devtools_websocket_client), std::move(devtools_event_listeners),
       capabilities.mobile_device, capabilities.page_load_strategy,
-      std::move(device), !capabilities.web_socket_url);
+      std::move(device), !capabilities.web_socket_url,
+      capabilities.enable_extension_targets);
   return Status(kOk);
 }
 
@@ -912,14 +915,15 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(dummy_process), command,
           &user_data_dir_temp_dir, &extension_dir,
-          capabilities.network_emulation_enabled, !capabilities.web_socket_url);
+          capabilities.network_emulation_enabled, !capabilities.web_socket_url,
+          capabilities.enable_extension_targets);
 
-  if (!capabilities.extension_load_timeout.is_zero()) {
+  if (capabilities.enable_extension_targets &&
+      !capabilities.extension_load_timeout.is_zero()) {
     for (const std::string& url : extension_bg_pages) {
       VLOG(0) << "Waiting for extension bg page load: " << url;
-      std::unique_ptr<WebView> web_view;
-      status = chrome_impl->WaitForPageToLoad(
-          url, capabilities.extension_load_timeout, &web_view, w3c_compliant);
+      status = chrome_impl->WaitForExtensionPageToLoad(
+          url, capabilities.extension_load_timeout, w3c_compliant);
       if (status.IsError()) {
         return Status(
             kSessionNotCreated,

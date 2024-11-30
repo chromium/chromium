@@ -733,7 +733,7 @@ void WebTransport::OnDatagramReceived(std::string_view datagram) {
     return;
   }
 
-  client_->OnDatagramReceived(base::make_span(
+  client_->OnDatagramReceived(base::span(
       reinterpret_cast<const uint8_t*>(datagram.data()), datagram.size()));
 }
 

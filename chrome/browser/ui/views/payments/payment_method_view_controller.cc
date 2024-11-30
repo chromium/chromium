@@ -66,7 +66,7 @@ class PaymentMethodListItem final : public PaymentRequestItemList::Item {
   PaymentMethodListItem(const PaymentMethodListItem&) = delete;
   PaymentMethodListItem& operator=(const PaymentMethodListItem&) = delete;
 
-  ~PaymentMethodListItem() override {}
+  ~PaymentMethodListItem() override = default;
 
   base::WeakPtr<PaymentRequestRowView> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -165,7 +165,7 @@ PaymentMethodViewController::PaymentMethodViewController(
   }
 }
 
-PaymentMethodViewController::~PaymentMethodViewController() {}
+PaymentMethodViewController::~PaymentMethodViewController() = default;
 
 std::u16string PaymentMethodViewController::GetSheetTitle() {
   return l10n_util::GetStringUTF16(

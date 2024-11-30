@@ -61,7 +61,14 @@ public class CachedFlag extends Flag {
             boolean defaultValue,
             boolean defaultValueInTests) {
         super(featureMap, featureName);
-        mDefaultValue = BuildConfig.IS_FOR_TEST ? defaultValueInTests : defaultValue;
+
+        // In is_chrome_branded = true builds, fieldtrial_testing_config.json is not applied, so
+        // we do not want to use the |defaultValueInTests|, which should be kept in sync with the
+        // .json.
+        mDefaultValue =
+                (BuildConfig.IS_FOR_TEST && !BuildConfig.IS_CHROME_BRANDED)
+                        ? defaultValueInTests
+                        : defaultValue;
     }
 
     /**

@@ -18,6 +18,11 @@
 
 namespace user_education {
 
+namespace internal {
+class FeaturePromoQueueCachedDataTest;
+class FeaturePromoQueueSetCachedDataTest;
+}  // namespace internal
+
 // Represents a single precondition for promos. Derive specific preconditions
 // from this class.
 class FeaturePromoPrecondition {
@@ -32,15 +37,12 @@ class FeaturePromoPrecondition {
   // Returns a unique identifier for different types of preconditions.
   virtual Identifier GetIdentifier() const = 0;
 
-  // Gets the failure reason to give if the condition is not met.
-  // This can be changed in case e.g. an error condition is detected.
-  virtual FeaturePromoResult::Failure GetFailure() const = 0;
-
   // Gets a description of the precondition.
   virtual const std::string& GetDescription() const = 0;
 
-  // Gets whether the precondition is met and promos are allowed.
-  virtual bool IsAllowed() const = 0;
+  // Gets whether the precondition is met and promos are allowed. If not,
+  // returns the relevant failure.
+  virtual FeaturePromoResult CheckPrecondition() const = 0;
 
   // Extracts any cached data from this precondition and adds it to `to_add_to`;
   // future calls to this object may fail. Cached data likely reflects the most
@@ -53,8 +55,8 @@ class FeaturePromoPrecondition {
   FeaturePromoPrecondition() = default;
 };
 
-// Same as `FeaturePromoPrecondition`, but stores values for identifier,
-// failure, and description, along with optional cached data.
+// Same as `FeaturePromoPrecondition`, but stores values for identifier
+// and description, along with optional cached data.
 class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
  public:
   using Identifier = ui::ElementIdentifier;
@@ -64,16 +66,12 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
 
   // FeaturePromoPrecondition:
   Identifier GetIdentifier() const override;
-  FeaturePromoResult::Failure GetFailure() const override;
   const std::string& GetDescription() const override;
   void ExtractCachedData(
       internal::PreconditionData::Collection& to_add_to) override;
 
-  void set_failure(FeaturePromoResult::Failure failure) { failure_ = failure; }
-
  protected:
   FeaturePromoPreconditionBase(Identifier identifier,
-                               FeaturePromoResult::Failure failure,
                                std::string description);
 
   // Use this method to initialize the various types of data the precondition
@@ -111,9 +109,10 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
                            GetAfterExtractCachedDataFails);
   FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
                            FeaturePromoPreconditionList_ExtractCachedData);
+  friend internal::FeaturePromoQueueCachedDataTest;
+  friend internal::FeaturePromoQueueSetCachedDataTest;
 
   const Identifier identifier_;
-  FeaturePromoResult::Failure failure_;
   const std::string description_;
 
   // Mutable so that data can be cached during retrieval.
@@ -125,25 +124,26 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
 class CachingFeaturePromoPrecondition : public FeaturePromoPreconditionBase {
  public:
   CachingFeaturePromoPrecondition(Identifier identifier,
-                                  FeaturePromoResult::Failure failure,
                                   std::string description,
-                                  bool initial_state);
+                                  FeaturePromoResult initial_state);
   ~CachingFeaturePromoPrecondition() override;
 
   // FeaturePromoPrecondition:
-  bool IsAllowed() const override;
+  FeaturePromoResult CheckPrecondition() const override;
 
   // See `set_is_allowed`.
-  void set_is_allowed_for_testing(bool is_allowed) {
-    set_is_allowed(is_allowed);
+  void set_check_result_for_testing(FeaturePromoResult check_result) {
+    set_check_result(check_result);
   }
 
  protected:
   // Called by implementing classes to update the allowed state.
-  void set_is_allowed(bool is_allowed) { is_allowed_ = is_allowed; }
+  void set_check_result(FeaturePromoResult check_result) {
+    check_result_ = check_result;
+  }
 
  private:
-  bool is_allowed_;
+  FeaturePromoResult check_result_;
 };
 
 // Represents a precondition that forwards its allowed state from some other
@@ -152,16 +152,15 @@ class CallbackFeaturePromoPrecondition : public FeaturePromoPreconditionBase {
  public:
   CallbackFeaturePromoPrecondition(
       Identifier identifier,
-      FeaturePromoResult::Failure failure,
       std::string description,
-      base::RepeatingCallback<bool()> is_allowed_callback);
+      base::RepeatingCallback<FeaturePromoResult()> check_result_callback);
   ~CallbackFeaturePromoPrecondition() override;
 
   // FeaturePromoPrecondition:
-  bool IsAllowed() const override;
+  FeaturePromoResult CheckPrecondition() const override;
 
  private:
-  const base::RepeatingCallback<bool()> is_allowed_callback_;
+  const base::RepeatingCallback<FeaturePromoResult()> check_result_callback_;
 };
 
 // Represents a precondition that forwards all of its information from another
@@ -174,9 +173,8 @@ class ForwardingFeaturePromoPrecondition : public FeaturePromoPrecondition {
 
   // FeaturePromoPrecondition:
   Identifier GetIdentifier() const override;
-  FeaturePromoResult::Failure GetFailure() const override;
   const std::string& GetDescription() const override;
-  bool IsAllowed() const override;
+  FeaturePromoResult CheckPrecondition() const override;
 
  private:
   raw_ref<const FeaturePromoPrecondition> source_;

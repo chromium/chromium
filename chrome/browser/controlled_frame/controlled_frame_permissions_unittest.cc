@@ -192,6 +192,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::JAVASCRIPT_OPTIMIZER:
       case ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL:
       case ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS:
+      case ContentSettingsType::LEGACY_COOKIE_SCOPE:
         break;
 
       default:

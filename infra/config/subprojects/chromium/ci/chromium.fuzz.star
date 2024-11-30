@@ -346,6 +346,7 @@ ci.builder(
         short_name = "centipede",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    execution_timeout = 4 * time.hour,
     properties = {
         "upload_bucket": "chromium-browser-centipede",
         "upload_directory": "asan",
@@ -690,8 +691,9 @@ ci.builder(
         mixins = ["chromium-tester-service-account"],
     ),
     builderless = False,
-    cores = 12,
+    cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac asan",
         short_name = "med",
@@ -1124,6 +1126,7 @@ ci.builder(
         "upload_directory": "asan",
     },
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_linking = True,
 )
 
 ci.builder(
@@ -1293,7 +1296,7 @@ ci.builder(
                 "clobber",
                 "mb",
             ],
-            build_config = builder_config.build_config.DEBUG,
+            build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),

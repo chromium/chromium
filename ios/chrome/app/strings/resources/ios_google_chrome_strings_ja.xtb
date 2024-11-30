@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chrome の設定を開いて Chrome を既定のブラウザに設定します。</translation>
 <translation id="1670609221633730681">Chrome のヒント: アドレスバーの位置を選択</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">パスワードを Chrome に保存</translation>
 <translation id="1790080846677398234">入力した URL を Chrome のブックマークに追加します。</translation>
 <translation id="1799920918471566157">Chrome を使いこなすヒント</translation>
 <translation id="1830634592642484976">この住所は現在、Chrome に保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">Chrome は毎回モバイルサイトをリクエストします。</translation>
 <translation id="3740397331642243698">入力された URL を Google Chrome のシークレット モードで開きます。</translation>
 <translation id="3741995255368156336">Chrome リーディング リストを開きます。</translation>
+<translation id="3808570423967020928">ホーム画面ドックから Chrome にすばやくアクセスできます。</translation>
 <translation id="3827545470516145620">このデバイスは標準のセキュリティ機能で保護されます</translation>
 <translation id="384394811301901750">現在 Google Chrome ではカメラを使用できません</translation>
 <translation id="3863841106411295595">入力した URL を Chrome のリーディング リストに追加します。</translation>
@@ -178,7 +180,7 @@
 数分待ってからアカウントを切り替えてください。今すぐアカウントを切り替えると、このデータは削除されます。</translation>
 <translation id="5998675059699164418">Chrome を使用するためにログインするよう、組織が求めています。</translation>
 <translation id="6021312115739110405">Google があなた向けに作成したカスタム フィード。ニュース、スポーツ、天気情報など。</translation>
-<translation id="6022659036123304283">Chrome を独自にカスタマイズ</translation>
+<translation id="6022659036123304283">Chrome を自分用にカスタマイズ</translation>
 <translation id="6110625574506755980">Chrome の一部の機能は使用できなくなります。</translation>
 <translation id="6132149203299792222">Google アカウントでログインすると、パスワードやブックマークなどを同期できます。</translation>
 <translation id="6145223986912084844">chrome</translation>
@@ -219,9 +221,11 @@
 
 Chrome を使いやすくするためにデータを使用するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="6922332667202044570">Chrome の閲覧履歴データを削除します。</translation>
+<translation id="6924922227983877439">デフォルトで Chrome を使用してリンクを開く</translation>
 <translation id="6975725306479268850">自動入力で Chrome を選択する</translation>
 <translation id="7056826488869329999">Chrome で安全チェックを開いて実行します。</translation>
 <translation id="7061455974939528301">Chrome アイコンを長押しして、[ホーム画面を編集] をクリックします</translation>
+<translation id="7065813315247345131">Chrome をドックに移動</translation>
 <translation id="7124339256045485976">Chrome を最新の状態に維持します</translation>
 <translation id="7161390184744336561">Google Chrome は古いバージョンです</translation>
 <translation id="7165736900384873061">Google Chrome の QR スキャナの使用を開始する</translation>

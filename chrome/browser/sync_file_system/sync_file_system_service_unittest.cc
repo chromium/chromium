@@ -86,8 +86,8 @@ void VerifyFileError(base::OnceClosure callback, base::File::Error error) {
 
 class MockSyncEventObserver : public SyncEventObserver {
  public:
-  MockSyncEventObserver() {}
-  ~MockSyncEventObserver() override {}
+  MockSyncEventObserver() = default;
+  ~MockSyncEventObserver() override = default;
 
   MOCK_METHOD3(OnSyncStateUpdated,
                void(const GURL& app_origin,

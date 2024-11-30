@@ -42,6 +42,8 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
+#include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
@@ -56,9 +58,8 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
-#include "components/autofill/core/browser/randomized_encoder.h"
-#include "components/autofill/core/browser/server_prediction_overrides.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -252,10 +253,10 @@ void FormStructure::DetermineNonActiveHeuristicTypes(
     ParsingContext& context) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (base::FeatureList::IsEnabled(autofill_ai::kAutofillAi)) {
-    // Run the parser for the prediction improvements.
-    context.pattern_file = PatternFile::kPredictionImprovements;
+    // Run the parser for the AutofillAi.
+    context.pattern_file = PatternFile::kAutofillAi;
     AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),
-                         HeuristicSource::kPredictionImprovementRegexes);
+                         HeuristicSource::kAutofillAiRegexes);
   }
 
   if (GetActiveHeuristicSource() == HeuristicSource::kDefaultRegexes) {
@@ -438,6 +439,56 @@ bool FormStructure::ShouldBeQueried() const {
 bool FormStructure::ShouldBeUploaded() const {
   return active_field_count() >= kMinRequiredFieldsForUpload &&
          ShouldBeParsed();
+}
+
+bool FormStructure::ShouldUploadUkm(bool require_classified_field) const {
+  if (!ShouldBeParsed()) {
+    return false;
+  }
+
+  auto is_focusable_text_field =
+      [](const std::unique_ptr<AutofillField>& field) {
+        return field->IsTextInputElement() && field->IsFocusable();
+      };
+
+  // Return true if the field is a visible text input field which has predicted
+  // types from heuristics or the server.
+  auto is_focusable_predicted_text_field =
+      [](const std::unique_ptr<AutofillField>& field) {
+        return field->IsTextInputElement() && field->IsFocusable() &&
+               ((field->server_type() != NO_SERVER_DATA &&
+                 field->server_type() != UNKNOWN_TYPE) ||
+                field->heuristic_type() != UNKNOWN_TYPE ||
+                field->html_type() != HtmlFieldType::kUnspecified);
+      };
+
+  size_t num_text_fields = base::ranges::count_if(
+      fields(), require_classified_field ? is_focusable_predicted_text_field
+                                         : is_focusable_text_field);
+  if (num_text_fields == 0) {
+    return false;
+  }
+
+  // If the form contains a single text field and this contains the string
+  // "search" in its name/id/placeholder, the function return false and the form
+  // is not recorded into UKM. The form is considered a search box.
+  if (num_text_fields == 1) {
+    auto it = base::ranges::find_if(
+        fields(), require_classified_field ? is_focusable_predicted_text_field
+                                           : is_focusable_text_field);
+    if (base::ToLowerASCII((*it)->placeholder()).find(u"search") !=
+            std::string::npos ||
+        base::ToLowerASCII((*it)->name()).find(u"search") !=
+            std::string::npos ||
+        base::ToLowerASCII((*it)->label()).find(u"search") !=
+            std::string::npos ||
+        base::ToLowerASCII((*it)->aria_label()).find(u"search") !=
+            std::string::npos) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
@@ -732,6 +783,10 @@ void FormStructure::AssignBestFieldTypes(
 
     const FieldCandidates& candidates = iter->second;
     field->set_heuristic_type(heuristic_source, candidates.BestHeuristicType());
+    if (heuristic_source == GetActiveHeuristicSource()) {
+      autofill_metrics::LogLocalHeuristicMatchedAttribute(
+          candidates.BestHeuristicTypeReason());
+    }
 
     const size_t field_rank = ++field_rank_map.at(field->GetFieldSignature());
     // Log the field type predicted from local heuristics.
@@ -1068,12 +1123,36 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
 }
 
 base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-FormStructure::GetServerPredictions() const {
-  return base::MakeFlatMap<FieldGlobalId, AutofillType::ServerPrediction>(
-      fields_, {}, [](const std::unique_ptr<AutofillField>& field) {
-        return std::make_pair(field->global_id(),
-                              AutofillType::ServerPrediction(*field));
+FormStructure::GetServerPredictions(
+    const std::vector<FieldGlobalId>& field_ids) const {
+  auto predictions =
+      base::MakeFlatMap<FieldGlobalId, AutofillType::ServerPrediction>(
+          field_ids, {}, [](const FieldGlobalId& id) {
+            return std::make_pair(id, AutofillType::ServerPrediction());
+          });
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
+    auto field_in_predictions = predictions.find(field->global_id());
+    if (field_in_predictions != predictions.end()) {
+      field_in_predictions->second = AutofillType::ServerPrediction(*field);
+    }
+  }
+  return predictions;
+}
+
+base::flat_map<FieldGlobalId, FieldType> FormStructure::GetHeuristicPredictions(
+    HeuristicSource source,
+    const std::vector<FieldGlobalId>& field_ids) const {
+  auto predictions = base::MakeFlatMap<FieldGlobalId, FieldType>(
+      field_ids, {}, [](const FieldGlobalId& id) {
+        return std::make_pair(id, NO_SERVER_DATA);
       });
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
+    auto field_in_predictions = predictions.find(field->global_id());
+    if (field_in_predictions != predictions.end()) {
+      field_in_predictions->second = field->heuristic_type(source);
+    }
+  }
+  return predictions;
 }
 
 }  // namespace autofill

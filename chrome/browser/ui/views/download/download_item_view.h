@@ -84,7 +84,6 @@ class DownloadItemView : public views::View,
   void Layout(PassKey) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -107,6 +106,9 @@ class DownloadItemView : public views::View,
 
   std::u16string GetStatusTextForTesting() const;
   void OpenItemForTesting();
+
+  // Tooltip text is only displayed when not showing a warning dialog.
+  void UpdateTooltipText();
 
  protected:
   // views::View:

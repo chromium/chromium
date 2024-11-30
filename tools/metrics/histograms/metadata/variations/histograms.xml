@@ -27,10 +27,24 @@ chromium-metrics-reviews@google.com.
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The size of the variations seed (serialized uncompressed proto) that is
-    loaded on startup and used. Note that not all loaded seeds are used; for
-    example, expired seeds are not used. The seed could be a regular seed or a
-    safe seed. Recorded after setting up field trials with the seed.
+    The size (up to 1M bytes) of the variations seed (serialized uncompressed
+    proto) that is loaded on startup and used. Note that not all loaded seeds
+    are used; for example, expired seeds are not used. The seed could be a
+    regular seed or a safe seed. Recorded after setting up field trials with the
+    seed.
+  </summary>
+</histogram>
+
+<histogram name="Variations.AppliedSeed.Size.V2" units="bytes"
+    expires_after="2025-05-11">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The size (up to 10M bytes) of the variations seed (serialized uncompressed
+    proto) that is loaded on startup and used. Note that not all loaded seeds
+    are used; for example, expired seeds are not used. The seed could be a
+    regular seed or a safe seed. Recorded after setting up field trials with the
+    seed. Windows only.
   </summary>
 </histogram>
 
@@ -47,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.AppSeedFreshness" units="minutes"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -292,17 +306,6 @@ chromium-metrics-reviews@google.com.
     Records the reason for rejecting a variations seed that contains a layer
     with LIMITED entropy mode. This is recorded when calculating the entropy
     usage for the studies constrained to the layer with LIMITED entropy mode.
-  </summary>
-</histogram>
-
-<histogram name="Variations.LimitedEntropyTrial.AshSeedIsValid.OnSyncToLacros"
-    enum="BooleanValid" expires_after="2025-01-07">
-  <owner>yulunz@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Whether the seed value to randomize the limited entropy synthetic trial is
-    valid. This is only emitted from LaCrOS clients when reading the seed value
-    from the Ash Chrome client.
   </summary>
 </histogram>
 
@@ -582,6 +585,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Variations.SeedFileWriteEmptySeed.{SeedFile}"
+    enum="BooleanEmpty" expires_after="2025-05-06">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether a seed copied from local state to the {SeedFile} is empty. Emitted
+    by clients in the seed file experiment's treatment group when creating the
+    {SeedFile}'s SeedReaderWriter if the file (a) does not exist or (b) exists
+    but cannot be read.
+  </summary>
+  <token key="SeedFile">
+    <variant name="Latest" summary="latest seed file"/>
+    <variant name="Safe" summary="safe seed file"/>
+  </token>
+</histogram>
+
 <histogram name="Variations.SeedFreshness" units="minutes"
     expires_after="2025-05-11">
   <owner>asvitkine@chromium.org</owner>
@@ -748,7 +767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.WebViewDownloadJobInterval" units="minutes"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -759,7 +778,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.WebViewDownloadJobQueueTime" units="minutes"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include <cassert>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
+#include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/system/toast/system_nudge_view.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/callback_list.h"
@@ -29,8 +33,10 @@
 #include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/env.h"
+#include "ui/aura/window.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
@@ -195,6 +201,16 @@ class TestCampaignsManagerObserver : public growth::CampaignsManager::Observer {
   base::RunLoop run_loop_;
   bool loaded_ = false;
 };
+
+std::unique_ptr<aura::Window> CreateAuraWindow(std::u16string window_title) {
+  ash::TestWidgetBuilder builder;
+  builder.SetWindowTitle(window_title);
+  builder.SetTestWidgetDelegate();
+  builder.SetContext(ash::Shell::GetPrimaryRootWindow());
+  builder.SetBounds(gfx::Rect(0, 0, 600, 400));
+  views::Widget* widget = builder.BuildOwnedByNativeWidget();
+  return std::unique_ptr<aura::Window>(widget->GetNativeWindow());
+}
 
 }  // namespace
 
@@ -368,6 +384,17 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest, ClearConfig) {
 
   growth::CampaignsManager::Get()->ClearEvent(growth::CampaignEvent::kAppOpened,
                                               "abcd");
+}
+
+IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
+                       NotifyEventGameWindowOpened) {
+  const std::string event_name = "ChromeOSAshGrowthCampaigns_GameWindowOpened";
+  EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
+
+  std::unique_ptr<aura::Window> window =
+      CreateAuraWindow(u"TestGameWindowTitle");
+  window->SetProperty(ash::kAppIDKey,
+                      std::string(extension_misc::kGeForceNowAppId));
 }
 
 // CampaignsManagerInteractiveUiNudgeTest ----------------------------------

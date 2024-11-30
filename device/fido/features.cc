@@ -163,4 +163,9 @@ BASE_FEATURE(kDigitalCredentialsHybridLinking,
              "DigitalCredentialsHybridLinking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Net yet enabled by default.
+BASE_FEATURE(kWebAuthnPasskeyUpgrade,
+             "WebAuthenticationPasskeyUpgrade",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

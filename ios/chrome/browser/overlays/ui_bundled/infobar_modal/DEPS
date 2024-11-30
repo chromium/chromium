@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/ui/infobars/coordinators",
-  "+ios/chrome/browser/ui/infobars/modals",
-  "+ios/chrome/browser/ui/infobars/presentation",
+  "+ios/chrome/browser/infobars/ui_bundled/coordinators",
+  "+ios/chrome/browser/infobars/ui_bundled/modals",
+  "+ios/chrome/browser/infobars/ui_bundled/presentation",
 ]

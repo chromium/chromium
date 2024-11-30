@@ -136,6 +136,10 @@ void SurfaceLayer::SetIsReflection(bool is_reflection) {
   is_reflection_.Write(*this) = true;
 }
 
+void SurfaceLayer::SetOverrideChildPaintFlags(bool override_child_paint_flags) {
+  override_child_paint_flags_.Write(*this) = true;
+}
+
 void SurfaceLayer::SetMayContainVideo(bool may_contain_video) {
   may_contain_video_.Write(*this) = may_contain_video;
   SetNeedsCommit();
@@ -190,6 +194,8 @@ void SurfaceLayer::PushPropertiesTo(
   // commit, don't block on |surface_range_| again.
   deadline_in_frames_.Write(*this) = 0u;
   layer_impl->SetIsReflection(is_reflection_.Read(*this));
+  layer_impl->SetOverrideChildPaintFlags(
+      override_child_paint_flags_.Read(*this));
   layer_impl->SetStretchContentToFillBounds(
       stretch_content_to_fill_bounds_.Read(*this));
   layer_impl->SetSurfaceHitTestable(surface_hit_testable_.Read(*this));

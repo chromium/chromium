@@ -1260,10 +1260,6 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
 
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
 
-  net::SchemefulSite site_to_partition =
-      isolation_info.network_isolation_key().GetTopFrameSite().value_or(
-          net::SchemefulSite());
-
   PrivacySetting privacy_setting = cookie_access_policy_->CanAccessCookies(
       request.url, isolation_info.site_for_cookies(), is_3pc_allowed,
       request.storage_access_api_status);

@@ -76,7 +76,7 @@ class ResponseBuffer : public base::RefCountedThreadSafe<ResponseBuffer> {
 
  private:
   friend class base::RefCountedThreadSafe<ResponseBuffer>;
-  ~ResponseBuffer() {}
+  ~ResponseBuffer() = default;
 
   std::string response_;
   int result_;
@@ -118,7 +118,7 @@ AdbImpl::AdbImpl(
   CHECK(io_task_runner_.get());
 }
 
-AdbImpl::~AdbImpl() {}
+AdbImpl::~AdbImpl() = default;
 
 Status AdbImpl::GetDevices(std::vector<std::string>* devices) {
   const std::string& serial_from_env = GetSerialFromEnvironment();

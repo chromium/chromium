@@ -49,8 +49,7 @@ std::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     return std::nullopt;
   }
 
-  return make_span(static_cast<uint8_t*>(address),
-                   GetMemorySectionSize(address));
+  return span(static_cast<uint8_t*>(address), GetMemorySectionSize(address));
 }
 
 void PlatformSharedMemoryMapper::Unmap(span<uint8_t> mapping) {

@@ -49,6 +49,12 @@ found in the LICENSE file.
             android:background="@drawable/capture_overlay_border"
             android:visibility="gone" />
 
+        <FrameLayout
+            android:id="@+id/sheet_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false" />
+
         <View
             android:id="@+id/edge_to_edge_bottom_chin"
             android:layout_width="match_parent"
@@ -129,6 +135,14 @@ found in the LICENSE file.
             android:layout_height="wrap_content" />
 
         <ViewStub
+            android:id="@+id/bookmark_bar_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/bookmark_bar"
+            android:layout="@layout/bookmark_bar"
+            android:minHeight="@dimen/bookmark_bar_min_height" />
+
+        <ViewStub
             android:inflatedId="@+id/toolbar_progress_bar_container"
             android:id="@+id/progress_bar_stub"
             android:layout="@layout/toolbar_progress_bar"
@@ -197,12 +211,6 @@ found in the LICENSE file.
             android:id="@+id/tab_grid_dialog_stub"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-        <FrameLayout
-            android:id="@+id/sheet_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false" />
 
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 

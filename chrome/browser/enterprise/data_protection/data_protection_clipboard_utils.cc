@@ -177,7 +177,7 @@ void PasteIfAllowedByContentAnalysis(
   dialog_data.reason =
       enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
   dialog_data.clipboard_source =
-      data_controls::ReportingService::GetClipboardSourceString(
+      data_controls::ReportingService::GetClipboardSource(
           source, destination,
           enterprise_connectors::kOnBulkDataEntryScopePref);
 

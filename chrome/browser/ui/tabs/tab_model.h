@@ -11,27 +11,18 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-#include "chrome/browser/ui/tabs/supports_handles.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 class TabStripModel;
-
-namespace views {
-class WidgetDelegate;
-class Widget;
-}  // namespace views
-
 namespace tabs {
 
 class TabCollection;
 class TabFeatures;
 
-class TabModel final : public SupportsHandles<TabModel>,
-                       public TabInterface,
-                       public TabStripModelObserver {
+class TabModel final : public TabInterface, public TabStripModelObserver {
  public:
   // Conceptually, tabs should always be a part of a normal window. There are
   // currently 2 cases where they are not:
@@ -51,14 +42,14 @@ class TabModel final : public SupportsHandles<TabModel>,
   void OnRemovedFromModel();
 
   TabStripModel* owning_model() const { return owning_model_; }
-  tabs::TabModel* opener() const { return opener_; }
+  tabs::TabInterface* opener() const { return opener_; }
   bool reset_opener_on_active_tab_change() const {
     return reset_opener_on_active_tab_change_;
   }
   bool blocked() const { return blocked_; }
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
-  void set_opener(tabs::TabModel* opener) { opener_ = opener; }
+  void set_opener(tabs::TabInterface* opener) { opener_ = opener; }
   void set_reset_opener_on_active_tab_change(
       bool reset_opener_on_active_tab_change) {
     reset_opener_on_active_tab_change_ = reset_opener_on_active_tab_change;
@@ -86,7 +77,6 @@ class TabModel final : public SupportsHandles<TabModel>,
   // features do not need to handle the situation of existing outside the
   // context of a tab strip.
   void DestroyTabFeatures();
-  TabFeatures* tab_features() { return tab_features_.get(); }
 
   // Returns a pointer to the parent TabCollection. This method is specifically
   // designed to be accessible only within the collection tree that has the
@@ -141,11 +131,8 @@ class TabModel final : public SupportsHandles<TabModel>,
   bool IsInNormalWindow() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
-  std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
-      views::WidgetDelegate* delegate) override;
   bool IsPinned() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
-  uint32_t GetTabHandle() const override;
   void Close() override;
 
  private:
@@ -184,7 +171,7 @@ class TabModel final : public SupportsHandles<TabModel>,
   // model or is in the process of being closed.
   raw_ptr<TabStripModel> owning_model_ = nullptr;
   raw_ptr<TabStripModel> soon_to_be_owning_model_ = nullptr;
-  raw_ptr<tabs::TabModel> opener_ = nullptr;
+  raw_ptr<tabs::TabInterface> opener_ = nullptr;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
   bool blocked_ = false;
@@ -226,8 +213,6 @@ class TabModel final : public SupportsHandles<TabModel>,
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;
 };
-
-using TabHandle = TabModel::Handle;
 
 }  // namespace tabs
 

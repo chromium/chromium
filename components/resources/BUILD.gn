@@ -31,6 +31,7 @@ group("resources") {
     ":components_resources",
     ":components_scaled_resources",
     ":dev_ui_components_resources",
+    "../chrome_urls_ui/resources:resources",
     "../flags_ui/resources:resources",
     "../version_ui/resources:resources",
   ]

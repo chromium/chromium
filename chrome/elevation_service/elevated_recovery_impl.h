@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/win/scoped_handle.h"
-#include "components/crx_file/crx_verifier.h"
 
 namespace base {
 
@@ -19,6 +18,10 @@ class CommandLine;
 class FilePath;
 
 }  // namespace base
+
+namespace crx_file {
+enum class VerifierFormat;
+}
 
 namespace elevation_service {
 

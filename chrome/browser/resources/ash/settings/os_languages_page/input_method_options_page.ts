@@ -291,8 +291,7 @@ export class SettingsInputMethodOptionsPageElement extends
             name as keyof typeof OPTION_DEFAULT, defaultOverrides);
         needsPrefUpdate = true;
       }
-      if (loadTimeData.getBoolean('allowAutocorrectToggle') &&
-          name in AUTOCORRECT_OPTION_MAP_OVERRIDE) {
+      if (name in AUTOCORRECT_OPTION_MAP_OVERRIDE) {
         // Safety: We checked that `name` is a key above.
         value = AUTOCORRECT_OPTION_MAP_OVERRIDE[name as AutocorrectOptionMapKey]
                     // Safety: All autocorrect prefs have values that are
@@ -302,8 +301,7 @@ export class SettingsInputMethodOptionsPageElement extends
       }
       if (needsPrefUpdate) {
         // This function call is unsafe if this option is
-        // `JAPANESE_NUMBER_OF_SUGGESTIONS`, or `allowAutocorrectToggle` is off
-        // and this option is an autocorrect option.
+        // `JAPANESE_NUMBER_OF_SUGGESTIONS`.
         // In this case, `this.updatePref_` expects the value to be a string, as
         // the `shouldStoreAsNumber` branch is hit - but `getDefaultValue`
         // returns a number, not a string, in this case.
@@ -434,8 +432,7 @@ export class SettingsInputMethodOptionsPageElement extends
     if (updatedSettings[engineId] === undefined) {
       updatedSettings[engineId] = {};
     }
-    if (loadTimeData.getBoolean('allowAutocorrectToggle') &&
-        optionName in AUTOCORRECT_OPTION_MAP_OVERRIDE) {
+    if (optionName in AUTOCORRECT_OPTION_MAP_OVERRIDE) {
       // newValue is passed in as the value for display, so map it back to a
       // number.
       newValue =
@@ -446,15 +443,11 @@ export class SettingsInputMethodOptionsPageElement extends
               // a boolean here.
               .mapValueForWrite(newValue as boolean);
     } else if (shouldStoreAsNumber(optionName)) {
-      // Safety: The above if statements ensure that `optionName` is one of:
-      // - `PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL, if `allowAutocorrectToggle`
-      //   is not set
-      // - `VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL, if `allowAutocorrectToggle`
-      //   is not set
-      // - `JAPANESE_NUMBER_OF_SUGGESTIONS`
-      // All of the above returns `UiType.DROPDOWN` in `getOptionUiType`, so
-      // they are incorrectly passed as a string from Polymer's two-way native
-      // binding, and all of the above return numbers from `getOptionMenuItems`.
+      // Safety: The above if statements ensure that `optionName` is
+      // `JAPANESE_NUMBER_OF_SUGGESTIONS`.
+      // The above returns `UiType.DROPDOWN` in `getOptionUiType`, so
+      // it is incorrectly passed as a string from Polymer's two-way native
+      // binding, and it returns numbers from `getOptionMenuItems`.
       // TODO(b/265557721): Remove this when we remove Polymer's two-way native
       // binding of value changes.
       newValue = parseInt(newValue as string, 10);

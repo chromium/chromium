@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <link id="favicon" rel="icon" href="/test.ico" type="image/x-icon"/>
+  </head>
   <body>
     <video src="../tulip2.webm" loop=true />
   </body>
@@ -122,6 +125,17 @@
         video.src = "../tulip2.webm";
         video.play();
       });
+    }
+
+    function setMediaSessionSeekToActionHandler() {
+      navigator.mediaSession.setActionHandler("seekto", (details) => {
+        video.currentTime = details.seekTime;
+        document.title = 'seekto ' + details.seekTime.toString();
+      });
+    }
+
+    function updateFaviconSrc(url) {
+      document.getElementById('favicon').setAttribute('href', url);
     }
   </script>
 </html>

@@ -27,8 +27,10 @@ proto_library("optimization_guide_proto") {
     "features/history_query_intent.proto",
     "features/history_search_strings.proto",
     "features/model_prototyping.proto",
+    "features/password_change_submission.proto",
     "features/product_specifications.proto",
     "features/prompt_api.proto",
+    "features/scam_detection.proto",
     "features/summarize.proto",
     "features/tab_organization.proto",
     "features/text_safety.proto",
@@ -36,6 +38,7 @@ proto_library("optimization_guide_proto") {
     "hint_cache.proto",
     "hints.proto",
     "history_query_intent_model_metadata.proto",
+    "icon_view_metadata.proto",
     "loading_predictor_metadata.proto",
     "model_execution.proto",
     "model_quality_metadata.proto",
@@ -159,6 +162,20 @@ proto_library("history_query_intent_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "history_query_intent.descriptor"
+  proto_deps = [
+    ":optimization_guide_proto",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
+}
+
+proto_library("scam_detection_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/scam_detection.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "scam_detection.descriptor"
   proto_deps = [
     ":optimization_guide_proto",
     "//third_party/metrics_proto:metrics_proto",

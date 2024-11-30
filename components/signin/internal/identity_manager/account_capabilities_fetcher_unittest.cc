@@ -130,17 +130,17 @@ const char kAccountCapabilitiesResponseFormat[] =
     R"({"accountCapabilities": [%s]})";
 
 const char kSingleCapabilitiyResponseFormat[] =
-    R"({"name": "%s", "booleanValue": %s})";
+    R"({"name": "%.*s", "booleanValue": %s})";
 
 const char kCapabilityParamName[] = "names=";
 
 std::string GenerateValidAccountCapabilitiesResponse(bool capability_value) {
   std::vector<std::string> dict_array;
-  for (const std::string& name :
+  for (std::string_view name :
        AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames()) {
     dict_array.push_back(
-        base::StringPrintf(kSingleCapabilitiyResponseFormat, name.c_str(),
-                           capability_value ? "true" : "false"));
+        base::StringPrintf(kSingleCapabilitiyResponseFormat, name.size(),
+                           name.data(), capability_value ? "true" : "false"));
   }
   return base::StringPrintf(kAccountCapabilitiesResponseFormat,
                             base::JoinString(dict_array, ",").c_str());
@@ -154,7 +154,7 @@ void VerifyAccountCapabilitiesRequest(const network::ResourceRequest& request) {
                                         .AsStringPiece();
   // The request body should look like:
   // "names=Name1&names=Name2&names=Name3"
-  std::vector<std::string> requested_capabilities = base::SplitString(
+  std::vector<std::string_view> requested_capabilities = base::SplitStringPiece(
       request_string, "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   for (auto& name : requested_capabilities) {
     EXPECT_TRUE(base::StartsWith(name, kCapabilityParamName));

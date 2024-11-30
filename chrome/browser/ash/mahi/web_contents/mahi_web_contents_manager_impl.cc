@@ -299,7 +299,8 @@ void MahiWebContentsManagerImpl::OnContextMenuClicked(
   if (button_type == chromeos::mahi::ButtonType::kQA) {
     context_menu_request->question = question;
   }
-  if (button_type == chromeos::mahi::ButtonType::kElucidation) {
+  if (button_type == chromeos::mahi::ButtonType::kElucidation ||
+      button_type == chromeos::mahi::ButtonType::kSummaryOfSelection) {
     CHECK(!selected_text_.empty());
   }
 
@@ -432,7 +433,7 @@ void MahiWebContentsManagerImpl::RequestPDFContent(
   }
 
   pdf_observer_ = std::make_unique<MahiPDFObserver>(
-      web_contents_to_observe, ui::kAXModeWebContentsOnly,
+      web_contents_to_observe, ui::kAXModeWebContentsOnly | ui::AXMode::kPDFOcr,
       rfh_pdf->GetAXTreeID(),
       base::BindOnce(&MahiWebContentsManagerImpl::OnGetAXTreeUpdatesForPDF,
                      weak_pointer_factory_.GetWeakPtr(), std::move(callback)));

@@ -354,7 +354,7 @@ void CreditCardFidoAuthenticator::OptChange(
     base::Value::Dict authenticator_response) {
   payments::OptChangeRequestDetails request_details;
   request_details.app_locale =
-      autofill_client_->GetPersonalDataManager()->app_locale();
+      autofill_client_->GetPersonalDataManager().app_locale();
 
   switch (current_flow_) {
     case OPT_IN_WITH_CHALLENGE_FLOW:
@@ -567,7 +567,7 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
 
   const CoreAccountInfo account_info =
       autofill_client_->GetPersonalDataManager()
-          ->payments_data_manager()
+          .payments_data_manager()
           .GetAccountInfoForPaymentsServer();
   options->user.id =
       std::vector<uint8_t>(account_info.gaia.begin(), account_info.gaia.end());
@@ -746,7 +746,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
           autofill_client_,
           autofill_client_->GetPaymentsAutofillClient()
               ->GetPaymentsNetworkInterface(),
-          autofill_client_->GetPersonalDataManager());
+          &autofill_client_->GetPersonalDataManager());
 
       std::optional<GURL> last_committed_primary_main_frame_origin;
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard &&

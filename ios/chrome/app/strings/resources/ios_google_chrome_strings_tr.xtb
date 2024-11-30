@@ -38,6 +38,7 @@ Dikkate alınması gereken noktalar:
 <translation id="1646463005043273333">Chrome'u varsayılan tarayıcı olarak ayarlamak için Chrome ayarlarını açar.</translation>
 <translation id="1670609221633730681">Chrome ipucu: Adres çubuğunuzun konumunu seçin</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Şifrelerinizi Chrome'a Kaydedin</translation>
 <translation id="1790080846677398234">Girilen URL'leri Chrome'daki yer işaretlerinize ekler.</translation>
 <translation id="1799920918471566157">Chrome İpuçları</translation>
 <translation id="1830634592642484976">Bu adres şu anda Chrome'da kayıtlı. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedin.</translation>
@@ -82,7 +83,7 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="2788811701191021538">Chrome'daki ödeme yöntemi ayarları sayfasını açar.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome'un verilerinizi nasıl gizli tuttuğu<ph name="END_LINK" /> hakkında daha fazla bilgi edinin</translation>
 <translation id="292371311537977079">Chrome ayarları</translation>
-<translation id="2923827943290349720">Chrome'u kapattığınızda Gizli sekmeleri kilitleyin</translation>
+<translation id="2923827943290349720">Chrome'u kapattığınızda Gizli sekmeler kilitlensin</translation>
 <translation id="2940565985148833945">Chrome İpucu: Lens ile Arama Yapın</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />'u seçin</translation>
 <translation id="2986402782150919988">Chrome'a yer işareti ekle</translation>
@@ -109,6 +110,7 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="3655656110921623717">Bu durumda Chrome her seferinde mobil siteyi ister.</translation>
 <translation id="3740397331642243698">Girilen URL'leri Google Chrome'da Gizli modda açar.</translation>
 <translation id="3741995255368156336">Chrome Okuma Listesi'ni açar.</translation>
+<translation id="3808570423967020928">Ana ekran yuvanızdan Chrome'a daha hızlı erişin.</translation>
 <translation id="3827545470516145620">Bu cihazda standart güvenlik korumasına sahipsiniz</translation>
 <translation id="384394811301901750">Google Chrome şu anda kameranızı kullanamıyor</translation>
 <translation id="3863841106411295595">Girilen URL'leri Chrome'daki okuma listenize ekler.</translation>
@@ -219,9 +221,11 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 
 Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="6922332667202044570">Chrome'daki tarama verilerini silme</translation>
+<translation id="6924922227983877439">Bağlantıları varsayılan olarak Chrome'da açın</translation>
 <translation id="6975725306479268850">Otomatik doldurma için Chrome'u seçin</translation>
 <translation id="7056826488869329999">Chrome'da Güvenlik Kontrolü'nü açar ve yürütür.</translation>
 <translation id="7061455974939528301">Chrome simgesini basılı tutup "Ana ekranı düzenle"yi tıklayın</translation>
+<translation id="7065813315247345131">Chrome'u yuvaya taşıyın</translation>
 <translation id="7124339256045485976">Chrome'u güncel tutun</translation>
 <translation id="7161390184744336561">Google Chrome güncel değil</translation>
 <translation id="7165736900384873061">Google Chrome QR tarayıcısını kullanmaya başlayın</translation>
@@ -297,7 +301,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="8544583291890527417">Chrome'un sizin için tespit ettiği tüm gizlilik veya güvenlik sorunlarıyla ilgili uyarılar.</translation>
 <translation id="8558480467877843976">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="8603022514504485810">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
-<translation id="8630122478628016441">Chrome'u kapattığınızda "Gizli sekmeleri kilitleyin" seçeneğini etkinleştirin.</translation>
+<translation id="8630122478628016441">"Chrome'u kapattığınızda Gizli sekmeler kilitlensin" seçeneğini etkinleştirin.</translation>
 <translation id="8673726683583791503">Google Lens ile Alışveriş Yapın</translation>
 <translation id="8727043961453758442">Chrome'dan en iyi şekilde yararlanın</translation>
 <translation id="8765470054473112089">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>

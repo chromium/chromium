@@ -78,7 +78,6 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             chrome_preloading_predictor::kOmniboxDirectURLInput);
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -117,11 +116,11 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
   }
 
  private:
+  base::ScopedMockElapsedTimersForTest test_timer_;
   content::test::PrerenderTestHelper prerender_helper_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       ukm_entry_builder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
   // Disable sampling of UKM preloading logs.
   content::test::PreloadingConfigOverride preloading_config_override_;
 };

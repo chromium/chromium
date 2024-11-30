@@ -173,6 +173,9 @@ public class AccessibilityNodeInfoUtils {
         if (node.getMaxTextLength() != -1) {
             builder.append(" maxTextLength:").append(node.getMaxTextLength());
         }
+        if (node.getLiveRegion() != 0) {
+            builder.append(" liveRegion:").append(node.getLiveRegion());
+        }
 
         // Child objects - print for non-null cases.
         if (node.getCollectionInfo() != null) {

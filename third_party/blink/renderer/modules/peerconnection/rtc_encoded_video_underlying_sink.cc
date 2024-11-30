@@ -65,7 +65,7 @@ ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSink::write(
   if (enable_frame_restrictions_ &&
       (encoded_frame->OwnerId() != owner_id_ ||
        encoded_frame->Counter() <= last_received_frame_counter_)) {
-    return EmptyPromise();
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   last_received_frame_counter_ = encoded_frame->Counter();

@@ -50,7 +50,7 @@ class NetworkProfileBubbleBrowserListObserver : public BrowserListObserver {
 };
 
 NetworkProfileBubbleBrowserListObserver::
-    ~NetworkProfileBubbleBrowserListObserver() {}
+    ~NetworkProfileBubbleBrowserListObserver() = default;
 
 void NetworkProfileBubbleBrowserListObserver::OnBrowserAdded(Browser* browser) {
 }

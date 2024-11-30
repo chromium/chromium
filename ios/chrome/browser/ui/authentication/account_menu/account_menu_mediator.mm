@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -27,9 +28,8 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
 @interface AccountMenuMediator () <ChromeAccountManagerServiceObserver,
                                    IdentityManagerObserverBridgeDelegate,
@@ -114,8 +114,7 @@
     // By default, if the mediator was not involved in stopping the account
     // menu, it mean the coordinator was directly interupted.
     self.signinCoordinatorResult = SigninCoordinatorResultInterrupted;
-    _signinCompletionInfo =
-        [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
+    _signinCompletionIdentity = nil;
     _error = GetAccountErrorUIInfo(_syncService);
   }
   return self;
@@ -123,7 +122,7 @@
 
 - (void)disconnect {
   _accountSwitchInProgress.RunAndReset();
-  _signinCompletionInfo = nil;
+  _signinCompletionIdentity = nil;
   _blockUpdates = YES;
   _accountManagerService = nullptr;
   _accountManagerServiceObserver.reset();
@@ -314,13 +313,12 @@
         *profileName != _accountManagerService->GetProfileName()) {
       // TODO(crbug.com/375604649): Unblock the UI (and show some error?) if
       // switching failed.
-      // TODO(crbug.com/375604649): Provide a `completion` to ensure that after
-      // a successful profile switch, the correct account is signed in in the
-      // new profile.
+      // TODO(crbug.com/375604649): Provide an observer to take care of the
+      // transition (animation, continuation, ...) and to unblock the UI if
+      // the switching failed.
       [self.delegate triggerProfileSwitchToProfileNamed:base::SysUTF8ToNSString(
                                                             *profileName)
-                                             completion:^(bool success){
-                                             }];
+                                               observer:nil];
       return;
     }
   }
@@ -418,11 +416,10 @@
   }
   __weak __typeof(self) weakSelf = self;
   self.userInteractionsBlocked = YES;
-  [self.delegate
-      didTapAddAccountWithCompletion:^(SigninCoordinatorResult result,
-                                       SigninCompletionInfo* info) {
-        [weakSelf accountAddedIsDone];
-      }];
+  [self.delegate didTapAddAccountWithCompletion:^(SigninCoordinatorResult,
+                                                  id<SystemIdentity>) {
+    [weakSelf accountAddedIsDone];
+  }];
 }
 
 #pragma mark - Callbacks
@@ -479,8 +476,7 @@
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {
-    _signinCompletionInfo =
-        [SigninCompletionInfo signinCompletionInfoWithIdentity:newIdentity];
+    _signinCompletionIdentity = newIdentity;
     self.signinCoordinatorResult = result;
     [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
     [_delegate mediatorWantsToBeDismissed:self];
@@ -517,20 +513,13 @@
 // Updates the identity list in `_identities`, and sends an notification to
 // the consumer.
 - (void)updateIdentities {
-  NSArray<id<SystemIdentity>>* allIdentities;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    std::vector<AccountInfo> accountInfos =
-        _identityManager->GetAccountsOnDevice();
-    allIdentities =
-        _accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
-  } else {
-    allIdentities = _accountManagerService->GetAllIdentities();
-  }
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      signin::GetIdentitiesOnDevice(_identityManager, _accountManagerService);
 
   NSMutableArray<NSString*>* gaiaIDsToRemove = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToAdd = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToKeep = [NSMutableArray array];
-  for (id<SystemIdentity> secondaryIdentity : allIdentities) {
+  for (id<SystemIdentity> secondaryIdentity : identitiesOnDevice) {
     NSString* gaiaID = secondaryIdentity.gaiaID;
     if (secondaryIdentity == _primaryIdentity) {
       continue;
@@ -551,7 +540,7 @@
 
   for (NSUInteger i = 0; i < _identities.count; ++i) {
     id<SystemIdentity> identity = _identities[i];
-    if (![allIdentities containsObject:identity] ||
+    if (![identitiesOnDevice containsObject:identity] ||
         identity == _primaryIdentity) {
       [gaiaIDsToRemove addObject:identity.gaiaID];
       [_identities removeObjectAtIndex:i--];

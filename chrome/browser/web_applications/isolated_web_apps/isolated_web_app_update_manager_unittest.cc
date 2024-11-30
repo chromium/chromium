@@ -110,7 +110,8 @@ using ::testing::WithArg;
 struct IwaForceInstallPolicyEntry {
   IsolatedWebAppUrlInfo url_info;
   std::string_view update_manifest_url;
-  std::optional<std::string_view> update_channel;
+  std::optional<UpdateChannel> update_channel;
+  std::optional<base::Version> pinned_version;
 };
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
@@ -470,8 +471,14 @@ class IsolatedWebAppUpdateManagerUpdateTest
                        entry.url_info.web_bundle_id().id())
                   .Set(kPolicyUpdateManifestUrlKey, entry.update_manifest_url);
 
-          if (entry.update_channel.has_value()) {
-            dict.Set(kPolicyUpdateChannelKey, entry.update_channel.value());
+          if (entry.update_channel) {
+            dict.Set(kPolicyUpdateChannelKey,
+                     entry.update_channel.value().ToString());
+          }
+
+          if (entry.pinned_version) {
+            dict.Set(kPolicyPinnedVersionKey,
+                     entry.pinned_version.value().GetString());
           }
 
           return dict;
@@ -647,8 +654,10 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
                              iwa_info3_->installed_version)
           .Build(),
       webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+
   SetIwaForceInstallPolicy(
-      {{iwa_info3_->url_info, iwa_info3_->update_manifest_url.spec(), "beta"}});
+      {{iwa_info3_->url_info, iwa_info3_->update_manifest_url.spec(),
+        UpdateChannel::Create("beta").value()}});
 
   task_environment()->FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
@@ -713,6 +722,151 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
   // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
+  fake_provider().Shutdown();
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
+       DiscoversAndPreparesUpdateOfPolicyInstalledAppsToPinnedVersion) {
+  AddDummyIsolatedAppToRegistry(
+      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
+      IsolationData::Builder(iwa_info1_->installed_location,
+                             iwa_info1_->installed_version)
+          .Build(),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+
+  SetIwaForceInstallPolicy(
+      {{/*url_info=*/iwa_info1_->url_info,
+        /*update_manifest_url=*/iwa_info1_->update_manifest_url.spec(),
+        /*update_channel=*/std::nullopt,
+        /*pinned_version=*/iwa_info1_->update_version}});
+
+  task_environment()->FastForwardBy(
+      *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
+      base::TimeTicks::Now());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info1_->url_info.app_id()),
+              test::IwaIs(iwa_info1_->update_app_name,
+                          test::IsolationDataIs(
+                              UpdateLocationMatcher(profile()),
+                              Eq(iwa_info1_->update_version),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+  EXPECT_THAT(
+      UpdateDiscoveryLog(),
+      UnorderedElementsAre(IsDict(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+  EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(IsDict(DictionaryHasValue(
+                                    "result", base::Value("Success")))));
+
+  fake_provider().Shutdown();
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
+       DoesNotDiscoverUpdateOfPolicyInstalledAppsWithPinnedCurrentVersion) {
+  AddDummyIsolatedAppToRegistry(
+      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
+      IsolationData::Builder(iwa_info1_->installed_location,
+                             iwa_info1_->installed_version)
+          .Build(),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+
+  SetIwaForceInstallPolicy(
+      {{/*url_info=*/iwa_info1_->url_info,
+        /*update_manifest_url=*/iwa_info1_->update_manifest_url.spec(),
+        /*update_channel=*/std::nullopt,
+        /*pinned_version=*/iwa_info1_->installed_version}});
+
+  task_environment()->FastForwardBy(
+      *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
+      base::TimeTicks::Now());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info1_->url_info.app_id()),
+              test::IwaIs(Eq("installed iwa 1"),
+                          test::IsolationDataIs(
+                              Eq(iwa_info1_->installed_location),
+                              Eq(iwa_info1_->installed_version),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+
+  EXPECT_THAT(UpdateApplyLog(), IsEmpty());
+
+  fake_provider().Shutdown();
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
+}
+
+TEST_F(
+    IsolatedWebAppUpdateManagerUpdateMockTimeTest,
+    DoesNotDiscoverUpdateOfPolicyInstalledAppsWithPinnedToNotExistentVersion) {
+  AddDummyIsolatedAppToRegistry(
+      profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
+      IsolationData::Builder(iwa_info1_->installed_location,
+                             iwa_info1_->installed_version)
+          .Build(),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+
+  AddDummyIsolatedAppToRegistry(
+      profile(), iwa_info2_->url_info.origin().GetURL(), "installed iwa 2",
+      IsolationData::Builder(iwa_info2_->installed_location,
+                             iwa_info2_->installed_version)
+          .Build(),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+
+  // Pin IWA 1 to a version that is higher than the latest (2.0.0).
+  // Pin IWA 2 to lower version than the current one (dowgrading by only pinning
+  // is not possible)
+  SetIwaForceInstallPolicy(
+      {{/*url_info=*/iwa_info1_->url_info,
+        /*update_manifest_url=*/iwa_info1_->update_manifest_url.spec(),
+        /*update_channel=*/std::nullopt,
+        /*pinned_version=*/base::Version("5.0.0")},
+       {/*url_info=*/iwa_info2_->url_info,
+        /*update_manifest_url=*/iwa_info2_->update_manifest_url.spec(),
+        /*update_channel=*/std::nullopt,
+        /*pinned_version=*/base::Version("0.5.0")}});
+
+  task_environment()->FastForwardBy(
+      *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
+      base::TimeTicks::Now());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info1_->url_info.app_id()),
+              test::IwaIs(Eq("installed iwa 1"),
+                          test::IsolationDataIs(
+                              Eq(iwa_info1_->installed_location),
+                              Eq(iwa_info1_->installed_version),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info2_->url_info.app_id()),
+              test::IwaIs(Eq("installed iwa 2"),
+                          test::IsolationDataIs(
+                              Eq(iwa_info2_->installed_location),
+                              Eq(iwa_info2_->installed_version),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+
+  EXPECT_THAT(UpdateDiscoveryLog(),
+              UnorderedElementsAre(IsDict(DictionaryHasValue(
+                  "result",
+                  base::Value("Error::kUpdateManifestNoApplicableVersion")))));
+  EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
+  EXPECT_THAT(UpdateApplyLog(), IsEmpty());
+
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
       ->Shutdown();
@@ -958,6 +1112,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
+
   EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
                   iwa_info2_->url_info.app_id()),
               test::IwaIs(iwa_info2_->update_app_name,

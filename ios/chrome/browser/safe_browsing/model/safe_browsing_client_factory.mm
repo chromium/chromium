@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_impl.h"
+#import "ios/chrome/browser/safe_browsing/model/safe_browsing_helper_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
@@ -53,7 +54,8 @@ SafeBrowsingClientFactory::BuildServiceInstanceFor(
   PrerenderService* prerender_service =
       PrerenderServiceFactory::GetForProfile(profile);
   return std::make_unique<SafeBrowsingClientImpl>(
-      lookup_service, hash_real_time_service, prerender_service);
+      profile->GetPrefs(), lookup_service, hash_real_time_service,
+      prerender_service);
 }
 
 web::BrowserState* SafeBrowsingClientFactory::GetBrowserStateToUse(

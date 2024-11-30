@@ -15,7 +15,7 @@ namespace tabs {
 class MockTabInterface : public testing::NiceMock<TabInterface> {
  public:
   MockTabInterface();
-  ~MockTabInterface();
+  ~MockTabInterface() override;
 
   MOCK_METHOD(content::WebContents*, GetContents, (), (const, override));
   MOCK_METHOD(void, Close, (), (override));
@@ -56,10 +56,6 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               (),
               (override));
   MOCK_METHOD(TabFeatures*, GetTabFeatures, (), (override));
-  MOCK_METHOD(std::unique_ptr<views::Widget>,
-              CreateAndShowTabScopedWidget,
-              (views::WidgetDelegate*),
-              (override));
   MOCK_METHOD(bool, IsPinned, (), (const override));
   MOCK_METHOD(std::optional<tab_groups::TabGroupId>,
               GetGroup,

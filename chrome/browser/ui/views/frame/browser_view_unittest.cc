@@ -110,7 +110,7 @@ class BrowserViewTest : public TestWithBrowserView {
   BrowserViewTest(const BrowserViewTest&) = delete;
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
 
-  ~BrowserViewTest() override {}
+  ~BrowserViewTest() override = default;
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     TestingProfile::TestingFactories factories =
@@ -696,7 +696,7 @@ class BrowserViewHostedAppTest : public TestWithBrowserView {
   BrowserViewHostedAppTest(const BrowserViewHostedAppTest&) = delete;
   BrowserViewHostedAppTest& operator=(const BrowserViewHostedAppTest&) = delete;
 
-  ~BrowserViewHostedAppTest() override {}
+  ~BrowserViewHostedAppTest() override = default;
 };
 
 // Test basic layout for hosted apps.

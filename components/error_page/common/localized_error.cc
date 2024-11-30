@@ -931,7 +931,6 @@ LocalizedError::PageState LocalizedError::GetPageState(
     bool stale_copy_in_cache,
     bool can_show_network_diagnostics_dialog,
     bool is_incognito,
-    bool offline_content_feature_enabled,
     bool auto_fetch_feature_enabled,
     bool is_kiosk_mode,
     const std::string& locale,
@@ -1150,38 +1149,12 @@ LocalizedError::PageState LocalizedError::GetPageState(
           l10n_util::GetStringUTF16(IDS_ERRORPAGES_BUTTON_DOWNLOADING));
     } else {
       result.auto_fetch_allowed = true;
-      result.strings.Set("attemptAutoFetch", "true");
       result.strings.SetByDottedPath(
           "savePageLater.savePageMsg",
           l10n_util::GetStringUTF16(IDS_ERRORPAGES_SAVE_PAGE_BUTTON));
       result.strings.SetByDottedPath(
           "savePageLater.cancelMsg",
           l10n_util::GetStringUTF16(IDS_ERRORPAGES_CANCEL_SAVE_PAGE_BUTTON));
-    }
-  }
-
-  result.strings.Set(
-      "closeDescriptionPopup",
-      l10n_util::GetStringUTF16(IDS_ERRORPAGES_SUGGESTION_CLOSE_POPUP_BUTTON));
-
-  if (LocalizedError::IsOfflineError(error_domain, error_code) &&
-      !is_incognito) {
-    result.offline_content_feature_enabled = offline_content_feature_enabled;
-    if (offline_content_feature_enabled) {
-      result.strings.Set("suggestedOfflineContentPresentation", "on");
-      result.strings.SetByDottedPath(
-          "offlineContentList.title",
-          l10n_util::GetStringUTF16(IDS_ERRORPAGES_OFFLINE_CONTENT_LIST_TITLE));
-      result.strings.SetByDottedPath(
-          "offlineContentList.actionText",
-          l10n_util::GetStringUTF16(
-              IDS_ERRORPAGES_OFFLINE_CONTENT_LIST_OPEN_ALL_BUTTON));
-      result.strings.SetByDottedPath(
-          "offlineContentList.showText",
-          l10n_util::GetStringUTF16(IDS_SHOW_CONTENT));
-      result.strings.SetByDottedPath(
-          "offlineContentList.hideText",
-          l10n_util::GetStringUTF16(IDS_HIDE_CONTENT));
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

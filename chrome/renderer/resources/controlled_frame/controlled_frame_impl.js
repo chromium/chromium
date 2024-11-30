@@ -6,7 +6,7 @@ var CHROME_WEB_VIEW_CONTEXT_MENUS_PROMISE_API_METHODS =
     require('chromeWebViewContextMenusApiMethods').PROMISE_API_METHODS;
 var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
 var WebViewContextMenusImpl = require('chromeWebView').WebViewContextMenusImpl;
-var ControlledFrame = getInternalApi('controlledFrameInternal');
+var ControlledFrameInternal = getInternalApi('controlledFrameInternal');
 var ControlledFrameEvents =
     require('controlledFrameEvents').ControlledFrameEvents;
 var logging = requireNative('logging');
@@ -46,15 +46,16 @@ ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased =
   };
 }
 
-ControlledFrameContextMenusImpl.prototype.create = function() {
-  let args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
-  let result = $Function.apply(ControlledFrame.contextMenusCreate, null, args);
-  if (bindingUtil.hasLastError()) {
-    result = bindingUtil.getLastErrorMessage();
-    bindingUtil.clearLastError();
-  }
-  return result;
+// Controlled Frame has its own internal definition of Context Menus create().
+ControlledFrameContextMenusImpl.prototype.createImpl = function() {
+  const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
+  return $Function.apply(
+      ControlledFrameInternal.contextMenusCreate, null, args);
 }
+
+ControlledFrameContextMenusImpl.prototype.create =
+    ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
+        ControlledFrameContextMenusImpl.prototype.createImpl, "create");
 
 ControlledFrameContextMenusImpl.prototype.remove =
     ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
@@ -93,6 +94,10 @@ class ControlledFrameImpl extends ChromeWebViewImpl {
 
   createWebViewContextMenus() {
     return new ControlledFrameContextMenus(this.viewInstanceId);
+  }
+
+  setClientHintsUABrandEnabled(enable) {
+    ControlledFrameInternal.setClientHintsEnabled(this.guest.getId(), !!enable);
   }
 
   getLogTag() {

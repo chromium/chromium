@@ -35,7 +35,7 @@ class QueryResultManager::MediaSourceMediaSinksObserver
     DCHECK(result_manager);
   }
 
-  ~MediaSourceMediaSinksObserver() override {}
+  ~MediaSourceMediaSinksObserver() override = default;
 
   // MediaSinksObserver:
   void OnSinksReceived(const std::vector<MediaSink>& result) override {
@@ -66,7 +66,7 @@ class QueryResultManager::AnyMediaSinksObserver : public MediaSinksObserver {
   AnyMediaSinksObserver(MediaRouter* router, QueryResultManager* result_manager)
       : MediaSinksObserver(router), result_manager_(result_manager) {}
 
-  ~AnyMediaSinksObserver() override {}
+  ~AnyMediaSinksObserver() override = default;
 
   // MediaSinksObserver:
   void OnSinksReceived(const std::vector<MediaSink>& sinks) override {

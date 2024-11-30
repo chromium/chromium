@@ -342,6 +342,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                             base::TimeTicks end,
                             ExecutionContext* task_context) override;
   bool RequestedMainFramePending() override;
+  void RecordRenderingUpdateEndTime(base::TimeTicks) override;
   ukm::UkmRecorder* MainFrameUkmRecorder() override;
   ukm::SourceId MainFrameUkmSourceId() override;
 
@@ -583,6 +584,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // when hiding. The bottom controls scroll immediately and never translate the
   // content (only clip it).
   void SetBrowserControlsParams(cc::BrowserControlsParams params);
+
+  void SetMaxSafeAreaInsets(const gfx::Insets& max_safe_area_insets);
 
   // This function provides zooming for find in page results when browsing with
   // page autosize.
@@ -1037,9 +1040,6 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Triggers onmove event for window.
   void EnqueueMoveEvent();
-
-  // Update scroll-markers for any scroller scrolled by the impl thread.
-  void HandleScrollMarkerUpdates(const cc::CompositorCommitData& commit_data);
 
 #if BUILDFLAG(IS_WIN)
   // Computes a contiguous range of character bounds within proximity of

@@ -21,7 +21,8 @@
 #include "gpu/ipc/common/surface_handle.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/viz/service/input/android_input_callback.h"
+#include "components/input/android/android_input_callback.h"
+#include "components/input/android/input_receiver_data.h"
 #endif
 
 namespace input {
@@ -53,7 +54,7 @@ class VIZ_SERVICE_EXPORT InputManager
     : public FrameSinkObserver,
       public input::RenderWidgetHostInputEventRouter::Delegate,
 #if BUILDFLAG(IS_ANDROID)
-      public AndroidInputCallbackClient,
+      public input::AndroidInputCallbackClient,
 #endif
       public RenderInputRouterSupportBase::Delegate,
       public RenderInputRouterDelegateImpl::Delegate {
@@ -75,6 +76,8 @@ class VIZ_SERVICE_EXPORT InputManager
   // FrameSinkObserver overrides.
   void OnDestroyedCompositorFrameSink(
       const FrameSinkId& frame_sink_id) override;
+  void OnFrameSinkDeviceScaleFactorChanged(const FrameSinkId& frame_sink_id,
+                                           float device_scale_factor) override;
 
   // RenderWidgetHostInputEventRouter::Delegate implementation.
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
@@ -127,8 +130,16 @@ class VIZ_SERVICE_EXPORT InputManager
   void OnRIRDelegateClientDisconnected(uint32_t grouping_id);
 
 #if BUILDFLAG(IS_ANDROID)
-  void CreateAndroidInputReceiver(const FrameSinkId& frame_sink_id,
-                                  const gpu::SurfaceHandle& surface_handle);
+  // Android input receiver is created only for the very first root compositor
+  // frame sink creation notification that InputManager receives.
+  // Due to an Android platform bug(b/368251173) which causes crash on calling
+  // AInputReceiver_release, the input receiver is reused for any future root
+  // compositors.
+  void CreateOrReuseAndroidInputReceiver(
+      const FrameSinkId& frame_sink_id,
+      const gpu::SurfaceHandle& surface_handle);
+
+  std::unique_ptr<input::InputReceiverData> receiver_data_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   friend class MockInputManager;

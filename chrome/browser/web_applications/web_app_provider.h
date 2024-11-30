@@ -30,6 +30,7 @@ class FakeWebAppProvider;
 class FileUtilsWrapper;
 class GeneratedIconFixManager;
 class IsolatedWebAppInstallationManager;
+class IsolatedWebAppPolicyManager;
 class IsolatedWebAppUpdateManager;
 class ManifestUpdateManager;
 class NavigationCapturingLog;
@@ -52,7 +53,6 @@ class WebAppUiManager;
 class WebContentsManager;
 
 #if BUILDFLAG(IS_CHROMEOS)
-class IsolatedWebAppPolicyManager;
 class WebAppRunOnOsLoginManager;
 #endif
 
@@ -159,8 +159,9 @@ class WebAppProvider : public KeyedService {
 #if BUILDFLAG(IS_CHROMEOS)
   // Runs web apps on OS login.
   WebAppRunOnOsLoginManager& run_on_os_login_manager();
-  IsolatedWebAppPolicyManager& iwa_policy_manager();
 #endif
+
+  IsolatedWebAppPolicyManager& iwa_policy_manager();
 
   WebAppUiManager& ui_manager();
 
@@ -250,9 +251,9 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<IsolatedWebAppInstallationManager>
       isolated_web_app_installation_manager_;
   std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager_;
+  std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;
-  std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppUiManager> ui_manager_;
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;

@@ -12,10 +12,15 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 
+namespace blink {
+struct RendererPreferences;
+}  // namespace blink
+
 namespace content {
 
 struct ContextMenuParams;
 class NavigationController;
+class JavaScriptDialogManager;
 class SiteInstance;
 class WebContents;
 
@@ -42,6 +47,26 @@ class GuestPageHolder : public base::SupportsUserData {
     // Returns true if the context menu operation was handled by the delegate.
     virtual bool GuestHandleContextMenu(RenderFrameHost& render_frame_host,
                                         const ContextMenuParams& params) = 0;
+
+    // Returns a pointer to a service to manage JavaScript dialogs. May return
+    // nullptr in which case dialogs aren't shown.
+    virtual JavaScriptDialogManager* GuestGetJavascriptDialogManager() = 0;
+
+    // Allow the delegate to mutate the RendererPreferences.
+    virtual void GuestOverrideRendererPreferences(
+        blink::RendererPreferences& preferences) = 0;
+
+    // The main frame was completely loaded.
+    virtual void GuestDocumentOnLoadCompleted() = 0;
+
+    // The main frame's loading progress changed.
+    virtual void GuestDidChangeLoadProgress(double progress) = 0;
+
+    // The main frame's process is gone.
+    virtual void GuestMainFrameProcessGone(base::TerminationStatus status) = 0;
+
+    // The guest was resized.
+    virtual void GuestResizeDueToAutoResize(const gfx::Size& new_size) = 0;
 
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific

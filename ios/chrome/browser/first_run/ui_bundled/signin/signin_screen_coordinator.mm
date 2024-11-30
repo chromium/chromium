@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
@@ -131,8 +132,7 @@
 }
 
 - (void)stop {
-  [self.identityChooserCoordinator stop];
-  self.identityChooserCoordinator = nil;
+  [self stopIdentityChooserCoordinator];
   self.delegate = nil;
   self.viewController = nil;
   [self.mediator disconnect];
@@ -156,6 +156,16 @@
 
 #pragma mark - Private
 
+- (void)stopIdentityChooserCoordinator {
+  [self.identityChooserCoordinator stop];
+  self.identityChooserCoordinator = nil;
+}
+
+- (void)stopAddAccountCoordinator {
+  [self.addAccountSigninCoordinator stop];
+  self.addAccountSigninCoordinator = nil;
+}
+
 - (void)stopUMACoordinator {
   [self.UMACoordinator stop];
   self.UMACoordinator.delegate = nil;
@@ -172,23 +182,21 @@
   __weak __typeof(self) weakSelf = self;
   self.addAccountSigninCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
+        id<SystemIdentity> signinCompletionIdentity) {
         [weakSelf addAccountSigninCompleteWithResult:signinResult
-                                      completionInfo:signinCompletionInfo];
+                                  completionIdentity:signinCompletionIdentity];
       };
   [self.addAccountSigninCoordinator start];
 }
 
 // Callback handling the completion of the AddAccount action.
 - (void)addAccountSigninCompleteWithResult:(SigninCoordinatorResult)signinResult
-                            completionInfo:
-                                (SigninCompletionInfo*)signinCompletionInfo {
-  [self.addAccountSigninCoordinator stop];
-  self.addAccountSigninCoordinator = nil;
+                        completionIdentity:
+                            (id<SystemIdentity>)signinCompletionIdentity {
+  [self stopAddAccountCoordinator];
   if (signinResult == SigninCoordinatorResultSuccess &&
-      self.accountManagerService->IsValidIdentity(
-          signinCompletionInfo.identity)) {
-    self.mediator.selectedIdentity = signinCompletionInfo.identity;
+      self.accountManagerService->IsValidIdentity(signinCompletionIdentity)) {
+    self.mediator.selectedIdentity = signinCompletionIdentity;
     self.mediator.addedAccount = YES;
   }
 }
@@ -233,8 +241,7 @@
 - (void)identityChooserCoordinatorDidClose:
     (IdentityChooserCoordinator*)coordinator {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
-  [self.identityChooserCoordinator stop];
-  self.identityChooserCoordinator = nil;
+  [self stopIdentityChooserCoordinator];
 }
 
 - (void)identityChooserCoordinatorDidTapOnAddAccount:

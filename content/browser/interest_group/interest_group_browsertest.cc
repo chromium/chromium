@@ -7954,11 +7954,6 @@ IN_PROC_BROWSER_TEST_F(
 class InterestGroupAuctionReportBuyersEnableDebugModeTest
     : public InterestGroupBrowserTest {
  public:
-  explicit InterestGroupAuctionReportBuyersEnableDebugModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kPrivateAggregationAuctionReportBuyerDebugModeConfig);
-  }
-
   void SetUpOnMainThread() override {
     InterestGroupBrowserTest::SetUpOnMainThread();
 
@@ -8086,16 +8081,6 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-};
-
-class InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest
-    : public InterestGroupAuctionReportBuyersEnableDebugModeTest {
- public:
-  InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kPrivateAggregationAuctionReportBuyerDebugModeConfig);
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
@@ -8406,56 +8391,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
   EXPECT_EQ(request_returned->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kEnabled);
   EXPECT_EQ(request_returned->debug_key(), 1234);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest,
-    DebugMode_Ignored) {
-  SetUpTestWithOneInterestGroup();
-  ExpectPrivateAggregationCall(
-      /*bucket=*/101, /*value=*/10,
-      AggregatableReportSharedInfo::DebugMode::kDisabled);
-  RunAuctionAndWaitForURLAndNavigateIframe(
-      JsReplace(
-          R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    auctionReportBuyerKeys: [1n],
-    auctionReportBuyers: {
-      bidCount: { bucket: 100n, scale: 10 },
-    },
-    auctionReportBuyerDebugModeConfig: { enabled: true, debugKey: 1234n }
-                         })",
-          test_origin_,
-          embedded_https_test_server().GetURL(
-              "a.test", "/interest_group/decision_logic.js")),
-      /*expected_url=*/ad_url_);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest,
-    InvalidInput_Ignored) {
-  SetUpTestWithOneInterestGroup();
-  ExpectPrivateAggregationCall(
-      /*bucket=*/101, /*value=*/10,
-      AggregatableReportSharedInfo::DebugMode::kDisabled);
-  RunAuctionAndWaitForURLAndNavigateIframe(
-      JsReplace(
-          R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    auctionReportBuyerKeys: [1n],
-    auctionReportBuyers: {
-      bidCount: { bucket: 100n, scale: 10 },
-    },
-    auctionReportBuyerDebugModeConfig: 1
-                         })",
-          test_origin_,
-          embedded_https_test_server().GetURL(
-              "a.test", "/interest_group/decision_logic.js")),
-      /*expected_url=*/ad_url_);
 }
 
 // Run an auction with 2 interest groups. One of the interest groups will
@@ -24250,149 +24185,24 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   // anticipatory process for it.
   // 2. b.test, the second buyer, doesn't have any IGs. We won't request an
   // anticipatory process or create a worklet for it.
-  // 3. c.test, the top-level seller, will not have an anticipatory process
-  // started for it, because there are no top-level buyers cached (component
-  // auctions actually don't allow top-level buyers). A worklet
-  // will still be created for it.
-  // 4. d.test, the component seller, will have an anticipatory process
-  // started for it because there's a cached buyer in its auction (a.test).
+  // 3. c.test and d.test, will not have any anticipatory process
+  // started them it, because we only start anticipatory processes for buyers.
+  // Worklets will still be requested for them.
   //
-  // Overall there will be 2 anticipatory processes started and 3 worklets
+  // Overall there will be 1 anticipatory process started and 3 worklets
   // requested.
   base::HistogramTester histogram_tester;
   auto result = RunAuctionAndWait(auction_config);
   histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
                                       AuctionResult::kNoBids, 1);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome", 2);
-  histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess, 1);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
       AuctionProcessManager::RequestWorkletServiceOutcome::
           kCreatedNewDedicatedProcess,
-      1);
+      2);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
       AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    UsesAnticipatoryProcessesTest,
-    BuyersGetAnticipatoryProcessesAheadOfSellersExceptOnAndroid) {
-  GURL joining_url = embedded_https_test_server().GetURL("b.test", "/echo");
-  url::Origin origin_b = url::Origin::Create(joining_url);
-  ASSERT_TRUE(NavigateToURL(shell(), joining_url));
-
-  url::Origin origin_a =
-      url::Origin::Create(embedded_https_test_server().GetURL("a.test", "/"));
-
-  // Join and leave interest groups so that a.test and b.test will both be in
-  // the database, but only a.test will be in the cache.
-  std::vector<std::pair<std::string, std::string>> igs_to_join{
-      {"a.test", "a"}, {"b.test", "b"}, {"b.test", "c"}};
-  for (auto& [owner_host, ig_name] : igs_to_join) {
-    GURL ad_url =
-        embedded_https_test_server().GetURL(owner_host, "/echo?render_cars");
-    // Use a bidding script that does not bid to prevent the auction from having
-    // a winner. If the auction has a winner, there will be a race condition
-    // where a a worklet will be created for reporting.
-    GURL script_url = embedded_https_test_server().GetURL(
-        owner_host, "/interest_group/bidding_logic_do_not_bid.js");
-    blink::InterestGroup interest_group =
-        blink::TestInterestGroupBuilder(
-            /*owner=*/url::Origin::Create(script_url),
-            /*name=*/ig_name)
-            .SetBiddingUrl(script_url)
-            .SetAds({{{ad_url, std::nullopt}}})
-            .Build();
-    AttachInterestGroupObserver();
-    manager_->JoinInterestGroup(interest_group, joining_url);
-    WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
-                            interest_group.owner, interest_group.name}});
-
-    std::optional<url::Origin> cached_signals_origin;
-    EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(
-        interest_group.owner, cached_signals_origin));
-
-    if (ig_name == "c") {
-      // Leave the second IG for b.test. Now b.test won't be in the cache, but
-      // it'll be in the database.
-      EXPECT_EQ(kSuccess,
-                LeaveInterestGroupAndVerify(interest_group.owner, "c"));
-      EXPECT_FALSE(manager_->GetCachedOwnerAndSignalsOrigins(
-          interest_group.owner, cached_signals_origin));
-    }
-  }
-
-  const char kConfigTemplate[] = R"({
-        seller: $1,
-        decisionLogicURL: $2,
-        auctionSignals: "bidderAllowsComponentAuction,"+
-                        "sellerAllowsComponentAuction",
-        componentAuctions:
-            [{
-              seller: $1,
-              decisionLogicURL: $2,
-              interestGroupBuyers: [$3, $4],
-              auctionSignals: "bidderAllowsComponentAuction,"+
-                              "sellerAllowsComponentAuction"
-            }]
-      })";
-
-  GURL seller_script = embedded_https_test_server().GetURL(
-      "c.test", "/interest_group/decision_logic.js");
-  std::string auction_config =
-      JsReplace(kConfigTemplate, url::Origin::Create(seller_script),
-                seller_script, origin_a, origin_b);
-
-  // Run the auction.
-  //
-  // We will start an anticipatory process for buyer a.test because it's in the
-  // cache and for seller c.test because one of its buyers (a.test) was in the
-  // cache. We will not start one for buyer b.test because it wasn't cached.
-  // However, both buyers have IGs so we will end up requesting worklets for
-  // both buyers and the seller. Overall, we will start 2 anticipatory processes
-  // and request 3 worklets.
-  //
-  // On Android, renderer processes are used, so a process created for an origin
-  // cannot be used for another origin. Therefore, b.test will not be able to
-  // use an anticipatory process and must create a new one.
-  //
-  // On other platforms, the anticipatory processes are not bound to an origin,
-  // and because we request buyers before sellers, the buyers should be able to
-  // claim anticipatory processes before the sellers.
-  base::HistogramTester histogram_tester;
-  auto result = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
-                                      AuctionResult::kNoBids, 1);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome", 1);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome", 2);
-#if BUILDFLAG(IS_ANDROID)
-  histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess, 1);
-  histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess, 1);
-  histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::
-          kCreatedNewDedicatedProcess,
-      1);
-#else
-  histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::
-          kCreatedNewDedicatedProcess,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess, 2);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 class AuctionConfigReportingTimeoutEnabledTest
@@ -26457,8 +26267,7 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, RealTimeReporting) {
 
   // Check the request body, which is the real time report in cbor.
   std::string body = network::GetUploadData(*request);
-  const auto maybe_map =
-      cbor::Reader::Read(base::as_bytes(base::make_span(body)));
+  const auto maybe_map = cbor::Reader::Read(base::as_byte_span(body));
   ASSERT_TRUE(maybe_map && maybe_map->is_map());
   const auto& map = maybe_map->GetMap();
 

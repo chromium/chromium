@@ -10,15 +10,13 @@ OAuthMultiloginTokenResponse::OAuthMultiloginTokenResponse(
     std::string oauth_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     ,
-    std::string token_binding_assertion,
-    std::optional<HybridEncryptionKey> ephemeral_key
+    std::string token_binding_assertion
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     )
     : oauth_token_(std::move(oauth_token))
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       ,
-      token_binding_assertion_(std::move(token_binding_assertion)),
-      ephemeral_key_(std::move(ephemeral_key))
+      token_binding_assertion_(std::move(token_binding_assertion))
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 {
 }

@@ -83,9 +83,9 @@ bool CanImportURL(const GURL& url) {
 
 }  // namespace internal
 
-BookmarksFileImporter::BookmarksFileImporter() {}
+BookmarksFileImporter::BookmarksFileImporter() = default;
 
-BookmarksFileImporter::~BookmarksFileImporter() {}
+BookmarksFileImporter::~BookmarksFileImporter() = default;
 
 void BookmarksFileImporter::StartImport(
     const importer::SourceProfile& source_profile,

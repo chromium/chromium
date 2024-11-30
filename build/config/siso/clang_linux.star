@@ -80,9 +80,12 @@ def __filegroups(ctx):
             "includes": [
                 "clang*",
                 "ld.lld",
+                "ld64.lld",
                 "lld",
                 "llvm-nm",
                 "llvm-objcopy",
+                "llvm-objdump",
+                "llvm-otool",
                 "llvm-readelf",
                 "llvm-readobj",
                 "llvm-strip",
@@ -175,6 +178,9 @@ def __clang_link(ctx, cmd):
         elif arg.startswith("-L"):
             lib_path = ctx.fs.canonpath(arg.removeprefix("-L"))
             inputs.append(lib_path + ":link")
+        elif arg == "--":
+            clang_base = ctx.fs.canonpath(path.dir(path.dir(cmd.args[i + 1])))
+            inputs.append(clang_base + ":link")
     if sysroot:
         inputs.extend([sysroot + ":link"])
 
@@ -235,17 +241,12 @@ def __step_config(ctx, step_config):
             "build/linux/debian_bullseye_armhf-sysroot/usr/lib/arm-linux-gnueabihf:libs",
             "third_party/llvm-build/Release+Asserts/bin:llddeps",
         ],
-        "build/toolchain/gcc_solink_wrapper.py": [
-            "build/toolchain/whole_archive.py",
-            "build/toolchain/wrapper_utils.py",
-        ],
-        "build/toolchain/gcc_link_wrapper.py": [
-            "build/toolchain/whole_archive.py",
-            "build/toolchain/wrapper_utils.py",
-        ],
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include",
+        ],
+        "third_party/llvm-build/Release+Asserts/bin/clang++:link": [
+            "third_party/llvm-build/Release+Asserts/bin:llddeps",
         ],
     })
     step_config["input_deps"].update(clang_all.input_deps)

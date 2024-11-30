@@ -172,8 +172,16 @@ TEST_F(TracingObserverProtoTest,
   data_source_tester.EndTracing();
 }
 
+// TODO(crbug.com/376596183): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
+  AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
+#else
+#define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
+  AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
+#endif
 TEST_F(TracingObserverProtoTest,
-       AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled) {
+       MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled) {
   auto* tracing_observer =
       memory_instrumentation::TracingObserverProto::GetInstance();
   tracing::DataSourceTester data_source_tester(tracing_observer);

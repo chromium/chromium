@@ -14,20 +14,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 
 /**
  * Stubbed class for getting version numbers from the rest of Chrome. Override the functions for
  * unit tests.
  */
 public class VersionNumberGetter {
-    private static final String MIN_SDK_VERSION_PARAM = "min_sdk_version";
-    public static final IntCachedFieldTrialParameter MIN_SDK_VERSION =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.OMAHA_MIN_SDK_VERSION_ANDROID,
-                    MIN_SDK_VERSION_PARAM,
-                    ContextUtils.getApplicationContext().getApplicationInfo().minSdkVersion);
-
     private static VersionNumberGetter sInstance = new VersionNumberGetter();
 
     /** If true, OmahaClient will never report that a newer version is available. */
@@ -75,15 +67,20 @@ public class VersionNumberGetter {
      * @return Whether the current Android OS version is supported.
      */
     public static boolean isCurrentOsVersionSupported() {
-        return Build.VERSION.SDK_INT >= MIN_SDK_VERSION.getValue();
+        int minSdkVersionParamValue = ChromeFeatureList.sOmahaMinSdkVersionMinSdkVersion.getValue();
+        if (minSdkVersionParamValue == -1) {
+            minSdkVersionParamValue =
+                    ContextUtils.getApplicationContext().getApplicationInfo().minSdkVersion;
+        }
+        return Build.VERSION.SDK_INT >= minSdkVersionParamValue;
     }
 
     /**
-     * Checks if we know about a newer version available than the one we're using.  This does not
+     * Checks if we know about a newer version available than the one we're using. This does not
      * actually fire any requests over to the server: it just checks the version we stored the last
      * time we talked to the Omaha server.
      *
-     * NOTE: This function incurs I/O, so don't use it on the main thread.
+     * <p>NOTE: This function incurs I/O, so don't use it on the main thread.
      */
     static boolean isNewerVersionAvailable() {
         assert !ThreadUtils.runningOnUiThread();

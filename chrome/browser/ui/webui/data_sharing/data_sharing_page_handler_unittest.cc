@@ -115,7 +115,9 @@ TEST_F(DataSharingPageHandlerUnitTest, GetTabGroupPreview) {
                                 std::move(callback));
 }
 
-TEST_F(DataSharingPageHandlerUnitTest, OpenTabGroup) {
+// TODO(crbug.com/381173816): This test should not run without setting sync
+// service.
+TEST_F(DataSharingPageHandlerUnitTest, DISABLED_OpenTabGroup) {
   handler()->OpenTabGroup("FAKE_GROUP_ID");
   DataSharingOpenGroupHelper* helper =
       browser()->browser_window_features()->data_sharing_open_group_helper();

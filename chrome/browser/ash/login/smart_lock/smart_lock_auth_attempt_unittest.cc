@@ -39,7 +39,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   TestLockHandler(const TestLockHandler&) = delete;
   TestLockHandler& operator=(const TestLockHandler&) = delete;
 
-  ~TestLockHandler() override {}
+  ~TestLockHandler() override = default;
 
   void set_state(AuthState value) { state_ = value; }
   AuthState state() const { return state_; }
@@ -103,14 +103,14 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
 class SmartLockAuthAttemptUnlockTest : public testing::Test {
  public:
-  SmartLockAuthAttemptUnlockTest() {}
+  SmartLockAuthAttemptUnlockTest() = default;
 
   SmartLockAuthAttemptUnlockTest(const SmartLockAuthAttemptUnlockTest&) =
       delete;
   SmartLockAuthAttemptUnlockTest& operator=(
       const SmartLockAuthAttemptUnlockTest&) = delete;
 
-  ~SmartLockAuthAttemptUnlockTest() override {}
+  ~SmartLockAuthAttemptUnlockTest() override = default;
 
   void SetUp() override {
     auth_attempt_ = std::make_unique<SmartLockAuthAttempt>(test_account_id1_);

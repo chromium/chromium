@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -19,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -36,7 +34,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -59,8 +56,6 @@ import java.util.function.Consumer;
 // TODO(crbug.com/40268641): Add a new coordinator so this class doesn't own everything.
 public class BookmarkManagerCoordinator
         implements SearchDelegate, BackPressHandler, OnAttachStateChangeListener {
-    private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
-            10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
 
     private final SelectionDelegate<BookmarkId> mSelectionDelegate =
             new SelectionDelegate<>() {
@@ -382,16 +377,6 @@ public class BookmarkManagerCoordinator
      */
     private boolean onBackPressed() {
         return mMediator.onBackPressed();
-    }
-
-    private int computeCacheMaxSize() {
-        ActivityManager activityManager =
-                ((ActivityManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.ACTIVITY_SERVICE));
-        return Math.min(
-                activityManager.getMemoryClass() / 4 * ConversionUtils.BYTES_PER_MEGABYTE,
-                FAVICON_MAX_CACHE_SIZE_BYTES);
     }
 
     @VisibleForTesting

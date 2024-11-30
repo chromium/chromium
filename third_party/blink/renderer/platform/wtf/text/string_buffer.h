@@ -49,7 +49,7 @@ class StringBuffer {
   StringBuffer() = default;
 
   explicit StringBuffer(unsigned length) {
-    CharType* characters;
+    base::span<CharType> characters;
     data_ = StringImpl::CreateUninitialized(length, characters);
   }
 

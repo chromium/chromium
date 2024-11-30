@@ -81,7 +81,7 @@ bool ShouldIgnorePermissionRequest(
   LensOverlayController* lens_overlay_controller =
       browser->tab_strip_model()
           ->GetActiveTab()
-          ->tab_features()
+          ->GetTabFeatures()
           ->lens_overlay_controller();
   // Don't show prompt if Lens Overlay is showing
   // TODO(b/331940245): Refactor to be decoupled from LensOverlayController

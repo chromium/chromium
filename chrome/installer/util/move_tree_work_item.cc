@@ -9,7 +9,7 @@
 #include "base/win/shlwapi.h"
 #include "chrome/installer/util/duplicate_tree_detector.h"
 
-MoveTreeWorkItem::~MoveTreeWorkItem() {}
+MoveTreeWorkItem::~MoveTreeWorkItem() = default;
 
 MoveTreeWorkItem::MoveTreeWorkItem(const base::FilePath& source_path,
                                    const base::FilePath& dest_path,

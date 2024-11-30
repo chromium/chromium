@@ -956,11 +956,11 @@ const char* validateGetPublicKeyCredentialPRFExtension(
     DOMArrayPiece piece(cred->id());
     cred_ids.emplace_back(piece.Bytes(), piece.ByteLength());
   }
-  const auto compare = [](const base::span<const uint8_t>& a,
-                          const base::span<const uint8_t>& b) -> bool {
-    return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+  const auto compare = [](base::span<const uint8_t> a,
+                          base::span<const uint8_t> b) {
+    return std::ranges::lexicographical_compare(a, b);
   };
-  std::sort(cred_ids.begin(), cred_ids.end(), compare);
+  std::ranges::sort(cred_ids, compare);
 
   if (prf.hasEval()) {
     const char* error = validatePRFInputs(*prf.eval());
@@ -981,9 +981,8 @@ const char* validateGetPublicKeyCredentialPRFExtension(
         return "'prf' extension contains an empty credential ID in "
                "'evalByCredential'";
       }
-      if (!std::binary_search(cred_ids.begin(), cred_ids.end(),
-                              base::as_bytes(base::make_span(cred_id)),
-                              compare)) {
+      if (!std::ranges::binary_search(cred_ids, base::as_byte_span(cred_id),
+                                      compare)) {
         return "'prf' extension contains 'evalByCredential' key that doesn't "
                "match any in allowedCredentials";
       }
@@ -1260,12 +1259,27 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     return promise;
   }
 
-  if (IsDigitalIdentityCredentialType(*options) &&
-      RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
-          resolver->GetExecutionContext())) {
-    DiscoverDigitalIdentityCredentialFromExternalSource(
-        resolver, exception_state, *options);
+  if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
+          resolver->GetExecutionContext()) &&
+      IsDigitalIdentityCredentialType(*options)) {
+    DiscoverDigitalIdentityCredentialFromExternalSource(resolver, *options,
+                                                        exception_state);
     return promise;
+  }
+
+  if (options->hasPublicKey() && !options->publicKey()->hasChallenge()) {
+    if (!blink::RuntimeEnabledFeatures::
+            WebAuthenticationChallengeUrlEnabled()) {
+      resolver->RejectWithTypeError(
+          "Failed to read the 'challenge' property from "
+          "'PublicKeyCredentialRequestOptions'");
+      return promise;
+    } else if (!options->publicKey()->hasChallengeUrl()) {
+      resolver->RejectWithTypeError(
+          "Failed to read 'challenge' or 'challengeUrl' property from "
+          "'PublicKeyCredentialRequestOptions'");
+      return promise;
+    }
   }
 
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
@@ -1639,6 +1653,14 @@ AuthenticationCredentialsContainer::create(
           script_state);
   auto promise = resolver->Promise();
 
+  if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsCreationEnabled(
+          resolver->GetExecutionContext()) &&
+      IsDigitalIdentityCredentialType(*options)) {
+    CreateDigitalIdentityCredentialInExternalSource(resolver, *options,
+                                                    exception_state);
+    return promise;
+  }
+
   RequiredOriginType required_origin_type;
   if (IsForPayment(options, resolver->GetExecutionContext())) {
     required_origin_type = RequiredOriginType::
@@ -1902,38 +1924,44 @@ AuthenticationCredentialsContainer::create(
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Required parameters missing in `options.publicKey`."));
-  } else if (mojo_options->user->id.size() > 64) {
+    return promise;
+  }
+
+  if (mojo_options->user->id.size() > 64) {
     // https://www.w3.org/TR/webauthn/#user-handle
     v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
     resolver->Reject(V8ThrowException::CreateTypeError(
         isolate, "User handle exceeds 64 bytes."));
-  } else {
-    if (!mojo_options->relying_party->id) {
-      mojo_options->relying_party->id =
-          resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
-    }
+    return promise;
+  }
 
-    auto* authenticator =
-        CredentialManagerProxy::From(script_state)->Authenticator();
-    if (mojo_options->is_payment_credential_creation) {
-      String rp_id_for_payment_extension = mojo_options->relying_party->id;
-      WTF::Vector<uint8_t> user_id_for_payment_extension =
-          mojo_options->user->id;
-      authenticator->MakeCredential(
-          std::move(mojo_options),
-          WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
-                        std::make_unique<ScopedPromiseResolver>(resolver),
-                        std::move(scoped_abort_state),
-                        rp_id_for_payment_extension,
-                        std::move(user_id_for_payment_extension)));
-    } else {
-      authenticator->MakeCredential(
-          std::move(mojo_options),
-          WTF::BindOnce(&OnMakePublicKeyCredentialComplete,
-                        std::make_unique<ScopedPromiseResolver>(resolver),
-                        std::move(scoped_abort_state), required_origin_type,
-                        is_rk_required));
+  if (!mojo_options->relying_party->id) {
+    mojo_options->relying_party->id =
+        resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
+  }
+
+  auto* authenticator =
+      CredentialManagerProxy::From(script_state)->Authenticator();
+  if (mojo_options->is_payment_credential_creation) {
+    String rp_id_for_payment_extension = mojo_options->relying_party->id;
+    WTF::Vector<uint8_t> user_id_for_payment_extension = mojo_options->user->id;
+    authenticator->MakeCredential(
+        std::move(mojo_options),
+        WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
+                      std::make_unique<ScopedPromiseResolver>(resolver),
+                      std::move(scoped_abort_state),
+                      rp_id_for_payment_extension,
+                      std::move(user_id_for_payment_extension)));
+  } else {
+    if (RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled()) {
+      mojo_options->is_conditional = options->mediation() == "conditional";
     }
+    authenticator->MakeCredential(
+        std::move(mojo_options),
+        WTF::BindOnce(&OnMakePublicKeyCredentialComplete,
+                      std::make_unique<ScopedPromiseResolver>(resolver),
+                      std::move(scoped_abort_state), required_origin_type,
+                      is_rk_required));
   }
 
   return promise;

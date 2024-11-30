@@ -656,8 +656,8 @@ class LocalAuthenticationWithPinControllerImplTest
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
     EXPECT_TRUE(base::test::RunUntil([&auth_submission_counter]() {
-      return (auth_submission_counter.password_submit_counter_ +
-              auth_submission_counter.pin_submit_counter_);
+      return auth_submission_counter.password_submit_counter_ > 0 ||
+             auth_submission_counter.pin_submit_counter_ > 0;
     }));
   }
 

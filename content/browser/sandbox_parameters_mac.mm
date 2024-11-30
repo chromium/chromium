@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -26,13 +27,11 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "printing/buildflags/buildflags.h"
 #include "sandbox/mac/sandbox_compiler.h"
 #include "sandbox/policy/mac/params.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace content {
 
@@ -215,9 +214,7 @@ bool SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:
     case sandbox::mojom::Sandbox::kMirroring:
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
-#endif
     case sandbox::mojom::Sandbox::kPrintCompositor:
     case sandbox::mojom::Sandbox::kRenderer:
     case sandbox::mojom::Sandbox::kService:
@@ -232,13 +229,10 @@ bool SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
       SetupNetworkSandboxParameters(compiler, command_line);
       break;
     case sandbox::mojom::Sandbox::kNoSandbox:
-      CHECK(false) << "Unhandled parameters for sandbox_type "
+      NOTREACHED() << "Unhandled parameters for sandbox_type "
                    << static_cast<int>(sandbox_type);
-      break;
     // Setup parameters for sandbox types handled by embedders below.
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case sandbox::mojom::Sandbox::kScreenAI:
-#endif
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kOnDeviceTranslation:
       SetupCommonSandboxParameters(compiler, command_line);

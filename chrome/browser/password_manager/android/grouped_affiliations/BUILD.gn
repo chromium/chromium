@@ -16,6 +16,7 @@ static_library("public") {
   deps = [
     ":jni_headers",
     "//base",
+    "//components/password_manager/core/browser:browser",
     "//content/public/browser",
     "//ui/android:android",
   ]
@@ -25,8 +26,17 @@ generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/grouped_affiliations/AcknowledgeGroupedCredentialSheetBridge.java" ]
 }
 
+java_cpp_enum("java_enum_srcjar") {
+  visibility =
+      [ "//chrome/browser/password_manager/android/grouped_affiliations:*" ]
+  sources = [ "acknowledge_grouped_credential_sheet_bridge.h" ]
+}
+
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":java_enum_srcjar",
+    ":jni_headers",
+  ]
   sources = [
     "java/src/org/chromium/chrome/browser/grouped_affiliations/AcknowledgeGroupedCredentialSheetBridge.java",
     "java/src/org/chromium/chrome/browser/grouped_affiliations/AcknowledgeGroupedCredentialSheetController.java",

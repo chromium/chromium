@@ -49,7 +49,7 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
           nullptr, task_runner.get(),
           TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
       BackingStore::BlobFilesCleanedCallback(),
-      BackingStore::ReportOutstandingBlobsCallback(), task_runner);
+      BackingStore::ReportOutstandingBlobsCallback());
   Status s = backing_store->Initialize(false);
   EXPECT_FALSE(s.ok());
   ASSERT_TRUE(temp_directory.Delete());
@@ -84,7 +84,7 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
             task_runner.get(),
             TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
         BackingStore::BlobFilesCleanedCallback(),
-        BackingStore::ReportOutstandingBlobsCallback(), task_runner);
+        BackingStore::ReportOutstandingBlobsCallback());
     Status s = backing_store->Initialize(false);
     ASSERT_TRUE(s.IsIOError());
   }

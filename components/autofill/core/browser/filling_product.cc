@@ -40,29 +40,22 @@ std::string FillingProductToString(FillingProduct filling_product) {
   NOTREACHED();
 }
 // LINT.ThenChange(
-//   /tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct,
-//   /tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct.Condensed
+//   //tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct,
+//   //tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct.Condensed
 // )
 
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAddressEntry:
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillEverythingFromAddressProfile:
-    case SuggestionType::kFillFullPhoneNumber:
-    case SuggestionType::kFillFullEmail:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kEditAddressProfile:
-    case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kManageAddress:
       return FillingProduct::kAddress;
     case SuggestionType::kCreditCardEntry:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kManageCreditCard:
@@ -154,10 +147,6 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
 FillingProduct GetPreferredSuggestionFillingProduct(
     FieldType trigger_field_type,
     AutofillSuggestionTriggerSource suggestion_trigger_source) {
-  if (suggestion_trigger_source ==
-      mojom::AutofillSuggestionTriggerSource::kManualFallbackAddress) {
-    return FillingProduct::kAddress;
-  }
   if (suggestion_trigger_source ==
       mojom::AutofillSuggestionTriggerSource::kManualFallbackPayments) {
     return FillingProduct::kCreditCard;

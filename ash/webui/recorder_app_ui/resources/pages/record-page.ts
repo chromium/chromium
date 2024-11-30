@@ -56,6 +56,7 @@ import {
   toggleTranscriptionEnabled,
 } from '../core/state/transcription.js';
 import {
+  assert,
   assertExhaustive,
   assertExists,
   assertInstanceof,
@@ -430,12 +431,14 @@ export class RecordPage extends ReactiveLitElement {
         this.platformHandler.canCaptureSystemAudioWithLoopback.value,
     });
 
+    const selectedLanguage = this.platformHandler.getSelectedLanguage();
+
     try {
       // Don't enable SODA if it's unavailable. All UI to enable transcription
       // are gated behind transcriptionAvailable.
       await session.start(
         this.transcriptionEnabled.value && this.transcriptionAvailable.value,
-        settings.value.transcriptionLanguage,
+        selectedLanguage,
       );
     } catch (e) {
       if (e instanceof DOMException &&
@@ -460,9 +463,8 @@ export class RecordPage extends ReactiveLitElement {
       // or add untrack() to specify region that dependencies shouldn't be
       // tracked.
       if (this.transcriptionEnabled.value &&
-          this.transcriptionAvailable.value &&
-          settings.value.transcriptionLanguage !== null) {
-        session.startNewSodaSession(settings.value.transcriptionLanguage);
+          this.transcriptionAvailable.value && selectedLanguage !== null) {
+        session.startNewSodaSession(selectedLanguage);
       } else {
         session.stopSodaSession();
       }
@@ -508,7 +510,7 @@ export class RecordPage extends ReactiveLitElement {
 
     const transcription = session.progress.value.transcription;
     const locale = this.transcriptionEnabled.value ?
-      settings.value.transcriptionLanguage :
+      this.platformHandler.getSelectedLanguage() :
       null;
 
     this.platformHandler.eventsSender.sendRecordEvent({
@@ -719,6 +721,14 @@ export class RecordPage extends ReactiveLitElement {
       case TranscriptionEnableState.ENABLED: {
         const sodaState = this.platformHandler.getSelectedLanguageState();
         if (sodaState === null) {
+          // When language selection is not available, the
+          // getSelectedLanguageState should return the state of the default
+          // language.
+          assert(
+            this.platformHandler.isMultipleLanguageAvailable(),
+            'Language selection is unavailable but' +
+              ' getSelectedLanguageState returns null.',
+          );
           return html`
             <div id="transcription-consent">
               <cra-image name="transcription_off"></cra-image>

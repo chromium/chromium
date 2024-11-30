@@ -139,10 +139,10 @@ static bool AllowMimeTypeAsScript(
     counter = kTextHtmlFeatures[same_origin];
   } else if (mime_type.StartsWithIgnoringASCIICase("text/plain")) {
     counter = kTextPlainFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringCase("text/xml")) {
+  } else if (mime_type.StartsWithIgnoringASCIICase("text/xml")) {
     counter = kTextXmlFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringCase("text/json") ||
-             mime_type.StartsWithIgnoringCase("application/json")) {
+  } else if (mime_type.DeprecatedStartsWithIgnoringCase("text/json") ||
+             mime_type.DeprecatedStartsWithIgnoringCase("application/json")) {
     counter = kJsonFeatures[same_origin];
   } else {
     counter = kUnknownFeatures[same_origin];

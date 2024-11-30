@@ -35,6 +35,14 @@ BASE_FEATURE(kClientSideDetectionAcceptHCAllowlist,
              "ClientSideDetectionAcceptHCAllowlist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection,
+             "ClientSideDetectionBrandAndIntentForScamDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClientSideDetectionDebuggingMetadataCache,
+             "ClientSideDetectionDebuggingMetadataCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -94,6 +102,10 @@ BASE_FEATURE(kDlpRegionalizedEndpoints,
              "DlpRegionalizedEndpoints",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDownloadsPageReferrerUrl,
+             "DownloadsPageReferrerUrl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -108,6 +120,23 @@ const base::FeatureParam<int> kDownloadWarningSurveyType{
 
 const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds{
     &kDownloadWarningSurvey, "ignore_delay_seconds", 300};
+
+BASE_FEATURE(kEnhancedSafeBrowsingPromo,
+             "EnhancedSafeBrowsingPromo",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+BASE_FEATURE(kEnterprisePasswordReuseUiRefresh,
+             "EnterprisePasswordReuseUiRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid,
+             "EnterpriseRealTimeUrlCheckOnAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEsbAiStringUpdate,
              "EsbAiStringUpdate",
@@ -201,14 +230,6 @@ constexpr base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate{
     &kHashPrefixRealTimeLookupsSamplePing,
     "HashPrefixRealTimeLookupsSampleRate", /*default_value=*/100};
 
-BASE_FEATURE(kDownloadsPageReferrerUrl,
-             "DownloadsPageReferrerUrl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnterprisePasswordReuseUiRefresh,
-             "EnterprisePasswordReuseUiRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLocalListsUseSBv5,
              "SafeBrowsingLocalListsUseSBv5",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -255,6 +276,18 @@ BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
 #endif
 );
 
+BASE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit,
+             "SafeBrowsingDailyPhishingReportsLimit",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
+    &kSafeBrowsingDailyPhishingReportsLimit,
+    /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/10};
+
+BASE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold,
+             "SafeBrowsingPhishingClassificationESBThreshold",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation,
              "SafeBrowsingReferrerChainWithCopyPasteNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -273,16 +306,16 @@ BASE_FEATURE(kSafetyHubAbusiveNotificationRevocation,
              "SafetyHubAbusiveNotificationRevocation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSavePasswordHashFromProfilePicker,
+             "SavePasswordHashFromProfilePicker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSimplifiedUrlDisplay,
              "SimplifiedUrlDisplay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTailoredSecurityRetryForSyncUsers,
-             "TailoredSecurityRetryForSyncUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -303,35 +336,6 @@ BASE_FEATURE(kVisualFeaturesSizes,
              "VisualFeaturesSizes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold,
-             "SafeBrowsingPhishingClassificationESBThreshold",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit,
-             "SafeBrowsingDailyPhishingReportsLimit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSavePasswordHashFromProfilePicker,
-             "SavePasswordHashFromProfilePicker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClientSideDetectionDebuggingMetadataCache,
-             "ClientSideDetectionDebuggingMetadataCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnhancedSafeBrowsingPromo,
-             "EnhancedSafeBrowsingPromo",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
-    &kSafeBrowsingDailyPhishingReportsLimit,
-    /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/10};
-
 // Returns the list of the experimental features that are enabled or disabled,
 // as part of currently running Safe Browsing experiments.
 base::Value::List GetFeatureStatusList() {
@@ -347,6 +351,7 @@ base::Value::List GetFeatureStatusList() {
       &kDownloadTailoredWarnings,
       &kEnhancedSafeBrowsingPromo,
       &kEnterprisePasswordReuseUiRefresh,
+      &kEnterpriseRealTimeUrlCheckOnAndroid,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExtensionTelemetryDisableOffstoreExtensions,
       &kExtensionTelemetryForEnterprise,

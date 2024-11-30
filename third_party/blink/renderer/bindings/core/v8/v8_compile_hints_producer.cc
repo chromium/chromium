@@ -213,7 +213,7 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
   }
 
   static_assert(sizeof(unsigned) == sizeof(int32_t));
-  unsigned* raw_data = (bloom.GetRawData());
+  auto raw_data = bloom.GetRawData();
 
   // Add noise to the data.
   for (int i = 0; i < kBloomFilterInt32Count; ++i) {

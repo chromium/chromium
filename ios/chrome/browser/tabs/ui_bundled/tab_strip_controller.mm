@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/tabs/ui_bundled/requirements/tab_strip_constants.h"
 #import "ios/chrome/browser/tabs/ui_bundled/requirements/tab_strip_presentation.h"
@@ -54,7 +55,6 @@
 #import "ios/chrome/browser/tabs/ui_bundled/tab_view.h"
 #import "ios/chrome/browser/tabs/ui_bundled/target_frame_cache.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
@@ -455,7 +455,7 @@ const CGFloat kSymbolSize = 18;
 
     // `self.view` setup.
     _useTabStacking = [self shouldUseTabStacking];
-    CGRect tabStripFrame = browser->GetSceneState().window.bounds;
+    CGRect tabStripFrame = browser->GetSceneState().rootView.bounds;
     tabStripFrame.size.height = kTabStripHeight;
     _view = [[TabStripContainerView alloc] initWithFrame:tabStripFrame];
     _view.autoresizingMask = (UIViewAutoresizingFlexibleWidth |

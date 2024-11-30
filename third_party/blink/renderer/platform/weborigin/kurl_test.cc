@@ -1125,8 +1125,8 @@ TEST(KURLTest, HasIDNA2008DeviationCharacters) {
   // Copying the URL from a canonical string presently doesn't copy the boolean.
   KURL url1(u"http://\u03b2\u03cc\u03bb\u03bf\u03c2.com/path");
   std::string url_string = url1.GetString().Utf8();
-  KURL url2(AtomicString::FromUTF8(url_string.data(), url_string.length()),
-            url1.GetParsed(), url1.IsValid());
+  KURL url2(AtomicString::FromUTF8(url_string), url1.GetParsed(),
+            url1.IsValid());
   EXPECT_FALSE(url2.HasIDNA2008DeviationCharacter());
 }
 

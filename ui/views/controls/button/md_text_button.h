@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
 #include "ui/views/controls/focus_ring.h"
@@ -67,12 +68,12 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void SetStrokeColorOverrideDeprecated(const std::optional<SkColor>& color);
   std::optional<SkColor> GetStrokeColorOverrideDeprecated() const;
 
-  // Override the default corner radius (received from the `LayoutProvider` for
-  // `ShapeContextTokens::kButtonRadius`) of the round rect used for the
-  // background and ink drop effects.
-  void SetCornerRadius(std::optional<float> radius);
-  std::optional<float> GetCornerRadius() const;
-  float GetCornerRadiusValue() const;
+  // Override the default corner radius (or radii) (received from the
+  // `LayoutProvider` for `ShapeContextTokens::kButtonRadius`) of the round rect
+  // used for the background and ink drop effects.
+  void SetCornerRadii(const gfx::RoundedCornersF& radii);
+  void SetCornerRadius(float radius);
+  gfx::RoundedCornersF GetCornerRadii() const;
 
   // See |custom_padding_|.
   void SetCustomPadding(const std::optional<gfx::Insets>& padding);
@@ -120,8 +121,8 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   std::optional<SkColor> stroke_color_override_;
   std::optional<ui::ColorId> stroke_color_id_override_;
 
-  // Used to set the corner radius of the button.
-  std::optional<float> corner_radius_;
+  // Used to set the corner radii of the button.
+  std::optional<gfx::RoundedCornersF> radii_;
 
   // Used to override default padding.
   std::optional<gfx::Insets> custom_padding_;
@@ -144,7 +145,7 @@ class VIEWS_EXPORT MdTextButtonActionViewInterface
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
-VIEW_BUILDER_PROPERTY(std::optional<float>, CornerRadius)
+VIEW_BUILDER_PROPERTY(gfx::RoundedCornersF, CornerRadii)
 VIEW_BUILDER_PROPERTY(std::optional<SkColor>, BgColorOverrideDeprecated)
 VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, BgColorIdOverride)
 VIEW_BUILDER_PROPERTY(std::optional<gfx::Insets>, CustomPadding)

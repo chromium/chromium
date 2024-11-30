@@ -3466,40 +3466,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "setLocalFilesEnabled") {
-    std::optional<bool> enabled = value.FindBool("enabled");
-    ASSERT_TRUE(enabled.has_value());
-    g_browser_process->local_state()->SetBoolean(prefs::kLocalUserFilesAllowed,
-                                                 enabled.value());
-    return;
-  }
-
-  if (name == "setLocalFilesMigrationDestination") {
-    const std::string* provider = value.FindString("provider");
-    ASSERT_TRUE(provider);
-    ASSERT_TRUE(*provider == download_dir_util::kLocationGoogleDrive ||
-                *provider == download_dir_util::kLocationOneDrive);
-    g_browser_process->local_state()->SetString(
-        prefs::kLocalUserFilesMigrationDestination, *provider);
-    return;
-  }
-
-  if (name == "skipSkyVaultMigration") {
-    file_manager::VolumeManager* volume_manager = VolumeManager::Get(profile());
-    volume_manager->OnMigrationSucceededForTesting();
-    return;
-  }
-
-  if (name == "setDefaultLocation") {
-    const std::string* defaultLocation = value.FindString("defaultLocation");
-    ASSERT_TRUE(defaultLocation &&
-                (*defaultLocation == download_dir_util::kLocationGoogleDrive ||
-                 *defaultLocation == download_dir_util::kLocationOneDrive));
-    profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
-                                     *defaultLocation);
-    return;
-  }
-
   if (name == "setTrashEnabled") {
     std::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());

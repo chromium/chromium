@@ -50,6 +50,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
@@ -1422,9 +1423,9 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     }
   }
 #if BUILDFLAG(IS_WIN)
-  if (site_instance && GetContentClient()->browser()->ShouldUseSkiaFontManager(
+  if (site_instance && GetContentClient()->browser()->ShouldUseFontDataManager(
                            site_instance->GetSiteURL())) {
-    flags |= RenderProcessFlags::kSkiaFontManager;
+    flags |= RenderProcessFlags::kFontDataManager;
   }
 #endif
   return new RenderProcessHostImpl(browser_context, storage_partition_impl,
@@ -2551,7 +2552,7 @@ const base::TimeTicks& RenderProcessHostImpl::GetLastInitTime() {
   return last_init_time_;
 }
 
-base::Process::Priority RenderProcessHostImpl::GetPriority() {
+base::Process::Priority RenderProcessHostImpl::GetPriority() const {
   return priority_.GetProcessPriority();
 }
 
@@ -2830,7 +2831,7 @@ void RenderProcessHostImpl::ShutdownForBadMessage(
   if (run_renderer_in_process()) {
     // In single process mode it is better if we don't suicide but just
     // crash.
-    CHECK(false);
+    NOTREACHED();
   }
 
   // We kill the renderer but don't include a NOTREACHED, because we want the
@@ -3243,8 +3244,8 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
       switches::kDeviceScaleFactor,
       base::NumberToString(display::win::GetDPIScale()));
 
-  if (!!(flags_ & RenderProcessFlags::kSkiaFontManager)) {
-    command_line->AppendSwitch(switches::kUseSkiaFontManager);
+  if (!!(flags_ & RenderProcessFlags::kFontDataManager)) {
+    command_line->AppendSwitch(switches::kUseFontDataManager);
   }
 #endif
 
@@ -3439,7 +3440,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 #if BUILDFLAG(ENABLE_PPAPI)
       switches::kEnablePepperTesting,
 #endif
-      switches::kEnforceWebRtcIPPermissionCheck,
       switches::kWebRtcMaxCaptureFramerate,
       switches::kEnableLowEndDeviceMode,
       switches::kDisableLowEndDeviceMode,
@@ -4362,7 +4362,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
                                  process_lock.ToString());
       SCOPED_CRASH_KEY_STRING256("Bug40889283", "site_info",
                                  site_info.GetDebugString());
-      CHECK(false) << "IsSuitableHost found a process that is marked as unused "
+      NOTREACHED() << "IsSuitableHost found a process that is marked as unused "
                       "but has a valid process lock: "
                    << process_lock;
     }
@@ -4779,7 +4779,7 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
                                    site_info.GetDebugString());
     ChildProcessSecurityPolicyImpl::GetInstance()->LogKilledProcessOriginLock(
         render_process_host->GetID());
-    CHECK(false) << "Unsuitable process reused for site " << site_info;
+    NOTREACHED() << "Unsuitable process reused for site " << site_info;
   }
 
   // Otherwise, create a new RenderProcessHost.

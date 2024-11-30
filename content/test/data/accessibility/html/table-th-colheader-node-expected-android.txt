@@ -1,1 +1,0 @@
-android.view.View role_description='column header' collection_item table_header name='Firstname' row_span=1 column_span=1

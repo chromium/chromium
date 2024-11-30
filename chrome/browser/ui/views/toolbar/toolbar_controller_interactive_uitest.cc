@@ -142,7 +142,6 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto CheckIsManagedByController(ui::ElementIdentifier id) {
-    ToolbarController::ElementIdInfo d;
     return Check(
         [this, id]() {
           for (const auto& el : responsive_elements_) {
@@ -201,8 +200,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                           }
                         }).SetDescription("ForceOverflow")),
               WaitForShow(kToolbarOverflowButtonElementId), WaitForHide(id));
-    AddDescription(result,
-                   "AddDummyButtonsToToolbarTillElementOverflows( %s )");
+    AddDescriptionPrefix(result,
+                         "AddDummyButtonsToToolbarTillElementOverflows()");
     return result;
   }
 
@@ -221,8 +220,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                         }).SetDescription("ForceOverflow")),
               WaitForShow(kToolbarOverflowButtonElementId),
               CheckActionItemOverflowed(id, true));
-    AddDescription(result,
-                   "AddDummyButtonsToToolbarTillElementOverflows( %s )");
+    AddDescriptionPrefix(result,
+                         "AddDummyButtonsToToolbarTillElementOverflows()");
     return result;
   }
 

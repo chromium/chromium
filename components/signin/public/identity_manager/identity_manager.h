@@ -286,7 +286,7 @@ class IdentityManager : public KeyedService,
   AccountInfo FindExtendedAccountInfoByEmailAddress(
       const std::string& email_address) const;
   // The same as `FindExtendedAccountInfo()` but finds an account by gaia ID.
-  AccountInfo FindExtendedAccountInfoByGaiaId(const std::string& gaia_id) const;
+  AccountInfo FindExtendedAccountInfoByGaiaId(const GaiaId& gaia_id) const;
 
   // Provides the information of all accounts that are present in the Gaia
   // cookie in the cookie jar, ordered by their order in the cookie.
@@ -314,7 +314,9 @@ class IdentityManager : public KeyedService,
   DeviceAccountsSynchronizer* GetDeviceAccountsSynchronizer();
 
 #if BUILDFLAG(IS_IOS)
-  // Gets all accounts on the device, including the ones from other profiles.
+  // Gets all accounts on the device, including the ones from other profiles, in
+  // the order provided by the system (usually the order in which the accounts
+  // were added).
   [[nodiscard]] std::vector<AccountInfo> GetAccountsOnDevice();
 #endif
 
@@ -417,7 +419,7 @@ class IdentityManager : public KeyedService,
   void OnNetworkInitialized();
 
   // Picks the correct account_id for account with the given gaia id and email.
-  CoreAccountId PickAccountIdForAccount(const std::string& gaia,
+  CoreAccountId PickAccountIdForAccount(const GaiaId& gaia,
                                         const std::string& email) const;
 
   // Methods used only by embedder-level factory classes.
@@ -547,7 +549,7 @@ class IdentityManager : public KeyedService,
       IdentityManager* identity_manager,
       const CoreAccountId& account_id,
       const std::string& email,
-      const std::string& gaia,
+      const GaiaId& gaia,
       const std::string& hosted_domain,
       const std::string& full_name,
       const std::string& given_name,

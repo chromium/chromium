@@ -21,28 +21,24 @@
 
 namespace optimization_guide {
 
-FakeBaseModelAsset::FakeBaseModelAsset() {
+FakeBaseModelAsset::FakeBaseModelAsset(Content&& content)
+    : version_(content.version) {
   CHECK(temp_dir_.CreateUniqueTempDir());
+  Write(std::move(content));
 }
+FakeBaseModelAsset::FakeBaseModelAsset(
+    proto::OnDeviceModelValidationConfig&& validation_config)
+    : FakeBaseModelAsset({
+          .config = ExecutionConfigWithValidation(std::move(validation_config)),
+      }) {}
 FakeBaseModelAsset::~FakeBaseModelAsset() = default;
 
-void FakeBaseModelAsset::Write(
-    std::optional<proto::OnDeviceModelExecutionFeatureConfig> config,
-    std::optional<proto::OnDeviceModelExecutionFeatureConfig> config2,
-    std::optional<proto::OnDeviceModelValidationConfig> validation_config) {
-  proto::OnDeviceModelExecutionConfig execution_config;
-  if (config) {
-    *execution_config.add_feature_configs() = *config;
-  }
-  if (config2) {
-    *execution_config.add_feature_configs() = *config2;
-  }
-  if (validation_config) {
-    *execution_config.mutable_validation_config() = *validation_config;
-  }
+void FakeBaseModelAsset::Write(Content&& content) {
+  CHECK(base::WriteFile(temp_dir_.GetPath().Append(kWeightsFile),
+                        base::NumberToString(content.weight)));
   CHECK(base::WriteFile(
       temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile),
-      execution_config.SerializeAsString()));
+      content.config.SerializeAsString()));
 }
 
 FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)

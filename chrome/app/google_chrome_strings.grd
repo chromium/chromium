@@ -1225,6 +1225,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PROFILE_MENU_SIGN_OUT" desc="The text label of the Sign out of Chrome button in the Profile Menu.">
           Sign out of Chrome
         </message>
+        <message name="IDS_PROFILE_MENU_ADD_PROFILE" desc="The text label of the add new profile item in the profile menu.">
+          Add Chrome profile
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING" desc="The text label of the Sign out of Chrome button in the Profile Menu when the user is in sign in pending state.">
@@ -1238,6 +1241,9 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_PROFILE_MENU_SIGN_OUT" desc="The text label of the Sign out of Chrome button in the Profile Menu.">
           Sign Out of Chrome
+        </message>
+        <message name="IDS_PROFILE_MENU_ADD_PROFILE" desc="The text label of the add new profile item in the profile menu.">
+          Add Chrome Profile
         </message>
       </if>
 
@@ -1704,15 +1710,13 @@ Permissions you've already given to websites and apps may apply to this account.
         To use and save Chrome data in your Google Account, update Chrome
       </message>
 
-      <!-- Sync errors. Android uses native UI to handle Sync settings -->
-      <if expr="not is_android">
-        <message name="IDS_SYNC_UPGRADE_CLIENT" desc="Message indicating client needs to be upgraded to the latest version.">
-          Update Chrome to start sync
-        </message>
-        <message name="IDS_SYNC_UPGRADE_CLIENT_BUTTON" desc="Button indicating client needs to be upgraded to the latest version.">
-          Update Chrome
-        </message>
-      </if>
+      <!-- Sync errors. -->
+      <message name="IDS_SYNC_UPGRADE_CLIENT" desc="Message indicating client needs to be upgraded to the latest version.">
+        Update Chrome to start sync
+      </message>
+      <message name="IDS_SYNC_UPGRADE_CLIENT_BUTTON" desc="Button indicating client needs to be upgraded to the latest version.">
+        Update Chrome
+      </message>
 
       <!-- Upgrade recovery bubble -->
       <message name="IDS_RECOVERY_BUBBLE_TITLE" desc="Text for the title of the chrome recovery bubble view.">
@@ -2007,39 +2011,6 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
 
         <!-- Entrypoint Strings -->
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE"
-          desc="Text
-    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
-    to search anything on the page via Google Lens.">
-          Search anything on this page
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_1"
-          desc="Text
-    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
-    to search any image or text via Google Lens.">
-          Search any image or text with Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_2"
-          desc="Text
-    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
-    to select images or text to search with Google Lens.">
-          Select images/text to search with Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL"
-          desc="Label
-    for the Google Lens button in the CTRL+F dialog.">
-          Google Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_1"
-          desc="Label
-    for the button in the CTRL+F dialog to open Google Lens.">
-          Open Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_2"
-          desc="Label
-    for the button in the CTRL+F dialog inviting the user to try Google Lens.">
-          Try Lens
-        </message>
         <message name="IDS_CONTENT_CONTEXT_LENS_OVERLAY"
           desc="The name of the Lens overlay command in the content area context menu">
           Search with Google Lens

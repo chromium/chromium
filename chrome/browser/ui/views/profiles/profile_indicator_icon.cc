@@ -13,7 +13,7 @@ ProfileIndicatorIcon::ProfileIndicatorIcon() {
   SetFlipCanvasOnPaintForRTLUI(true);
 }
 
-ProfileIndicatorIcon::~ProfileIndicatorIcon() {}
+ProfileIndicatorIcon::~ProfileIndicatorIcon() = default;
 
 void ProfileIndicatorIcon::OnPaint(gfx::Canvas* canvas) {
   if (base_icon_.IsEmpty())

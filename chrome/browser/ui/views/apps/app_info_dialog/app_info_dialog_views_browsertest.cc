@@ -21,7 +21,7 @@
 
 class AppInfoDialogBrowserTest : public DialogBrowserTest {
  public:
-  AppInfoDialogBrowserTest() {}
+  AppInfoDialogBrowserTest() = default;
 
   AppInfoDialogBrowserTest(const AppInfoDialogBrowserTest&) = delete;
   AppInfoDialogBrowserTest& operator=(const AppInfoDialogBrowserTest&) = delete;

@@ -16,7 +16,6 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "base/command_line.h"
@@ -171,60 +170,6 @@ void CoralController::CacheEmbeddings(const CoralRequest& request,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-CoralController::CoralService* CoralController::EnsureCoralService() {
-  // Generate a fake service if --force-birch-fake-coral-backend is enabled.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceBirchFakeCoralBackend)) {
-    if (!fake_service_) {
-      fake_service_ = std::make_unique<FakeCoralService>();
-    }
-    return fake_service_.get();
-  }
-
-  if (!coral_service_ && mojo_service_manager::IsServiceManagerBound()) {
-    auto pipe_handle = coral_service_.BindNewPipeAndPassReceiver().PassPipe();
-    coral_service_.reset_on_disconnect();
-    mojo_service_manager::GetServiceManagerProxy()->Request(
-        chromeos::mojo_services::kCrosCoralService, kRequestCoralServiceTimeout,
-        std::move(pipe_handle));
-  }
-  return coral_service_ ? coral_service_.get() : nullptr;
-}
-
-void CoralController::HandleGroupResult(CoralSource source,
-                                        CoralResponseCallback callback,
-                                        const base::TimeTicks& request_time,
-                                        coral::mojom::GroupResultPtr result) {
-  if (result->is_error()) {
-    LOG(ERROR) << "Coral group request failed with CoralError code: "
-               << static_cast<int>(result->get_error());
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  coral::mojom::GroupResponsePtr group_response =
-      std::move(result->get_response());
-  VLOG(1) << "Coral group " << SourceToString(source)
-          << " request succeeded with " << GroupResponseToString(group_response)
-          << ", in " << (base::TimeTicks::Now() - request_time).InMilliseconds()
-          << " ms.";
-  auto response = std::make_unique<CoralResponse>();
-  response->set_source(source);
-  response->set_groups(std::move(group_response->groups));
-  std::move(callback).Run(std::move(response));
-}
-
-void CoralController::HandleCacheEmbeddingsResult(
-    base::OnceCallback<void(bool)> callback,
-    coral::mojom::CacheEmbeddingsResultPtr result) {
-  if (result->is_error()) {
-    LOG(ERROR) << "Coral cache embeddings request failed with CoralError code: "
-               << static_cast<int>(result->get_error());
-    std::move(callback).Run(false);
-    return;
-  }
-  std::move(callback).Run(true);
-}
-
 void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
   // TODO(crbug.com/378558824): Fix desk preview view after moving apps and
   // tabs.
@@ -292,39 +237,121 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
 
 void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) {
   std::vector<GURL> tab_urls;
+  base::flat_set<std::string> app_ids;
   for (const coral::mojom::EntityPtr& entity : group->entities) {
     if (entity->is_tab()) {
       tab_urls.push_back(entity->get_tab()->url);
+    } else if (entity->is_app()) {
+      app_ids.insert(entity->get_app()->id);
     }
   }
 
-  if (tab_urls.empty()) {
+  // `RestoreDataCollector` has a callback because it is compatible with lacros
+  // which needs to be async. If there are no apps and just tabs, we can
+  // directly trigger the callback, but we have to create the template
+  // ourselves.
+  if (app_ids.empty()) {
+    OnTemplateCreated(tab_urls, /*desk_template=*/nullptr);
     return;
   }
 
-  // TODO(crbug.com/365839564): Handle the apps in `group`. Functionality should
-  // be shared with `RestoreDataCollector`, except we exclude browsers and
-  // windows on the active desk not in `group`.
-  auto restore_data = std::make_unique<app_restore::RestoreData>();
-  auto& launch_list =
-      restore_data
-          ->mutable_app_id_to_launch_list()[app_constants::kChromeAppId];
-  // All tabs go into the same window.
-  auto& app_restore_data =
-      launch_list[Shell::Get()->coral_delegate()->GetChromeDefaultRestoreId()];
-  app_restore_data = std::make_unique<app_restore::AppRestoreData>();
-  app_restore_data->browser_extra_info.urls = std::move(tab_urls);
+  // TODO(crbug.com/365839564): Handle multi display case.
+  DesksController::Get()->CaptureActiveDeskAsSavedDesk(
+      base::BindOnce(&CoralController::OnTemplateCreated,
+                     weak_factory_.GetWeakPtr(), tab_urls),
+      DeskTemplateType::kCoral,
+      /*root_window_to_show=*/Shell::GetPrimaryRootWindow(), app_ids);
+}
 
-  // TODO(crbug.com/365839564): The title can be nullopt and updated async
-  // after. Figure out how to handle that case.
-  auto saved_group = std::make_unique<DeskTemplate>(
-      base::Uuid::GenerateRandomV4(), DeskTemplateSource::kUser, "saved group",
-      base::Time::Now(), DeskTemplateType::kCoral);
-  saved_group->set_desk_restore_data(std::move(restore_data));
+CoralController::CoralService* CoralController::EnsureCoralService() {
+  // Generate a fake service if --force-birch-fake-coral-backend is enabled.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceBirchFakeCoralBackend)) {
+    if (!fake_service_) {
+      fake_service_ = std::make_unique<FakeCoralService>();
+    }
+    return fake_service_.get();
+  }
+
+  if (!coral_service_ && mojo_service_manager::IsServiceManagerBound()) {
+    auto pipe_handle = coral_service_.BindNewPipeAndPassReceiver().PassPipe();
+    coral_service_.reset_on_disconnect();
+    mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosCoralService, kRequestCoralServiceTimeout,
+        std::move(pipe_handle));
+  }
+  return coral_service_ ? coral_service_.get() : nullptr;
+}
+
+void CoralController::HandleGroupResult(CoralSource source,
+                                        CoralResponseCallback callback,
+                                        const base::TimeTicks& request_time,
+                                        coral::mojom::GroupResultPtr result) {
+  if (result->is_error()) {
+    LOG(ERROR) << "Coral group request failed with CoralError code: "
+               << static_cast<int>(result->get_error());
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  coral::mojom::GroupResponsePtr group_response =
+      std::move(result->get_response());
+  VLOG(1) << "Coral group " << SourceToString(source)
+          << " request succeeded with " << GroupResponseToString(group_response)
+          << ", in " << (base::TimeTicks::Now() - request_time).InMilliseconds()
+          << " ms.";
+  auto response = std::make_unique<CoralResponse>();
+  response->set_source(source);
+  response->set_groups(std::move(group_response->groups));
+  std::move(callback).Run(std::move(response));
+}
+
+void CoralController::HandleCacheEmbeddingsResult(
+    base::OnceCallback<void(bool)> callback,
+    coral::mojom::CacheEmbeddingsResultPtr result) {
+  if (result->is_error()) {
+    LOG(ERROR) << "Coral cache embeddings request failed with CoralError code: "
+               << static_cast<int>(result->get_error());
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(true);
+}
+
+void CoralController::OnTemplateCreated(
+    const std::vector<GURL>& tab_urls,
+    std::unique_ptr<DeskTemplate> desk_template) {
+  std::unique_ptr<DeskTemplate> new_template = std::move(desk_template);
+  // There is a chance the template is empty due to unsupported apps.
+  if (!new_template) {
+    if (tab_urls.empty()) {
+      return;
+    }
+
+    // TODO(crbug.com/365839564): The title can be nullopt and updated async
+    // after. Figure out how to handle that case.
+    new_template = std::make_unique<DeskTemplate>(
+        base::Uuid::GenerateRandomV4(), DeskTemplateSource::kUser,
+        "saved group", base::Time::Now(), DeskTemplateType::kCoral);
+    new_template->set_desk_restore_data(
+        std::make_unique<app_restore::RestoreData>());
+  }
+
+  auto* shell = Shell::Get();
+  if (!tab_urls.empty()) {
+    auto* restore_data = new_template->mutable_desk_restore_data();
+    auto& launch_list =
+        restore_data
+            ->mutable_app_id_to_launch_list()[app_constants::kChromeAppId];
+    // All tabs go into the same window.
+    auto& app_restore_data =
+        launch_list[shell->coral_delegate()->GetChromeDefaultRestoreId()];
+    app_restore_data = std::make_unique<app_restore::AppRestoreData>();
+    app_restore_data->browser_extra_info.urls = std::move(tab_urls);
+  }
 
   // TODO(crbug.com/365839564): Callback should show the templates library view.
-  Shell::Get()->saved_desk_delegate()->GetDeskModel()->AddOrUpdateEntry(
-      std::move(saved_group), base::DoNothing());
+  shell->saved_desk_delegate()->GetDeskModel()->AddOrUpdateEntry(
+      std::move(new_template), base::DoNothing());
 }
 
 }  // namespace ash

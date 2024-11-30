@@ -48,6 +48,7 @@
 #include "base/containers/adapters.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/video_color_space.h"
+#include "skia/ext/cicp.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
@@ -207,30 +208,8 @@ static std::unique_ptr<ColorProfile> ParseCicpChunk(
   uint8_t matrix_coefficients = chunk.data[2];
   uint8_t range_u8 = chunk.data[3];
 
-  // Per PNG spec, matrix_coefficients must be 0, i.e. RGB (YUV is explicitly
-  // disallowed).
-  if (matrix_coefficients) {
-    return nullptr;
-  }
-  // range must be 0 or 1.
-  if (range_u8 != 0 && range_u8 != 1) {
-    return nullptr;
-  }
-  const auto range = range_u8 == 1 ? gfx::ColorSpace::RangeID::FULL
-                                   : gfx::ColorSpace::RangeID::LIMITED;
-  if (range == gfx::ColorSpace::RangeID::LIMITED) {
-    // TODO(crbug/1339019): Implement this if needed.
-    DLOG(WARNING) << "Limited range RGB is not fully supported";
-  }
-  media::VideoColorSpace color_space(primaries, trc, 0, range);
-
-  // If not valid, do not return anything.
-  if (!color_space.IsSpecified()) {
-    return nullptr;
-  }
-
-  sk_sp<SkColorSpace> sk_color_space =
-      color_space.ToGfxColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
+  sk_sp<SkColorSpace> sk_color_space = skia::CICPGetSkColorSpace(
+      primaries, trc, matrix_coefficients, range_u8, /*prefer_srgb_trfn=*/true);
   if (!sk_color_space) {
     return nullptr;
   }

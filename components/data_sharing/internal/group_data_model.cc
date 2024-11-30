@@ -226,14 +226,19 @@ void GroupDataModel::FetchGroupsFromSDK(
   std::map<GroupId, VersionToken> group_versions;
   data_sharing_pb::ReadGroupsParams params;
   for (const GroupId& group_id : added_or_updated_groups) {
-    // TODO(crbug.com/301390275): pass `consistency_token`.
-    params.add_group_ids(group_id.value());
-
     auto collaboration_group_specifics_opt =
         collaboration_group_sync_bridge_->GetSpecifics(group_id);
     CHECK(collaboration_group_specifics_opt.has_value());
     group_versions[group_id] =
         ComputeVersionToken(*collaboration_group_specifics_opt);
+
+    // TODO(crbug.com/301390275): pass `consistency_token`.
+    params.add_group_ids(group_id.value());
+    data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
+        params.add_group_params();
+    group_params->set_group_id(group_id.value());
+    group_params->set_consistency_token(
+        collaboration_group_specifics_opt->consistency_token());
   }
 
   sdk_delegate_.ReadGroups(

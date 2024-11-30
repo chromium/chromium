@@ -255,6 +255,11 @@ class InsecureDelegate : public CookieAccessDelegate {
       const CanonicalCookie& cookie) const override {
     return CookieAccessSemantics::UNKNOWN;
   }
+
+  CookieLegacyScope GetAccessForLegacyCookieScope(
+      const CanonicalCookie& cookie) const override {
+    return CookieLegacyScope::UNKNOWN;
+  }
   // Returns whether a cookie should be attached regardless of its SameSite
   // value vs the request context.
   bool ShouldIgnoreSameSiteRestrictions(
@@ -331,6 +336,13 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
   ASSERT_FALSE(session->ShouldDeferRequest(request.get()));
+}
+
+TEST_F(SessionTest, CreationDate) {
+  auto session = Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  ASSERT_TRUE(session);
+  // Make sure it's set to a plausible value.
+  EXPECT_LT(base::Time::Now() - base::Days(1), session->creation_date());
 }
 
 }  // namespace

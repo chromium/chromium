@@ -935,7 +935,7 @@ bool Color::SetFromString(const String& name) {
   if (name[0] != '#')
     return SetNamedColor(name);
   return VisitCharacters(name, [this](auto chars) {
-    return ParseHexColorInternal(chars.subspan(1), *this);
+    return ParseHexColorInternal(chars.template subspan<1>(), *this);
   });
 }
 

@@ -1,0 +1,6 @@
+Test that long animation frame does not overlap with paint time
+Recording started
+Tracing complete
+Found paint event
+Paint events do not overlap with AnimationFrame
+

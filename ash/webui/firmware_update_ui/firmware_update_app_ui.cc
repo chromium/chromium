@@ -46,8 +46,6 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->AddBoolean("isFirmwareUpdateUIV2Enabled",
                      ash::features::IsFirmwareUpdateUIV2Enabled());
-  source->AddBoolean("isUpstreamTrustedReportsFirmwareEnabled",
-                     ash::features::IsUpstreamTrustedReportsFirmwareEnabled());
   source->AddBoolean("IsFlexFirmwareUpdateEnabled",
                      ash::features::IsFlexFirmwareUpdateEnabled());
 }

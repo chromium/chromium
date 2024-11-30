@@ -392,6 +392,28 @@ struct UploadCardResponseDetails {
       get_details_for_enrollment_response_details;
 };
 
+// A collection of information required to create a payment instrument request
+// to link a BNPL partner.
+struct GetDetailsForCreateBnplPaymentInstrumentRequestDetails {
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails();
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails(
+      const GetDetailsForCreateBnplPaymentInstrumentRequestDetails& other);
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails& operator=(
+      const GetDetailsForCreateBnplPaymentInstrumentRequestDetails& other);
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails(
+      GetDetailsForCreateBnplPaymentInstrumentRequestDetails&&);
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails& operator=(
+      GetDetailsForCreateBnplPaymentInstrumentRequestDetails&&);
+  ~GetDetailsForCreateBnplPaymentInstrumentRequestDetails();
+
+  // `app_locale` is the Chrome locale.
+  std::string_view app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number;
+  // The ID of the BNPL partner to be linked. i.e. Affirm
+  std::string_view issuer_id;
+};
+
 }  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_DETAILS_H_

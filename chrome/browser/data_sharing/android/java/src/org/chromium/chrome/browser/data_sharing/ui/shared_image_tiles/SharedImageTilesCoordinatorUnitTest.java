@@ -7,12 +7,17 @@ package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,9 +39,8 @@ import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.ui.base.TestActivity;
-
-import java.util.Arrays;
 
 /** Unit test for {@link SharedImageTilesCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -47,6 +52,7 @@ public class SharedImageTilesCoordinatorUnitTest {
 
     @Mock private DataSharingService mDataSharingService;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
+    @Mock private Bitmap mAvatarBitmap;
 
     private Activity mActivity;
     private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -56,10 +62,12 @@ public class SharedImageTilesCoordinatorUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        initialize(SharedImageTilesType.DEFAULT, SharedImageTilesColor.DEFAULT);
+        initialize(
+                SharedImageTilesType.DEFAULT,
+                new SharedImageTilesColor(SharedImageTilesColor.Style.DEFAULT));
     }
 
-    private void initialize(@SharedImageTilesType int type, @SharedImageTilesColor int color) {
+    private void initialize(@SharedImageTilesType int type, SharedImageTilesColor color) {
         mSharedImageTilesCoordinator =
                 new SharedImageTilesCoordinator(mActivity, type, color, mDataSharingService);
         mView = mSharedImageTilesCoordinator.getView();
@@ -69,6 +77,62 @@ public class SharedImageTilesCoordinatorUnitTest {
     private void verifyViews(int countVisibility, int iconViewCount) {
         assertEquals(mCountTileView.getVisibility(), countVisibility);
         assertEquals(mSharedImageTilesCoordinator.getAllIconViews().size(), iconViewCount);
+    }
+
+    private void simulateReadGroupWith2ValidMembers() {
+        GroupMember memberValid1 =
+                new GroupMember(
+                        /* gaiaId= */ null,
+                        /* displayName= */ null,
+                        EMAIL,
+                        /* role= */ 0,
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
+        GroupMember memberValid2 =
+                new GroupMember(
+                        /* gaiaId= */ null,
+                        /* displayName= */ null,
+                        EMAIL,
+                        /* role= */ 0,
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
+        GroupMember memberInvalid1 =
+                new GroupMember(
+                        /* gaiaId= */ null,
+                        /* displayName= */ null,
+                        /* email= */ null,
+                        /* role= */ 0,
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
+        GroupMember memberInvalid2 =
+                new GroupMember(
+                        /* gaiaId= */ null,
+                        /* displayName= */ null,
+                        /* email= */ "",
+                        /* role= */ 0,
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
+        GroupDataOrFailureOutcome outcome =
+                new GroupDataOrFailureOutcome(
+                        new GroupData(
+                                /* groupId= */ null,
+                                /* displayName= */ null,
+                                new GroupMember[] {
+                                    memberValid1, memberValid2, memberInvalid1, memberInvalid2
+                                },
+                                /* accessToken= */ null),
+                        PeopleGroupActionFailure.UNKNOWN);
+
+        doAnswer(
+                        invocation -> {
+                            Callback<GroupDataOrFailureOutcome> callback =
+                                    invocation.getArgument(1);
+                            callback.onResult(outcome);
+                            return null;
+                        })
+                .when(mDataSharingService)
+                .readGroup(eq(COLLABORATION_ID), any(Callback.class));
+        doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUiDelegate();
     }
 
     @Test
@@ -102,53 +166,47 @@ public class SharedImageTilesCoordinatorUnitTest {
 
     @Test
     public void testFetchPeopleIcon() {
-        GroupMember memberValid =
-                new GroupMember(
-                        /* gaiaId= */ null,
-                        /* displayName= */ null,
-                        EMAIL,
-                        /* role= */ 0,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember memberInvalid1 =
-                new GroupMember(
-                        /* gaiaId= */ null,
-                        /* displayName= */ null,
-                        /* email= */ null,
-                        /* role= */ 0,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember memberInvalid2 =
-                new GroupMember(
-                        /* gaiaId= */ null,
-                        /* displayName= */ null,
-                        /* email= */ "",
-                        /* role= */ 0,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(
-                        new GroupData(
-                                /* groupId= */ null,
-                                /* displayName= */ null,
-                                new GroupMember[] {memberValid, memberInvalid1, memberInvalid2},
-                                /* accessToken= */ null),
-                        PeopleGroupActionFailure.UNKNOWN);
+        simulateReadGroupWith2ValidMembers();
+        Callback<Boolean> mockFinishedCallback = mock(Callback.class);
+        mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID, mockFinishedCallback);
 
-        doAnswer(
-                        invocation -> {
-                            Callback<GroupDataOrFailureOutcome> callback =
-                                    invocation.getArgument(1);
-                            callback.onResult(outcome);
-                            return null;
-                        })
-                .when(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID), any(Callback.class));
-        doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUiDelegate();
+        ArgumentCaptor<DataSharingAvatarBitmapConfig> configCaptor =
+                ArgumentCaptor.forClass(DataSharingAvatarBitmapConfig.class);
 
-        mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID);
+        verify(mDataSharingUiDelegate, times(2)).getAvatarBitmap(configCaptor.capture());
 
-        verify(mDataSharingUiDelegate)
-                .showAvatars(any(), any(), eq(Arrays.asList(memberValid.email)), any(), any());
+        // Finished callback is not triggered if we are waiting for more bitmaps.
+        configCaptor
+                .getAllValues()
+                .get(0)
+                .getDataSharingAvatarCallback()
+                .onAvatarLoaded(mAvatarBitmap);
+
+        verify(mockFinishedCallback, never()).onResult(anyBoolean());
+
+        // Finished callback should only be called when all bitmaps returns.
+        configCaptor
+                .getAllValues()
+                .get(1)
+                .getDataSharingAvatarCallback()
+                .onAvatarLoaded(mAvatarBitmap);
+
+        verify(mockFinishedCallback).onResult(true);
+    }
+
+    @Test
+    public void testFetchPeopleIconFailure() {
+        simulateReadGroupWith2ValidMembers();
+
+        Callback<Boolean> mockFinishedCallback = mock(Callback.class);
+        mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID, mockFinishedCallback);
+
+        verify(mockFinishedCallback, never()).onResult(anyBoolean());
+
+        // A new update would fail the previous ongoing update.
+        Callback<Boolean> mockFinishedCallback2 = mock(Callback.class);
+        mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID, mockFinishedCallback2);
+
+        verify(mockFinishedCallback).onResult(false);
     }
 }

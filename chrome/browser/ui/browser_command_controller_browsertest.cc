@@ -66,7 +66,7 @@ namespace chrome {
 
 class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
  public:
-  BrowserCommandControllerBrowserTest() {}
+  BrowserCommandControllerBrowserTest() = default;
 
   BrowserCommandControllerBrowserTest(
       const BrowserCommandControllerBrowserTest&) = delete;
@@ -595,15 +595,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestToolbarPinningOnly,
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-class CreateShortcutBrowserCommandControllerNavTest
-    : public BrowserCommandControllerBrowserTest {
- public:
-  CreateShortcutBrowserCommandControllerNavTest() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kShortcutsNotApps};
-};
+using CreateShortcutBrowserCommandControllerNavTest =
+    BrowserCommandControllerBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
                        ErrorUrlDisabled) {

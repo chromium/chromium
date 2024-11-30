@@ -16,7 +16,7 @@
 // This fuzzer uses DomatoLPM to generate JS based on an existing Domato
 // rule.
 class WebcodecsInProcessFuzzer
-    : public InProcessProtoFuzzer<
+    : public InProcessBinaryProtoFuzzer<
           domatolpm::generated::webcodecs_fuzzer_grammar::fuzzcase> {
  public:
   using FuzzCase = domatolpm::generated::webcodecs_fuzzer_grammar::fuzzcase;
@@ -34,6 +34,6 @@ int WebcodecsInProcessFuzzer::Fuzz(const FuzzCase& fuzz_case) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
-  testing::AssertionResult res = content::ExecJs(rfh, js_str);
+  CHECK(content::ExecJs(rfh, js_str));
   return 0;
 }

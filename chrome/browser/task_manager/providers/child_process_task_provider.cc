@@ -20,7 +20,7 @@ using content::ChildProcessData;
 
 namespace task_manager {
 
-ChildProcessTaskProvider::ChildProcessTaskProvider() {}
+ChildProcessTaskProvider::ChildProcessTaskProvider() = default;
 
 ChildProcessTaskProvider::~ChildProcessTaskProvider() {
 }

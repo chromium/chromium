@@ -15,8 +15,8 @@
 
 namespace {
 
-constexpr int kBackToTabButtonVerticalMargin = 4;
-constexpr int kBackToTabButtonHorizontalMargin = 32;
+constexpr int kBackToTabButtonVerticalMargin = 5;
+constexpr int kBackToTabButtonHorizontalMargin = 28;
 constexpr int kBackToTabButtonSize = 24;
 constexpr int kBackToTabButtonIconSize = 16;
 

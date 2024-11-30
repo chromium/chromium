@@ -697,36 +697,36 @@ void BrokenAlternativeServicesTest::TestExponentialBackoff(
   }
 }
 
-TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_OneSecond_True) {
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoffOneSecondTrue) {
   TestExponentialBackoff(base::Seconds(1), true);
 }
 
-TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_OneSecond_False) {
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoffOneSecondFalse) {
   TestExponentialBackoff(base::Seconds(1), false);
 }
 
-TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_FiveSeconds_True) {
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoffFiveSecondsTrue) {
   TestExponentialBackoff(base::Seconds(5), true);
 }
 
-TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_FiveSeconds_False) {
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoffFiveSecondsFalse) {
   TestExponentialBackoff(base::Seconds(5), false);
 }
 
-TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_TenSeconds_True) {
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoffTenSecondsTrue) {
   TestExponentialBackoff(base::Seconds(10), true);
 }
 
-TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_TenSeconds_False) {
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoffTenSecondsFalse) {
   TestExponentialBackoff(base::Seconds(10), false);
 }
 
-TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_FiveMinutes_True) {
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoffFiveMinutesTrue) {
   TestExponentialBackoff(base::Seconds(kBrokenAlternativeProtocolDelaySecs),
                          true);
 }
 
-TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_FiveMinutes_False) {
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoffFiveMinutesFalse) {
   TestExponentialBackoff(base::Seconds(kBrokenAlternativeProtocolDelaySecs),
                          false);
 }

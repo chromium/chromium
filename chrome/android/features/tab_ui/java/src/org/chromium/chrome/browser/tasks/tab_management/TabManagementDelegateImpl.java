@@ -121,7 +121,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         bottomSheetController,
                         dataSharingTabManager,
                         backPressManager,
-                        desktopWindowStateManager);
+                        desktopWindowStateManager,
+                        edgeToEdgeSupplier);
         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
         Handler handler = new Handler();
         profileProviderSupplier.onAvailable(

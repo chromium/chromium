@@ -62,7 +62,11 @@ BookmarksSidePanelUIConfig::BookmarksSidePanelUIConfig()
                                   chrome::kChromeUIBookmarksSidePanelHost) {}
 
 bool BookmarksSidePanelUIConfig::IsPreloadable() {
-  return true;
+  // TODO(crbug.com/373838921): re-enable preloading once the backend image
+  // service is no longer overwhelmed. This might be fixed by either adding a
+  // backend caching layer (crbug.com/379143109), or by us not requesting image
+  // during preloading.
+  return false;
 }
 
 std::optional<int> BookmarksSidePanelUIConfig::GetCommandIdForTesting() {
@@ -177,8 +181,9 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"primaryFilterHeading", IDS_BOOKMARKS_PRIMARY_FILTER_HEADING},
       {"secondaryFilterHeading", IDS_BOOKMARKS_SECONDARY_FILTER_HEADING},
   };
-  for (const auto& str : kLocalizedStrings)
+  for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
 
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 

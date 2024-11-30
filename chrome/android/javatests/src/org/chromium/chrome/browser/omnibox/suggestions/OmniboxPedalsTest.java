@@ -46,9 +46,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
@@ -66,6 +64,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -182,22 +181,6 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
-    public void testClearBrowsingData() throws InterruptedException {
-        setSuggestions(createPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
-        clickOnPedalToSettings(
-                () -> mOmniboxUtils.clickOnAction(0, 0), ClearBrowsingDataFragmentAdvanced.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.CLEAR_BROWSING_DATA,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testClearBrowsingData_withQuickDeleteEnabled() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
         mOmniboxUtils.clickOnAction(0, 0);

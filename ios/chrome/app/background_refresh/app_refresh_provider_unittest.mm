@@ -22,7 +22,7 @@ using AppRefreshProviderTest = PlatformTest;
 // created.
 TEST_F(AppRefreshProviderTest, VerifyInitializer) {
   AppRefreshProvider* provider = [[AppRefreshProvider alloc] init];
-  EXPECT_EQ(provider.refreshInterval, base::Minutes(15));
+  EXPECT_EQ(provider.refreshInterval, base::Minutes(30));
 }
 
 // Test that isDue will be true if the provider was never run before.

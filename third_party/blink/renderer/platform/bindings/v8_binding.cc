@@ -30,8 +30,8 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 
 namespace blink {
 
@@ -97,8 +97,7 @@ namespace bindings {
 
 void V8ObjectToPropertyDescriptor(v8::Isolate* isolate,
                                   v8::Local<v8::Value> descriptor_object,
-                                  V8PropertyDescriptorBag& descriptor_bag,
-                                  ExceptionState& exception_state) {
+                                  V8PropertyDescriptorBag& descriptor_bag) {
   // TODO(crbug.com/1261485): This function is the same as
   // v8::internal::PropertyDescriptor::ToPropertyDescriptor.  Make the
   // function exposed public and re-use it rather than re-implementing
@@ -108,13 +107,13 @@ void V8ObjectToPropertyDescriptor(v8::Isolate* isolate,
   desc = V8PropertyDescriptorBag();
 
   if (!descriptor_object->IsObject()) {
-    exception_state.ThrowTypeError("Property description must be an object.");
+    V8ThrowException::ThrowTypeError(isolate,
+                                     "Property description must be an object.");
     return;
   }
 
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
   v8::Local<v8::Object> v8_desc = descriptor_object.As<v8::Object>();
-  TryRethrowScope rethrow_scope(isolate, exception_state);
 
   auto get_value = [&](const char* property, bool& has,
                        v8::Local<v8::Value>& value) -> bool {
@@ -161,7 +160,8 @@ void V8ObjectToPropertyDescriptor(v8::Isolate* isolate,
     return;
 
   if ((desc.has_get || desc.has_set) && (desc.has_value || desc.has_writable)) {
-    exception_state.ThrowTypeError(
+    V8ThrowException::ThrowTypeError(
+        isolate,
         "Invalid property descriptor. Cannot both specify accessors and "
         "a value or writable attribute");
     return;

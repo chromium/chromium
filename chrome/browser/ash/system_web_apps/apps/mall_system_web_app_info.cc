@@ -52,7 +52,8 @@ MallSystemAppDelegate::GetWebAppInfo() const {
 }
 
 bool MallSystemAppDelegate::IsAppEnabled() const {
-  if (apps::DetermineUserType(profile()) != apps::kUserTypeUnmanaged) {
+  if (apps::DetermineUserType(profile()) != apps::kUserTypeUnmanaged &&
+      !base::FeatureList::IsEnabled(chromeos::features::kCrosMallManaged)) {
     return false;
   }
   return chromeos::features::IsCrosMallSwaEnabled();

@@ -26,6 +26,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -36,10 +38,15 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
@@ -61,6 +68,12 @@ public class EducationalTipModuleMediatorUnitTest {
     @Mock private ObservableSupplier<Profile> mProfileSupplier;
     @Mock private Profile mProfile;
     @Mock EducationalTipModuleMediator.Natives mEducationalTipModuleMediatorJniMock;
+    @Mock private Tracker mTracker;
+    @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
+
+    @Captor
+    private ArgumentCaptor<DefaultBrowserPromoTriggerStateListener>
+            mDefaultBrowserPromoTriggerStateListener;
 
     private FeatureList.TestValues mParamsTestValues;
     private Context mContext;
@@ -78,6 +91,8 @@ public class EducationalTipModuleMediatorUnitTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         EducationalTipModuleMediatorJni.setInstanceForTesting(mEducationalTipModuleMediatorJniMock);
         mExpectedModuleType = ModuleType.EDUCATIONAL_TIP;
+        TrackerFactory.setTrackerForTests(mTracker);
+        DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
 
         mEducationalTipModuleMediator =
                 new EducationalTipModuleMediator(mModel, mModuleDelegate, mActionDelegate);
@@ -127,14 +142,47 @@ public class EducationalTipModuleMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testCreateInputContext() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
+
         InputContext inputContext = mEducationalTipModuleMediator.createInputContext();
         assertEquals(2, inputContext.getSizeForTesting());
-        assertEquals(
-                0, inputContext.getEntryForTesting("is_default_browser_chrome").floatValue, 0.01);
+
+        // Test signal "should_show_non_role_manager_default_browser_promo".
+        when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(mContext))
+                .thenReturn(true);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
         assertEquals(
                 1,
                 inputContext.getEntryForTesting(
-                                "has_default_browser_promo_reached_limit_in_role_manager")
+                                "should_show_non_role_manager_default_browser_promo")
+                        .floatValue,
+                0.01);
+
+        when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(mContext))
+                .thenReturn(false);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
+        assertEquals(
+                0,
+                inputContext.getEntryForTesting(
+                                "should_show_non_role_manager_default_browser_promo")
+                        .floatValue,
+                0.01);
+
+        // Test signal "has_default_browser_promo_shown_in_other_surface".
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
+                .thenReturn(true);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
+        assertEquals(
+                0,
+                inputContext.getEntryForTesting("has_default_browser_promo_shown_in_other_surface")
+                        .floatValue,
+                0.01);
+
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
+                .thenReturn(false);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
+        assertEquals(
+                1,
+                inputContext.getEntryForTesting("has_default_browser_promo_shown_in_other_surface")
                         .floatValue,
                 0.01);
     }
@@ -206,17 +254,45 @@ public class EducationalTipModuleMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testOnViewCreated() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
+                .thenReturn(true);
 
         mEducationalTipModuleMediator.showModuleWithCardInfo(
                 EducationalTipCardType.DEFAULT_BROWSER_PROMO);
         mEducationalTipModuleMediator.onViewCreated();
         verify(mEducationalTipModuleMediatorJniMock)
                 .notifyCardShown(mProfile, EducationalTipCardType.DEFAULT_BROWSER_PROMO);
+        verify(mMockDefaultBrowserPromoUtils)
+                .removeListener(
+                        mEducationalTipModuleMediator
+                                .getDefaultBrowserPromoTriggerStateListenerForTesting());
+        verify(mMockDefaultBrowserPromoUtils).notifyDefaultBrowserPromoVisible();
 
         mEducationalTipModuleMediator.showModuleWithCardInfo(EducationalTipCardType.TAB_GROUPS);
         mEducationalTipModuleMediator.onViewCreated();
         verify(mEducationalTipModuleMediatorJniMock)
                 .notifyCardShown(mProfile, EducationalTipCardType.TAB_GROUPS);
+        verify(mMockDefaultBrowserPromoUtils)
+                .removeListener(
+                        mEducationalTipModuleMediator
+                                .getDefaultBrowserPromoTriggerStateListenerForTesting());
+        verify(mMockDefaultBrowserPromoUtils).notifyDefaultBrowserPromoVisible();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
+    public void testRemoveModule() {
+        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
+        mEducationalTipModuleMediator.showModuleWithCardInfo(
+                EducationalTipCardType.DEFAULT_BROWSER_PROMO);
+        verify(mMockDefaultBrowserPromoUtils)
+                .addListener(mDefaultBrowserPromoTriggerStateListener.capture());
+
+        mDefaultBrowserPromoTriggerStateListener.getValue().onDefaultBrowserPromoTriggered();
+        verify(mModuleDelegate).removeModule(mExpectedModuleType);
+        verify(mMockDefaultBrowserPromoUtils)
+                .removeListener(mDefaultBrowserPromoTriggerStateListener.capture());
     }
 
     private void testShowModuleWithForcedCardTypeImpl(

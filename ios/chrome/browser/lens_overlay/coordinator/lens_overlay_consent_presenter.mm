@@ -15,8 +15,8 @@
 @implementation LensOverlayConsentPresenter {
   /// Orchestrates the change in detents of the associated bottom sheet.
   LensOverlayDetentsManager* _detentsManager;
-  UIViewController* _presentedConsentViewController;
-  UIViewController* _presentingViewController;
+  __weak UIViewController* _presentedConsentViewController;
+  __weak UIViewController* _presentingViewController;
 }
 
 - (instancetype)initWithPresentingViewController:(UIViewController*)presentingVC
@@ -29,6 +29,12 @@
     _presentingViewController = presentingVC;
   }
   return self;
+}
+
+- (BOOL)isConsentVisible {
+  return _presentingViewController.presentedViewController != nil &&
+         _presentingViewController.presentedViewController ==
+             _presentedConsentViewController;
 }
 
 - (void)showConsentViewController {
@@ -44,6 +50,20 @@
       presentViewController:_presentedConsentViewController
                    animated:YES
                  completion:nil];
+}
+
+- (void)dismissConsentViewControllerAnimated:(BOOL)animated
+                                  completion:(void (^)(void))completion {
+  // As the presenting view controller is not owned by the presenter it can be
+  // released independently. If this is the case, make sure the completion is
+  // called before exiting.
+  if (!_presentingViewController) {
+    completion();
+    return;
+  }
+
+  [_presentingViewController dismissViewControllerAnimated:animated
+                                                completion:completion];
 }
 
 #pragma mark - LensOverlayDetentsChangeObserver

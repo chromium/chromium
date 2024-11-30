@@ -529,6 +529,21 @@ def GsutilList(*urls, ignore_fail=False):
   return lines
 
 
+def join_args(args: list) -> str:
+  """Join the args into a single command line."""
+  if sys.platform.startswith('win'):
+    # subprocess.list2cmdline is an API for subprocess internal use. However to
+    # reduce the external dependency, we use it for Windows to quote the args.
+    return subprocess.list2cmdline(args)
+  else:
+    return shlex.join(args)
+
+
+def quote_arg(arg: str) -> str:
+  """Quote the arg for the shell."""
+  return join_args([arg])
+
+
 class ArchiveBuild(abc.ABC):
   """Base class for a archived build."""
 
@@ -776,12 +791,12 @@ class ArchiveBuild(abc.ABC):
 
   def _launch_revision(self, tempdir, executables, args=()):
     args = [*self._get_extra_args(), *args]
-    args_str = shlex.join(args)
-    command = (self.command.replace(r'%p', shlex.quote(
+    args_str = join_args(args)
+    command = (self.command.replace(r'%p', quote_arg(
         executables['chrome'])).replace(r'%s', args_str).replace(
             r'%a', args_str).replace(r'%t', tempdir))
     if self.chromedriver:
-      command = command.replace(r'%d', shlex.quote(executables['chromedriver']))
+      command = command.replace(r'%d', quote_arg(executables['chromedriver']))
     return self._run(command, shell=True)
 
   def run_revision(self, download, tempdir, args=()):
@@ -2481,7 +2496,7 @@ def MaybeSwitchBuildType(opts, good, bad):
         "You could try to get a more precise culprit range with the continuous "
         "official build (-o) using the following command:")
   command_line = GenerateCommandLine(new_opts)
-  print(shlex.join(command_line))
+  print(join_args(command_line))
   return command_line
 
 

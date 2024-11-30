@@ -220,6 +220,11 @@ bool BrowserAccessibility::IsLineBreakObject() const {
   return node()->IsLineBreak();
 }
 
+bool BrowserAccessibility::HasDefaultAction() const {
+  return node()->data().GetDefaultActionVerb() !=
+         ax::mojom::DefaultActionVerb::kNone;
+}
+
 BrowserAccessibility* BrowserAccessibility::PlatformGetChild(
     size_t child_index) const {
   // We need to explicitly check for leafiness here instead of relying on

@@ -134,7 +134,7 @@ void ValidateHistograms(const RecordedHistogram* recorded,
 
 }  // namespace
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionMetricsApiTest
     : public ExtensionApiTest,

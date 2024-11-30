@@ -9,6 +9,10 @@
 	path = chrome/installer/mac/third_party/xz/xz
 	url = https://chromium.googlesource.com/chromium/deps/xz
 	gclient-condition = checkout_mac
+[submodule "chrome/release_scripts"]
+	path = chrome/release_scripts
+	url = https://chrome-internal.googlesource.com/chrome/tools/release/scripts
+	gclient-condition = checkout_chrome_release_scripts
 [submodule "third_party/libc++/src"]
 	path = third_party/libc++/src
 	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx
@@ -361,6 +365,12 @@
 [submodule "third_party/speedometer/v3.0"]
 	path = third_party/speedometer/v3.0
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
+[submodule "third_party/speedometer/v2.0"]
+	path = third_party/speedometer/v2.0
+	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
+[submodule "third_party/speedometer/v2.1"]
+	path = third_party/speedometer/v2.1
+	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
 [submodule "third_party/ukey2/src"]
 	path = third_party/ukey2/src
 	url = https://chromium.googlesource.com/external/github.com/google/ukey2
@@ -402,6 +412,9 @@
 	path = third_party/libunwindstack
 	url = https://chromium.googlesource.com/chromium/src/third_party/libunwindstack
 	gclient-condition = checkout_android
+[submodule "third_party/libva-fake-driver/src"]
+	path = third_party/libva-fake-driver/src
+	url = https://chromium.googlesource.com/chromiumos/platform/libva-fake-driver
 [submodule "third_party/libvpx/source/libvpx"]
 	path = third_party/libvpx/source/libvpx
 	url = https://chromium.googlesource.com/webm/libvpx

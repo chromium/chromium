@@ -111,8 +111,10 @@ QuickInsertZeroStateView::QuickInsertZeroStateView(
     // kEditorRewrite and LobsterWithSelectedText are not visible in the
     // zero-state, since it's replaced with the rewrite suggestions and the
     // lobster result, respectively.
+    // kGifs is shown in the emoji bar instead of this view.
     if (category == QuickInsertCategory::kEditorRewrite ||
-        category == QuickInsertCategory::kLobsterWithSelectedText) {
+        category == QuickInsertCategory::kLobsterWithSelectedText ||
+        category == QuickInsertCategory::kGifs) {
       continue;
     }
 

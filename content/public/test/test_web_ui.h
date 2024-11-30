@@ -48,7 +48,7 @@ class TestWebUI : public WebUI {
   void SetController(std::unique_ptr<WebUIController> controller) override;
   float GetDeviceScaleFactor() override;
   const std::u16string& GetOverriddenTitle() override;
-  void OverrideTitle(const std::u16string& title) override {}
+  void OverrideTitle(const std::u16string& title) override;
   BindingsPolicySet GetBindings() override;
   void SetBindings(BindingsPolicySet bindings) override;
   const std::vector<std::string>& GetRequestableSchemes() override;

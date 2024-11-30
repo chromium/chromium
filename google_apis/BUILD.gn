@@ -133,6 +133,8 @@ component("google_apis") {
     "gaia/gaia_config.h",
     "gaia/gaia_constants.cc",
     "gaia/gaia_constants.h",
+    "gaia/gaia_id.cc",
+    "gaia/gaia_id.h",
     "gaia/gaia_oauth_client.cc",
     "gaia/gaia_oauth_client.h",
     "gaia/gaia_switches.cc",
@@ -163,6 +165,7 @@ component("google_apis") {
     "gaia/oauth_multilogin_result.h",
     "gaia/oauth_request_signer.cc",
     "gaia/oauth_request_signer.h",
+    "gaia/token_binding_response_encryption_error.h",
     "google_api_keys.cc",
     "google_api_keys.h",
   ]

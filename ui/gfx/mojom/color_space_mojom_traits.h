@@ -169,8 +169,6 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
         return gfx::mojom::ColorSpaceTransferID::CUSTOM;
       case gfx::ColorSpace::TransferID::CUSTOM_HDR:
         return gfx::mojom::ColorSpaceTransferID::CUSTOM_HDR;
-      case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
-        return gfx::mojom::ColorSpaceTransferID::PIECEWISE_HDR;
       case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
         return gfx::mojom::ColorSpaceTransferID::SCRGB_LINEAR_80_NITS;
     }
@@ -251,9 +249,6 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
         return true;
       case gfx::mojom::ColorSpaceTransferID::CUSTOM_HDR:
         *out = gfx::ColorSpace::TransferID::CUSTOM_HDR;
-        return true;
-      case gfx::mojom::ColorSpaceTransferID::PIECEWISE_HDR:
-        *out = gfx::ColorSpace::TransferID::PIECEWISE_HDR;
         return true;
       case gfx::mojom::ColorSpaceTransferID::SCRGB_LINEAR_80_NITS:
         *out = gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS;

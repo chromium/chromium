@@ -6,6 +6,7 @@
 #define BASE_TYPES_STRONG_ALIAS_H_
 
 #include <compare>
+#include <functional>
 #include <ostream>
 #include <type_traits>
 #include <utility>
@@ -60,12 +61,11 @@ namespace base {
 // used) if UnderlyingType doesn't support them.
 //
 // StrongAlias only directly exposes comparison operators (for convenient use in
-// ordered containers) and a Hasher struct (for unordered_map/set). It's
-// impossible, without reflection, to expose all methods of the UnderlyingType
-// in StrongAlias's interface. It's also potentially unwanted (ex. you don't
-// want to be able to add two StrongAliases that represent socket handles).
-// A getter and dereference operators are provided in case you need to access
-// the UnderlyingType.
+// ordered containers). It's impossible, without reflection, to expose all
+// methods of the UnderlyingType in StrongAlias's interface. It's also
+// potentially unwanted (ex. you don't want to be able to add two StrongAliases
+// that represent socket handles). A getter and dereference operators are
+// provided in case you need to access the UnderlyingType.
 //
 // See also
 // - //styleguide/c++/blink-c++.md which provides recommendation and examples of
@@ -118,12 +118,6 @@ class StrongAlias {
   // Example usage:
   //     using MyType = base::StrongAlias<...>;
   //     using MySet = std::unordered_set<MyType, typename MyType::Hasher>;
-  //
-  // https://google.github.io/styleguide/cppguide.html#std_hash asks to avoid
-  // defining specializations of `std::hash` - this is why the hasher needs to
-  // be explicitly specified and why the following code will *not* work:
-  //     using MyType = base::StrongAlias<...>;
-  //     using MySet = std::unordered_set<MyType>;  // This won't work.
   struct Hasher {
     using argument_type = StrongAlias;
     using result_type = std::size_t;
@@ -153,5 +147,13 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace base
+
+template <typename TagType, typename UnderlyingType>
+struct std::hash<base::StrongAlias<TagType, UnderlyingType>> {
+  size_t operator()(
+      const base::StrongAlias<TagType, UnderlyingType>& id) const {
+    return std::hash<UnderlyingType>()(id.value());
+  }
+};
 
 #endif  // BASE_TYPES_STRONG_ALIAS_H_

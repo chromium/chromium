@@ -52,8 +52,8 @@ TEST(SignedExchangeCertificateParseTest, EmptyChain) {
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
-  auto parsed = SignedExchangeCertificateChain::Parse(
-      base::make_span(*serialized), nullptr);
+  auto parsed =
+      SignedExchangeCertificateChain::Parse(base::span(*serialized), nullptr);
   EXPECT_FALSE(parsed);
 }
 
@@ -69,8 +69,8 @@ TEST(SignedExchangeCertificateParseTest, MissingCert) {
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
-  auto parsed = SignedExchangeCertificateChain::Parse(
-      base::make_span(*serialized), nullptr);
+  auto parsed =
+      SignedExchangeCertificateChain::Parse(base::span(*serialized), nullptr);
   EXPECT_FALSE(parsed);
 }
 
@@ -94,8 +94,8 @@ TEST(SignedExchangeCertificateParseTest, OneCert) {
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
-  auto parsed = SignedExchangeCertificateChain::Parse(
-      base::make_span(*serialized), nullptr);
+  auto parsed =
+      SignedExchangeCertificateChain::Parse(base::span(*serialized), nullptr);
   ASSERT_TRUE(parsed);
   EXPECT_EQ(cert_der, net::x509_util::CryptoBufferAsStringPiece(
                           parsed->cert()->cert_buffer()));
@@ -123,8 +123,8 @@ TEST(SignedExchangeCertificateParseTest, MissingOCSPInFirstCert) {
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
-  auto parsed = SignedExchangeCertificateChain::Parse(
-      base::make_span(*serialized), nullptr);
+  auto parsed =
+      SignedExchangeCertificateChain::Parse(base::span(*serialized), nullptr);
   EXPECT_FALSE(parsed);
 }
 
@@ -154,8 +154,8 @@ TEST(SignedExchangeCertificateParseTest, TwoCerts) {
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
-  auto parsed = SignedExchangeCertificateChain::Parse(
-      base::make_span(*serialized), nullptr);
+  auto parsed =
+      SignedExchangeCertificateChain::Parse(base::span(*serialized), nullptr);
   ASSERT_TRUE(parsed);
   EXPECT_EQ(cert1_der, net::x509_util::CryptoBufferAsStringPiece(
                            parsed->cert()->cert_buffer()));
@@ -193,8 +193,8 @@ TEST(SignedExchangeCertificateParseTest, HavingOCSPInSecondCert) {
   auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
-  auto parsed = SignedExchangeCertificateChain::Parse(
-      base::make_span(*serialized), nullptr);
+  auto parsed =
+      SignedExchangeCertificateChain::Parse(base::span(*serialized), nullptr);
   EXPECT_FALSE(parsed);
 }
 
@@ -207,7 +207,7 @@ TEST(SignedExchangeCertificateParseTest, ParseGoldenFile) {
   ASSERT_TRUE(base::ReadFileToString(path, &contents));
 
   auto parsed = SignedExchangeCertificateChain::Parse(
-      base::as_bytes(base::make_span(contents)), nullptr);
+      base::as_bytes(base::span(contents)), nullptr);
   ASSERT_TRUE(parsed);
 }
 

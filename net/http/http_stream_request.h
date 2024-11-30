@@ -14,7 +14,7 @@
 #include "net/base/request_priority.h"
 #include "net/http/alternative_service.h"
 #include "net/http/http_response_info.h"
-#include "net/http/http_stream_pool_switching_info.h"
+#include "net/http/http_stream_pool_request_info.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -118,7 +118,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     // better way to resolve proxies. This method is needed because currently
     // HttpStreamFactory::JobController resolves proxies.
     virtual void OnSwitchesToHttpStreamPool(
-        HttpStreamPoolSwitchingInfo request_info) = 0;
+        HttpStreamPoolRequestInfo request_info) = 0;
   };
 
   class NET_EXPORT_PRIVATE Helper {

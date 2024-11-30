@@ -98,10 +98,6 @@ class CORE_EXPORT PerformanceTimingForReporting final
   LargestContentfulPaintDetailsForReporting
   SoftNavigationLargestContentfulPaintDetailsForMetrics() const;
 
-  LargestContentfulPaintDetailsForReporting
-  PopulateLargestContentfulPaintDetailsForReporting(
-      const LargestContentfulPaintDetails& timing) const;
-
   // The time at which the frame is first eligible for painting due to not
   // being throttled. A zero value indicates throttling.
   uint64_t FirstEligibleToPaint() const;
@@ -188,6 +184,9 @@ class CORE_EXPORT PerformanceTimingForReporting final
   InteractiveDetector* GetInteractiveDetector() const;
   std::optional<base::TimeDelta> MonotonicTimeToPseudoWallTime(
       const std::optional<base::TimeTicks>&) const;
+  LargestContentfulPaintDetailsForReporting
+  PopulateLargestContentfulPaintDetailsForReporting(
+      const LargestContentfulPaintDetails& timing) const;
 
   bool cross_origin_isolated_capability_;
 };

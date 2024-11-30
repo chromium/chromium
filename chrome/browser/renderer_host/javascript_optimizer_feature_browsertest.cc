@@ -11,6 +11,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -96,7 +97,14 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   GURL::Replacements url_replacements;
-  url_replacements.SetPortStr("");
+  if (!content::SiteIsolationPolicy::
+          AreOriginKeyedProcessesEnabledByDefault()) {
+    // Strictly speaking, an origin includes scheme, host domain and the port.
+    // In non-origin-keyed site isolation, the port is stripped from the
+    // SiteInstance's SiteUrl. But when AreOriginKeyedProcessesEnabledByDefault
+    // is true, the origin must include the port or else this test will fail.
+    url_replacements.SetPortStr("");
+  }
   GURL embedded_origin =
       embedded_test_server()->GetOrigin().GetURL().ReplaceComponents(
           url_replacements);

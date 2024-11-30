@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import {fireAuthTokenInvalidEvent} from 'chrome://resources/ash/common/quick_unlock/utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {AuthFactor, AuthFactorConfig, FactorObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactor, AuthFactorConfig, ConfigureResult, FactorObserverReceiver, PasswordFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_settings.html.js';
@@ -48,6 +51,7 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
   }
 
   authToken: string|null;
+  private hasPin_: boolean;
   private hasGaiaPassword_: boolean;
   private hasLocalPassword_: boolean;
   private changePasswordFactorSetupEnabled_: boolean;
@@ -68,6 +72,7 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     switch (factor) {
       case AuthFactor.kGaiaPassword:
       case AuthFactor.kLocalPassword:
+      case AuthFactor.kPin:
         this.updatePasswordState_();
         break;
       default:
@@ -86,14 +91,16 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     const authToken = this.authToken;
 
     const afc = AuthFactorConfig.getRemote();
-    const [{configured: hasGaiaPassword}, {configured: hasLocalPassword}] =
-        await Promise.all([
+    const [{ configured: hasGaiaPassword }, { configured: hasLocalPassword },
+      { configured: hasPin }] = await Promise.all([
           afc.isConfigured(authToken, AuthFactor.kGaiaPassword),
           afc.isConfigured(authToken, AuthFactor.kLocalPassword),
+          afc.isConfigured(authToken, AuthFactor.kPin),
         ]);
 
     this.hasGaiaPassword_ = hasGaiaPassword;
     this.hasLocalPassword_ = hasLocalPassword;
+    this.hasPin_ = hasPin;
   }
 
   private hasPassword_(): boolean {
@@ -102,10 +109,6 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
 
   private hasNoPassword_(): boolean {
     return !this.hasPassword_();
-  }
-
-  private shouldSetupPassword_(): boolean {
-    return this.hasNoPassword_() || this.canSwitchLocalPassword_();
   }
 
   private setLocalPasswordDialog(): SettingsSetLocalPasswordDialogElement {
@@ -120,6 +123,61 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
 
   private canSwitchLocalPassword_(): boolean {
     return this.hasGaiaPassword_ && this.changePasswordFactorSetupEnabled_;
+  }
+
+  private moreButton_(): CrIconButtonElement {
+    const moreButton = this.shadowRoot!.querySelector('#moreButton');
+    assert(moreButton instanceof CrIconButtonElement);
+    return moreButton;
+  }
+
+  private moreMenu_(): CrActionMenuElement {
+    const moreMenu = this.shadowRoot!.querySelector('#moreMenu');
+    assert(moreMenu instanceof CrActionMenuElement);
+    return moreMenu;
+  }
+
+
+  private onMoreButtonClicked_(event: Event): void {
+    event.preventDefault();  // Prevent default browser action (navigation).
+
+    const moreButton = this.moreButton_();
+    const moreMenu = this.moreMenu_();
+    moreMenu.showAt(moreButton);
+  }
+
+  private isRemoveAllowed_(
+      hasPin: boolean, hasGaiaPassword: boolean,
+      hasLocalPassword: boolean): boolean {
+    // TODO(b/368707638): Replace with an API call. hasPin_ is not sufficient.
+    return hasPin && (hasGaiaPassword || hasLocalPassword);
+  }
+
+  private async onRemovePasswordButtonClicked_(): Promise<void> {
+    if (typeof this.authToken !== 'string') {
+      console.error('Tried to remove password with expired token.');
+    } else {
+      const { result } =
+      await PasswordFactorEditor.getRemote().removePassword(this.authToken);
+      switch (result) {
+        case ConfigureResult.kSuccess:
+          break;
+        case ConfigureResult.kInvalidTokenError:
+          fireAuthTokenInvalidEvent(this);
+          break;
+        case ConfigureResult.kFatalError:
+          console.error('Error removing Password');
+          break;
+      }
+    }
+
+    // We always close the "more" menu, even when removePassword call didn't
+    // work: If the menu isn't closed but not attached anymore, then the user
+    // can't interact with the whole settings UI at all anymore.
+    const moreMenu = this.moreMenu_();
+    if (moreMenu) {
+      moreMenu.close();
+    }
   }
 }
 

@@ -68,7 +68,8 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
       !data.ReadColorSpace(&out->color_space) ||
       !data.ReadHdrMetadata(&out->hdr_metadata) ||
       !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id) ||
-      !data.ReadSynchronizationType(&out->synchronization_type)) {
+      !data.ReadSynchronizationType(&out->synchronization_type) ||
+      !data.ReadOrigin(&out->origin)) {
     return false;
   }
   out->id = id;

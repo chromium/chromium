@@ -141,9 +141,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 #pragma mark - Public
 
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil {
-  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+- (instancetype)init {
+  self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _titleHorizontalMargin = kTitleHorizontalMargin;
     _subtitleBottomMargin = kDefaultSubtitleBottomMargin;

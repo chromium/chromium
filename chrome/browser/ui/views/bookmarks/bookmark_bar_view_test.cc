@@ -247,12 +247,12 @@ void MoveMouseAndPress(const gfx::Point& screen_pos,
 // PageNavigator implementation that records the URL.
 class TestingPageNavigator : public PageNavigator {
  public:
-  TestingPageNavigator() {}
+  TestingPageNavigator() = default;
 
   TestingPageNavigator(const TestingPageNavigator&) = delete;
   TestingPageNavigator& operator=(const TestingPageNavigator&) = delete;
 
-  ~TestingPageNavigator() override {}
+  ~TestingPageNavigator() override = default;
 
   WebContents* OpenURL(const OpenURLParams& params,
                        base::OnceCallback<void(content::NavigationHandle&)>

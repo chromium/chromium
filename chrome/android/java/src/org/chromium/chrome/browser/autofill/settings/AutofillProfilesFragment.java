@@ -43,6 +43,7 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.plus_addresses.PlusAddressesUserActions;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -255,6 +256,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
         if (preference.getKey().equals(MANAGE_PLUS_ADDRESSES)) {
             PlusAddressesHelper.openManagePlusAddresses(getActivity(), getProfile());
+            PlusAddressesUserActions.MANAGE_OPTION_ON_SETTINGS_SELECTED.log();
             return;
         }
 

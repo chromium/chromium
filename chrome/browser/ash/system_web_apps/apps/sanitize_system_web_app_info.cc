@@ -74,3 +74,7 @@ gfx::Rect SanitizeSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
 bool SanitizeSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
+
+bool SanitizeSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
+  return true;
+}

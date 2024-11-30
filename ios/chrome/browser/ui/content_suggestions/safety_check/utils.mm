@@ -139,7 +139,7 @@ void HandleSafetyCheckPasswordTap(
       base::UserMetricsAction("MobileMagicStackOpenPasswordCheckup"));
 
   [applicationHandler
-      showPasswordCheckupPageForReferrer:
+      dismissModalsAndShowPasswordCheckupPageForReferrer:
           password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
 }
 

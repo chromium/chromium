@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
@@ -56,14 +54,7 @@ OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
       content::WebContentsUserData<OfferNotificationBubbleControllerImpl>(
-          *web_contents),
-      coupon_service_(CouponServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-  // TODO(crbug.com/40172797): Explore if there is a way to move CouponService
-  // out of this file.
-  if (coupon_service_)
-    coupon_service_observation_.Observe(coupon_service_);
-}
+          *web_contents) {}
 
 std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
   switch (offer_.GetOfferType()) {
@@ -203,14 +194,6 @@ void OfferNotificationBubbleControllerImpl::ReshowBubble() {
 
 void OfferNotificationBubbleControllerImpl::DismissNotification() {
   HideBubbleAndClearTimestamp(/*should_show_icon=*/false);
-}
-
-void OfferNotificationBubbleControllerImpl::OnCouponInvalidated(
-    const autofill::AutofillOfferData& offer_data) {
-  if (offer_.GetOfferType() == AutofillOfferData::OfferType::UNKNOWN ||
-      offer_ != offer_data)
-    return;
-  DismissNotification();
 }
 
 void OfferNotificationBubbleControllerImpl::OnVisibilityChanged(

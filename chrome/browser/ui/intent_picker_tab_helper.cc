@@ -26,8 +26,10 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/navigation_handle.h"
@@ -82,6 +84,21 @@ bool IsValidWebContentsForIntentPicker(content::WebContents* web_contents) {
     return false;
   }
   return true;
+}
+
+bool IsValidIntentPickerUrl(const GURL& url, bool is_error_page) {
+  if (url.SchemeIsHTTPOrHTTPS() && !is_error_page) {
+    return true;
+  }
+
+  // chrome://password-manager is a valid PWA, so it should be considered when
+  // evaluating whether to show the intent picker.
+  if (url.SchemeIs(content::kChromeUIScheme) &&
+      url.host() == password_manager::kChromeUIPasswordManagerHost) {
+    return true;
+  }
+
+  return false;
 }
 
 void ShowIntentPickerBubbleForApps(
@@ -440,9 +457,8 @@ void IntentPickerTabHelper::DidFinishNavigation(
   if (IsNavigatingToNewSite(navigation_handle)) {
     per_navigation_weak_factory_.InvalidateWeakPtrs();
 
-    bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
-                         !navigation_handle->IsErrorPage();
-    if (is_valid_page) {
+    if (IsValidIntentPickerUrl(navigation_handle->GetURL(),
+                               navigation_handle->IsErrorPage())) {
       MaybeShowIntentPickerIcon();
     } else {
       ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
@@ -454,8 +470,15 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
     const webapps::AppId& app_id) {
   // WebAppTabHelper has an app_id but it is reset during
   // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<webapps::AppId> local_app_id =
-      registrar_->FindAppWithUrlInScope(web_contents()->GetLastCommittedURL());
+      registrar_->FindBestAppWithUrlInScope(
+          web_contents()->GetLastCommittedURL(),
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          });
   if (app_id == local_app_id)
     ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
 }

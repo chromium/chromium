@@ -218,17 +218,6 @@ component("app_update") {
   visibility = [ "//components/services/app_service/*" ]
 }
 
-source_set("app_url_handling") {
-  sources = [
-    "url_handler_info.cc",
-    "url_handler_info.h",
-  ]
-
-  deps = [ "//url" ]
-
-  visibility = [ "//components/services/app_service/*" ]
-}
-
 source_set("icon_loader") {
   sources = [
     "icon_cache.cc",

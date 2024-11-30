@@ -126,7 +126,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void OnQuicBroken() override;
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolSwitchingInfo switching_info) override;
+      HttpStreamPoolRequestInfo request_info) override;
 
   ConnectionAttempts GetConnectionAttempts() const override;
 
@@ -135,15 +135,15 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
                            CreateWebSocketHandshakeStream);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponse_Direct);
+                           SetProxyInfoInResponseDirect);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponse_Proxied);
+                           SetProxyInfoInResponseProxied);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponse_Empty);
+                           SetProxyInfoInResponseEmpty);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponse_IpProtectionProxied);
+                           SetProxyInfoInResponseIpProtectionProxied);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponse_IpProtectionDirect);
+                           SetProxyInfoInResponseIpProtectionDirect);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateReceived);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateSent);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateOverflow);

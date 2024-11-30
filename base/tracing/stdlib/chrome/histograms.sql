@@ -8,21 +8,21 @@ CREATE PERFETTO TABLE chrome_histograms(
   -- The name of the histogram.
   name STRING,
   -- The value of the histogram sample.
-  value INT,
+  value LONG,
   -- Alias of |slice.ts|.
-  ts INT,
+  ts TIMESTAMP,
   -- Thread name.
   thread_name STRING,
   -- Utid of the thread.
-  utid INT,
+  utid LONG,
   -- Tid of the thread.
-  tid INT,
+  tid LONG,
   -- Process name.
   process_name STRING,
   -- Upid of the process.
-  upid INT,
+  upid LONG,
   -- Pid of the process.
-  pid INT
+  pid LONG
 ) AS
 SELECT
   extract_arg(slice.arg_set_id, "chrome_histogram_sample.name") as name,

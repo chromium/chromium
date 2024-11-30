@@ -44,7 +44,7 @@ AppInfoFooterPanel::AppInfoFooterPanel(Profile* profile,
   CreateButtons();
 }
 
-AppInfoFooterPanel::~AppInfoFooterPanel() {}
+AppInfoFooterPanel::~AppInfoFooterPanel() = default;
 
 // static
 std::unique_ptr<AppInfoFooterPanel> AppInfoFooterPanel::CreateFooterPanel(

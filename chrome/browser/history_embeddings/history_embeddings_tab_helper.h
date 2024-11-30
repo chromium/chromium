@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_TAB_HELPER_H_
 #define CHROME_BROWSER_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_TAB_HELPER_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "components/history/core/browser/history_types.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -19,9 +22,11 @@ class HistoryService;
 }
 namespace history_embeddings {
 class HistoryEmbeddingsService;
+struct UrlData;
 }
 namespace content {
 class NavigationHandle;
+class WeakDocumentPtr;
 }
 
 class HistoryEmbeddingsTabHelper
@@ -52,6 +57,13 @@ class HistoryEmbeddingsTabHelper
                             LoadingState old_loading_state,
                             LoadingState new_loading_state) override;
 
+  // Calls `RetrievePassages` for testing purposes only.
+  void RetrievePassagesForTesting(
+      history::URLID url_id,
+      history::VisitID visit_id,
+      base::Time visit_time,
+      content::WeakDocumentPtr weak_render_frame_host);
+
  private:
   explicit HistoryEmbeddingsTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HistoryEmbeddingsTabHelper>;
@@ -69,6 +81,31 @@ class HistoryEmbeddingsTabHelper
   void ExtractPassagesWithHistoryData(
       content::WeakDocumentPtr weak_render_frame_host,
       history::QueryURLResult result);
+
+  // Initiates async passage extraction from the given host's main frame.
+  // Optionally, gets existing passages and embeddings for `url_id` from the
+  // HistoryEmbeddings database before calling `RetrievePassagesWithUrlData`.
+  // Note: A `WeakDocumentPtr` is essentially a `WeakPtr<RenderFrameHost>`.
+  void RetrievePassages(history::URLID url_id,
+                        history::VisitID visit_id,
+                        base::Time visit_time,
+                        content::WeakDocumentPtr weak_render_frame_host);
+
+  // Called by `RetrievePassages()` either synchronously or asynchronously after
+  // getting existing passages and embeddings for `url_id` from the
+  // HistoryEmbeddings database. `existing_url_data` may still be nullopt if no
+  // data was found for `url_id`.
+  // Continues with passage extraction for `url_id`. When the extraction
+  // completes, the passages and the embeddings will be given to the
+  // HistoryEmbeddingsService to be stored in the database.
+  // It's in a member method to enable cancellation via `weak_factory_`.
+  void RetrievePassagesWithUrlData(
+      history::URLID url_id,
+      history::VisitID visit_id,
+      base::Time visit_time,
+      content::WeakDocumentPtr weak_render_frame_host,
+      std::optional<base::ElapsedTimer> database_access_timer,
+      std::optional<history_embeddings::UrlData> existing_url_data);
 
   // Invalidates weak pointers and cancels any pending extraction callbacks.
   void CancelExtraction();

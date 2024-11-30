@@ -166,6 +166,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      // <if expr="is_chromeos">
       enableSmartCardReadersContentSetting_: {
         type: Boolean,
         value() {
@@ -173,6 +174,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
               'enableSmartCardReadersContentSetting');
         },
       },
+      // </if>
 
       enableWebBluetoothNewPermissionsBackend_: {
         type: Boolean,
@@ -199,15 +201,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
-      },
-
-      is3pcdRedesignEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-                     'is3pcdCookieSettingsRedesignEnabled') &&
-              loadTimeData.getBoolean('isTrackingProtectionUxEnabled');
-        },
       },
 
       privateStateTokensEnabled_: {
@@ -374,14 +367,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableHandTrackingContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;
+  // <if expr="is_chromeos">
   private enableSmartCardReadersContentSetting_: boolean;
+  // </if>
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private enableWebPrintingContentSetting_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private enableAutomaticFullscreenContentSetting_: boolean;
-  private is3pcdRedesignEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
   private capturedSurfaceControlEnabled_: boolean;

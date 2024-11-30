@@ -50,8 +50,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-import java.util.function.Predicate;
-
 /** Instrumentation tests for {@link ConfirmImportSyncDataDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -278,22 +276,6 @@ public class ConfirmImportSyncDataDialogTest {
                                     "old.testaccount@gmail.com",
                                     "new.testaccount@gmail.com",
                                     isCurrentAccountManaged,
-                                    /* usesSplitStoresAndUPMForLocal= */ false);
-                });
-    }
-
-    private void showConfirmImportSyncDataDialog(Predicate<String> checkIfDisplayableEmailAddress) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mDialogCoordinator =
-                            new ConfirmImportSyncDataDialogCoordinator(
-                                    sActivityTestRule.getActivity(),
-                                    mDialogManager,
-                                    mListenerMock,
-                                    "old.testaccount@gmail.com",
-                                    "new.testaccount@gmail.com",
-                                    checkIfDisplayableEmailAddress,
-                                    /* isCurrentAccountManaged= */ false,
                                     /* usesSplitStoresAndUPMForLocal= */ false);
                 });
     }

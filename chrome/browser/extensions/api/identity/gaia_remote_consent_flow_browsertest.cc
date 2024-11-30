@@ -20,6 +20,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_auth_test_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,7 +98,7 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(switches::kOAuth2ClientID, base_url.spec());
 
     fake_gaia_.Initialize();
-    fake_gaia_.MapEmailToGaiaId(kTestEmail, kGaiaId);
+    fake_gaia_.MapEmailToGaiaId(kTestEmail, GaiaId(kGaiaId));
 
     FakeGaia::AccessTokenInfo token_info;
     token_info.token = "fake-userinfo-token-1";

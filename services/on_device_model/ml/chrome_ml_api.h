@@ -111,6 +111,11 @@ struct ChromeMLModelDescriptor {
 struct ChromeMLAdaptationDescriptor {
   // The model data to use.
   const ChromeMLModelData* model_data;
+
+  // The maximum input+output tokens the model can handle.
+  // The default value 0 will be treated not set, and in that case the original
+  // `max_tokens` set by the base model will be used.
+  uint32_t max_tokens;
 };
 
 // A status value included with each output chunk.
@@ -183,7 +188,6 @@ using ChromeMLSizeInTokensFn = std::function<void(int)>;
 using ChromeMLScoreFn = std::function<void(float)>;
 
 struct ChromeMLExecuteOptions {
-  const char* prompt;
   int context_mode;
   uint32_t max_tokens;
   uint32_t token_offset;
@@ -330,7 +334,7 @@ struct ChromeMLAPI {
                                       uintptr_t context,
                                       ChromeMLScheduleFn schedule);
 
-  // Executes a model given the input `options.prompt`. Results are fed
+  // Executes a model given the input `options.input`. Results are fed
   // incrementally to `options.execution_output_fn`. Execution may be cancelled
   // by calling CancelExecuteModel on `cancel`.
   bool (*SessionExecuteModel)(ChromeMLSession session,

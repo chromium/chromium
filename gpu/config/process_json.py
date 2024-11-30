@@ -429,9 +429,10 @@ def write_multi_gpu_style(multi_gpu_style, data_file):
 
 def write_gl_type(gl_type, data_file):
   suffix_for_type = {
-    'gl': 'GL',
     'gles': 'GLES',
-    'angle': 'ANGLE',
+    'angle_gl': 'ANGLE_GL',
+    'angle_gles': 'ANGLE_GLES',
+    'angle_vulkan': 'ANGLE_VULKAN',
     '': 'None',
   }
   assert gl_type in suffix_for_type
@@ -631,6 +632,13 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
                          intel_gpu_series_list, intel_gpu_generation,
                          data_file, data_helper_file)
   # group a bunch of less used conditions
+  if gl_type != '' or gl_version != None:
+    if gl_type == 'gles':
+      assert os_type == 'android'
+    elif gl_type == 'angle_gl':
+      assert os_type == 'linux'
+    elif gl_type in ('angle_gles', 'angle_vulkan'):
+      assert os_type in ('android', 'linux', 'chromeos')
   if (gl_type != '' or gl_version != None or pixel_shader_version != None or
       in_process_gpu or gl_reset_notification_strategy != None or
       direct_rendering_version != None or gpu_count != None or

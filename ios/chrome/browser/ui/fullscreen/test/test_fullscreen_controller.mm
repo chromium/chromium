@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_controller.h"
 
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model_observer.h"
@@ -92,9 +92,11 @@ bool TestFullscreenController::IsForceFullscreenMode() const {
   return model_ ? model_->IsForceFullscreenMode() : false;
 }
 
-void TestFullscreenController::EnterForceFullscreenMode() {
+void TestFullscreenController::EnterForceFullscreenMode(
+    bool insets_update_enabled) {
   if (model_ && !model_->IsForceFullscreenMode()) {
     model_->SetForceFullscreenMode(true);
+    model_->SetInsetsUpdateEnabled(insets_update_enabled);
     model_->IncrementDisabledCounter();
     model_->ForceEnterFullscreen();
   }

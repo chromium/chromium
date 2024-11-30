@@ -47,7 +47,8 @@ class COMPOSITOR_EXPORT ScrollInputHandler : public cc::InputHandlerClient {
   void DidFinishImplFrame() override;
   bool HasQueuedInput() const override;
   void SetScrollEventDispatchMode(
-      cc::InputHandlerClient::ScrollEventDispatchMode mode) override;
+      cc::InputHandlerClient::ScrollEventDispatchMode mode,
+      double scroll_deadline_ratio) override;
 
  private:
   // Cleared in WillShutdown().

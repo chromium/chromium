@@ -341,6 +341,7 @@ chromium-metrics-reviews@google.com.
   <int value="77" label="FirstPlusAddressCreationTime"/>
   <int value="78" label="LastPlusAddressFillingTime"/>
   <int value="79" label="SafeBrowsingEnhanced"/>
+  <int value="80" label="FacilitatedPaymentsEwallet"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
@@ -655,7 +656,7 @@ chromium-metrics-reviews@google.com.
   <int value="100279" label="KeyboardDefaultSplitModifierSettings"/>
   <int value="100280" label="DisplayAmbientLightSensorLastEnabled"/>
   <int value="100281" label="AccessibilityMainNodeAnnotationsEnabled"/>
-  <int value="100282" label="SyncableVersionedWallpaperInfo"/>
+  <int value="100282" label="(obsolete) SyncableVersionedWallpaperInfo"/>
   <int value="100283" label="FocusModeSelectedTask"/>
   <int value="100284" label="FocusModeSoundSection"/>
   <int value="100285" label="kAccessibilityFaceGazeActionsEnabled"/>
@@ -1290,9 +1291,23 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="OS-level notification"/>
   <int value="3" label="New Tab Page Infobar"/>
   <int value="4" label="Password Manager Error Message"/>
+  <int value="5" label="Account menu"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultRecoverabilityStatus) -->
+<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultUserActionTriggerForUMA) -->
+
+<!-- LINT.IfChange(UserActionableError) -->
+
+<enum name="UserActionableError">
+  <int value="1" label="Sign in needs update"/>
+  <int value="2" label="Needs passphrase"/>
+  <int value="3" label="Needs trusted vault key for passwords"/>
+  <int value="4" label="Needs trusted vault key for everything"/>
+  <int value="5" label="Trusted vault recoverability degraded for passwords"/>
+  <int value="6" label="Trusted vault recoverability degraded for everything"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service.h:UserActionableError) -->
 
 </enums>
 

@@ -278,7 +278,7 @@ public class CustomTabExternalNavigationTest {
 
     private @VerificationStatus int getCurrentPageVerifierStatus() {
         CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();
-        return customTabActivity.getComponent().resolveCurrentPageVerifier().getState().status;
+        return customTabActivity.getCurrentPageVerifier().getState().status;
     }
 
     /**

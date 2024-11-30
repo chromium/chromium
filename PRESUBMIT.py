@@ -464,7 +464,9 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
       excluded_paths=(
         'ios/chrome/browser/shared/ui/symbols/symbol_helpers.mm',
         'ios/chrome/common',
-        'ios/chrome/search_widget_extension/',
+        # App extensions have restricted dependencies and thus can't use the
+        # wrappers.
+        '^ios/chrome/\w+_extension/',
       ),
     ),
 )
@@ -952,8 +954,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     BanRule(
         r'/(\babsl::Span\b|#include <span>|\bstd::span\b)',
         (
-            'absl::Span and std::span are not allowed ',
-            '(https://crbug.com/1414652). Use base::span instead.',
+            'absl::Span and std::span are banned. Use base::span instead.',
         ),
         True,
         [
@@ -3449,6 +3450,32 @@ def _ParseDeps(contents):
     return local_scope
 
 
+def _FindAllDepsFilesForSubpath(input_api, subpath):
+    ret = []
+    while subpath:
+        cur = input_api.os_path.join(input_api.change.RepositoryRoot(), subpath, 'DEPS')
+        if input_api.os_path.exists(cur):
+            ret.append(cur)
+        subpath = input_api.os_path.dirname(subpath)
+    return ret
+
+
+def _FindAddedDepsThatRequireReview(input_api, depended_on_paths):
+    """Filters to those whose DEPS set new_usages_require_review=True"""
+    ret = set()
+    cache = {}
+    for target_path in depended_on_paths:
+        for subpath in _FindAllDepsFilesForSubpath(input_api, target_path):
+            config = cache.get(subpath)
+            if config is None:
+                config = _ParseDeps(input_api.ReadFile(subpath))
+                cache[subpath] = config
+            if config.get('new_usages_require_review'):
+                ret.add(target_path)
+                break
+    return ret
+
+
 def _CalculateAddedDeps(os_path, old_contents, new_contents):
     """Helper method for CheckAddedDepsHaveTargetApprovals. Returns
     a set of DEPS entries that we should look up.
@@ -3598,7 +3625,9 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
         return [output_api.PresubmitPromptWarning(
                 'Failed to retrieve owner override status - %s' % str(e))]
 
-    virtual_depended_on_files = set()
+    # A set of paths (that might not exist) that are being added as DEPS
+    # (via lines like "+foo/bar/baz").
+    depended_on_paths = set()
 
     # Consistently use / as path separator to simplify the writing of regex
     # expressions.
@@ -3609,12 +3638,14 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
                                      file_filter=file_filter):
         filename = input_api.os_path.basename(f.LocalPath())
         if filename == 'DEPS':
-            virtual_depended_on_files.update(
+            depended_on_paths.update(
                 _CalculateAddedDeps(input_api.os_path,
                                     '\n'.join(f.OldContents()),
                                     '\n'.join(f.NewContents())))
 
-    if not virtual_depended_on_files:
+    # Requiring reviews is opt-in as of https://crbug.com/365797506
+    depended_on_paths = _FindAddedDepsThatRequireReview(input_api, depended_on_paths)
+    if not depended_on_paths:
         return []
 
     if input_api.is_committing:
@@ -3649,10 +3680,10 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
     owner_email = owner_email or input_api.change.author_email
 
     approval_status = input_api.owners_client.GetFilesApprovalStatus(
-        virtual_depended_on_files, reviewers.union([owner_email]), [])
+        depended_on_paths, reviewers.union([owner_email]), [])
     missing_files = [
-        f for f in virtual_depended_on_files
-        if approval_status[f] != input_api.owners_client.APPROVED
+        p for p in depended_on_paths
+        if approval_status[p] != input_api.owners_client.APPROVED
     ]
 
     # We strip the /DEPS part that was added by
@@ -5872,126 +5903,50 @@ def CheckAccessibilityRelnotesField(input_api, output_api):
     return [output_api.PresubmitNotifyResult(message)]
 
 
-_ACCESSIBILITY_EVENTS_TEST_PATH = (
-    r"^content/test/data/accessibility/event/.*\.html",
+_ACCESSIBILITY_ARIA_METHOD_CANDIDATES_PATTERNS = r'(\-\>|\.)(get|has|FastGet|FastHas)Attribute\('
+
+_ACCESSIBILITY_ARIA_BAD_PARAMS_PATTERNS = (
+    r"\(html_names::kAria(.*)Attr\)",
+    r"\(html_names::kRoleAttr\)"
 )
 
-_ACCESSIBILITY_TREE_TEST_PATH = (
-    r"^content/test/data/accessibility/accname/"
-      ".*-expected-(mac|win|uia-win|auralinux).txt",
-    r"^content/test/data/accessibility/aria/"
-      ".*-expected-(mac|win|uia-win|auralinux).txt",
-    r"^content/test/data/accessibility/css/"
-      ".*-expected-(mac|win|uia-win|auralinux).txt",
-    r"^content/test/data/accessibility/event/"
-      ".*-expected-(mac|win|uia-win|auralinux).txt",
-    r"^content/test/data/accessibility/html/"
-      ".*-expected-(mac|win|uia-win|auralinux).txt",
+_ACCESSIBILITY_ARIA_FILE_CANDIDATES_PATTERNS = (
+    r".*/accessibility/.*.(cc|h)",
+    r".*/ax_.*.(cc|h)"
 )
 
-_ACCESSIBILITY_ANDROID_EVENTS_TEST_PATH = (
-    r"^.*/WebContentsAccessibilityEventsTest\.java",
-)
+def CheckAccessibilityAriaElementAttributeGetters(input_api, output_api):
+    """Checks that the blink accessibility code follows the defined patterns
+    for checking aria attributes, so that ElementInternals is not bypassed."""
 
-_ACCESSIBILITY_ANDROID_TREE_TEST_PATH = (
-    r"^.*/WebContentsAccessibilityTreeTest\.java",
-)
-
-def CheckAccessibilityEventsTestsAreIncludedForAndroid(input_api, output_api):
-    """Checks that commits that include a newly added, renamed/moved, or deleted
-    test in the DumpAccessibilityEventsTest suite also includes a corresponding
-    change to the Android test."""
-
-    def FilePathFilter(affected_file):
-        paths = _ACCESSIBILITY_EVENTS_TEST_PATH
+    # Limit to accessibility-related files.
+    def FileFilter(affected_file):
+        paths = _ACCESSIBILITY_ARIA_FILE_CANDIDATES_PATTERNS
         return input_api.FilterSourceFile(affected_file, files_to_check=paths)
 
-    def AndroidFilePathFilter(affected_file):
-        paths = _ACCESSIBILITY_ANDROID_EVENTS_TEST_PATH
-        return input_api.FilterSourceFile(affected_file, files_to_check=paths)
+    aria_method_regex = input_api.re.compile(_ACCESSIBILITY_ARIA_METHOD_CANDIDATES_PATTERNS)
+    aria_bad_params_regex = input_api.re.compile(
+        "|".join(_ACCESSIBILITY_ARIA_BAD_PARAMS_PATTERNS)
+    )
+    problems = []
 
-    # Only consider changes in the events test data path with html type.
-    if not any(
-            input_api.AffectedFiles(include_deletes=True,
-                                    file_filter=FilePathFilter)):
-        return []
+    for f in input_api.AffectedSourceFiles(FileFilter):
+        for line_num, line in f.ChangedContents():
+            if aria_method_regex.search(line) and aria_bad_params_regex.search(line):
+                problems.append(f"{f.LocalPath()}:{line_num}\n    {line.strip()}")
 
-    # If the commit contains any change to the Android test file, ignore.
-    if any(
-            input_api.AffectedFiles(include_deletes=True,
-                                    file_filter=AndroidFilePathFilter)):
-        return []
-
-    # Only consider changes that are adding/renaming or deleting a file
-    message = []
-    for f in input_api.AffectedFiles(include_deletes=True,
-                                     file_filter=FilePathFilter):
-        if f.Action() == 'A':
-            message = (
-                "It appears that you are adding platform expectations for a"
-                "\ndump_accessibility_events* test, but have not included"
-                "\na corresponding change for Android."
-                "\nPlease include the test from:"
-                "\n    content/public/android/javatests/src/org/chromium/"
-                "content/browser/accessibility/"
-                "WebContentsAccessibilityEventsTest.java"
-                "\nIf this message is confusing or annoying, please contact"
-                "\nmembers of ui/accessibility/OWNERS.")
-
-    # If no message was set, return empty.
-    if not len(message):
-        return []
-
-    return [output_api.PresubmitPromptWarning(message)]
-
-
-def CheckAccessibilityTreeTestsAreIncludedForAndroid(input_api, output_api):
-    """Checks that commits that include a newly added, renamed/moved, or deleted
-    test in the DumpAccessibilityTreeTest suite also includes a corresponding
-    change to the Android test."""
-
-    def FilePathFilter(affected_file):
-        paths = _ACCESSIBILITY_TREE_TEST_PATH
-        return input_api.FilterSourceFile(affected_file, files_to_check=paths)
-
-    def AndroidFilePathFilter(affected_file):
-        paths = _ACCESSIBILITY_ANDROID_TREE_TEST_PATH
-        return input_api.FilterSourceFile(affected_file, files_to_check=paths)
-
-    # Only consider changes in the various tree test data paths with html type.
-    if not any(
-            input_api.AffectedFiles(include_deletes=True,
-                                    file_filter=FilePathFilter)):
-        return []
-
-    # If the commit contains any change to the Android test file, ignore.
-    if any(
-            input_api.AffectedFiles(include_deletes=True,
-                                    file_filter=AndroidFilePathFilter)):
-        return []
-
-    # Only consider changes that are adding/renaming or deleting a file
-    message = []
-    for f in input_api.AffectedFiles(include_deletes=True,
-                                     file_filter=FilePathFilter):
-        if f.Action() == 'A':
-            message = (
-                "It appears that you are adding platform expectations for a"
-                "\ndump_accessibility_tree* test, but have not included"
-                "\na corresponding change for Android."
-                "\nPlease include (or remove) the test from:"
-                "\n    content/public/android/javatests/src/org/chromium/"
-                "content/browser/accessibility/"
-                "WebContentsAccessibilityTreeTest.java"
-                "\nIf this message is confusing or annoying, please contact"
-                "\nmembers of ui/accessibility/OWNERS.")
-
-    # If no message was set, return empty.
-    if not len(message):
-        return []
-
-    return [output_api.PresubmitPromptWarning(message)]
-
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                "Accessibility code should not use element methods to get or check"
+                "\nthe presence of aria attributes"
+                "\nPlease use ARIA-specific attribute access, e.g. HasAriaAttribute(),"
+                "\nAriaTokenAttribute(), AriaBoolAttribute(), AriaBooleanAttribute(),"
+                "\nAriaFloatAttribute().",
+                problems,
+            )
+        ]
+    return []
 
 # string pattern, sequence of strings to show when pattern matches,
 # error flag. True if match is a presubmit error, otherwise it's a warning.

@@ -70,6 +70,11 @@ public interface SiteSettingsDelegate {
     boolean isPermissionDedicatedCpssSettingAndroidFeatureEnabled();
 
     /**
+     * @return true if the PermissionSiteSettingsRadioButtonFeatureEnabled Feature is enabled.
+     */
+    boolean isPermissionSiteSettingsRadioButtonFeatureEnabled();
+
+    /**
      * @return true if the PrivacySandboxFirstPartySetsUi Feature is enabled.
      */
     boolean isPrivacySandboxFirstPartySetsUiFeatureEnabled();
@@ -185,11 +190,6 @@ public interface SiteSettingsDelegate {
      *         Bypass.
      */
     boolean shouldDisplayFingerprintingProtection();
-
-    /***
-     * @return true if the Tracking Protection branded UI should be shown.
-     */
-    boolean shouldShowTrackingProtectionBrandedUi();
 
     /**
      * @return whether the 100% 3PCD Tracking Protection with ACT features UI should be shown.

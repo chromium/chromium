@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -157,6 +159,9 @@ public class PdfPageUnitTest {
         Assert.assertFalse(
                 "Pdf should not be loaded when the download is not completed.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+        Assert.assertNull(
+                "Assist content cannot be generated when the pdf is not ready to load",
+                pdfPage.requestAssistContent());
 
         // Simulate download complete
         pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
@@ -175,6 +180,20 @@ public class PdfPageUnitTest {
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+        String jsonString = pdfPage.requestAssistContent();
+        Assert.assertNotNull(
+                "Assist content should be generated when the pdf is ready to load", jsonString);
+        JSONObject jsonObject = new JSONObject(jsonString);
+        JSONObject metadata = (JSONObject) jsonObject.get("file_metadata");
+        Assert.assertEquals(
+                "File uri should match.",
+                pdfPage.mPdfCoordinator.getUriForTesting().toString(),
+                metadata.get("file_uri"));
+        Assert.assertEquals(
+                "File name should match.", pdfPage.getTitle(), metadata.get("file_name"));
+        Assert.assertEquals(
+                "Mime type should match.", MimeTypeUtils.PDF_MIME_TYPE, metadata.get("mime_type"));
+        Assert.assertEquals("Work profile should match.", false, metadata.get("is_work_profile"));
 
         contentView.removeView(view);
         pdfPage.destroy();

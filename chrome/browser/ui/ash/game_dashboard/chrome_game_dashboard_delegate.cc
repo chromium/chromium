@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "components/user_manager/user_manager.h"
@@ -70,6 +72,12 @@ std::string ChromeGameDashboardDelegate::GetArcAppName(
 
 void ChromeGameDashboardDelegate::RecordGameWindowOpenedEvent(
     aura::Window* window) {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  if (campaigns_manager) {
+    campaigns_manager->RecordEvent(
+        growth::kGrowthCampaignsEventGameWindowOpened);
+  }
+
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   CHECK(user_manager);
   if (user_manager->GetActiveUser() != user_manager->GetPrimaryUser()) {

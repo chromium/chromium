@@ -97,10 +97,10 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   }
 
   base::span<uint8_t> span() {
-    return base::make_span(bytes(), static_cast<size_t>(size_));
+    return base::span(bytes(), static_cast<size_t>(size_));
   }
   base::span<const uint8_t> span() const {
-    return base::make_span(bytes(), static_cast<size_t>(size_));
+    return base::span(bytes(), static_cast<size_t>(size_));
   }
 
  protected:

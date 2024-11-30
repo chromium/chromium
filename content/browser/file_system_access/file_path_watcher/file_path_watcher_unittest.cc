@@ -1115,8 +1115,7 @@ TEST_F(FilePathWatcherTest, NonExistentDirectory) {
   // The delegate is only watching the file. Parent directory creation should
   // not trigger an event.
   ASSERT_TRUE(CreateDirectory(dir));
-  // TODO(crbug.com/40263777): Expect that no events are fired.
-
+  delegate.SpinAndExpectNoEvents();
   // It may take some time for `watcher` to re-construct its watch list, so it's
   // possible an event is missed. _At least_ one event should be fired, though.
   ASSERT_TRUE(WriteFile(file, "content"));
@@ -1164,7 +1163,7 @@ TEST_F(FilePathWatcherTest, DirectoryChain) {
   for (const auto& dir_name : dir_names) {
     sub_path = sub_path.AppendASCII(dir_name);
     ASSERT_TRUE(CreateDirectory(sub_path));
-    // TODO(crbug.com/40263777): Expect that no events are fired.
+    delegate.SpinAndExpectNoEvents();
   }
 
   // It may take some time for `watcher` to re-construct its watch list, so it's
@@ -1238,12 +1237,10 @@ TEST_F(FilePathWatcherTest, DeleteAndRecreate) {
   delegate.RunUntilEventsMatch(event_expecter);
 }
 
-// TODO(crbug.com/40263777): Split into smaller tests.
-TEST_F(FilePathWatcherTest, WatchDirectory) {
+TEST_F(FilePathWatcherTest, WatchDirectoryWriteToFile) {
   FilePathWatcher watcher;
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   base::FilePath file1(dir.AppendASCII("file1"));
-  base::FilePath file2(dir.AppendASCII("file2"));
   TestDelegate delegate;
   AccumulatingEventExpecter event_expecter;
   ASSERT_TRUE(SetupWatch(dir, &watcher, &delegate,
@@ -1277,6 +1274,29 @@ TEST_F(FilePathWatcherTest, WatchDirectory) {
 #endif
   delegate.RunUntilEventsMatch(event_expecter);
 #endif  // !BUILDFLAG(IS_APPLE)
+}
+
+TEST_F(FilePathWatcherTest, WatchDirectoryDeleteFileWriteToOtherFile) {
+  FilePathWatcher watcher;
+  base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
+  base::FilePath file1(dir.AppendASCII("file1"));
+  base::FilePath file2(dir.AppendASCII("file2"));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(dir, &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  ASSERT_TRUE(CreateDirectory(dir));
+  VLOG(1) << "Waiting for directory creation";
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
+
+  ASSERT_TRUE(WriteFile(file1, "content"));
+  VLOG(1) << "Waiting for file1 creation + modification";
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(dir);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   ASSERT_TRUE(DeleteFile(file1));
   VLOG(1) << "Waiting for file1 deletion";
@@ -1308,8 +1328,7 @@ TEST_F(FilePathWatcherTest, MoveParent) {
   // We should only get notified on `subdir_delegate` of its creation.
   ASSERT_TRUE(CreateDirectory(subdir));
   subdir_event_expecter.AddExpectedEventForPath(subdir);
-  // TODO(crbug.com/40263777): Expect that no events are fired on the
-  // file delegate.
+  file_delegate.SpinAndExpectNoEvents();
   subdir_delegate.RunUntilEventsMatch(subdir_event_expecter);
 
   ASSERT_TRUE(WriteFile(file, "content"));
@@ -1718,7 +1737,7 @@ TEST_F(FilePathWatcherTest, LinkedDirectoryPart2) {
                          FilePathWatcher::Type::kNonRecursive));
 
   ASSERT_TRUE(CreateDirectory(dir));
-  // TODO(crbug.com/40263777): Expect that no events are fired.
+  delegate.SpinAndExpectNoEvents();
 
   // It may take some time for `watcher` to re-construct its watch list, so it's
   // possible an event is missed. _At least_ one event should be fired, though.
@@ -2272,7 +2291,7 @@ TEST_F(FilePathWatcherTest, DirAttributesChanged) {
   // to access the file.
   ASSERT_TRUE(ChangeFilePermissions(test_dir1, Read, false));
   ASSERT_TRUE(ChangeFilePermissions(test_dir1, Read, true));
-  // TODO(crbug.com/40263777): Expect that no events are fired.
+  delegate.SpinAndExpectNoEvents();
 
   // We should get notified in this case because filepathwatcher can no
   // longer access the file.

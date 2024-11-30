@@ -510,6 +510,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Slider) {
   RunTest("settings/settings_slider_test.js", "mocha.run()");
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, SmartCardReadersPage) {
   RunTest("settings/smart_card_readers_page_test.js", "mocha.run()");
 }
@@ -517,6 +518,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SmartCardReadersPage) {
 IN_PROC_BROWSER_TEST_F(SettingsTest, SmartCardReaderOriginEntry) {
   RunTest("settings/smart_card_reader_origin_entry_test.js", "mocha.run()");
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SpeedPage) {
   RunTest("settings/speed_page_test.js", "mocha.run()");
@@ -1092,10 +1094,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, TrackingProtectionSubpage) {
           "runMochaSuite('TrackingProtectionSubpage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, TrackingProtectionUxDisabled) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('TrackingProtectionUxDisabled')");
-}
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyGuideRow')");
@@ -1155,6 +1153,18 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, TopicsSubpage) {
           "runMochaSuite('TopicsSubpage')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       TopicsSubpageAdsApiUxEnhancementsDisabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpageAdsApiUxEnhancementsDisabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       TopicsSubpageAdsApiUxEnhancements) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpageAdsApiUxEnhancements')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, FledgeSubpageEmpty) {
   RunTest("settings/privacy_sandbox_page_test.js",
           "runMochaSuite('FledgeSubpageEmpty')");
@@ -1171,6 +1181,18 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, AdMeasurementSubpage) {
           "runMochaSuite('AdMeasurementSubpage')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       AdMeasurementSubpageAdsApiUxEnhancements) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('AdMeasurementSubpageAdsApiUxEnhancements')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       AdMeasurementSubpageAdsApiUxEnhancementsDisabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('AdMeasurementSubpageAdsApiUxEnhancementsDisabled')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, ManageTopics) {
   RunTest("settings/privacy_sandbox_page_test.js",
           "runMochaSuite('ManageTopics')");
@@ -1179,6 +1201,12 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, ManageTopics) {
 IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, FledgeSubpage) {
   RunTest("settings/privacy_sandbox_page_test.js",
           "runMochaSuite('FledgeSubpage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       SiteSuggestedAdsSubpageAdsApiUxEnhancement) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('SiteSuggestedAdsSubpageAdsApiUxEnhancement')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
@@ -1457,20 +1485,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
           "runMochaSuite('UnusedSitePermissionsReview')");
 }
 
-// TODO(crbug.com/40884439): Flaky.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_UnusedSitePermissionsReviewDisabled \
-  DISABLED_UnusedSitePermissionsReviewDisabled
-#else
-#define MAYBE_UnusedSitePermissionsReviewDisabled \
-  UnusedSitePermissionsReviewDisabled
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
-                       MAYBE_UnusedSitePermissionsReviewDisabled) {
-  RunTest("settings/site_settings_page_test.js",
-          "runMochaSuite('UnusedSitePermissionsReviewDisabled')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
                        UnusedSitePermissionsReviewSafetyHubDisabled) {
   RunTest("settings/site_settings_page_test.js",
@@ -1480,14 +1494,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SafetyHubDisabled) {
   RunTest("settings/site_settings_page_test.js",
           "runMochaSuite('SafetyHubDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SettingsSiteSettingsPageTest,
-    AbusiveNotificationsEnabledUnusedSitePermissionsDisabled) {
-  RunTest("settings/site_settings_page_test.js",
-          "runMochaSuite('"
-          "AbusiveNotificationsEnabledUnusedSitePermissionsDisabled')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

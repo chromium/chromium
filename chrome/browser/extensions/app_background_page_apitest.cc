@@ -19,6 +19,7 @@
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background/background_contents_service_observer.h"
+#include "chrome/browser/background/background_contents_test_waiter.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
@@ -269,13 +270,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, LacksPermission) {
   ASSERT_TRUE(VerifyBackgroundMode(false));
 }
 
-// TODO(crbug.com/378997487): test fails on win-asan
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_ManifestBackgroundPage DISABLED_ManifestBackgroundPage
-#else
-#define MAYBE_ManifestBackgroundPage ManifestBackgroundPage
-#endif
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_ManifestBackgroundPage) {
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, ManifestBackgroundPage) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
@@ -297,6 +292,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_ManifestBackgroundPage) {
       embedded_test_server()->port(),
       embedded_test_server()->port());
 
+  BackgroundContentsTestWaiter background_waiter(profile());
   base::FilePath app_dir;
   ASSERT_TRUE(CreateApp(app_manifest, &app_dir));
   // Background mode should not be active now because no background app was
@@ -306,8 +302,9 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_ManifestBackgroundPage) {
   // the app was loaded.
   ASSERT_TRUE(VerifyBackgroundMode(true));
 
-  // Verify that the background contents exist.
+  // Wait for and then verify that the background contents exist.
   const Extension* extension = GetSingleLoadedExtension();
+  background_waiter.WaitForBackgroundContents(extension->id());
   BackgroundContents* background_contents =
       BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
           ->GetAppBackgroundContents((extension->id()));
@@ -359,8 +356,11 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsBackgroundPage) {
   ASSERT_FALSE(
       BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
           ->GetAppBackgroundContents(extension->id()));
+
+  BackgroundContentsTestWaiter background_waiter(profile());
   // The test makes sure that window.open returns null.
   ASSERT_TRUE(RunExtensionTest("app_background_page/no_js")) << message_;
+  background_waiter.WaitForBackgroundContents(extension->id());
   // And after it runs there should be a background page.
   BackgroundContents* background_contents =
       BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
@@ -379,14 +379,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsBackgroundPage) {
   UnloadExtension(extension->id());
 }
 
-// TODO(crbug.com/378997487): test fails on win-asan
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_NoJsManifestBackgroundPage DISABLED_NoJsManifestBackgroundPage
-#else
-#define MAYBE_NoJsManifestBackgroundPage NoJsManifestBackgroundPage
-#endif
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest,
-                       MAYBE_NoJsManifestBackgroundPage) {
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, NoJsManifestBackgroundPage) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
@@ -414,7 +407,9 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest,
   ASSERT_TRUE(LoadExtension(app_dir));
 
   // The background page should load.
+  BackgroundContentsTestWaiter background_waiter(profile());
   const Extension* extension = GetSingleLoadedExtension();
+  background_waiter.WaitForBackgroundContents(extension->id());
   BackgroundContents* background_contents =
       BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
           ->GetAppBackgroundContents((extension->id()));
@@ -559,10 +554,12 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_OpenThenClose) {
           ->GetAppBackgroundContents(extension->id()));
   // Background mode should not be active until a background page is created.
   ASSERT_TRUE(VerifyBackgroundMode(false));
+
+  BackgroundContentsTestWaiter background_waiter(profile());
   ASSERT_TRUE(RunExtensionTest("app_background_page/basic_open")) << message_;
   // Background mode should be active now because a background page was created.
   ASSERT_TRUE(VerifyBackgroundMode(true));
-
+  background_waiter.WaitForBackgroundContents(extension->id());
   // Verify that the background contents exist.
   BackgroundContents* background_contents =
       BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
@@ -614,6 +611,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, UnloadExtensionWhileHidden) {
 
   base::FilePath app_dir;
   ASSERT_TRUE(CreateApp(app_manifest, &app_dir));
+
+  BackgroundContentsTestWaiter background_waiter(profile());
   // Background mode should not be active now because no background app was
   // loaded.
   ASSERT_TRUE(LoadExtension(app_dir));
@@ -622,6 +621,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, UnloadExtensionWhileHidden) {
   ASSERT_TRUE(VerifyBackgroundMode(true));
 
   const Extension* extension = GetSingleLoadedExtension();
+  background_waiter.WaitForBackgroundContents(extension->id());
   ASSERT_TRUE(
       BackgroundContentsServiceFactory::GetForProfile(browser()->profile())
           ->GetAppBackgroundContents(extension->id()));

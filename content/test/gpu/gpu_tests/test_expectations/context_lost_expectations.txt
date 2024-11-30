@@ -186,7 +186,9 @@ crbug.com/329145823 [ win release amd ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release intel ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release qualcomm ] GpuCrash_InfoForHardwareGpu [ Failure ]
-crbug.com/329145823 [ mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ angle-opengl bigsur graphite-disabled mac-x86_64 no-asan no-clang-coverage nvidia-0xfe9 release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ asan graphite-disabled intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 
@@ -199,7 +201,6 @@ crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ 
 crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
 
 # Flaky failure on Mac Intel ASAN - DevTools Serialization Crash
-crbug.com/338574390 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
 

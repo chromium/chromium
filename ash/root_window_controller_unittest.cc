@@ -135,7 +135,7 @@ class RootWindowControllerTest : public AshTestBase {
   }
 };
 
-TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
+TEST_F(RootWindowControllerTest, MoveWindowsBasic) {
   // Windows origin should be doubled when moved to the 1st display.
   UpdateDisplay("600x500,300x250");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -252,7 +252,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
             unparented_control->GetNativeView()->parent()->GetId());
 }
 
-TEST_F(RootWindowControllerTest, MoveWindows_Modal) {
+TEST_F(RootWindowControllerTest, MoveWindowsModal) {
   UpdateDisplay("500x400,500x600");
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -282,7 +282,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Modal) {
 }
 
 // Make sure lock related windows moves.
-TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
+TEST_F(RootWindowControllerTest, MoveWindowsLockWindowsInUnified) {
   display_manager()->SetUnifiedDesktopEnabled(true);
 
   UpdateDisplay("500x400");
@@ -344,7 +344,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
 }
 
 // Tests that the moved windows maintain MRU ordering.
-TEST_F(RootWindowControllerTest, MoveWindows_MaintainMRUordering) {
+TEST_F(RootWindowControllerTest, MoveWindowsMaintainMRUordering) {
   UpdateDisplay("600x500,300x250");
 
   display::Screen* screen = display::Screen::GetScreen();

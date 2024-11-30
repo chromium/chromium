@@ -91,19 +91,34 @@ base::span<const VideoCodecProfile> GetSupportedVideoCodecProfiles() {
 }
 
 base::span<const gfx::Size> GetMinResolutions(VideoCodec codec) {
-  static constexpr auto kNoLimits = std::to_array({gfx::Size()});
 #if defined(ARCH_CPU_X86_FAMILY)
+  // Below test result based on a 2019 Intel MacBook Pro, and a 2015
+  // Intel MacBook Pro.
   static constexpr auto kMinH264Resolutions = std::to_array({
-      gfx::Size(640, 1),
-      gfx::Size(1, 480),
+      gfx::Size(640, 2),
+      gfx::Size(18, 480),
+  });
+  static constexpr auto kMinHEVCResolutions = std::to_array({
+      gfx::Size(146, 50),
   });
 #else
-  static constexpr auto kMinH264Resolutions = kNoLimits;
+  // Below test result based on a 2021 M1 Pro MacBook Pro, and a 2024
+  // M4 Mac Mini.
+  static constexpr auto kMinH264Resolutions = std::to_array({
+      gfx::Size(16, 16),
+  });
+  static constexpr auto kMinHEVCResolutions = std::to_array({
+      gfx::Size(16, 16),
+  });
 #endif  // defined(ARCH_CPU_X86_FAMILY)
-  if (codec == VideoCodec::kH264) {
-    return kMinH264Resolutions;
+  switch (codec) {
+    case VideoCodec::kH264:
+      return kMinH264Resolutions;
+    case VideoCodec::kHEVC:
+      return kMinHEVCResolutions;
+    default:
+      NOTREACHED();
   }
-  return kNoLimits;
 }
 
 gfx::Size GetMaxResolution(VideoCodec codec) {
@@ -460,22 +475,24 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
 
         SupportedProfile portrait_profile(supported_profile);
         portrait_profile.max_resolution.Transpose();
-        portrait_profile.min_resolution.Transpose();
         supported_profiles.push_back(portrait_profile);
       }
 
 #if SOFTWARE_ENCODING_SUPPORTED
       // macOS doesn't provide a way to enumerate codec details, so just
-      // assume software codec support is the same as hardware, but with
-      // the lowest possible minimum resolution.
-      supported_profile.min_resolution = gfx::Size(2, 2);
+      // assume software codec support is the same as hardware.
+      //
+      // NOTE: Although SW encoder always has lower supported min resolutions
+      // compared with HW encoder, but when both HW and SW encoder exist and if
+      // the resolution is not supported by hardware but supported by software,
+      // and if you set `no-preference`, VT will always emit an error. Thus,
+      // we should just re-use min resolutions of HW encoder for SW encoder.
       supported_profile.scalability_modes = always_supported_scalability_modes;
       supported_profile.is_software_codec = true;
       supported_profiles.push_back(supported_profile);
 
       SupportedProfile portrait_profile(supported_profile);
       portrait_profile.max_resolution.Transpose();
-      portrait_profile.min_resolution.Transpose();
       supported_profiles.push_back(portrait_profile);
 #endif  // SOFTWARE_ENCODING_SUPPORTED
     }

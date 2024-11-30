@@ -533,6 +533,14 @@ static bool NeedsPaintOffsetTranslation(
     return true;
   }
 
+  // TODO(crbug.com/349835587): Should Element or LayoutObject have a public
+  // IsCanvasPlacedElement() funciton?
+  if (object.Parent() && object.Parent()->IsCanvas()) {
+    // The object is being drawn by placeElement and should ignore the ignore
+    // the paint offset.
+    return true;
+  }
+
   if (NeedsIsolationNodes(box_model)) {
     DCHECK(box_model.HasLayer());
     return true;
@@ -827,8 +835,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       const auto& box = To<LayoutBox>(object_);
       const AnchorPositionScrollData& anchor_position_scroll_data =
           *box.GetAnchorPositionScrollData();
-      gfx::Vector2dF translation_offset =
-          -anchor_position_scroll_data.AccumulatedAdjustment();
+      gfx::Vector2dF translation_offset(
+          -anchor_position_scroll_data.AccumulatedAdjustment());
       TransformPaintPropertyNode::State state{
           {gfx::Transform::MakeTranslation(translation_offset)}};
 
@@ -2914,6 +2922,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollTranslation() {
         effective_change_type =
             PaintPropertyChangeType::kChangedOnlyCompositedValues;
         properties_->ScrollTranslation()->CompositorSimpleValuesUpdated();
+        if (paint_artifact_compositor->UsesRasterInducingScroll(
+                *properties_->Scroll())) {
+          paint_artifact_compositor->SetNeedsUpdateForRasterInducingScroll();
+        }
       }
     }
   }

@@ -312,38 +312,20 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
     EXPECT_EQ(EventType::kTouchMoved, event->type());
     EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
     EXPECT_EQ(State::kAttached, drag_controller_state());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // On Lacros, touch event will not update the cursor position.
-    EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
-#else
     EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
-#endif
   });
   SendDndMotionForWindowDrag({10, 10});
 
   enum TestStep { kDragging, kDropping, kDone } test_step = kDragging;
 
   EXPECT_CALL(delegate_, DispatchEvent(_))
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // Lacros dispatches TOUCH_MOVED event so that aura can update the touch
-      // position.
-      .WillOnce([&](Event* event) {
-        EXPECT_EQ(EventType::kTouchMoved, event->type());
-        EXPECT_EQ(gfx::Point(20, 20), event->AsLocatedEvent()->root_location());
-      })
-#endif
       .WillOnce([&](Event* event) {
         EXPECT_EQ(EventType::kTouchReleased, event->type());
         ASSERT_EQ(kDropping, test_step);
         EXPECT_EQ(State::kDropped, drag_controller_state());
-    // Ensure PlatformScreen keeps consistent.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        gfx::Point expected_point{0, 0};
-    // On Lacros, touch event will not update the cursor position.
-#else
         gfx::Point expected_point{20, 20};
         expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
-#endif
+        // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
         EXPECT_EQ(window_->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
@@ -421,24 +403,14 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
         EXPECT_EQ(0, event->AsTouchEvent()->pointer_details().id);
         EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
         EXPECT_EQ(State::kAttached, drag_controller_state());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        // On Lacros, touch event will not update the cursor position.
-        EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
-#else
         EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
-#endif
       })
       .WillOnce([&](Event* event) {
         EXPECT_EQ(EventType::kTouchMoved, event->type());
         EXPECT_EQ(1, event->AsTouchEvent()->pointer_details().id);
         EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
         EXPECT_EQ(State::kAttached, drag_controller_state());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        // On Lacros, touch event will not update the cursor position.
-        EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
-#else
         EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
-#endif
       });
   SendDndMotionForWindowDrag({10, 10});
 
@@ -450,25 +422,6 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
   } test_step = kDragging;
 
   EXPECT_CALL(delegate_, DispatchEvent(_))
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // Lacros dispatches TOUCH_MOVED event so that aura can update the touch
-      // position.
-      .WillOnce([&](Event* event) {
-        ASSERT_EQ(kDragging, test_step);
-        EXPECT_EQ(EventType::kTouchMoved, event->type());
-        EXPECT_EQ(0, event->AsTouchEvent()->pointer_details().id);
-        EXPECT_EQ(State::kDetached, drag_controller_state());
-        EXPECT_EQ(gfx::Point(20, 20), event->AsLocatedEvent()->root_location());
-      })
-      .WillOnce([&](Event* event) {
-        ASSERT_EQ(kDragging, test_step);
-        EXPECT_EQ(EventType::kTouchMoved, event->type());
-        EXPECT_EQ(1, event->AsTouchEvent()->pointer_details().id);
-
-        EXPECT_EQ(State::kDetached, drag_controller_state());
-        EXPECT_EQ(gfx::Point(20, 20), event->AsLocatedEvent()->root_location());
-      })
-#endif
       // delegate_ should receive two touch release events in a sequence.
       .WillOnce([&](Event* event) {
         ASSERT_EQ(kDropping, test_step);
@@ -476,14 +429,9 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
         EXPECT_EQ(0, event->AsTouchEvent()->pointer_details().id);
         EXPECT_EQ(State::kDropped, drag_controller_state());
 
-    // Ensure PlatformScreen keeps consistent.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        gfx::Point expected_point{0, 0};
-    // On Lacros, touch event will not update the cursor position.
-#else
+        // Ensure PlatformScreen keeps consistent.
         gfx::Point expected_point{20, 20};
         expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
-#endif
         EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
 
         EXPECT_EQ(window_->GetWidget(),
@@ -496,14 +444,9 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
         EXPECT_EQ(1, event->AsTouchEvent()->pointer_details().id);
         EXPECT_EQ(State::kDropped, drag_controller_state());
 
-    // Ensure PlatformScreen keeps consistent.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        gfx::Point expected_point{0, 0};
-    // On Lacros, touch event will not update the cursor position.
-#else
+        // Ensure PlatformScreen keeps consistent.
         gfx::Point expected_point{20, 20};
         expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
-#endif
         EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
 
         EXPECT_EQ(window_->GetWidget(),
@@ -926,22 +869,9 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
       /*allow_system_drag=*/false);
   EXPECT_EQ(State::kAttached, drag_controller_state());
   EXPECT_CALL(delegate_, DispatchEvent(_))
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // Lacros dispatches TOUCH_MOVED event so that aura can update the touch
-      // position.
       .WillOnce([&](Event* event) {
         EXPECT_EQ(EventType::kTouchMoved, event->type());
-        EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
-      })
-#endif
-      .WillOnce([&](Event* event) {
-        EXPECT_EQ(EventType::kTouchMoved, event->type());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        // On Lacros, touch event will not update the cursor position.
-        EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
-#else
         EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
-#endif
       });
   SendDndMotionForWindowDrag({10, 10});
 
@@ -1010,12 +940,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
     SendDndMotionForWindowDrag(location);
     location.Offset(0, 3);
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, touch event will not update the cursor position.
-  EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
-#else
   EXPECT_EQ(gfx::Point(30, 42), screen_->GetCursorScreenPoint());
-#endif
   EXPECT_EQ(target_window->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({50, 50}, {}));
 
@@ -1865,7 +1790,6 @@ TEST_P(WaylandWindowDragControllerTest, OutgoingSessionWithoutDndFinished) {
   EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 
-// Lacros requires aura shell.
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          Values(wl::ServerConfig{}));

@@ -170,7 +170,7 @@ AppInfoPermissionsPanel::AppInfoPermissionsPanel(
   CreatePermissionsList();
 }
 
-AppInfoPermissionsPanel::~AppInfoPermissionsPanel() {}
+AppInfoPermissionsPanel::~AppInfoPermissionsPanel() = default;
 
 void AppInfoPermissionsPanel::CreatePermissionsList() {
   auto permissions_heading = CreateHeading(

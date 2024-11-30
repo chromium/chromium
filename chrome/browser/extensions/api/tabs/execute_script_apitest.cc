@@ -33,7 +33,7 @@ struct BackForwardCacheDisabledDestructiveScriptTestPassToString {
 
 }  // namespace
 
-using ContextType = ExtensionApiTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExecuteScriptApiTestBase : public ExtensionApiTest {
  public:

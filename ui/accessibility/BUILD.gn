@@ -422,6 +422,7 @@ test("accessibility_unittests") {
     if (is_mac) {
       sources += [
         "platform/ax_platform_node_cocoa_unittest.mm",
+        "platform/browser_accessibility_cocoa_unittest.mm",
         "platform/browser_accessibility_mac_unittest.mm",
         "platform/inspect/ax_element_wrapper_mac_unittest.mm",
       ]

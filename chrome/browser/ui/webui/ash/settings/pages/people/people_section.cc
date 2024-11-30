@@ -46,6 +46,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
@@ -268,7 +269,7 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
       {"lockScreenOptionsLock", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOCK},
       {"lockScreenOptionsLoginLock",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOGIN_LOCK},
-      {"lockScreenRemovePinButton",
+      {"lockScreenRemoveButton",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_REMOVE_PIN_BUTTON},
       {"lockScreenPasswordLabel",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_LABEL},
@@ -519,7 +520,8 @@ PeopleSection::PeopleSection(Profile* profile,
       auth_performer_(UserDataAuthClient::Get()),
       fp_engine_(&auth_performer_) {
   // No search tags are registered if in guest mode.
-  if (IsGuestModeActive()) {
+  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (IsGuestModeActive(user)) {
     return;
   }
 

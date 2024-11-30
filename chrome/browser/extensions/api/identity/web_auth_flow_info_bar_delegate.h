@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_IDENTITY_WEB_AUTH_FLOW_INFO_BAR_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_IDENTITY_WEB_AUTH_FLOW_INFO_BAR_DELEGATE_H_
 
-#include "components/infobars/core/confirm_infobar_delegate.h"
-
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace content {
 class WebContents;
@@ -43,6 +43,12 @@ class WebAuthFlowInfoBarDelegate : public ConfirmInfoBarDelegate {
 
  private:
   explicit WebAuthFlowInfoBarDelegate(const std::string& extension_name);
+
+  // The Create() method needs a valid browser window because it shows the
+  // infobar in addition to creating the delegate. Unit tests construct the
+  // delegate directly from the private constructor. This way, they can avoid
+  // setting up the environment needed by the Create() method.
+  FRIEND_TEST_ALL_PREFIXES(WebAuthFlowInfoBarDelegateTest, LongExtensionName);
 
   const std::string extension_name_;
 

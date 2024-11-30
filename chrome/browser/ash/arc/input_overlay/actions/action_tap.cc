@@ -98,9 +98,9 @@ class ActionTap::ActionTapView : public ActionView {
       return;
     }
 
-    action_->set_pending_input(
+    action_->BindInput(
         InputElement::CreateActionTapKeyElement(ui::DomCode::NONE));
-    SetViewContent(BindingOption::kPending);
+    SetViewContent(BindingOption::kCurrent);
   }
 
   void OnBindingToMouse(std::string mouse_action) override {
@@ -281,10 +281,7 @@ std::unique_ptr<ActionView> ActionTap::CreateView(
 }
 
 void ActionTap::UnbindInput(const InputElement& input_element) {
-  if (pending_input_) {
-    pending_input_.reset();
-  }
-  pending_input_ = InputElement::CreateActionTapKeyElement(ui::DomCode::NONE);
+  BindInput(InputElement::CreateActionTapKeyElement(ui::DomCode::NONE));
 }
 
 ActionType ActionTap::GetType() const {

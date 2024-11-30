@@ -5,11 +5,9 @@
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 
 #include "base/test/bind.h"
-#include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/profiles/profile_destroyer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/offscreen/lifetime_enforcer_factories.h"
@@ -24,6 +22,13 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/test_extension_dir.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/browser.h"
+#endif
 
 namespace extensions {
 
@@ -72,13 +77,19 @@ std::unique_ptr<OffscreenDocumentLifetimeEnforcer> CreateTestLifetimeEnforcer(
 
 }  // namespace
 
-class OffscreenDocumentManagerBrowserTest : public ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+
+class OffscreenDocumentManagerBrowserTest : public ExtensionApiTestBase {
  public:
   OffscreenDocumentManagerBrowserTest() = default;
   ~OffscreenDocumentManagerBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTestBase::SetUpCommandLine(command_line);
     // Add the kOffscreenDocumentTesting switch to allow the use of the
     // `TESTING` reason in offscreen document creation.
     command_line->AppendSwitch(switches::kOffscreenDocumentTesting);
@@ -180,108 +191,13 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
     // document should be closed.
     ExtensionHostTestHelper host_waiter(profile());
     host_waiter.RestrictToHost(offscreen_document);
-    extension_service()->DisableExtension(extension->id(),
-                                          disable_reason::DISABLE_USER_ACTION);
+    DisableExtension(extension->id(), disable_reason::DISABLE_USER_ACTION);
     host_waiter.WaitForHostDestroyed();
     // Note: `offscreen_document` is destroyed at this point.
   }
 
   // There should no longer be a document for the extension.
   EXPECT_EQ(nullptr,
-            offscreen_document_manager()->GetOffscreenDocumentForExtension(
-                *extension));
-}
-
-// Tests creating offscreen documents for an incognito split-mode extension.
-IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
-                       IncognitoOffscreenDocuments) {
-  // `split` incognito mode is required in order to allow the extension to
-  // have a separate process in incognito.
-  static constexpr char kManifest[] =
-      R"({
-           "name": "Offscreen Document Test",
-           "manifest_version": 3,
-           "version": "0.1",
-           "incognito": "split"
-         })";
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
-                     "<html>offscreen</html>");
-
-  scoped_refptr<const Extension> extension =
-      LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  {
-    // Enable the extension in incognito. This results in an extension reload;
-    // wait for that to finish and update the `extension` pointer.
-    TestExtensionRegistryObserver registry_observer(
-        ExtensionRegistry::Get(profile()), extension->id());
-    util::SetIsIncognitoEnabled(extension->id(), browser()->profile(),
-                                /*enabled=*/true);
-    extension = registry_observer.WaitForExtensionLoaded();
-  }
-
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(util::IsIncognitoEnabled(extension->id(), profile()));
-
-  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
-
-  // Create an on-the-record offscreen document.
-  OffscreenDocumentHost* on_the_record_host =
-      CreateDocumentAndWaitForLoad(*extension, offscreen_url);
-  ASSERT_TRUE(on_the_record_host);
-  // Ensure the on-the-record context is used.
-  // Note: Throughout this test, we use
-  // `OffscreenDocumentHost::host_contents()` to access the BrowserContext
-  // instead of `OffscreenDocumentHost::browser_context()`; this is to ensure
-  // that the WebContents is hosted properly.
-  EXPECT_FALSE(on_the_record_host->host_contents()
-                   ->GetBrowserContext()
-                   ->IsOffTheRecord());
-
-  // Create an incognito browser and an incognito offscreen document, and
-  // validate that the proper context is used.
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  ASSERT_TRUE(incognito_browser);
-
-  OffscreenDocumentHost* incognito_host = CreateDocumentAndWaitForLoad(
-      *extension, offscreen_url, *incognito_browser->profile());
-  ASSERT_TRUE(incognito_host);
-  EXPECT_TRUE(
-      incognito_host->host_contents()->GetBrowserContext()->IsOffTheRecord());
-
-  // These should be separate offscreen documents and have separate profiles,
-  // but the same original profile.
-  EXPECT_NE(incognito_host, on_the_record_host);
-  EXPECT_EQ(Profile::FromBrowserContext(
-                on_the_record_host->host_contents()->GetBrowserContext()),
-            Profile::FromBrowserContext(
-                incognito_host->host_contents()->GetBrowserContext())
-                ->GetOriginalProfile());
-
-  // Ensure the offscreen documents are registered with the appropriate
-  // context.
-  EXPECT_EQ(on_the_record_host,
-            OffscreenDocumentManager::Get(profile())
-                ->GetOffscreenDocumentForExtension(*extension));
-  EXPECT_EQ(incognito_host,
-            OffscreenDocumentManager::Get(incognito_browser->profile())
-                ->GetOffscreenDocumentForExtension(*extension));
-
-  {
-    // Shut down the incognito browser. The `incognito_host` should be
-    // destroyed.
-    ExtensionHostTestHelper host_waiter(incognito_browser->profile());
-    host_waiter.RestrictToHost(incognito_host);
-    CloseBrowserSynchronously(incognito_browser);
-    host_waiter.WaitForHostDestroyed();
-    // Note: `incognito_host` is destroyed at this point.
-  }
-
-  // The on-the-record document should remain.
-  EXPECT_EQ(on_the_record_host,
             offscreen_document_manager()->GetOffscreenDocumentForExtension(
                 *extension));
 }
@@ -552,6 +468,111 @@ IN_PROC_BROWSER_TEST_F(
 
   // Now, the document should be closed.
   EXPECT_EQ(nullptr,
+            offscreen_document_manager()->GetOffscreenDocumentForExtension(
+                *extension));
+}
+
+// Tests creating offscreen documents for an incognito split-mode extension.
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
+                       IncognitoOffscreenDocuments) {
+  // `split` incognito mode is required in order to allow the extension to
+  // have a separate process in incognito.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "incognito": "split"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  {
+    // Enable the extension in incognito. This results in an extension reload;
+    // wait for that to finish and update the `extension` pointer.
+    TestExtensionRegistryObserver registry_observer(
+        ExtensionRegistry::Get(profile()), extension->id());
+    util::SetIsIncognitoEnabled(extension->id(), profile(),
+                                /*enabled=*/true);
+    extension = registry_observer.WaitForExtensionLoaded();
+  }
+
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(util::IsIncognitoEnabled(extension->id(), profile()));
+
+  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+
+  // Create an on-the-record offscreen document.
+  OffscreenDocumentHost* on_the_record_host =
+      CreateDocumentAndWaitForLoad(*extension, offscreen_url);
+  ASSERT_TRUE(on_the_record_host);
+  // Ensure the on-the-record context is used.
+  // Note: Throughout this test, we use
+  // `OffscreenDocumentHost::host_contents()` to access the BrowserContext
+  // instead of `OffscreenDocumentHost::browser_context()`; this is to ensure
+  // that the WebContents is hosted properly.
+  EXPECT_FALSE(on_the_record_host->host_contents()
+                   ->GetBrowserContext()
+                   ->IsOffTheRecord());
+
+#if BUILDFLAG(IS_ANDROID)
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+#else
+  // Create an incognito browser and an incognito offscreen document, and
+  // validate that the proper context is used.
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito_browser);
+  Profile* incognito_profile = incognito_browser->profile();
+#endif
+
+  OffscreenDocumentHost* incognito_host = CreateDocumentAndWaitForLoad(
+      *extension, offscreen_url, *incognito_profile);
+  ASSERT_TRUE(incognito_host);
+  EXPECT_TRUE(
+      incognito_host->host_contents()->GetBrowserContext()->IsOffTheRecord());
+
+  // These should be separate offscreen documents and have separate profiles,
+  // but the same original profile.
+  EXPECT_NE(incognito_host, on_the_record_host);
+  EXPECT_EQ(Profile::FromBrowserContext(
+                on_the_record_host->host_contents()->GetBrowserContext()),
+            Profile::FromBrowserContext(
+                incognito_host->host_contents()->GetBrowserContext())
+                ->GetOriginalProfile());
+
+  // Ensure the offscreen documents are registered with the appropriate
+  // context.
+  EXPECT_EQ(on_the_record_host,
+            OffscreenDocumentManager::Get(profile())
+                ->GetOffscreenDocumentForExtension(*extension));
+  EXPECT_EQ(incognito_host, OffscreenDocumentManager::Get(incognito_profile)
+                ->GetOffscreenDocumentForExtension(*extension));
+
+  {
+    ExtensionHostTestHelper host_waiter(incognito_profile);
+    host_waiter.RestrictToHost(incognito_host);
+#if BUILDFLAG(IS_ANDROID)
+    // Destroy OTR profile. Consequently, the `incognito_host` should be
+    // destroyed.
+    ProfileDestroyer::DestroyOTRProfileWhenAppropriate(incognito_profile);
+#else
+    // Shut down the incognito browser, OTR profile will be destroyed.
+    // Consequently, the `incognito_host` should be destroyed.
+    CloseBrowserSynchronously(incognito_browser);
+#endif
+    host_waiter.WaitForHostDestroyed();
+    // Note: `incognito_host` is destroyed at this point.
+  }
+
+  // The on-the-record document should remain.
+  EXPECT_EQ(on_the_record_host,
             offscreen_document_manager()->GetOffscreenDocumentForExtension(
                 *extension));
 }

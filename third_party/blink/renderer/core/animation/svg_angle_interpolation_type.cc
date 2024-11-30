@@ -32,8 +32,9 @@ SVGPropertyBase* SVGAngleInterpolationType::AppliedSVGValue(
   // Note: using default CSSToLengthConversionData here as it's
   // guaranteed to be a double.
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
-  double double_value = To<InterpolableNumber>(interpolable_value)
-                            .Value(CSSToLengthConversionData());
+  double double_value =
+      To<InterpolableNumber>(interpolable_value)
+          .Value(CSSToLengthConversionData(/*element=*/nullptr));
   auto* result = MakeGarbageCollected<SVGAngle>();
   result->NewValueSpecifiedUnits(SVGAngle::kSvgAngletypeDeg, double_value);
   return result;

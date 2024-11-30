@@ -177,7 +177,6 @@ static_library("common_lib") {
   ]
 
   public_deps = [
-    ":available_offline_content_mojom",
     ":buildflags",
     ":channel_info",
     ":ini_parser",
@@ -799,11 +798,6 @@ mojom("mojo_bindings") {
 
 mojom("supervised_user_commands_mojom") {
   sources = [ "supervised_user_commands.mojom" ]
-}
-
-mojom("available_offline_content_mojom") {
-  sources = [ "available_offline_content.mojom" ]
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }
 
 mojom("offline_page_auto_fetcher_mojom") {

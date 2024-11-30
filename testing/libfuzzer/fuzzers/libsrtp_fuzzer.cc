@@ -40,7 +40,7 @@ static size_t GetKeyLength(LibSrtpFuzzer::CryptoPolicy crypto_policy) {
   switch (crypto_policy) {
     case LibSrtpFuzzer::NUMBER_OF_POLICIES:
     case LibSrtpFuzzer::NONE:
-      return 0;
+      return SRTP_AES_ICM_128_KEY_LEN_WSALT;
     case LibSrtpFuzzer::LIKE_WEBRTC:
     case LibSrtpFuzzer::LIKE_WEBRTC_SHORT_AUTH:
     case LibSrtpFuzzer::LIKE_WEBRTC_WITHOUT_AUTH:
@@ -59,8 +59,8 @@ struct Environment {
     switch (crypto_policy) {
       case LibSrtpFuzzer::NUMBER_OF_POLICIES:
       case LibSrtpFuzzer::NONE:
-        srtp_crypto_policy_set_null_cipher_null_auth(&policy.rtp);
-        srtp_crypto_policy_set_null_cipher_null_auth(&policy.rtcp);
+        srtp_crypto_policy_set_null_cipher_hmac_null(&policy.rtp);
+        srtp_crypto_policy_set_null_cipher_hmac_null(&policy.rtcp);
         break;
       case LibSrtpFuzzer::LIKE_WEBRTC:
         srtp_crypto_policy_set_aes_cm_128_hmac_sha1_80(&policy.rtp);
@@ -108,15 +108,6 @@ struct Environment {
   srtp_policy_t policy;
   unsigned char key[SRTP_MAX_KEY_LEN] = {0};
 
-  static void srtp_crypto_policy_set_null_cipher_null_auth(
-      srtp_crypto_policy_t* p) {
-    p->cipher_type = SRTP_NULL_CIPHER;
-    p->cipher_key_len = 0;
-    p->auth_type = SRTP_NULL_AUTH;
-    p->auth_key_len = 0;
-    p->auth_tag_len = 0;
-    p->sec_serv = sec_serv_none;
-  }
 };
 
 size_t ReadLength(const uint8_t* data, size_t size) {

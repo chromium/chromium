@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -128,9 +129,11 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   service_connection_->source_provider()->GetVideoSource(
       device_id, source.BindNewPipeAndPassReceiver());
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   if (video_effects_processor) {
     source->RegisterVideoEffectsProcessor(std::move(video_effects_processor));
   }
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
   auto receiver_adapter =
       std::make_unique<video_capture::ReceiverMediaToMojoAdapter>(

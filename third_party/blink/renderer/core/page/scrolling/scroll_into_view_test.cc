@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
@@ -256,8 +255,7 @@ TEST_P(ScrollIntoViewTest, SmoothScroll) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+  ASSERT_NEAR(Window().scrollY(), 299, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -294,13 +292,11 @@ TEST_P(ScrollIntoViewTest, NestedContainer) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+  ASSERT_NEAR(Window().scrollY(), 299, 1);
   if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
     // If MultiSmoothScrollIntoView is enabled, the frames will also scroll the
     // inner container.
-    ASSERT_NEAR(container->scrollTop(),
-                (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+    ASSERT_NEAR(container->scrollTop(), 299, 1);
   } else {
     ASSERT_EQ(container->scrollTop(), 0);
   }
@@ -326,8 +322,7 @@ TEST_P(ScrollIntoViewTest, NestedContainer) {
   // Scrolling the inner container
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 794 : 299), 1);
+  ASSERT_NEAR(container->scrollTop(), 299, 1);
 
   // Finish scrolling the inner container
   Compositor().BeginFrame(1);
@@ -373,13 +368,11 @@ TEST_P(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+  ASSERT_NEAR(Window().scrollY(), 299, 1);
   if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
     // If MultiSmoothScrollIntoView is enabled, the frames will also scroll
     // container1.
-    ASSERT_NEAR(container1->scrollTop(),
-                (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+    ASSERT_NEAR(container1->scrollTop(), 299, 1);
   } else {
     ASSERT_EQ(container1->scrollTop(), 0);
   }
@@ -388,13 +381,11 @@ TEST_P(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 171 : 61), 1);
+  ASSERT_NEAR(Window().scrollY(), 61, 1);
   if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
     // If MultiSmoothScrollIntoView is enabled, the new scrollIntoView does not
     // cancel the first scrollIntoView so the scroll on container1 continues.
-    ASSERT_GT(container1->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299));
+    ASSERT_GT(container1->scrollTop(), 299);
   } else {
     ASSERT_EQ(container1->scrollTop(), 0);  // container1 should not scroll.
   }
@@ -419,8 +410,7 @@ TEST_P(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   // Scrolling content2 in container2
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container2->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 952 : 300), 1);
+  ASSERT_NEAR(container2->scrollTop(), 300, 1);
 
   // Finish all the animation to make sure there is no another animation queued
   // on container1.
@@ -474,11 +464,9 @@ TEST_P(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 250 : 241), 1);
+  ASSERT_NEAR(Window().scrollY(), 241, 1);
   if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    ASSERT_NEAR(container->scrollTop(),
-                (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+    ASSERT_NEAR(container->scrollTop(), 299, 1);
   } else {
     ASSERT_EQ(container->scrollTop(), 0);
   }
@@ -497,11 +485,9 @@ TEST_P(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
   // The window animation should continue running but the container shouldn't
   // yet have started unless MultiSmoothScrollIntoView support is enabled.
   Compositor().BeginFrame();
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 258 : 260), 1);
+  ASSERT_NEAR(Window().scrollY(), 260, 1);
   if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    ASSERT_GT(container->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299));
+    ASSERT_GT(container->scrollTop(), 299);
   } else {
     // container should not have scrolled yet.
     ASSERT_EQ(container->scrollTop(), 0);
@@ -546,11 +532,9 @@ TEST_P(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+  ASSERT_NEAR(Window().scrollY(), 299, 1);
   if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-    ASSERT_NEAR(container->scrollTop(),
-                (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+    ASSERT_NEAR(container->scrollTop(), 299, 1);
   } else {
     ASSERT_EQ(container->scrollTop(), 0);
   }
@@ -563,8 +547,7 @@ TEST_P(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 165 : 58), 1);
+  ASSERT_NEAR(Window().scrollY(), 58, 1);
 
   Compositor().BeginFrame(1);
   ASSERT_EQ(Window().scrollY(), 0);
@@ -679,8 +662,7 @@ TEST_P(ScrollIntoViewTest, SmoothAndInstantInChain) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 794 : 299), 1);
+  ASSERT_NEAR(container->scrollTop(), 299, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -714,8 +696,7 @@ TEST_P(ScrollIntoViewTest, SmoothScrollAnchor) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 794 : 299), 1);
+  ASSERT_NEAR(container->scrollTop(), 299, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -770,8 +751,7 @@ TEST_P(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+  ASSERT_NEAR(Window().scrollY(), 299, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -963,8 +943,7 @@ TEST_P(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 800 : 299), 1);
+  ASSERT_NEAR(Window().scrollY(), 299, 1);
 
   // ProgrammaticScroll that could interrupt the current smooth scroll.
   Window().scrollTo(0, 0);
@@ -1000,9 +979,7 @@ TEST_P(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (::features::IsImpulseScrollAnimationEnabled() ? 79389 : 16971),
-              1);
+  ASSERT_NEAR(Window().scrollY(), 16971, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(0.5);

@@ -140,14 +140,25 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
     friend bool operator==(const OverlayRect&, const OverlayRect&) = default;
   };
 
+  // Returns true if the `quad_below` meets the criteria to allow the quad above
+  // it to utilize the fullscreen letterboxing optimization in `DCLayerTree`.
+  // - `quad_below` must be the quad directly below the quad we are marking as
+  //   "possible fullscreen letterboxing". If null, indicates there is nothing
+  //   below the quad we're checking.
+  // - `display_rect` is ideally the monitor rect, but is approximated with the
+  //   root render pass output rect.
+  // See implementation for details.
+  static bool IsPossibleFullScreenLetterboxing(const DrawQuad* quad_below,
+                                               const gfx::Rect& display_rect);
+
   // Promote a single quad in isolation, like how |Process| would internally.
   // This ignores per-frame limitations such as max number of YUV quads, etc.
   // This also adds other properties needed for delegated compositing.
   std::optional<OverlayCandidate> FromTextureOrYuvQuad(
       const DisplayResourceProvider* resource_provider,
       const AggregatedRenderPass* render_pass,
-      const QuadList::ConstIterator& it,
-      bool is_page_fullscreen_mode) const;
+      const DrawQuad& quad,
+      bool is_possible_full_screen_letterboxing) const;
 
  private:
   // Information about a render pass's overlays from the previous frame. The
@@ -328,7 +339,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       RenderPassCurrentFrameState& current_frame_state) const;
 
   void RemoveOverlayDamageRect(
-      const QuadList::Iterator& it,
+      const DrawQuad* quad,
       RenderPassCurrentFrameState& render_pass_state) const;
 
   // Remove all video overlay candidates if any overlays in any render passes

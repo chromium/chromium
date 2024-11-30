@@ -708,6 +708,11 @@ const char kLensUnaryApisWithHttpTransportEnabledName[] =
 const char kLensUnaryApisWithHttpTransportEnabledDescription[] =
     "Enables the unary APIs with HTTP transport.";
 
+const char kLensUnaryHttpTransportEnabledName[] =
+    "Lens unary HTTP transport enabled";
+const char kLensUnaryHttpTransportEnabledDescription[] =
+    "Enables the HTTP transport for unary requests.";
+
 const char kLensWebPageLoadOptimizationEnabledName[] =
     "Lens web page load optimization";
 const char kLensWebPageLoadOptimizationEnabledDescription[] =
@@ -890,10 +895,6 @@ const char kOmniboxZeroSuggestPrefetchingOnWebName[] =
 const char kOmniboxZeroSuggestPrefetchingOnWebDescription[] =
     "Enables prefetching of the zero prefix suggestions for eligible users "
     "on the Web (i.e. non-NTP and non-SRP URLs).";
-
-const char kOmniboxColorIconsName[] = "Enable color icons in the Omnibox";
-const char kOmniboxColorIconsDescription[] =
-    "When enabled, displays color microphone and Lens icons in the omnibox.";
 
 const char kOnlyAccessClipboardAsyncName[] =
     "Only access the clipboard asynchronously";
@@ -1091,6 +1092,10 @@ const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
+
+const char kSetUpListInFirstRunName[] = "Set Up List in First Run";
+const char kSetUpListInFirstRunNameDescription[] =
+    "Displays the Set Up List in the First Run.";
 
 const char kShareInWebContextMenuIOSName[] = "Share in web context menu";
 const char kShareInWebContextMenuIOSDescription[] =

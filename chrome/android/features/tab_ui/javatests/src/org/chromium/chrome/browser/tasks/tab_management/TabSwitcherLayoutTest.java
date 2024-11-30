@@ -195,7 +195,10 @@ public class TabSwitcherLayoutTest {
                 () -> {
                     cta.getTabModelSelector()
                             .getCurrentModel()
-                            .closeTabs(TabClosureParams.closeTab(tab).build());
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).build(),
+                                    /* allowDialog= */ false);
                 });
         mActivityTestRule.loadUrlInTab(
                 mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
@@ -213,10 +216,6 @@ public class TabSwitcherLayoutTest {
 
         mActivityTestRule.loadUrlInTab(
                 mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
-    }
-
-    private int getTabCountInCurrentTabModel() {
-        return mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount();
     }
 
     @Test

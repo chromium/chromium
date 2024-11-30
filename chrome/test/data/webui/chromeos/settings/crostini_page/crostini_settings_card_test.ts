@@ -20,9 +20,7 @@ import {clearBody} from '../utils.js';
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
 suite('<crostini-settings-card>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-  const hostRoute = isRevampWayfindingEnabled ? routes.ABOUT : routes.CROSTINI;
+  const hostRoute = routes.ABOUT;
 
   let crostiniSettingsCard: CrostiniSettingsCardElement;
   let guestOsBrowserProxy: TestGuestOsBrowserProxy;

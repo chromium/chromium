@@ -722,14 +722,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     TraceableCounter<int, TracingCategory::kInfo>
         renderer_pause_count;  // Renderer is paused if non-zero.
 
-    TraceableObjectState<RAILMode,
-                         TracingCategory::kTopLevel>
-        rail_mode_for_tracing;  // Don't use except for tracing.
-
-    TraceableObjectState<bool, TracingCategory::kTopLevel> renderer_hidden;
+    bool renderer_hidden = false;
     std::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
-    TraceableObjectState<bool, TracingCategory::kTopLevel>
-        renderer_backgrounded;
+    bool renderer_backgrounded = kLaunchingProcessIsBackgrounded;
     TraceableState<bool, TracingCategory::kDefault>
         blocking_input_expected_soon;
     TraceableState<bool, TracingCategory::kDebug> in_idle_period_for_testing;

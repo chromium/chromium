@@ -335,18 +335,12 @@ auto RunVideoCapture(
   auto service = std::make_unique<UtilityThreadVideoCaptureServiceImpl>(
       std::move(receiver), base::SingleThreadTaskRunner::GetCurrentDefault());
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  {
-#else
-  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
-    UtilityThread::Get()->BindHostReceiver(
-        remote_gpu.InitWithNewPipeAndPassReceiver());
-    std::unique_ptr<viz::Gpu> viz_gpu = viz::Gpu::Create(
-        std::move(remote_gpu), UtilityThread::Get()->GetIOTaskRunner());
-    service->SetVizGpu(std::move(viz_gpu));
-  }
+  mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
+  UtilityThread::Get()->BindHostReceiver(
+      remote_gpu.InitWithNewPipeAndPassReceiver());
+  std::unique_ptr<viz::Gpu> viz_gpu = viz::Gpu::Create(
+      std::move(remote_gpu), UtilityThread::Get()->GetIOTaskRunner());
+  service->SetVizGpu(std::move(viz_gpu));
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 
   return service;

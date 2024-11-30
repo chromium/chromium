@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -260,7 +261,9 @@ syncer::UpdateResponseData MockDataTypeWorker::GenerateSharedUpdateData(
     const std::string& collaboration_id) {
   syncer::UpdateResponseData response_data =
       GenerateUpdateData(tag_hash, specifics);
-  response_data.entity.collaboration_id = collaboration_id;
+  response_data.entity.collaboration_metadata =
+      CollaborationMetadata::ForLocalChange(/*changed_by=*/"",
+                                            collaboration_id);
   return response_data;
 }
 

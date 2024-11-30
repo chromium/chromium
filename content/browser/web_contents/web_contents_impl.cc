@@ -1261,7 +1261,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       upload_position_(0),
       is_resume_pending_(false),
       notify_disconnection_(false),
-      dialog_manager_(nullptr),
       is_showing_before_unload_dialog_(false),
       last_active_time_ticks_(base::TimeTicks::Now()),
       last_active_time_(base::Time::Now()),
@@ -1387,9 +1386,7 @@ WebContentsImpl::~WebContentsImpl() {
   created_widgets_.clear();
 
   // Clear out any JavaScript state.
-  if (dialog_manager_) {
-    dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
-  }
+  CancelDialogManagerDialogs(/*reset_state=*/true);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   color_chooser_holder_.reset();
@@ -1967,9 +1964,7 @@ RenderViewHostImpl* WebContentsImpl::GetRenderViewHost() {
 void WebContentsImpl::CancelActiveAndPendingDialogs() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::CancelActiveAndPendingDialogs");
-  if (dialog_manager_) {
-    dialog_manager_->CancelDialogs(this, /*reset_state=*/false);
-  }
+  CancelDialogManagerDialogs(/*reset_state=*/false);
   if (browser_plugin_embedder_) {
     browser_plugin_embedder_->CancelGuestDialogs();
   }
@@ -2381,6 +2376,15 @@ void WebContentsImpl::SetRendererInitiatedUserAgentOverrideOption(
 }
 
 const blink::UserAgentOverride& WebContentsImpl::GetUserAgentOverride() {
+  return renderer_preferences_.user_agent_override;
+}
+
+const blink::UserAgentOverride& WebContentsImpl::GetUserAgentOverride(
+    FrameTree& frame_tree) {
+  if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
+          *frame_tree.GetMainFrame())) {
+    return guest->GetRendererPrefs().user_agent_override;
+  }
   return renderer_preferences_.user_agent_override;
 }
 
@@ -3635,6 +3639,32 @@ void WebContentsImpl::OnSharedDictionaryAccessed(
       RenderFrameHost*, const network::mojom::SharedDictionaryAccessDetails&) =
       &WebContentsObserver::OnSharedDictionaryAccessed;
   observers_.NotifyObservers(func, rfh, details);
+}
+
+void WebContentsImpl::OnDeviceBoundSessionAccessed(
+    NavigationHandle* navigation,
+    const net::device_bound_sessions::SessionKey& session) {
+  OPTIONAL_TRACE_EVENT1("content",
+                        "WebContentsImpl::OnDeviceBoundSessionAccessed",
+                        "navigation_handle", navigation);
+  // Use a variable to select between overloads.
+  void (WebContentsObserver::*func)(
+      NavigationHandle*, const net::device_bound_sessions::SessionKey&) =
+      &WebContentsObserver::OnDeviceBoundSessionAccessed;
+  observers_.NotifyObservers(func, navigation, session);
+}
+
+void WebContentsImpl::OnDeviceBoundSessionAccessed(
+    RenderFrameHostImpl* rfh,
+    const net::device_bound_sessions::SessionKey& session) {
+  OPTIONAL_TRACE_EVENT1("content",
+                        "WebContentsImpl::OnDeviceBoundSessionAccessed",
+                        "render_frame_host", rfh);
+  // Use a variable to select between overloads.
+  void (WebContentsObserver::*func)(
+      RenderFrameHost*, const net::device_bound_sessions::SessionKey&) =
+      &WebContentsObserver::OnDeviceBoundSessionAccessed;
+  observers_.NotifyObservers(func, rfh, session);
 }
 
 void WebContentsImpl::NotifyStorageAccessed(
@@ -5120,8 +5150,7 @@ void WebContentsImpl::ShowCreatedWindow(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix) &&
-      active_file_chooser_) {
+  if (active_file_chooser_) {
     // Do not allow opening a new window or tab while a file select is active
     // file chooser to avoid user confusion over which tab triggered the file
     // chooser.
@@ -5720,6 +5749,20 @@ void WebContentsImpl::ResizeDueToAutoResize(
     const gfx::Size& new_size) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ResizeDueToAutoResize",
                         "render_widget_host", render_widget_host);
+
+  // If we are a guest frame tree and the RenderWidgetHost is the same as the
+  // guest's main frame widget, then send the guest a notification about the
+  // resize.
+  if (render_widget_host->frame_tree()->is_guest() &&
+      render_widget_host->frame_tree()->GetMainFrame()->GetRenderWidgetHost() ==
+          render_widget_host) {
+    if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
+            *render_widget_host->frame_tree()->GetMainFrame())) {
+      guest->delegate()->GuestResizeDueToAutoResize(new_size);
+    }
+    return;
+  }
+
   if (render_widget_host != GetRenderViewHost()->GetWidget()) {
     return;
   }
@@ -6006,7 +6049,9 @@ void WebContentsImpl::ReplaceMisspelling(const std::u16string& word) {
   input_handler->ReplaceMisspelling(word);
 }
 
-void WebContentsImpl::NotifyContextMenuClosed(const GURL& link_followed) {
+void WebContentsImpl::NotifyContextMenuClosed(
+    const GURL& link_followed,
+    const std::optional<blink::Impression>& impression) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::NotifyContextMenuClosed");
   RenderFrameHost* focused_frame = GetFocusedFrame();
   if (!focused_frame) {
@@ -6014,7 +6059,7 @@ void WebContentsImpl::NotifyContextMenuClosed(const GURL& link_followed) {
   }
 
   if (context_menu_client_) {
-    context_menu_client_->ContextMenuClosed(link_followed);
+    context_menu_client_->ContextMenuClosed(link_followed, impression);
   }
 
   context_menu_client_.reset();
@@ -7195,10 +7240,9 @@ void WebContentsImpl::DidNavigateAnyFramePostCommit(
   // has_user_gesture, which might get filtered out when navigating from
   // proxies. If so, we can remove tracking of
   // `last_committed_common_params_has_user_gesture` entirely.
-  if (render_frame_host->last_committed_common_params_has_user_gesture() &&
-      dialog_manager_) {
+  if (render_frame_host->last_committed_common_params_has_user_gesture()) {
     DCHECK(is_active);
-    dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
+    CancelDialogManagerDialogs(/*reset_state=*/true);
   }
 }
 
@@ -8234,7 +8278,7 @@ void WebContentsImpl::RunJavaScriptDialog(
     JavaScriptDialogCallback response_callback) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RunJavaScriptDialog",
                         "render_frame_host", render_frame_host);
-  DCHECK(render_frame_host->GetPage().IsPrimary());
+  DCHECK(render_frame_host->IsActive());
 
   // Ensure that if showing a dialog is the first thing that a page does, that
   // the contents of the previous page aren't shown behind it. This is required
@@ -8259,8 +8303,17 @@ void WebContentsImpl::RunJavaScriptDialog(
   std::vector<protocol::PageHandler*> page_handlers =
       protocol::PageHandler::EnabledForWebContents(this);
 
-  if (delegate_) {
-    dialog_manager_ = delegate_->GetJavaScriptDialogManager(this);
+  bool should_suppress = false;
+  JavaScriptDialogManager* dialog_manager = nullptr;
+  // Give guest a first crack at the dialog.
+  if (GuestPageHolderImpl* guest_holder =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    if (auto* guest_delegate = guest_holder->delegate()) {
+      dialog_manager = guest_delegate->GuestGetJavascriptDialogManager();
+    }
+  } else if (delegate_) {
+    dialog_manager = delegate_->GetJavaScriptDialogManager(this);
+    should_suppress = delegate_->ShouldSuppressDialogs(this);
   }
 
   // While a JS message dialog is showing, defer commits in this WebContents.
@@ -8268,8 +8321,7 @@ void WebContentsImpl::RunJavaScriptDialog(
       std::make_unique<JavaScriptDialogDismissNotifier>();
 
   // Suppress JavaScript dialogs when requested.
-  bool should_suppress = delegate_ && delegate_->ShouldSuppressDialogs(this);
-  bool has_non_devtools_handlers = delegate_ && dialog_manager_;
+  bool has_non_devtools_handlers = delegate_ && dialog_manager;
   bool has_handlers = page_handlers.size() || has_non_devtools_handlers;
   bool suppress_this_message = should_suppress || !has_handlers;
 
@@ -8318,8 +8370,9 @@ void WebContentsImpl::RunJavaScriptDialog(
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false));
   }
 
-  if (dialog_manager_) {
-    dialog_manager_->RunJavaScriptDialog(
+  if (dialog_manager) {
+    created_dialog_since_last_cancel_ = true;
+    dialog_manager->RunJavaScriptDialog(
         this, render_frame_host, dialog_type, normalized_message,
         default_prompt,
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false),
@@ -8346,7 +8399,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RunBeforeUnloadConfirm",
                         "render_frame_host", render_frame_host, "is_reload",
                         is_reload);
-  DCHECK(render_frame_host->GetPage().IsPrimary());
+  DCHECK(render_frame_host->IsActive());
 
   // Ensure that if showing a dialog is the first thing that a page does, that
   // the contents of the previous page aren't shown behind it. This is required
@@ -8371,8 +8424,17 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   std::vector<protocol::PageHandler*> page_handlers =
       protocol::PageHandler::EnabledForWebContents(this);
 
-  if (delegate_) {
-    dialog_manager_ = delegate_->GetJavaScriptDialogManager(this);
+  JavaScriptDialogManager* dialog_manager = nullptr;
+  bool should_suppress = false;
+  // Give guest a first crack at the dialog.
+  if (GuestPageHolderImpl* guest_holder =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    if (auto* guest_delegate = guest_holder->delegate()) {
+      dialog_manager = guest_delegate->GuestGetJavascriptDialogManager();
+    }
+  } else if (delegate_) {
+    dialog_manager = delegate_->GetJavaScriptDialogManager(this);
+    should_suppress = delegate_->ShouldSuppressDialogs(this);
   }
 
   // While a JS beforeunload dialog is showing, defer commits in this
@@ -8380,8 +8442,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   javascript_dialog_dismiss_notifier_ =
       std::make_unique<JavaScriptDialogDismissNotifier>();
 
-  bool should_suppress = delegate_ && delegate_->ShouldSuppressDialogs(this);
-  bool has_non_devtools_handlers = delegate_ && dialog_manager_;
+  bool has_non_devtools_handlers = delegate_ && dialog_manager;
   bool has_handlers = page_handlers.size() || has_non_devtools_handlers;
   if (should_suppress || !has_handlers) {
     std::move(callback).Run(false, true, std::u16string());
@@ -8400,8 +8461,9 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false));
   }
 
-  if (dialog_manager_) {
-    dialog_manager_->RunBeforeUnloadDialog(
+  if (dialog_manager) {
+    created_dialog_since_last_cancel_ = true;
+    dialog_manager->RunBeforeUnloadDialog(
         this, render_frame_host, is_reload,
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false));
 #if BUILDFLAG(IS_ANDROID)
@@ -8665,8 +8727,20 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // current_frame_host() for the root FrameTreeNode has already been cleared.
   // Since the WebContents is going away, none of the work here is needed, so
   // just return early.
-  if (IsBeingDestroyed()) {
+  auto* rvh_impl = static_cast<RenderViewHostImpl*>(rvh);
+  if (IsBeingDestroyed() || rvh_impl->frame_tree()->IsBeingDestroyed()) {
     return;
+  }
+
+  // If we are a guest frame tree and the RenderViewHost is the main frame's RVH
+  // then notify that the guest's main frame process went away.
+  if (rvh_impl->frame_tree()->is_guest() &&
+      rvh_impl->frame_tree()->GetMainFrame()->render_view_host() == rvh_impl) {
+    if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
+            *rvh_impl->frame_tree()->GetMainFrame())) {
+      guest->delegate()->GuestMainFrameProcessGone(status);
+      return;
+    }
   }
 
   if (rvh != GetRenderViewHost()) {
@@ -8674,7 +8748,6 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
     return;
   }
 
-  auto* rvh_impl = static_cast<RenderViewHostImpl*>(rvh);
   DCHECK(rvh_impl->GetMainRenderFrameHost()->IsInPrimaryMainFrame())
       << "GetRenderViewHost() must belong to the primary frame tree";
 
@@ -8907,48 +8980,65 @@ void WebContentsImpl::DidStopLoading() {
 #endif
 }
 
-void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidChangeLoadProgress");
-  if (IsBeingDestroyed()) {
+void WebContentsImpl::DidChangeLoadProgressForMainFrame(
+    RenderFrameHostImpl* render_frame_host) {
+  OPTIONAL_TRACE_EVENT0("content",
+                        "WebContentsImpl::DidChangeLoadProgressForMainFrame");
+  if (IsBeingDestroyed() ||
+      render_frame_host->frame_tree()->IsBeingDestroyed()) {
     return;
   }
-  double load_progress = GetLoadProgress();
 
-  // The delegate is notified immediately for the first and last updates. Also,
-  // since the message loop may be pretty busy when a page is loaded, it might
-  // not execute a posted task in a timely manner so the progress report is sent
-  // immediately if enough time has passed.
-  base::TimeDelta min_delay = minimum_delay_between_loading_updates_ms_;
-  bool delay_elapsed =
-      loading_last_progress_update_.is_null() ||
-      base::TimeTicks::Now() - loading_last_progress_update_ > min_delay;
+  DCHECK(render_frame_host->is_main_frame());
+  if (!render_frame_host->IsOutermostMainFrame()) {
+    // If this main frame isn't an outermost main frame but an embedded
+    // main frame then return. ie. a fenced frame inside a guest.
+    return;
+  }
 
-  if (load_progress == 0.0 || load_progress == 1.0 || delay_elapsed) {
-    // If there is a pending task to send progress, it is now obsolete.
-    loading_weak_factory_.InvalidateWeakPtrs();
+  if (auto* guest =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    guest->delegate()->GuestDidChangeLoadProgress(
+        render_frame_host->frame_tree()->GetLoadProgress());
+  } else if (render_frame_host->IsInPrimaryMainFrame()) {
+    double load_progress = GetLoadProgress();
 
-    // Notify the load progress change.
-    SendChangeLoadProgress();
+    // The delegate is notified immediately for the first and last updates.
+    // Also, since the message loop may be pretty busy when a page is loaded, it
+    // might not execute a posted task in a timely manner so the progress report
+    // is sent immediately if enough time has passed.
+    base::TimeDelta min_delay = minimum_delay_between_loading_updates_ms_;
+    bool delay_elapsed =
+        loading_last_progress_update_.is_null() ||
+        base::TimeTicks::Now() - loading_last_progress_update_ > min_delay;
 
-    // Clean-up the states if needed.
-    if (load_progress == 1.0) {
-      ResetLoadProgressState();
+    if (load_progress == 0.0 || load_progress == 1.0 || delay_elapsed) {
+      // If there is a pending task to send progress, it is now obsolete.
+      loading_weak_factory_.InvalidateWeakPtrs();
+
+      // Notify the load progress change.
+      SendChangeLoadProgress();
+
+      // Clean-up the states if needed.
+      if (load_progress == 1.0) {
+        ResetLoadProgressState();
+      }
+      return;
     }
-    return;
-  }
 
-  if (loading_weak_factory_.HasWeakPtrs()) {
-    return;
-  }
+    if (loading_weak_factory_.HasWeakPtrs()) {
+      return;
+    }
 
-  if (min_delay == base::Milliseconds(0)) {
-    SendChangeLoadProgress();
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&WebContentsImpl::SendChangeLoadProgress,
-                       loading_weak_factory_.GetWeakPtr()),
-        min_delay);
+    if (min_delay == base::Milliseconds(0)) {
+      SendChangeLoadProgress();
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&WebContentsImpl::SendChangeLoadProgress,
+                         loading_weak_factory_.GetWeakPtr()),
+          min_delay);
+    }
   }
 }
 
@@ -9089,11 +9179,29 @@ void WebContentsImpl::DocumentOnLoadCompleted(
     RenderFrameHostImpl* render_frame_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DocumentOnLoadCompleted",
                         "render_frame_host", render_frame_host);
-  DCHECK(render_frame_host->IsInPrimaryMainFrame());
-  ShowInsecureLocalhostWarningIfNeeded(render_frame_host->GetPage());
+  DCHECK(render_frame_host->is_main_frame());
+  if (!render_frame_host->IsOutermostMainFrame()) {
+    // If this main frame isn't an outermost main frame but an embedded
+    // main frame then return. )ie. a fenced frame inside a guest).
+    return;
+  }
 
-  observers_.NotifyObservers(
-      &WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame);
+  if (auto* guest =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    ShowInsecureLocalhostWarningIfNeeded(render_frame_host->GetPage());
+    guest->delegate()->GuestDocumentOnLoadCompleted();
+  } else if (render_frame_host->IsInPrimaryMainFrame()) {
+    // Don't dispatch DocumentOnLoadCompletedInPrimaryMainFrame for non-primary
+    // main frames. As most of the observers are interested only in the onload
+    // completion of the current document in the primary main frame. Since the
+    // WebContents could be hosting more than one main frame (e.g., fenced
+    // frames, prerender pages or pending delete RFHs), return early for other
+    // cases. In case of prerendering, we dispatch
+    // DocumentOnLoadCompletedInPrimaryMainFrame on activation.
+    ShowInsecureLocalhostWarningIfNeeded(render_frame_host->GetPage());
+    observers_.NotifyObservers(
+        &WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame);
+  }
 }
 
 void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
@@ -9130,8 +9238,13 @@ void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
   // TODO(evan): make use of title_direction.
   // http://code.google.com/p/chromium/issues/detail?id=27094
   bool title_changed = UpdateTitleForEntryImpl(entry, title);
-  if (title_changed && render_frame_host == GetPrimaryMainFrame()) {
-    NotifyTitleUpdateForEntry(entry);
+  if (title_changed) {
+    if (render_frame_host == GetPrimaryMainFrame()) {
+      NotifyTitleUpdateForEntry(entry);
+    }
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.TitleWasSetForMainFrame");
+    observers_.NotifyObservers(&WebContentsObserver::TitleWasSetForMainFrame,
+                               render_frame_host);
   }
 }
 
@@ -9584,6 +9697,26 @@ void WebContentsImpl::BeforeUnloadFiredFromRenderManager(
   // Note: |this| might be deleted at this point.
 }
 
+void WebContentsImpl::CancelDialogManagerDialogs(bool reset_state) {
+  if (!created_dialog_since_last_cancel_) {
+    return;
+  }
+  // We only reset `created_dialog_since_last_cancel_` if reset_state
+  // is true.
+  if (reset_state) {
+    created_dialog_since_last_cancel_ = false;
+  }
+  if (!delegate_) {
+    return;
+  }
+  JavaScriptDialogManager* dialog_manager =
+      delegate_->GetJavaScriptDialogManager(this);
+  if (!dialog_manager) {
+    return;
+  }
+  dialog_manager->CancelDialogs(this, reset_state);
+}
+
 void WebContentsImpl::CancelModalDialogsForRenderManager() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::CancelModalDialogsForRenderManager");
@@ -9595,9 +9728,7 @@ void WebContentsImpl::CancelModalDialogsForRenderManager() {
   // Note that we don't bother telling |browser_plugin_embedder_| because the
   // cross-process navigation will either destroy the browser plugins or not
   // require their dialogs to close.
-  if (dialog_manager_) {
-    dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
-  }
+  CancelDialogManagerDialogs(/*reset_state=*/true);
 }
 
 void WebContentsImpl::NotifySwappedFromRenderManager(
@@ -9875,7 +10006,7 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
   // The user confirms and closes a dialog even after the page has navigated
   // away and got into BackForwardCache.
-  DCHECK(!rfh || rfh->GetPage().IsPrimary() || rfh->IsInBackForwardCache());
+  DCHECK(!rfh || rfh->IsActive() || rfh->IsInBackForwardCache());
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDialogClosed",
                         "render_frame_host", rfh);
   last_dialog_suppressed_ = dialog_was_suppressed;
@@ -10788,13 +10919,6 @@ void WebContentsImpl::UpdateOverridingUserAgent() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::UpdateOverridingUserAgent");
   NotifyPreferencesChanged();
-}
-
-void WebContentsImpl::SetJavaScriptDialogManagerForTesting(
-    JavaScriptDialogManager* dialog_manager) {
-  OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::SetJavaScriptDialogManagerForTesting");
-  dialog_manager_ = dialog_manager;
 }
 
 void WebContentsImpl::ShowInsecureLocalhostWarningIfNeeded(PageImpl& page) {

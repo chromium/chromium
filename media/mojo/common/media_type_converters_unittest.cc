@@ -63,7 +63,7 @@ void CompareAudioBuffers(SampleFormat sample_format,
 
 }  // namespace
 
-TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
+TEST(MediaTypeConvertersTest, ConvertDecoderBufferNormal) {
   const uint8_t kData[] = "hello, world";
   const uint8_t kAlphaData[] = "sideshow bob";
   const uint32_t kSpatialLayers[] = {36, 24, 36};
@@ -103,7 +103,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   EXPECT_FALSE(result->decrypt_config());
 }
 
-TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS) {
+TEST(MediaTypeConvertersTest, ConvertDecoderBufferEOS) {
   // Original.
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CreateEOSBuffer());
 
@@ -115,7 +115,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS) {
   EXPECT_TRUE(result->end_of_stream());
 }
 
-TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_Video_NextConfig) {
+TEST(MediaTypeConvertersTest, ConvertDecoderBufferEOSVideoNextConfig) {
   // Original.
   auto buffer = DecoderBuffer::CreateEOSBuffer(TestVideoConfig::Normal());
 
@@ -130,7 +130,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_Video_NextConfig) {
                   .Matches(TestVideoConfig::Normal()));
 }
 
-TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_Audio_NextConfig) {
+TEST(MediaTypeConvertersTest, ConvertDecoderBufferEOSAudioNextConfig) {
   // Original.
   auto buffer = DecoderBuffer::CreateEOSBuffer(TestAudioConfig::Normal());
 
@@ -146,7 +146,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_Audio_NextConfig) {
                   .Matches(TestAudioConfig::Normal()));
 }
 
-TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_KeyFrame) {
+TEST(MediaTypeConvertersTest, ConvertDecoderBufferKeyFrame) {
   const uint8_t kData[] = "hello, world";
   const size_t kDataSize = std::size(kData);
 
@@ -166,7 +166,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_KeyFrame) {
   EXPECT_TRUE(result->is_key_frame());
 }
 
-TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CencEncryptedBuffer) {
+TEST(MediaTypeConvertersTest, ConvertDecoderBufferCencEncryptedBuffer) {
   const uint8_t kData[] = "hello, world";
   const size_t kDataSize = std::size(kData);
   const char kKeyId[] = "00112233445566778899aabbccddeeff";
@@ -201,7 +201,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CencEncryptedBuffer) {
   EXPECT_FALSE(result->decrypt_config());
 }
 
-TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CbcsEncryptedBuffer) {
+TEST(MediaTypeConvertersTest, ConvertDecoderBufferCbcsEncryptedBuffer) {
   const uint8_t kData[] = "hello, world";
   const size_t kDataSize = std::size(kData);
   const char kKeyId[] = "00112233445566778899aabbccddeeff";
@@ -238,7 +238,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CbcsEncryptedBuffer) {
   EXPECT_FALSE(result->decrypt_config());
 }
 
-TEST(MediaTypeConvertersTest, ConvertAudioBuffer_EOS) {
+TEST(MediaTypeConvertersTest, ConvertAudioBufferEOS) {
   // Original.
   scoped_refptr<AudioBuffer> buffer(AudioBuffer::CreateEOSBuffer());
 
@@ -250,7 +250,7 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_EOS) {
   EXPECT_TRUE(result->end_of_stream());
 }
 
-TEST(MediaTypeConvertersTest, ConvertAudioBuffer_MONO) {
+TEST(MediaTypeConvertersTest, ConvertAudioBufferMONO) {
   // Original.
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_MONO;
   const int kSampleRate = 48000;
@@ -267,7 +267,7 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_MONO) {
   CompareAudioBuffers(kSampleFormatU8, *buffer, *result);
 }
 
-TEST(MediaTypeConvertersTest, ConvertAudioBuffer_FLOAT) {
+TEST(MediaTypeConvertersTest, ConvertAudioBufferFLOAT) {
   // Original.
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_4_0;
   const int kSampleRate = 48000;

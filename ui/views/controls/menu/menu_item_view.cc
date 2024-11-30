@@ -433,6 +433,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
   submenu_ = std::make_unique<SubmenuView>(/*parent=*/this);
   submenu_->SetProperty(kElementIdentifierKey, submenu_id_);
   UpdateAccessibleHasPopup();
+  UpdateAccessibleExpandedCollapsedState();
 #if BUILDFLAG(IS_MAC)
   // All MenuItemViews of Type kSubMenu have a respective SubmenuView.
   // However, in the Views hierarchy, this SubmenuView is not a child of the
@@ -900,6 +901,7 @@ MenuItemView::MenuItemView(MenuItemView* parent,
 
   UpdateAccessibleSelection();
   UpdateAccessibleKeyShortcuts();
+  UpdateAccessibleExpandedCollapsedState();
 }
 
 void MenuItemView::PrepareForRun(bool has_mnemonics, bool show_mnemonics) {
@@ -1642,6 +1644,19 @@ void MenuItemView::UpdateAccessibleName() {
             GetScrollViewContainerViewAccessibility()) {
       scrollview_accessibility->SetName(accessible_name);
     }
+  }
+}
+
+void MenuItemView::UpdateAccessibleExpandedCollapsedState() {
+  if (type_ != Type::kSubMenu && type_ != Type::kActionableSubMenu) {
+    GetViewAccessibility().RemoveExpandCollapseState();
+    return;
+  }
+
+  if (SubmenuIsShowing()) {
+    GetViewAccessibility().SetIsExpanded();
+  } else {
+    GetViewAccessibility().SetIsCollapsed();
   }
 }
 

@@ -93,7 +93,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
                     const gfx::ColorSpace& color_space,
                     GrSurfaceOrigin surface_origin,
                     SkAlphaType alpha_type,
-                    uint32_t usage,
+                    gpu::SharedImageUsageSet usage,
                     gfx::GpuMemoryBufferHandle buffer_handle));
   MOCK_METHOD8(DoCreateMappableSharedImage,
                void(const gfx::Size& size,

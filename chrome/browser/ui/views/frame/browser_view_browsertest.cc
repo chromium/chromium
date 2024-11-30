@@ -126,7 +126,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   TestWebContentsObserver(const TestWebContentsObserver&) = delete;
   TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
 
-  ~TestWebContentsObserver() override {}
+  ~TestWebContentsObserver() override = default;
 
   void WebContentsDestroyed() override {
     other_->NotifyNavigationStateChanged(static_cast<content::InvalidateTypes>(

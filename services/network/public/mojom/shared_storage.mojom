@@ -48,3 +48,13 @@ union SharedStorageModifierMethod {
   SharedStorageDeleteMethod delete_method;
   SharedStorageClearMethod clear_method;
 };
+
+// Request to execute `method` with optional parameters.
+struct SharedStorageModifierMethodWithOptions {
+  // The method to execute.
+  SharedStorageModifierMethod method;
+
+  // If provided, the `method` will be executed with a lock acquired on the
+  // resource with name `with_lock`.
+  string? with_lock;
+};

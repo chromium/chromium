@@ -104,6 +104,7 @@ void InitializeResState(res_state res) {
     // `TestResolvReader::CloseResState()`.
     struct sockaddr_in6* sa6;
     sa6 = static_cast<sockaddr_in6*>(malloc(sizeof(*sa6)));
+    memset(sa6, 0, sizeof(*sa6));
     sa6->sin6_family = AF_INET6;
     sa6->sin6_port = base::HostToNet16(NS_DEFAULTPORT - i);
     inet_pton(AF_INET6, kNameserversIPv6[i], &sa6->sin6_addr);

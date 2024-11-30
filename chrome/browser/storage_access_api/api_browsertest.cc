@@ -62,7 +62,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -568,9 +568,11 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   }
 
   void OpenConnectToPage(content::RenderFrameHost* frame,
-                         const net::SpawnedTestServer& wss_server) {
-    std::string query = base::StrCat(
-        {"url=", wss_server.GetURL(kHostB, "echo-request-headers").spec()});
+                         const net::EmbeddedTestServer& wss_server) {
+    std::string query =
+        base::StrCat({"url=", net::test_server::GetWebSocketURL(
+                                  wss_server, kHostB, "/echo-request-headers")
+                                  .spec()});
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
 
@@ -1619,6 +1621,71 @@ IN_PROC_BROWSER_TEST_F(
             std::make_tuple("", "None", "cross-site=b.test"));
 }
 
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       Navigation_ViaFormSubmission_SameOriginRedirect) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(https_server().GetURL(kHostB, "/form.html"));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(content::ExecJs(
+      GetFrame(),
+      content::JsReplace("document.getElementById('form').action = $1",
+                         RedirectViaHosts({kHostB}, EchoCookiesURL(kHostB)))));
+
+  {
+    content::TestNavigationObserver load_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    EXPECT_TRUE(content::ExecJs(GetFrame(),
+                                "document.getElementById('form').submit()"));
+    load_observer.Wait();
+  }
+
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  // The navigation itself carried cookies from the previous document's storage
+  // access, and the new document inherited storage access.
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
+            CookieBundleWithContent("cross-site=b.test"));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       Navigation_ViaFormSubmission_CrossOriginRedirect) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(https_server().GetURL(kHostB, "/form.html"));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(content::ExecJs(
+      GetFrame(),
+      content::JsReplace(
+          "document.getElementById('form').action = $1",
+          RedirectViaHosts({kHostBSubdomain}, EchoCookiesURL(kHostB)))));
+
+  {
+    content::TestNavigationObserver load_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    EXPECT_TRUE(content::ExecJs(GetFrame(),
+                                "document.getElementById('form').submit()"));
+    load_observer.Wait();
+  }
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  // The navigation itself carried cookies from the previous document's storage
+  // access, but the new document did not inherit storage access.
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
+            std::make_tuple("", "None", "cross-site=b.test"));
+}
+
 // Validate that in a A(A) frame tree, the inner A iframe can obtain cookie
 // access by default.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
@@ -1735,11 +1802,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        WebsocketRequestsUseStorageAccessGrants) {
-  net::SpawnedTestServer wss_server(
-      net::SpawnedTestServer::TYPE_WSS,
-      net::SpawnedTestServer::SSLOptions(
-          net::SpawnedTestServer::SSLOptions::CERT_TEST_NAMES),
-      net::GetWebSocketTestDataDirectory());
+  net::EmbeddedTestServer wss_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  wss_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::InstallDefaultWebSocketHandlers(&wss_server);
+
   ASSERT_TRUE(wss_server.Start());
 
   SetBlockThirdPartyCookies(true);

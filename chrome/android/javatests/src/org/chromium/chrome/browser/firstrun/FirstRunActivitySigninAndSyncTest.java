@@ -461,15 +461,6 @@ public class FirstRunActivitySigninAndSyncTest {
                 });
     }
 
-    private void clickMoreThenClickButton(@IdRes int buttonId) {
-        // The more button is shown on smaller screens. Click it if it's visible so the
-        // main button bar is shown.
-        if (mFirstRunActivity.findViewById(R.id.more_button).isShown()) {
-            onView(withId(R.id.more_button)).perform(click());
-        }
-        clickButton(buttonId);
-    }
-
     private void clickButton(@IdRes int buttonId) {
         // Ensure that the button isn't hidden, and is enabled.
         onView(allOf(withId(buttonId), withEffectiveVisibility(Visibility.VISIBLE)))

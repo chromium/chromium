@@ -195,8 +195,6 @@ void PaintWorkletBasedClip(GraphicsContext& context,
                            const gfx::RectF& reference_box,
                            const LayoutObject& reference_box_object) {
   DCHECK(ClipPathClipper::HasCompositeClipPathAnimation(clip_path_owner));
-  DCHECK_EQ(clip_path_owner.StyleRef().ClipPath()->GetType(),
-            ClipPathOperation::kShape);
 
   ClipPathPaintImageGenerator* generator =
       clip_path_owner.GetFrame()->GetClipPathPaintImageGenerator();
@@ -235,6 +233,30 @@ void PaintWorkletBasedClip(GraphicsContext& context,
                     ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
                     dst_rect, &src_rect, SkBlendMode::kSrcOver,
                     kRespectImageOrientation);
+}
+
+gfx::RectF CalcLocalReferenceBox(
+    const LayoutObject& object,
+    const ClipPathOperation::OperationType clip_path_operation,
+    GeometryBox geometry_box) {
+  if (object.IsSVGChild()) {
+    // Use the object bounding box for url() references.
+    if (clip_path_operation == ClipPathOperation::kReference) {
+      geometry_box = GeometryBox::kFillBox;
+    }
+    gfx::RectF unzoomed_reference_box = SVGResources::ReferenceBoxForEffects(
+        object, geometry_box, SVGResources::ForeignObjectQuirk::kDisabled);
+    if (UsesZoomedReferenceBox(object)) {
+      return gfx::ScaleRect(unzoomed_reference_box,
+                            object.StyleRef().EffectiveZoom());
+    }
+    return unzoomed_reference_box;
+  }
+
+  const auto& box = To<LayoutBoxModelObject>(object);
+  PhysicalRect reference_box = BorderBoxRect(box);
+  reference_box.Expand(ReferenceBoxBorderBoxOutsets(geometry_box, box));
+  return gfx::RectF(reference_box);
 }
 
 }  // namespace
@@ -318,8 +340,9 @@ void ClipPathClipper::ResolveClipPathStatus(const LayoutObject& layout_object,
 }
 
 gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
-  ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
+  ClipPathOperation* clip_path = object.StyleRef().ClipPath();
   GeometryBox geometry_box = GeometryBox::kBorderBox;
+
   if (const auto* shape = DynamicTo<ShapeClipPathOperation>(clip_path)) {
     geometry_box = shape->GetGeometryBox();
   } else if (const auto* box =
@@ -327,24 +350,7 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
     geometry_box = box->GetGeometryBox();
   }
 
-  if (object.IsSVGChild()) {
-    // Use the object bounding box for url() references.
-    if (clip_path.GetType() == ClipPathOperation::kReference) {
-      geometry_box = GeometryBox::kFillBox;
-    }
-    gfx::RectF unzoomed_reference_box = SVGResources::ReferenceBoxForEffects(
-        object, geometry_box, SVGResources::ForeignObjectQuirk::kDisabled);
-    if (UsesZoomedReferenceBox(object)) {
-      return gfx::ScaleRect(unzoomed_reference_box,
-                            object.StyleRef().EffectiveZoom());
-    }
-    return unzoomed_reference_box;
-  }
-
-  const auto& box = To<LayoutBoxModelObject>(object);
-  PhysicalRect reference_box = BorderBoxRect(box);
-  reference_box.Expand(ReferenceBoxBorderBoxOutsets(geometry_box, box));
-  return gfx::RectF(reference_box);
+  return CalcLocalReferenceBox(object, clip_path->GetType(), geometry_box);
 }
 
 std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
@@ -569,14 +575,29 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     context.Translate(paint_offset.left, paint_offset.top);
   }
 
-  gfx::RectF reference_box = LocalReferenceBox(layout_object);
-
   if (ClipPathClipper::HasCompositeClipPathAnimation(layout_object)) {
-    if (!layout_object.GetFrame())
+    if (!layout_object.GetFrame()) {
       return;
+    }
+
+    // clip_path can potentially be a nullptr instead of being none in certain
+    // cases, like if there is a clip-path animation with a delay on an element
+    // that is absolutely positioned.
+    gfx::RectF reference_box;
+    if (layout_object.StyleRef().ClipPath()) {
+      reference_box = ClipPathClipper::LocalReferenceBox(layout_object);
+    } else {
+      // TODO(crbug.com/379052285): these assumptions are currently valid
+      // because of value filters. Eventually, these should be removed when
+      // proper geometry-box support is added.
+      reference_box = CalcLocalReferenceBox(
+          layout_object, ClipPathOperation::OperationType::kShape,
+          GeometryBox::kBorderBox);
+    }
 
     PaintWorkletBasedClip(context, layout_object, reference_box, layout_object);
   } else {
+    gfx::RectF reference_box = LocalReferenceBox(layout_object);
     bool is_first = true;
     bool rest_of_the_chain_already_appled = false;
     const LayoutObject* current_object = &layout_object;

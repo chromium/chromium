@@ -3099,7 +3099,7 @@ struct IsBetterThanEngineTestCase {
   IsBetterThanEngineTestEngine worse_engine;
 } kTestCases[] = {
     {
-        .description = "NonFeaturedByPolicy_SafeForAutoreplace",
+        .description = "NonFeaturedBySiteSearchPolicy_SafeForAutoreplace",
         .better_engine =
             {
                 .keyword = u"kw",
@@ -3112,7 +3112,7 @@ struct IsBetterThanEngineTestCase {
             },
     },
     {
-        .description = "NonFeaturedByPolicy_EditedByUser",
+        .description = "NonFeaturedBySiteSearchPolicy_EditedByUser",
         .better_engine =
             {
                 .keyword = u"kw",
@@ -3125,7 +3125,7 @@ struct IsBetterThanEngineTestCase {
             },
     },
     {
-        .description = "FeaturedByPolicy_EditedByUser",
+        .description = "FeaturedBySiteSearchPolicy_EditedByUser",
         .better_engine =
             {
                 .keyword = u"@kw",
@@ -3139,7 +3139,8 @@ struct IsBetterThanEngineTestCase {
             },
     },
     {
-        .description = "FeaturedByPolicy_NonFeaturedByPolicy",
+        .description =
+            "FeaturedBySiteSearchPolicy_NonFeaturedBySiteSearchPolicy",
         .better_engine =
             {
                 .keyword = u"@kw",
@@ -3194,6 +3195,62 @@ struct IsBetterThanEngineTestCase {
                 .keyword = u"kw",
                 .created_by_policy = CreatedByPolicy::kSiteSearch,
                 .last_modified = base::Time::FromTimeT(1000),
+            },
+    },
+    {
+        .description = "NonFeaturedBySearchAggregatorPolicy_SafeForAutoreplace",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSearchAggregator,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .safe_for_autoreplace = true,
+            },
+    },
+    {
+        .description = "NonFeaturedBySearchAggregatorPolicy_EditedByUser",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .safe_for_autoreplace = false,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSearchAggregator,
+            },
+
+    },
+    {
+        .description = "FeaturedBySearchAggregatorPolicy_EditedByUser",
+        .better_engine =
+            {
+                .keyword = u"@kw",
+                .created_by_policy = CreatedByPolicy::kSearchAggregator,
+                .featured_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"@kw",
+                .safe_for_autoreplace = false,
+            },
+    },
+    {
+        .description = "FeaturedBySearchAggregatorPolicy_"
+                       "NonFeaturedBySearchAggregatorPolicy",
+        .better_engine =
+            {
+                .keyword = u"@kw",
+                .created_by_policy = CreatedByPolicy::kSearchAggregator,
+                .featured_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSearchAggregator,
             },
     },
 };

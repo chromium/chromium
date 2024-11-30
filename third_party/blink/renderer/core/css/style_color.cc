@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/properties/css_color_function_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
@@ -160,7 +161,8 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
                                                 Length::ValueRange::kAll);
     } else if (const CSSMathFunctionValue* function =
                    DynamicTo<CSSMathFunctionValue>(value)) {
-      return function->ToCalcValue(CSSToLengthConversionData());
+      return function->ToCalcValue(
+          CSSToLengthConversionData(/*element=*/nullptr));
     } else {
       NOTREACHED();
     }
@@ -253,18 +255,11 @@ Color StyleColor::UnresolvedRelativeColor::Resolve(
   // hsl and hwb are specified with percent reference ranges of 0..100 in
   // channels 1 and 2, but blink::Color represents these values over 0..1.
   // We scale up the origin values so that they pass through computation
-  // correctly, then later, scale them down in the final result.
-  //
-  // https://www.w3.org/TR/css-color-4/#hue-syntax
-  // Channels representing <hue> are normalized to the range [0,360).
-  const bool is_hxx_color_space =
-      (color_interpolation_space_ == Color::ColorSpace::kHSL) ||
-      (color_interpolation_space_ == Color::ColorSpace::kHWB);
-  const bool is_lch_color_space =
-      (color_interpolation_space_ == Color::ColorSpace::kLch) ||
-      (color_interpolation_space_ == Color::ColorSpace::kOklch);
-
-  if (is_hxx_color_space) {
+  // correctly, then later
+  // (in ColorFunctionParser::MakePerColorSpaceAdjustments()), scale them down
+  // in the final result.
+  if (color_interpolation_space_ == Color::ColorSpace::kHSL ||
+      color_interpolation_space_ == Color::ColorSpace::kHWB) {
     keyword_values[1].second *= 100.;
     keyword_values[2].second *= 100.;
   }
@@ -275,7 +270,7 @@ Color StyleColor::UnresolvedRelativeColor::Resolve(
 
   auto to_channel_value =
       [&evaluation_input](const CalculationValue* calculation_value,
-                          double channel_percentage) -> std::optional<float> {
+                          double channel_percentage) -> std::optional<double> {
     // The color function metadata table uses NaN to indicate that percentages
     // are not applicable to a given channel. NaN is not suitable as a clamp
     // limit for evaluating a CalculationValue, so translate it into float max.
@@ -288,35 +283,18 @@ Color StyleColor::UnresolvedRelativeColor::Resolve(
     return std::nullopt;
   };
 
-  std::array<std::optional<float>, 3> params = {
+  std::array<std::optional<double>, 3> params = {
       to_channel_value(channel0_.get(),
                        function_metadata.channel_percentage[0]),
       to_channel_value(channel1_.get(),
                        function_metadata.channel_percentage[1]),
       to_channel_value(channel2_.get(),
                        function_metadata.channel_percentage[2])};
-  std::optional<float> param_alpha = to_channel_value(alpha_.get(), 1.f);
-
-  auto wrap_hue_channel = [](std::optional<float>& param) {
-    if (param.has_value()) {
-      // Perform the wrap at double precision to avoid floating-point rounding
-      // drift which is observable at single precision for some values.
-      param.value() =
-          fmod(fmod(static_cast<double>(param.value()), 360.0) + 360.0, 360.0);
-    }
-  };
-  auto scale_down_channel = [](std::optional<float>& param) {
-    if (param.has_value()) {
-      param.value() /= 100.f;
-    }
-  };
-  if (is_hxx_color_space) {
-    wrap_hue_channel(params[0]);
-    scale_down_channel(params[1]);
-    scale_down_channel(params[2]);
-  } else if (is_lch_color_space) {
-    wrap_hue_channel(params[2]);
-  }
+  std::optional<double> param_alpha = to_channel_value(alpha_.get(), 1.f);
+  ColorFunctionParser::MakePerColorSpaceAdjustments(
+      /*is_relative_color=*/true,
+      /*is_legacy_syntax=*/false, color_interpolation_space_, params,
+      param_alpha);
 
   Color result = Color::FromColorSpace(color_interpolation_space_, params[0],
                                        params[1], params[2], param_alpha);

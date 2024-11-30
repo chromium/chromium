@@ -5,16 +5,14 @@
 #include "third_party/blink/renderer/core/input/touch_action_util.h"
 
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 
 namespace blink {
 namespace touch_action_util {
 
 TouchAction ComputeEffectiveTouchAction(const Node& node) {
-  if (const ComputedStyle* style =
-          node.GetComputedStyleForElementOrLayoutObject()) {
-    return style->EffectiveTouchAction();
+  if (LayoutObject* layout_object = node.GetLayoutObject()) {
+    return layout_object->StyleRef().EffectiveTouchAction();
   }
   return TouchAction::kAuto;
 }

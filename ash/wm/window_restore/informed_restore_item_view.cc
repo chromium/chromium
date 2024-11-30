@@ -139,7 +139,7 @@ InformedRestoreItemView::InformedRestoreItemView(
   for (int i = 0; i < static_cast<int>(favicons.size()); ++i) {
     const GURL& url = favicons[i];
     delegate->GetFaviconForUrl(
-        url.spec(), /*lacros_profile_id=*/0,
+        url.spec(),
         base::BindOnce(&InformedRestoreItemView::OnOneFaviconLoaded,
                        GetWeakPtr(), barrier, i),
         &cancelable_favicon_task_tracker_);

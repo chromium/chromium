@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/queue_with_sizes.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -19,69 +18,69 @@
 
 namespace blink {
 
+class ReadableStreamDefaultController::CallPullIfNeededResolveFunction final
+    : public ThenCallable<IDLUndefined, CallPullIfNeededResolveFunction> {
+ public:
+  explicit CallPullIfNeededResolveFunction(
+      ReadableStreamDefaultController* controller)
+      : controller_(controller) {}
+
+  void React(ScriptState* script_state) {
+    // https://streams.spec.whatwg.org/#readable-stream-default-controller-call-pull-if-needed
+    // 7. Upon fulfillment of pullPromise,
+    //   a. Set controller.[[pulling]] to false.
+    controller_->is_pulling_ = false;
+
+    //   b. If controller.[[pullAgain]] is true,
+    if (controller_->will_pull_again_) {
+      //  i. Set controller.[[pullAgain]] to false.
+      controller_->will_pull_again_ = false;
+
+      //  ii. Perform ! ReadableStreamDefaultControllerCallPullIfNeeded(
+      //      controller).
+      CallPullIfNeeded(script_state, controller_);
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(controller_);
+    ThenCallable<IDLUndefined, CallPullIfNeededResolveFunction>::Trace(visitor);
+  }
+
+ private:
+  const Member<ReadableStreamDefaultController> controller_;
+};
+
+class ReadableStreamDefaultController::CallPullIfNeededRejectFunction final
+    : public ThenCallable<IDLAny, CallPullIfNeededRejectFunction> {
+ public:
+  explicit CallPullIfNeededRejectFunction(
+      ReadableStreamDefaultController* controller)
+      : controller_(controller) {}
+
+  void React(ScriptState* script_state, ScriptValue e) {
+    // 8. Upon rejection of pullPromise with reason e,
+    //   a. Perform ! ReadableStreamDefaultControllerError(controller, e).
+    Error(script_state, controller_, e.V8Value());
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(controller_);
+    ThenCallable<IDLAny, CallPullIfNeededRejectFunction>::Trace(visitor);
+  }
+
+ private:
+  const Member<ReadableStreamDefaultController> controller_;
+};
+
 // This constructor is used internally; it is not reachable from JavaScript.
 ReadableStreamDefaultController::ReadableStreamDefaultController(
     ScriptState* script_state)
-    : queue_(MakeGarbageCollected<QueueWithSizes>()) {
-  class CallPullIfNeededResolveFunction final : public PromiseHandler {
-   public:
-    explicit CallPullIfNeededResolveFunction(
-        ReadableStreamDefaultController* controller)
-        : controller_(controller) {}
-
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
-      // https://streams.spec.whatwg.org/#readable-stream-default-controller-call-pull-if-needed
-      // 7. Upon fulfillment of pullPromise,
-      //   a. Set controller.[[pulling]] to false.
-      controller_->is_pulling_ = false;
-
-      //   b. If controller.[[pullAgain]] is true,
-      if (controller_->will_pull_again_) {
-        //  i. Set controller.[[pullAgain]] to false.
-        controller_->will_pull_again_ = false;
-
-        //  ii. Perform ! ReadableStreamDefaultControllerCallPullIfNeeded(
-        //      controller).
-        CallPullIfNeeded(script_state, controller_);
-      }
-    }
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
-    }
-
-   private:
-    const Member<ReadableStreamDefaultController> controller_;
-  };
-
-  class CallPullIfNeededRejectFunction final : public PromiseHandler {
-   public:
-    explicit CallPullIfNeededRejectFunction(
-        ReadableStreamDefaultController* controller)
-        : controller_(controller) {}
-
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> e) override {
-      // 8. Upon rejection of pullPromise with reason e,
-      //   a. Perform ! ReadableStreamDefaultControllerError(controller, e).
-      Error(script_state, controller_, e);
-    }
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
-    }
-
-   private:
-    const Member<ReadableStreamDefaultController> controller_;
-  };
-
-  resolve_function_ =
-      MakeGarbageCollected<CallPullIfNeededResolveFunction>(this);
-  reject_function_ = MakeGarbageCollected<CallPullIfNeededRejectFunction>(this);
-}
+    : queue_(MakeGarbageCollected<QueueWithSizes>()),
+      resolve_function_(
+          MakeGarbageCollected<CallPullIfNeededResolveFunction>(this)),
+      reject_function_(
+          MakeGarbageCollected<CallPullIfNeededRejectFunction>(this)) {}
 
 void ReadableStreamDefaultController::close(ScriptState* script_state,
                                             ExceptionState& exception_state) {
@@ -334,7 +333,7 @@ void ReadableStreamDefaultController::Trace(Visitor* visitor) const {
 // Readable stream default controller internal methods
 //
 
-v8::Local<v8::Promise> ReadableStreamDefaultController::CancelSteps(
+ScriptPromise<IDLUndefined> ReadableStreamDefaultController::CancelSteps(
     ScriptState* script_state,
     v8::Local<v8::Value> reason) {
   // https://streams.spec.whatwg.org/#rs-default-controller-private-cancel
@@ -433,8 +432,8 @@ void ReadableStreamDefaultController::CallPullIfNeeded(
   auto pull_promise =
       controller->pull_algorithm_->Run(script_state, 0, nullptr);
 
-  StreamThenPromise(script_state, pull_promise, controller->resolve_function_,
-                    controller->reject_function_);
+  pull_promise.Then(script_state, controller->resolve_function_.Get(),
+                    controller->reject_function_.Get());
 }
 
 bool ReadableStreamDefaultController::ShouldCallPull(

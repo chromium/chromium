@@ -89,9 +89,6 @@ constexpr int kRefreshInkDropRadius = 12;
 constexpr auto kPopupItemTypesUsingLeadingIcons =
     base::MakeFixedFlatSet<SuggestionType>(
         {SuggestionType::kAllSavedPasswordsEntry,
-         SuggestionType::kDeleteAddressProfile,
-         SuggestionType::kEditAddressProfile,
-         SuggestionType::kFillEverythingFromAddressProfile,
          SuggestionType::kManageAddress, SuggestionType::kManageCreditCard,
          SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
          SuggestionType::kPasswordAccountStorageEmpty,

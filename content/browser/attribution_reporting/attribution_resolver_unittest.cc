@@ -38,6 +38,7 @@
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
@@ -2945,6 +2946,8 @@ TEST_F(AttributionResolverTest, GetAttributionDataKeysSet) {
       url::Origin::Create(GURL("https://a.r.test")));
   auto expected_2 = AttributionDataModel::DataKey(
       url::Origin::Create(GURL("https://b.r.test")));
+  auto expected_3 = AttributionDataModel::DataKey(
+      url::Origin::Create(GURL("https://c.r.test")));
 
   auto s1 =
       SourceBuilder()
@@ -2970,7 +2973,16 @@ TEST_F(AttributionResolverTest, GetAttributionDataKeysSet) {
   storage()->StoreSource(s2);
   storage()->StoreSource(s3);
 
-  EXPECT_THAT(storage()->GetAllDataKeys(), ElementsAre(expected_1, expected_2));
+  storage()->ProcessAggregatableDebugReport(
+      CreateAggregatableDebugReport({AggregatableReportHistogramContribution(
+                                        /*bucket=*/1, /*value=*/1,
+                                        /*filtering_id=*/std::nullopt)},
+                                    /*reporting_origin=*/"https://c.r.test"),
+      /*remaining_budget=*/std::nullopt,
+      /*source_id=*/std::nullopt);
+
+  EXPECT_THAT(storage()->GetAllDataKeys(),
+              ElementsAre(expected_1, expected_2, expected_3));
 }
 
 TEST_F(AttributionResolverTest, SourceDebugKey_RoundTrips) {

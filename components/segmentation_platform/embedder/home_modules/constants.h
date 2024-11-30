@@ -38,9 +38,10 @@ inline constexpr char kSendTabInfobarReceivedInLastSession[] =
     "send_tab_infobar_received_in_last_session";
 
 // Input Context keys for emphemeral android modules.
-const char kIsDefaultBrowserChrome[] = "is_default_browser_chrome";
-const char kHasDefaultBrowserPromoReachedLimitInRoleManager[] =
-    "has_default_browser_promo_reached_limit_in_role_manager";
+const char kShouldShowNonRoleManagerDefaultBrowserPromo[] =
+    "should_show_non_role_manager_default_browser_promo";
+const char kHasDefaultBrowserPromoShownInOtherSurface[] =
+    "has_default_browser_promo_shown_in_other_surface";
 const char kHaveTabGroups[] = "have_tab_groups";
 const char kNumberOfTabs[] = "number_of_tabs";
 const char kHaveSyncedTabGroups[] = "have_synced_tab_groups";

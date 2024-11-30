@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">Vonesë e lartë në uebsajtet HTTPS</translation>
 <translation id="361575905210396100">Faleminderit për komentet e tua</translation>
 <translation id="3621072146987826699">elefantë</translation>
+<translation id="3628462041319107639">Modeli i transkriptimit po shkarkohet…</translation>
 <translation id="3632040286124154621">Sugjerim i mirë</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
 <translation id="3639873154908477486">Emri (A në Zh)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
 <translation id="382043424867370667">Imazhi i sfondit për perëndimin e diellit</translation>
 <translation id="3824259034819781947">Bashkëngjit skedarët</translation>
+<translation id="383586991013681190">Zgjidh gjuhën e transkriptimit dhe shkarkoje te "Cilësimet"</translation>
 <translation id="3836587210832263413">Aktivizo vetëm shtesat që u beson</translation>
 <translation id="3838338534323494292">Fjalëkalimi i ri</translation>
 <translation id="3845880861638660475">Shtyp <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> për ta mbyllur dialogun.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">Nuk përputhet asnjë rezultat</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
+<translation id="4483498983731992167">Transkripti nuk mund të krijohet</translation>
 <translation id="4486524074141928967">Do të dalësh nga llogaria në <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur një tast modifikues (Ctrl, Alt, Shift ose "<ph name="META_KEY" />").</translation>
 <translation id="4500966230243561393">Ngjyra e ndërfaqes</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">lart</translation>
 <translation id="5107243100836678918">Shkurtorja pa tastin "<ph name="META_KEY" />" mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin "<ph name="KEY" />". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Të ngjashme:</translation>
+<translation id="5121677070210013200">Modeli i transkriptimit nuk mund të shkarkohet. Provo përsëri ose rinis pajisjen tënde Chromebook.</translation>
 <translation id="5130848777448318809">kalushë</translation>
 <translation id="5137451382116112100">I plotë</translation>
 <translation id="5140788690559353412">Kur humb qasjen te llogaria jote e shkollës, nuk do të kesh më qasje tek email-i i lidhur dhe te skedarët e "Diskut të Google", si p.sh. Gmail, "Dokumentet", "Diapozitivat" etj.</translation>
@@ -1040,6 +1044,7 @@
 <translation id="6058625436358447366">Për të përfunduar, fut fjalëkalimet e vjetra dhe të reja</translation>
 <translation id="6061772781719867950">Kërkesa të dështuara në HTTP</translation>
 <translation id="6073292342939316679">ulja e ndriçimit të tastierës</translation>
+<translation id="6074752328838739425">Fshih përmbledhjen</translation>
 <translation id="6075872808778243331">(Android) Vonesa e HTTP-së</translation>
 <translation id="6078323886959318429">Shto një shkurtore</translation>
 <translation id="6091080061796993741">të verdhë</translation>
@@ -1229,6 +1234,7 @@
 <translation id="6866732840889595464">luledele</translation>
 <translation id="6871256179359663621">vjollcë e çelur</translation>
 <translation id="6889786074662672253">Gjatë rinisjes, mos e hiq nga priza pajisjen e jashtme dhe mos e fik kompjuterin. Mund ta minimizosh këtë dritare. Kjo mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
+<translation id="6899460405678814458">Shfaq përmbledhjen</translation>
 <translation id="6900701049656042631">Ky album nuk ka asnjë fotografi. Për të shtuar fotografi, shko te <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Krijo sfondin me IA-në</translation>
 <translation id="6905163627763043954">Provoje</translation>
@@ -1262,6 +1268,7 @@
 <translation id="7040729769968826896">Lejo identifikimin e altoparlantëve</translation>
 <translation id="7041549558901442110">Pajisja nuk është lidhur.</translation>
 <translation id="7046522406494308071">Të rivendosen të gjitha shkurtoret te parazgjedhjet?</translation>
+<translation id="7049916119678019302">Shkarko modelin e transkriptimit te "Cilësimet"</translation>
 <translation id="7058278511608979688">Mbaro dhe ruaj</translation>
 <translation id="7059230779847288458">Po karikohet, <ph name="TIME_VALUE" /> derisa të mbushet</translation>
 <translation id="7066538517128343186">tasti <ph name="KEY" /></translation>

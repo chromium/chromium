@@ -4,5 +4,5 @@
   text-transform: none;
   text-indent: 0 !important;
   text-align: start !important;
-  text-align-last: start !important;
+  text-align-last: auto !important;
 }

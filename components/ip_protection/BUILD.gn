@@ -9,12 +9,16 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     "//components/ip_protection/common:ip_protection_config_http_unittest",
+    "//components/ip_protection/common:ip_protection_core_impl_mojo_unittest",
     "//components/ip_protection/common:ip_protection_core_impl_unittest",
     "//components/ip_protection/common:ip_protection_data_types_unittest",
     "//components/ip_protection/common:ip_protection_proxy_config_direct_fetcher_unittest",
     "//components/ip_protection/common:ip_protection_proxy_config_manager_impl_unittest",
+    "//components/ip_protection/common:ip_protection_proxy_config_mojo_fetcher_unittest",
     "//components/ip_protection/common:ip_protection_proxy_delegate_unittest",
+    "//components/ip_protection/common:ip_protection_token_direct_fetcher_unittest",
     "//components/ip_protection/common:ip_protection_token_manager_impl_unittest",
+    "//components/ip_protection/common:ip_protection_token_mojo_fetcher_unittest",
     "//components/ip_protection/common:masked_domain_list_manager_unittest",
     "//components/ip_protection/common:mock_blind_sign_auth",
     "//components/ip_protection/common:url_matcher_with_bypass_unittest",

@@ -37,18 +37,12 @@
 
 namespace base {
 
-BASE_FEATURE(kUseThreadPriorityLowest,
-             "UseThreadPriorityLowest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAboveNormalCompositingBrowserWin,
              "AboveNormalCompositingBrowserWin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
-// Flag used to set thread priority to |THREAD_PRIORITY_LOWEST| for
-// |kUseThreadPriorityLowest| Feature.
-std::atomic<bool> g_use_thread_priority_lowest{false};
 // Flag used to map Compositing ThreadType |THREAD_PRIORITY_ABOVE_NORMAL| on the
 // UI thread for |kAboveNormalCompositingBrowserWin| Feature.
 std::atomic<bool> g_above_normal_compositing_browser{true};
@@ -382,7 +376,7 @@ void SetCurrentThreadPriority(ThreadType thread_type,
   PlatformThreadHandle::Handle thread_handle =
       PlatformThread::CurrentHandle().platform_handle();
 
-  if (!g_use_thread_priority_lowest && thread_type != ThreadType::kBackground) {
+  if (thread_type != ThreadType::kBackground) {
     // Exit background mode if the new priority is not BACKGROUND. This is a
     // no-op if not in background mode.
     ::SetThreadPriority(thread_handle, THREAD_MODE_BACKGROUND_END);
@@ -401,10 +395,7 @@ void SetCurrentThreadPriority(ThreadType thread_type,
       // MSDN recommends THREAD_MODE_BACKGROUND_BEGIN for threads that perform
       // background work, as it reduces disk and memory priority in addition to
       // CPU priority.
-      desired_priority =
-          g_use_thread_priority_lowest.load(std::memory_order_relaxed)
-              ? THREAD_PRIORITY_LOWEST
-              : THREAD_MODE_BACKGROUND_BEGIN;
+      desired_priority = THREAD_MODE_BACKGROUND_BEGIN;
       break;
     case ThreadType::kUtility:
       desired_priority = THREAD_PRIORITY_BELOW_NORMAL;
@@ -438,7 +429,7 @@ void SetCurrentThreadPriority(ThreadType thread_type,
         << "Set thread memory priority failed.";
   }
 
-  if (!g_use_thread_priority_lowest && thread_type == ThreadType::kBackground) {
+  if (thread_type == ThreadType::kBackground) {
     // In a background process, THREAD_MODE_BACKGROUND_BEGIN lowers the memory
     // and I/O priorities but not the CPU priority (kernel bug?). Use
     // THREAD_PRIORITY_LOWEST to also lower the CPU priority.
@@ -556,9 +547,6 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
 }
 
 void InitializePlatformThreadFeatures() {
-  g_use_thread_priority_lowest.store(
-      FeatureList::IsEnabled(kUseThreadPriorityLowest),
-      std::memory_order_relaxed);
   g_above_normal_compositing_browser.store(
       FeatureList::IsEnabled(kAboveNormalCompositingBrowserWin),
       std::memory_order_relaxed);

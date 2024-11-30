@@ -19,8 +19,11 @@ class PLATFORM_EXPORT CanvasDeferredPaintRecord
   CanvasDeferredPaintRecord();
   void SetPaintRecord(cc::PaintRecord, gfx::SizeF);
   void Clear();
-  cc::PaintRecord GetPaintRecord() { return paint_record_; }
-  gfx::Transform GetTransform() { return transform_; }
+  cc::PaintRecord GetPaintRecord() const { return paint_record_; }
+  gfx::Transform GetTransform() const { return transform_; }
+  void SetTransform(gfx::Transform transform) { transform_ = transform; }
+  void SetIsDirty(bool is_dirty) { is_dirty_ = is_dirty; }
+  bool IsDirty() const { return is_dirty_; }
 
   gfx::SizeF GetSize() const override;
 
@@ -31,6 +34,7 @@ class PLATFORM_EXPORT CanvasDeferredPaintRecord
   gfx::Transform transform_;
   gfx::SizeF size_{0, 0};
   cc::PaintRecord paint_record_;
+  bool is_dirty_ = false;
 };
 
 }  // namespace blink

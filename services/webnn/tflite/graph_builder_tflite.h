@@ -55,13 +55,27 @@ class GraphBuilderTflite final {
   STACK_ALLOCATED();
 
  public:
+  struct Result {
+    Result(flatbuffers::DetachedBuffer buffer,
+           base::flat_map<std::string, int> input_name_to_index,
+           base::flat_map<std::string, int> output_name_to_index);
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+    Result(Result&&);
+    Result& operator=(Result&&);
+    ~Result();
+
+    flatbuffers::DetachedBuffer buffer;
+    base::flat_map<std::string, int> input_name_to_index;
+    base::flat_map<std::string, int> output_name_to_index;
+  };
+
   GraphBuilderTflite(const GraphBuilderTflite&) = delete;
   GraphBuilderTflite& operator=(const GraphBuilderTflite&) = delete;
 
   // Factory method that creates a GraphBuilderTflite and builds a TFLite
   // Flatbuffer Returns unexpected if it fails.
-  [[nodiscard]] static base::expected<flatbuffers::DetachedBuffer, std::string>
-  CreateAndBuild(
+  [[nodiscard]] static base::expected<Result, std::string> CreateAndBuild(
       ContextProperties context_properties,
       const mojom::GraphInfo& graph_info,
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
@@ -91,7 +105,8 @@ class GraphBuilderTflite final {
     TensorInfo();
     TensorInfo(int32_t index,
                ::tflite::TensorType data_type,
-               base::span<const int32_t> dimensions);
+               base::span<const int32_t> dimensions,
+               std::optional<std::string> name = std::nullopt);
     ~TensorInfo();
 
     // Copyable and movable.
@@ -103,6 +118,7 @@ class GraphBuilderTflite final {
     int32_t index;
     ::tflite::TensorType data_type;
     std::vector<int32_t> dimensions;
+    std::optional<std::string> name;
   };
 
   // Serialize tensor for input, constant and output operand and return the
@@ -179,6 +195,9 @@ class GraphBuilderTflite final {
     requires internal::IsSupportedTensorType<DataType>
   base::span<const DataType> GetConstantValue(uint64_t operand_id);
 
+  // Get the value from constant operand and cast it to int64 data type.
+  base::FixedArray<int64_t> GetConstantInt64Value(uint64_t operand_id);
+
   // Operation serialization helpers for operations not directly declared in
   // the mojom::Operation union.
   //
@@ -219,6 +238,12 @@ class GraphBuilderTflite final {
       const TensorInfo& input_tensor_info);
   int32_t CastGatherIndices(const TensorInfo& indices_tensor_info);
 
+  // This function is called by `SerializeGatherND` to serialize WebNN
+  // gatherND or gatherElements.
+  OperatorOffset SerializeGatherNDOperation(int32_t input_tensor_index,
+                                            int32_t indices_tensor_index,
+                                            int32_t output_tensor_index);
+
   // This function is called by `SerializeConcat` to serialize WebNN
   // concat operator or used to emulate WebNN operations.
   OperatorOffset SerializeConcatOperation(
@@ -231,6 +256,16 @@ class GraphBuilderTflite final {
   int32_t SerializeDequantizeOperation(
       int32_t input_tensor_index,
       base::span<const int32_t> input_dimensions);
+
+  // Get int64 zero point from int4 constant operand.
+  base::FixedArray<int64_t> GetInt64ZeroPointFromInt4(
+      uint64_t zero_point_operand_id);
+  base::FixedArray<int64_t> GetInt64ZeroPoint(uint64_t zero_point_operand_id);
+  // Serialize quantize params for quantizeLinear and dequantizeLinear.
+  std::optional<QuantizateParametersOffset> SerializeQuantizeParams(
+      uint64_t zero_point_operand_id,
+      uint64_t scale_operand_id,
+      size_t input_rank);
 
   // This function is called by `SerializeMatmul` to serialize WebNN
   // matmul operator or used to emulate WebNN operations.
@@ -302,6 +337,7 @@ class GraphBuilderTflite final {
   OperatorOffset SerializeTransposeOperation(
       int32_t input_tensor_index,
       int32_t output_tensor_index,
+      base::span<const int32_t> input_shape,
       base::span<const uint32_t> permutation);
 
   // This function is called by `SerializeScatterND` to serialize WebNN
@@ -311,6 +347,12 @@ class GraphBuilderTflite final {
       int32_t indices_tensor_index,
       int32_t updates_tensor_index,
       int32_t output_tensor_index);
+
+  // This function is called by `SerializeReverse` to serialize WebNN
+  // reverse operation.
+  OperatorOffset SerializeReverseOperation(int32_t input_tensor_index,
+                                           base::span<const int32_t> axes,
+                                           int32_t output_tensor_index);
 
   // This function is called by `SerializeWhere` to serialize WebNN where
   // operation or used to emulate scatterND operation.
@@ -526,6 +568,8 @@ class GraphBuilderTflite final {
       const mojom::Expand& expand);
   base::expected<OperatorOffset, std::string> SerializeGather(
       const mojom::Gather& gather);
+  base::expected<OperatorOffset, std::string> SerializeGatherElements(
+      const mojom::GatherElements& gather_elements);
   base::expected<OperatorOffset, std::string> SerializeGatherND(
       const mojom::GatherND& gather_nd);
   base::expected<OperatorOffset, std::string> SerializeGelu(
@@ -538,6 +582,9 @@ class GraphBuilderTflite final {
       const mojom::HardSigmoid& hard_sigmoid);
   base::expected<OperatorOffset, std::string> SerializeHardSwish(
       const mojom::HardSwish& hard_swish);
+  OperatorOffset SerializeIdentityOperation(uint32_t input_tensor_index,
+                                            uint32_t output_tensor_index,
+                                            base::span<const int32_t> shape);
   base::expected<OperatorOffset, std::string> SerializeInstanceNormalization(
       const mojom::InstanceNormalization& instance_normalization);
   base::expected<OperatorOffset, std::string> SerializeLayerNormalization(
@@ -558,10 +605,6 @@ class GraphBuilderTflite final {
       const mojom::Pool2d& pool2d);
   base::expected<OperatorOffset, std::string> SerializePrelu(
       const mojom::Prelu& prelu);
-  base::FixedArray<int64_t> GetInt64ZeroPoint(uint64_t zero_point_operand_id);
-  base::expected<QuantizateParametersOffset, std::string>
-  SerializeQuantizeParams(uint64_t zero_point_operand_id,
-                          uint64_t scale_operand_id);
   base::expected<OperatorOffset, std::string> SerializeQuantizeLinear(
       const mojom::QuantizeLinear& quantize_linear);
   base::expected<OperatorOffset, std::string> SerializeDequantizeLinear(
@@ -583,6 +626,8 @@ class GraphBuilderTflite final {
   base::expected<OperatorOffset, std::string> SerializeReshape(
       uint64_t input_operand_id,
       uint64_t output_operand_id);
+  base::expected<OperatorOffset, std::string> SerializeReverse(
+      const mojom::Reverse& reverse);
   base::expected<OperatorOffset, std::string> SerializeScatterND(
       const mojom::ScatterND& scatter_nd);
   base::expected<OperatorOffset, std::string> SerializeSigmoid(
@@ -612,9 +657,8 @@ class GraphBuilderTflite final {
 
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.
-  flatbuffers::DetachedBuffer FinishAndTakeFlatBuffer(
-      base::span<const uint64_t> input_operands,
-      base::span<const uint64_t> output_operands);
+  Result FinishAndTakeResult(base::span<const uint64_t> input_operands,
+                             base::span<const uint64_t> output_operands);
 
   const ContextProperties context_properties_;
 

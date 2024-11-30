@@ -207,7 +207,6 @@
       },
       {
         "args": [
-          "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
           "--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter"
         ],
         "isolate_profile_data": true,
@@ -375,9 +374,6 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
-        "args": [
-          "--disable-features=WebRTC-H264WithOpenH264FFmpeg"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1818,7 +1814,7 @@
             "os": "Windows-10-19045"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 18
         },
         "test": "headless_shell_wpt",
         "test_id_prefix": "ninja://:headless_shell_wpt/"

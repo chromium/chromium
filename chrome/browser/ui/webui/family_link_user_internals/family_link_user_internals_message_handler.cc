@@ -31,6 +31,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 
 using content::BrowserThread;
 
@@ -232,7 +233,7 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
           &section_list, "User Information for " + account.full_name);
       AddSectionEntry(section_user, "Account id",
                       account.account_id.ToString());
-      AddSectionEntry(section_user, "Gaia", account.gaia);
+      AddSectionEntry(section_user, "Gaia", account.gaia.ToString());
       AddSectionEntry(section_user, "Email", account.email);
       AddSectionEntry(section_user, "Given name", account.given_name);
       AddSectionEntry(section_user, "Hosted domain", account.hosted_domain);

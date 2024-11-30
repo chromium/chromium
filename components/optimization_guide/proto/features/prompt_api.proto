@@ -38,6 +38,6 @@ message PromptApiRequest {
 // Type for OnDeviceModelExecutionFeatureConfig::feature_metadata.
 message PromptApiMetadata {
   // A version for config changes that require implementor updates.
-  // Version 0->1 Changes from using StringValue -> PromptApiRequest.
+  // Version 0->2 Changes from using StringValue -> PromptApiRequest.
   uint32 version = 1;
 }

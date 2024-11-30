@@ -20,7 +20,13 @@ class GpuMemoryBufferTestPlatform : public blink::TestingPlatformSupport {
     SharedGpuContext::SetGpuMemoryBufferManagerForTesting(nullptr);
   }
 
-  bool IsGpuCompositingDisabled() const override { return false; }
+  bool IsGpuCompositingDisabled() const override {
+    return is_gpu_compositing_disabled_;
+  }
+
+  void SetGpuCompositingDisabled(bool disable) {
+    is_gpu_compositing_disabled_ = disable;
+  }
 
  private:
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override {
@@ -28,6 +34,7 @@ class GpuMemoryBufferTestPlatform : public blink::TestingPlatformSupport {
   }
 
   gpu::TestGpuMemoryBufferManager test_gpu_memory_buffer_manager_;
+  bool is_gpu_compositing_disabled_ = false;
 };
 }  // namespace blink
 

@@ -9,8 +9,6 @@
 
 namespace blink {
 
-class ScrollMarkerGroupPseudoElement;
-
 class ScrollButtonPseudoElement : public PseudoElement {
  public:
   ScrollButtonPseudoElement(Element* originating_element, PseudoId pseudo_id)
@@ -25,18 +23,11 @@ class ScrollButtonPseudoElement : public PseudoElement {
   bool HasActivationBehavior() const final { return true; }
   bool WillRespondToMouseClickEvents() override { return true; }
   Node* InnerNodeForHitTesting() final { return this; }
-  void SetScrollMarkerGroup(
-      ScrollMarkerGroupPseudoElement* scroll_marker_group) {
-    scroll_marker_group_ = scroll_marker_group;
-  }
-  ScrollMarkerGroupPseudoElement* ScrollMarkerGroup() const {
-    return scroll_marker_group_;
-  }
-
-  void Trace(Visitor* v) const final;
 
  private:
-  WeakMember<ScrollMarkerGroupPseudoElement> scroll_marker_group_;
+  // As per https://drafts.csswg.org/css-overflow-5/#scroll-buttons
+  // defines a "page" size to be 85% of the scrollport size.
+  static constexpr double PageSizePercent = 0.85;
 };
 
 template <>

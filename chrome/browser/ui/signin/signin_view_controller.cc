@@ -335,7 +335,7 @@ void SigninViewController::SignoutOrReauthWithPrompt(
 }
 
 void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
-    std::string_view extension_name,
+    const std::u16string& extension_name_for_display,
     base::OnceClosure on_complete) {
   // TODO(b/321900930): Consider using `CHECK()` instead on `DVLOG()`.
   signin::IdentityManager* identity_manager =
@@ -376,8 +376,8 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
         ntp_tab_index, TabStripUserGestureDetails(
                            TabStripUserGestureDetails::GestureType::kOther));
     ShowChromeSigninDialogForExtensions(
-        extension_name, std::move(on_complete), account_info_for_promos,
-        tab_strip->GetWebContentsAt(ntp_tab_index));
+        extension_name_for_display, std::move(on_complete),
+        account_info_for_promos, tab_strip->GetWebContentsAt(ntp_tab_index));
     return;
   }
 
@@ -392,10 +392,10 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
   content::WebContents* web_contents = Navigate(&params)->GetWebContents();
   // `base::Unretained(this)` is safe as `this` owns
   // `new_tab_web_contents_observer_`.
-  base::OnceCallback<void(content::WebContents*)> callback =
-      base::BindOnce(&SigninViewController::ShowChromeSigninDialogForExtensions,
-                     base::Unretained(this), std::string(extension_name),
-                     std::move(on_complete), account_info_for_promos);
+  base::OnceCallback<void(content::WebContents*)> callback = base::BindOnce(
+      &SigninViewController::ShowChromeSigninDialogForExtensions,
+      base::Unretained(this), std::u16string(extension_name_for_display),
+      std::move(on_complete), account_info_for_promos);
 
   new_tab_web_contents_observer_ = std::make_unique<NewTabWebContentsObserver>(
       web_contents, std::move(callback));
@@ -743,7 +743,7 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
 }
 
 void SigninViewController::ShowChromeSigninDialogForExtensions(
-    std::string_view extension_name,
+    const std::u16string& extension_name_for_display,
     base::OnceClosure on_complete,
     const AccountInfo& account_info_for_promos,
     content::WebContents* contents) {
@@ -770,12 +770,12 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
       browser_->profile()->GetWeakPtr(), account_info_for_promos.account_id);
 
   std::u16string title =
-      extension_name.empty()
+      extension_name_for_display.empty()
           ? l10n_util::GetStringUTF16(
                 IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE_FALLBACK)
           : l10n_util::GetStringFUTF16(
                 IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE,
-                base::UTF8ToUTF16(extension_name));
+                extension_name_for_display);
 
   std::u16string continue_as_text =
       base::UTF8ToUTF16(!account_info_for_promos.given_name.empty()

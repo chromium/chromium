@@ -16,7 +16,7 @@
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "crypto/signature_verifier.h"
-#include "net/device_bound_sessions/test_util.h"
+#include "net/device_bound_sessions/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

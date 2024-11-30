@@ -25,8 +25,8 @@
 
 #include "third_party/blink/renderer/core/editing/commands/simplify_markup_command.h"
 
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -58,7 +58,7 @@ void SimplifyMarkupCommand::DoApply(EditingState* editing_state) {
     if (!starting_node)
       continue;
     const ComputedStyle* starting_style =
-        starting_node->GetComputedStyleForElementOrLayoutObject();
+        GetComputedStyleForElementOrLayoutObject(*starting_node);
     if (!starting_style)
       continue;
     ContainerNode* current_node = starting_node;
@@ -83,7 +83,7 @@ void SimplifyMarkupCommand::DoApply(EditingState* editing_state) {
         break;
       }
 
-      if (!current_node->GetComputedStyleForElementOrLayoutObject()
+      if (!GetComputedStyleForElementOrLayoutObject(*current_node)
                ->VisualInvalidationDiff(GetDocument(), *starting_style)
                .HasDifference()) {
         top_node_with_starting_style = current_node;

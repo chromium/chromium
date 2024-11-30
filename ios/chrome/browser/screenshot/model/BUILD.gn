@@ -12,8 +12,8 @@ source_set("model") {
   deps = [
     "//base",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/ui/main",
     "//ios/web/public",
   ]
 }
@@ -28,12 +28,12 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/ui/main",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//third_party/ocmock",

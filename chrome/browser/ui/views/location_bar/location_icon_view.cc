@@ -81,7 +81,7 @@ LocationIconView::LocationIconView(
   UpdateBorder();
 }
 
-LocationIconView::~LocationIconView() {}
+LocationIconView::~LocationIconView() = default;
 
 gfx::Size LocationIconView::GetMinimumSize() const {
   return GetMinimumSizeForPreferredSize(GetPreferredSize());
@@ -309,8 +309,7 @@ void LocationIconView::UpdateIcon() {
         this->GetWidget() && this->GetWidget()->GetCustomTheme();
 
     if (has_custom_theme && icon_name == vector_icons::kGoogleSuperGIcon.name) {
-      SetBackground(
-          views::CreateRoundedRectBackground(SK_ColorWHITE, height() / 2));
+      SetBackgroundColor(SK_ColorWHITE);
     }
   }
 #endif
@@ -330,8 +329,7 @@ void LocationIconView::UpdateBackground() {
             is_text_dangerous ? kColorOmniboxSecurityChipDangerousBackground
                               : kColorOmniboxIconBackground);
 
-    SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(id), height() / 2));
+    SetBackgroundColor(GetColorProvider()->GetColor(id));
 
     if (is_text_dangerous) {
       ConfigureInkDropForRefresh2023(this,
@@ -362,8 +360,7 @@ void LocationIconView::Update(bool suppress_animations,
   UpdateLabelColors();
 
   if (force_hide_background) {
-    SetBackground(
-        views::CreateRoundedRectBackground(SK_ColorTRANSPARENT, height() / 2));
+    SetBackgroundColor(SK_ColorTRANSPARENT);
   }
 
   bool is_editing_or_empty = delegate_->IsEditingOrEmpty();
@@ -443,6 +440,10 @@ gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(
   size.SetToMin(
       GetSizeForLabelWidth(font_list().GetExpectedTextWidth(kMinCharacters)));
   return size;
+}
+
+void LocationIconView::SetBackgroundColor(SkColor color) {
+  SetBackground(views::CreateRoundedRectBackground(color, GetCornerRadii()));
 }
 
 BEGIN_METADATA(LocationIconView)

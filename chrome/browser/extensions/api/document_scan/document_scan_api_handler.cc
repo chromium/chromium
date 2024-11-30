@@ -635,12 +635,13 @@ void DocumentScanAPIHandler::OnReadScanDataResponse(
 }
 
 template <>
-KeyedService*
-BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService>
+BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  return new DocumentScanAPIHandler(context);
+  return std::make_unique<DocumentScanAPIHandler>(context);
 }
 
 }  // namespace extensions

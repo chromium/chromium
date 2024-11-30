@@ -129,9 +129,7 @@ class OnDeviceModelServiceTest : public testing::Test {
   }
 
   mojom::InputOptionsPtr MakeInput(const std::string& input) {
-    auto options = mojom::InputOptions::New();
-    options->text = input;
-    return options;
+    return MakeInput({ml::InputPiece(input)});
   }
 
   mojom::InputOptionsPtr MakeInput(std::vector<ml::InputPiece> input) {
@@ -285,11 +283,9 @@ TEST_F(OnDeviceModelServiceTest, IgnoresContext) {
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver());
   session->AddContext(MakeInput("cheese"), {});
-  session->Execute(
-      mojom::InputOptions::New("cheddar", std::nullopt, std::nullopt,
-                               /*ignore_context=*/true, std::nullopt,
-                               std::nullopt, std::nullopt, std::nullopt),
-      response.BindRemote());
+  auto input = MakeInput("cheddar");
+  input->ignore_context = true;
+  session->Execute(std::move(input), response.BindRemote());
   response.WaitForCompletion();
 
   EXPECT_THAT(response.responses(), ElementsAre("Input: cheddar\n"));
@@ -313,16 +309,12 @@ TEST_F(OnDeviceModelServiceTest, MultipleSessionsIgnoreContext) {
   session2->AddContext(MakeInput("banana"), {});
 
   session2->Execute(MakeInput("candy"), response2.BindRemote());
-  session2->Execute(
-      mojom::InputOptions::New("chip", std::nullopt, std::nullopt,
-                               /*ignore_context=*/true, std::nullopt,
-                               std::nullopt, std::nullopt, std::nullopt),
-      response3.BindRemote());
-  session1->Execute(
-      mojom::InputOptions::New("choco", std::nullopt, std::nullopt,
-                               /*ignore_context=*/true, std::nullopt,
-                               std::nullopt, std::nullopt, std::nullopt),
-      response4.BindRemote());
+  auto chip = MakeInput("chip");
+  chip->ignore_context = true;
+  session2->Execute(std::move(chip), response3.BindRemote());
+  auto choco = MakeInput("choco");
+  choco->ignore_context = true;
+  session1->Execute(std::move(choco), response4.BindRemote());
   session2->Execute(MakeInput("orange"), response5.BindRemote());
 
   response1.WaitForCompletion();
@@ -370,19 +362,15 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokenLimits) {
 
   std::string input = "big cheese";
   ContextClientWaiter client1;
-  session->AddContext(
-      mojom::InputOptions::New(input, /*max_tokens=*/4, std::nullopt, false,
-                               std::nullopt, std::nullopt, std::nullopt,
-                               std::nullopt),
-      client1.BindRemote());
+  auto max_input = MakeInput("big cheese");
+  max_input->max_tokens = 4;
+  session->AddContext(std::move(max_input), client1.BindRemote());
   EXPECT_EQ(client1.WaitForCompletion(), 4);
 
   ContextClientWaiter client2;
-  session->AddContext(
-      mojom::InputOptions::New(input, std::nullopt, /*token_offset=*/4, false,
-                               std::nullopt, std::nullopt, std::nullopt,
-                               std::nullopt),
-      client2.BindRemote());
+  auto offset_input = MakeInput("big cheese");
+  offset_input->token_offset = 4;
+  session->AddContext(std::move(offset_input), client2.BindRemote());
   EXPECT_EQ(client2.WaitForCompletion(), 6);
 
   session->Execute(MakeInput("cheddar"), response.BindRemote());
@@ -572,6 +560,47 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokens) {
   EXPECT_THAT(response.responses(), ElementsAre("Context: System: hi End.\n",
                                                 "Context: Model: hello End.\n",
                                                 "Input: User: bye\n"));
+}
+
+TEST_F(OnDeviceModelServiceTest, AddContextWithImages) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver());
+
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back("cheddar");
+
+    SkBitmap cheesy_bitmap;
+    cheesy_bitmap.allocN32Pixels(7, 21);
+    cheesy_bitmap.eraseColor(SK_ColorYELLOW);
+    pieces.push_back(cheesy_bitmap);
+
+    pieces.push_back("cheese");
+
+    session->AddContext(MakeInput(std::move(pieces)), {});
+  }
+
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back("bleu");
+
+    SkBitmap moldy_cheese;
+    moldy_cheese.allocN32Pixels(63, 42);
+    moldy_cheese.eraseColor(SK_ColorBLUE);
+    pieces.push_back(moldy_cheese);
+
+    pieces.push_back("cheese");
+
+    session->Execute(MakeInput(std::move(pieces)), response.BindRemote());
+    response.WaitForCompletion();
+  }
+
+  EXPECT_THAT(response.responses(),
+              ElementsAre("Context: cheddar[Bitmap of size 7x21]cheese\n",
+                          "Input: bleu[Bitmap of size 63x42]cheese\n"));
 }
 
 TEST_F(OnDeviceModelServiceTest, ClassifyTextSafety) {

@@ -11,6 +11,7 @@
 #include "chrome/browser/android/shortcut_helper.h"
 #else
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "url/url_constants.h"
@@ -29,7 +30,11 @@ bool DoesOriginContainAnyInstalledWebApp(
   // that WebAppProvider is started.
   if (!provider || !provider->on_registry_ready().is_signaled())
     return false;
-  return provider->registrar_unsafe().DoesScopeContainAnyApp(origin);
+  // TODO(crbug.com/340952100): Evaluate call sites of DoesScopeContainAnyApp
+  // for correctness.
+  return provider->registrar_unsafe().DoesScopeContainAnyApp(
+      origin, {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION});
 #endif
 }
 

@@ -95,6 +95,22 @@ public class TabShareUtils {
     }
 
     /**
+     * @param outcome The result of a group read.
+     * @return Whether the group has multiple collaborators.
+     */
+    public static boolean hasMultipleCollaborators(@Nullable GroupDataOrFailureOutcome outcome) {
+        return discernSharedGroupState(outcome) == GroupSharedState.HAS_OTHER_USERS;
+    }
+
+    /**
+     * @param groupData The shared group data.
+     * @return Whether the group has multiple collaborators.
+     */
+    public static boolean hasMultipleCollaborators(@Nullable GroupData groupData) {
+        return discernSharedGroupState(groupData) == GroupSharedState.HAS_OTHER_USERS;
+    }
+
+    /**
      * Tries to figure out if the signed in user account has a role in a given group, and if so,
      * which role they have.
      *

@@ -135,7 +135,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
 
 class KeyboardAccessTest : public InProcessBrowserTest {
  public:
-  KeyboardAccessTest() {}
+  KeyboardAccessTest() = default;
 
   KeyboardAccessTest(const KeyboardAccessTest&) = delete;
   KeyboardAccessTest& operator=(const KeyboardAccessTest&) = delete;

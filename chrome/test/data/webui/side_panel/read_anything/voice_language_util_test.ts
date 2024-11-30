@@ -284,14 +284,17 @@ suite('voice and language utils', () => {
       // Google TTS voices in English (even if in a different locale) exist.
       assertDeepEquals([voice2], getFilteredVoiceList(possibleVoices));
     } else {
-      // eSpeak voices should be filtered out only on ChromeOS Ash.
-      assertDeepEquals(
-          [voice1, voice2, voice3], getFilteredVoiceList(possibleVoices));
+      // en-us is kept because it is an exact Google TTS locale. cy is kept
+      // because there is no Google TTS locale that supports it. en-cb is not
+      // kept because there are other locales supported by Google TTS for the
+      // same language.
+      assertDeepEquals([voice1, voice2], getFilteredVoiceList(possibleVoices));
     }
   });
 
   test(
-      'getFilteredVoiceList returns only Google voices and one system voice',
+      'getFilteredVoiceList returns only Google voices and one system voice ' +
+          'per language',
       () => {
         const voice1 = createSpeechSynthesisVoice({
           default: true,
@@ -303,32 +306,57 @@ suite('voice and language utils', () => {
           default: true,
           name: 'Google Shari',
           localService: true,
-          lang: 'cy',
+          lang: 'en-us',
         });
         const voice3 = createSpeechSynthesisVoice({
           default: false,
           name: 'Lauren',
           localService: true,
-          lang: 'en-cb',
+          lang: 'en-us',
         });
         const voice4 = createSpeechSynthesisVoice({
           default: true,
           name: 'Kristi',
           localService: true,
-          lang: 'en-cb',
+          lang: 'en-us',
+        });
+        const voice5 = createSpeechSynthesisVoice({
+          default: true,
+          name: 'Google Cat',
+          localService: true,
+          lang: 'pt-br',
+        });
+        const voice6 = createSpeechSynthesisVoice({
+          default: true,
+          name: 'Google Dog',
+          localService: true,
+          lang: 'pt-br',
+        });
+        const voice7 = createSpeechSynthesisVoice({
+          default: false,
+          name: 'Mouse',
+          localService: true,
+          lang: 'pt-br',
+        });
+        const voice8 = createSpeechSynthesisVoice({
+          default: true,
+          name: 'Bird',
+          localService: true,
+          lang: 'pt-br',
         });
 
         const possibleVoices: SpeechSynthesisVoice[] =
-            [voice1, voice2, voice3, voice4];
+            [voice1, voice2, voice3, voice4, voice5, voice6, voice7, voice8];
 
         if (chrome.readingMode.isChromeOsAsh) {
           // Don't filter out any system voices on ChromeOS.
           assertDeepEquals(
               possibleVoices, getFilteredVoiceList(possibleVoices));
         } else {
-          // Keep only the default system voice.
+          // Keep only the default system voice per language.
           assertDeepEquals(
-              [voice1, voice2, voice4], getFilteredVoiceList(possibleVoices));
+              [voice1, voice2, voice4, voice5, voice6, voice8],
+              getFilteredVoiceList(possibleVoices));
         }
       });
 

@@ -235,6 +235,8 @@ std::optional<int> GetBuiltInImageResourceId(
       return IDR_SCALABLE_IPH_YOUTUBE_ICON_120_PNG;
     case BuiltInImage::kPlayStoreIcon:
       return IDR_SCALABLE_IPH_GOOGLE_PLAY_ICON_120_PNG;
+    case BuiltInImage::kRNotification:
+      return IDR_GROWTH_FRAMEWORK_R_NOTIFICATION_PNG;
 #else
     // Sclable Iph images are included only if ash-build and Chrome branded.
     // Returns a fall-back image for the other case.

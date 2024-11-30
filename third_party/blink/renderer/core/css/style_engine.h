@@ -598,7 +598,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void InvalidatePositionTryStyles();
 
   void MarkLastSuccessfulPositionFallbackDirtyForElement(Element& element) {
-    last_successful_option_dirty_set_.insert(&element);
+    anchored_element_dirty_set_.insert(&element);
+  }
+  void MarkForDefaultAnchorScrollShift(Element& element) {
+    anchored_element_dirty_set_.insert(&element);
   }
 
   StyleRuleKeyframes* KeyframeStylesForAnimation(
@@ -749,7 +752,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
 
   // Returns true if marked dirty for layout
-  bool UpdateLastSuccessfulPositionFallbacks();
+  bool UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift();
 
   void RevisitActiveStyleSheetsForInspector();
 
@@ -1168,7 +1171,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Elements which had their computed position-try-fallbacks changed since last
   // time resize observers were considered. May need to have their last
   // successful option invalidated.
-  HeapHashSet<Member<Element>> last_successful_option_dirty_set_;
+  HeapHashSet<Member<Element>> anchored_element_dirty_set_;
 
   // Names of @position-try rules which were added, removed, or modified since
   // last time resize observers were considered. Anchored elements with a last

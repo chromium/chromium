@@ -2132,16 +2132,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
-  if (policy.has_login_web_ui_lazy_loading()) {
-    const em::DeviceLoginScreenWebUILazyLoadingProto& container(
-        policy.login_web_ui_lazy_loading());
-    if (container.has_enabled()) {
-      policies->Set(key::kDeviceLoginScreenWebUILazyLoading,
-                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
-                    nullptr);
-    }
-  }
 
   if (policy.has_keylocker_for_storage_encryption_enabled()) {
     const em::DeviceKeylockerForStorageEncryptionEnabledProto& container(
@@ -2272,9 +2262,10 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::BooleanPolicyProto& container(
         policy.deviceloginscreentouchvirtualkeyboardenabled());
     if (container.has_value()) {
-      policies->Set(key::kTouchVirtualKeyboardEnabled, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.value()), nullptr);
+      policies->Set(key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
     }
   }
 

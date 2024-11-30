@@ -23,16 +23,11 @@ namespace heap_profiling {
 // reporting is enabled.
 BASE_DECLARE_FEATURE(kHeapProfilerReporting);
 
-// If this is enabled, heap profiling in subprocesses is controlled centrally
-// from the browser process.
-BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
-
-// The probability of including a child process in each snapshot that's taken
-// when kHeapProfilerCentralControl is enabled, as a percentage from 0 to 100.
-// Defaults to 100, but can be set lower to sub-sample process types that are
-// very common (mainly renderers) to keep data volume low. Samples from child
-// processes are weighted in inverse proportion to the snapshot probability to
-// normalize the aggregated results.
+// The probability of including a child process in each snapshot that's taken,
+// as a percentage from 0 to 100. Defaults to 100, but can be set lower to
+// sub-sample process types that are very common (mainly renderers) to keep data
+// volume low. Samples from child processes are weighted in inverse proportion
+// to the snapshot probability to normalize the aggregated results.
 extern const base::FeatureParam<int> kGpuSnapshotProbability;
 extern const base::FeatureParam<int> kNetworkSnapshotProbability;
 extern const base::FeatureParam<int> kRendererSnapshotProbability;

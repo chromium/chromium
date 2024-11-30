@@ -126,7 +126,6 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -12163,9 +12162,10 @@ class MultipleDataChunkDelegate : public URLLoaderTestDelegate {
   void DidReceiveData(URLLoaderClient* original_client,
                       base::span<const char> data) override {
     EXPECT_GT(data.size(), 16u);
-    original_client->DidReceiveDataForTesting(data.subspan(0, 16));
+    const auto [first, rest] = data.split_at<16>();
+    original_client->DidReceiveDataForTesting(first);
     // This didReceiveData call shouldn't crash due to a failed assertion.
-    original_client->DidReceiveDataForTesting(data.subspan(16));
+    original_client->DidReceiveDataForTesting(rest);
   }
 };
 

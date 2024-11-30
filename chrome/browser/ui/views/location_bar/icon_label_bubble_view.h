@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_observer.h"
@@ -113,6 +114,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void SetLabel(const std::u16string& label,
                 const std::u16string& accessible_name);
   void SetFontList(const gfx::FontList& font_list);
+
+  gfx::RoundedCornersF GetCornerRadii() const;
+  void SetCornerRadii(const gfx::RoundedCornersF& radii);
 
   const views::View* GetImageContainerView() const {
     return image_container_view();
@@ -330,6 +334,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   std::optional<ui::ColorId> background_color_id_;
   std::optional<ui::ColorId> foreground_color_id_;
+
+  std::optional<gfx::RoundedCornersF> radii_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ICON_LABEL_BUBBLE_VIEW_H_

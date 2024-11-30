@@ -398,7 +398,7 @@ class NetworkChangeNotifierFuchsiaTest : public testing::Test {
   std::unique_ptr<FakeIPAddressObserver> ip_observer_;
 };
 
-TEST_F(NetworkChangeNotifierFuchsiaTest, ConnectFail_BeforeGetWatcher) {
+TEST_F(NetworkChangeNotifierFuchsiaTest, ConnectFailBeforeGetWatcher) {
   // CreateNotifier will pass an already-disconnected Watcher handle to the
   // new NetworkChangeNotifier, which will cause the process to exit during
   // construction.
@@ -407,7 +407,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, ConnectFail_BeforeGetWatcher) {
       testing::ExitedWithCode(1), "");
 }
 
-TEST_F(NetworkChangeNotifierFuchsiaTest, ConnectFail_AfterGetWatcher) {
+TEST_F(NetworkChangeNotifierFuchsiaTest, ConnectFailAfterGetWatcher) {
   CreateNotifier();
 
   EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_NONE,

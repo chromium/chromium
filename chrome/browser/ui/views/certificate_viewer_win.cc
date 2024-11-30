@@ -26,7 +26,7 @@ namespace {
 // nested run loops.
 class CertificateViewerDialogWin : public ui::BaseShellDialogImpl {
  public:
-  CertificateViewerDialogWin() {}
+  CertificateViewerDialogWin() = default;
 
   CertificateViewerDialogWin(const CertificateViewerDialogWin&) = delete;
   CertificateViewerDialogWin& operator=(const CertificateViewerDialogWin&) =

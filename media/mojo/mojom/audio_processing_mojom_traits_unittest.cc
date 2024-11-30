@@ -25,10 +25,8 @@ TEST(AudioProcessingMojomTraitsTest, AudioProcessingSettings) {
   settings_in.echo_cancellation = !settings_in.echo_cancellation;
   settings_in.noise_suppression = !settings_in.noise_suppression;
   settings_in.automatic_gain_control = !settings_in.automatic_gain_control;
-  settings_in.high_pass_filter = !settings_in.high_pass_filter;
   settings_in.multi_channel_capture_processing =
       !settings_in.multi_channel_capture_processing;
-  settings_in.stereo_mirroring = !settings_in.stereo_mirroring;
 
   mojo::test::SerializeAndDeserialize<media::mojom::AudioProcessingSettings>(
       settings_in, settings_out);

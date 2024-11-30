@@ -142,6 +142,20 @@ class ProductMessagingController final {
   // Has no effect if the notice has already started to show.
   void UnqueueRequiredNotice(RequiredNoticeId notice_id);
 
+  // Callback for notifications about other services' activity.
+  using StatusUpdateCallback = base::RepeatingCallback<void(RequiredNoticeId)>;
+
+  // Adds a callback that will be called whenever a RequiredNoticeHandle will be
+  // granted. This can optionally be used to know when other systems are about
+  // to show a notice.
+  base::CallbackListSubscription AddRequiredNoticePriorityHandleGrantedCallback(
+      StatusUpdateCallback callback);
+
+  // Adds a callback that will be called when the UI of a required notice will
+  // actually be shown (not just that the handle is being held).
+  base::CallbackListSubscription AddRequiredNoticeShownCallback(
+      StatusUpdateCallback callback);
+
   RequiredNoticeId current_notice_for_testing() const {
     return current_notice_;
   }
@@ -177,6 +191,9 @@ class ProductMessagingController final {
   // Do housekeeping associated with a new session.
   void OnNewSession();
 
+  // Notify that the notice was actually shown.
+  void OnNoticeShown(RequiredNoticeId notice_id);
+
   // Describes the current contents of `pending_notices_` for debugging/error
   // purposes.
   std::string DumpData() const;
@@ -185,6 +202,10 @@ class ProductMessagingController final {
   raw_ptr<UserEducationStorageService> storage_service_ = nullptr;
   std::map<RequiredNoticeId, RequiredNoticeData> pending_notices_;
   base::CallbackListSubscription session_subscription_;
+  base::RepeatingCallbackList<StatusUpdateCallback::RunType>
+      handle_granted_callbacks_;
+  base::RepeatingCallbackList<StatusUpdateCallback::RunType>
+      notice_shown_callbacks_;
   base::WeakPtrFactory<ProductMessagingController> weak_ptr_factory_{this};
 };
 

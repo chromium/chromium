@@ -143,10 +143,6 @@ GetThrottlerParamsForRequestCoverage(
 }
 }  // namespace
 
-BASE_FEATURE(kMultipleBoundSessionsEnabled,
-             "MultipleBoundSessionsEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
@@ -170,13 +166,13 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
   std::vector<bound_session_credentials::BoundSessionParams>
       bound_session_params =
           session_params_storage_->ReadAllParamsAndCleanStorageIfNecessary();
-  if (bound_session_params.empty()) {
-    return;
-  }
 
-  if (!base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
-    InitializeBoundSession(bound_session_params.front());
-    UpdateAllRenderers();
+  constexpr int kMaxSessionsForMetrics = 30;
+  base::UmaHistogramExactLinear(
+      "Signin.BoundSessionCredentials.SessionCountOnInit",
+      bound_session_params.size(), kMaxSessionsForMetrics);
+
+  if (bound_session_params.empty()) {
     return;
   }
 
@@ -193,38 +189,14 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
-    // In the multi-session mode, we need to stop the controller corresponding
-    // to the same session, if any.
-    auto it = cookie_controllers_.find(
-        bound_session_credentials::GetBoundSessionKey(params));
-    if (it != cookie_controllers_.end()) {
-      cookie_controllers_.erase(it);
-      RecordSessionTerminationTrigger(
-          SessionTerminationTrigger::kSessionOverride);
-      // Note: `NotifyBoundSessionTerminated()` is not called as new session is
-      // starting with the same scope.
-    }
-  } else {
-    // In the single-session mode, we need to do the following:
-    // - stop the current controller regardless of what session it controls, and
-    // - clear storage entry for the current session if it doesn't match the new
-    //   session.
-    if (BoundSessionCookieController* controller = cookie_controller();
-        controller) {
-      bool clear_params = controller->GetBoundSessionKey() !=
-                          bound_session_credentials::GetBoundSessionKey(params);
-      if (clear_params) {
-        session_params_storage_->ClearParams(controller->site(),
-                                             controller->session_id());
-      }
-      cookie_controllers_.clear();
-      // `controller` is no longer valid and must not be used.
-      RecordSessionTerminationTrigger(
-          SessionTerminationTrigger::kSessionOverride);
-      // Note: `NotifyBoundSessionTerminated()` is not called as new session is
-      // starting with the same scope.
-    }
+  auto it = cookie_controllers_.find(
+      bound_session_credentials::GetBoundSessionKey(params));
+  if (it != cookie_controllers_.end()) {
+    cookie_controllers_.erase(it);
+    RecordSessionTerminationTrigger(
+        SessionTerminationTrigger::kSessionOverride);
+    // Note: `NotifyBoundSessionTerminated()` is not called as new session is
+    // starting with the same scope.
   }
 
   InitializeBoundSession(params);
@@ -303,32 +275,24 @@ void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
 
   std::vector<BoundSessionCookieController*> blocking_controllers;
   bool request_covered_by_at_least_one_session = false;
-  if (!base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
-    blocking_controllers.push_back(cookie_controller());
-    // Assume by default that the only controller covers all incoming
-    // requests.
-    request_covered_by_at_least_one_session = true;
-  } else {
-    for (const auto& [key, controller] : cookie_controllers_) {
-      std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
-          throttler_params;
-      throttler_params.push_back(
-          GetThrottlerParamsForRequestCoverage(controller.get()));
-      GoogleURLLoaderThrottle::RequestBoundSessionStatus status =
-          GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
-              untrusted_request_url, throttler_params);
-      switch (status) {
-        case GoogleURLLoaderThrottle::RequestBoundSessionStatus::
-            kCoveredWithMissingCookie:
-          blocking_controllers.push_back(controller.get());
-          [[fallthrough]];
-        case GoogleURLLoaderThrottle::RequestBoundSessionStatus::
-            kCoveredWithFreshCookie:
-          request_covered_by_at_least_one_session = true;
-          break;
-        case GoogleURLLoaderThrottle::RequestBoundSessionStatus::kNotCovered:
-          break;
-      }
+  for (const auto& [key, controller] : cookie_controllers_) {
+    std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr> throttler_params;
+    throttler_params.push_back(
+        GetThrottlerParamsForRequestCoverage(controller.get()));
+    GoogleURLLoaderThrottle::RequestBoundSessionStatus status =
+        GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+            untrusted_request_url, throttler_params);
+    switch (status) {
+      case GoogleURLLoaderThrottle::RequestBoundSessionStatus::
+          kCoveredWithMissingCookie:
+        blocking_controllers.push_back(controller.get());
+        [[fallthrough]];
+      case GoogleURLLoaderThrottle::RequestBoundSessionStatus::
+          kCoveredWithFreshCookie:
+        request_covered_by_at_least_one_session = true;
+        break;
+      case GoogleURLLoaderThrottle::RequestBoundSessionStatus::kNotCovered:
+        break;
     }
   }
 
@@ -365,13 +329,6 @@ void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
       !base::EqualsCaseInsensitiveASCII(
           registration_params.registration_endpoint().path_piece(),
           exclusive_registration_path)) {
-    return;
-  }
-
-  if (!registration_requests_.empty() &&
-      !base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
-    // If there are multiple racing registration requests, only one will be
-    // processed and it will contain the most up-to-date set of cookies.
     return;
   }
 
@@ -508,9 +465,6 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
     const bound_session_credentials::BoundSessionParams& bound_session_params) {
-  if (!base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
-    CHECK(cookie_controllers_.empty());
-  }
   std::unique_ptr<BoundSessionCookieController> controller =
       CreateBoundSessionCookieController(bound_session_params,
                                          is_off_the_record_profile_);

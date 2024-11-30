@@ -1,7 +1,6 @@
 [INTERFACES]
 interface AI
     attribute @@toStringTag
-    getter languageDetector
     getter languageModel
     getter rewriter
     getter summarizer
@@ -12,21 +11,6 @@ interface AICreateMonitor : EventTarget
     getter ondownloadprogress
     method constructor
     setter ondownloadprogress
-interface AILanguageDetector
-    attribute @@toStringTag
-    method constructor
-    method destroy
-    method detect
-interface AILanguageDetectorCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method languageAvailable
-interface AILanguageDetectorFactory
-    attribute @@toStringTag
-    method capabilities
-    method constructor
-    method create
 interface AILanguageModel : EventTarget
     attribute @@toStringTag
     getter maxTokens
@@ -96,10 +80,6 @@ interface AITranslator
     method constructor
     method destroy
     method translate
-interface AITranslatorFactory
-    attribute @@toStringTag
-    method constructor
-    method create
 interface AIWriter
     attribute @@toStringTag
     getter sharedContext
@@ -1785,6 +1765,10 @@ interface ReadableStreamDefaultReader
     method constructor
     method read
     method releaseLock
+interface ReportBody
+    attribute @@toStringTag
+    method constructor
+    method toJSON
 interface ReportingObserver
     attribute @@toStringTag
     method constructor

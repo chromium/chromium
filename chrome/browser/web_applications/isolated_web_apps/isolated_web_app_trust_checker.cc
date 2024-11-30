@@ -13,16 +13,12 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_trust_check.h"
@@ -56,11 +52,9 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
             .message = "Web Bundle IDs of type ProxyMode are not supported."};
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   if (IsTrustedViaPolicy(web_bundle_id)) {
     return {.status = Result::Status::kTrusted};
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::IsTrustedAsKioskIwa(web_bundle_id)) {
@@ -89,7 +83,6 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
           .message = "The public key(s) are not trusted."};
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
     const web_package::SignedWebBundleId& web_bundle_id) const {
   const PrefService::Preference* pref = profile_->GetPrefs()->FindPreference(
@@ -107,7 +100,6 @@ bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
         return options.has_value() && options->web_bundle_id() == web_bundle_id;
       });
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void SetTrustedWebBundleIdsForTesting(  // IN-TEST
     base::flat_set<web_package::SignedWebBundleId> trusted_web_bundle_ids) {

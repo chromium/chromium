@@ -9,9 +9,9 @@
 #include <string>
 #include <tuple>
 
+#include "base/component_export.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -24,7 +24,7 @@ typedef struct CGPoint CGPoint;
 namespace gfx {
 
 // A point has an x and y coordinate.
-class GEOMETRY_EXPORT Point {
+class COMPONENT_EXPORT(GEOMETRY) Point {
  public:
   constexpr Point() : x_(0), y_(0) {}
   constexpr Point(int x, int y) : x_(x), y_(y) {}
@@ -139,18 +139,18 @@ inline Point TransposePoint(const gfx::Point& p) {
 void PrintTo(const Point& point, ::std::ostream* os);
 
 // Helper methods to scale a gfx::Point to a new gfx::Point.
-GEOMETRY_EXPORT Point ScaleToCeiledPoint(const Point& point,
-                                         float x_scale,
-                                         float y_scale);
-GEOMETRY_EXPORT Point ScaleToCeiledPoint(const Point& point, float x_scale);
-GEOMETRY_EXPORT Point ScaleToFlooredPoint(const Point& point,
-                                          float x_scale,
-                                          float y_scale);
-GEOMETRY_EXPORT Point ScaleToFlooredPoint(const Point& point, float x_scale);
-GEOMETRY_EXPORT Point ScaleToRoundedPoint(const Point& point,
-                                          float x_scale,
-                                          float y_scale);
-GEOMETRY_EXPORT Point ScaleToRoundedPoint(const Point& point, float x_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Point ScaleToCeiledPoint(const Point& point, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Point ScaleToCeiledPoint(const Point& point, float x_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Point ScaleToFlooredPoint(const Point& point, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Point ScaleToFlooredPoint(const Point& point, float x_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Point ScaleToRoundedPoint(const Point& point, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Point ScaleToRoundedPoint(const Point& point, float x_scale);
 
 }  // namespace gfx
 

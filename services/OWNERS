@@ -1,6 +1,5 @@
 set noparent
 blundell@chromium.org
-rockot@google.com
 
 # For adding or removing languages.
 per-file *.grd=claudiomagni@chromium.org

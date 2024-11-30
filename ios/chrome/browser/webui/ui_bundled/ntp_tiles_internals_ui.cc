@@ -94,8 +94,7 @@ web::WebUIIOSDataSource* CreateNTPTilesInternalsHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUINTPTilesInternalsHost);
 
-  source->AddResourcePaths(base::make_span(kNtpTilesInternalsResources,
-                                           kNtpTilesInternalsResourcesSize));
+  source->AddResourcePaths(kNtpTilesInternalsResources);
   source->AddResourcePath("", IDR_NTP_TILES_INTERNALS_NTP_TILES_INTERNALS_HTML);
   return source;
 }

@@ -33,7 +33,13 @@ class MessageTracker : public KeyedService {
     kOpened = 1,
     kHung = 2,
     kNoReceivers = 3,
-    kMaxValue = kNoReceivers,
+    kOpenChannelToNonEnabledExtension = 4,
+    kNotExternallyConnectable = 5,
+    kWorkerStarted = 6,
+    kWillNotOpenChannel = 7,
+    kOpenChannelReceiverInvalidPort = 8,
+    kOpenChannelDispatchNoReceivers = 9,
+    kMaxValue = kOpenChannelDispatchNoReceivers,
   };
 
   class TestObserver {

@@ -6,6 +6,8 @@
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -19,9 +21,18 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace settings {
+
+PrivacySandboxCountries& GetPrivacySandboxCountries() {
+  static base::NoDestructor<PrivacySandboxCountriesImpl> instance;
+  return *instance;
+}
+
+// The name of the on-click function when the privacy policy link is pressed.
+constexpr char16_t kPrivacyPolicyFunc[] = u"onPrivacyPolicyLinkClicked_";
 
 void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                               Profile* profile) {
@@ -159,6 +170,19 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_2},
       {"fledgePageCurrentSitesDescriptionLearnMoreA11yLabel",
        IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_LEARN_MORE_A11Y_LABEL},
+      // Site Suggested Ads Page - Ads API UX Enhancements
+      {"siteSuggestedAdsPageToggleSubLabelV2",
+       IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_TOGGLE_SUB_LABEL_V2},
+      {"siteSuggestedAdsPageExplanationV2",
+       IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2},
+      {"siteSuggestedAdsPageExplanationV2LinkText",
+       IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2_LINK_TEXT},
+      {"siteSuggestedAdsPageExplanationV2LinkAriaDescription",
+       IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2_LINK_ARIA_DESCRIPTION},
+      {"siteSuggestedAdsPageLearnMoreBullet1V2",
+       IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_1_V2},
+      {"siteSuggestedAdsPageLearnMoreBullet2V2",
+       IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_2_V2},
       {"adMeasurementPageTitle", IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE},
       {"adMeasurementPageToggleLabel",
        IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_LABEL},
@@ -255,6 +279,53 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       "firstPartySetsUIEnabled",
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxFirstPartySetsUI));
+  html_source->AddBoolean(
+      "isPrivacySandboxAdsApiUxEnhancementsEnabled",
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements));
+  // Site Suggested Ads Page - Ads API UX Enhancements
+  html_source->AddString(
+      "siteSuggestedAdsPageLearnMoreBullet3V2",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2,
+          base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
+                                 GURL(chrome::kAdPrivacyLearnMoreURL),
+                                 g_browser_process->GetApplicationLocale())
+                                 .spec()),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2_LINK_ARIA_DESCRIPTION)));
+
+  bool is_china_user = GetPrivacySandboxCountries().IsChina();
+  const char* privacy_policy_url = is_china_user
+                                       ? chrome::kPrivacyPolicyURLChina
+                                       : chrome::kPrivacyPolicyURL;
+
+  html_source->AddString(
+      "siteSuggestedAdsPageDisclaimer",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER,
+          base::ASCIIToUTF16(privacy_policy_url),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
+          kPrivacyPolicyFunc));
+  // Ad Topics Page - Ads API UX Enhancements
+  html_source->AddString(
+      "adTopicsPageDisclaimer",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER,
+          base::ASCIIToUTF16(privacy_policy_url),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
+          kPrivacyPolicyFunc));
+  // Ad Measurement Page - Ads API UX Enhancements
+  html_source->AddString(
+      "adMeasurementPageDisclaimer",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_AD_MEASUREMENT_PAGE_DISCLAIMER,
+          base::ASCIIToUTF16(privacy_policy_url),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
+          kPrivacyPolicyFunc));
 }
 
 }  // namespace settings

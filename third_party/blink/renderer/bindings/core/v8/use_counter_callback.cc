@@ -17,8 +17,9 @@ namespace blink {
 
 void UseCounterCallback(v8::Isolate* isolate,
                         v8::Isolate::UseCounterFeature feature) {
-  if (V8PerIsolateData::From(isolate)->IsUseCounterDisabled())
+  if (V8PerIsolateData::From(isolate)->IsUseCounterDisabled()) {
     return;
+  }
 
   std::optional<WebFeature> blink_feature;
   std::optional<WebDXFeature> webdx_feature;
@@ -412,6 +413,30 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kSetMethods:
       webdx_feature = WebDXFeature::kSetMethods;
+      break;
+    case v8::Isolate::kArrayFindLast:
+      webdx_feature = WebDXFeature::kArrayFindlast;
+      break;
+    case v8::Isolate::kArrayGroup:
+      webdx_feature = WebDXFeature::kArrayGroup;
+      break;
+    case v8::Isolate::kArrayBufferTransfer:
+      webdx_feature = WebDXFeature::kTransferableArraybuffer;
+      break;
+    case v8::Isolate::kPromiseWithResolvers:
+      webdx_feature = WebDXFeature::kPromiseWithresolvers;
+      break;
+    case v8::Isolate::kAtomicsWaitAsync:
+      webdx_feature = WebDXFeature::kAtomicsWaitAsync;
+      break;
+    case v8::Isolate::kLocaleInfoObsoletedGetters:
+      webdx_feature = WebDXFeature::kLocaleInfoObsoletedGetters;
+      break;
+    case v8::Isolate::kLocaleInfoFunctions:
+      webdx_feature = WebDXFeature::kLocaleInfoFunctions;
+      break;
+    case v8::Isolate::kExtendingNonExtensibleWithPrivate:
+      blink_feature = WebFeature::kV8ExtendingNonExtensibleWithPrivate;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink

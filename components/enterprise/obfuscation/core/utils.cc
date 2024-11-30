@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/no_destructor.h"
@@ -163,18 +165,16 @@ base::expected<HeaderData, Error> GetHeaderData(
     return base::unexpected(Error::kDeobfuscationFailed);
   }
 
-  // Extract salt.
-  base::span<const uint8_t> salt = header.subspan(1, kSaltSize);
-
-  // Extract nonce_prefix.
-  std::vector<uint8_t> nonce_prefix(header.begin() + 1 + kSaltSize,
-                                    header.end());
+  // Extract salt and nonce_prefix.
+  header = header.subspan<1>();
+  const auto& [salt, nonce_prefix] = header.split_at<kSaltSize>();
 
   // Generate file-specific key.
-  std::vector<uint8_t> derived_key = crypto::HkdfSha256(
-      GetSymmetricKey(), salt, base::span<uint8_t>(), kKeySize);
+  std::vector<uint8_t> derived_key =
+      crypto::HkdfSha256(GetSymmetricKey(), salt, {}, kKeySize);
 
-  return base::ok(HeaderData(std::move(derived_key), std::move(nonce_prefix)));
+  return base::ok(
+      HeaderData(std::move(derived_key), base::ToVector(nonce_prefix)));
 }
 
 base::expected<std::vector<uint8_t>, Error> DeobfuscateDataChunk(

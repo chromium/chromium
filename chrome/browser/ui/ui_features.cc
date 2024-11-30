@@ -18,7 +18,7 @@ namespace features {
 // by the platform (e.g. Wayland). See https://crbug.com/896640
 BASE_FEATURE(kAllowWindowDragUsingSystemDragDrop,
              "AllowWindowDragUsingSystemDragDrop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the use of WGC for the Eye Dropper screen capture.
 BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
@@ -195,12 +195,6 @@ BASE_FEATURE(kResponsiveToolbar,
              "ResponsiveToolbar",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !defined(ANDROID)
-BASE_FEATURE(kSidePanelCompanionDefaultPinned,
-             "SidePanelCompanionDefaultPinned",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kSidePanelResizing,
              "SidePanelResizing",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -312,6 +306,10 @@ BASE_FEATURE(kTabOrganizationModelStrategy,
              "TabOrganizationModelStrategy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabOrganizationUserInstruction,
+             "TabOrganizationUserInstruction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabOrganizationEnableNudgeForEnterprise,
              "TabOrganizationEnableNudgeForEnterprise",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -330,18 +328,6 @@ const base::FeatureParam<double> kTabOrganizationTriggerSensitivityThreshold{
 
 const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode{
     &kTabOrganization, "trigger_demo_mode", false};
-
-// Controls feature parameters for Tab Search's `Recently Closed` entries.
-BASE_FEATURE(kTabSearchRecentlyClosed,
-             "TabSearchRecentlyClosed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kTabSearchRecentlyClosedDefaultItemDisplayCount{
-    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedDefaultItemDisplayCount",
-    8};
-
-const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold{
-    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedTabCountThreshold", 100};
 
 // Enables creating a web app window when tearing off a tab with a url
 // controlled by a web app.

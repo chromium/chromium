@@ -1868,7 +1868,13 @@ void WebAppPublisherHelper::MaybeAddWebPageNotifications(
                           ? non_persistent_metadata->document_url
                           : notification.origin_url();
 
-    auto app_ids = registrar().FindAppsInScope(url);
+    // TODO(crbug.com/379916273): Evaluate call sites of
+    // FindBestAppWithUrlInScope for correctness.
+    auto app_ids = registrar().FindAllAppsNestedInUrl(
+        url, {
+                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+             });
     for (const auto& app_id : app_ids) {
       MaybeAddNotification(app_id, notification.id());
     }

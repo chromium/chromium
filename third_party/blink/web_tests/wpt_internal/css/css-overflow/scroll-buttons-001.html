@@ -4,7 +4,7 @@
 <link rel="match" href="scroll-buttons-001-ref.html">
 <link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-button">
 <style>
-  div::scroll-next-button {
+  div::scroll-button(block-end) {
     content: "";
     background: green;
     display: flex;
@@ -12,7 +12,7 @@
     width: 100px;
   }
 
-  div::scroll-prev-button {
+  div::scroll-button(block-start) {
     content: "";
     background: green;
     display: flex;

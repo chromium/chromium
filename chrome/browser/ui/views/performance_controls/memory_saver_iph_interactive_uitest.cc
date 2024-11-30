@@ -60,7 +60,7 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
         }),
         WaitForShow(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-    AddDescription(steps, "TriggerMemorySaverPromo( %s )");
+    AddDescriptionPrefix(steps, "TriggerMemorySaverPromo()");
     return steps;
   }
 };

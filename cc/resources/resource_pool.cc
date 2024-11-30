@@ -18,6 +18,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -403,8 +404,8 @@ void ResourcePool::ReleaseResource(InUsePoolResource in_use_resource) {
     CHECK(!base::Contains(unused_resources_, pool_resource->unique_id(),
                           &PoolResource::unique_id));
 
-    // Resource doesn't exist in any of our lists. CHECK.
-    CHECK(false);
+    // Resource doesn't exist in any of our lists. NOTREACHED().
+    NOTREACHED();
   }
 
   // Also ensure that the resource wasn't null in our list.

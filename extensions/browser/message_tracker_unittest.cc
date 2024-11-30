@@ -127,7 +127,7 @@ TEST_F(MessageTrackerUnitTest, NotifyOpenedMessageIfStoppedBeforeHung) {
       message_id, MessageTracker::OpenChannelMessagePipelineResult::kOpened);
 
   // This will wait for the hung check created by
-  // NotifyStartTrackingMessageDelivery(), then proceed.
+  // StartTrackingMessagingStage(), then proceed.
   {
     SCOPED_TRACE(
         "waiting for hung check to run after starting and updating new "
@@ -156,7 +156,7 @@ TEST_F(MessageTrackerUnitTest, NotifyHungMessageIfStoppedAfterHung) {
       mojom::ChannelType::kSendMessage);
 
   // This will wait for the hung check created by
-  // NotifyStartTrackingMessageDelivery(), then proceed.
+  // StartTrackingMessagingStage(), then proceed.
   {
     SCOPED_TRACE(
         "waiting for timeout check to run after starting and updating new "

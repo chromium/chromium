@@ -15,16 +15,16 @@ enum Section {
   kPeople = 3,
   kDevice = 4,
   kPersonalization = 5,
-  kSearchAndAssistant = 6,
+  // Note: Value 6 was for deprecated kSearchAndAssistant. Do not reuse.
   kApps = 7,
-  kCrostini = 8,
+  // Note: Value 8 was for deprecated kCrostini. Do not reuse.
   // Note: Value 9 was for deprecated Plugin VM section - see
   // https://crbug.com/1074101. Do not reuse.
   // Note: Value 10 was for deprecated kDateAndTime. Do not reuse.
   kPrivacyAndSecurity = 11,
   kLanguagesAndInput = 12,
   kFiles = 13,
-  kPrinting = 14,
+  // Note: Value 14 was for deprecated kPrinting. Do not reuse.
   kAccessibility = 15,
   // Deprecated, do not reuse. http://crbug/370836853
   // kReset = 16,
@@ -277,7 +277,6 @@ const string kManageIsolatedWebAppsSubpagePath = "manage-isolated-web-apps";
 const string kAppParentalControlsSubpagePath = "app-parental-controls";
 
 // Crostini section.
-const string kCrostiniSectionPath = "crostini";
 const string kCrostiniDetailsSubpagePath = "crostini/details";
 const string kCrostiniManageSharedFoldersSubpagePath = "crostini/sharedPaths";
 const string kCrostiniUsbPreferencesSubpagePath = "crostini/sharedUsbDevices";
@@ -327,7 +326,6 @@ const string kOfficeFilesSubpagePath = "officeFiles";
 const string kNetworkFileSharesSubpagePath = "smbShares";
 
 // Printing section.
-const string kPrintingSectionPath = "osPrinting";
 const string kPrintingDetailsSubpagePath = "cupsPrinters";
 
 // Accessibility section.

@@ -1906,7 +1906,9 @@ void BackForwardTransitionAnimator::SetUpEmbedderContentLayerIfNeeded(
   embedder_live_content_clone_ = cc::slim::UIResourceLayer::Create();
   embedder_live_content_clone_->SetBitmap(bitmap);
   embedder_live_content_clone_->SetIsDrawable(true);
-  embedder_live_content_clone_->SetPosition(gfx::PointF(0.f, 0.f));
+  embedder_live_content_clone_->SetPosition(
+      gfx::PointF(0.f, -animation_manager_->web_contents_view_android()
+                            ->GetTopControlsHeight()));
   embedder_live_content_clone_->SetBounds(
       animation_manager_->web_contents_view_android()
           ->GetNativeView()

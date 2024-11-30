@@ -180,6 +180,12 @@ BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,
              "AutofillEnablePrefetchingRiskDataForRetrieval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the 'Save and Fill' suggestion will be offered in the credit
+// card dropdown menu for users who don't have any cards saved in Autofill.
+BASE_FEATURE(kAutofillEnableSaveAndFill,
+             "AutofillEnableSaveAndFill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the save card screen will present a loading spinner when
 // uploading the card to the server and present a confirmation screen with the
 // result when completed.
@@ -258,6 +264,11 @@ BASE_FEATURE(kAutofillRemovePaymentsButterDropdown,
              "AutofillRemovePaymentsButterDropdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, we will store autofill server card data in shared storage.
+BASE_FEATURE(kAutofillSharedStorageServerCardData,
+             "AutofillSharedStorageServerCardData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, manual fill view will be shown directly from form focusing
 // events, if a virtual card has been retrieved previously.
@@ -301,9 +312,9 @@ BASE_FEATURE(kAutofillUpstream,
 // upload save bubble.
 BASE_FEATURE(kAutofillUpstreamUpdatedUi,
              "AutofillUpstreamUpdatedUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment{
-    &kAutofillUpstreamUpdatedUi, "autofill_upstream_updated_ui_treatment", 0};
+    &kAutofillUpstreamUpdatedUi, "autofill_upstream_updated_ui_treatment", 1};
 
 // When enabled, adds a timeout on the network request for VcnEnroll requests.
 BASE_FEATURE(kAutofillVcnEnrollRequestTimeout,

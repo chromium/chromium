@@ -70,10 +70,6 @@ public class RtlGestureNavIphTest {
             mEmittedEvent = event;
         }
 
-        public @Nullable String getLastEmittedEvent() {
-            return mEmittedEvent;
-        }
-
         @Override
         public boolean shouldTriggerHelpUi(String feature) {
             return true;

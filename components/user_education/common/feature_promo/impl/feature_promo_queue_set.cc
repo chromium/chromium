@@ -127,9 +127,9 @@ FeaturePromoQueueSet::UpdateAndIdentifyNextEligiblePromo() {
   return result;
 }
 
-std::optional<FeaturePromoParams>
+std::optional<EligibleFeaturePromo>
 FeaturePromoQueueSet::UpdateAndGetNextEligiblePromo() {
-  std::optional<FeaturePromoParams> result;
+  std::optional<EligibleFeaturePromo> result;
 
   // Check queues from higher to lower priority. If an eligible promo is found,
   // or a promo remains waiting in a higher-priority queue, do not check lower-

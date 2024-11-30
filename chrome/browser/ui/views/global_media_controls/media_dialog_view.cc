@@ -331,6 +331,9 @@ void MediaDialogView::OnLiveCaptionEnabledChanged() {
 
   if (media::IsLiveTranslateEnabled()) {
     live_translate_container_->SetVisible(enabled);
+    target_language_container_->SetVisible(
+        enabled &&
+        profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled));
   }
 
   UpdateBubbleSize();
@@ -339,6 +342,7 @@ void MediaDialogView::OnLiveCaptionEnabledChanged() {
 void MediaDialogView::OnLiveTranslateEnabledChanged() {
   bool enabled = profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled);
   live_translate_button_->SetIsOn(enabled);
+
   target_language_container_->SetVisible(enabled);
   UpdateBubbleSize();
 }
@@ -642,7 +646,8 @@ void MediaDialogView::InitializeLiveTranslateSection() {
   target_language_container->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kVerticalMarginDip, 0)));
   target_language_container->SetVisible(
-      profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled));
+      profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled) &&
+      profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   target_language_container
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
@@ -675,7 +680,7 @@ void MediaDialogView::InitializeCaptionSettingsSection() {
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsChromeRefreshIcon,
                                      ui::kColorIcon, kImageWidthDip),
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAPTION_SETTINGS),
-      std::u16string(), std::u16string(), std::u16string(),
+      std::u16string(),
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon, ui::kColorIcon,
                                      kImageWidthDip));
   caption_settings_button_ = caption_settings_container->AddChildView(

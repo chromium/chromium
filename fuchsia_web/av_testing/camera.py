@@ -36,16 +36,11 @@ class Parameters:
 def start(parameters: Parameters) -> None:
     """Starts an av_sync_record process to record the video from the camera.
     Executing of this function shouldn't be terminated as it would create a
-    bad constructed video file. If the recorder binary does not exist, the
-    function returns immediately."""
+    bad constructed video file."""
     assert parameters.output_path
     assert parameters.file
     BINARY = '/usr/local/cipd/av_sync_record/av_sync_record'
-    if not os.path.isfile(BINARY):
-        logging.warning(
-            '%s is not found, camera capturing will be ignored. This should ' +
-            'only happen on the dev environment without the camera.', BINARY)
-        return
+    assert os.path.isfile(BINARY)
     args = [
         BINARY, '--gid=', '--uid=',
         f'--camera_info_path={parameters.info_file}',

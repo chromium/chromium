@@ -2189,13 +2189,6 @@ TEST_F(HoldingSpaceTrayTest, HasExpectedBubbleTreatment) {
   EXPECT_EQ(bubble->layer()->rounded_corner_radii(), gfx::RoundedCornersF(0.f));
 }
 
-TEST_F(HoldingSpaceTrayTest, CheckTrayAccessibilityText) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_EQ(GetTray()->GetAccessibleNameForTray(),
-            u"Tote: recent screen captures, downloads, and pinned files");
-}
-
 TEST_F(HoldingSpaceTrayTest, TrayButtonWithRefreshIcon) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
@@ -2214,17 +2207,27 @@ TEST_F(HoldingSpaceTrayTest, CheckTrayTooltipText) {
   EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()), u"Tote");
 }
 
-TEST_F(HoldingSpaceTrayTest, BubbleViewAccessibleName) {
+TEST_F(HoldingSpaceTrayTest, AccessibleNames) {
   StartSession();
+  {
+    ui::AXNodeData node_data;
+    GetTray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringFUTF16(
+                  IDS_ASH_HOLDING_SPACE_A11Y_NAME,
+                  l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE)));
+  }
 
   test_api()->Show();
   views::View* bubble = test_api()->GetBubble();
   ASSERT_TRUE(bubble);
 
-  ui::AXNodeData node_data;
-  bubble->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            test_api()->GetAccessibleNameForBubble());
+  {
+    ui::AXNodeData node_data;
+    bubble->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              test_api()->GetAccessibleNameForBubble());
+  }
 }
 
 using HoldingSpacePreviewsTrayTest = HoldingSpaceTrayTestBase;

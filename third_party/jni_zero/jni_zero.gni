@@ -147,23 +147,19 @@ template("generate_jni_registration") {
     walk_keys = [ "java_walk_keys" ]
   }
 
-  if (defined(invoker.priority_java_targets)) {
-    if (enable_jni_multiplexing) {
-      # This is intended for WebView, so we can only look at Java sources. This
-      # is becuase WebView's java is a strict subset of it's native, so we don't
-      # need to take the intersection of it's native and java.
-      _priority_java_sources_list =
-          "$target_gen_dir/$target_name.priority_javasources.txt"
-      jni_sources_list("${target_name}__priority_java_sources") {
-        deps = invoker.priority_java_targets
-        output = _priority_java_sources_list
+  if (enable_jni_multiplexing && defined(invoker.priority_java_targets)) {
+    # This is intended for WebView, so we can only look at Java sources. This
+    # is becuase WebView's java is a strict subset of it's native, so we don't
+    # need to take the intersection of it's native and java.
+    _priority_java_sources_list =
+        "$target_gen_dir/$target_name.priority_javasources.txt"
+    jni_sources_list("${target_name}__priority_java_sources") {
+      deps = invoker.priority_java_targets
+      output = _priority_java_sources_list
 
-        # When apk or bundle module targets are uses, do not pull metadata from
-        # their native library deps.
-        walk_keys = [ "java_walk_keys" ]
-      }
-    } else {
-      not_needed(invoker, [ "priority_java_targets" ])
+      # When apk or bundle module targets are uses, do not pull metadata from
+      # their native library deps.
+      walk_keys = [ "java_walk_keys" ]
     }
   }
 
@@ -239,13 +235,24 @@ template("generate_jni_registration") {
       }
       if (enable_jni_multiplexing) {
         args += [ "--enable-jni-multiplexing" ]
+
+        if (defined(_priority_java_sources_list)) {
+          args += [
+            "--priority-java-sources-file",
+            rebase_path(_priority_java_sources_list, root_build_dir),
+          ]
+        }
+        if (defined(invoker.never_omit_switch_num) &&
+            invoker.never_omit_switch_num) {
+          args += [ "--never-omit-switch-num" ]
+        }
       }
-      if (defined(_priority_java_sources_list)) {
-        args += [
-          "--priority-java-sources-file",
-          rebase_path(_priority_java_sources_list, root_build_dir),
-        ]
-      }
+    } else {
+      not_needed(invoker,
+                 [
+                   "never_omit_switch_num",
+                   "priority_java_targets",
+                 ])
     }
 
     if (defined(invoker.namespace)) {
@@ -586,6 +593,7 @@ template("native_with_jni") {
                                "manual_jni_registration",
                                "module_name",
                                "namespace",
+                               "never_omit_switch_num",
                                "remove_uncalled_jni",
                                "priority_java_targets",
                              ])
@@ -598,6 +606,7 @@ template("native_with_jni") {
                  "manual_jni_registration",
                  "module_name",
                  "namespace",
+                 "never_omit_switch_num",
                  "remove_uncalled_jni",
                  "priority_java_targets",
                ])

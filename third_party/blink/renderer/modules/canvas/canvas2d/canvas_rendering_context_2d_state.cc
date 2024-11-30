@@ -353,7 +353,8 @@ void CanvasRenderingContext2DState::SetFont(
   FontDescription font_description = passed_font_description;
   font_description.SetSubpixelAscentDescent(true);
 
-  CSSToLengthConversionData conversion_data = CSSToLengthConversionData();
+  CSSToLengthConversionData conversion_data =
+      CSSToLengthConversionData(/*element=*/nullptr);
   Font font = Font();
   auto const font_size = CSSToLengthConversionData::FontSizes(
       font_description.ComputedSize(), font_description.ComputedSize(), &font,
@@ -869,7 +870,8 @@ void CanvasRenderingContext2DState::SetLetterSpacing(
   parsed_letter_spacing_ = builder.ToString();
   // Convert letter spacing to pixel length and set it in font_description.
   FontDescription font_description(GetFontDescription());
-  CSSToLengthConversionData conversion_data = CSSToLengthConversionData();
+  CSSToLengthConversionData conversion_data =
+      CSSToLengthConversionData(/*element=*/nullptr);
   auto const font_size = CSSToLengthConversionData::FontSizes(
       font_description.ComputedSize(), font_description.ComputedSize(), &font_,
       1.0f /*Deliberately ignore zoom on the canvas element*/);
@@ -904,7 +906,8 @@ void CanvasRenderingContext2DState::SetWordSpacing(const String& word_spacing) {
   parsed_word_spacing_ = builder.ToString();
   // Convert letter spacing to pixel length and set it in font_description.
   FontDescription font_description(GetFontDescription());
-  CSSToLengthConversionData conversion_data = CSSToLengthConversionData();
+  CSSToLengthConversionData conversion_data =
+      CSSToLengthConversionData(/*element=*/nullptr);
   auto const font_size = CSSToLengthConversionData::FontSizes(
       font_description.ComputedSize(), font_description.ComputedSize(), &font_,
       1.0f /*Deliberately ignore zoom on the canvas element*/);

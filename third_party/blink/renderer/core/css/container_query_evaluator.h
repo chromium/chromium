@@ -43,12 +43,6 @@ class CORE_EXPORT ContainerQueryEvaluator final
                          ContainerSelectorCache&,
                          MatchResult&);
 
-  // Get the parent container candidate for container queries. Either the flat
-  // tree parent or the shadow-including parent based on a runtime flag due to a
-  // spec change.
-  // To be removed when the CSSFlatTreeContainer flag is removed.
-  static Element* ParentContainerCandidateElement(Element& element);
-
   // Width/Height are used by container relative units (qi, qb, etc).
   //
   // A return value of std::nullopt normally means that the relevant axis
@@ -61,11 +55,11 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool DependsOnStyle() const { return depends_on_style_; }
   bool DependsOnStuck() const { return depends_on_stuck_; }
   bool DependsOnSnapped() const { return depends_on_snapped_; }
-  bool DependsOnOverflowing() const { return depends_on_overflowing_; }
+  bool DependsOnScrollable() const { return depends_on_scrollable_; }
   bool DependsOnSize() const { return depends_on_size_; }
   bool MayDependOnWritingDirection() const {
     return DependsOnSize() || DependsOnStuck() || DependsOnSnapped() ||
-           DependsOnOverflowing();
+           DependsOnScrollable();
   }
 
   enum class Change : uint8_t {
@@ -145,9 +139,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
   void UpdateContainerSnapped(ContainerSnappedFlags snapped);
 
   // Update the CSSContainerValues with the new overflowing state.
-  void UpdateContainerOverflowing(
-      ContainerOverflowingFlags overflowing_horizontal,
-      ContainerOverflowingFlags overflowing_vertical);
+  void UpdateContainerScrollable(ContainerScrollableFlags scrollable_horizontal,
+                                 ContainerScrollableFlags scrollable_vertical);
 
   // Re-evaluate the cached results and clear any results which are affected by
   // the ContainerStuckPhysical changes.
@@ -160,16 +153,16 @@ class CORE_EXPORT ContainerQueryEvaluator final
 
   // Re-evaluate the cached results and clear any results which are affected by
   // the snapped target changes.
-  Change OverflowContainerChanged(
-      ContainerOverflowingFlags overflowing_horizontal,
-      ContainerOverflowingFlags overflowing_vertical);
+  Change ScrollableContainerChanged(
+      ContainerScrollableFlags scrollable_horizontal,
+      ContainerScrollableFlags scrollable_vertical);
 
   enum ContainerType {
     kSizeContainer,
     kStyleContainer,
     kStickyContainer,
     kSnapContainer,
-    kOverflowContainer,
+    kScrollableContainer,
   };
   void ClearResults(Change change, ContainerType container_type);
 
@@ -222,10 +215,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
       static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
   ContainerSnappedFlags pending_snapped_ =
       static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
-  ContainerOverflowingFlags overflowing_horizontal_ =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
-  ContainerOverflowingFlags overflowing_vertical_ =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  ContainerScrollableFlags scrollable_horizontal_ =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  ContainerScrollableFlags scrollable_vertical_ =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
   Member<ScrollStateQuerySnapshot> scroll_state_snapshot_;
   // The MediaQueryExpValue::UnitFlags of all queries evaluated against this
@@ -235,7 +228,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool depends_on_style_ = false;
   bool depends_on_stuck_ = false;
   bool depends_on_snapped_ = false;
-  bool depends_on_overflowing_ = false;
+  bool depends_on_scrollable_ = false;
   bool depends_on_size_ = false;
 };
 

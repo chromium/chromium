@@ -70,7 +70,7 @@ class TestTabStatsTracker : public TabStatsTracker {
   TestTabStatsTracker(const TestTabStatsTracker&) = delete;
   TestTabStatsTracker& operator=(const TestTabStatsTracker&) = delete;
 
-  ~TestTabStatsTracker() override {}
+  ~TestTabStatsTracker() override = default;
 
   // Helper functions to update the number of tabs/windows.
 
@@ -160,7 +160,7 @@ class TestTabStatsTracker : public TabStatsTracker {
 class TestUmaStatsReportingDelegate
     : public TestTabStatsTracker::UmaStatsReportingDelegate {
  public:
-  TestUmaStatsReportingDelegate() {}
+  TestUmaStatsReportingDelegate() = default;
 
   TestUmaStatsReportingDelegate(const TestUmaStatsReportingDelegate&) = delete;
   TestUmaStatsReportingDelegate& operator=(

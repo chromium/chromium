@@ -127,7 +127,7 @@ class JavaClass:
     return type_resolver.contextualize(self)
 
   def to_cpp(self):
-    return common.escape_class_name(self.full_name_with_slashes)
+    return common.jni_mangle(self.full_name_with_slashes)
 
   def as_type(self):
     return JavaType(java_class=self)
@@ -150,6 +150,9 @@ class JavaType:
   java_class: Optional[JavaClass] = None
   converted_type: Optional[str] = dataclasses.field(default=None, compare=False)
   nullable: bool = True
+
+  def __post_init__(self):
+    assert (self.java_class is None) != (self.primitive_name is None), self
 
   @staticmethod
   def from_descriptor(descriptor):
@@ -274,9 +277,6 @@ class JavaParamList(tuple):
     return ', '.join(
         p.to_java_declaration(type_resolver=type_resolver) for p in self)
 
-  def to_call_str(self):
-    return ', '.join(p.name for p in self)
-
 
 @dataclasses.dataclass(frozen=True, order=True)
 class JavaSignature:
@@ -332,13 +332,6 @@ class JavaSignature:
     return_type = self.return_type.to_proxy()
     param_list = self.param_list.to_proxy()
     return JavaSignature.from_params(return_type, param_list)
-
-  def with_params_reordered(self):
-    return JavaSignature.from_params(
-        self.return_type,
-        JavaParamList(
-            tuple(sorted(self.param_list,
-                         key=lambda x: x.java_type.to_proxy()))))
 
 
 class TypeResolver:

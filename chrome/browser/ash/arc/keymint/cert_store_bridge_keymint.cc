@@ -32,6 +32,14 @@ void CertStoreBridgeKeyMint::UpdatePlaceholderKeysInKeyMint(
   }
 }
 
+void CertStoreBridgeKeyMint::SetSerialNumber(const std::string& serial_number) {
+  if (!cert_store_proxy_.is_bound()) {
+    LOG(ERROR) << "Failed to update Serial Number. Cert store not bound";
+    return;
+  }
+  cert_store_proxy_->SetSerialNumber(serial_number);
+}
+
 bool CertStoreBridgeKeyMint::IsProxyBound() const {
   return cert_store_proxy_.is_bound();
 }

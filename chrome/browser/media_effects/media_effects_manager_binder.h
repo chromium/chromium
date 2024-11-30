@@ -8,7 +8,11 @@
 #include "content/public/browser/browser_context.h"
 #include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+
+static_assert(BUILDFLAG(ENABLE_VIDEO_EFFECTS),
+              "Requires enable_video_effects to be true");
 
 namespace media_effects {
 

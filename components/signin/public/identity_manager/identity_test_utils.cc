@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_manager_core/account.h"
@@ -145,7 +146,7 @@ AccountAvailabilityOptions::AccountAvailabilityOptions(std::string_view email)
 
 AccountAvailabilityOptions::AccountAvailabilityOptions(
     std::string_view email,
-    std::string_view gaia_id,
+    const GaiaId& gaia_id,
     std::optional<ConsentLevel> consent_level,
     std::optional<std::string> refresh_token,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -195,7 +196,7 @@ AccountAvailabilityOptionsBuilder& AccountAvailabilityOptionsBuilder::AsPrimary(
 }
 
 AccountAvailabilityOptionsBuilder&
-AccountAvailabilityOptionsBuilder::WithGaiaId(std::string_view gaia_id) {
+AccountAvailabilityOptionsBuilder::WithGaiaId(const GaiaId& gaia_id) {
   CHECK(!gaia_id.empty());
   gaia_id_ = gaia_id;
   return *this;
@@ -681,13 +682,13 @@ void SetFreshnessOfAccountsInGaiaCookie(IdentityManager* identity_manager,
   cookie_manager->set_list_accounts_stale_for_testing(!accounts_are_fresh);
 }
 
-std::string GetTestGaiaIdForEmail(const std::string& email) {
+GaiaId GetTestGaiaIdForEmail(const std::string& email) {
   std::string gaia_id =
       std::string("gaia_id_for_") + gaia::CanonicalizeEmail(email);
   // Avoid character '@' in the gaia ID string as there is code in the codebase
   // that asserts that a gaia ID does not contain a "@" character.
   std::replace(gaia_id.begin(), gaia_id.end(), '@', '_');
-  return gaia_id;
+  return GaiaId(gaia_id);
 }
 
 void UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -737,14 +738,14 @@ void CancelAllOngoingGaiaCookieOperations(IdentityManager* identity_manager) {
 void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const CoreAccountId& account_id,
                                           const std::string& email,
-                                          const std::string& gaia,
+                                          const GaiaId& gaia,
                                           const std::string& hosted_domain,
                                           const std::string& full_name,
                                           const std::string& given_name,
                                           const std::string& locale,
                                           const std::string& picture_url) {
   base::Value::Dict user_info;
-  user_info.Set("id", gaia);
+  user_info.Set("id", gaia.ToString());
   user_info.Set("email", email);
   user_info.Set("hd", hosted_domain);
   user_info.Set("name", full_name);

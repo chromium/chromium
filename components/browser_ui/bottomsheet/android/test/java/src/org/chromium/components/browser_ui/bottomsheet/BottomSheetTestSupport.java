@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.bottomsheet;
 
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -53,7 +54,13 @@ public class BottomSheetTestSupport {
         getBottomSheet().setSheetOffsetFromBottom(offset, reason);
     }
 
-    /** @see {@link BottomSheet#getFullRatio()} */
+    public void setBottomMargin(int offset) {
+        getBottomSheet().setBottomMargin(offset);
+    }
+
+    /**
+     * @see {@link BottomSheet#getFullRatio()}
+     */
     public float getFullRatio() {
         return getBottomSheet().getFullRatio();
     }
@@ -111,6 +118,11 @@ public class BottomSheetTestSupport {
     /** @return The bottom sheet view. */
     private BottomSheet getBottomSheet() {
         return (BottomSheet) mController.getBottomSheetViewForTesting();
+    }
+
+    /** Returns the container for the bottom sheet. */
+    public ViewGroup getSheetContainer() {
+        return mController.getBottomSheetContainerForTesting();
     }
 
     /**

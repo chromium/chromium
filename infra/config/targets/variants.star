@@ -13,6 +13,30 @@ targets.variant(
 )
 
 targets.variant(
+    name = "CHANNEL_BETA",
+    identifier = "Beta Channel",
+    args = [
+        "--channel=beta",
+    ],
+)
+
+targets.variant(
+    name = "CHANNEL_DEV",
+    identifier = "Dev Channel",
+    args = [
+        "--channel=dev",
+    ],
+)
+
+targets.variant(
+    name = "CHANNEL_STABLE",
+    identifier = "Stable Channel",
+    args = [
+        "--channel=stable",
+    ],
+)
+
+targets.variant(
     name = "DISABLE_FIELD_TRIAL_CONFIG",
     identifier = "Disable Field Trial Config",
     generate_pyl_entry = False,

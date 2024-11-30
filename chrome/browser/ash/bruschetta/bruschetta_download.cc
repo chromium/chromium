@@ -85,7 +85,7 @@ std::string Sha256File(const base::FilePath& path) {
     if (read.value_or(0) == 0) {
       break;
     }
-    ctx->Update(base::span(buffer).subspan(0, *read));
+    ctx->Update(base::span(buffer).first(*read));
   }
 
   std::array<uint8_t, crypto::kSHA256Length> digest_bytes;

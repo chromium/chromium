@@ -147,7 +147,7 @@ TEST_F(ConnectorTest, Basic) {
       std::string(reinterpret_cast<const char*>(message_received.payload())));
 }
 
-TEST_F(ConnectorTest, Basic_Synchronous) {
+TEST_F(ConnectorTest, BasicSynchronous) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
@@ -172,7 +172,7 @@ TEST_F(ConnectorTest, Basic_Synchronous) {
       std::string(reinterpret_cast<const char*>(message_received.payload())));
 }
 
-TEST_F(ConnectorTest, Basic_EarlyIncomingReceiver) {
+TEST_F(ConnectorTest, BasicEarlyIncomingReceiver) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
@@ -198,7 +198,7 @@ TEST_F(ConnectorTest, Basic_EarlyIncomingReceiver) {
       std::string(reinterpret_cast<const char*>(message_received.payload())));
 }
 
-TEST_F(ConnectorTest, Basic_TwoMessages) {
+TEST_F(ConnectorTest, BasicTwoMessages) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
@@ -230,7 +230,7 @@ TEST_F(ConnectorTest, Basic_TwoMessages) {
   }
 }
 
-TEST_F(ConnectorTest, Basic_TwoMessages_Synchronous) {
+TEST_F(ConnectorTest, BasicTwoMessagesSynchronous) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,

@@ -262,7 +262,7 @@
 <translation id="2138109643290557664">شناور شدن</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />٪</translation>
 <translation id="2148716181193084225">امروز</translation>
-<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="215206000155329774"><ph name="INTENT" />؛ <ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> عکس</translation>
 <translation id="2154460308960858308">پاک کردن جستجو</translation>
 <translation id="2157660087437850958">انتخاب‌گر اموجی</translation>
@@ -488,7 +488,7 @@
 <translation id="3361618936611118375">سوشی</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
-<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="3369632935976756339"><ph name="INTENT" />؛ <ph name="QUERY_TEXT" />؛ <ph name="SUBTEXT" />؛ <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">کاغذدیواری گردش زمین</translation>
 <translation id="33736539805963175">پس‌زمینه <ph name="LETTERS_COLOR" /> با حرف <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">انحصاری</translation>
@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
 <translation id="361575905210396100">از بازخوردتان سپاس‌گزاریم</translation>
 <translation id="3621072146987826699">فیل</translation>
+<translation id="3628462041319107639">درحال بارگیری مدل ترانویسی…</translation>
 <translation id="3632040286124154621">پیشنهاد خوب</translation>
 <translation id="3632579075709132555">پنهان/ نمایان کردن صفحه حریم خصوصی</translation>
 <translation id="3639873154908477486">نام (الف تا ی)</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
 <translation id="382043424867370667">کاغذدیواری غروب آفتاب</translation>
 <translation id="3824259034819781947">پیوست فایل</translation>
+<translation id="383586991013681190">زبان ترانویسی را انتخاب کنید و در «تنظیمات» بارگیری کنید</translation>
 <translation id="3836587210832263413">فقط افزونه‌هایی را که به آن‌ها اعتماد دارید روشن کنید</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
 <translation id="3845880861638660475">برای بستن کادر گفتگو، کلیدهای <ph name="ALT_SHORTCUT_START" />دگرساز<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />گریز<ph name="ESC_SHORTCUT_END" /> را فشار دهید.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">نتیجه منطبقی پیدا نشد</translation>
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
+<translation id="4483498983731992167">ترانویسی ایجاد نشد</translation>
 <translation id="4486524074141928967">در <ph name="TIME" /> از سیستم خارج خواهید شد</translation>
 <translation id="4500722292849917410">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از یکی از کلیدهای توصیف‌گر (مهار، دگرساز، تبدیل، یا <ph name="META_KEY" />) فشار دهید.</translation>
 <translation id="4500966230243561393">رنگ میانا</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">بالا</translation>
 <translation id="5107243100836678918">اگر میان‌بر کلید <ph name="META_KEY" /> نداشته باشد، ممکن است با میان‌بر برخی‌از برنامه‌ها تداخل پیدا کند. اگر می‌خواهید همچنان از این میان‌بر استفاده کنید آن را دوباره فشار دهید، یا میان‌بر جدیدی را بااستفاده از کلید <ph name="KEY" /> فشار دهید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">مترادف:</translation>
+<translation id="5121677070210013200">‏مدل ترانویسی بارگیری نشد. دوباره امتحان کنید یا Chromebook را بازراه‌اندازی کنید.</translation>
 <translation id="5130848777448318809">اسبچه</translation>
 <translation id="5137451382116112100">تمام‌صفحه</translation>
 <translation id="5140788690559353412">‏وقتی دسترسی به حساب تحصیلی خود را ازدست بدهید، دیگر به ایمیل منسوب و فایل‌های Google Drive مثل Gmail، «سندنگار»، «اسلایدنگار»، و غیره دسترسی نخواهید داشت.</translation>
@@ -1040,6 +1044,7 @@
 <translation id="6058625436358447366">برای تکمیل کار، گذرواژه‌های قدیمی و جدیدتان را وارد کنید</translation>
 <translation id="6061772781719867950">‏درخواست‌های HTTP ناموفق بود</translation>
 <translation id="6073292342939316679">کاهش روشنایی صفحه‌کلید</translation>
+<translation id="6074752328838739425">پنهان کردن خلاصه</translation>
 <translation id="6075872808778243331">‏(Android) تأخیر HTTP ‏</translation>
 <translation id="6078323886959318429">افزودن میان‌بر</translation>
 <translation id="6091080061796993741">زرد</translation>
@@ -1103,7 +1108,7 @@
 <translation id="6331191339300272798">زمینه تاریک خودکار</translation>
 <translation id="6335228876613776082">مدل بارگیری شد</translation>
 <translation id="6340526405444716530">شخصی‌سازی</translation>
-<translation id="6348252528297699679">می‌توانید مکان را در «تنظیمات &gt; حریم خصوصی و امنیت &gt; تنظیمات حریم خصوصی &gt; دسترسی به مکان» خاموش کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="6348252528297699679">می‌توانید مکان را در «تنظیمات &gt; حریم خصوصی و امنیت &gt; کنترل‌های حریم خصوصی &gt; دسترسی به مکان» خاموش کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">نام کاربری و گذرواژه</translation>
 <translation id="6352210854422428614">سیاره دیگر</translation>
 <translation id="6359706544163531585">غیرفعال کردن زمینه روشن</translation>
@@ -1229,6 +1234,7 @@
 <translation id="6866732840889595464">گل مینا</translation>
 <translation id="6871256179359663621">بنفش روشن</translation>
 <translation id="6889786074662672253">درحین بازراه‌اندازی، این دستگاه خارجی را از برق نکشید یا رایانه را خاموش نکنید. می‌توانید این پنجره را کوچک کنید. این کار ممکن است چند دقیقه طول بکشد و در این مدت ممکن است دستگاه خارجی‌تان کار نکند.</translation>
+<translation id="6899460405678814458">نمایش دادن خلاصه</translation>
 <translation id="6900701049656042631">این آلبوم عکسی ندارد. برای افزودن عکس، به <ph name="LINK" /> بروید</translation>
 <translation id="6902359863093437070">ایجاد پس‌زمینه با هوش مصنوعی</translation>
 <translation id="6905163627763043954">امتحانش کنید</translation>
@@ -1262,6 +1268,7 @@
 <translation id="7040729769968826896">مجاز کردن تشخیص گوینده</translation>
 <translation id="7041549558901442110">دستگاه متصل نشده است.</translation>
 <translation id="7046522406494308071">همه میان‌برها به حالت پیش‌فرض بازنشانی شود؟</translation>
+<translation id="7049916119678019302">مدل ترانویسی را در «تنظیمات» بارگیری کنید</translation>
 <translation id="7058278511608979688">پایان و ذخیره</translation>
 <translation id="7059230779847288458">درحال شارژ، <ph name="TIME_VALUE" /> تا شارژ کامل</translation>
 <translation id="7066538517128343186">کلید <ph name="KEY" /></translation>
@@ -1351,7 +1358,7 @@
 <translation id="7388959671917308825">صفحه لمسی داخلی</translation>
 <translation id="7397270852490618635">خاموش کردن زمینه روشن</translation>
 <translation id="7401543881546089382">حذف میان‌بر</translation>
-<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> آماده به‌روزرسانی است</translation>
+<translation id="7405493795721832710">‫<ph name="DEVICE_NAME" /> آماده به‌روزرسانی است</translation>
 <translation id="741244894080940828">تبدیل</translation>
 <translation id="7415801143053185905">‏تأخیر خیلی زیاد HTTP</translation>
 <translation id="7418738250896500352">تعداد کلمه‌ها برای ساده کردن خیلی زیاد است</translation>
@@ -1482,7 +1489,7 @@
 <translation id="8045012663542226664">بی‌صدا کردن میکروفون</translation>
 <translation id="8054112564438735763">بژ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> روی پس‌زمینه <ph name="CHARACTERS_BACKGROUND" /></translation>
-<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">«نام نقطه دستیابی» متصل است.</translation>
 <translation id="8067208048261192356">قهوه‌ای</translation>
 <translation id="8067224607978179455">حذف <ph name="ACTION_NAME" /></translation>
@@ -1725,7 +1732,7 @@
 <translation id="917720651393141712">آزمایش کردن</translation>
 <translation id="9188992814426075118">صفحه‌کلیدتان می‌تواند به‌طور خودکار با کاغذدیواری منطبق شود</translation>
 <translation id="9189000703457422362">نمی‌توان بااستفاده از نقطه‌های «نام نقطه دستیابی» که به‌طور خودکار شناسایی شده است به این شبکه متصل شد. برای کسب اطلاعات بیشتر با شرکت مخابراتی‌تان تماس بگیرید.</translation>
-<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />؛ <ph name="SUBTEXT" />؛ <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">«نام نقطه دستیابی»*</translation>
 <translation id="9195918315673527512">کلیدهای دسته کنترل انتخاب‌شده <ph name="KEYS" /> هستند. برای ویرایش کنترل، روی دکمه تک‌ضرب بزنید</translation>
 <translation id="9204237731135241582">‏نمی‌توان از برنامه‌های Android با دروازه تماس گرفت</translation>

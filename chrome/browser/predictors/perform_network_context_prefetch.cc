@@ -29,6 +29,7 @@
 #include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/referrer_policy.h"
+#include "net/url_request/url_request_job.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/attribution.mojom.h"
@@ -58,6 +59,15 @@ const std::string SerializeHeaderString(const T& value) {
   return net::structured_headers::SerializeItem(
              net::structured_headers::Item(value))
       .value_or(std::string());
+}
+
+// Returns the correct referrer header for a request to `url` from `page`.
+// Currently assumes the policy is
+// REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN.
+GURL CalculateReferrer(const GURL& page, const GURL& url) {
+  return net::URLRequestJob::ComputeReferrerForPolicy(
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN, page,
+      url);
 }
 
 // Heuristic to identify a favicon request.
@@ -101,9 +111,10 @@ void PrefetchResource(
 
   // TODO(crbug.com/342445996): We need the predictor to predict the referrer
   // policy so that we can create the referrer fields correctly.
-  request.referrer = page;
-  request.referrer_policy =
-      net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN;
+  static constexpr net::ReferrerPolicy kExpectedReferrerPolicy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
+  request.referrer = CalculateReferrer(page, url);
+  request.referrer_policy = kExpectedReferrerPolicy;
 
   auto& headers = request.headers;
   headers.SetHeader("Purpose", "prefetch");
@@ -238,6 +249,14 @@ void PerformNetworkContextPrefetch(Profile* profile,
     // incognito or not.
     return;
   }
+  // Only support secure connections.
+  // TODO(crbug.com/342445996): Maybe relax this restriction if this code is
+  // used by features that support insecure prefetches.
+  if (!page.SchemeIsCryptographic()) {
+    DLOG(ERROR) << "PerformNetworkContextPrefetch() called for non-SSL page: "
+                << page << " (ignored)";
+    return;
+  }
   const auto page_origin = url::Origin::Create(page);
   content::StoragePartition* storage_partition =
       profile->GetStoragePartitionForUrl(page);
@@ -270,6 +289,15 @@ void PerformNetworkContextPrefetch(Profile* profile,
       // TODO(crbug.com/342445996): Support more resource types.
       continue;
     }
+    // Only support secure subresources.
+    // TODO(crbug.com/342445996): Relax this restriction in future if needed.
+    if (!url.SchemeIsCryptographic()) {
+      DLOG(ERROR)
+          << "PerformNetworkContextPrefetch() called for non-SSL subresource: "
+          << url << " (ignored)";
+      continue;
+    }
+
     // TODO(crbug.com/342445996): Usually requests will have the same origin, so
     // maybe cache (origin, accept_langage) to avoid wasteful recalculation?
     const std::string accept_language =

@@ -10,20 +10,13 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "build/build_config.h"
 
 namespace base {
 
-DriveInfo::DriveInfo() = default;
-DriveInfo::~DriveInfo() = default;
-DriveInfo::DriveInfo(DriveInfo&&) = default;
-DriveInfo& DriveInfo::operator=(DriveInfo&&) = default;
-
 std::optional<DriveInfo> GetFileDriveInfo(const FilePath& path) {
-  std::vector<base::FilePath::StringType> components = path.GetComponents();
+  std::vector<FilePath::StringType> components = path.GetComponents();
 
-  base::File volume(base::FilePath(L"\\\\.\\" + components[0]),
-                    base::File::FLAG_OPEN);
+  File volume(FilePath(L"\\\\.\\" + components[0]), File::FLAG_OPEN);
   if (!volume.IsValid()) {
     return std::nullopt;
   }

@@ -23,8 +23,8 @@ class Extension;
 // MediaCaptureDevicesDispatcher.
 class MediaAccessHandler {
  public:
-  MediaAccessHandler() {}
-  virtual ~MediaAccessHandler() {}
+  MediaAccessHandler() = default;
+  virtual ~MediaAccessHandler() = default;
 
   // Check if the media stream type is supported by MediaAccessHandler.
   virtual bool SupportsStreamType(content::WebContents* web_contents,

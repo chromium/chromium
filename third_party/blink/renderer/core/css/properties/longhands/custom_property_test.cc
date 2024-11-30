@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -103,8 +102,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(
-      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
+  EXPECT_EQ(100, primitive_value->ComputeLength<double>(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
@@ -114,8 +113,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(
-      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
+  EXPECT_EQ(100, primitive_value->ComputeLength<double>(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
@@ -125,8 +124,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(
-      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
+  EXPECT_EQ(100, primitive_value->ComputeLength<double>(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueEmptyInitial) {
@@ -197,7 +196,7 @@ TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
       ParseValue(property, "100px", CSSParserLocalContext());
   EXPECT_TRUE(value1->IsPrimitiveValue());
   EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->ComputeLength<double>(
-                     CSSToLengthConversionData()));
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 
   const CSSValue* value2 =
       ParseValue(property, "maroon", CSSParserLocalContext());

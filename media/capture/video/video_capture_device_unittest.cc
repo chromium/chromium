@@ -61,81 +61,77 @@
 
 #if BUILDFLAG(IS_APPLE)
 // Mac will always give you the size you ask for and this case will fail.
-#define MAYBE_UsingRealWebcam_AllocateBadSize \
-  DISABLED_UsingRealWebcam_AllocateBadSize
+#define MAYBE_UsingRealWebcamAllocateBadSize \
+  DISABLED_UsingRealWebcamAllocateBadSize
 // We will always get YUYV from the Mac AVFoundation implementations.
-#define MAYBE_UsingRealWebcam_CaptureMjpeg DISABLED_UsingRealWebcam_CaptureMjpeg
+#define MAYBE_UsingRealWebcamCaptureMjpeg DISABLED_UsingRealWebcamCaptureMjpeg
 
 // TODO(crbug.com/40148984): Re-enable as soon as issues with resource access
 // are fixed.
-#define MAYBE_UsingRealWebcam_TakePhoto DISABLED_UsingRealWebcam_TakePhoto
+#define MAYBE_UsingRealWebcamTakePhoto DISABLED_UsingRealWebcamTakePhoto
 // TODO(crbug.com/40148984): Re-enable as soon as issues with resource access
 // are fixed.
-#define MAYBE_UsingRealWebcam_GetPhotoState \
-  DISABLED_UsingRealWebcam_GetPhotoState
+#define MAYBE_UsingRealWebcamGetPhotoState DISABLED_UsingRealWebcamGetPhotoState
 // TODO(crbug.com/40148984): Re-enable as soon as issues with resource access
 // are fixed.
-#define MAYBE_UsingRealWebcam_CaptureWithSize \
-  DISABLED_UsingRealWebcam_CaptureWithSize
+#define MAYBE_UsingRealWebcamCaptureWithSize \
+  DISABLED_UsingRealWebcamCaptureWithSize
 
-#define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
-  UsingRealWebcam_CheckPhotoCallbackRelease
+#define MAYBE_UsingRealWebcamCheckPhotoCallbackRelease \
+  UsingRealWebcamCheckPhotoCallbackRelease
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 // Windows test bots don't have camera.
 // Linux test bots don't have camera.
 // On Fuchsia the tests run under emulator that doesn't support camera.
-#define MAYBE_UsingRealWebcam_AllocateBadSize \
-  DISABLED_UsingRealWebcam_AllocateBadSize
-#define MAYBE_UsingRealWebcam_CaptureMjpeg DISABLED_UsingRealWebcam_CaptureMjpeg
-#define MAYBE_UsingRealWebcam_TakePhoto DISABLED_UsingRealWebcam_TakePhoto
-#define MAYBE_UsingRealWebcam_GetPhotoState \
-  DISABLED_UsingRealWebcam_GetPhotoState
-#define MAYBE_UsingRealWebcam_CaptureWithSize \
-  DISABLED_UsingRealWebcam_CaptureWithSize
-#define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
-  DISABLED_UsingRealWebcam_CheckPhotoCallbackRelease
+#define MAYBE_UsingRealWebcamAllocateBadSize \
+  DISABLED_UsingRealWebcamAllocateBadSize
+#define MAYBE_UsingRealWebcamCaptureMjpeg DISABLED_UsingRealWebcamCaptureMjpeg
+#define MAYBE_UsingRealWebcamTakePhoto DISABLED_UsingRealWebcamTakePhoto
+#define MAYBE_UsingRealWebcamGetPhotoState DISABLED_UsingRealWebcamGetPhotoState
+#define MAYBE_UsingRealWebcamCaptureWithSize \
+  DISABLED_UsingRealWebcamCaptureWithSize
+#define MAYBE_UsingRealWebcamCheckPhotoCallbackRelease \
+  DISABLED_UsingRealWebcamCheckPhotoCallbackRelease
 #elif BUILDFLAG(IS_ANDROID)
-#define MAYBE_UsingRealWebcam_AllocateBadSize UsingRealWebcam_AllocateBadSize
+#define MAYBE_UsingRealWebcamAllocateBadSize UsingRealWebcamAllocateBadSize
 // This format is not returned by VideoCaptureDeviceFactoryAndroid's
 // GetSupportedFormats
-#define MAYBE_UsingRealWebcam_CaptureMjpeg DISABLED_UsingRealWebcam_CaptureMjpeg
-#define MAYBE_UsingRealWebcam_TakePhoto UsingRealWebcam_TakePhoto
-#define MAYBE_UsingRealWebcam_GetPhotoState UsingRealWebcam_GetPhotoState
-#define MAYBE_UsingRealWebcam_CaptureWithSize UsingRealWebcam_CaptureWithSize
-#define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
-  UsingRealWebcam_CheckPhotoCallbackRelease
+#define MAYBE_UsingRealWebcamCaptureMjpeg DISABLED_UsingRealWebcamCaptureMjpeg
+#define MAYBE_UsingRealWebcamTakePhoto UsingRealWebcamTakePhoto
+#define MAYBE_UsingRealWebcamGetPhotoState UsingRealWebcamGetPhotoState
+#define MAYBE_UsingRealWebcamCaptureWithSize UsingRealWebcamCaptureWithSize
+#define MAYBE_UsingRealWebcamCheckPhotoCallbackRelease \
+  UsingRealWebcamCheckPhotoCallbackRelease
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_UsingRealWebcam_AllocateBadSize \
-  DISABLED_UsingRealWebcam_AllocateBadSize
-#define MAYBE_UsingRealWebcam_CaptureMjpeg UsingRealWebcam_CaptureMjpeg
-#define MAYBE_UsingRealWebcam_TakePhoto DISABLED_UsingRealWebcam_TakePhoto
-#define MAYBE_UsingRealWebcam_GetPhotoState \
-  DISABLED_UsingRealWebcam_GetPhotoState
-#define MAYBE_UsingRealWebcam_CaptureWithSize \
-  DISABLED_UsingRealWebcam_CaptureWithSize
-#define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
+#define MAYBE_UsingRealWebcamAllocateBadSize \
+  DISABLED_UsingRealWebcamAllocateBadSize
+#define MAYBE_UsingRealWebcamCaptureMjpeg UsingRealWebcamCaptureMjpeg
+#define MAYBE_UsingRealWebcamTakePhoto DISABLED_UsingRealWebcamTakePhoto
+#define MAYBE_UsingRealWebcamGetPhotoState DISABLED_UsingRealWebcamGetPhotoState
+#define MAYBE_UsingRealWebcamCaptureWithSize \
+  DISABLED_UsingRealWebcamCaptureWithSize
+#define MAYBE_UsingRealWebcamCheckPhotoCallbackRelease \
   UsingRealWebcam_CheckPhotoCallbackRelease
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 // UsingRealWebcam_AllocateBadSize will hang when a real camera is attached and
 // if more than one test is trying to use the camera (even across processes). Do
 // NOT renable this test without fixing the many bugs associated with it:
 // http://crbug.com/94134 http://crbug.com/137260 http://crbug.com/417824
-#define MAYBE_UsingRealWebcam_AllocateBadSize \
-  DISABLED_UsingRealWebcam_AllocateBadSize
-#define MAYBE_UsingRealWebcam_CaptureMjpeg UsingRealWebcam_CaptureMjpeg
-#define MAYBE_UsingRealWebcam_TakePhoto UsingRealWebcam_TakePhoto
-#define MAYBE_UsingRealWebcam_GetPhotoState UsingRealWebcam_GetPhotoState
-#define MAYBE_UsingRealWebcam_CaptureWithSize UsingRealWebcam_CaptureWithSize
-#define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
-  UsingRealWebcam_CheckPhotoCallbackRelease
+#define MAYBE_UsingRealWebcamAllocateBadSize \
+  DISABLED_UsingRealWebcamAllocateBadSize
+#define MAYBE_UsingRealWebcamCaptureMjpeg UsingRealWebcamCaptureMjpeg
+#define MAYBE_UsingRealWebcamTakePhoto UsingRealWebcamTakePhoto
+#define MAYBE_UsingRealWebcamGetPhotoState UsingRealWebcamGetPhotoState
+#define MAYBE_UsingRealWebcamCaptureWithSize UsingRealWebcamCaptureWithSize
+#define MAYBE_UsingRealWebcamCheckPhotoCallbackRelease \
+  UsingRealWebcamCheckPhotoCallbackRelease
 #else
-#define MAYBE_UsingRealWebcam_AllocateBadSize UsingRealWebcam_AllocateBadSize
-#define MAYBE_UsingRealWebcam_CaptureMjpeg UsingRealWebcam_CaptureMjpeg
-#define MAYBE_UsingRealWebcam_TakePhoto DISABLED_UsingRealWebcam_TakePhoto
-#define MAYBE_UsingRealWebcam_GetPhotoState \
-  DISABLED_UsingRealWebcam_GetPhotoState
-#define MAYBE_UsingRealWebcam_CaptureWithSize UsingRealWebcam_CaptureWithSize
-#define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
+#define MAYBE_UsingRealWebcamAllocateBadSize UsingRealWebcamAllocateBadSize
+#define MAYBE_UsingRealWebcamCaptureMjpeg UsingRealWebcamCaptureMjpeg
+#define MAYBE_UsingRealWebcamTakePhoto DISABLED_UsingRealWebcamTakePhoto
+#define MAYBE_UsingRealWebcamGetPhotoState DISABLED_UsingRealWebcamGetPhotoState
+#define MAYBE_UsingRealWebcamCaptureWithSize UsingRealWebcamCaptureWithSize
+#define MAYBE_UsingRealWebcamCheckPhotoCallbackRelease \
   UsingRealWebcam_CheckPhotoCallbackRelease
 #endif
 
@@ -528,7 +524,7 @@ TEST(VideoCaptureDeviceDescriptor, RemoveTrailingWhitespaceFromDisplayName) {
 }
 
 // Allocates the first enumerated device, and expects a frame.
-WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_CaptureWithSize) {
+WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcamCaptureWithSize) {
   RunTestCase(
       base::BindOnce(&VideoCaptureDeviceTest::RunCaptureWithSizeTestCase,
                      base::Unretained(this)));
@@ -585,7 +581,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Allocates a device with an uncommon resolution and verifies frames are
 // captured in a close, much more typical one.
-WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_AllocateBadSize) {
+WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcamAllocateBadSize) {
   RunTestCase(
       base::BindOnce(&VideoCaptureDeviceTest::RunAllocateBadSizeTestCase,
                      base::Unretained(this)));
@@ -669,7 +665,7 @@ void VideoCaptureDeviceTest::RunReAllocateCameraTestCase() {
 }
 
 // Starts the camera in 720p to try and capture MJPEG format.
-WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_CaptureMjpeg) {
+WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcamCaptureMjpeg) {
   RunTestCase(base::BindOnce(&VideoCaptureDeviceTest::RunCaptureMjpegTestCase,
                              base::Unretained(this)));
 }
@@ -732,7 +728,7 @@ void VideoCaptureDeviceTest::RunNoCameraSupportsPixelFormatMaxTestCase() {
 
 // Starts the camera and verifies that a photo can be taken. The correctness of
 // the photo is enforced by MockImageCaptureClient.
-WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_TakePhoto) {
+WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcamTakePhoto) {
   RunTestCase(base::BindOnce(&VideoCaptureDeviceTest::RunTakePhotoTestCase,
                              base::Unretained(this)));
 }
@@ -779,7 +775,7 @@ void VideoCaptureDeviceTest::RunTakePhotoTestCase() {
 }
 
 // Starts the camera and verifies that the photo capabilities can be retrieved.
-WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_GetPhotoState) {
+WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcamGetPhotoState) {
   RunTestCase(base::BindOnce(&VideoCaptureDeviceTest::RunGetPhotoStateTestCase,
                              base::Unretained(this)));
 }
@@ -834,7 +830,7 @@ void VideoCaptureDeviceTest::RunGetPhotoStateTestCase() {
 #if BUILDFLAG(IS_WIN)
 // Verifies that the photo callback is correctly released by MediaFoundation
 WRAPPED_TEST_P(VideoCaptureDeviceTest,
-               MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease) {
+               MAYBE_UsingRealWebcamCheckPhotoCallbackRelease) {
   if (!UseWinMediaFoundation())
     return;
 

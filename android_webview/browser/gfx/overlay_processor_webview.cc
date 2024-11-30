@@ -997,8 +997,7 @@ bool OverlayProcessorWebView::ProcessForFrameSinkId(
       auto uv_rect = gfx::BoundingRect(texture_quad->uv_top_left,
                                        texture_quad->uv_bottom_right);
 
-      auto new_resource_id =
-          pass.draw_quads().front().remapped_resources.ids[0];
+      auto new_resource_id = pass.draw_quads().front().remapped_resource_id;
       if (resource_provider_->IsOverlayCandidate(new_resource_id)) {
         UpdateOverlayResource(frame_sink_id, new_resource_id, uv_rect);
         buffer_updated = true;

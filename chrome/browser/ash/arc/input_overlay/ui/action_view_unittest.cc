@@ -152,8 +152,6 @@ TEST_F(ActionViewTest, TestDragMoveActionMove) {
   auto origin_mouse_pos = root_location_;
   MouseDragActionViewBy(move_action_view, gfx::Vector2d(10, 10));
   ReleaseLeftMouse(move_action_view);
-  // Save the change.
-  move_action_->BindPending();
   auto mouse_moved = root_location_ - origin_mouse_pos;
   updated_pos += mouse_moved;
   // Check if touch position is updated after drag move.
@@ -166,8 +164,6 @@ TEST_F(ActionViewTest, TestDragMoveActionMove) {
   auto origin_touch_pos = root_location_;
   TouchMoveAtActionViewBy(move_action_view, gfx::Vector2d(-10, -15));
   TouchReleaseAtActionView(move_action_view);
-  // Save the change.
-  move_action_->BindPending();
   auto touch_moved = root_location_ - origin_touch_pos;
   updated_pos += touch_moved;
   // Check if touch position is updated after drag move.
@@ -188,8 +184,6 @@ TEST_F(ActionViewTest, TestDragMoveActionTap) {
   auto origin_mouse_pos = root_location_;
   MouseDragActionViewBy(tap_action_view, gfx::Vector2d(-10, 0));
   ReleaseLeftMouse(tap_action_view);
-  // Save the change.
-  tap_action_->BindPending();
   auto mouse_moved = root_location_ - origin_mouse_pos;
   updated_pos += mouse_moved;
   // Check if touch position is updated after drag move.
@@ -203,8 +197,6 @@ TEST_F(ActionViewTest, TestDragMoveActionTap) {
   auto origin_touch_pos = root_location_;
   TouchMoveAtActionViewBy(tap_action_view, gfx::Vector2d(20, 0));
   TouchReleaseAtActionView(tap_action_view);
-  // Save the change.
-  tap_action_->BindPending();
   auto touch_moved = root_location_ - origin_touch_pos;
   updated_pos += touch_moved;
   // Check if touch position is updated after drag move.
@@ -357,7 +349,6 @@ TEST_F(ActionViewTest, TestArrowKeyMove) {
       ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_LEFT, ui::EF_NONE));
   move_action_view->touch_point()->OnKeyReleased(
       ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_LEFT, ui::EF_NONE));
-  move_action_->BindPending();
   auto move_left = gfx::Vector2d(-kArrowKeyMoveDistance, 0);
   updated_pos += move_left;
   EXPECT_POINTF_NEAR(updated_pos, move_action_->touch_down_positions()[0],
@@ -369,7 +360,6 @@ TEST_F(ActionViewTest, TestArrowKeyMove) {
       ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE));
   move_action_view->touch_point()->OnKeyReleased(
       ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_DOWN, ui::EF_NONE));
-  move_action_->BindPending();
   auto move_down = gfx::Vector2d(0, kArrowKeyMoveDistance);
   updated_pos += move_down;
   EXPECT_POINTF_NEAR(updated_pos, move_action_->touch_down_positions()[0],
@@ -386,7 +376,6 @@ TEST_F(ActionViewTest, TestArrowKeyMove) {
   }
   move_action_view->touch_point()->OnKeyReleased(
       ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_RIGHT, ui::EF_NONE));
-  move_action_->BindPending();
   EXPECT_POINTF_NEAR(updated_pos, move_action_->touch_down_positions()[0],
                      kTolerance);
 }

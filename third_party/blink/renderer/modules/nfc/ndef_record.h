@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "services/device/public/mojom/nfc.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -80,7 +81,7 @@ class MODULES_EXPORT NDEFRecord final : public ScriptWrappable {
   const String& id() const { return id_; }
   const String& encoding() const { return encoding_; }
   const String& lang() const { return lang_; }
-  DOMDataView* data() const;
+  NotShared<DOMDataView> data() const;
   std::optional<HeapVector<Member<NDEFRecord>>> toRecords(
       ExceptionState& exception_state) const;
 

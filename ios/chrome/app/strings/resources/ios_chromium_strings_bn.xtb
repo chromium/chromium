@@ -19,6 +19,7 @@
 <translation id="146407871188825689">ডিফল্ট হিসেবে, iPad-এ Chromium ব্যবহার করুন</translation>
 <translation id="1471084500615228555">Chromium-এ ব্রাউজ করা ডেটা মুছুন</translation>
 <translation id="1472013873724362412">আপনার অ্যাকাউন্ট Chromium-এ কাজ করে না৷ সাইন-ইন করার জন্য আপনার ডোমেন অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন বা কোন সাধারণ Google অ্যাকাউন্ট ব্যবহার করুন৷</translation>
+<translation id="148576268809812097">Chromium-এ আপনার পাসওয়ার্ড সেভ করুন</translation>
 <translation id="1501302548410882220">সব জায়গায় Chromium ব্যবহার করুন</translation>
 <translation id="1503199973012840174">আপনার Chromium পুরনো হয়ে গেছে। নিরাপদ থাকতে এটি আপডেট করুন।</translation>
 <translation id="1515748263297244785">iPad-এর জন্য ডিফল্ট হিসেবে Chromium ব্যবহার করুন</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">পাসওয়ার্ড আপনার অ্যাকাউন্টে (<ph name="EMAIL" />) সেভ করা হবে।</translation>
 <translation id="1811860791247653035">পছন্দমতো সুবিধা ও অন্যান্য ফিচার ব্যবহার করতে <ph name="FEATURE_NAME_1" /> ও <ph name="FEATURE_NAME_2" />-এ Chromium যোগ করে নিন</translation>
 <translation id="1838412507805038478"><ph name="ISSUER" /> যে এই ওয়েবসাইটের শংসাপত্র প্রকাশ করেছে Chromium তা যাচাই করেছে।</translation>
+<translation id="1839447949248872139">সাধারণত Chromium-এ লিঙ্ক খুলুন</translation>
 <translation id="1843424232666537147">Google Chrome-এর এমন বৈশিষ্ট্য রয়েছে যা আপনাকে আপনার ইন্টারনেট ডেটা পরিচালনা করতে এবং কিভাবে আপনি ওয়েবপৃষ্ঠাগুলি দ্রুত লোড করতে পারবেন সে বিষয়ে সহায়তা করে।
 <ph name="BEGIN_LINK" />আরো জানুন<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromium-এ Maps</translation>
@@ -160,6 +162,7 @@
 <translation id="5048795749726991615">আপনার অন্যান্য অ্যাপে আপনার সেভ করা পাসওয়ার্ডগুলি সহজেই পেতে, অটোফিলের জন্য Chromium ব্যবহার করুন</translation>
 <translation id="5053429694249468757">Chromium-এর ডেটা মোছা হচ্ছে…</translation>
 <translation id="5071749685031362629">iOS-এর জন্য Chromium</translation>
+<translation id="5088872414922783602">হোম স্ক্রিন ডক থেকে আরও দ্রুত Chromium অ্যাক্সেস করুন।</translation>
 <translation id="5124429847818367226">মেসেজ, ডকুমেন্ট ও অন্যান্য অ্যাপ ব্রাউজ করতে বা এইসবের লিঙ্কে ট্যাপ করতে এখন আপনি যেকোনও সময় Chromium ব্যবহার করত পারবেন।</translation>
 <translation id="5131565040785979529">আপনার সাইন-ইন করে থাকা অ্যাকাউন্ট এবং Chromium কীভাবে ব্যবহার করা হয় তা আপনার প্রতিষ্ঠান, <ph name="DOMAIN" />, ম্যানেজ করে।</translation>
 <translation id="5224391634244552924">কোনও পাসওয়ার্ড সেভ করা নেই। আপনি পাসওয়ার্ড সেভ করলে Chromium সেটি চেক করতে পারবে।</translation>
@@ -273,6 +276,7 @@
 <translation id="800380310260616129">এখান থেকে Chromium ডাউনলোড করুন।</translation>
 <translation id="8013573822802650211">আপনার সমস্ত ডিভাইসে সাইন-ইন করে থাকুন, যাতে আপনি যেখান থেকেই Chromium ব্যবহার করুন না কেন, সেখানেই আপনি নিজের ট্যাবগুলি দেখতে পারেন</translation>
 <translation id="8014091604604659473">Chromium থেকে সাইন-আউট হয়ে গেছেন</translation>
+<translation id="8035379487371146621">ডকে Chromium সরিয়ে নিয়ে যান</translation>
 <translation id="8104697640054703121">বিপজ্জনক সাইট থেকে বাঁচতে Chromium সবচেয়ে শক্তিশালী সুরক্ষা প্রদান করে</translation>
 <translation id="8119542592987737574">iPhone-এর হোম স্ক্রিন ডক থেকে আরও দ্রুত Chromium অ্যাক্সেস করুন।</translation>
 <translation id="8164086860209325020">Chromium 'সেটিংস'-এ যান</translation>

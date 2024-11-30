@@ -208,7 +208,7 @@ public class Module<T> {
             context = ContextUtils.getApplicationContext();
             String moduleName = mName;
             if (BundleUtils.isIsolatedSplitInstalled(moduleName)) {
-                context = BundleUtils.createIsolatedSplitContext(context, moduleName);
+                context = BundleUtils.createIsolatedSplitContext(moduleName);
             }
         }
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

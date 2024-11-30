@@ -40,7 +40,7 @@ class AnimationInterpolableValueTest : public testing::Test {
     i->Interpolate(0, progress);
     TypedInterpolationValue* interpolated_value = i->GetInterpolatedValue();
     EXPECT_TRUE(interpolated_value);
-    CSSToLengthConversionData length_resolver;
+    CSSToLengthConversionData length_resolver(/*element=*/nullptr);
     return To<InterpolableNumber>(interpolated_value->GetInterpolableValue())
         .Value(length_resolver);
   }
@@ -85,7 +85,7 @@ TEST_F(AnimationInterpolableValueTest, SimpleList) {
       InterpolateLists(std::move(list_a), std::move(list_b), 0.3);
   const auto& out_list = To<InterpolableList>(*interpolated_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   EXPECT_FLOAT_EQ(
       30, To<InterpolableNumber>(out_list.Get(0))->Value(length_resolver));
   EXPECT_FLOAT_EQ(
@@ -112,7 +112,7 @@ TEST_F(AnimationInterpolableValueTest, NestedList) {
   InterpolableValue* interpolated_value = InterpolateLists(list_a, list_b, 0.5);
   const auto& out_list = To<InterpolableList>(*interpolated_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   EXPECT_FLOAT_EQ(
       50, To<InterpolableNumber>(out_list.Get(0))->Value(length_resolver));
   EXPECT_FLOAT_EQ(
@@ -123,7 +123,7 @@ TEST_F(AnimationInterpolableValueTest, NestedList) {
 }
 
 TEST_F(AnimationInterpolableValueTest, ScaleAndAddNumbers) {
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   InterpolableNumber* base = MakeGarbageCollected<InterpolableNumber>(10);
   ScaleAndAdd(*base, 2, *MakeGarbageCollected<InterpolableNumber>(1));
   EXPECT_FLOAT_EQ(21, base->Value(length_resolver));
@@ -147,7 +147,7 @@ TEST_F(AnimationInterpolableValueTest, ScaleAndAddLists) {
   add_list->Set(1, MakeGarbageCollected<InterpolableNumber>(2));
   add_list->Set(2, MakeGarbageCollected<InterpolableNumber>(3));
   ScaleAndAdd(*base_list, 2, *add_list);
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   EXPECT_FLOAT_EQ(
       11, To<InterpolableNumber>(base_list->Get(0))->Value(length_resolver));
   EXPECT_FLOAT_EQ(
@@ -179,7 +179,8 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
   using Flags = CSSMathExpressionNode::Flags;
 
   Font font;
-  CSSToLengthConversionData length_resolver = CSSToLengthConversionData();
+  CSSToLengthConversionData length_resolver =
+      CSSToLengthConversionData(/*element=*/nullptr);
   length_resolver.SetFontSizes(
       CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
 

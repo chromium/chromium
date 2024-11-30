@@ -2555,19 +2555,19 @@ TEST_F(AccessibilityControllerDisableTouchpadTest,
   controller->RemoveObserver(&observer);
 }
 
-class AccessibilityControllerFilterKeysTest
+class AccessibilityControllerBounceKeysTest
     : public AccessibilityControllerTestBase {
  protected:
-  AccessibilityControllerFilterKeysTest() = default;
-  AccessibilityControllerFilterKeysTest(
-      const AccessibilityControllerFilterKeysTest&) = delete;
-  AccessibilityControllerFilterKeysTest& operator=(
-      const AccessibilityControllerFilterKeysTest&) = delete;
-  ~AccessibilityControllerFilterKeysTest() override = default;
+  AccessibilityControllerBounceKeysTest() = default;
+  AccessibilityControllerBounceKeysTest(
+      const AccessibilityControllerBounceKeysTest&) = delete;
+  AccessibilityControllerBounceKeysTest& operator=(
+      const AccessibilityControllerBounceKeysTest&) = delete;
+  ~AccessibilityControllerBounceKeysTest() override = default;
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityFilterKeys);
+        ::features::kAccessibilityBounceKeys);
 
     AccessibilityControllerTestBase::SetUp();
 
@@ -2580,7 +2580,7 @@ class AccessibilityControllerFilterKeysTest
   }
 };
 
-TEST_F(AccessibilityControllerFilterKeysTest, ToggleBounceKeysEnabledPref) {
+TEST_F(AccessibilityControllerBounceKeysTest, ToggleBounceKeysEnabledPref) {
   ASSERT_FALSE(prefs()->GetBoolean(prefs::kAccessibilityBounceKeysEnabled));
   ASSERT_FALSE(controller()->bounce_keys().enabled());
   ASSERT_FALSE(filter_keys_event_rewriter()->IsBounceKeysEnabled());
@@ -2594,7 +2594,7 @@ TEST_F(AccessibilityControllerFilterKeysTest, ToggleBounceKeysEnabledPref) {
   EXPECT_FALSE(filter_keys_event_rewriter()->IsBounceKeysEnabled());
 }
 
-TEST_F(AccessibilityControllerFilterKeysTest, UpdateBounceKeysDelayPref) {
+TEST_F(AccessibilityControllerBounceKeysTest, UpdateBounceKeysDelayPref) {
   ASSERT_EQ(prefs()->GetInteger(prefs::kAccessibilityBounceKeysDelayMs),
             kDefaultAccessibilityBounceKeysDelay.InMilliseconds());
   ASSERT_EQ(filter_keys_event_rewriter()->GetBounceKeysDelay(),

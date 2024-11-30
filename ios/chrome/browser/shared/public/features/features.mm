@@ -84,7 +84,7 @@ SegmentedDefaultBrowserExperimentTypeEnabled() {
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
              "IOSKeyboardAccessoryUpgrade",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu,
              "IOSKeyboardAccessoryUpgradeShortManualFillMenu",
@@ -332,7 +332,7 @@ bool IsContextualPanelForceShowEntrypointEnabled() {
 
 BASE_FEATURE(kContextualPanel,
              "ContextualPanel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsContextualPanelEnabled() {
   return base::FeatureList::IsEnabled(kContextualPanel);
@@ -583,10 +583,6 @@ bool IsNewSyncOptInIllustration() {
 BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOmniboxColorIcons,
-             "OmniboxColorIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers,
              "ClearDeviceDataOnSignOutForManagedUsers",
@@ -1030,7 +1026,7 @@ BASE_FEATURE(kSpotlightNeverRetainIndex,
 
 BASE_FEATURE(kIOSSaveToPhotosImprovements,
              "SaveToPhotosImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kSaveToPhotosContextMenuImprovementParam[] =
     "save-to-photos-context-menu-improvement";
@@ -1070,7 +1066,7 @@ bool IsHomeCustomizationEnabled() {
 
 BASE_FEATURE(kEnableAppBackgroundRefresh,
              "EnableAppBackgroundRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAppBackgroundRefreshEnabled() {
   version_info::Channel channel = ::GetChannel();
@@ -1092,7 +1088,7 @@ bool IsHomeMemoryImprovementsEnabled() {
 
 BASE_FEATURE(kRichBubbleWithoutImage,
              "RichBubbleWithoutImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsRichBubbleWithoutImageEnabled() {
   return base::FeatureList::IsEnabled(kRichBubbleWithoutImage);

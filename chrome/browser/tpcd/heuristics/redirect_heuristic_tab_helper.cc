@@ -10,6 +10,7 @@
 #include "base/rand_util.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/dips_service_impl.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_utils.h"
@@ -106,7 +107,10 @@ void RedirectHeuristicTabHelper::MaybeRecordRedirectHeuristic(
          const ukm::SourceId& third_party_source_id,
          const content::CookieAccessDetails& details,
          const size_t sites_passed_count, bool is_current_interaction,
-         std::pair<std::optional<base::Time>, bool> range) {
+         std::pair<std::optional<base::Time>, DIPSInteractionType> range) {
+        if (!service) {
+          return;
+        }
         return service->RecordRedirectHeuristic(
             first_party_source_id, third_party_source_id, details,
             sites_passed_count, is_current_interaction, range.second,
@@ -127,7 +131,7 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
     const content::CookieAccessDetails& details,
     const size_t sites_passed_count,
     bool is_current_interaction,
-    bool is_user_activation_interaction,
+    DIPSInteractionType interaction_type,
     std::optional<base::Time> last_user_interaction_time) {
   // This function can only be reached if the redirect heuristic is satisfied
   // for the previous recorded redirect.
@@ -136,16 +140,12 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
       clock_->Now() - last_commit_timestamp_.value(), base::Minutes(15),
       base::BindRepeating(&base::TimeDelta::InMilliseconds));
 
-  InteractionType interaction_type = InteractionType::NoInteraction;
   int hours_since_last_interaction = -1;
   if (last_user_interaction_time.has_value()) {
     hours_since_last_interaction = Bucketize3PCDHeuristicTimeDelta(
         clock_->Now() - last_user_interaction_time.value(), base::Days(60),
         base::BindRepeating(&base::TimeDelta::InHours)
             .Then(base::BindRepeating([](int64_t t) { return t; })));
-    interaction_type = is_user_activation_interaction
-                           ? InteractionType::UserActivation
-                           : InteractionType::Authentication;
   }
 
   OptionalBool has_same_site_iframe =

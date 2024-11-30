@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/enum_set.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
@@ -42,6 +43,7 @@
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -132,7 +134,7 @@ bool SetCookie(network::mojom::CookieManager* cookie_manager,
   auto cookie = net::CanonicalCookie::CreateForTesting(
       url, cookie_line, base::Time::Now(),
       /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt, net::CookieSourceType::kOther);
+      /*cookie_partition_key=*/std::nullopt, net::CookieSourceType::kHTTP);
 
   return SetCookie(cookie_manager, url, *cookie);
 }
@@ -333,6 +335,7 @@ class FloatingSsoTest : public policy::PolicyTest {
     commit_future.Get();
   }
 
+  // TODO(crbug.com/379092376): remove this once Floating SSO is out of beta.
   // This will switch the channel to beta for branded builds, but will be a
   // no-op for non-branded builds which are always set to
   // `version_info::Channel::UNKNOWN`. CQ/CI builders which use branded Chrome
@@ -491,6 +494,35 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FiltersOutSessionCookies) {
   // Cookie is not added to store.
   auto store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FiltersOutCookiesWithNonHttpSource) {
+  auto& service = floating_sso_service();
+  EnableAllFloatingSsoSettings();
+  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
+
+  const auto& store_entries = GetStoreEntries();
+  ASSERT_EQ(store_entries.size(), 0u);
+
+  // For every source type different from `net::CookieSourceType::kHTTP`, add a
+  // cookie with such source type to the browser, and verify that it's not being
+  // synced.
+  for (net::CookieSourceType source :
+       base::EnumSet<net::CookieSourceType, net::CookieSourceType::kUnknown,
+                     net::CookieSourceType::kMaxValue>::All()) {
+    if (source == net::CookieSourceType::kHTTP) {
+      continue;
+    }
+    const GURL url("https://example.com");
+    std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateForTesting(
+            url, kStandardCookieLine, base::Time::Now(),
+            /*server_time=*/std::nullopt,
+            /*cookie_partition_key=*/std::nullopt, source);
+    ASSERT_TRUE(SetCookie(cookie_manager(), url, *cookie));
+    // Verify that nothing is added to Sync store.
+    EXPECT_EQ(store_entries.size(), 0u);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(FloatingSsoTest,

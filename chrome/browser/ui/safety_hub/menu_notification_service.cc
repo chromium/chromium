@@ -12,9 +12,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
@@ -54,9 +51,13 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     NotificationPermissionsReviewService* notification_permissions_service,
 #if !BUILDFLAG(IS_ANDROID)
     PasswordStatusCheckService* password_check_service,
+    SafetyHubHatsService* safety_hub_hats_service,
 #endif  // !BUILDFLAG(IS_ANDROID)
     Profile* profile) {
   pref_service_ = std::move(pref_service);
+#if !BUILDFLAG(IS_ANDROID)
+  safety_hub_hats_service_ = safety_hub_hats_service;
+#endif  // !BUILDFLAG(IS_ANDROID)
   const base::Value::Dict& stored_notifications =
       pref_service_->GetDict(safety_hub_prefs::kMenuNotificationsPrefsKey);
 
@@ -141,20 +142,6 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
       base::BindRepeating(
           &SafetyHubMenuNotificationService::OnSafeBrowsingPrefUpdate,
           base::Unretained(this)));
-
-#if !BUILDFLAG(IS_ANDROID)
-  // If any notification is not shown yet, trigger Hats survey control group.
-  if (base::FeatureList::IsEnabled(features::kSafetyHubHaTSOneOffSurvey) &&
-      !HasAnyNotificationBeenShown()) {
-    HatsService* hats_service = HatsServiceFactory::GetForProfile(
-        profile, /*create_if_necessary=*/true);
-    if (!hats_service) {
-      return;
-    }
-    hats_service->LaunchSurvey(
-        kHatsSurveyTriggerSafetyHubOneOffExperimentControl);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void SafetyHubMenuNotificationService::UpdateResultGetterForTesting(
@@ -168,6 +155,19 @@ void SafetyHubMenuNotificationService::UpdateResultGetterForTesting(
 SafetyHubMenuNotificationService::~SafetyHubMenuNotificationService() {
   registrar_.RemoveAll();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void SafetyHubMenuNotificationService::MaybeTriggerControlSurvey() const {
+  // If any notification is not shown yet, trigger Hats survey control group.
+  if (base::FeatureList::IsEnabled(features::kSafetyHubHaTSOneOffSurvey) &&
+      !HasAnyNotificationBeenShown()) {
+    if (!safety_hub_hats_service_) {
+      return;
+    }
+    safety_hub_hats_service_->TriggerControlSurvey();
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::optional<MenuNotificationEntry>
 SafetyHubMenuNotificationService::GetNotificationToShow() {
@@ -188,8 +188,8 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
         item.first == safety_hub::SafetyHubModuleType::SAFE_BROWSING ? 3 : 0;
     if (notification->ShouldBeShown(info_element->interval,
                                     max_all_time_impressions)) {
-      // Notifications are first sorted by priority, and then by being currently
-      // active.
+      // Notifications are first sorted by priority, and then by being
+      // currently active.
       if (info_element->priority > cur_highest_priority ||
           (info_element->priority == cur_highest_priority &&
            notification->IsCurrentlyActive())) {
@@ -217,7 +217,6 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
     (*it)->Dismiss();
   }
   notification_to_show->Show();
-  last_shown_module_ = notification_to_show->GetModuleType();
 
   // The information related to showing the notification needs to be persisted
   // as well.
@@ -253,7 +252,6 @@ void SafetyHubMenuNotificationService::SaveNotificationsToPrefs() const {
   pref_service_->SetDict(safety_hub_prefs::kMenuNotificationsPrefsKey,
                          std::move(notifications));
 }
-
 
 std::unique_ptr<SafetyHubMenuNotification>
 SafetyHubMenuNotificationService::GetNotificationFromDict(
@@ -314,11 +312,6 @@ void SafetyHubMenuNotificationService::DismissActiveNotificationOfModule(
   if (notification->IsCurrentlyActive()) {
     notification->Dismiss();
   }
-}
-
-std::optional<safety_hub::SafetyHubModuleType>
-SafetyHubMenuNotificationService::GetLastShownNotificationModule() const {
-  return last_shown_module_;
 }
 
 bool SafetyHubMenuNotificationService::HasAnyNotificationBeenShown() const {

@@ -166,8 +166,9 @@ NavigateParams NavigateParamsForShareTarget(
     if (share_target.method == apps::ShareTarget::Method::kPost) {
       nav_params.extra_headers =
           "Content-Type: application/x-www-form-urlencoded\r\n";
-      nav_params.post_data = network::ResourceRequestBody::CreateFromBytes(
-          serialization.c_str(), serialization.length());
+      nav_params.post_data =
+          network::ResourceRequestBody::CreateFromCopyOfBytes(
+              base::as_byte_span(serialization));
     } else {
       GURL::Replacements replacements;
       replacements.SetQueryStr(serialization);

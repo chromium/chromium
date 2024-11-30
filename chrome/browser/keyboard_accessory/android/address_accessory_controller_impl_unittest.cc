@@ -113,6 +113,10 @@ class MockAutofillClient : public TestContentAutofillClient {
               GetLastCommittedPrimaryMainFrameOrigin,
               (),
               (const, override));
+  MOCK_METHOD(void,
+              TriggerPlusAddressUserPerceptionSurvey,
+              (plus_addresses::hats::SurveyType),
+              (override));
 };
 
 class MockAutofillDriver : public TestContentAutofillDriver {
@@ -579,6 +583,9 @@ TEST_F(AddressAccessoryControllerTest, FillsPlusAddressSuggestion) {
               ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
                                mojom::ActionPersistence::kFill, field_id,
                                plus_address));
+  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey(
+                                     plus_addresses::hats::SurveyType::
+                                         kFilledPlusAddressViaManualFallack));
   controller()->OnFillingTriggered(
       field_id, AccessorySheetField::Builder()
                     .SetSuggestionType(AccessorySuggestionType::kPlusAddress)

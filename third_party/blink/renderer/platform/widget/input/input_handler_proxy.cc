@@ -202,12 +202,50 @@ bool IsGestureScrollOrPinch(WebInputEvent::Type type) {
   }
 }
 
-bool DoNotEnqueueLateScrollEvents(
+bool ImmediatelyDispatchFirstScrollEventBeforeDeadline(
     cc::InputHandlerClient::ScrollEventDispatchMode mode) {
   return mode == cc::InputHandlerClient::ScrollEventDispatchMode::
                      kDispatchScrollEventsImmediately ||
          mode == cc::InputHandlerClient::ScrollEventDispatchMode::
-                     kUseScrollPredictorForDeadline;
+                     kUseScrollPredictorForDeadline ||
+         mode == cc::InputHandlerClient::ScrollEventDispatchMode::
+                     kDispatchScrollEventsUntilDeadline;
+}
+
+// Determines if we have exceeded our internal deadline for dispatching input,
+// when compared to `args`. Returns true when we are in the mode that supports
+// this, and the deadline has been exceeded. With the exception of `args` being
+// more than one VSync in the past. Otherwise returns false.
+bool ShouldNotDispatchLateInputEvent(
+    cc::InputHandlerClient::ScrollEventDispatchMode mode,
+    double scroll_deadline_ratio,
+    const viz::BeginFrameArgs& args,
+    const base::TickClock* tick_clock) {
+  // This will cause us to dispatch immediately. This is okay, as it is the
+  // existing default behaviour. Input will still be processed and displayed.
+  // There is just potentially increased latency for the remainder of the
+  // scroll.
+  if (mode != cc::InputHandlerClient::ScrollEventDispatchMode::
+                  kDispatchScrollEventsUntilDeadline) {
+    return false;
+  }
+  auto frame_time_delta = tick_clock->NowTicks() - args.frame_time;
+  // If the `frame_time` is more than one VSync in the past, everything is
+  // backed up. We should not throttle input delivery.
+  if (frame_time_delta > args.interval) {
+    return false;
+  }
+  auto deadline_delta = args.interval * scroll_deadline_ratio;
+  // If `frame_time_delta` is beyond the `deadline_delta` then we should not
+  // dispatch input. A late submission can lead to back pressure, causing future
+  // frames to be skipped.
+  //
+  // This can occur when:
+  //   1) Frame production was not properly stopped. Which would lead to us
+  //      submitting an input that was intended for the next VSync
+  //   2) We began subscribing to `OnBeginFrame`, however we receive an initial
+  //      `BeginFrameArgs::MISSED` that is too far in the past.
+  return frame_time_delta > deadline_delta;
 }
 
 }  // namespace
@@ -331,12 +369,13 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
 
   if (currently_active_gesture_device_.has_value()) {
     // While scrolling, if there were no enqueued events during
-    // DeliverInputForBeginFrame we want to dispatch those immediately. We will
-    // return to `enqueue_scroll_events_` once frame production has begun.
+    // DeliverInputForBeginFrame we want to dispatch the first event
+    // immediately. We will return to `enqueue_scroll_events_` once frame
+    // production has begun.
     if (gesture_event.IsScrollEvent() &&
-        DoNotEnqueueLateScrollEvents(scroll_event_dispatch_mode_) &&
+        ImmediatelyDispatchFirstScrollEventBeforeDeadline(
+            scroll_event_dispatch_mode_) &&
         !enqueue_scroll_events_) {
-      enqueue_scroll_events_ = true;
       // TODO(jonross): this will update to a prediction that is -5ms before
       // `current_begin_frame_args_.frame_time`. We should consider not
       // dispatching if `event_with_callback` is too old, and if we expect a
@@ -352,6 +391,15 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
       } else {
         compositor_event_queue_->Queue(std::move(event_with_callback));
       }
+      if (ShouldNotDispatchLateInputEvent(
+              scroll_event_dispatch_mode_, scroll_deadline_ratio_,
+              current_begin_frame_args_, tick_clock_)) {
+        input_handler_->SetNeedsAnimateInput();
+        return;
+      }
+      // To reach here we should of had no events in the queue. We also should
+      // have only enqueued one event.
+      DCHECK_EQ(compositor_event_queue_->size(), 1u);
       DispatchQueuedInputEvents(false /* frame_aligned */);
       return;
     }
@@ -376,7 +424,9 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
     compositor_event_queue_->Queue(std::move(event_with_callback));
 
     // |synchronous_input_handler_| is WebView only. WebView has different
-    // mechanisms and we want to forward all events immediately.
+    // mechanisms and we want to forward all events immediately. While we
+    // normally end up here when `enqueue_scroll_events_` is true, these edge
+    // cases will cause input to be forwarded immediately, rather than enqueued.
     if (is_scroll_end_from_wheel || is_first_wheel_scroll_update ||
         synchronous_input_handler_) {
       DispatchQueuedInputEvents(false /* frame_aligned */);
@@ -442,6 +492,14 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
     std::move(callback).Run(DROP_EVENT, std::move(event),
                             /*overscroll_params=*/nullptr, attribution,
                             std::move(metrics));
+  }
+
+  // We do not call `SetNeedsAnimateInput` here, as it is set when this event
+  // was enqueued.
+  if (ShouldNotDispatchLateInputEvent(scroll_event_dispatch_mode_,
+                                      scroll_deadline_ratio_,
+                                      current_begin_frame_args_, tick_clock_)) {
+    return;
   }
 
   // We blocked the compositor gesture event queue while the hit test was
@@ -1487,6 +1545,19 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
     const viz::BeginFrameArgs& args) {
   current_begin_frame_args_ = args;
   enqueue_scroll_events_ = !compositor_event_queue_->empty();
+  // TODO(jonross): This occurs for more than just `BeginFrameArgs::MISSED`.
+  // We likely need to cap the number of consecutive times duing which this
+  // occurs. As we could have a slow device that just consistently starts frame
+  // production after the deadline.
+  if (enqueue_scroll_events_ &&
+      args.type == viz::BeginFrameArgs::BeginFrameArgsType::MISSED &&
+      ShouldNotDispatchLateInputEvent(scroll_event_dispatch_mode_,
+                                      scroll_deadline_ratio_,
+                                      current_begin_frame_args_, tick_clock_)) {
+    input_handler_->SetNeedsAnimateInput();
+    return;
+  }
+
   // While
   // `cc::InputHandlerClient::ScrollEventDispatchMode::kUseScrollPredictorForEmptyQueue`
   // is enabled we will attempt to generate synthetic scroll events for
@@ -1545,8 +1616,10 @@ bool InputHandlerProxy::HasQueuedInput() const {
 }
 
 void InputHandlerProxy::SetScrollEventDispatchMode(
-    ScrollEventDispatchMode mode) {
+    ScrollEventDispatchMode mode,
+    double scroll_deadline_ratio) {
   scroll_event_dispatch_mode_ = mode;
+  scroll_deadline_ratio_ = scroll_deadline_ratio;
 }
 
 void InputHandlerProxy::SetSynchronousInputHandler(

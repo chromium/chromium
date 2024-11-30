@@ -30,8 +30,6 @@ scoped_refptr<TextureLayer> TextureLayer::CreateForMailbox(
 
 TextureLayer::TextureLayer(TextureLayerClient* client)
     : client_(client),
-      flipped_(true),
-      nearest_neighbor_(false),
       uv_bottom_right_(1.f, 1.f),
       premultiplied_alpha_(true),
       blend_background_color_(false),
@@ -53,20 +51,6 @@ void TextureLayer::ClearTexture() {
 std::unique_ptr<LayerImpl> TextureLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return TextureLayerImpl::Create(tree_impl, id());
-}
-
-void TextureLayer::SetFlipped(bool flipped) {
-  if (flipped_.Read(*this) == flipped)
-    return;
-  flipped_.Write(*this) = flipped;
-  SetNeedsCommit();
-}
-
-void TextureLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  if (nearest_neighbor_.Read(*this) == nearest_neighbor)
-    return;
-  nearest_neighbor_.Write(*this) = nearest_neighbor;
-  SetNeedsCommit();
 }
 
 void TextureLayer::SetUV(const gfx::PointF& top_left,
@@ -193,7 +177,7 @@ bool TextureLayer::Update() {
   if (client_.Read(*this)) {
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
-    if (client_.Write(*this)->PrepareTransferableResource(this, &resource,
+    if (client_.Write(*this)->PrepareTransferableResource(&resource,
                                                           &release_callback)) {
       // Already within a commit, no need to do another one immediately.
       bool requires_commit = false;
@@ -226,8 +210,6 @@ void TextureLayer::PushPropertiesTo(
   TRACE_EVENT0("cc", "TextureLayer::PushPropertiesTo");
 
   TextureLayerImpl* texture_layer = static_cast<TextureLayerImpl*>(layer);
-  texture_layer->SetFlipped(flipped_.Read(*this));
-  texture_layer->SetNearestNeighbor(nearest_neighbor_.Read(*this));
   texture_layer->SetUVTopLeft(uv_top_left_.Read(*this));
   texture_layer->SetUVBottomRight(uv_bottom_right_.Read(*this));
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_.Read(*this));

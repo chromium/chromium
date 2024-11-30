@@ -6,12 +6,15 @@
 #define COMPONENTS_SIGNIN_PUBLIC_BASE_SESSION_BINDING_TEST_UTILS_H_
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+class HybridEncryptionKey;
 
 namespace signin {
 
@@ -26,6 +29,13 @@ std::optional<base::Value::Dict> ExtractHeaderFromJwt(std::string_view jwt);
 
 // Returns a parsed payload part of `jwt` or std::nullopt if parsing fails.
 std::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt);
+
+// Encrypts `value` with `ephemeral_key`. Produced string can be later decrypted
+// by `DecryptValueWithEphemeralKey()`.
+// Returns an empty string if encryption fails.
+std::string EncryptValueWithEphemeralKey(
+    const HybridEncryptionKey& ephemeral_key,
+    std::string_view value);
 
 }  // namespace signin
 

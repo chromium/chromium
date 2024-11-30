@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_group.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_timing_info.h"
@@ -104,13 +105,17 @@ HttpStreamPool::Group::~Group() {
 
 std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     Job::Delegate* delegate,
+    RespectLimits respect_limits,
+    bool enable_ip_based_pooling,
+    bool enable_alternative_services,
     NextProto expected_protocol,
     bool is_http1_allowed,
     ProxyInfo proxy_info) {
   EnsureAttemptManager();
-  return std::make_unique<Job>(delegate, attempt_manager_.get(),
-                               expected_protocol, is_http1_allowed,
-                               std::move(proxy_info));
+  return std::make_unique<Job>(delegate, attempt_manager_.get(), respect_limits,
+                               enable_ip_based_pooling,
+                               enable_alternative_services, expected_protocol,
+                               is_http1_allowed, std::move(proxy_info));
 }
 
 int HttpStreamPool::Group::Preconnect(size_t num_streams,
@@ -164,6 +169,8 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
                               : kClosedConnectionReturnedToPool;
   } else if (generation != generation_) {
     not_reusable_reason = kSocketGenerationOutOfDate;
+  } else if (ReachedMaxStreamLimit()) {
+    not_reusable_reason = kExceededSocketLimits;
   } else {
     reusable = true;
   }
@@ -177,6 +184,7 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
   }
 
   pool_->ProcessPendingRequestsInGroups();
+  MaybeComplete();
 }
 
 void HttpStreamPool::Group::AddIdleStreamSocket(
@@ -188,6 +196,7 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
+  MaybeComplete();
 }
 
 std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
@@ -242,8 +251,17 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
     return false;
   }
 
+  RecordNetLogClosingSocket(*idle_stream_sockets_.front().stream_socket,
+                            kExceededSocketLimits);
   idle_stream_sockets_.pop_front();
   pool_->DecrementTotalIdleStreamCount();
+  if (CanComplete()) {
+    // Use PostTask since MaybeComplete() may delete `this`, and this method
+    // could be called while iterating all groups.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
+  }
   return true;
 }
 
@@ -273,23 +291,36 @@ HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
 
 void HttpStreamPool::Group::FlushWithError(
     int error,
+    StreamCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
-  Refresh(net_log_close_reason_utf8);
-  CancelJobs(error);
+  // Refresh() may delete this. Get a weak pointer to this and call CancelJobs()
+  // only when this is still alive.
+  base::WeakPtr<Group> weak_this = weak_ptr_factory_.GetWeakPtr();
+  Refresh(net_log_close_reason_utf8, attempt_cancel_reason);
+  if (weak_this) {
+    CancelJobs(error);
+  }
 }
 
-void HttpStreamPool::Group::Refresh(
-    std::string_view net_log_close_reason_utf8) {
+void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
+                                    StreamCloseReason cancel_reason) {
   ++generation_;
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
   if (attempt_manager_) {
-    attempt_manager_->CancelInFlightAttempts();
+    attempt_manager_->CancelInFlightAttempts(cancel_reason);
   }
 }
 
 void HttpStreamPool::Group::CloseIdleStreams(
     std::string_view net_log_close_reason_utf8) {
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
+  if (CanComplete()) {
+    // Use PostTask since MaybeComplete() may delete `this`, and this method
+    // could be called while iterating all groups.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void HttpStreamPool::Group::CancelJobs(int error) {
@@ -355,8 +386,12 @@ void HttpStreamPool::Group::EnsureAttemptManager() {
       std::make_unique<AttemptManager>(this, http_network_session()->net_log());
 }
 
+bool HttpStreamPool::Group::CanComplete() const {
+  return ActiveStreamSocketCount() == 0 && !attempt_manager_;
+}
+
 void HttpStreamPool::Group::MaybeComplete() {
-  if (ActiveStreamSocketCount() > 0) {
+  if (!CanComplete()) {
     return;
   }
 

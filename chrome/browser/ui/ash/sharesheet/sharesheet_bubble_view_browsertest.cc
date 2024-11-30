@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -45,18 +44,8 @@
 namespace ash {
 namespace sharesheet {
 
-class SharesheetBubbleViewBrowserTest
-    : public ::testing::WithParamInterface<bool>,
-      public InProcessBrowserTest {
+class SharesheetBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
-  SharesheetBubbleViewBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(::features::kNearbySharing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(::features::kNearbySharing);
-    }
-  }
-
   void ShowUi() {
     views::Widget::Widgets old_widgets;
     for (aura::Window* root_window : Shell::GetAllRootWindows())
@@ -101,16 +90,9 @@ class SharesheetBubbleViewBrowserTest
 
  protected:
   raw_ptr<views::Widget, DanglingUntriaged> sharesheet_widget_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SharesheetBubbleViewBrowserTest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewBrowserTest, InvokeUi_Default) {
+IN_PROC_BROWSER_TEST_F(SharesheetBubbleViewBrowserTest, InvokeUi_Default) {
   ShowUi();
   ASSERT_TRUE(VerifyUi());
   DismissUi();
@@ -236,11 +218,7 @@ class SharesheetBubbleViewPolicyBrowserTest
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SharesheetBubbleViewPolicyBrowserTest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(SharesheetBubbleViewPolicyBrowserTest,
                        InvokeUi_DlpAllowed) {
   SetupRulesManager(/*is_dlp_blocked*/ false);
   SetupAppService();
@@ -249,7 +227,7 @@ IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewPolicyBrowserTest,
   DismissUi();
 }
 
-IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_F(SharesheetBubbleViewPolicyBrowserTest,
                        InvokeUi_DlpBlocked) {
   SetupRulesManager(/*is_dlp_blocked*/ true);
   SetupAppService();

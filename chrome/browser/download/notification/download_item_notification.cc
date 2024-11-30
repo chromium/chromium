@@ -757,9 +757,9 @@ DownloadItemNotification::GetExtraActions() const {
           download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         if (AllowedToOpenWhileScanning())
           actions->push_back(DownloadCommands::OPEN_WHEN_COMPLETE);
-      } else if (!item_->IsPaused()) {
+      } else if (!item_->IsPaused() && item_->GetUploadedBytes() == 0) {
         actions->push_back(DownloadCommands::PAUSE);
-      } else {
+      } else if (item_->IsPaused() && item_->GetUploadedBytes() == 0) {
         actions->push_back(DownloadCommands::RESUME);
       }
       actions->push_back(DownloadCommands::CANCEL);

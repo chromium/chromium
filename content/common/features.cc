@@ -175,28 +175,10 @@ BASE_FEATURE(kFedCmFlexibleFields,
              "FedCmFlexibleFields",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables CORS checks on the ID assertion endpoint of the FedCM API.
-BASE_FEATURE(kFedCmIdAssertionCORS,
-             "FedCmIdAssertionCORS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables sending SameSite=Lax cookies in credentialed FedCM requests
 // (accounts endpoint, ID assertion endpoint and disconnect endpoint).
 BASE_FEATURE(kFedCmSameSiteLax,
              "FedCmSameSiteLax",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables sending only SameSite=None cookies in credentialed FedCM requests
-// (accounts endpoint and ID assertion endpoint). If kFedCmIdAssertionCORS
-// is enabled, this is a no-op for the ID assertion endpoint.
-BASE_FEATURE(kFedCmSameSiteNone,
-             "FedCmSameSiteNone",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Allows showing the filtered out accounts after the user attempts to login to
-// an account.
-BASE_FEATURE(kFedCmShowFilteredAccounts,
-             "FedCmShowFilteredAccounts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables installed web app matching for getInstalledRelatedApps API.
@@ -386,6 +368,18 @@ BASE_FEATURE(kMojoDedicatedThread,
              "MojoDedicatedThread",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, additional spare RPHs will be warmed up when the browser is
+// not busy.
+BASE_FEATURE(kMultipleSpareRPHs,
+             "MultipleSpareRPHs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(size_t,
+                   kMultipleSpareRPHsCount,
+                   &kMultipleSpareRPHs,
+                   "count",
+                   1u);
+
 // Enables skipping of calls to hideSoftInputFromWindow when there is not a
 // keyboard currently visible.
 #if BUILDFLAG(IS_ANDROID)
@@ -547,11 +541,6 @@ BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
              "SkipEarlyCommitPendingForCrashedFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// (crbug/1377753): Speculatively start service worker before BeforeUnload runs.
-BASE_FEATURE(kSpeculativeServiceWorkerStartup,
-             "SpeculativeServiceWorkerStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kTextInputClient,
              "TextInputClient",
@@ -606,11 +595,6 @@ BASE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames,
 BASE_FEATURE(kWebOTPAssertionFeaturePolicy,
              "WebOTPAssertionFeaturePolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Flag guard for fix for crbug.com/1504324.
-BASE_FEATURE(kWindowOpenFileSelectFix,
-             "WindowOpenFileSelectFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Flag guard for fix for crbug.com/40942531.
 BASE_FEATURE(kLimitCrossOriginNonActivatedPaintHolding,

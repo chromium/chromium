@@ -111,7 +111,7 @@ ObjectProxy::ReplyCallbackHolder::ReleaseCallback() {
 }
 
 ObjectProxy::ObjectProxy(Bus* bus,
-                         const std::string& service_name,
+                         std::string_view service_name,
                          const ObjectPath& object_path,
                          int options)
     : bus_(bus),

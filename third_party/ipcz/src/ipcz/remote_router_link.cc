@@ -63,8 +63,12 @@ void RemoteRouterLink::SetLinkState(FragmentRef<RouterLinkState> state) {
     memory->WaitForBufferAsync(
         descriptor.buffer_id(),
         [self = WrapRefCounted(this), memory, descriptor] {
-          self->SetLinkState(memory->AdoptFragmentRef<RouterLinkState>(
-              memory->GetFragment(descriptor)));
+          auto state =
+              memory->AdoptFragmentRefIfValid<RouterLinkState>(descriptor);
+          if (state.is_addressable()) {
+            self->SetLinkState(std::move(state));
+            self->FlushRouter();
+          }
         });
     return;
   }
@@ -95,9 +99,6 @@ void RemoteRouterLink::SetLinkState(FragmentRef<RouterLinkState> state) {
   // MarkSideStable().
   if (side_is_stable_.load(std::memory_order_acquire)) {
     MarkSideStable();
-  }
-  if (Ref<Router> router = node_link()->GetRouter(sublink_)) {
-    router->Flush(Router::kForceProxyBypassAttempt);
   }
 }
 
@@ -487,6 +488,12 @@ std::string RemoteRouterLink::Describe() const {
      << node_link_->remote_node_name().ToString() << " via sublink "
      << sublink_;
   return ss.str();
+}
+
+void RemoteRouterLink::FlushRouter() {
+  if (Ref<Router> router = node_link()->GetRouter(sublink_)) {
+    router->Flush(Router::kForceProxyBypassAttempt);
+  }
 }
 
 }  // namespace ipcz

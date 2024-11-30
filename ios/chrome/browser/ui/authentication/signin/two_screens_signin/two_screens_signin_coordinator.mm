@@ -12,6 +12,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_coordinator.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -22,8 +24,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/logging/upgrade_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/uno_signin_screen_provider.h"
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
-#import "ios/chrome/browser/ui/screen/screen_type.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -112,6 +112,11 @@ using base::UserMetricsAction;
 
 #pragma mark - Private
 
+- (void)stopChildCoordinator {
+  [_childCoordinator stop];
+  _childCoordinator = nil;
+}
+
 // Dismiss the main navigation view controller with an animation and run the
 // sign-in completion callback on completion of the animation to finish
 // presenting the screens.
@@ -172,8 +177,8 @@ using base::UserMetricsAction;
   NOTREACHED() << static_cast<int>(type);
 }
 
-// Calls the completion callback with the given `result` and a
-// SigninCompletionInfo object that includes the given `identity`.
+// Calls the completion callback with the given `result` and the given
+// `identity`.
 - (void)finishWithResult:(SigninCoordinatorResult)result
                 identity:(id<SystemIdentity>)identity {
   if (self.accessPoint ==
@@ -184,16 +189,11 @@ using base::UserMetricsAction;
   }
   // When this coordinator is interrupted, `_childCoordinator` needs to be
   // stopped here.
-  if (_childCoordinator) {
-    [_childCoordinator stop];
-    _childCoordinator = nil;
-  }
+  [self stopChildCoordinator];
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   _screenProvider = nil;
-  SigninCompletionInfo* completionInfo =
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:result completionIdentity:identity];
 }
 
 #pragma mark - FirstRunScreenDelegate
@@ -202,8 +202,7 @@ using base::UserMetricsAction;
 // Stops the child coordinator and prepares the next screen to present.
 - (void)screenWillFinishPresenting {
   CHECK(_childCoordinator) << base::SysNSStringToUTF8([self description]);
-  [_childCoordinator stop];
-  _childCoordinator = nil;
+  [self stopChildCoordinator];
   [self presentScreen:[_screenProvider nextScreenType]];
 }
 

@@ -298,10 +298,8 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
 
     // When `kFledgeUseKVv2SignalsCache` is enabled, the TrustedSignalsCache
     // manages KVv2 fetches in the browser process, so don't need get a key to
-    // pass to the worklet process. It's currently only supported for bidder
-    // signals, though, so still need the key for seller signals.
-    if (!base::FeatureList::IsEnabled(features::kFledgeUseKVv2SignalsCache) ||
-        worklet_info_.type != WorkletType::kBidder) {
+    // pass to the worklet process.
+    if (!base::FeatureList::IsEnabled(features::kFledgeUseKVv2SignalsCache)) {
       waiting_on_trusted_signals_kvv2_public_key_ = true;
       worklet_manager->delegate()->GetBiddingAndAuctionServerKey(
           std::move(worklet_info_.trusted_signals_coordinator),
@@ -935,8 +933,7 @@ AuctionWorkletManager::AuctionWorkletManager(
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
     auction_shared_storage_host_ = std::make_unique<AuctionSharedStorageHost>(
         static_cast<StoragePartitionImpl*>(
-            delegate_->GetFrame()->GetProcess()->GetStoragePartition())
-            ->GetSharedStorageManager());
+            delegate_->GetFrame()->GetProcess()->GetStoragePartition()));
   }
 }
 

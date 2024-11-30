@@ -16,6 +16,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -62,7 +63,7 @@ AccountInfo AccountInfoFromDeviceAccount(
     const DeviceAccountsProvider::AccountInfo& account) {
   AccountInfo account_info;
   account_info.email = account.email;
-  account_info.gaia = account.gaia;
+  account_info.gaia = GaiaId(account.gaia);
   account_info.hosted_domain = account.hosted_domain;
   return account_info;
 }
@@ -113,7 +114,7 @@ void SSOAccessTokenFetcher::Start(const std::string& client_id,
                                   const std::vector<std::string>& scopes) {
   std::set<std::string> scopes_set(scopes.begin(), scopes.end());
   provider_->GetAccessToken(
-      account_.gaia, client_id, scopes_set,
+      account_.gaia.ToString(), client_id, scopes_set,
       base::BindOnce(&SSOAccessTokenFetcher::OnAccessTokenResponse,
                      weak_factory_.GetWeakPtr()));
 }

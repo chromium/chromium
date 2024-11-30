@@ -58,9 +58,7 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
   // Called when it turns out that KeyEvent is not handled.
   void OnUnhandledKeyEvent(const KeyEvent& key_event);
 
-  // Creates a new PlatformKeyboardHook/shortcuts inhibitor for |window|. For
-  // now used only for non-Lacros windows due to divergences between CrOS/Lacros
-  // and Linux Desktop requirements and their actual implementation. See
+  // Creates a new PlatformKeyboardHook/shortcuts inhibitor for |window|. See
   // comments in this function's definition for more context.
   std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
       WaylandWindow* window,

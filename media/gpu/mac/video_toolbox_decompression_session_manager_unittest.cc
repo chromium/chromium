@@ -272,7 +272,7 @@ TEST_F(VideoToolboxDecompressionSessionManagerTest, IncompatibleFormatChange) {
   EXPECT_EQ(decompression_session_->creations, 2ul);
 }
 
-TEST_F(VideoToolboxDecompressionSessionManagerTest, DecodeError_Early) {
+TEST_F(VideoToolboxDecompressionSessionManagerTest, DecodeErrorEarly) {
   auto format = CreateFormat();
   auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);
@@ -290,7 +290,7 @@ TEST_F(VideoToolboxDecompressionSessionManagerTest, DecodeError_Early) {
   EXPECT_EQ(decompression_session_->creations, 1ul);
 }
 
-TEST_F(VideoToolboxDecompressionSessionManagerTest, DecodeError_Late) {
+TEST_F(VideoToolboxDecompressionSessionManagerTest, DecodeErrorLate) {
   auto format = CreateFormat();
   auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);

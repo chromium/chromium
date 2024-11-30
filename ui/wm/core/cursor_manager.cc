@@ -270,6 +270,28 @@ gfx::Size CursorManager::GetSystemCursorSize() const {
   return current_state_->system_cursor_size();
 }
 
+void CursorManager::UpdateSystemCursorVisibilityForTest(bool visible) {
+  CommitSystemCursorVisibility(visible);
+}
+
+void CursorManager::CommitSystemCursorVisibility(bool visible) {
+  if (visible == current_state_->visible()) {
+    return;
+  }
+
+  // Use lock to prevent ShowCursor/HideCursor when system cursor is invisible.
+  if (!visible) {
+    LockCursor();
+  } else {
+    UnlockCursor();
+  }
+
+  current_state_->SetVisible(visible);
+  observers_.Notify(
+      &aura::client::CursorClientObserver::OnCursorVisibilityChanged,
+      GetCursor().type() == ui::mojom::CursorType::kNone ? false : visible);
+}
+
 void CursorManager::CommitSystemCursorSize(
     const gfx::Size& system_cursor_size) {
   current_state_->set_system_cursor_size(system_cursor_size);

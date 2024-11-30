@@ -25,6 +25,12 @@ BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 // allowlist as well.
 BASE_DECLARE_FEATURE(kClientSideDetectionAcceptHCAllowlist);
 
+// Create a response containing the brand and the intent of the page using the
+// on-device model LLM.
+BASE_DECLARE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection);
+
+BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
+
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the
@@ -66,11 +72,11 @@ BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
 // the current prompt which is a dialog/modal.
 BASE_DECLARE_FEATURE(kDangerousDownloadInterstitial);
 
-// Controls whether we prompt the user on unencrypted deep scans.
-BASE_DECLARE_FEATURE(kDeepScanningPromptRemoval);
-
 // Controls whether we use new broader criteria for deep scans.
 BASE_DECLARE_FEATURE(kDeepScanningCriteria);
+
+// Controls whether we prompt the user on unencrypted deep scans.
+BASE_DECLARE_FEATURE(kDeepScanningPromptRemoval);
 
 // Controls whether the delayed warning experiment is enabled.
 BASE_DECLARE_FEATURE(kDelayedWarnings);
@@ -81,6 +87,10 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // Sends the WebProtect content scanning request to the corresponding regional
 // DLP endpoint based on ChromeDataRegionSetting policy.
 BASE_DECLARE_FEATURE(kDlpRegionalizedEndpoints);
+
+// Show referrer URL on download item on chrome://downloads page. This will
+// replace the downloads url.
+BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
 
 // The kill switch for download tailored warnings. The main control is on the
 // server-side.
@@ -100,6 +110,16 @@ extern const base::FeatureParam<int> kDownloadWarningSurveyType;
 // The time interval after which to consider a download warning ignored, and
 // potentially show the survey for ignoring a download bubble warning.
 extern const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds;
+
+// Enables Enhanced Safe Browsing promos for iOS.
+BASE_DECLARE_FEATURE(kEnhancedSafeBrowsingPromo);
+
+// Enables showing an updated Password Reuse UI for enterprise users.
+BASE_DECLARE_FEATURE(kEnterprisePasswordReuseUiRefresh);
+
+// When on, enterprise policy EnterpriseRealTimeUrlCheckMode on Android is
+// supported.
+BASE_DECLARE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid);
 
 // Enables string update on the enhanced protection description on
 // chrome://settings/security to mention the use of AI.
@@ -190,10 +210,6 @@ BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsSamplePing);
 // HPRT lookup. The value should be between 0 and 100.
 extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 
-// Show referrer URL on download item on chrome://downloads page. This will
-// replace the downloads url.
-BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
-
 // If enabled, fetching lists from Safe Browsing and performing checks on those
 // lists uses the v5 APIs instead of the v4 Update API. There is no change to
 // how often the checks are triggered (they are still not in real time).
@@ -214,10 +230,35 @@ extern const base::FeatureParam<int>
 // its own section.
 BASE_DECLARE_FEATURE(kPasswordLeakToggleMove);
 
+// Enables HaTS surveys for users encountering red warnings.
+BASE_DECLARE_FEATURE(kRedWarningSurvey);
+
+// Specifies whether we want to show HaTS surveys based on if the user bypassed
+// the warning or not. Note: specifying any combination of TRUE and FALSE
+// corresponds to "don't care."
+extern const base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter;
+
+// Specifies which CSBRR report types (and thus, red warning types) we want to
+// show HaTS surveys for.
+extern const base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter;
+
+// Specifies the HaTS survey's identifier.
+extern const base::FeatureParam<std::string> kRedWarningSurveyTriggerId;
+
 // Controls whether asynchronous real-time check is enabled. When enabled, the
 // navigation can be committed before real-time Safe Browsing check is
 // completed.
 BASE_DECLARE_FEATURE(kSafeBrowsingAsyncRealTimeCheck);
+
+// Enables client side phishing daily reports limit to be configured via Finch
+// for ESB and SBER users
+BASE_DECLARE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit);
+
+// Specifies the CSD-Phishing daily reports limit for ESB users
+extern const base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB;
+
+// Enables new ESB specific threshold fields in Visual TF Lite model files
+BASE_DECLARE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold);
 
 // Enable adding copy/paste navigation to the referrer chain.
 BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);
@@ -235,6 +276,9 @@ BASE_DECLARE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist);
 // Automatically revoke abusive notifications in Safety Hub.
 BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
 
+// Enables saving gaia password hash from the Profile Picker sign-in flow.
+BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
+
 // Status of the SimplifiedUrlDisplay experiments. This does not control the
 // individual experiments, those are controlled by their own feature flags.
 // The feature is only set by Finch so that we can differentiate between
@@ -244,11 +288,8 @@ BASE_DECLARE_FEATURE(kSimplifiedUrlDisplay);
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 
-// Enable a retry for the tailored security dialogs when the dialog fails to
-// show for a user whose google account has sync turned on. This feature helps
-// run the tailored security logic for users where the integration failed in the
-// past.
-BASE_DECLARE_FEATURE(kTailoredSecurityRetryForSyncUsers);
+// Controls whether the integration of tailored security settings is enabled.
+BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enable an observer-based retry mechanism for the tailored security dialogs.
@@ -256,9 +297,6 @@ BASE_DECLARE_FEATURE(kTailoredSecurityRetryForSyncUsers);
 // retry the tailored security logic when a WebContents becomes available.
 BASE_DECLARE_FEATURE(kTailoredSecurityObserverRetries);
 #endif
-
-// Controls whether the integration of tailored security settings is enabled.
-BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
 
 // Specifies which non-resource HTML Elements to collect based on their tag and
 // attributes. It's a single param containing a comma-separated list of pairs.
@@ -274,42 +312,6 @@ BASE_DECLARE_FEATURE(kThreatDomDetailsTagAndAttributeFeature);
 BASE_DECLARE_FEATURE(kVisualFeaturesSizes);
 
 base::Value::List GetFeatureStatusList();
-
-// Enables new ESB specific threshold fields in Visual TF Lite model files
-BASE_DECLARE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold);
-
-// Enables client side phishing daily reports limit to be configured via Finch
-// for ESB and SBER users
-BASE_DECLARE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit);
-
-// Specifies the CSD-Phishing daily reports limit for ESB users
-extern const base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB;
-
-// Enables HaTS surveys for users encountering red warnings.
-BASE_DECLARE_FEATURE(kRedWarningSurvey);
-
-// Specifies the HaTS survey's identifier.
-extern const base::FeatureParam<std::string> kRedWarningSurveyTriggerId;
-
-// Specifies which CSBRR report types (and thus, red warning types) we want to
-// show HaTS surveys for.
-extern const base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter;
-
-// Specifies whether we want to show HaTS surveys based on if the user bypassed
-// the warning or not. Note: specifying any combination of TRUE and FALSE
-// corresponds to "don't care."
-extern const base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter;
-
-BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
-
-// Enables Enhanced Safe Browsing promos for iOS.
-BASE_DECLARE_FEATURE(kEnhancedSafeBrowsingPromo);
-
-// Enables saving gaia password hash from the Profile Picker sign-in flow.
-BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
-
-// Enables showing an updated Password Reuse UI for enterprise users.
-BASE_DECLARE_FEATURE(kEnterprisePasswordReuseUiRefresh);
 
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

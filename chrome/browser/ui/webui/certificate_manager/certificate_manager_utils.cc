@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
+#include "chrome/common/pref_names.h"
 #include "content/public/browser/web_contents.h"
 
 void ShowCertificateDialog(base::WeakPtr<content::WebContents> web_contents,
@@ -27,7 +28,10 @@ void ShowCertificateDialog(
     base::WeakPtr<content::WebContents> web_contents,
     bssl::UniquePtr<CRYPTO_BUFFER> cert,
     chrome_browser_server_certificate_database::CertificateMetadata
-        cert_metadata) {
+        cert_metadata,
+    base::RepeatingCallback<
+        void(net::ServerCertificateDatabase::CertInformation,
+             base::OnceCallback<void(bool)>)>) {
   if (!web_contents) {
     return;
   }
@@ -35,4 +39,9 @@ void ShowCertificateDialog(
   CertificateViewerDialog::ShowConstrainedWithMetadata(
       std::move(cert), std::move(cert_metadata), web_contents.get(),
       web_contents->GetTopLevelNativeWindow());
+}
+
+bool IsCACertificateManagementAllowed(const PrefService& prefs) {
+  return prefs.GetInteger(prefs::kCACertificateManagementAllowed) !=
+         static_cast<int>(CACertificateManagementPermission::kNone);
 }

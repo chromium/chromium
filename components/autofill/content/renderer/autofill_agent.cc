@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -31,6 +32,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/a11y_utils.h"
 #include "components/autofill/content/renderer/form_autofill_issues.h"
@@ -297,6 +299,24 @@ gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
 
 }  // namespace
 
+OptionalForm::OptionalForm() = default;
+OptionalForm::OptionalForm(const OptionalForm&) = default;
+OptionalForm::OptionalForm(std::nullopt_t) {}
+OptionalForm::OptionalForm(base::optional_ref<FormData> form LIFETIME_BOUND)
+    : form_(form) {}
+OptionalForm::OptionalForm(FormData& form) : form_(form) {}
+OptionalForm::~OptionalForm() = default;
+
+const FormData& OptionalForm::operator*() const LIFETIME_BOUND {
+  CHECK(has_value());
+  return *form_;
+}
+
+bool OptionalForm::has_value() const {
+  return form_.has_value() && base::FeatureList::IsEnabled(
+                                  features::kAutofillOptimizeFormExtraction);
+}
+
 // During prerendering, we do not want the renderer to send messages to the
 // corresponding driver. Since we use a channel associated interface, we still
 // need to set up the mojo connection as before (i.e., we can't defer binding
@@ -525,7 +545,7 @@ void AutofillAgent::FocusedElementChanged(
 
   // This behavior was introduced for to fix http://crbug.com/1105254. It's
   // unclear if this is still needed.
-  auto handle_focus_change = [&]() {
+  auto handle_focus_change = [&] {
     if ((config_.uses_keyboard_accessory_for_suggestions ||
          !config_.focus_requires_scroll) &&
         new_focused_element && unsafe_render_frame() &&
@@ -672,7 +692,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
 
   // This checks whether another source, that is relevant for Autofill, already
   // reported the submission of `form_data`.
-  const bool is_duplicate_submission_for_autofill = [&]() {
+  const bool is_duplicate_submission_for_autofill = [&] {
     DenseSet<mojom::SubmissionSource> af_sources = sources;
     // Autofill ignores DOM_MUTATION_AFTER_AUTOFILL on non-WebView platforms.
     // For this reason, the presence of DOM_MUTATION_AFTER_AUTOFILL in the
@@ -686,7 +706,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
 
   // This checks whether another source, that is relevant for PasswordManager,
   // already reported the submission of `form_data`.
-  const bool is_duplicate_submission_for_password_manager = [&]() {
+  const bool is_duplicate_submission_for_password_manager = [&] {
     DenseSet<mojom::SubmissionSource> pwm_sources = sources;
     // PasswordManager doesn't consider FORM_SUBMISSION as a sufficient
     // condition for "successful" submission.
@@ -1255,8 +1275,7 @@ void AutofillAgent::ShowSuggestions(
 
   // Manual fallbacks override any prioritization done based on the field type.
   // TODO(crbug.com/333990908): Test manual fallback on different form types.
-  if (IsAddressAutofillManuallyTriggered(trigger_source) ||
-      IsPaymentsAutofillManuallyTriggered(trigger_source) ||
+  if (IsPaymentsAutofillManuallyTriggered(trigger_source) ||
       IsPlusAddressesManuallyTriggered(trigger_source)) {
     QueryAutofillSuggestions(element, trigger_source);
     return;
@@ -1369,7 +1388,7 @@ void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
   element.SetAutofillValue(WebString::FromUTF16(value), autofill_state);
   UpdateStateForTextChange(element,
                            autofill_state == WebAutofillState::kAutofilled
-                               ? FieldPropertiesFlags::kAutofilled
+                               ? FieldPropertiesFlags::kAutofilledOnUserTrigger
                                : FieldPropertiesFlags::kUserTyped);
 }
 
@@ -1416,6 +1435,23 @@ void AutofillAgent::ExtractForm(
     return;
   }
   std::move(callback).Run(std::nullopt);
+}
+
+void AutofillAgent::ExtractLabeledTextNodeValue(
+    const std::u16string& value_regex,
+    const std::u16string& label_regex,
+    uint32_t number_of_ancestor_levels_to_search,
+    base::OnceCallback<void(const std::string&)> callback) {
+  WebDocument document = GetDocument();
+  if (!document) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  std::string result = form_util::ExtractFinalCheckoutAmountFromDom(
+      document, base::UTF16ToUTF8(value_regex), base::UTF16ToUTF8(label_regex),
+      number_of_ancestor_levels_to_search);
+  std::move(callback).Run(result);
 }
 
 void AutofillAgent::EmitFormIssuesToDevtools() {
@@ -1561,6 +1597,16 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
 
 void AutofillAgent::SelectControlDidChange(
     const WebFormControlElement& element) {
+  if (WebDocument document = GetDocument();
+      !document || !document.GetFrame() ||
+      !document.GetFrame()->HasTransientUserActivation() ||
+      element.IsAutofilled()) {
+    // This filtering is an approximation of "the user manually edited the
+    // field". The reason is that some JS value-change events could be the
+    // result of a user edit to a custom select field tied to a hidden select
+    // element.
+    return;
+  }
   form_tracker_->SelectControlDidChange(element);
 }
 
@@ -1727,7 +1773,8 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   }
 
   const auto input_element = element.DynamicTo<WebInputElement>();
-  if (input_element && !element.Value().IsEmpty() &&
+  if (input_element && input_element.IsTextField() &&
+      !element.Value().IsEmpty() &&
       (input_element.FormControlTypeForAutofill() ==
            blink::mojom::FormControlType::kInputPassword ||
        password_autofill_agent_->IsUsernameInputField(input_element))) {
@@ -1771,8 +1818,9 @@ void AutofillAgent::OnProvisionallySaveForm(
 
   // Updates cached data needed for submission so that we only cache the latest
   // version of the to-be-submitted form.
-  auto update_submission_data_on_user_edit = [&]() {
-    if (form_element) {
+  auto update_submission_data_on_user_edit = [&] {
+    if (form_element && !base::FeatureList::IsEnabled(
+                            features::kAutofillOptimizeFormExtraction)) {
       UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
       return;
     }
@@ -1784,15 +1832,19 @@ void AutofillAgent::OnProvisionallySaveForm(
         });
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));
-    UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillOptimizeFormExtraction)) {
+      UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
+    }
   };
 
   switch (source) {
     case FormTracker::Observer::SaveFormReason::kWillSendSubmitEvent:
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
-      password_autofill_agent_->InformBrowserAboutUserInput(form_element,
-                                                            WebInputElement());
+      password_autofill_agent_->InformBrowserAboutUserInput(
+          form_element, WebInputElement(),
+          OptionalForm(provisionally_saved_form()));
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
       update_submission_data_on_user_edit();
@@ -1974,7 +2026,7 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
   auto has_been_user_edited = [this](const FormFieldData& field) {
     return formless_elements_user_edited_.contains(field.renderer_id());
   };
-  auto know_expected_submitted_form = [&]() {
+  auto know_expected_submitted_form = [&] {
     return form_element.has_value() &&
            base::FeatureList::IsEnabled(
                features::kAutofillUseSubmittedFormInHtmlSubmission);

@@ -72,7 +72,7 @@ class SVGAngle final : public SVGPropertyHelper<SVGAngle> {
   }
 
   void SetValueInSpecifiedUnits(float value_in_specified_units) {
-    value_in_specified_units_ = value_in_specified_units;
+    NewValueSpecifiedUnits(unit_type_, value_in_specified_units);
   }
   float ValueInSpecifiedUnits() const { return value_in_specified_units_; }
 

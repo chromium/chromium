@@ -22,6 +22,14 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
         content: "AFTER";
       }
 
+      #inspected::before::marker {
+        content: "before marker";
+      }
+
+      #inspected::after::marker {
+        content: "after marker";
+      }
+
       #inspected::before {
         display: list-item;
       }

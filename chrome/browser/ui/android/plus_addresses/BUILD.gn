@@ -8,7 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [
     ":jni_headers",
-    ":plus_address_browser_java_enums",
+    "//components/plus_addresses:plus_address_java_enums",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
@@ -80,10 +80,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
   ]
-}
-
-java_cpp_enum("plus_address_browser_java_enums") {
-  sources = [ "plus_address_creation_view_android.h" ]
 }
 
 robolectric_library("junit") {

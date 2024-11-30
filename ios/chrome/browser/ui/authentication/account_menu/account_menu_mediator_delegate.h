@@ -7,11 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 @class AccountMenuMediator;
 @class AuthenticationFlow;
+@protocol ChangeProfileObserving;
 @protocol SystemIdentity;
 
 @protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
@@ -39,7 +41,7 @@
 
 // Requests a switch to the profile with the given `profileName`.
 - (void)triggerProfileSwitchToProfileNamed:(NSString*)profileName
-                                completion:(void (^)(bool success))completion;
+                                  observer:(id<ChangeProfileObserving>)observer;
 
 // Shows https://myaccount.google.com/ for the account currently signed-in
 // to Chrome. The content is displayed in a new view in the stack, i.e.
@@ -51,7 +53,7 @@
 
 // The user tapped on "Add account…".
 - (void)didTapAddAccountWithCompletion:
-    (ShowSigninCommandCompletionCallback)completion;
+    (SigninCoordinatorCompletionCallback)completion;
 
 // Blocks the user from using Chromium. Returns whether the block was possible.
 - (BOOL)blockOtherScenesIfPossible;

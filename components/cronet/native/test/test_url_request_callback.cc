@@ -109,8 +109,8 @@ void TestUrlRequestCallback::OnRedirectReceived(Cronet_UrlRequestPtr request,
   CHECK(!last_error_);
 
   response_step_ = ON_RECEIVED_REDIRECT;
-  redirect_url_list_.push_back(newLocationUrl);
-  redirect_response_info_list_.push_back(
+  redirect_url_list().emplace_back(newLocationUrl);
+  redirect_response_info_list().emplace_back(
       std::make_unique<UrlResponseInfo>(info));
   ++redirect_count_;
   if (MaybeCancelOrPause(request)) {

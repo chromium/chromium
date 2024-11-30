@@ -21,6 +21,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/token.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_data.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
@@ -329,7 +331,7 @@ class NewTabPageHandlerTest : public testing::Test {
         &mock_logo_service_, &test_sync_service_,
         &mock_segmentation_platform_service_, web_contents_,
         std::move(mock_feature_promo_helper_ptr_), base::Time::Now(),
-        &module_id_names, mock_customize_chrome_tab_helper_.get());
+        &module_id_details, mock_customize_chrome_tab_helper_.get());
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
@@ -399,8 +401,8 @@ class NewTabPageHandlerTest : public testing::Test {
   raw_ptr<PromoServiceObserver> promo_service_observer_;
 
  private:
-  const std::vector<std::pair<const std::string, int>> module_id_names = {
-      {"drive", IDS_NTP_MODULES_DRIVE_NAME}};
+  const std::vector<ntp::ModuleIdDetail> module_id_details = {
+      {ntp_modules::kDriveModuleId, IDS_NTP_MODULES_DRIVE_NAME}};
   raw_ptr<MockHatsService> mock_hats_service_;
 };
 
@@ -909,7 +911,7 @@ TEST_F(NewTabPageHandlerTest, GetModulesIdNames) {
       /*disabled_features=*/{});
   handler_->GetModulesIdNames(callback.Get());
   EXPECT_EQ(modules_details.size(), 1u);
-  EXPECT_EQ(modules_details.front()->id, "drive");
+  EXPECT_EQ(modules_details.front()->id, ntp_modules::kDriveModuleId);
 }
 
 TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
@@ -945,8 +947,9 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
-  const std::vector<std::string> module_ids = {"google_calendar",
-                                               "tab_resumption"};
+  const std::vector<std::string> module_ids = {
+      ntp_modules::kGoogleCalendarModuleId,
+      ntp_modules::kMostRelevantTabResumptionModuleId};
   handler_->OnModulesLoadedWithData(module_ids);
 
   for (const auto& module_id : module_ids) {
@@ -962,14 +965,15 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
       {
           {features::kHappinessTrackingSurveysForDesktopNtpModules,
            {{ntp_features::kNtpModulesEligibleForHappinessTrackingSurveyParam,
-             "drive"}}},
+             ntp_modules::kDriveModuleId}}},
       },
       {});
 
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
       .Times(0);
-  const std::vector<std::string> module_ids = {"google_calendar"};
+  const std::vector<std::string> module_ids = {
+      ntp_modules::kGoogleCalendarModuleId};
   handler_->OnModulesLoadedWithData(module_ids);
 
   for (const auto& module_id : module_ids) {
@@ -980,7 +984,7 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
 }
 
 TEST_F(NewTabPageHandlerTest, SetModuleDisabledTriggersPageCall) {
-  handler_->SetModuleDisabled("drive", true);
+  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
   EXPECT_CALL(mock_page_, SetDisabledModules).Times(1);
   mock_page_.FlushForTesting();
 }

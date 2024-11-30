@@ -360,7 +360,7 @@ TEST_P(SincResamplerTest, Resample) {
 
 // Tests resampling using a given input and output sample rate, and a small
 // kernel size.
-TEST_P(SincResamplerTest, Resample_SmallKernel) {
+TEST_P(SincResamplerTest, ResampleSmallKernel) {
   // Make comparisons using one second of data.
   static const double kTestDurationSecs = 1;
   int input_samples = kTestDurationSecs * input_rate_;

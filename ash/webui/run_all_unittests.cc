@@ -8,7 +8,6 @@
 #include "base/test/test_suite.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/test/unittest_test_suite.h"
-#include "mojo/core/embedder/embedder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
 #error This test target only builds with linux-chromeos, not for real ChromeOS\
@@ -21,8 +20,6 @@ int main(int argc, char** argv) {
       base::BindRepeating(
           &content::UnitTestTestSuite::CreateTestContentClients));
 
-  // Some tests use mojo
-  mojo::core::Init();
   return base::LaunchUnitTests(argc, argv,
                                base::BindOnce(&content::UnitTestTestSuite::Run,
                                               base::Unretained(&test_suite)));

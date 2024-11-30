@@ -666,6 +666,10 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "unoDesktopEnabled",
       switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
+
+  html_source->AddBoolean("isImprovedSettingsUIOnDesktopEnabled",
+                          switches::IsImprovedSettingsUIOnDesktopEnabled());
+
 #if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "isClearPrimaryAccountAllowed",
@@ -812,8 +816,6 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       {"speedPageTitle", IDS_SETTINGS_PERFORMANCE_SPEED_PAGE_TITLE},
       {"memorySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING},
-      {"memorySaverModeDescription",
-       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION},
       {"memorySaverModeHeuristicsLabel",
        IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_HEURISTICS_LABEL},
       {"memorySaverModeRecommendedBadge",
@@ -839,8 +841,6 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       {"batteryPageTitle", IDS_SETTINGS_PERFORMANCE_BATTERY_PAGE_TITLE},
       {"batterySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING},
-      {"batterySaverModeDescription",
-       IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION},
       {"batterySaverModeLinkOsDescription",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_LINK_OS_SETTING_DESCRIPTION},
       {"batterySaverModeEnabledOnBatteryLabel",
@@ -865,8 +865,6 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_MANUAL},
       {"tabDiscardingExceptionsActiveSiteAriaDescription",
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ACTIVE_SITE_ARIA_DESCRIPTION},
-      {"preloadingToggleSummary",
-       IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY},
       {"discardRingTreatmentEnabledLabel",
        IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_LABEL},
       {"tabHoverPreviewCardLinkTitle",
@@ -878,19 +876,37 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString(
-      "discardRingTreatmentEnabledDescriptionWithLearnLink",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK,
-          chrome::kDiscardRingTreatmentLearnMoreUrl,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+  static constexpr struct {
+    const char* id;
+    int message_id;
+    const char16_t* url;
+  } kLearnMoreStrings[] = {
+      {"batterySaverModeDescription",
+       IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION,
+       chrome::kBatterySaverModeLearnMoreUrl},
+      {"discardRingTreatmentEnabledDescriptionWithLearnLink",
+       IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK,
+       chrome::kDiscardRingTreatmentLearnMoreUrl},
+      {"memorySaverModeDescription",
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION,
+       chrome::kMemorySaverModeLearnMoreUrl},
+      {"performanceInterventionEnabledDescription",
+       IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_DESCRIPTION,
+       chrome::kPerformanceInterventionLearnMoreUrl},
+      {"preloadingToggleSummary",
+       IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY,
+       chrome::kPreloadingLearnMoreUrl}};
 
-  html_source->AddString(
-      "performanceInterventionEnabledDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_DESCRIPTION,
-          chrome::kPerformanceInterventionLearnMoreUrl,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+  const std::u16string settings_opens_in_new_tab =
+      l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB);
+
+  for (const auto& learn_more_string : kLearnMoreStrings) {
+    html_source->AddString(
+        learn_more_string.id,
+        l10n_util::GetStringFUTF16(learn_more_string.message_id,
+                                   learn_more_string.url,
+                                   settings_opens_in_new_tab));
+  }
 
   html_source->AddString(
       "tabDiscardTimerFiveMinutes",
@@ -1276,6 +1292,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"cardBenefitsLabel", IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LABEL},
       {"autofillPredictionImprovementsPageTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE},
+      {"autofillPredictionImprovementsDescription",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DESCRIPTION},
       {"autofillPredictionImprovementsWhenOnSavedInfo",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO},
       {"autofillPredictionImprovementsUseToFill",
@@ -1335,8 +1353,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   is_guest_mode = profile->IsOffTheRecord();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  autofill::PersonalDataManager* personal_data =
-      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
+  autofill::PersonalDataManager& personal_data =
+      *autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
   html_source->AddBoolean(
       "migrationEnabled",
       !is_guest_mode &&
@@ -1348,7 +1366,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("showIbansSettings",
                           autofill::ShouldShowIbanOnSettingsPage(
-                              personal_data->payments_data_manager()
+                              personal_data.payments_data_manager()
                                   .GetCountryCodeForExperimentGroup(),
                               profile->GetPrefs()));
 
@@ -1491,6 +1509,7 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
       {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
       {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
       {"verifyAccount", IDS_SETTINGS_PEOPLE_VERIFY_ACCOUNT_BUTTON},
+      {"signOutOfChrome", IDS_PROFILE_MENU_SIGN_OUT},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -2708,6 +2727,10 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsSerialPorts", IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS},
       {"siteSettingsSerialPortsMidSentence",
        IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE},
+#if BUILDFLAG(IS_CHROMEOS)
+      {"siteSettingsSmartCardReaders",
+       IDS_SITE_SETTINGS_TYPE_SMART_CARD_READERS},
+#endif
       {"siteSettingsUsbDevices", IDS_SITE_SETTINGS_TYPE_USB_DEVICES},
       {"siteSettingsUsbDevicesMidSentence",
        IDS_SITE_SETTINGS_TYPE_USB_DEVICES_MID_SENTENCE},

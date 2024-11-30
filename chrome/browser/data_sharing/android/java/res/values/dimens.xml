@@ -14,10 +14,22 @@ found in the LICENSE file.
     <dimen name="small_shared_image_tiles_icon_height">16dp</dimen>
     <dimen name="small_shared_image_tiles_icon_total_height">20dp</dimen>
     <dimen name="small_shared_image_tiles_text_size">10sp</dimen>
+    <dimen name="small_shared_image_tiles_text_padding">4dp</dimen>
     <dimen name="shared_image_tiles_overlap_margin">8dp</dimen>
     <dimen name="shared_image_tiles_overlap_margin_negative">-6dp</dimen>
+    <dimen name="shared_image_tiles_text_padding">6dp</dimen>
+    <dimen name="default_bg_elevation">@dimen/default_elevation_5</dimen>
 
     <!-- Dimens for recipient invitation modal -->
     <dimen name="data_sharing_invitation_footer_width">300dp</dimen>
     <dimen name="data_sharing_invitation_button_margin">8dp</dimen>
+
+    <!-- Dimens for recent activity screen -->
+    <dimen name="recent_activity_avatar_container_size">44dp</dimen>
+    <dimen name="recent_activity_avatar_size">40dp</dimen>
+    <dimen name="recent_activity_padding_top_bottom">2dp</dimen>
+    <dimen name="recent_activity_avatar_margin_end">12dp</dimen>
+    <dimen name="recent_activity_title_top_margin">14dp</dimen>
+    <dimen name="recent_activity_recycler_view_top_margin">7dp</dimen>
+
 </resources>

@@ -14,6 +14,7 @@
 #include <type_traits>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
@@ -565,8 +566,7 @@ class HTMLFastPathParser {
       static HTMLElement* Create(Document& document) {
         // Body is only supported as an element for adding children, and not
         // a node that is created by this code.
-        CHECK(false);
-        return nullptr;
+        NOTREACHED();
       }
     };
 

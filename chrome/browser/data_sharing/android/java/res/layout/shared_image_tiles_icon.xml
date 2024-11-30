@@ -14,9 +14,14 @@ found in the LICENSE file.
     android:background="@drawable/round_image_filled"
     android:layout_marginEnd="@dimen/shared_image_tiles_overlap_margin_negative" >
 
-    <FrameLayout
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
         android:id="@+id/shared_image_tiles_avatar_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        app:cornerRadiusTopStart="@dimen/shared_image_tiles_icon_radius"
+        app:cornerRadiusTopEnd="@dimen/shared_image_tiles_icon_radius"
+        app:cornerRadiusBottomStart="@dimen/shared_image_tiles_icon_radius"
+        app:cornerRadiusBottomEnd="@dimen/shared_image_tiles_icon_radius"
+        android:importantForAccessibility="no" />
 </FrameLayout>

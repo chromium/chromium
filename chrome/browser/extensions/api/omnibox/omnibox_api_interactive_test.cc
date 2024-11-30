@@ -105,7 +105,7 @@ void VerifyMatchComponents(const ExpectedMatchComponents& expected,
   }
 }
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class OmniboxApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {

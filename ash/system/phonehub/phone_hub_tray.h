@@ -71,7 +71,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
@@ -132,7 +131,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, EcheIconActivatesCallback);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, TrayPressedMetrics);
-  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, BubbleViewAccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, AccessibleNames);
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;

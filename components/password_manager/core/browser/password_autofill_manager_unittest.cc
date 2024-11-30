@@ -216,7 +216,7 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
               (device_reauth::DeviceAuthenticator*),
               (override));
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_LINUX)
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(
       std::unique_ptr<
           password_manager::PasswordCrossDomainConfirmationPopupController>,
@@ -224,7 +224,7 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
       (const gfx::RectF& element_bounds,
        base::i18n::TextDirection text_direction,
        const GURL& domain,
-       const std::u16string& password_origin,
+       const std::u16string& password_hostname,
        base::OnceClosure confirmation_callback),
       (override));
 #endif
@@ -1224,8 +1224,8 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnPasswordField) {
   manager.reset();
   client.reset();
 
-  const auto& entries = autofill_client.GetTestUkmRecorder()->GetEntriesByName(
-      UkmEntry::kEntryName);
+  const auto& entries =
+      autofill_client.GetUkmRecorder()->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(expected_source_id, entry->source_id);
@@ -2394,7 +2394,7 @@ TEST_F(PasswordAutofillManagerTest,
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_LINUX)
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillManagerTest, ShowCrossDomainConfirmationPopup) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;

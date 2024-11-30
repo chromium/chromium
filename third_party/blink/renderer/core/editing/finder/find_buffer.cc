@@ -7,7 +7,6 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -344,7 +343,7 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
   for (const Node* node = &start_node; !node->isSameNode(&end_node);
        node = FlatTreeTraversal::Next(*node)) {
     const ComputedStyle* style =
-        node->GetComputedStyleForElementOrLayoutObject();
+        GetComputedStyleForElementOrLayoutObject(*node);
     if (ShouldIgnoreContents(*node) || !style ||
         style->Display() == EDisplay::kNone ||
         style->Visibility() != EVisibility::kVisible) {

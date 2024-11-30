@@ -4819,8 +4819,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, UploadBytes) {
           shell()->web_contents(), url, TRAFFIC_ANNOTATION_FOR_TESTS));
 
   download_parameters->set_post_body(
-      network::ResourceRequestBody::CreateFromBytes(kUploadString.data(),
-                                                    kUploadString.size()));
+      network::ResourceRequestBody::CreateFromCopyOfBytes(
+          base::as_byte_span(kUploadString)));
 
   DownloadManager* download_manager = DownloadManagerForShell(shell());
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
@@ -5173,16 +5173,8 @@ class MHTMLImprovementsLoadingTest : public MhtmlLoadingTest {
   std::unique_ptr<DownloadTestContentBrowserClient> browser_client_;
 };
 
-// Test disabled on Android due to flakiness. See https://crbug.com/378746190
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_FormsDisabledWhenRenderedFromHttp \
-  DISABLED_FormsDisabledWhenRenderedFromHttp
-#else
-#define MAYBE_FormsDisabledWhenRenderedFromHttp \
-  FormsDisabledWhenRenderedFromHttp
-#endif
 IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
-                       MAYBE_FormsDisabledWhenRenderedFromHttp) {
+                       FormsDisabledWhenRenderedFromHttp) {
   // Note that normally Chrome will not load MHTML over HTTP(s), and instead
   // will download the file. On Android, Chrome supports loading 'trusted'
   // offline pages, which are loaded through `OfflinePageURLLoader`, and are
@@ -5214,6 +5206,7 @@ IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
   response.Done();
 
   observer->WaitForNavigationFinished();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // <input> is disabled. It won't have the disabled property set, but it will
   // have the effects. One effect is changing the cursor.
@@ -5234,6 +5227,7 @@ IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   observer->WaitForNavigationFinished();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // <input> is not disabled.
   EXPECT_EQ(

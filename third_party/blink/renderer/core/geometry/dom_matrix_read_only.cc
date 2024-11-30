@@ -487,7 +487,7 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
   }
 
   TransformOperations operations = TransformBuilder::CreateTransformOperations(
-      *value, CSSToLengthConversionData());
+      *value, CSSToLengthConversionData(/*element=*/nullptr));
 
   if (operations.BoxSizeDependencies()) {
     exception_state.ThrowDOMException(

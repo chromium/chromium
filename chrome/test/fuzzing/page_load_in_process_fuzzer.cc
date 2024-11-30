@@ -33,7 +33,8 @@
 // * run servers on 3+ different ports to support cross-origin navigations
 
 class PageLoadInProcessFuzzer
-    : public InProcessProtoFuzzer<test::fuzzing::page_load_fuzzing::FuzzCase> {
+    : public InProcessTextProtoFuzzer<
+          test::fuzzing::page_load_fuzzing::FuzzCase> {
  public:
   using WhichServer = test::fuzzing::page_load_fuzzing::WhichServer;
   PageLoadInProcessFuzzer();
@@ -70,7 +71,7 @@ class PageLoadInProcessFuzzer
 REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(PageLoadInProcessFuzzer)
 
 PageLoadInProcessFuzzer::PageLoadInProcessFuzzer()
-    : InProcessProtoFuzzer({
+    : InProcessTextProtoFuzzer({
           RunLoopTimeoutBehavior::kDeclareInfiniteLoop,
           base::Seconds(180),
       }),

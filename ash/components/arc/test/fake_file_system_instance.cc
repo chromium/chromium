@@ -770,13 +770,6 @@ void FakeFileSystemInstance::ReindexDirectory(
   RequestMediaScan(paths);
 }
 
-void FakeFileSystemInstance::DEPRECATED_OpenUrlsWithPermission(
-    mojom::OpenUrlsRequestPtr request,
-    DEPRECATED_OpenUrlsWithPermissionCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  handled_url_requests_.emplace_back(std::move(request));
-}
-
 void FakeFileSystemInstance::OpenUrlsWithPermissionAndWindowInfo(
     mojom::OpenUrlsRequestPtr request,
     mojom::WindowInfoPtr window_info,

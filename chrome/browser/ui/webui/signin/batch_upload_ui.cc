@@ -9,8 +9,12 @@
 
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/signin/batch_upload_handler.h"
@@ -22,7 +26,42 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/data_type.h"
 #include "content/public/browser/web_ui_data_source.h"
+
+namespace {
+
+std::pair<AccountInfo, std::vector<syncer::LocalDataDescription>>
+GetSampleData() {
+  AccountInfo account_info;
+  account_info.email = "sample@gmail.com";
+  std::vector<syncer::LocalDataDescription> descritpions;
+
+  for (syncer::DataType type : {syncer::PASSWORDS, syncer::CONTACT_INFO}) {
+    syncer::LocalDataDescription& description = descritpions.emplace_back();
+    description.type = type;
+    for (int i = 0; i < 3; ++i) {
+      syncer::LocalDataItemModel& model =
+          description.local_data_models.emplace_back();
+      model.id = base::ToString(i);
+      model.title = "sample_" + std::get<std::string>(model.id);
+      model.subtitle = "sample_sub_" + std::get<std::string>(model.id);
+    }
+  }
+
+  return {account_info, descritpions};
+}
+
+// Sample/debugging implementation that closes the browser tab regardless of the
+// item map.
+void CloseBrowserTabOnCompletionSample(
+    Browser* browser,
+    const std::map<syncer::DataType,
+                   std::vector<syncer::LocalDataItemModel::DataId>>& items) {
+  browser->GetTabStripModel()->GetActiveTab()->Close();
+}
+
+}  // namespace
 
 BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
@@ -40,6 +79,12 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
       {"batchUploadTitle", IDS_BATCH_UPLOAD_TITLE},
       {"saveToAccount", IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL},
       {"cancel", IDS_CANCEL},
+      {"lastItemSelectedScreenReader",
+       IDS_BATCH_UPLOAD_LAST_ITEM_SELECTED_SCREEN_READER},
+      {"itemCountSelectedScreenReader",
+       IDS_BATCH_UPLOAD_SCREEN_READER_ITEM_COUNT_SELECTED},
+      {"selectAllScreenReader", IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_ALL},
+      {"selectNoneScreenReader", IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -96,6 +141,19 @@ void BatchUploadUI::BindInterface(
 void BatchUploadUI::CreateBatchUploadHandler(
     mojo::PendingRemote<batch_upload::mojom::Page> page,
     mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver) {
+  // For regular usages, `Initialize()` should be called right after loading the
+  // Url into the view. This assumes that the URL was loaded directly into
+  // Chrome for debugging purposes - fill it with sample data.
+  if (!initialize_handler_callback_) {
+    auto [account_info, descriptions] = GetSampleData();
+    Browser* browser = chrome::FindLastActive();
+    BatchUploadSelectedDataTypeItemsCallback sample_completion_callback =
+        base::BindOnce(&CloseBrowserTabOnCompletionSample, browser);
+    Initialize(account_info, browser, std::move(descriptions),
+               base::DoNothing(), base::DoNothing(),
+               std::move(sample_completion_callback));
+  }
+
   CHECK(initialize_handler_callback_);
   std::move(initialize_handler_callback_)
       .Run(std::move(page), std::move(receiver));

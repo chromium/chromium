@@ -79,13 +79,28 @@ bool StructTraits<webnn::mojom::OperandDescriptorDataView,
 
   base::expected<webnn::OperandDescriptor, std::string> descriptor =
       webnn::OperandDescriptor::Create(FromMojoDataType(data.data_type()),
-                                       base::make_span(shape));
+                                       base::span(shape));
 
   if (!descriptor.has_value()) {
     return false;
   }
 
   *out = *std::move(descriptor);
+  return true;
+}
+
+// static
+webnn::mojom::DataType
+EnumTraits<webnn::mojom::DataType, webnn::OperandDataType>::ToMojom(
+    webnn::OperandDataType input) {
+  return ToMojoDataType(input);
+}
+
+// static
+bool EnumTraits<webnn::mojom::DataType, webnn::OperandDataType>::FromMojom(
+    webnn::mojom::DataType input,
+    webnn::OperandDataType* output) {
+  *output = FromMojoDataType(input);
   return true;
 }
 

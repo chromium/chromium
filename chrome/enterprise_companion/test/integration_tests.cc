@@ -330,6 +330,51 @@ TEST_F(IntegrationTests, Install) {
   ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
 }
 
+// Running the application installer multiple times should configure a valid
+// installation.
+TEST_F(IntegrationTests, OverInstall) {
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+}
+
+// Running the application installer when an existing installation is running
+// should instruct it to stop and shut down.
+TEST_F(IntegrationTests, OverInstallRunning) {
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+
+  // The server process should be shut down by the install process. Reset the
+  // handle in the test fixture to ensure that a second shutdown is not
+  // attempted during `TearDown`.
+  EXPECT_EQ(WaitForProcess(server_process_), 0);
+  server_process_ = base::Process();
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+}
+
+// If a server instance is already running, other invocations should be unable
+// to acquire the global singleton lock.
+TEST_F(IntegrationTests, MultipleConcurrentInstancesDisallowed) {
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  std::optional<base::FilePath> exe_path = FindExistingInstall();
+  ASSERT_TRUE(exe_path);
+  base::CommandLine command_line(*exe_path);
+  base::Process process = base::LaunchProcess(command_line, {});
+  ASSERT_TRUE(process.IsValid());
+
+  EXPECT_EQ(WaitForProcess(process), 1);
+}
+
 // Running the application uninstaller should remove all traces of the app from
 // the system.
 TEST_F(IntegrationTests, Uninstall) {
@@ -462,6 +507,40 @@ TEST_F(IntegrationTests, UnknownDMTokenInvalidated) {
       device_management_storage::GetDefaultDMStorage();
   ASSERT_TRUE(dm_storage);
   EXPECT_FALSE(dm_storage->IsValidDMToken());
+}
+
+// The application should delete the stored DM token if the server requests so.
+TEST_F(IntegrationTests, InvalidDMTokenDeleted) {
+  SetDefaultPolicyFetchResponses();
+  // Configure the policy server to signal that DMToken deletion has been
+  // requested via the DMServer response.
+  dm_test_server_.policy_storage()->set_error_detail(
+      em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(StoreDMToken(policy::kFakeDeviceToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_, {{proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+                          EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                              policy::DeviceManagementStatus::
+                                  DM_STATUS_SERVICE_DEVICE_NEEDS_RESET)}})},
+      CreateLogResponse());
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().EqualsDeviceManagementStatus(
+      policy::DeviceManagementStatus::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET));
+
+  // Shut down the server before reading the token back, as the server may
+  // hold an exclusive lock on files opened by DMStorage.
+  WaitForTestServerExpectationsToBeMet();
+  ShutdownServerAndWaitForExit();
+
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  ASSERT_TRUE(dm_storage);
+  EXPECT_EQ(dm_storage->GetDmToken(), "");
 }
 
 // The application should reload the enrollment token from storage on every

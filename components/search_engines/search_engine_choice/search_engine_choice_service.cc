@@ -167,6 +167,18 @@ void LogSearchRepromptKeyHistograms(RepromptResult result, bool is_wildcard) {
 
 using NativeCallbackType = base::OnceCallback<void(int)>;
 
+constexpr char kUnknownCountryIdStored[] =
+    "Search.ChoiceDebug.UnknownCountryIdStored";
+
+// LINT.IfChange(UnknownCountryIdStored)
+enum class UnknownCountryIdStored {
+  kValidCountryId = 0,
+  kDontClearInvalidCountry = 1,
+  kClearedPref = 2,
+  kMaxValue = kClearedPref,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:UnknownCountryIdStored)
+
 }  // namespace
 
 SearchEngineChoiceService::SearchEngineChoiceService(
@@ -424,7 +436,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
                      : "no")
               : "no value");
 
-      NOTREACHED(base::NotFatalUntil::M132);
+      NOTREACHED(base::NotFatalUntil::M135);
       caller_trace_key.Clear();
     }
   }
@@ -619,7 +631,22 @@ int SearchEngineChoiceService::GetCountryIdInternal() {
   // computed asynchronously using platform-specific signals, and may not be
   // available yet.
   if (profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
-    return profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
+    const int stored_country =
+        profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
+    if (stored_country != country_codes::kCountryIDUnknown) {
+      base::UmaHistogramEnumeration(kUnknownCountryIdStored,
+                                    UnknownCountryIdStored::kValidCountryId);
+      return stored_country;
+    }
+    if (!base::FeatureList::IsEnabled(switches::kClearPrefForUnknownCountry)) {
+      base::UmaHistogramEnumeration(
+          kUnknownCountryIdStored,
+          UnknownCountryIdStored::kDontClearInvalidCountry);
+      return stored_country;
+    }
+    profile_prefs_->ClearPref(country_codes::kCountryIDAtInstall);
+    base::UmaHistogramEnumeration(kUnknownCountryIdStored,
+                                  UnknownCountryIdStored::kClearedPref);
   }
   // If `country_codes::kCountryIDAtInstall` is not available, attempt to
   // compute it at startup. On success, it is saved to prefs and never changes
@@ -655,7 +682,17 @@ int SearchEngineChoiceService::GetCountryIdInternal() {
 #else
   // On other platforms, `country_codes::kCountryIDAtInstall` is computed
   // synchronously inside `country_codes::GetCountryIDFromPrefs()`.
-  return country_codes::GetCountryIDFromPrefs(&profile_prefs_.get());
+  const int pref_country =
+      country_codes::GetCountryIDFromPrefs(&profile_prefs_.get());
+  if (pref_country == country_codes::kCountryIDUnknown) {
+    base::UmaHistogramEnumeration(
+        kUnknownCountryIdStored,
+        UnknownCountryIdStored::kDontClearInvalidCountry);
+  } else {
+    base::UmaHistogramEnumeration(kUnknownCountryIdStored,
+                                  UnknownCountryIdStored::kValidCountryId);
+  }
+  return pref_country;
 #endif
 }
 

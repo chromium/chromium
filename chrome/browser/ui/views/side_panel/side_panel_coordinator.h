@@ -127,7 +127,7 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   //  tab-scoped and window-scoped registry, or in multiple different tab-scoped
   //  registries.
   struct UniqueKey {
-    std::optional<uint32_t> tab_handle;
+    std::optional<tabs::TabHandle> tab_handle;
     SidePanelEntry::Key key;
     friend bool operator==(const UniqueKey&, const UniqueKey&) = default;
   };

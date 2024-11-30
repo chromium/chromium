@@ -609,6 +609,11 @@ extern const char kLensTranslateToggleModeEnabledDescription[];
 extern const char kLensUnaryApisWithHttpTransportEnabledName[];
 extern const char kLensUnaryApisWithHttpTransportEnabledDescription[];
 
+// Title and description for the flag to enable HTTP transport for unary
+// requests.
+extern const char kLensUnaryHttpTransportEnabledName[];
+extern const char kLensUnaryHttpTransportEnabledDescription[];
+
 // Title and description for the flag to enable the Lens web page load
 // optimization.
 extern const char kLensWebPageLoadOptimizationEnabledName[];
@@ -781,11 +786,6 @@ extern const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[];
 // Title and description for the zero-suggest prefetching on any Web Page.
 extern const char kOmniboxZeroSuggestPrefetchingOnWebName[];
 extern const char kOmniboxZeroSuggestPrefetchingOnWebDescription[];
-
-// Title and description for the flag to enable the color icons in the
-// omnibox.
-extern const char kOmniboxColorIconsName[];
-extern const char kOmniboxColorIconsDescription[];
 
 // Title and description for the flag to force clipboard access to be
 // asynchronous.
@@ -970,6 +970,11 @@ extern const char kSeparateProfilesForManagedAccountsDescription[];
 // Text Edit Menu option).
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
+
+// Title and description for the flag to enable the Set Up List in the First
+// Run.
+extern const char kSetUpListInFirstRunName[];
+extern const char kSetUpListInFirstRunNameDescription[];
 
 // Title and description for the flag to enable the Share button
 // in the web context menu in iOS.

@@ -28,6 +28,7 @@ class GURL;
 @protocol UITraitEnvironment;
 @class NSString;
 @class NSData;
+@protocol UIMenuBuilder;
 @class UIView;
 
 namespace net {
@@ -187,6 +188,8 @@ class WebClient {
 
   virtual bool IsInsecureFormWarningEnabled(
       web::BrowserState* browser_state) const;
+
+  virtual void BuildEditMenu(web::WebState* web_state, id<UIMenuBuilder>) const;
 };
 
 }  // namespace web

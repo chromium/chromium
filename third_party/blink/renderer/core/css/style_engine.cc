@@ -73,7 +73,6 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
@@ -731,7 +730,6 @@ void StyleEngine::UpdateActiveStyle() {
   DCHECK(GetDocument().IsActive());
   DCHECK(IsMainThread());
   TRACE_EVENT0("blink", "Document::updateActiveStyle");
-  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(*this);
   UpdateViewport();
   UpdateActiveStyleSheets();
   UpdateGlobalRuleSet();
@@ -1745,7 +1743,7 @@ bool HasAttributeDependentGeneratedContent(const Element& element) {
     return style && style->HasAttrFunction();
   };
 
-  return HasAttrFunc(element.GetPseudoElement(kPseudoIdCheck)) ||
+  return HasAttrFunc(element.GetPseudoElement(kPseudoIdCheckMark)) ||
          HasAttrFunc(element.GetPseudoElement(kPseudoIdBefore)) ||
          HasAttrFunc(element.GetPseudoElement(kPseudoIdAfter)) ||
          HasAttrFunc(element.GetPseudoElement(kPseudoIdSelectArrow)) ||
@@ -3543,20 +3541,8 @@ void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
       DCHECK(cq_data->SkippedStyleRecalc());
       break;
     case ContainerQueryEvaluator::Change::kNearestContainer:
-      if (RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled() ||
-          !IsShadowHost(container)) {
-        change = change.ForceRecalcSizeContainer();
-        break;
-      }
-      // Since the nearest container is found in shadow-including ancestors
-      // and not in flat tree ancestors, and style recalc traversal happens in
-      // flat tree order, we need to invalidate inside flat tree descendant
-      // containers if such containers are inside shadow trees.
-      //
-      // See also StyleRecalcChange::FlagsForChildren where we turn
-      // kRecalcContainer into kRecalcDescendantContainers when traversing
-      // past a shadow host.
-      [[fallthrough]];
+      change = change.ForceRecalcSizeContainer();
+      break;
     case ContainerQueryEvaluator::Change::kDescendantContainers:
       change = change.ForceRecalcDescendantSizeContainers();
       break;
@@ -3604,20 +3590,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       }
       break;
     case ContainerQueryEvaluator::Change::kNearestContainer:
-      if (RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled() ||
-          !IsShadowHost(container)) {
-        change = change.ForceRecalcSizeContainer();
-        break;
-      }
-      // Since the nearest container is found in shadow-including ancestors and
-      // not in flat tree ancestors, and style recalc traversal happens in flat
-      // tree order, we need to invalidate inside flat tree descendant
-      // containers if such containers are inside shadow trees.
-      //
-      // See also StyleRecalcChange::FlagsForChildren where we turn
-      // kRecalcContainer into kRecalcDescendantContainers when traversing past
-      // a shadow host.
-      [[fallthrough]];
+      change = change.ForceRecalcSizeContainer();
+      break;
     case ContainerQueryEvaluator::Change::kDescendantContainers:
       change = change.ForceRecalcDescendantSizeContainers();
       break;
@@ -4428,7 +4402,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
   visitor->Trace(style_containment_scope_tree_);
   visitor->Trace(try_value_flips_);
-  visitor->Trace(last_successful_option_dirty_set_);
+  visitor->Trace(anchored_element_dirty_set_);
   FontSelectorClient::Trace(visitor);
 }
 
@@ -4520,10 +4494,11 @@ void StyleEngine::UpdateViewportSize() {
 
 namespace {
 
-bool UpdateLastSuccessfulPositionFallback(Element& element) {
-  if (OutOfFlowData* out_of_flow_data = element.GetOutOfFlowData()) {
+bool UpdateLastSuccessfulPositionFallbackAndAnchorScrollShift(
+    Element& element) {
+  if (OutOfFlowData* data = element.GetOutOfFlowData()) {
     LayoutObject* layout_object = element.GetLayoutObject();
-    if (out_of_flow_data->ApplyPendingSuccessfulPositionFallback(
+    if (data->ApplyPendingSuccessfulPositionFallbackAndAnchorScrollShift(
             layout_object) &&
         layout_object) {
       layout_object->SetNeedsLayoutAndFullPaintInvalidation(
@@ -4563,7 +4538,7 @@ bool InvalidatePositionTryNames(Element* root,
 
 }  // namespace
 
-bool StyleEngine::UpdateLastSuccessfulPositionFallbacks() {
+bool StyleEngine::UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift() {
   bool invalidated = false;
   if (!dirty_position_try_names_.empty()) {
     // Added, removed, or modified @position-try rules.
@@ -4576,13 +4551,13 @@ bool StyleEngine::UpdateLastSuccessfulPositionFallbacks() {
     dirty_position_try_names_.clear();
   }
 
-  if (!last_successful_option_dirty_set_.empty()) {
-    for (Element* element : last_successful_option_dirty_set_) {
-      if (UpdateLastSuccessfulPositionFallback(*element)) {
+  if (!anchored_element_dirty_set_.empty()) {
+    for (Element* element : anchored_element_dirty_set_) {
+      if (UpdateLastSuccessfulPositionFallbackAndAnchorScrollShift(*element)) {
         invalidated = true;
       }
     }
-    last_successful_option_dirty_set_.clear();
+    anchored_element_dirty_set_.clear();
   }
   return invalidated;
 }

@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.customtabs;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,6 +44,30 @@ import java.util.List;
 /** A controller for the account mismatched notice message. */
 public class MismatchNotificationController
         implements SigninManager.SignInStateObserver, AccountsChangeObserver {
+    // LINT.IfChange(SuppressedReason)
+    /** Used to record Signin.CctAccountMismatchNoticeSuppressed histogram. */
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({
+        SuppressedReason.ACCOUNT_LIST_NOT_YET_AVAILABLE,
+        SuppressedReason.NOTICE_DISPLAY_LIMIT_MET,
+        SuppressedReason.NOTICE_DISMISSED_MULTIPLE_TIMES,
+        SuppressedReason.NOTICE_DISPLAYED_RECENTLY,
+        SuppressedReason.FRE_COMPLETED_RECENTLY,
+        SuppressedReason.CCT_IS_OFF_THE_RECORD,
+        SuppressedReason.MAX
+    })
+    public @interface SuppressedReason {
+        int ACCOUNT_LIST_NOT_YET_AVAILABLE = 0;
+        int NOTICE_DISPLAY_LIMIT_MET = 1;
+        int NOTICE_DISMISSED_MULTIPLE_TIMES = 2;
+        int NOTICE_DISPLAYED_RECENTLY = 3;
+        int FRE_COMPLETED_RECENTLY = 4;
+        int CCT_IS_OFF_THE_RECORD = 5;
+        int MAX = 6;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SuppressedReason)
     private final WindowAndroid mWindowAndroid;
     private final Profile mProfile;
     private final String mAppAccountEmail;
@@ -77,6 +103,14 @@ public class MismatchNotificationController
         mSigninManager.addSignInStateObserver(this);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);
+    }
+
+    public static void recordMismatchNoticeSuppressedHistogram(
+            @SuppressedReason int suppressedReason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.CctAccountMismatchNoticeSuppressed",
+                suppressedReason,
+                SuppressedReason.MAX);
     }
 
     public void showSignedOutMessage(Context context, Callback<Integer> onClose) {
@@ -169,6 +203,13 @@ public class MismatchNotificationController
                     };
         }
         onClose.onResult(closeType.getNumber());
+
+        destroy();
+    }
+
+    private void destroy() {
+        mAccountManagerFacade.removeObserver(this);
+        mSigninManager.removeSignInStateObserver(this);
     }
 
     @Override
@@ -188,9 +229,8 @@ public class MismatchNotificationController
 
     private void dismissMessage() {
         MessageDispatcher dispatcher = MessageDispatcherProvider.from(mWindowAndroid);
+        assert dispatcher != null;
         dispatcher.dismissMessage(mMessageProperties, DismissReason.DISMISSED_BY_FEATURE);
-        mAccountManagerFacade.removeObserver(this);
-        mSigninManager.removeSignInStateObserver(this);
     }
 
     public static void setInstanceForTesting(

@@ -29,7 +29,7 @@ SwitchAccessTestUtils::SwitchAccessTestUtils(Profile* profile) {
       profile_, extension_misc::kSwitchAccessExtensionId);
 }
 
-SwitchAccessTestUtils::~SwitchAccessTestUtils() {}
+SwitchAccessTestUtils::~SwitchAccessTestUtils() = default;
 
 void SwitchAccessTestUtils::EnableSwitchAccess(
     const std::set<int>& select_key_codes,

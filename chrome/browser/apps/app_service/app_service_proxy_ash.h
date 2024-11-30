@@ -26,7 +26,6 @@
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
-#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -59,7 +58,6 @@ class BrowserAppInstanceTracker;
 class PackageId;
 class PromiseAppRegistryCache;
 class PromiseAppService;
-class StandaloneBrowserApps;
 class UninstallDialog;
 
 struct PromiseApp;
@@ -91,10 +89,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   apps::AppPlatformMetrics* AppPlatformMetrics();
   apps::AppPlatformMetricsService* AppPlatformMetricsService();
 
+  // TODO(373972275): Remove BrowserAppInstanceTracker,
+  // BrowserAppInstanceRegistry and InstanceRegistryUpdater.
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
   apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();
-
-  apps::StandaloneBrowserApps* StandaloneBrowserApps();
 
   // Registers `crosapi_subscriber_`.
   void RegisterCrosApiSubScriber(SubscriberCrosapi* subscriber);
@@ -381,13 +379,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   apps::InstanceRegistry instance_registry_;
 
-  std::unique_ptr<apps::BrowserAppInstanceTracker>
-      browser_app_instance_tracker_;
-  std::unique_ptr<apps::BrowserAppInstanceRegistry>
-      browser_app_instance_registry_;
-  std::unique_ptr<apps::InstanceRegistryUpdater>
-      browser_app_instance_app_service_updater_;
-
   std::unique_ptr<apps::PromiseAppService> promise_app_service_;
 
   // When PauseApps is called, the app is added to |pending_pause_requests|.
@@ -409,10 +400,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   std::unique_ptr<apps::AppPlatformMetricsService>
       app_platform_metrics_service_;
-
-  // App service require the Lacros Browser to keep alive for web apps.
-  // TODO(crbug.com/40167449): Support Lacros not keeping alive.
-  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>

@@ -82,10 +82,9 @@ void OffscreenCanvasPlaceholderTest::SetUp() {
   dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(placeholder_id);
   dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_id);
   resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-      SkImageInfo::MakeN32Premul(kWidth, kHeight),
-      cc::PaintFlags::FilterQuality::kLow,
+      gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
+      SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      dispatcher_->GetWeakPtr(),
       test_web_shared_image_interface_provider_.get());
 }
 
@@ -106,9 +105,9 @@ CanvasResource* OffscreenCanvasPlaceholderTest::DispatchOneFrame() {
   scoped_refptr<CanvasResource> resource =
       resource_provider_->ProduceCanvasResource(FlushReason::kTesting);
   CanvasResource* resource_raw_ptr = resource.get();
-  dispatcher_->DispatchFrame(
-      std::move(resource), base::TimeTicks(), SkIRect::MakeEmpty(),
-      false /* needs_vertical_flip */, false /* is-opaque */);
+  dispatcher_->DispatchFrame(std::move(resource), base::TimeTicks(),
+                             SkIRect::MakeEmpty(),
+                             /*is_opaque=*/false);
   // We avoid holding a ref here to avoid interfering with
   // OffscreenCanvasPlaceholder's ref count logic.  This pointer should only
   // be used for validations.

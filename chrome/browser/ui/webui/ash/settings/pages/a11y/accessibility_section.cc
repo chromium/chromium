@@ -531,7 +531,22 @@ base::span<const SearchConcept> GetA11yFaceGazeSearchConcepts() {
   return tags;
 }
 
-base::span<const SearchConcept> GetA11yFilterKeysSearchConcepts() {
+base::span<const SearchConcept> GetA11yDisableTouchpadSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
+      {{IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD,
+        mojom::kCursorAndTouchpadSubpagePath,
+        mojom::SearchResultIcon::kTouchpad,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kDisableTouchpad},
+        {
+            IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD_ALT1,
+            SearchConcept::kAltTagEnd,
+        }}});
+  return tags;
+}
+
+base::span<const SearchConcept> GetA11yBounceKeysSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_BOUNCE_KEYS,
        mojom::kKeyboardAndTextInputSubpagePath,
@@ -539,6 +554,12 @@ base::span<const SearchConcept> GetA11yFilterKeysSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kBounceKeys}},
+  });
+  return tags;
+}
+
+base::span<const SearchConcept> GetA11ySlowKeysSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_SLOW_KEYS,
        mojom::kKeyboardAndTextInputSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -595,8 +616,12 @@ bool IsAccessibilityFlashNotificationFeatureEnabled() {
   return ::features::IsAccessibilityFlashScreenFeatureEnabled();
 }
 
-bool IsAccessibilityFilterKeysEnabled() {
-  return ::features::IsAccessibilityFilterKeysEnabled();
+bool IsAccessibilityBounceKeysEnabled() {
+  return ::features::IsAccessibilityBounceKeysEnabled();
+}
+
+bool IsAccessibilitySlowKeysEnabled() {
+  return ::features::IsAccessibilitySlowKeysEnabled();
 }
 
 }  // namespace
@@ -1534,6 +1559,8 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
                           IsAccessibilityFaceGazeEnabled());
 
+  html_source->AddString("faceGazeLearnMoreUrl", chrome::kFaceGazeLearnMoreURL);
+
   html_source->AddBoolean("isAccessibilityDisableTouchpadEnabled",
                           IsAccessibilityDisableTouchpadEnabled());
 
@@ -1543,13 +1570,16 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityFlashNotificationFeatureEnabled",
                           IsAccessibilityFlashNotificationFeatureEnabled());
 
-  html_source->AddBoolean("isAccessibilityFilterKeysEnabled",
-                          IsAccessibilityFilterKeysEnabled());
-  html_source->AddInteger("defaultSlowKeysDelayMillis",
-                          kDefaultAccessibilitySlowKeysDelay.InMilliseconds());
+  html_source->AddBoolean("isAccessibilityBounceKeysEnabled",
+                          IsAccessibilityBounceKeysEnabled());
   html_source->AddInteger(
       "defaultBounceKeysDelayMillis",
       kDefaultAccessibilityBounceKeysDelay.InMilliseconds());
+
+  html_source->AddBoolean("isAccessibilitySlowKeysEnabled",
+                          IsAccessibilitySlowKeysEnabled());
+  html_source->AddInteger("defaultSlowKeysDelayMillis",
+                          kDefaultAccessibilitySlowKeysDelay.InMilliseconds());
 
   ::settings::AddAxAnnotationsSectionStrings(html_source);
   ::settings::AddCaptionSubpageStrings(html_source);
@@ -1866,6 +1896,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kFaceGaze,
       mojom::Setting::kBounceKeys,
       mojom::Setting::kSlowKeys,
+      mojom::Setting::kDisableTouchpad,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
                             kManageAccessibilitySettings, generator);
@@ -1997,8 +2028,16 @@ void AccessibilitySection::UpdateSearchTags() {
     updater.AddSearchTags(GetA11yFaceGazeSearchConcepts());
   }
 
-  if (IsAccessibilityFilterKeysEnabled()) {
-    updater.AddSearchTags(GetA11yFilterKeysSearchConcepts());
+  if (IsAccessibilityBounceKeysEnabled()) {
+    updater.AddSearchTags(GetA11yBounceKeysSearchConcepts());
+  }
+
+  if (IsAccessibilitySlowKeysEnabled()) {
+    updater.AddSearchTags(GetA11ySlowKeysSearchConcepts());
+  }
+
+  if (IsAccessibilityDisableTouchpadEnabled()) {
+    updater.AddSearchTags(GetA11yDisableTouchpadSearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled)) {

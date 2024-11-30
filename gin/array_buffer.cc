@@ -191,7 +191,7 @@ class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
     if (!mapping)
       return std::nullopt;
 
-    return base::make_span(reinterpret_cast<uint8_t*>(mapping), size);
+    return base::span(reinterpret_cast<uint8_t*>(mapping), size);
   }
 
   void Unmap(base::span<uint8_t> mapping) override {

@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,9 +31,6 @@ using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
-
-const bool kIsRevampEnabled =
-    ash::features::IsOsSettingsRevampWayfindingEnabled();
 
 class FakeObserver : public mojom::SearchResultsObserver {
  public:
@@ -87,9 +83,7 @@ base::span<const SearchConcept> GetPrintingSearchConcepts() {
 
 // Creates a result with some default values.
 mojom::SearchResultPtr CreateDummyResult() {
-  const mojom::Section kSection = kIsRevampEnabled
-                                      ? mojom::Section::kSystemPreferences
-                                      : mojom::Section::kPrinting;
+  const mojom::Section kSection = mojom::Section::kSystemPreferences;
 
   return mojom::SearchResult::New(
       /*text=*/std::u16string(),
@@ -119,12 +113,10 @@ class SearchHandlerTest : public testing::Test {
   void SetUp() override {
     handler_.BindInterface(handler_remote_.BindNewPipeAndPassReceiver());
 
-    const mojom::Section kSection = kIsRevampEnabled
-                                        ? mojom::Section::kSystemPreferences
-                                        : mojom::Section::kPrinting;
+    const mojom::Section kSection = mojom::Section::kSystemPreferences;
 
     fake_hierarchy_.AddSubpageMetadata(
-        IDS_SETTINGS_PRINTING_CUPS_PRINTERS, kSection,
+        IDS_OS_SETTINGS_PRINTING_CUPS_PRINT_TITLE, kSection,
         mojom::Subpage::kPrintingDetails, mojom::SearchResultIcon::kPrinter,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::kPrintingDetailsSubpagePath);
@@ -225,9 +217,7 @@ TEST_F(SearchHandlerTest, UrlModification) {
 
   // The URL should have bee modified according to the FakeOsSettingSection
   // scheme.
-  const std::string kPrefix = kIsRevampEnabled
-                                  ? std::string("kSystemPreferences::")
-                                  : std::string("kPrinting::");
+  const std::string kPrefix = std::string("kSystemPreferences::");
 
   EXPECT_EQ(kPrefix + mojom::kPrintingDetailsSubpagePath,
             search_results[0]->url_path_with_parameters);

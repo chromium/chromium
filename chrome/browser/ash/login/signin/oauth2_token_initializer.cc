@@ -12,9 +12,9 @@
 
 namespace ash {
 
-OAuth2TokenInitializer::OAuth2TokenInitializer() {}
+OAuth2TokenInitializer::OAuth2TokenInitializer() = default;
 
-OAuth2TokenInitializer::~OAuth2TokenInitializer() {}
+OAuth2TokenInitializer::~OAuth2TokenInitializer() = default;
 
 void OAuth2TokenInitializer::Start(const UserContext& user_context,
                                    FetchOAuth2TokensCallback callback) {

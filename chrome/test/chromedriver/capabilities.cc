@@ -1101,6 +1101,19 @@ bool Capabilities::IsRemoteBrowser() const {
   return debugger_address.IsValid();
 }
 
+Status Capabilities::MigrateCapabilities() {
+  // Injecting "background_page" is deprecated. Throw a warning and migrate to
+  // the new dedicated switch for it.
+  if (window_types.contains(WebViewInfo::kBackgroundPage)) {
+    window_types.erase(WebViewInfo::kBackgroundPage);
+    enable_extension_targets = true;
+    LOG(WARNING) << "Injecting \"background_page\" windowType is deprecated. "
+                    "Use enableExtensionTargets option instead.";
+  }
+
+  return Status(kOk);
+}
+
 Status Capabilities::Parse(const base::Value::Dict& desired_caps,
                            bool w3c_compliant) {
   std::map<std::string, Parser> parser_map;
@@ -1149,6 +1162,11 @@ Status Capabilities::Parse(const base::Value::Dict& desired_caps,
     parser_map[kChromeDriverOptionsKey] =
         base::BindRepeating(&ParseChromeOptions);
   }
+
+  // Enable Chrome extension related targets
+  parser_map["enableExtensionTargets"] =
+      base::BindRepeating(&ParseBoolean, &enable_extension_targets);
+
   // se:options.loggingPrefs and goog:loggingPrefs is spec-compliant name,
   // but loggingPrefs is still supported in legacy mode.
   const std::string prefixed_logging_prefs_key =
@@ -1214,5 +1232,5 @@ Status Capabilities::Parse(const base::Value::Dict& desired_caps,
                     "but devtools events logging was not enabled");
     }
   }
-  return Status(kOk);
+  return MigrateCapabilities();
 }

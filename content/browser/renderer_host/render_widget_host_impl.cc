@@ -2536,9 +2536,9 @@ bool RenderWidgetHostImpl::PreHandleGestureEvent(
   return delegate()->PreHandleGestureEvent(event);
 }
 
-std::unique_ptr<input::PeakGpuMemoryTracker>
+std::unique_ptr<viz::PeakGpuMemoryTracker>
 RenderWidgetHostImpl::MakePeakGpuMemoryTracker(
-    input::PeakGpuMemoryTracker::Usage usage) {
+    viz::PeakGpuMemoryTracker::Usage usage) {
   return PeakGpuMemoryTrackerFactory::Create(usage);
 }
 

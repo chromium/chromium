@@ -61,6 +61,10 @@ enum class VirtualKeyboardMode;
 }  // namespace mojom
 }  // namespace ui
 
+namespace net::device_bound_sessions {
+struct SessionKey;
+}  // namespace net::device_bound_sessions
+
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
 }  // namespace network::mojom
@@ -533,6 +537,20 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
       NavigationHandle* navigation_handle,
       const network::mojom::SharedDictionaryAccessDetails& details) {}
 
+  // Called when a network request issued by the navivation accesses a
+  // device bound session
+  // (https://github.com/WICG/dbsc/blob/main/README.md).
+  virtual void OnDeviceBoundSessionAccessed(
+      RenderFrameHost* render_frame_host,
+      const net::device_bound_sessions::SessionKey& session) {}
+
+  // Called when a document accesses a device bound session
+  // (https://github.com/WICG/dbsc/blob/main/README.md) by issuing a
+  // network request.
+  virtual void OnDeviceBoundSessionAccessed(
+      NavigationHandle* navigation_handle,
+      const net::device_bound_sessions::SessionKey& session) {}
+
   // Called when the renderer requests access to storage.
   // Observers will be notified about the type of storage access requested
   // as well as whether access was blocked or not.
@@ -650,6 +668,10 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
 
   // This method is invoked when the title of the WebContents is set.
   virtual void TitleWasSet(NavigationEntry* entry) {}
+
+  // Invoked when the title is changed for any main frame in the WebContents
+  // (a primary main frame of a WebContents, a fenced frame or a MPArch guest).
+  virtual void TitleWasSetForMainFrame(RenderFrameHost* render_frame_host) {}
 
   // These methods are invoked when a Pepper plugin instance is created/deleted
   // in the DOM.

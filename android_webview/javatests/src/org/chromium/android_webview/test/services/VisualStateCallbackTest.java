@@ -36,8 +36,6 @@ import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.android_webview.test.RenderProcessGoneHelper;
 import org.chromium.android_webview.test.TestAwContents;
 import org.chromium.android_webview.test.TestAwContentsClient;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 
@@ -59,10 +57,6 @@ public class VisualStateCallbackTest extends AwParameterizedTest {
             mVisualStateCallbackArrived = true;
             notifyCalled();
         }
-
-        public boolean visualStateCallbackArrived() {
-            return mVisualStateCallbackArrived;
-        }
     }
 
     private static class RenderProcessGoneTestAwContentsClient extends TestAwContentsClient {
@@ -74,9 +68,6 @@ public class VisualStateCallbackTest extends AwParameterizedTest {
 
     private static class VisualStateCallbackTestAwContents extends TestAwContents {
         private VisualStateCallbackHelper mVisualStateCallbackHelper;
-
-        private VisualStateCallback mCallback;
-        private long mRequestId;
 
         public VisualStateCallbackTestAwContents(
                 AwBrowserContext browserContext,
@@ -99,26 +90,10 @@ public class VisualStateCallbackTest extends AwParameterizedTest {
             mVisualStateCallbackHelper = new VisualStateCallbackHelper();
         }
 
-        public VisualStateCallbackHelper getVisualStateCallbackHelper() {
-            return mVisualStateCallbackHelper;
-        }
-
         @Override
         public void invokeVisualStateCallback(
                 final VisualStateCallback callback, final long requestId) {
-            mCallback = callback;
-            mRequestId = requestId;
             mVisualStateCallbackHelper.onVisualStateCallbackArrived();
-        }
-
-        public void doInvokeVisualStateCallbackOnUiThread() {
-            final VisualStateCallbackTestAwContents awContents = this;
-            PostTask.runOrPostTask(
-                    TaskTraits.UI_DEFAULT, () -> awContents.doInvokeVisualStateCallback());
-        }
-
-        private void doInvokeVisualStateCallback() {
-            super.invokeVisualStateCallback(mCallback, mRequestId);
         }
     }
 

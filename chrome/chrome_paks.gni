@@ -115,6 +115,7 @@ template("chrome_extra_paks") {
       "$root_gen_dir/chrome/data_sharing_internals_resources.pak",
       "$root_gen_dir/chrome/segmentation_internals_resources.pak",
       "$root_gen_dir/components/autofill/core/browser/autofill_address_rewriter_resources.pak",
+      "$root_gen_dir/components/chrome_urls_resources.pak",
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/components/flags_ui_resources.pak",
       "$root_gen_dir/components/metrics/metrics_url_constants.pak",
@@ -221,14 +222,12 @@ template("chrome_extra_paks") {
       if (is_chrome_branded) {
         sources += [
           "$root_gen_dir/chrome/browser/nearby_sharing/internal/icons/nearby_share_internal_icons.pak",
-          "$root_gen_dir/chrome/lens_resources.pak",
           "$root_gen_dir/chrome/media_router_feedback_resources.pak",
           "$root_gen_dir/chrome/preinstalled_web_apps_resources.pak",
         ]
         deps += [
           "//chrome/browser/nearby_sharing/internal/icons",
           "//chrome/browser/resources:preinstalled_web_apps_resources",
-          "//chrome/browser/resources/lens:resources",
           "//chrome/browser/resources/media_router/cast_feedback:resources",
         ]
       }

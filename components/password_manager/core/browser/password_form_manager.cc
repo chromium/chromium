@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_generation_manager.h"
@@ -137,6 +138,8 @@ std::optional<PasswordStoreBackendError> GetErrorForErrorMessage(
       PasswordStoreBackendErrorType::kAuthErrorResolvable,
       PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
       PasswordStoreBackendErrorType::kKeyRetrievalRequired,
+      PasswordStoreBackendErrorType::kEmptySecurityDomain,
+      PasswordStoreBackendErrorType::kIrretrievableSecurityDomain,
   };
 
   if (account_store_backend_error.has_value() &&
@@ -216,12 +219,16 @@ void SetUsernameValueFromOutsideOfForm(const std::u16string& value,
 bool UsernameOutsideOfFormHasHigherPriority(
     UsernameFoundOutsideOfFormType possible_username_type,
     UsernameDetectionMethod username_in_the_password_form_type) {
+  // TODO(crbug.com/371933424): Consider giving equal priority to the model
+  // and server predictions.
   return possible_username_type ==
              UsernameFoundOutsideOfFormType::kSingleUsernameOverride ||
          (possible_username_type ==
               UsernameFoundOutsideOfFormType::kSingleUsernamePrediction &&
           username_in_the_password_form_type !=
-              UsernameDetectionMethod::kServerSidePrediction);
+              UsernameDetectionMethod::kServerSidePrediction &&
+          username_in_the_password_form_type !=
+              UsernameDetectionMethod::kModelPrediction);
 }
 
 bool ShouldUploadCrowdsourcingVotes(const FormOrDigest& form_or_digest) {
@@ -1115,6 +1122,15 @@ void PasswordFormManager::ProcessServerPredictions(
   }
 }
 
+void PasswordFormManager::ProcessModelPredictions(
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+        predictions) {
+  parser_.set_model_predictions(predictions);
+  // TODO(crbug.com/371933424): Model predictions always arrive before server
+  // predictions at the moment. Refactor this class to not depend on this to be
+  // resilient to pipeline changes.
+}
+
 void PasswordFormManager::Fill() {
   if (parser_.server_predictions() ||
       !wait_for_server_predictions_for_filling_) {
@@ -1166,6 +1182,9 @@ void PasswordFormManager::FillNow() {
                          FormDataParser::Mode::kFilling);
   if (!parsed_observed_form_) {
     return;
+  }
+  if (form_parsed_observer_) {
+    form_parsed_observer_->OnPasswordFormParsed(this);
   }
   metrics_recorder_->CacheParsingResultInFillingMode(
       *parsed_observed_form_.get());
@@ -1825,6 +1844,15 @@ base::flat_set<std::u16string> PasswordFormManager::GetStoredUsernames() const {
     stored_usernames.erase(u"");
   }
   return stored_usernames;
+}
+
+void PasswordFormManager::SetObserver(
+    base::WeakPtr<PasswordFormManagerObserver> observer) {
+  form_parsed_observer_ = observer;
+}
+
+void PasswordFormManager::ResetObserver() {
+  form_parsed_observer_.reset();
 }
 
 }  // namespace password_manager

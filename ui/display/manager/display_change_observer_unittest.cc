@@ -814,7 +814,7 @@ TEST_F(DisplayResolutionTest, DisplayZoom) {
       managed_display_info.set_zoom_factor(zoom);
       const Display display = CreateDisplay(managed_display_info);
 
-      // Emulate how lacros computes the scale factor.
+      // Emulate how arc computes the scale factor.
       const float scale_factor = config.resolution.width() /
                                  static_cast<float>(display.size().width());
       EXPECT_NEAR(scale_factor, display.device_scale_factor(),
@@ -845,7 +845,7 @@ TEST_F(DisplayResolutionTest, DisplayZoom) {
       managed_display_info.set_zoom_factor(zoom);
       const Display display = CreateDisplay(managed_display_info);
 
-      // Emulate how lacros computes the scale factor.
+      // Emulate how arc computes the scale factor.
       const float scale_factor =
           size.width() / static_cast<float>(display.size().width());
       EXPECT_NEAR(scale_factor, display.device_scale_factor(),

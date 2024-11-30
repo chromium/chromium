@@ -63,8 +63,7 @@ MessageOrError WebSocketMessageAssembler::HandleFrame(
   base::Extend(multi_frame_buffer_, base::as_byte_span(payload));
 
   if (is_final) {
-    Message complete_message(is_text_message_,
-                             base::make_span(multi_frame_buffer_));
+    Message complete_message(is_text_message_, base::span(multi_frame_buffer_));
     state_ = MessageState::kFinished;
     return complete_message;
   }

@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Looper;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 
@@ -168,6 +169,8 @@ public class SelectFileDialogTest {
                 new String[] {"application/pdf"},
                 /* capture= */ false,
                 /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         mOnActionCallback.waitForCallback(callCount, 1);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
@@ -209,6 +212,8 @@ public class SelectFileDialogTest {
                 new String[] {"application/pdf"},
                 /* capture= */ false,
                 /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
@@ -250,6 +255,8 @@ public class SelectFileDialogTest {
                 new String[] {"application/pdf", "image/gif"},
                 /* capture= */ false,
                 /* multiple= */ true,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
@@ -289,6 +296,14 @@ public class SelectFileDialogTest {
                                         (String[]) intent.getExtra(Intent.EXTRA_MIME_TYPES));
                                 assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
                             }
+                            assertEquals(
+                                    Uri.parse("content://authority/tree/123"),
+                                    intent.getExtra(DocumentsContract.EXTRA_INITIAL_URI));
+                            if (Intent.ACTION_CREATE_DOCUMENT.equals(intentAction)) {
+                                assertEquals("suggested.txt", intent.getExtra(Intent.EXTRA_TITLE));
+                            } else {
+                                assertEquals(null, intent.getExtra(Intent.EXTRA_TITLE));
+                            }
                             return true;
                         })
                 .when(windowAndroid)
@@ -303,6 +318,8 @@ public class SelectFileDialogTest {
                 fileTypes,
                 /* capture= */ false,
                 /* multiple= */ false,
+                /* defaultDirectory= */ "content://authority/tree/123",
+                /* suggestedName= */ "suggested.txt",
                 windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
@@ -349,6 +366,10 @@ public class SelectFileDialogTest {
                             assertEquals(
                                     null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
                             assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            assertEquals(
+                                    null,
+                                    getContentIntent.getExtra(DocumentsContract.EXTRA_INITIAL_URI));
+                            assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_TITLE));
                             return true;
                         })
                 .when(windowAndroid)
@@ -363,6 +384,8 @@ public class SelectFileDialogTest {
                 new String[] {},
                 /* capture= */ false,
                 /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
@@ -386,6 +409,8 @@ public class SelectFileDialogTest {
                 new String[] {".pdf", ".jpg"},
                 /* capture= */ false,
                 /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         mOnActionCallback.waitForCallback(callCount, 1);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
@@ -418,6 +443,10 @@ public class SelectFileDialogTest {
                             assertEquals(
                                     null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
                             assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            assertEquals(
+                                    null,
+                                    getContentIntent.getExtra(DocumentsContract.EXTRA_INITIAL_URI));
+                            assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_TITLE));
                             return true;
                         })
                 .when(windowAndroid)
@@ -434,6 +463,8 @@ public class SelectFileDialogTest {
                 new String[] {".pdf", ".jpg", "image/gif"},
                 /* capture= */ false,
                 /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
@@ -453,6 +484,10 @@ public class SelectFileDialogTest {
                             assertEquals(
                                     null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
                             assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            assertEquals(
+                                    null,
+                                    getContentIntent.getExtra(DocumentsContract.EXTRA_INITIAL_URI));
+                            assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_TITLE));
                             return true;
                         })
                 .when(windowAndroid)
@@ -468,6 +503,8 @@ public class SelectFileDialogTest {
                 new String[] {".xyz", "image/gif"},
                 /* capture= */ false,
                 /* multiple= */ true,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
@@ -490,6 +527,10 @@ public class SelectFileDialogTest {
                             assertEquals(
                                     null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
                             assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            assertEquals(
+                                    null,
+                                    getContentIntent.getExtra(DocumentsContract.EXTRA_INITIAL_URI));
+                            assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_TITLE));
                             return true;
                         })
                 .when(windowAndroid)
@@ -505,6 +546,8 @@ public class SelectFileDialogTest {
                 new String[] {".", "image/gif"},
                 /* capture= */ false,
                 /* multiple= */ true,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
@@ -526,6 +569,8 @@ public class SelectFileDialogTest {
                 new String[] {"image/jpeg"},
                 /* capture= */ true,
                 /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         mOnActionCallback.waitForCallback(callCount, 1);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
@@ -633,6 +678,10 @@ public class SelectFileDialogTest {
                                     new String[] {"image/jpeg", "type/nonexistent"}, mimeTypes);
                             assertEquals(
                                     null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            assertEquals(
+                                    null,
+                                    getContentIntent.getExtra(DocumentsContract.EXTRA_INITIAL_URI));
+                            assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_TITLE));
                             return true;
                         })
                 .when(windowAndroid)
@@ -685,6 +734,8 @@ public class SelectFileDialogTest {
                 new String[] {"image/jpeg"},
                 /* capture= */ true,
                 /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
         mOnActionCallback.waitForCallback(callCount, 1);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
@@ -752,6 +803,8 @@ public class SelectFileDialogTest {
                 new String[] {"video/*"},
                 /* capture= */ true,
                 /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
                 windowAndroid);
 
         assertTrue(cameraIntentShow.get());

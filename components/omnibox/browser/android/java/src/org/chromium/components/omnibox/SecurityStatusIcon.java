@@ -29,8 +29,8 @@ public class SecurityStatusIcon {
             case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
                 return useLockIconForSecureState
-                        ? R.drawable.omnibox_https_valid
-                        : R.drawable.omnibox_https_valid_refresh;
+                        ? R.drawable.omnibox_https_valid_lock
+                        : R.drawable.omnibox_https_valid_page_info;
             default:
                 assert false;
         }

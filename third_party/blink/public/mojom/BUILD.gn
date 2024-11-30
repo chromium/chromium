@@ -57,6 +57,7 @@ mojom("mojom_platform") {
     "compute_pressure/web_pressure_manager.mojom",
     "compute_pressure/web_pressure_manager_automation.mojom",
     "confidence_level.mojom",
+    "content_extraction/ai_page_content.mojom",
     "content_extraction/inner_html.mojom",
     "content_extraction/inner_text.mojom",
     "content_index/content_index.mojom",
@@ -1647,6 +1648,7 @@ mojom("mojom_modules") {
   overridden_deps_blink = [
     ":android_mojo_bindings",
     ":mojom_core",
+    "//services/network/public/mojom:mojom_shared_storage",
   ]
   component_deps_blink = [ "//third_party/blink/renderer/core" ]
 

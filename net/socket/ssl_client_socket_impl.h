@@ -76,10 +76,8 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // SSLSocket implementation.
   int ExportKeyingMaterial(std::string_view label,
-                           bool has_context,
-                           std::string_view context,
-                           unsigned char* out,
-                           unsigned int outlen) override;
+                           std::optional<base::span<const uint8_t>> context,
+                           base::span<uint8_t> out) override;
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override;

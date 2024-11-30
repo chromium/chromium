@@ -32,6 +32,7 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -40,6 +41,7 @@
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
 #include "components/signin/internal/identity_manager/token_binding_oauth2_access_token_fetcher.h"
 #include "components/signin/public/base/device_id_helper.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
@@ -320,7 +322,7 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (token_binding_helper_ &&
       token_binding_helper_->HasBindingKey(account_id)) {
-    const std::string gaia_id =
+    const GaiaId gaia_id =
         account_tracker_service_->GetAccountInfo(account_id).gaia;
     CHECK(!gaia_id.empty());
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
@@ -338,12 +340,14 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
     auto fetcher_wrapper =
         std::make_unique<TokenBindingOAuth2AccessTokenFetcher>(
             std::move(fetcher));
+    HybridEncryptionKey ephemeral_key;
+    std::string ephemeral_public_key = ephemeral_key.ExportPublicKey();
     token_binding_helper_->GenerateBindingKeyAssertion(
-        account_id, token_binding_challenge,
+        account_id, token_binding_challenge, ephemeral_public_key,
         GURL(kTokenBindingAssertionDestinationUrl),
         base::BindOnce(
             &TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion,
-            fetcher_wrapper->GetWeakPtr()));
+            fetcher_wrapper->GetWeakPtr(), std::move(ephemeral_key)));
     return fetcher_wrapper;
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -402,14 +406,15 @@ void MutableProfileOAuth2TokenServiceDelegate::
     GenerateRefreshTokenBindingKeyAssertionForMultilogin(
         const CoreAccountId& account_id,
         std::string_view challenge,
+        std::string_view ephemeral_public_key,
         TokenBindingHelper::GenerateAssertionCallback callback) {
   if (!token_binding_helper_ || GetTokenForMultilogin(account_id).empty()) {
-    std::move(callback).Run(std::string(), std::nullopt);
+    std::move(callback).Run(std::string());
   }
 
   token_binding_helper_->GenerateBindingKeyAssertion(
-      account_id, challenge, GURL(kTokenBindingAssertionDestinationUrl),
-      std::move(callback));
+      account_id, challenge, ephemeral_public_key,
+      GURL(kTokenBindingAssertionDestinationUrl), std::move(callback));
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 

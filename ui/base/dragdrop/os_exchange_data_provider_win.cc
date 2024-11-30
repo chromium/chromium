@@ -462,9 +462,9 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
 
     // Add the contents of each file as CFSTR_FILECONTENTS.
     base::span<const uint8_t> data_buffer =
-        base::make_span(reinterpret_cast<const uint8_t*>(
-                            filenames_and_contents[i].second.data()),
-                        filenames_and_contents[i].second.length());
+        base::span(reinterpret_cast<const uint8_t*>(
+                       filenames_and_contents[i].second.data()),
+                   filenames_and_contents[i].second.length());
     SetVirtualFileContentAtIndexForTesting(data_buffer, tymed,  // IN-TEST
                                            static_cast<LONG>(i));
   }

@@ -47,14 +47,14 @@ public class DirectWritingServiceBinderTest {
 
     @Test
     @Feature({"Stylus Handwriting"})
-    public void testOnWindowFocusChanged() {
+    public void testHandleWindowFocusChanged() {
         // Test that callback is not unregistered when window focus is lost.
-        mDwServiceBinder.onWindowFocusChanged(mContext, false);
+        mDwServiceBinder.handleWindowFocusChanged(mContext, false);
         verify(mDwServiceBinder, never()).unregisterCallback();
         verify(mDwServiceBinder).handleWindowFocusLost(mContext);
 
         // Test that callback is registered when window focus is gained.
-        mDwServiceBinder.onWindowFocusChanged(mContext, true);
+        mDwServiceBinder.handleWindowFocusChanged(mContext, true);
         verify(mDwServiceBinder).registerCallback();
     }
 

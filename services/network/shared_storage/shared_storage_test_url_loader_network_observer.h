@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
+#include "services/network/shared_storage/shared_storage_test_utils.h"
 #include "services/network/test/test_url_loader_network_observer.h"
 #include "url/origin.h"
 
@@ -27,11 +28,7 @@ class SharedStorageTestURLLoaderNetworkObserver
   ~SharedStorageTestURLLoaderNetworkObserver() override;
 
   const std::vector<
-      std::pair<url::Origin,
-                std::vector<std::tuple<mojom::SharedStorageOperationType,
-                                       std::optional<std::string>,
-                                       std::optional<std::string>,
-                                       std::optional<bool>>>>>&
+      std::pair<url::Origin, std::vector<SharedStorageMethodWrapper>>>&
   headers_received() const {
     return headers_received_;
   }
@@ -39,7 +36,8 @@ class SharedStorageTestURLLoaderNetworkObserver
   // TestURLLoaderNetworkObserver:
   void OnSharedStorageHeaderReceived(
       const url::Origin& request_origin,
-      std::vector<mojom::SharedStorageOperationPtr> operations,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
       OnSharedStorageHeaderReceivedCallback callback) override;
 
   void WaitForHeadersReceived(size_t expected_total);
@@ -47,12 +45,7 @@ class SharedStorageTestURLLoaderNetworkObserver
  private:
   std::unique_ptr<base::RunLoop> loop_;
   size_t expected_total_ = 0;
-  std::vector<
-      std::pair<url::Origin,
-                std::vector<std::tuple<mojom::SharedStorageOperationType,
-                                       std::optional<std::string>,
-                                       std::optional<std::string>,
-                                       std::optional<bool>>>>>
+  std::vector<std::pair<url::Origin, std::vector<SharedStorageMethodWrapper>>>
       headers_received_;
 };
 

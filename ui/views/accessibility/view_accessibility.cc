@@ -189,18 +189,19 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   data->relative_bounds.bounds = gfx::RectF(view_->bounds());
 
+  // TODO(crbug.com/378724151): Remove once all Views cache their tooltip.
   // This was previously found earlier in the function. It has been moved here,
   // after the call to `ViewAccessibility::Merge`, so that we only check the
   // `data` after all the attributes have been set. Otherwise, there was a bug
   // where the description was not yet populated into the out `data` member in
   // `Merge` and so we were falling into the `if` block below, which led to
   // hangs. See https://crbug.com/326509144 for more details.
-  if (!data->HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
+  if (!data->HasStringAttribute(ax::mojom::StringAttribute::kDescription) &&
+      view_->GetCachedTooltipText().empty()) {
     std::u16string tooltip = view_->GetTooltipText(gfx::Point());
     // Some screen readers announce the accessible description right after the
     // accessible name. Only use the tooltip as the accessible description if
-    // it's different from the name, otherwise users might be puzzled as to why
-    // their screen reader is announcing the same thing twice.
+    // it's different from the name, otherwise it could lead to double speak.
     if (!tooltip.empty() && tooltip != data->GetString16Attribute(
                                            ax::mojom::StringAttribute::kName)) {
       data->SetDescription(base::UTF16ToUTF8(tooltip));
@@ -442,6 +443,8 @@ void ViewAccessibility::SetName(std::u16string name,
     return;
   }
 
+  std::u16string old_name = GetCachedName();
+
   if (name.empty()) {
     data_.RemoveStringAttribute(ax::mojom::StringAttribute::kName);
   } else {
@@ -458,6 +461,14 @@ void ViewAccessibility::SetName(std::u16string name,
     }
 
     data_.SetNameChecked(name);
+  }
+
+  // If previously the accessible name was the same as the tooltip text, we
+  // weren't using the tooltip text as the description, however now that the
+  // name has changed, we should check if the tooltip text should be used as the
+  // description.
+  if (!old_name.empty() && old_name == view_->GetCachedTooltipText()) {
+    OnTooltipTextChanged();
   }
 
   view_->OnAccessibleNameChanged(name);
@@ -805,6 +816,30 @@ std::u16string ViewAccessibility::GetCachedDescription() const {
         data_.GetStringAttribute(ax::mojom::StringAttribute::kDescription));
   }
   return std::u16string();
+}
+
+void ViewAccessibility::OnTooltipTextChanged(
+    std::optional<std::u16string> old_tooltip_text) {
+  if (data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription) &&
+      view_->GetCachedTooltipText() == GetCachedDescription()) {
+    return;
+  }
+  // Some screen readers announce the accessible description right after the
+  // accessible name. Only use the tooltip as the accessible description if
+  // it's different from the name, otherwise users might be puzzled as to why
+  // their screen reader is announcing the same thing twice.
+  const std::u16string tooltip = view_->GetCachedTooltipText();
+  // We only want to update the description if we were previously using the
+  // tooltip as the description or if we had no description.
+  if ((old_tooltip_text.has_value() &&
+       old_tooltip_text == GetCachedDescription()) ||
+      !data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
+    if (!tooltip.empty() && tooltip != GetCachedName()) {
+      SetDescription(tooltip);
+    } else {
+      RemoveDescription();
+    }
+  }
 }
 
 void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {

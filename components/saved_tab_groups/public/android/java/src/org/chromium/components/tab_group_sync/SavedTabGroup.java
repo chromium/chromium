@@ -65,6 +65,8 @@ public class SavedTabGroup {
         sb.append(title);
         sb.append(", color = ");
         sb.append(color);
+        sb.append(", collaborationId = ");
+        sb.append(collaborationId);
         sb.append(", # of Tabs = ");
         sb.append(savedTabs.size());
 

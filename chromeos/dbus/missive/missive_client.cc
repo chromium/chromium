@@ -64,6 +64,7 @@ BASE_FEATURE(kEnableRetryEnqueueRecord,
 const base::FeatureParam<int> kNumSecondsToRetry{
     &kEnableRetryEnqueueRecord, "num_seconds_to_retry",
     /*default seconds to retry=*/2};
+
 namespace {
 
 constexpr char kUmaMissiveClientDbusError[] =

@@ -14,7 +14,7 @@
 
 class AskGoogleForSuggestionsDialogTest : public DialogBrowserTest {
  public:
-  AskGoogleForSuggestionsDialogTest() {}
+  AskGoogleForSuggestionsDialogTest() = default;
 
   AskGoogleForSuggestionsDialogTest(const AskGoogleForSuggestionsDialogTest&) =
       delete;

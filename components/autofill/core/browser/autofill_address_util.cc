@@ -258,34 +258,25 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     const std::string& app_locale) {
-  static constexpr auto kTypeToCompare = {
-      NAME_FULL, ADDRESS_HOME_ADDRESS, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER};
-
-  base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
-      differences = AutofillProfileComparator::GetProfileDifferenceMap(
-          first_profile, second_profile, FieldTypeSet(kTypeToCompare),
-          app_locale);
-
+  // `FieldTypeSet` is unordered, but since NAME_FULL < EMAIL_ADDRESS <
+  // PHONE_HOME_WHOLE_NUBER, the differences are returned in the correct order.
+  std::vector<ProfileValueDifference> differences_for_ui =
+      AutofillProfileComparator::GetProfileDifference(
+          first_profile, second_profile,
+          {NAME_FULL, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}, app_locale);
+  // ADDRESS_HOME_ADDRESS is handled separately.
   std::u16string first_address = GetEnvelopeStyleAddress(
       first_profile, app_locale, /*include_recipient=*/false,
       /*include_country=*/true);
   std::u16string second_address = GetEnvelopeStyleAddress(
       second_profile, app_locale, /*include_recipient=*/false,
       /*include_country=*/true);
-
-  std::vector<ProfileValueDifference> differences_for_ui;
-  for (FieldType type : kTypeToCompare) {
-    // Address is handled seprately.
-    if (type == ADDRESS_HOME_ADDRESS) {
-      if (first_address != second_address) {
-        differences_for_ui.push_back({type, first_address, second_address});
-      }
-      continue;
-    }
-    auto it = differences.find(type);
-    if (it == differences.end())
-      continue;
-    differences_for_ui.push_back({type, it->second.first, it->second.second});
+  if (first_address != second_address) {
+    // Insert right after NAME_FULL (if present).
+    differences_for_ui.insert(
+        differences_for_ui.begin() + (!differences_for_ui.empty() &&
+                                      differences_for_ui[0].type == NAME_FULL),
+        {ADDRESS_HOME_ADDRESS, first_address, second_address});
   }
   return differences_for_ui;
 }

@@ -731,7 +731,8 @@ void FederatedAuthRequestImpl::RequestToken(
           (IsFedCmActiveModeEnabled() &&
            idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kActive)
               ? RpMode::kActive
-              : RpMode::kPassive);
+              : RpMode::kPassive,
+          /*use_other_account_result=*/std::nullopt);
 
       AddDevToolsIssue(
           blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
@@ -1398,6 +1399,22 @@ bool FederatedAuthRequestImpl::CanShowContinueOnPopup() const {
   return had_transient_user_activation_;
 }
 
+FedCmUseOtherAccountResult
+FederatedAuthRequestImpl::ComputeUseOtherAccountResult(
+    blink::mojom::FederatedAuthRequestResult result,
+    const std::optional<GURL>& selected_idp_config_url) {
+  if (result != FederatedAuthRequestResult::kSuccess) {
+    return FedCmUseOtherAccountResult::kUserDoesNotSignIn;
+  }
+
+  CHECK(selected_idp_config_url);
+  if (webid::IsEndpointSameOrigin(*selected_idp_config_url, login_url_) &&
+      !account_ids_before_login_.contains(account_id_)) {
+    return FedCmUseOtherAccountResult::kUserSignsInWithNewAccount;
+  }
+  return FedCmUseOtherAccountResult::kUserSignsInWithExistingAccount;
+}
+
 void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     std::vector<IdentityRequestAccountPtr>&& accounts,
@@ -1538,7 +1555,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       account->identity_provider->idp_metadata.has_filtered_out_account = true;
     }
   }
-  account_ids_before_login_.clear();
 
   // TODO(crbug.com/40246099): Handle auto_reauthn_ for multi IDP.
   bool auto_reauthn_enabled =
@@ -2647,9 +2663,17 @@ void FederatedAuthRequestImpl::CompleteRequest(
     int num_idps_mismatch = std::count_if(
         idp_data_for_display_.begin(), idp_data_for_display_.end(),
         [](auto& provider) { return provider->has_login_status_mismatch; });
+    std::optional<FedCmUseOtherAccountResult> use_other_account_result;
+    // We know that use other account was used if and only if
+    // account_ids_before_login_ is not empty.
+    if (!account_ids_before_login_.empty()) {
+      use_other_account_result =
+          ComputeUseOtherAccountResult(result, selected_idp_config_url);
+    }
+
     fedcm_metrics_->RecordRequestTokenStatus(
         *token_status, mediation_requirement_, idp_order_, num_idps_mismatch,
-        selected_idp_config_url, rp_mode_);
+        selected_idp_config_url, rp_mode_, use_other_account_result);
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {

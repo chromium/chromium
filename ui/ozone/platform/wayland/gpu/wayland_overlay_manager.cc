@@ -93,33 +93,19 @@ bool WaylandOverlayManager::CanHandleCandidate(
         gfx::OVERLAY_TRANSFORM_INVALID) {
       return false;
     }
-  } else if (!manager_gpu_->supports_affine_transform() ||
-             absl::get<gfx::Transform>(candidate.transform).HasPerspective()) {
+  } else if (absl::get<gfx::Transform>(candidate.transform).HasPerspective()) {
     // Wayland supports only 2d matrix transforms.
     return false;
   }
 
-  if (candidate.background_color.has_value() &&
-      !manager_gpu_->supports_surface_background_color()) {
-    return false;
-  }
-
-  // If clipping isn't supported, reject candidates with a clip rect, unless
-  // that clip wouldn't have any effect.
-  if (!manager_gpu_->supports_clip_rect() && candidate.clip_rect &&
-      !candidate.clip_rect->Contains(
-          gfx::ToNearestRect(candidate.display_rect))) {
+  // Wayland doesn't support clip_rect, background_color.
+  if (candidate.clip_rect || candidate.background_color.has_value()) {
     return false;
   }
 
   if (is_delegated_context_) {
-    // Support for subpixel accurate position could be checked in ctor, but the
-    // WaylandBufferManagerGpu is not initialized when |this| is created. Thus,
-    // do checks here.
-    if (manager_gpu_->supports_subpixel_accurate_position())
-      return true;
-    else
-      NotifyOverlayDelegationLimitedCapabilityOnce();
+    // Subpixel accurate position is not available.
+    NotifyOverlayDelegationLimitedCapabilityOnce();
   }
 
   // Reject candidates that don't fall on a pixel boundary.

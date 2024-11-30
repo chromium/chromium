@@ -83,7 +83,7 @@ class NET_EXPORT_PRIVATE Bitmap {
 
   // Gets a span describing the internal map.
   base::span<const uint32_t> GetSpan() const {
-    return base::make_span(GetMap(), static_cast<size_t>(ArraySize()));
+    return base::span(GetMap(), static_cast<size_t>(ArraySize()));
   }
 
   // Sets a range of bits to |value|.

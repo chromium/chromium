@@ -8,8 +8,8 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/component_export.h"
 #include "ui/gfx/geometry/clamp_float_geometry.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -26,7 +26,7 @@ struct DecomposedTransform;
 // Results of the *Map* methods are clamped with ClampFloatGeometry().
 // See the definition of the function for details.
 //
-class GEOMETRY_EXPORT AxisTransform2d {
+class COMPONENT_EXPORT(GEOMETRY) AxisTransform2d {
  public:
   constexpr AxisTransform2d() = default;
   constexpr AxisTransform2d(float scale, const Vector2dF& translation)

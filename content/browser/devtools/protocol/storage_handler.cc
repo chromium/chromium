@@ -493,7 +493,7 @@ Response StorageHandler::Disable() {
   return Response::Success();
 }
 
-void StorageHandler::GetCookies(Maybe<std::string> browser_context_id,
+void StorageHandler::GetCookies(std::optional<std::string> browser_context_id,
                                 std::unique_ptr<GetCookiesCallback> callback) {
   StoragePartition* storage_partition = nullptr;
   Response response = StorageHandler::FindStoragePartition(browser_context_id,
@@ -530,7 +530,7 @@ void StorageHandler::GotAllCookies(
 
 void StorageHandler::SetCookies(
     std::unique_ptr<protocol::Array<Network::CookieParam>> cookies,
-    Maybe<std::string> browser_context_id,
+    std::optional<std::string> browser_context_id,
     std::unique_ptr<SetCookiesCallback> callback) {
   StoragePartition* storage_partition = nullptr;
   Response response = StorageHandler::FindStoragePartition(browser_context_id,
@@ -555,7 +555,7 @@ void StorageHandler::SetCookies(
 }
 
 void StorageHandler::ClearCookies(
-    Maybe<std::string> browser_context_id,
+    std::optional<std::string> browser_context_id,
     std::unique_ptr<ClearCookiesCallback> callback) {
   StoragePartition* storage_partition = nullptr;
   Response response = StorageHandler::FindStoragePartition(browser_context_id,
@@ -711,7 +711,7 @@ void StorageHandler::GetUsageAndQuota(
 
 void StorageHandler::OverrideQuotaForOrigin(
     const String& origin_string,
-    Maybe<double> quota_size,
+    std::optional<double> quota_size,
     std::unique_ptr<OverrideQuotaForOriginCallback> callback) {
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
@@ -962,7 +962,7 @@ void StorageHandler::NotifyIndexedDBContentChanged(
 }
 
 Response StorageHandler::FindStoragePartition(
-    const Maybe<std::string>& browser_context_id,
+    const std::optional<std::string>& browser_context_id,
     StoragePartition** storage_partition) {
   BrowserContext* browser_context = nullptr;
   Response response =
@@ -1099,11 +1099,9 @@ void StorageHandler::OnInterestGroupAccessed(
       access_time.InSecondsFSinceUnixEpoch(), type_enum,
       owner_origin.Serialize(), name,
       component_seller_origin.has_value()
-          ? Maybe<String>(component_seller_origin->Serialize())
-          : Maybe<String>(),
-      bid.has_value() ? Maybe<double>(*bid) : Maybe<double>(),
-      bid_currency.has_value() ? Maybe<String>(*bid_currency) : Maybe<String>(),
-      auction_id.has_value() ? Maybe<String>(*auction_id) : Maybe<String>());
+          ? std::optional<String>(component_seller_origin->Serialize())
+          : std::nullopt,
+      bid, bid_currency.CopyAsOptional(), auction_id.CopyAsOptional());
 }
 
 namespace {
@@ -1343,7 +1341,7 @@ void StorageHandler::SetSharedStorageEntry(
     const std::string& owner_origin_string,
     const std::string& key,
     const std::string& value,
-    Maybe<bool> ignore_if_present,
+    std::optional<bool> ignore_if_present,
     std::unique_ptr<SetSharedStorageEntryCallback> callback) {
   auto manager_or_response = GetSharedStorageManager();
   if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
@@ -2350,8 +2348,7 @@ void StorageHandler::NotifyInterestGroupAuctionEventOccurred(
   };
   frontend_->InterestGroupAuctionEventOccurred(
       event_time.InSecondsFSinceUnixEpoch(), type_enum, unique_auction_id,
-      parent_auction_id.has_value() ? Maybe<String>(*parent_auction_id)
-                                    : Maybe<String>(),
+      parent_auction_id.CopyAsOptional(),
       std::make_unique<base::Value::Dict>(auction_config.Clone()));
 }
 

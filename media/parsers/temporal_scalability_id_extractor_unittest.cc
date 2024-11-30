@@ -15,7 +15,7 @@ namespace media {
 
 using bytes = std::vector<uint8_t>;
 
-TEST(TemporalScalabilityIdExtractorTest, AssignTemporalIdBySvcSpec_2layers) {
+TEST(TemporalScalabilityIdExtractorTest, AssignTemporalIdBySvcSpec2layers) {
   TemporalScalabilityIdExtractor extractor(VideoCodec::kH264, 2);
   EXPECT_EQ(extractor.AssignTemporalIdBySvcSpec(0), 0);
   EXPECT_EQ(extractor.AssignTemporalIdBySvcSpec(1), 1);
@@ -25,7 +25,7 @@ TEST(TemporalScalabilityIdExtractorTest, AssignTemporalIdBySvcSpec_2layers) {
   EXPECT_EQ(extractor.AssignTemporalIdBySvcSpec(5), 1);
 }
 
-TEST(TemporalScalabilityIdExtractorTest, AssignTemporalIdBySvcSpec_3layers) {
+TEST(TemporalScalabilityIdExtractorTest, AssignTemporalIdBySvcSpec3layers) {
   TemporalScalabilityIdExtractor extractor(VideoCodec::kH264, 3);
   EXPECT_EQ(extractor.AssignTemporalIdBySvcSpec(0), 0);
   EXPECT_EQ(extractor.AssignTemporalIdBySvcSpec(1), 2);
@@ -39,7 +39,7 @@ TEST(TemporalScalabilityIdExtractorTest, AssignTemporalIdBySvcSpec_3layers) {
 }
 
 // `frame_id` doesn't matter, `temporal_id` is populated from the stream
-TEST(TemporalScalabilityIdExtractorTest, H264_SvcHeaders) {
+TEST(TemporalScalabilityIdExtractorTest, H264SvcHeaders) {
   TemporalScalabilityIdExtractor extractor(VideoCodec::kH264, 3);
   TemporalScalabilityIdExtractor::BitstreamMetadata md;
   md.temporal_id = 99;
@@ -57,7 +57,7 @@ TEST(TemporalScalabilityIdExtractorTest, H264_SvcHeaders) {
 }
 
 // Bitstream is corrupted, `temporal_id` is populated from `frame_id`
-TEST(TemporalScalabilityIdExtractorTest, H264_CorruptedStream) {
+TEST(TemporalScalabilityIdExtractorTest, H264CorruptedStream) {
   TemporalScalabilityIdExtractor extractor(VideoCodec::kH264, 2);
   TemporalScalabilityIdExtractor::BitstreamMetadata md;
   md.temporal_id = 99;
@@ -106,7 +106,7 @@ struct AV1TemporalScalabilityData {
 
 // `temporal_id`, `reference_frame_indices`, and `refresh_frame_flags` are
 // populated from the bitstream.
-TEST(TemporalScalabilityIdExtractorTest, AV1_TwoTemporalLayers) {
+TEST(TemporalScalabilityIdExtractorTest, AV1TwoTemporalLayers) {
   TemporalScalabilityIdExtractor extractor(VideoCodec::kAV1, 2);
   TemporalScalabilityIdExtractor::BitstreamMetadata md;
 

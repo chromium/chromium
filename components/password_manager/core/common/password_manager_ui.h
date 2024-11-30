@@ -93,6 +93,10 @@ enum State {
   // Passkey was successfully deleted because it was not present on an all
   // accepted credentials report.
   PASSKEY_NOT_ACCEPTED_STATE,
+
+  // A passkey was created automatically to "upgrade" an existing password for
+  // the same website and user.
+  PASSKEY_UPGRADE_STATE,
 };
 
 }  // namespace password_manager::ui

@@ -801,13 +801,13 @@ void CloudPolicyClient::SetBrowserDeviceIdentifier(
 void CloudPolicyClient::UploadPolicyValidationReport(
     CloudPolicyValidatorBase::Status status,
     const std::vector<ValueValidationIssue>& value_validation_issues,
-    const ValidationAction action,
+    ValidationAction action,
     const std::string& policy_type,
-    const std::string& policy_token) {
+    const std::string& policy_token,
+    ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
 
-  ResultCallback callback = base::DoNothing();
   std::unique_ptr<DMServerJobConfiguration> config =
       CreateReportUploadJobConfiguration(
           DeviceManagementService::JobConfiguration::
@@ -835,6 +835,17 @@ void CloudPolicyClient::UploadPolicyValidationReport(
   }
 
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
+}
+
+void CloudPolicyClient::UploadPolicyValidationReport(
+    CloudPolicyValidatorBase::Status status,
+    const std::vector<ValueValidationIssue>& value_validation_issues,
+    ValidationAction action,
+    const std::string& policy_type,
+    const std::string& policy_token) {
+  return UploadPolicyValidationReport(status, value_validation_issues, action,
+                                      policy_type, policy_token,
+                                      /*callback=*/base::DoNothing());
 }
 
 void CloudPolicyClient::FetchRobotAuthCodes(

@@ -63,6 +63,20 @@
 
 namespace web_app {
 
+IsolatedWebAppUpdateOptions::IsolatedWebAppUpdateOptions(
+    const GURL& update_manifest_url,
+    UpdateChannel update_channel,
+    const std::optional<base::Version>& pinned_version)
+    : update_manifest_url(update_manifest_url),
+      update_channel(update_channel),
+      pinned_version(pinned_version) {}
+
+IsolatedWebAppUpdateOptions::IsolatedWebAppUpdateOptions(
+    const IsolatedWebAppUpdateOptions& other) = default;
+IsolatedWebAppUpdateOptions& IsolatedWebAppUpdateOptions::operator=(
+    IsolatedWebAppUpdateOptions&& other) = default;
+IsolatedWebAppUpdateOptions::~IsolatedWebAppUpdateOptions() = default;
+
 // This helper class acts similarly to `IsolatedWebAppUpdateDiscoveryTask`, the
 // difference being that this class is for discovering local updates for
 // dev-mode installed IWAs.
@@ -146,13 +160,37 @@ GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(Profile* profile) {
 
     id_to_update_options_map.emplace(
         options->web_bundle_id(),
-        IsolatedWebAppUpdateOptions{
-            .update_manifest_url = options->update_manifest_url(),
-            .update_channel = options->update_channel()});
+        IsolatedWebAppUpdateOptions(options->update_manifest_url(),
+                                    options->update_channel(),
+                                    options->pinned_version()));
   }
 #endif
 
   return id_to_update_options_map;
+}
+
+bool ShouldProceedWithUpdateUnderVersionPinning(
+    const base::Version& pinned_version,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const IsolationData& isolation_data) {
+  if (pinned_version < isolation_data.version()) {
+    return false;
+  }
+
+  switch (LookupRotatedKey(web_bundle_id)) {
+    case KeyRotationLookupResult::kNoKeyRotation:
+      return pinned_version > isolation_data.version();
+    case KeyRotationLookupResult::kKeyFound: {
+      KeyRotationData data = GetKeyRotationData(web_bundle_id, isolation_data);
+      return pinned_version > isolation_data.version() ||
+             (pinned_version == isolation_data.version() &&
+              !data.current_installation_has_rk);
+    };
+    case KeyRotationLookupResult::kKeyBlocked:
+      return false;
+  }
+
+  return true;
 }
 
 IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
@@ -370,10 +408,11 @@ void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
     const IsolatedWebAppUrlInfo& url_info,
     const GURL& update_manifest_url,
     const UpdateChannel& update_channel,
+    const std::optional<base::Version>& pinned_version,
     bool dev_mode) {
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
       IwaUpdateDiscoveryTaskParams(update_manifest_url, update_channel,
-                                   url_info, dev_mode),
+                                   pinned_version, url_info, dev_mode),
       provider_->scheduler(), provider_->registrar_unsafe(),
       profile_->GetURLLoaderFactory()));
 
@@ -401,9 +440,14 @@ void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
 }
 
 void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(
-    const base::Version& component_version) {
+    const base::Version& version,
+    bool is_preloaded) {
   // The corresponding observer is added during `Start()`.
   CHECK(has_started_);
+
+  if (is_preloaded) {
+    return;
+  }
 
   if (!automatic_updates_enabled_) {
     return;
@@ -500,8 +544,22 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
     return false;
   }
 
+  if (update_options->pinned_version &&
+      !ShouldProceedWithUpdateUnderVersionPinning(
+          update_options->pinned_version.value(), url_info.web_bundle_id(),
+          isolation_data.value())) {
+    // By default, pinning an app to a lower version than the current one is
+    // impossible.
+    // The same version updates can only be performed when allowed by key
+    // rotation.
+    // Setting the pinned_version field in policy prevents any further updates
+    // to the IWA as long as it is set.
+    return false;
+  }
+
   DiscoverUpdatesForApp(url_info, update_options->update_manifest_url,
-                        update_options->update_channel, /*dev_mode=*/false);
+                        update_options->update_channel,
+                        update_options->pinned_version, /*dev_mode=*/false);
 
   return true;
 }

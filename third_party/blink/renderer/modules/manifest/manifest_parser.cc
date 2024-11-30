@@ -58,7 +58,6 @@ namespace {
 
 static constexpr char kOriginWildcardPrefix[] = "%2A.";
 // Keep in sync with web_app_origin_association_task.cc.
-static wtf_size_t kMaxUrlHandlersSize = 10;
 static wtf_size_t kMaxScopeExtensionsSize = 10;
 static wtf_size_t kMaxShortcutsSize = 10;
 static wtf_size_t kMaxOriginLength = 2000;
@@ -342,7 +341,6 @@ bool ManifestParser::Parse() {
 
   manifest_->file_handlers = ParseFileHandlers(root_object.get());
   manifest_->protocol_handlers = ParseProtocolHandlers(root_object.get());
-  manifest_->url_handlers = ParseUrlHandlers(root_object.get());
   manifest_->scope_extensions = ParseScopeExtensions(root_object.get());
   manifest_->lock_screen = ParseLockScreen(root_object.get());
   manifest_->note_taking = ParseNoteTaking(root_object.get());
@@ -1603,123 +1601,6 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
   }
 
   return std::move(protocol_handler);
-}
-
-Vector<mojom::blink::ManifestUrlHandlerPtr> ManifestParser::ParseUrlHandlers(
-    const JSONObject* from) {
-  Vector<mojom::blink::ManifestUrlHandlerPtr> url_handlers;
-  const bool feature_enabled =
-      base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) ||
-      RuntimeEnabledFeatures::WebAppUrlHandlingEnabled(execution_context_);
-  if (!feature_enabled || !from->Get("url_handlers")) {
-    return url_handlers;
-  }
-  JSONArray* handlers_list = from->GetArray("url_handlers");
-  if (!handlers_list) {
-    AddErrorInfo("property 'url_handlers' ignored, type array expected.");
-    return url_handlers;
-  }
-  for (wtf_size_t i = 0; i < handlers_list->size(); ++i) {
-    if (i == kMaxUrlHandlersSize) {
-      AddErrorInfo("property 'url_handlers' contains more than " +
-                   String::Number(kMaxUrlHandlersSize) +
-                   " valid elements, only the first " +
-                   String::Number(kMaxUrlHandlersSize) + " are parsed.");
-      break;
-    }
-
-    const JSONObject* handler_object = JSONObject::Cast(handlers_list->at(i));
-    if (!handler_object) {
-      AddErrorInfo("url_handlers entry ignored, type object expected.");
-      continue;
-    }
-
-    std::optional<mojom::blink::ManifestUrlHandlerPtr> url_handler =
-        ParseUrlHandler(handler_object);
-    if (!url_handler) {
-      continue;
-    }
-    url_handlers.push_back(std::move(url_handler.value()));
-  }
-  return url_handlers;
-}
-
-std::optional<mojom::blink::ManifestUrlHandlerPtr>
-ManifestParser::ParseUrlHandler(const JSONObject* object) {
-  DCHECK(
-      base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) ||
-      RuntimeEnabledFeatures::WebAppUrlHandlingEnabled(execution_context_));
-  if (!object->Get("origin")) {
-    AddErrorInfo(
-        "url_handlers entry ignored, required property 'origin' is missing.");
-    return std::nullopt;
-  }
-  const std::optional<String> origin_string =
-      ParseString(object, "origin", Trim(true));
-  if (!origin_string.has_value()) {
-    AddErrorInfo(
-        "url_handlers entry ignored, required property 'origin' is invalid.");
-    return std::nullopt;
-  }
-
-  // TODO(crbug.com/1072058): pre-process for input without scheme.
-  // (eg. example.com instead of https://example.com) because we can always
-  // assume the use of https for URL handling. Remove this TODO if we decide
-  // to require fully specified https scheme in this origin input.
-
-  if (origin_string->length() > kMaxOriginLength) {
-    AddErrorInfo(
-        "url_handlers entry ignored, 'origin' exceeds maximum character length "
-        "of " +
-        String::Number(kMaxOriginLength) + " .");
-    return std::nullopt;
-  }
-
-  auto origin = SecurityOrigin::CreateFromString(*origin_string);
-  if (!origin || origin->IsOpaque()) {
-    AddErrorInfo(
-        "url_handlers entry ignored, required property 'origin' is invalid.");
-    return std::nullopt;
-  }
-  if (origin->Protocol() != url::kHttpsScheme) {
-    AddErrorInfo(
-        "url_handlers entry ignored, required property 'origin' must use the "
-        "https scheme.");
-    return std::nullopt;
-  }
-
-  String host = origin->Host();
-  auto url_handler = mojom::blink::ManifestUrlHandler::New();
-  // Check for wildcard *.
-  if (host.StartsWith(kOriginWildcardPrefix)) {
-    url_handler->has_origin_wildcard = true;
-    // Trim the wildcard prefix to get the effective host. Minus one to exclude
-    // the length of the null terminator.
-    host = host.Substring(sizeof(kOriginWildcardPrefix) - 1);
-  } else {
-    url_handler->has_origin_wildcard = false;
-  }
-
-  bool host_valid = IsHostValidForScopeExtension(host);
-  if (!host_valid) {
-    AddErrorInfo(
-        "url_handlers entry ignored, domain of required property 'origin' is "
-        "invalid.");
-    return std::nullopt;
-  }
-
-  if (url_handler->has_origin_wildcard) {
-    origin = SecurityOrigin::CreateFromValidTuple(origin->Protocol(), host,
-                                                  origin->Port());
-    if (!origin_string.has_value()) {
-      AddErrorInfo(
-          "url_handlers entry ignored, required property 'origin' is invalid.");
-      return std::nullopt;
-    }
-  }
-
-  url_handler->origin = origin;
-  return std::move(url_handler);
 }
 
 Vector<mojom::blink::ManifestScopeExtensionPtr>

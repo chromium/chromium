@@ -17,7 +17,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedControllerCocoa
     : public ImmersiveModeControllerCocoa {
  public:
   explicit ImmersiveModeTabbedControllerCocoa(
-      NativeWidgetMacNSWindow* browser_window,
+      BrowserNativeWidgetWindow* browser_window,
       NativeWidgetMacOverlayNSWindow* overlay_window,
       NativeWidgetMacOverlayNSWindow* tab_window);
   ImmersiveModeTabbedControllerCocoa(

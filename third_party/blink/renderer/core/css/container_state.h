@@ -51,30 +51,29 @@ using ContainerSnappedFlags = unsigned;
 // Flags that represent whether a scroll-state query container has scrollable
 // overflow in a given direction. For physical directions, kStart is used for
 // left/top and kEnd is used for right/bottom.
-enum class ContainerOverflowing {
+enum class ContainerScrollable {
   kNone = 0,
   kStart = 1 << 0,
   kEnd = 1 << 1,
 };
 
-using ContainerOverflowingFlags = unsigned;
+using ContainerScrollableFlags = unsigned;
 
-inline ContainerOverflowingFlags Flip(ContainerOverflowingFlags overflowing) {
+inline ContainerScrollableFlags Flip(ContainerScrollableFlags overflowing) {
   if (overflowing ==
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone)) {
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone)) {
     return overflowing;
   }
-  ContainerOverflowingFlags flipped =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  ContainerScrollableFlags flipped =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
   if (overflowing &
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart)) {
-    flipped |=
-        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart)) {
+    flipped |= static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
   }
   if (overflowing &
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd)) {
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd)) {
     flipped |=
-        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart);
+        static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart);
   }
   return flipped;
 }

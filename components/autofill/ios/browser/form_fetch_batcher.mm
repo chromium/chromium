@@ -56,6 +56,8 @@ void FormFetchBatcher::PushRequestAndRun(
   // callback.
   weak_factory_.InvalidateWeakPtrs();
 
+  batch_scheduled_ = true;
+
   // Run the batch immediately.
   Run();
 }
@@ -63,6 +65,10 @@ void FormFetchBatcher::PushRequestAndRun(
 void FormFetchBatcher::PushRequest(
     FormFetchCompletion&& completion,
     std::optional<std::u16string> form_name_filter) {
+  fetch_requests_.emplace_back(
+      base::BindOnce(&ApplyFormFilterIfNeeded, std::move(form_name_filter))
+          .Then(std::move(completion)));
+
   if (!batch_scheduled_) {
     batch_scheduled_ = true;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -70,18 +76,14 @@ void FormFetchBatcher::PushRequest(
         base::BindOnce(&FormFetchBatcher::Run, weak_factory_.GetWeakPtr()),
         batch_period_);
   }
-
-  fetch_requests_.emplace_back(
-      base::BindOnce(&ApplyFormFilterIfNeeded, std::move(form_name_filter))
-          .Then(std::move(completion)));
 }
 
 void FormFetchBatcher::Run() {
   // There should be at least one fetch request in the batch when running it.
   CHECK_GT(fetch_requests_.size(), 0u, base::NotFatalUntil::M133);
-
-  base::UmaHistogramCounts100("Autofill.iOS.FormExtraction.ForScan.BatchSize",
-                              fetch_requests_.size());
+  // Running the batch should only be done when there was an actual batch
+  // scheduled.
+  CHECK(batch_scheduled_);
 
   if (frame_) {
     auto completion =
@@ -101,6 +103,12 @@ void FormFetchBatcher::Complete(
     std::optional<std::vector<autofill::FormData>> forms) {
   // Complete() should only be done when there are queued requests.
   CHECK_GT(fetch_requests_.size(), 0u, base::NotFatalUntil::M133);
+  // Completing the batch should only be done when there was an actual batch
+  // scheduled.
+  CHECK(batch_scheduled_);
+
+  base::UmaHistogramCounts100("Autofill.iOS.FormExtraction.ForScan.BatchSize",
+                              fetch_requests_.size());
 
   // The batch is being completed so a new batch can be scheduled starting from
   // now which includes new requests pushed by the completion blocks that are

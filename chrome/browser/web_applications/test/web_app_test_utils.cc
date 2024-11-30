@@ -84,7 +84,6 @@
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
@@ -288,23 +287,6 @@ std::vector<apps::ProtocolHandlerInfo> CreateRandomProtocolHandlers(
   }
 
   return protocol_handlers;
-}
-
-std::vector<apps::UrlHandlerInfo> CreateRandomUrlHandlers(uint32_t suffix) {
-  std::vector<apps::UrlHandlerInfo> url_handlers;
-
-  for (unsigned int i = 0; i < 3; ++i) {
-    std::string suffix_str =
-        base::NumberToString(suffix) + base::NumberToString(i);
-
-    apps::UrlHandlerInfo url_handler;
-    url_handler.origin =
-        url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
-    url_handler.has_origin_wildcard = true;
-    url_handlers.push_back(std::move(url_handler));
-  }
-
-  return url_handlers;
 }
 
 ScopeExtensions CreateRandomScopeExtensions(uint32_t suffix,
@@ -847,7 +829,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     app->SetShareTarget(CreateRandomShareTarget(random.next_uint()));
   }
   app->SetProtocolHandlers(CreateRandomProtocolHandlers(random.next_uint()));
-  app->SetUrlHandlers(CreateRandomUrlHandlers(random.next_uint()));
   app->SetScopeExtensions(
       CreateRandomScopeExtensions(random.next_uint(), random));
 

@@ -32,7 +32,7 @@ class DownloadTestFileActivityObserver::MockDownloadManagerDelegate
                                           1);
   }
 
-  ~MockDownloadManagerDelegate() override {}
+  ~MockDownloadManagerDelegate() override = default;
 
   void EnableFileChooser(bool enable) {
     file_chooser_enabled_ = enable;

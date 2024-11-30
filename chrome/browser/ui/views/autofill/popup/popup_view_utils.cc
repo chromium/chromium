@@ -451,13 +451,8 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kCreditCardEntry:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kDevtoolsTestAddresses:
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullEmail:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsError:
@@ -478,11 +473,8 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kDatalistEntry:
-    case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
-    case SuggestionType::kEditAddressProfile:
-    case SuggestionType::kFillEverythingFromAddressProfile:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
@@ -498,6 +490,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
     case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:

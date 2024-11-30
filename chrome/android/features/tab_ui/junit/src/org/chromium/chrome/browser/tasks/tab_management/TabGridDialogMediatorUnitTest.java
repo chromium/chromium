@@ -14,7 +14,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -86,12 +85,12 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -146,13 +145,13 @@ public class TabGridDialogMediatorUnitTest {
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private View mView;
     @Mock private TabGridDialogMediator.DialogController mDialogController;
-    @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabCreator mTabCreator;
     @Mock private TabSwitcherResetHandler mTabSwitcherResetHandler;
     @Mock private TabGridDialogMediator.AnimationSourceViewProvider mAnimationSourceViewProvider;
@@ -231,6 +230,7 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(mTab2);
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
@@ -249,7 +249,6 @@ public class TabGridDialogMediatorUnitTest {
                 .when(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
         doReturn(mView).when(mAnimationSourceViewProvider).getAnimationSourceViewForTab(anyInt());
-        doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
         doReturn(mEditable).when(mTitleTextView).getText();
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mEditable).toString();
         doReturn(null).when(mRecyclerViewPositionSupplier).get();
@@ -1428,7 +1427,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onToolbarMenuItemClick(R.id.recent_activity, TAB1_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.RecentActivity"));
-        verify(mDataSharingTabManager).showRecentActivity(COLLABORATION_ID1);
+        verify(mDataSharingTabManager).showRecentActivity(mActivity, COLLABORATION_ID1);
     }
 
     @Test
@@ -1681,7 +1680,7 @@ public class TabGridDialogMediatorUnitTest {
                 .get(MESSAGE_SERVICE_ACTION_PROVIDER)
                 .review();
 
-        verify(mDataSharingTabManager, never()).showRecentActivity(any());
+        verify(mDataSharingTabManager, never()).showRecentActivity(any(), anyString());
         verify(mDialogController, atLeastOnce())
                 .removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
     }
@@ -1700,7 +1699,7 @@ public class TabGridDialogMediatorUnitTest {
                 .get(MESSAGE_SERVICE_ACTION_PROVIDER)
                 .review();
 
-        verify(mDataSharingTabManager).showRecentActivity(COLLABORATION_ID1);
+        verify(mDataSharingTabManager).showRecentActivity(mActivity, COLLABORATION_ID1);
     }
 
     @Test
@@ -1722,7 +1721,6 @@ public class TabGridDialogMediatorUnitTest {
                         mDialogController,
                         mModel,
                         mCurrentTabGroupModelFilterSupplier,
-                        mTabCreatorManager,
                         withResetHandler ? mTabSwitcherResetHandler : null,
                         mRecyclerViewPositionSupplier,
                         withAnimSource ? mAnimationSourceViewProvider : null,

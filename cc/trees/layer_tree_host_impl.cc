@@ -519,16 +519,16 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     compositor_frame_reporting_controller_->set_event_latency_tracker(this);
 
 #if BUILDFLAG(IS_CHROMEOS)
-    dropped_frame_counter_.EnableReporForUI();
+    dropped_frame_counter_.EnableReportForUI();
     compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
         FrameInfo::SmoothEffectDrivingThread::kMain, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   dropped_frame_counter_.set_total_counter(&total_frame_counter_);
-  frame_trackers_.set_custom_tracker_results_added_callback(
-      base::BindRepeating(&LayerTreeHostImpl::NotifyThroughputTrackerResults,
-                          weak_factory_.GetWeakPtr()));
+  frame_trackers_.set_custom_tracker_results_added_callback(base::BindRepeating(
+      &LayerTreeHostImpl::NotifyCompositorMetricsTrackerResults,
+      weak_factory_.GetWeakPtr()));
 }
 
 LayerTreeHostImpl::~LayerTreeHostImpl() {
@@ -634,7 +634,7 @@ void LayerTreeHostImpl::ReadyToCommit(
        commit_timeout)) {
     is_measuring_smoothness_ = true;
     total_frame_counter_.Reset();
-    dropped_frame_counter_.OnFcpReceived();
+    dropped_frame_counter_.OnFirstContentfulPaintReceived();
   }
 
   // Notify the browser controls manager that we have processed any
@@ -713,6 +713,7 @@ void LayerTreeHostImpl::PullLayerTreeHostPropertiesFrom(
     RecordGpuRasterizationHistogram();
   SetDebugState(commit_state.debug_state);
   SetVisualDeviceViewportSize(commit_state.visual_device_viewport_size);
+  SetMaxSafeAreaInsets(commit_state.max_safe_area_insets);
   set_viewport_mobile_optimized(commit_state.is_viewport_mobile_optimized);
   SetPrefersReducedMotion(commit_state.prefers_reduced_motion);
   SetMayThrottleIfUndrawnFrames(commit_state.may_throttle_if_undrawn_frames);
@@ -789,7 +790,8 @@ void LayerTreeHostImpl::CommitComplete() {
     }
   }
 
-  for (const auto& info : mutator_host_->TakePendingThroughputTrackerInfos()) {
+  for (const auto& info :
+       mutator_host_->TakePendingCompositorMetricsTrackerInfos()) {
     const MutatorHost::TrackedAnimationSequenceId sequence_id = info.id;
     const bool start = info.start;
     if (start)
@@ -2240,9 +2242,9 @@ void LayerTreeHostImpl::LogAverageLagEvents(
   lag_tracking_manager_.DidPresentCompositorFrame(frame_token, details);
 }
 
-void LayerTreeHostImpl::NotifyThroughputTrackerResults(
+void LayerTreeHostImpl::NotifyCompositorMetricsTrackerResults(
     const CustomTrackerResults& results) {
-  client_->NotifyThroughputTrackerResults(results);
+  client_->NotifyCompositorMetricsTrackerResults(results);
 }
 
 void LayerTreeHostImpl::DidNotNeedBeginFrame() {
@@ -2507,6 +2509,36 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
         gfx::Vector2dF offset2d(0.0f, -std::round(offset));
         metadata.offset_tag_values.emplace_back(content_offset_tag, offset2d);
       }
+
+      if (features::IsBcivBottomControlsEnabled() &&
+          browser_controls_offset_manager_->BottomControlsHeight() > 0) {
+        const viz::OffsetTag& bottom_controls_offset_tag =
+            browser_controls_offset_manager_->BottomControlsOffsetTag();
+        if (bottom_controls_offset_tag) {
+          CHECK(!content_offset_tag.IsEmpty());
+
+          float bottom_controls_visible_height =
+              browser_controls_offset_manager_->BottomControlsHeight() *
+              browser_controls_offset_manager_->BottomControlsShownRatio();
+          float offset =
+              browser_controls_offset_manager_->BottomControlsHeight() -
+              bottom_controls_visible_height;
+          if (bottom_controls_visible_height == 0) {
+            // Similar to the top toolbar hairline, there are visual effects
+            // on the top most bottom controls that are still shown after being
+            // completely scrolled off screen. Shift the bottom controls a bit
+            // more so that these visual effects disappear.
+            offset += browser_controls_offset_manager_
+                          ->BottomControlsAdditionalHeight();
+          }
+
+          // ViewAndroid::OnTopControlsChanged() also rounds the offset before
+          // handing it off to Android.
+          gfx::Vector2dF offset2d(0.0f, std::round(offset));
+          metadata.offset_tag_values.emplace_back(bottom_controls_offset_tag,
+                                                  offset2d);
+        }
+      }
     }
 #endif
   }
@@ -2640,7 +2672,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
               metadata.top_controls_shown_ratio ||
           last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
               metadata.bottom_controls_shown_ratio;
-    } else {
+    } else if (!features::IsBcivBottomControlsEnabled()) {
       // When AndroidBrowserControlsInViz is enabled, don't always use
       // bottom_controls_shown_ratio to determine if surface sync is needed,
       // because it changes even when there are no bottom controls.
@@ -2817,8 +2849,10 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   }
   active_tree_->ResetAllChangeTracking();
 
-  devtools_instrumentation::DidDrawFrame(
-      id_, frame->begin_frame_ack.frame_id.sequence_number);
+  if (!GetSettings().is_layer_tree_for_ui) {
+    devtools_instrumentation::DidDrawFrame(
+        id_, frame->begin_frame_ack.frame_id.sequence_number);
+  }
   benchmark_instrumentation::IssueImplThreadRenderingStatsEvent(
       rendering_stats_instrumentation_->TakeImplThreadRenderingStats());
 
@@ -3042,8 +3076,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   std::vector<viz::ResourceId> resources;
   for (const auto& render_pass : frame->render_passes) {
     for (auto* quad : render_pass->quad_list) {
-      for (viz::ResourceId resource_id : quad->resources)
-        resources.push_back(resource_id);
+      if (quad->resource_id != viz::kInvalidResourceId) {
+        resources.push_back(quad->resource_id);
+      }
     }
   }
 
@@ -3263,8 +3298,10 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   total_frame_counter_.OnBeginFrame(args);
   compositor_frame_reporting_controller_->SetNeedsRasterPropertiesAnimated(
       paint_worklet_tracker_.HasInputPropertiesAnimatedOnImpl());
-  devtools_instrumentation::DidBeginFrame(id_, args.frame_time,
-                                          args.frame_id.sequence_number);
+  if (!GetSettings().is_layer_tree_for_ui) {
+    devtools_instrumentation::DidBeginFrame(id_, args.frame_time,
+                                            args.frame_id.sequence_number);
+  }
 
   // When there is a |target_local_surface_id_|, we do not wish to begin
   // producing Impl Frames for an older viz::LocalSurfaceId, as it will never
@@ -4487,6 +4524,15 @@ void LayerTreeHostImpl::SetVisualDeviceViewportSize(
 
 gfx::Size LayerTreeHostImpl::VisualDeviceViewportSize() const {
   return visual_device_viewport_size_;
+}
+
+void LayerTreeHostImpl::SetMaxSafeAreaInsets(
+    const gfx::Insets& max_safe_area_insets) {
+  max_safe_area_insets_ = max_safe_area_insets;
+}
+
+gfx::Insets LayerTreeHostImpl::MaxSafeAreaInsets() const {
+  return max_safe_area_insets_;
 }
 
 void LayerTreeHostImpl::SetPrefersReducedMotion(bool prefers_reduced_motion) {

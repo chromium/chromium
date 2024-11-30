@@ -44,7 +44,7 @@ TEST_F(MediaRemotingIntegrationTest, BasicPlayback) {
   EXPECT_EQ("-3.59,-2.06,-0.43,2.15,0.77,-0.95,", GetAudioHash().ToString());
 }
 
-TEST_F(MediaRemotingIntegrationTest, BasicPlayback_MediaSource) {
+TEST_F(MediaRemotingIntegrationTest, BasicPlaybackMediaSource) {
   TestMediaSource source("bear-320x240.webm", 219229);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -55,7 +55,7 @@ TEST_F(MediaRemotingIntegrationTest, BasicPlayback_MediaSource) {
   Stop();
 }
 
-TEST_F(MediaRemotingIntegrationTest, MediaSource_ConfigChange_WebM) {
+TEST_F(MediaRemotingIntegrationTest, MediaSourceConfigChangeWebM) {
   TestMediaSource source("bear-320x240-16x9-aspect.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
 

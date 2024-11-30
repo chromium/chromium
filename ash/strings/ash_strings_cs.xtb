@@ -1529,7 +1529,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6121838516699723042">Potvrzení stahování <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google v relaci hosta není k dispozici.</translation>
 <translation id="6127395413317891856">Jste offline. Zkontrolujte připojení a zkuste to znovu.</translation>
-<translation id="6129953537138746214">Mezera</translation>
+<translation id="6129953537138746214">Mezerník</translation>
 <translation id="6137566720514957455">Otevřít dialogové okno odstranění účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na co se chcete soustředit?</translation>
 <translation id="6141988275892716286">Potvrzení stahování</translation>
@@ -2123,6 +2123,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8142699993796781067">Soukromá síť</translation>
 <translation id="8144760705599030999">Uložte si zařízení <ph name="NAME" /> do účtu <ph name="EMAIL" />, aby ho bylo možné rychleji spárovat s jinými zařízeními</translation>
 <translation id="8144914663975476336">Vyberte formát nahrávky</translation>
+<translation id="8145272500474066209">Generativní umělá inteligence může dělat chyby, a to i v případě lidí, proto si odpověď zkontrolujte. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Zobrazit nastavení Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Zavřete stisknutím kláves Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatické doplnění</translation>

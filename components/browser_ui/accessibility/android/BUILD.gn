@@ -37,6 +37,7 @@ android_library("constants_java") {
 android_library("lib_java") {
   srcjar_deps = [ ":accessibility_jni_headers" ]
   sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/DeviceAccessibilitySettingsHandler.java",
     "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
@@ -56,6 +57,8 @@ android_library("lib_java") {
     "//build/android:build_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
+    "//components/cached_flags:java",
+    "//components/omnibox/common:features_java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
@@ -133,22 +136,32 @@ android_library("unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.components.browser_ui.accessibility"
 
-  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewTest.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsTest.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewTest.java",
+  ]
 
   deps = [
     ":java_resources",
     ":lib_java",
     "//base:base_java_test_support",
     "//base:tasks_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/settings/android:test_support_java",
     "//content/public/android:content_java",
+    "//content/public/android:content_main_dex_jni_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

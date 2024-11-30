@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker_registry.h"
-#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/script/dynamic_module_resolver.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/js_module_script.h"
@@ -27,6 +26,7 @@
 #include "third_party/blink/renderer/core/script/parsed_specifier.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
 namespace blink {
@@ -231,11 +231,10 @@ IntegrityMetadataSet ModulatorImplBase::GetIntegrityMetadata(
   String value = GetIntegrityMetadataString(url);
   IntegrityMetadataSet integrity_metadata;
   if (!value.IsNull()) {
-    SubresourceIntegrity::ReportInfo report_info;
-    SubresourceIntegrity::ParseIntegrityAttribute(
-        value, SubresourceIntegrity::IntegrityFeatures::kDefault,
-        integrity_metadata, &report_info);
-    SubresourceIntegrityHelper::DoReport(*GetExecutionContext(), report_info);
+    IntegrityReport integrity_report;
+    SubresourceIntegrity::ParseIntegrityAttribute(value, integrity_metadata,
+                                                  &integrity_report);
+    integrity_report.SendReports(GetExecutionContext());
   }
   return integrity_metadata;
 }

@@ -134,6 +134,10 @@ BASE_DECLARE_FEATURE(kWebAuthnSkipHybridConfigIfSystemSupported);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kDigitalCredentialsHybridLinking);
 
+// Enable passkey upgrade requests in Google Password Manager.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnPasskeyUpgrade);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

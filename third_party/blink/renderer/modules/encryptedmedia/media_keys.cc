@@ -223,7 +223,7 @@ class GetStatusForPolicyResultPromise
     }
 
     Resolve<V8MediaKeyStatus>(
-        EncryptedMediaUtils::ConvertKeyStatusToString(key_status));
+        EncryptedMediaUtils::ConvertKeyStatusToEnum(key_status));
   }
 
   void Trace(Visitor* visitor) const override {

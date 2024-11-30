@@ -29,7 +29,8 @@ class BoxModelObjectPainter : public BoxPainterBase {
       const Color&,
       const FillLayer&,
       BackgroundBleedAvoidance,
-      bool is_painting_background_in_contents_space) const override;
+      bool is_painting_background_in_contents_space,
+      PaintFlags paint_flags) const override;
 
   void PaintTextClipMask(const PaintInfo&,
                          const gfx::Rect& mask_rect,

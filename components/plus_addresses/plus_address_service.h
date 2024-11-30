@@ -13,8 +13,8 @@
 #include "base/observer_list_types.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 
 namespace url {
@@ -87,7 +87,6 @@ class PlusAddressService : public KeyedService,
   // Virtual to allow overriding the behavior in tests.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
                                   const PlusAddress& plus_address,
-                                  bool is_manual_fallback,
                                   PlusAddressRequestCallback on_completed) = 0;
 
   // Returns whether refreshing a plus address on `origin` is supported.
@@ -118,9 +117,6 @@ class PlusAddressService : public KeyedService,
 
   // Returns true if the feature is supported for the user.
   virtual bool IsEnabled() const = 0;
-
-  // Triggers the HaTS survey of the `survey_type`.
-  virtual void TriggerUserPerceptionSurvey(hats::SurveyType survey_type) = 0;
 };
 
 }  // namespace plus_addresses

@@ -130,6 +130,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // subsequent guest navigations.
   void SetUserAgentOverride(const std::string& ua_string_override);
 
+  // Sets whether a special brand list is used in client hints. This currently
+  // affects <controlledframe> and has no affect on <webview>
+  void SetClientHintsEnabled(bool enable);
+
   // Stop loading the guest.
   void Stop();
 
@@ -213,10 +217,16 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool IsPermissionRequestable(ContentSettingsType type) const final;
   std::optional<content::PermissionResult> OverridePermissionResult(
       ContentSettingsType type) const final;
+  void GuestViewDocumentOnLoadCompleted() final;
+  void GuestViewDidChangeLoadProgress(double progress) final;
+  void GuestViewMainFrameProcessGone(base::TerminationStatus status) final;
 
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
                               const content::ContextMenuParams& params) final;
+  content::JavaScriptDialogManager* GuestGetJavascriptDialogManager() final;
+  void GuestOverrideRendererPreferences(
+      blink::RendererPreferences& preferences) final;
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;
@@ -279,9 +289,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void DidRedirectNavigation(
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
-  void LoadProgressChanged(double progress) final;
-  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
-  void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) final;
   void UserAgentOverrideSet(const blink::UserAgentOverride& ua_override) final;
   void FrameNameChanged(content::RenderFrameHost* render_frame_host,
                         const std::string& name) final;
@@ -345,6 +352,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       const base::Value::Dict& create_params,
       GuestPageCreatedCallback callback,
       std::optional<content::StoragePartitionConfig> storage_partition_config);
+
+  void UpdateUserAgentMetadata();
 
   // Identifies the set of rules registries belonging to this guest.
   int rules_registry_id_;
@@ -419,6 +428,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Used to delay the navigation of a recreated guest contents until later in
   // the attachment process when state related to the WebRequest API is set up.
   base::OnceClosure recreate_initial_nav_;
+
+  // The current UA override.
+  blink::UserAgentOverride ua_override_;
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.

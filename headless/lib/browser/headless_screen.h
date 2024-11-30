@@ -5,18 +5,20 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_H_
 
+#include <string_view>
+
+#include "base/containers/flat_map.h"
 #include "ui/display/display.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/display/screen_base.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace headless {
 
 class HeadlessScreen : public display::ScreenBase {
  public:
-  // Creates a display::Screen of the specified size and scale factor.
-  static HeadlessScreen* Create(const gfx::Size& size, float scale_factor);
+  static HeadlessScreen* Create(const gfx::Size& window_size,
+                                std::string_view screen_info_spec);
 
   HeadlessScreen(const HeadlessScreen&) = delete;
   HeadlessScreen& operator=(const HeadlessScreen&) = delete;
@@ -25,6 +27,7 @@ class HeadlessScreen : public display::ScreenBase {
 
   // Updates screen size given the screen orientation.
   static void UpdateScreenSizeForScreenOrientation(
+      int64_t display_id,
       display::mojom::ScreenOrientation screen_orientation);
 
   // display::Screen overrides:
@@ -37,16 +40,20 @@ class HeadlessScreen : public display::ScreenBase {
   display::Display GetDisplayNearestWindow(
       gfx::NativeWindow window) const override;
 
-  bool IsNaturalPortrait() const { return natural_portrait_; }
-  bool IsNaturalLandscape() const { return !natural_portrait_; }
+  bool IsNaturalPortrait(int64_t display_id) const;
+  bool IsNaturalLandscape(int64_t display_id) const;
 
  private:
-  HeadlessScreen(const gfx::Rect& bounds, float scale_factor);
+  HeadlessScreen(const gfx::Size& window_size,
+                 std::string_view screen_info_spec);
 
   void UpdateScreenSizeForScreenOrientationImpl(
+      int64_t display_id,
       display::mojom::ScreenOrientation screen_orientation);
 
-  bool natural_portrait_ = false;
+  display::Display GetDisplayById(int64_t display_id);
+
+  base::flat_map<int64_t, bool> is_natural_landscape_map_;
 };
 
 }  // namespace headless

@@ -86,15 +86,19 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
   DCHECK(get_supported_format_requests_.Contains(resolver));
   get_supported_format_requests_.erase(resolver);
 
-  Vector<WTF::String> results;
+  Vector<V8BarcodeFormat> results;
   results.ReserveInitialCapacity(results.size());
-  for (const auto& format : formats)
-    results.push_back(BarcodeDetector::BarcodeFormatToString(format));
+  for (const auto& format : formats) {
+    results.push_back(
+        V8BarcodeFormat(BarcodeDetector::BarcodeFormatToEnum(format)));
+  }
+
   if (IdentifiabilityStudySettings::Get()->ShouldSampleWebFeature(
           WebFeature::kBarcodeDetector_GetSupportedFormats)) {
     IdentifiableTokenBuilder builder;
-    for (const auto& format_string : results)
-      builder.AddToken(IdentifiabilityBenignStringToken(format_string));
+    for (const auto& format : results) {
+      builder.AddToken(IdentifiabilityBenignStringToken(format.AsString()));
+    }
 
     ExecutionContext* context = GetSupplementable();
     IdentifiabilityMetricBuilder(context->UkmSourceID())
@@ -115,7 +119,7 @@ void BarcodeDetectorStatics::OnConnectionError() {
     // Return an empty list to indicate that no barcode formats are supported
     // since this connection failure indicates barcode detection is, in general,
     // not supported by the platform.
-    resolver->Resolve(Vector<String>());
+    resolver->Resolve(Vector<V8BarcodeFormat>());
   }
 }
 

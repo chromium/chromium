@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
 
 #include "base/numerics/clamped_math.h"
@@ -86,6 +81,7 @@ GPUShaderModule::GPUShaderModule(GPUDevice* device,
                                  const String& label)
     : DawnObject<wgpu::ShaderModule>(device, std::move(shader_module), label) {}
 
+// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 void GPUShaderModule::OnCompilationInfoCallback(
     ScriptPromiseResolver<GPUCompilationInfo>* resolver,
     wgpu::CompilationInfoRequestStatus status,
@@ -118,12 +114,14 @@ void GPUShaderModule::OnCompilationInfoCallback(
   // Temporarily immediately create the CompilationInfo info and resolve the
   // promise.
   GPUCompilationInfo* result = MakeGarbageCollected<GPUCompilationInfo>();
-  for (uint32_t i = 0; i < info->messageCount; ++i) {
-    const wgpu::CompilationMessage* message = &info->messages[i];
+  // SAFETY: Required from caller
+  const auto info_span =
+      UNSAFE_BUFFERS(base::span<const wgpu::CompilationMessage>(
+          info->messages, info->messageCount));
+  for (const auto& message : info_span) {
     result->AppendMessage(MakeGarbageCollected<GPUCompilationMessage>(
-        StringFromASCIIAndUTF8(message->message), message->type,
-        message->lineNum, message->utf16LinePos, message->utf16Offset,
-        message->utf16Length));
+        StringFromASCIIAndUTF8(message.message), message.type, message.lineNum,
+        message.utf16LinePos, message.utf16Offset, message.utf16Length));
   }
 
   resolver->Resolve(result);

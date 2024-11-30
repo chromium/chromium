@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -160,9 +159,10 @@ public class SafetyCheckSettingsFragmentTest {
 
     private void configureMockSyncService(boolean isPasswordSyncEnabled) {
         when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
-        Set<Integer> selectedTypes =
+        Set<Integer> selectedTypes;
+        selectedTypes =
                 isPasswordSyncEnabled
-                        ? CollectionUtil.newHashSet(UserSelectableType.PASSWORDS)
+                        ? Set.of(UserSelectableType.PASSWORDS)
                         : Collections.EMPTY_SET;
         when(mSyncService.getSelectedTypes()).thenReturn(selectedTypes);
         when(mSyncService.getAccountInfo())

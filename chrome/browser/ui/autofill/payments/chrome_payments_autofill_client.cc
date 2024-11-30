@@ -625,7 +625,7 @@ ChromePaymentsAutofillClient::GetPaymentsNetworkInterface() {
         Profile::FromBrowserContext(web_contents()->GetBrowserContext())
             ->GetURLLoaderFactory(),
         client_->GetIdentityManager(),
-        &client_->GetPersonalDataManager()->payments_data_manager(),
+        &client_->GetPersonalDataManager().payments_data_manager(),
         Profile::FromBrowserContext(web_contents()->GetBrowserContext())
             ->IsOffTheRecord());
   }
@@ -731,7 +731,7 @@ ChromePaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   if (!virtual_card_enrollment_manager_) {
     virtual_card_enrollment_manager_ =
         std::make_unique<VirtualCardEnrollmentManager>(
-            client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
+            &client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
             &client_.get());
   }
 
@@ -818,7 +818,7 @@ void ChromePaymentsAutofillClient::UpdateOfferNotification(
   const CreditCard* card = offer.GetEligibleInstrumentIds().empty()
                                ? nullptr
                                : client_->GetPersonalDataManager()
-                                     ->payments_data_manager()
+                                     .payments_data_manager()
                                      .GetCreditCardByInstrumentId(
                                          offer.GetEligibleInstrumentIds()[0]);
 

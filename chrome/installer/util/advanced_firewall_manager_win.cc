@@ -22,9 +22,9 @@
 
 namespace installer {
 
-AdvancedFirewallManager::AdvancedFirewallManager() {}
+AdvancedFirewallManager::AdvancedFirewallManager() = default;
 
-AdvancedFirewallManager::~AdvancedFirewallManager() {}
+AdvancedFirewallManager::~AdvancedFirewallManager() = default;
 
 bool AdvancedFirewallManager::Init(const std::wstring& app_name,
                                    const base::FilePath& app_path) {

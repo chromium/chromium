@@ -104,7 +104,7 @@ void VerifyIconsMatch(const gfx::Image& bar_rendering,
           .GetBitmap()));
 }
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class BrowserActionApiTest : public ExtensionApiTest {
  public:

@@ -66,6 +66,7 @@ class StubSyncWebSocket : public SyncWebSocket {
   bool handshake_add_script_handled_ = false;
   bool handshake_runtime_eval_handled_ = false;
   bool handshake_page_enable_handled_ = false;
+  bool handshake_target_set_autoattach_handled_ = false;
   bool connect_complete_ = false;
   int response_limit_ = std::numeric_limits<int>::max();
   std::queue<std::string> queued_response_;

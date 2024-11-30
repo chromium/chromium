@@ -8,6 +8,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/cronet/config.gni")
+import("//build/config/gclient_args.gni")
 import("//build/config/zip.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
@@ -23,6 +24,7 @@ import("//tools/binary_size/sizes.gni")
 import("//url/features.gni")
 
 _templates_dir = "$target_gen_dir/templates"
+_gclient_path = "//third_party/depot_tools/gclient.py"
 _gn_path = "//buildtools/linux64/gn"
 _ninja_path = "//third_party/ninja/ninja"
 
@@ -499,6 +501,7 @@ android_library("cronet_urlconnection_impl_java") {
   ]
   deps = [
     ":cronet_api_java",
+    "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -2012,6 +2015,19 @@ script_test("generate_build_script_test") {
   args = [ "@WrappedPath(" + rebase_path(
                "//components/cronet/gn2bp/tests/generate_build_scripts_output_test.py",
                root_build_dir) + ")" ]
+}
+
+action("cronet_gn2bp_aosp_feedback_loop") {
+  script = "//components/cronet/gn2bp/run_gn2bp.py"
+  sources = GN2BP_SOURCES + LICENSE_SOURCES + [
+    "$_gclient_path",
+  ]
+  _stamp_path = "$target_gen_dir/$target_name.stamp"
+  args = [
+    "--stamp",
+    rebase_path(_stamp_path, root_build_dir),
+  ]
+  outputs = [ _stamp_path ]
 }
 
 action("gn2bp_check") {

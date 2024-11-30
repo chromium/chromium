@@ -23,3 +23,44 @@ virtual/split-http-cache/external/wpt/signed-exchange/reporting/*
 
 # Translator API is implemented in the `//chrome` layer.
 external/wpt/ai/translator/*
+
+# Tests fail on headless shell so run them on Chrome
+external/wpt/client-hints/accept-ch/answers.sub.https.html
+external/wpt/client-hints/accept-ch/feature-policy-navigation/feature-policy.https.html
+external/wpt/client-hints/accept-ch/feature-policy-navigation/no-feature-policy.https.html
+external/wpt/client-hints/accept-ch/feature-policy.sub.https.html
+external/wpt/client-hints/accept-ch/no-feature-policy.sub.https.html
+external/wpt/client-hints/sandbox/iframe-csp-same-origin.https.html
+external/wpt/client-hints/sandbox/iframe-same-origin.https.html
+external/wpt/cookies/attributes/max-age.html
+external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
+external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html
+external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html
+external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html
+external/wpt/notifications/cross-origin-serviceworker.tentative.https.sub.html
+external/wpt/notifications/event-onclose.https.html
+external/wpt/notifications/instance.https.window.html
+external/wpt/notifications/permissions-non-secure.html
+external/wpt/notifications/shownotification-without-permission.https.window.html
+external/wpt/notifications/shownotification.https.window.html
+external/wpt/permissions-policy/reporting/report-only-single-endpoint.https.sub.html
+external/wpt/storage-access-api/storageAccess.testdriver.sub.html
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cache-storage.https.tentative.window.html?document
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cache.tentative.window.html
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cross-origin-isolated.tentative.window.html
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-fetch.https.tentative.window.html
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-link.https.tentative.window.html
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-redirect.tentative.window.html
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-script.https.tentative.window.html
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-video.https.tentative.window.html
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/isolate-and-require-corp-load-from-cache-storage.tentative.https.html
+virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/isolate-and-require-corp.tentative.https.html
+virtual/force-eager/external/wpt/measure-memory/iframe.cross-origin.https.window.html
+virtual/force-eager/external/wpt/measure-memory/iframe.same-origin.https.window.html
+virtual/force-eager/external/wpt/measure-memory/main-frame.https.window.html
+virtual/force-eager/external/wpt/measure-memory/randomized-breakdown.https.window.html
+virtual/force-eager/external/wpt/measure-memory/service-worker.https.any.serviceworker.html
+virtual/force-eager/external/wpt/measure-memory/window-open.cross-origin.https.window.html
+virtual/force-eager/external/wpt/measure-memory/window-open.cross-site.https.window.html
+virtual/force-eager/external/wpt/measure-memory/window-open.same-origin.https.window.html
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/window-resize-aborts-transition-before-ready.html

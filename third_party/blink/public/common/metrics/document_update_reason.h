@@ -20,6 +20,7 @@ enum class DocumentUpdateReason {
   kBaseColor,
   kBeginMainFrame,
   kCanvas,
+  kCanvasPlaceElement,
   kComputedStyle,
   kContextMenu,
   kDisplayLock,

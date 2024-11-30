@@ -20,10 +20,10 @@ ScrollStateQuerySnapshot::ScrollStateQuerySnapshot(Element& container)
 bool ScrollStateQuerySnapshot::UpdateScrollState() {
   ContainerStuckPhysical stuck_horizontal = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical = ContainerStuckPhysical::kNo;
-  ContainerOverflowingFlags overflowing_horizontal =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
-  ContainerOverflowingFlags overflowing_vertical =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  ContainerScrollableFlags scrollable_horizontal =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  ContainerScrollableFlags scrollable_vertical =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
 
   LayoutBoxModelObject* layout_object =
       DynamicTo<LayoutBoxModelObject>(container_->GetLayoutObject());
@@ -47,32 +47,32 @@ bool ScrollStateQuerySnapshot::UpdateScrollState() {
       ScrollOffset min_offset = scrollable_area->MinimumScrollOffset();
       ScrollOffset offset = scrollable_area->GetScrollOffset();
       if (offset.x() > min_offset.x()) {
-        overflowing_horizontal |= static_cast<ContainerOverflowingFlags>(
-            ContainerOverflowing::kStart);
+        scrollable_horizontal |=
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart);
       }
       if (offset.x() < max_offset.x()) {
-        overflowing_horizontal |=
-            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+        scrollable_horizontal |=
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
       }
       if (offset.y() > min_offset.y()) {
-        overflowing_vertical |= static_cast<ContainerOverflowingFlags>(
-            ContainerOverflowing::kStart);
+        scrollable_vertical |=
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart);
       }
       if (offset.y() < max_offset.y()) {
-        overflowing_vertical |=
-            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+        scrollable_vertical |=
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
       }
     }
   }
   std::swap(stuck_horizontal_, stuck_horizontal);
   std::swap(stuck_vertical_, stuck_vertical);
-  std::swap(overflowing_horizontal_, overflowing_horizontal);
-  std::swap(overflowing_vertical_, overflowing_vertical);
+  std::swap(scrollable_horizontal_, scrollable_horizontal);
+  std::swap(scrollable_vertical_, scrollable_vertical);
 
   if (stuck_horizontal_ != stuck_horizontal ||
       stuck_vertical_ != stuck_vertical ||
-      overflowing_horizontal_ != overflowing_horizontal ||
-      overflowing_vertical_ != overflowing_vertical) {
+      scrollable_horizontal_ != scrollable_horizontal ||
+      scrollable_vertical_ != scrollable_vertical) {
     // TODO(crbug.com/40268059): The kLocalStyleChange is not necessary for the
     // container itself, but it is a way to reach reach ApplyScrollState() in
     // Element::RecalcOwnStyle() for the next lifecycle update.

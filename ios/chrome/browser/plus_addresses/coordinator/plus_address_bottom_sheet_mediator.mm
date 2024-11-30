@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
@@ -88,13 +89,12 @@ enum class PlusAddressAction {
         handlePlusAddressResult:maybePlusProfile
                       forAction:PlusAddressAction::kPlusAddressActionConfirm];
   });
-  // `is_manual_fallback` is used to conditionally launch a HaTS survey, which
-  // is not possible to iOS.
+
   _plusAddressService->ConfirmPlusAddress(
       _mainFrameOrigin,
       plus_addresses::PlusAddress(
           base::SysNSStringToUTF8(_reservedPlusAddress)),
-      /*is_manual_fallback=*/false, std::move(callback));
+      std::move(callback));
 }
 
 - (NSString*)primaryEmailAddress {
@@ -141,6 +141,8 @@ enum class PlusAddressAction {
 #pragma mark - PlusAddressErrorAlertDelegate
 
 - (void)didAcceptAffiliatedPlusAddressSuggestion {
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.AffiliationErrorFilledExisting"));
   [_delegate runAutofillCallback:_reservedPlusAddress];
   [_consumer dismissBottomSheet];
 }
@@ -150,6 +152,8 @@ enum class PlusAddressAction {
 }
 
 - (void)didSelectTryAgainToConfirm {
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.CreateErrorTryAgainClicked"));
   [_consumer didSelectTryAgainToConfirm];
 }
 

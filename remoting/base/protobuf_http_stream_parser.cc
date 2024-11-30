@@ -84,11 +84,12 @@ void ProtobufHttpStreamParser::ParseStreamIfAvailable() {
     }
   }
 
-  if (bytes_consumed == 0) {
+  if (bytes_consumed <= 0) {
     return;
   }
   base::span<const uint8_t> bytes_not_consumed =
-      read_buffer_->span_before_offset().subspan(bytes_consumed);
+      read_buffer_->span_before_offset().subspan(
+          static_cast<size_t>(bytes_consumed));
   read_buffer_->everything().copy_prefix_from(bytes_not_consumed);
   read_buffer_->set_offset(bytes_not_consumed.size());
 }

@@ -21,7 +21,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
@@ -50,6 +49,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceProvider;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -88,10 +88,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -110,7 +108,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -346,7 +343,6 @@ public class NewTabPage
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to observe for
      *     offset changes.
      * @param activityTabProvider Provides the current active tab.
-     * @param modalDialogManager {@link ModalDialogManager} for the app.
      * @param snackbarManager {@link SnackbarManager} object.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param tabModelSelector {@link TabModelSelector} object.
@@ -371,7 +367,6 @@ public class NewTabPage
             Activity activity,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Tab> activityTabProvider,
-            ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector,
@@ -412,17 +407,9 @@ public class NewTabPage
 
         Profile profile = mTab.getProfile();
 
-        var tabGroupCreationDialogManager =
-                new TabGroupCreationDialogManager(
-                        mActivity, modalDialogManager, /* onTabGroupCreation= */ null);
         SuggestionsNavigationDelegate navigationDelegate =
                 new SuggestionsNavigationDelegate(
-                        activity,
-                        profile,
-                        nativePageHost,
-                        tabModelSelector,
-                        tabGroupCreationDialogManager,
-                        mTab);
+                        activity, profile, nativePageHost, tabModelSelector, mTab);
         mNewTabPageManager =
                 new NewTabPageManagerImpl(
                         navigationDelegate, profile, nativePageHost, snackbarManager);
@@ -899,33 +886,6 @@ public class NewTabPage
     }
 
     /**
-     * Returns an arbitrary int value stored in the last committed navigation entry. If some step
-     * fails then the default is returned instead.
-     *
-     * @param key The string previously used to tag this piece of data.
-     * @param tab A tab that is used to access the NavigationController and the NavigationEntry
-     *     extras.
-     * @param defaultValue The value to return if lookup or parsing is unsuccessful.
-     * @return The value for the given key.
-     *     <p>TODO(crbug.com/40618119): Refactor this to be reusable across NativePage components.
-     */
-    private static int getIntFromNavigationEntry(String key, Tab tab, int defaultValue) {
-        if (tab.getWebContents() == null) return defaultValue;
-
-        String stringValue = getStringFromNavigationEntry(tab, key);
-        if (stringValue == null || stringValue.isEmpty()) {
-            return RecyclerView.NO_POSITION;
-        }
-
-        try {
-            return Integer.parseInt(stringValue);
-        } catch (NumberFormatException e) {
-            Log.w(TAG, "Bad data found for %s : %s", key, stringValue, e);
-            return RecyclerView.NO_POSITION;
-        }
-    }
-
-    /**
      * Returns an arbitrary string value stored in the last committed navigation entry. If the look
      * up fails, an empty string is returned.
      *
@@ -1013,7 +973,7 @@ public class NewTabPage
 
     @Override
     public boolean supportsEdgeToEdge() {
-        return !EdgeToEdgeUtils.DISABLE_NTP_E2E.getValue();
+        return !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableNtpE2e.getValue();
     }
 
     @Override
@@ -1234,7 +1194,10 @@ public class NewTabPage
 
         mTabModelSelector
                 .getModel(false)
-                .closeTabs(TabClosureParams.closeTab(mTab).allowUndo(false).build());
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(mTab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
         if (mHomeSurfaceTracker != null) {
             // Updates the mHomeSurfaceTracker since the Tab of the NTP is closed.
             mHomeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(null, null);

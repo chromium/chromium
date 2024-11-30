@@ -62,7 +62,7 @@ TEST(FirstPartySetsValidator, Valid) {
   EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary2));
 }
 
-TEST(FirstPartySetsValidator, Invalid_Singleton) {
+TEST(FirstPartySetsValidator, InvalidSingleton) {
   // `kPrimary1` is a singleton.
   FirstPartySetsValidator validator = ValidateSets({
       {kPrimary1, kPrimary1},
@@ -76,7 +76,7 @@ TEST(FirstPartySetsValidator, Invalid_Singleton) {
   EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary2));
 }
 
-TEST(FirstPartySetsValidator, Invalid_Orphan) {
+TEST(FirstPartySetsValidator, InvalidOrphan) {
   // `kAssociated1` is an orphan.
   FirstPartySetsValidator validator = ValidateSets({
       {kAssociated1, kPrimary1},
@@ -90,7 +90,7 @@ TEST(FirstPartySetsValidator, Invalid_Orphan) {
   EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary2));
 }
 
-TEST(FirstPartySetsValidator, Invalid_Nondisjoint) {
+TEST(FirstPartySetsValidator, InvalidNondisjoint) {
   // `kAssociated1` is listed in more than one set.
   FirstPartySetsValidator validator = ValidateSets({
       {kAssociated1, kPrimary1},

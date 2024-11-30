@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "installer_posix.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace enterprise_companion {
 
@@ -21,29 +22,45 @@ namespace {
 bool InstallToDir(const base::FilePath& install_directory) {
   base::FilePath source_exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &source_exe_path)) {
-    LOG(ERROR) << "Failed to retrieve the current executable's path.";
+    VLOG(1) << "Failed to retrieve the current executable's path.";
     return false;
   }
 
   base::FilePath dest_exe_path = install_directory.AppendASCII(kExecutableName);
+  base::FilePath backup_exe_path = dest_exe_path.AddExtensionASCII("old");
+  if (base::PathExists(dest_exe_path) &&
+      !base::CopyFile(dest_exe_path, backup_exe_path)) {
+    VPLOG(1) << "Failed to backup existing installation";
+    return false;
+  }
+
+  absl::Cleanup restore_backup = [&] {
+    if (base::PathExists(backup_exe_path) &&
+        !base::CopyFile(backup_exe_path, dest_exe_path)) {
+      VPLOG(1) << "Failed to restore backup installation";
+    }
+  };
+  absl::Cleanup delete_backup = [&] { base::DeleteFile(backup_exe_path); };
+
   if (!base::CopyFile(source_exe_path, dest_exe_path)) {
-    LOG(ERROR) << "Failed to copy the new executable to the install directory.";
+    VPLOG(1) << "Failed to copy the new executable to the install directory.";
     return false;
   }
 
   if (!base::SetPosixFilePermissions(install_directory,
                                      kInstallDirPermissionsMask)) {
-    LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at"
-               << install_directory;
+    VPLOG(1) << "Failed to set permissions to drwxr-xr-x at"
+             << install_directory;
     return false;
   }
 
   if (!base::SetPosixFilePermissions(dest_exe_path,
                                      kInstallDirPermissionsMask)) {
-    LOG(ERROR) << "Failed to set permissions to rwxr-xr-x at" << dest_exe_path;
+    VPLOG(1) << "Failed to set permissions to rwxr-xr-x at" << dest_exe_path;
     return false;
   }
 
+  std::move(restore_backup).Cancel();
   return true;
 }
 
@@ -52,7 +69,7 @@ bool InstallToDir(const base::FilePath& install_directory) {
 bool Install() {
   std::optional<base::FilePath> install_directory = GetInstallDirectory();
   if (!install_directory) {
-    LOG(ERROR) << "Failed to get install directory";
+    VLOG(1) << "Failed to get install directory";
     return false;
   }
 

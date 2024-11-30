@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰিবলৈ Chromeৰ ছেটিং খোলে।</translation>
 <translation id="1670609221633730681">Chromeৰ কিটিপ: আপোনাৰ ঠিকনাৰ বাৰৰ স্থান বাছনি কৰক</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Chromeত আপোনাৰ পাছৱৰ্ডসমূহ ছেভ কৰক</translation>
 <translation id="1790080846677398234">Chromeত আপোনাৰ বুকমাৰ্কত ইনপুট কৰা URL যোগ দিয়ে।</translation>
 <translation id="1799920918471566157">Chromeৰ কিটিপ</translation>
 <translation id="1830634592642484976">এই ঠিকনাটো বৰ্তমান Chromeত ছেভ কৰা হয়। এইটো সমগ্ৰ Google প্ৰ’ডাক্টসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ কৰক।</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">ইয়াৰ অৰ্থ হৈছে Chromeএ প্ৰত্যেকবাৰ ম’বাইল ছাইটৰ অনুৰোধ কৰিব।</translation>
 <translation id="3740397331642243698">অন্তৰ্ভুক্ত কৰা URLসমূহ Google Chromeৰ ইনক’গনিট’ত খোলে।</translation>
 <translation id="3741995255368156336">Chromeৰ পঢ়াৰ সূচী খোলে।</translation>
+<translation id="3808570423967020928">আপোনাৰ গৃহ স্ক্ৰীনৰ ড’কৰ পৰা অধিক দ্ৰুতভাৱে Chrome এক্সেছ কৰক।</translation>
 <translation id="3827545470516145620">আপুনি এই ডিভাইচটোত মান্য সুৰক্ষা লাভ কৰি আছে</translation>
 <translation id="384394811301901750">Google Chromeএ বর্তমান আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
 <translation id="3863841106411295595">Chromeত আপোনাৰ পঢ়াৰ সূচীত ইনপুট কৰা URL যোগ দিয়ে।</translation>
@@ -219,9 +221,11 @@
 
 আপোনাৰ Chromeৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপোনাৰ ডেটা ব্যৱহাৰ কৰা অধিক ছেটিং পাবলৈ <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="6922332667202044570">Chromeত ব্ৰাউজিঙৰ ডেটা মচক।</translation>
+<translation id="6924922227983877439">ডিফ’ল্ট হিচাপে Chromeত লিংকসমূহ খোলক</translation>
 <translation id="6975725306479268850">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটোৰ বাবে Chrome বাছনি কৰক</translation>
 <translation id="7056826488869329999">Chromeত সুৰক্ষা পৰীক্ষা খোলে আৰু চলায়।</translation>
 <translation id="7061455974939528301">Chromeৰ চিহ্নটো টিপি হেঁচি ৰাখক আৰু "গৃহ স্ক্ৰীন সম্পাদনা কৰক"ত ক্লিক কৰক</translation>
+<translation id="7065813315247345131">Chromeক ড’কলৈ স্থানান্তৰ কৰক</translation>
 <translation id="7124339256045485976">Chrome আপ টু ডে’ট কৰি ৰাখক</translation>
 <translation id="7161390184744336561">Google Chrome পুৰণি হৈছে</translation>
 <translation id="7165736900384873061">Google Chrome QR স্কেনাৰ ব্যৱহাৰ কৰিবলৈ আৰম্ভ কৰক</translation>

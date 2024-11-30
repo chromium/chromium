@@ -315,9 +315,7 @@ TEST_F(AddressNormalizerTest, FormatInvalidPhone_AddressNormalizedAsync) {
   // Expect that the phone number was formatted and address normalizer
   EXPECT_TRUE(normalization_successful());
   EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? "+15151231234"
-          : "5151231234",
+      "+15151231234",
       base::UTF16ToUTF8(result_profile().GetRawInfo(PHONE_HOME_WHOLE_NUMBER)));
   EXPECT_EQ("CA",
             base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)));

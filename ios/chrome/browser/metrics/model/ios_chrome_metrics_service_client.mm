@@ -563,6 +563,20 @@ void IOSChromeMetricsServiceClient::OnProfileLoaded(ProfileManagerIOS* manager,
   }
 }
 
+void IOSChromeMetricsServiceClient::OnProfileUnloaded(
+    ProfileManagerIOS* manager,
+    ProfileIOS* profile) {
+  // Nothing to do, the observer unregister themselves when the KeyedService
+  // as part of the ProfileIOS destruction.
+}
+
+void IOSChromeMetricsServiceClient::OnProfileMarkedForPermanentDeletion(
+    ProfileManagerIOS* manager,
+    ProfileIOS* profile) {
+  // Nothing to do, the observer unregister themselves when the KeyedService
+  // as part of the ProfileIOS destruction.
+}
+
 bool IOSChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {
   return UkmConsentStateObserver::IsUkmAllowedForAllProfiles();
 }

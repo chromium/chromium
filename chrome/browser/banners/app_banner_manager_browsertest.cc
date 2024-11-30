@@ -78,7 +78,7 @@ class AppBannerManagerTest : public AppBannerManager {
   AppBannerManagerTest(const AppBannerManagerTest&) = delete;
   AppBannerManagerTest& operator=(const AppBannerManagerTest&) = delete;
 
-  ~AppBannerManagerTest() override {}
+  ~AppBannerManagerTest() override = default;
 
   bool TriggeringDisabledForTesting() const override { return false; }
 

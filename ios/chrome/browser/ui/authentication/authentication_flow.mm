@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
@@ -560,6 +561,13 @@ enum class CancelationReason {
     syncer::SetAccountKeyedPrefValue([self prefs],
                                      prefs::kSigninHasAcceptedManagementDialog,
                                      gaiaIDHash, base::Value(true));
+  }
+  if (AreSeparateProfilesForManagedAccountsEnabled() &&
+      _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE) {
+    GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->MakePersonalProfileManagedWithGaiaID(
+            base::SysNSStringToUTF8(_identityToSignIn.gaiaID));
   }
   [self continueSignin];
 }

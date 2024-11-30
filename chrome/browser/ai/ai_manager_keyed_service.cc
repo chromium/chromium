@@ -21,6 +21,7 @@
 #include "base/supports_user_data.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
@@ -41,6 +42,7 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
@@ -68,8 +70,6 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
       return blink::mojom::ModelAvailabilityCheckResult::kNoUnknown;
     case optimization_guide::OnDeviceModelEligibilityReason::kFeatureNotEnabled:
       return blink::mojom::ModelAvailabilityCheckResult::kNoFeatureNotEnabled;
-    case optimization_guide::OnDeviceModelEligibilityReason::kModelNotAvailable:
-      return blink::mojom::ModelAvailabilityCheckResult::kNoModelNotAvailable;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kConfigNotAvailableForFeature:
       return blink::mojom::ModelAvailabilityCheckResult::
@@ -104,13 +104,23 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
         kModelAdaptationNotAvailable:
       return blink::mojom::ModelAvailabilityCheckResult::
           kNoModelAdaptationNotAvailable;
+    case optimization_guide::OnDeviceModelEligibilityReason::kModelNotEligible:
+      return blink::mojom::ModelAvailabilityCheckResult::kModelNotEligible;
     case optimization_guide::OnDeviceModelEligibilityReason::kValidationPending:
       return blink::mojom::ModelAvailabilityCheckResult::kNoValidationPending;
     case optimization_guide::OnDeviceModelEligibilityReason::kValidationFailed:
       return blink::mojom::ModelAvailabilityCheckResult::kNoValidationFailed;
     case optimization_guide::OnDeviceModelEligibilityReason::
+        kInsufficientDiskSpace:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoInsufficientDiskSpace;
+    case optimization_guide::OnDeviceModelEligibilityReason::
         kModelToBeInstalled:
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kNoOnDeviceFeatureUsed:
       return blink::mojom::ModelAvailabilityCheckResult::kAfterDownload;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kDeprecatedModelNotAvailable:
     case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
       NOTREACHED();
   }
@@ -250,7 +260,7 @@ std::unique_ptr<CreateLanguageModelOnDeviceSessionTask>
 AIManagerKeyedService::CreateLanguageModelInternal(
     const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
     AIContextBoundObjectSet& context_bound_object_set,
-    base::OnceCallback<void(std::unique_ptr<AILanguageModel>)> callback,
+    base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
     const std::optional<const AILanguageModel::Context>& context,
     base::SupportsUserData* context_user_data) {
   CHECK(browser_context_);
@@ -260,13 +270,18 @@ AIManagerKeyedService::CreateLanguageModelInternal(
           [](base::WeakPtr<content::BrowserContext> browser_context,
              AIContextBoundObjectSet& context_bound_object_set,
              const std::optional<const AILanguageModel::Context>& context,
-             base::OnceCallback<void(std::unique_ptr<AILanguageModel>)>
+             base::OnceCallback<void(
+                 base::expected<
+                     std::unique_ptr<AILanguageModel>,
+                     blink::mojom::AIManagerCreateLanguageModelError>)>
                  callback,
              std::unique_ptr<
                  optimization_guide::OptimizationGuideModelExecutor::Session>
                  session) {
             if (!session) {
-              std::move(callback).Run(nullptr);
+              std::move(callback).Run(base::unexpected(
+                  blink::mojom::AIManagerCreateLanguageModelError::
+                      kUnableToCalculateTokenSize));
               return;
             }
 
@@ -301,18 +316,16 @@ void AIManagerKeyedService::CreateLanguageModel(
              client,
          AIContextBoundObjectSet& context_bound_object_set,
          blink::mojom::AILanguageModelCreateOptionsPtr options,
-         std::unique_ptr<AILanguageModel> language_model) {
+         AILanguageModelOrCreationError creation_result) {
         mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
             client_remote(std::move(client));
-        if (!language_model) {
-          // TODO(crbug.com/343325183): probably we should consider
-          // returning an error enum and throw a clear exception from
-          // the blink side.
-          client_remote->OnResult(
-              mojo::PendingRemote<blink::mojom::AILanguageModel>(),
-              /*info=*/nullptr);
+        if (!creation_result.has_value()) {
+          client_remote->OnError(creation_result.error());
           return;
         }
+        std::unique_ptr<AILanguageModel> language_model =
+            std::move(creation_result.value());
+        CHECK(language_model);
 
         const std::optional<std::string>& system_prompt =
             options->system_prompt;
@@ -328,9 +341,17 @@ void AIManagerKeyedService::CreateLanguageModel(
                   [](mojo::Remote<
                          blink::mojom::AIManagerCreateLanguageModelClient>
                          client_remote,
-                     mojo::PendingRemote<blink::mojom::AILanguageModel> remote,
+                     base::expected<
+                         mojo::PendingRemote<blink::mojom::AILanguageModel>,
+                         blink::mojom::AIManagerCreateLanguageModelError>
+                         remote,
                      blink::mojom::AILanguageModelInfoPtr info) {
-                    client_remote->OnResult(std::move(remote), std::move(info));
+                    if (remote.has_value()) {
+                      client_remote->OnResult(std::move(remote.value()),
+                                              std::move(info));
+                    } else {
+                      client_remote->OnError(remote.error());
+                    }
                   },
                   std::move(client_remote)));
         } else {
@@ -475,13 +496,14 @@ void AIManagerKeyedService::CreateLanguageModelForCloning(
       [](AIContextBoundObjectSet& context_bound_object_set,
          mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
              client_remote,
-         std::unique_ptr<AILanguageModel> language_model) {
-        if (!language_model) {
-          client_remote->OnResult(
-              mojo::PendingRemote<blink::mojom::AILanguageModel>(),
-              /*info=*/nullptr);
+         AILanguageModelOrCreationError creation_result) {
+        if (!creation_result.has_value()) {
+          client_remote->OnError(creation_result.error());
           return;
         }
+        std::unique_ptr<AILanguageModel> language_model =
+            std::move(creation_result.value());
+        CHECK(language_model);
 
         client_remote->OnResult(language_model->TakePendingRemote(),
                                 language_model->GetLanguageModelInfo());

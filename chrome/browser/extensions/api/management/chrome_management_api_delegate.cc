@@ -257,8 +257,8 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     extensions::api::management::ExtensionInfo info;
     info.id = app_id;
     info.name = registrar.GetAppShortName(app_id);
-    info.enabled = registrar.IsInstallState(
-        app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION});
+    info.enabled = registrar.GetInstallState(app_id) ==
+                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION;
     info.install_type =
         extensions::api::management::ExtensionInstallType::kOther;
     info.is_app = true;

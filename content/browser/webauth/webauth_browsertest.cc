@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -501,12 +502,11 @@ class WebAuthBrowserTestContentBrowserClient
 
     void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
         override {
-      CHECK(false);
+      NOTREACHED();
     }
 
     std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-      CHECK(false);
-      return nullptr;
+      NOTREACHED();
     }
 
     void CreateLoaderAndStart(
@@ -534,12 +534,11 @@ class WebAuthBrowserTestContentBrowserClient
    public:
     void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
         override {
-      CHECK(false);
+      NOTREACHED();
     }
 
     std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-      CHECK(false);
-      return nullptr;
+      NOTREACHED();
     }
 
     void CreateLoaderAndStart(
@@ -1845,7 +1844,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
                                    0x64, 0x43, 0x72, 0x65, 0x64, 0x65,
                                    0x6E, 0x74, 0x69, 0x61, 0x6C};
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
-      device::fido_parsing_utils::Materialize(base::make_span(kCredentialId)),
+      device::fido_parsing_utils::Materialize(base::span(kCredentialId)),
       "foo.com"));
 
   GetParameters parameters;

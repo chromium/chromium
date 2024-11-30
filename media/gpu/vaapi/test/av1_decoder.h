@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
 #include "media/parsers/ivf_parser.h"
 // For libgav1::ObuSequenceHeader. std::optional demands ObuSequenceHeader to
@@ -64,7 +65,7 @@ class Av1Decoder : public VideoDecoder {
                              scoped_refptr<SharedVASurface> display_surface);
 
   IvfFrameHeader ivf_frame_header_{};
-  const uint8_t* ivf_frame_data_ = nullptr;
+  raw_ptr<const uint8_t> ivf_frame_data_ = nullptr;
 
   // VA handles.
   std::unique_ptr<ScopedVAConfig> va_config_;

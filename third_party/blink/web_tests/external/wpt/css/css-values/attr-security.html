@@ -5,20 +5,22 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style>
-  @property --some-url {
+  @property --some-string {
     syntax: "<string>";
     inherits: false;
     initial-value: "empty";
   }
-  @property --some-url-list {
+  @property --some-string-list {
     syntax: "<string>+";
     inherits: false;
     initial-value: "empty";
   }
   div {
-    --some-url: attr(data-foo);
-    --some-url-list: attr(data-foo);
+    --some-string: attr(data-foo);
+    --some-string-list: "https://does-not-exist2.test/404.png" attr(data-foo);
     --some-other-url: attr(data-foo);
+    --image-set-valid:  url("https://does-not-exist.test/404.png") type(attr(data-foo));
+    --image-set-invalid: attr(data-foo type(<url>)) 1x;
   }
 </style>
 
@@ -41,6 +43,26 @@
         });
 
         elem.style.setProperty(property, null);
+    }
+
+    function test_registered_custom_property(customPropertyName, customPropertySyntax, customPropertyInitialValue,
+                                             attrValue, expectedValue) {
+      window.CSS.registerProperty({
+        name: customPropertyName,
+        syntax: customPropertySyntax,
+        inherits: false,
+        initialValue: customPropertyInitialValue,
+      });
+      var elem = document.getElementById("attr");
+      elem.setAttribute("data-foo", attrValue);
+      var attrString = "attr(data-foo type(" + customPropertySyntax + "))";
+      elem.style.setProperty(customPropertyName, attrString);
+      test(() => {
+          assert_equals(window.getComputedStyle(elem).getPropertyValue(customPropertyName),
+                        expectedValue,
+                          "'" + customPropertyName + ": " + attrString + "' with data-foo='" + attrValue + "'");
+      });
+      elem.style.setProperty(customPropertyName, null);
     }
 
     // Direct use.
@@ -70,6 +92,7 @@
               'https://does-not-exist.test/404.png',
               'src(url("https://does-not-exist.test/404.png"))');
 
+    // The following string() function is under discussion in the working group and does not exist yet.
     test_attr('--x',
               'src(string("https://does-not-exist.test" attr(data-foo)))',
               '/404.png',
@@ -79,22 +102,22 @@
               '/404.png',
               'none');
     test_attr('background-image',
-              'src(string("https://does-not-exist.test/""404.png")))',
+              'src(string("https://does-not-exist.test/""404.png"))',
               '/404.png',
               'src(url("https://does-not-exist.test/404.png"))');
 
     test_attr('--x',
-              'image(attr(data-foo))',
-              'https://does-not-exist.test/404.png',
-              'image("https://does-not-exist.test/404.png")');
+              'attr(data-foo type(<url>))',
+              'url(https://does-not-exist.test/404.png)',
+              'url("https://does-not-exist.test/404.png")');
     test_attr('background-image',
-              'image(attr(data-foo))',
-              'https://does-not-exist.test/404.png',
+              'attr(data-foo type(<url>))',
+              'url(https://does-not-exist.test/404.png)',
               'none');
     test_attr('background-image',
-              'image("https://does-not-exist.test/404.png")',
-              'https://does-not-exist.test/404.png',
-              'image(url("https://does-not-exist.test/404.png"))');
+              'url("https://does-not-exist.test/404.png")',
+              'url(https://does-not-exist.test/404.png)',
+              'url("https://does-not-exist.test/404.png")');
 
     test_attr('--x',
               'image(attr(data-foo))',
@@ -108,6 +131,11 @@
               'image("https://does-not-exist.test/404.png")',
               'https://does-not-exist.test/404.png',
               'image(url("https://does-not-exist.test/404.png"))');
+
+    test_attr('background-image',
+              'url(https://does-not-exist.test/404.png), attr(data-foo type(<image>))',
+              'linear-gradient(#000000, #ffffff)',
+              'url("https://does-not-exist.test/404.png"), linear-gradient(rgb(0, 0, 0), rgb(255, 255, 255))');
 
     // The remaining tests use image-set(), but should be equivalent for image() etc.
 
@@ -123,23 +151,25 @@
 
     // Test via a registered custom property.
     test_attr('--x',
-              'image-set(var(--some-url))',
+              'image-set(var(--some-string))',
               'https://does-not-exist.test/404.png',
               'image-set("https://does-not-exist.test/404.png")');
     test_attr('background-image',
-              'image-set(var(--some-url))',
+              'image-set(var(--some-string))',
               'https://does-not-exist.test/404.png',
               'none');
 
     // Test via a registered custom property (list).
     test_attr('--x',
-              'image-set(var(--some-url))',
+              'image-set(var(--some-string-list))',
               'https://does-not-exist.test/404.png',
-              'image-set("https://does-not-exist.test/404.png")');
+              'image-set("https://does-not-exist2.test/404.png" "https://does-not-exist.test/404.png")');
     test_attr('background-image',
-              'image-set(var(--some-url))',
+              'image-set(var(--some-string-list))',
               'https://does-not-exist.test/404.png',
               'none');
+    test_registered_custom_property('--registered-url', '<url>', 'url("https://does-not-exist.test/empty-url")', 'https://does-not-exist.test/404.png', 'url("https://does-not-exist.test/empty-url")');
+    test_registered_custom_property('--registered-color', '<color>', 'red', 'blue', 'rgb(0, 0, 255)');
 
     // Test via a non-registered custom property.
     test_attr('--x',
@@ -148,6 +178,22 @@
               'image-set("https://does-not-exist.test/404.png")');
     test_attr('background-image',
               'image-set(var(--some-other-url))',
+              'https://does-not-exist.test/404.png',
+              'none');
+
+    // Test multiple token substitution
+    test_attr('background-image',
+              'attr(data-foo type(*))',
+              'url(https://does-not-exist.test/404.png), linear-gradient(black, white)',
+              'none');
+
+    // Test total attr()-tainting for substitution values
+    test_attr('background-image',
+              'image-set(var(--image-set-valid))',
+              'image/jpeg',
+              'none');
+    test_attr('background-image',
+              'image-set(var(--image-set-invalid))',
               'https://does-not-exist.test/404.png',
               'none');
 </script>

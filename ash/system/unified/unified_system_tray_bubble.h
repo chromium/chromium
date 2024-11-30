@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/screen_layout_observer.h"
@@ -44,6 +45,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
                                            public ScreenLayoutObserver,
                                            public ShelfObserver,
                                            public TimeToClickRecorder::Delegate,
+                                           public KeyboardControllerObserver,
                                            public TabletModeObserver {
  public:
   explicit UnifiedSystemTrayBubble(UnifiedSystemTray* tray);
@@ -112,6 +114,9 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
 
   // ShelfObserver:
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
+
+  // KeyboardControllerObserver:
+  void OnKeyboardVisibilityChanged(bool visible) override;
 
   // Updates the bubble height based on if it's going to show the main page or
   // the detailed page.

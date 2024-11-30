@@ -410,7 +410,7 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
       _personalDataManager->payments_data_manager().GetCardArtURL(*creditCard);
   if (!cardArtURL.is_empty() && cardArtURL.is_valid()) {
     gfx::Image* image = _personalDataManager->payments_data_manager()
-                            .GetCreditCardArtImageForUrl(cardArtURL);
+                            .GetCachedCardArtImageForUrl(cardArtURL);
     if (image) {
       return image->ToUIImage();
     }

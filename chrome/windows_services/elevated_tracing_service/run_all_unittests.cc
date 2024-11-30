@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/test_suite.h"
+#include "base/test/test_switches.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/windows_services/service_program/process_wrl_module.h"
 #include "mojo/core/embedder/configuration.h"
@@ -19,8 +23,9 @@ namespace {
 
 class TracingServiceTestSuite : public base::TestSuite {
  public:
-  TracingServiceTestSuite(int argc, char** argv)
-      : base::TestSuite(argc, argv) {}
+  TracingServiceTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {
+    ExtendTestTimeouts();
+  }
 
  protected:
   void Initialize() override {
@@ -37,6 +42,33 @@ class TracingServiceTestSuite : public base::TestSuite {
   }
 
  private:
+  // Tests run in this binary may need 120s in order to reach a platform timeout
+  // for COM calls. Add switches to the process command line to extend the
+  // values that would cause tests to be terminated prematurely.
+  static void ExtendTestTimeouts() {
+    auto& command_line = *base::CommandLine::ForCurrentProcess();
+    constexpr auto kTimeoutMs = base::Seconds(130).InMilliseconds();
+    const auto timeout_string = base::NumberToString(kTimeoutMs);
+
+    // Controls how long the test launcher will allow a child process to run.
+    if (!command_line.HasSwitch(switches::kTestLauncherTimeout)) {
+      command_line.AppendSwitchASCII(switches::kTestLauncherTimeout,
+                                     timeout_string);
+    }
+
+    // Controls how long a RunLoop may run tasks in TaskEnvironment.
+    if (!command_line.HasSwitch(switches::kUiTestActionTimeout)) {
+      command_line.AppendSwitchASCII(switches::kUiTestActionTimeout,
+                                     timeout_string);
+    }
+
+    // Controls how long TaskEnvironment will allow a single task to run.
+    if (!command_line.HasSwitch(switches::kUiTestActionMaxTimeout)) {
+      command_line.AppendSwitchASCII(switches::kUiTestActionMaxTimeout,
+                                     timeout_string);
+    }
+  }
+
   install_static::ScopedInstallDetails install_details_;
   base::TestIOThread test_io_thread_{base::TestIOThread::kManualStart};
   std::optional<mojo::core::ScopedIPCSupport> ipc_support_;

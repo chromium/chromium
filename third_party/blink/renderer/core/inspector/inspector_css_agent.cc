@@ -149,10 +149,11 @@ class FrontendOperationScope {
 };
 
 Element* GetPseudoIdAndTag(Element* element,
+                           PseudoElement*& pseudo_element,
                            PseudoId& element_pseudo_id,
                            AtomicString& view_transition_name) {
   auto* resolved_element = element;
-  if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
+  if ((pseudo_element = DynamicTo<PseudoElement>(element))) {
     resolved_element = IsTransitionPseudoElement(pseudo_element->GetPseudoId())
                            ? pseudo_element->UltimateOriginatingElement()
                            : pseudo_element->ParentOrShadowHostElement();
@@ -1205,26 +1206,29 @@ protocol::Response InspectorCSSAgent::getLocationForSelector(
 
 protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     int node_id,
-    Maybe<protocol::CSS::CSSStyle>* inline_style,
-    Maybe<protocol::CSS::CSSStyle>* attributes_style,
-    Maybe<protocol::Array<protocol::CSS::RuleMatch>>* matched_css_rules,
-    Maybe<protocol::Array<protocol::CSS::PseudoElementMatches>>*
+    std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
+    std::unique_ptr<protocol::CSS::CSSStyle>* attributes_style,
+    std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>*
+        matched_css_rules,
+    std::unique_ptr<protocol::Array<protocol::CSS::PseudoElementMatches>>*
         pseudo_id_matches,
-    Maybe<protocol::Array<protocol::CSS::InheritedStyleEntry>>*
+    std::unique_ptr<protocol::Array<protocol::CSS::InheritedStyleEntry>>*
         inherited_entries,
-    Maybe<protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*
+    std::unique_ptr<
+        protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*
         inherited_pseudo_id_matches,
-    Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
         css_keyframes_rules,
-    Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionTryRule>>*
         css_position_try_rules,
-    Maybe<int>* active_position_fallback_index,
-    Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>* css_property_rules,
-    Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*
+    std::optional<int>* active_position_fallback_index,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>*
+        css_property_rules,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*
         css_property_registrations,
-    Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
+    std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*
         css_font_palette_values_rule,
-    Maybe<int>* parent_layout_node_id) {
+    std::optional<int>* parent_layout_node_id) {
   protocol::Response response = AssertEnabled();
   if (!response.IsSuccess())
     return response;
@@ -1241,7 +1245,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   // If the requested element is a pseudo element, `element` becomes
   // the first non-pseudo parent element or shadow host element
   // after `GetPseudoIdAndTag` call below.
-  element = GetPseudoIdAndTag(element, element_pseudo_id, view_transition_name);
+  PseudoElement* pseudo_element = nullptr;
+  element = GetPseudoIdAndTag(element, pseudo_element, element_pseudo_id,
+                              view_transition_name);
   if (!element)
     return protocol::Response::ServerError("Pseudo element has no parent");
 
@@ -1258,7 +1264,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   for (InspectorStyleSheet* stylesheet :
        css_style_sheet_to_inspector_style_sheet_.Values()) {
     stylesheet->SyncTextIfNeeded();
-    ghost_rules.Populate(*stylesheet->PageStyleSheet());
+    if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
+      ghost_rules.Populate(*stylesheet->PageStyleSheet());
+    }
   }
 
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
@@ -1299,8 +1307,17 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
       CustomPropertiesForNode(element);
 
   // Pseudo elements.
-  if (element_pseudo_id)
-    return protocol::Response::Success();
+  // Some pseudo elements can have nested pseudo elements,
+  // and we need to show them in the originating pseudo element's
+  // styles.
+  if (pseudo_element) {
+    if (!pseudo_element->CanHaveNestedPseudoElement()) {
+      return protocol::Response::Success();
+    }
+    element = pseudo_element;
+    resolver =
+        InspectorStyleResolver(pseudo_element, kPseudoIdNone, g_null_atom);
+  }
 
   InspectorStyleSheetForInlineStyle* inline_style_sheet =
       AsInspectorStyleSheet(element);
@@ -1777,8 +1794,8 @@ InspectorCSSAgent::AnimationsForNode(Element* element,
 
 protocol::Response InspectorCSSAgent::getInlineStylesForNode(
     int node_id,
-    Maybe<protocol::CSS::CSSStyle>* inline_style,
-    Maybe<protocol::CSS::CSSStyle>* attributes_style) {
+    std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
+    std::unique_ptr<protocol::CSS::CSSStyle>* attributes_style) {
   protocol::Response response = AssertEnabled();
   if (!response.IsSuccess())
     return response;
@@ -1961,7 +1978,7 @@ protocol::Response InspectorCSSAgent::collectClassNames(
 protocol::Response InspectorCSSAgent::setStyleSheetText(
     const String& style_sheet_id,
     const String& text,
-    protocol::Maybe<String>* source_map_url) {
+    std::optional<String>* source_map_url) {
   FrontendOperationScope scope;
   InspectorStyleSheetBase* inspector_style_sheet = nullptr;
   protocol::Response response =
@@ -2180,7 +2197,7 @@ protocol::Response InspectorCSSAgent::MultipleStyleTextsActions(
 
 protocol::Response InspectorCSSAgent::setStyleTexts(
     std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>> edits,
-    protocol::Maybe<int> node_for_property_syntax_validation,
+    std::optional<int> node_for_property_syntax_validation,
     std::unique_ptr<protocol::Array<protocol::CSS::CSSStyle>>* result) {
   FrontendOperationScope scope;
   HeapVector<Member<StyleSheetAction>> actions;
@@ -2420,7 +2437,7 @@ protocol::Response InspectorCSSAgent::addRule(
     const String& style_sheet_id,
     const String& rule_text,
     std::unique_ptr<protocol::CSS::SourceRange> location,
-    protocol::Maybe<int> node_for_property_syntax_validation,
+    std::optional<int> node_for_property_syntax_validation,
     std::unique_ptr<protocol::CSS::CSSRule>* result) {
   FrontendOperationScope scope;
   InspectorStyleSheet* inspector_style_sheet = nullptr;
@@ -3391,7 +3408,9 @@ HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
     Element* element) {
   PseudoId pseudo_id = kPseudoIdNone;
   AtomicString view_transition_name = g_null_atom;
-  element = GetPseudoIdAndTag(element, pseudo_id, view_transition_name);
+  PseudoElement* pseudo_element = nullptr;
+  element = GetPseudoIdAndTag(element, pseudo_element, pseudo_id,
+                              view_transition_name);
   if (!element)
     return {};
 
@@ -3559,9 +3578,9 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
 
 protocol::Response InspectorCSSAgent::getBackgroundColors(
     int node_id,
-    Maybe<protocol::Array<String>>* background_colors,
-    Maybe<String>* computed_font_size,
-    Maybe<String>* computed_font_weight) {
+    std::unique_ptr<protocol::Array<String>>* background_colors,
+    std::optional<String>* computed_font_size,
+    std::optional<String>* computed_font_weight) {
   Element* element = nullptr;
   protocol::Response response = dom_agent_->AssertElement(node_id, element);
   if (!response.IsSuccess())
@@ -3629,7 +3648,7 @@ protocol::Response InspectorCSSAgent::startRuleUsageTracking() {
 }
 
 protocol::Response InspectorCSSAgent::trackComputedStyleUpdatesForNode(
-    protocol::Maybe<int> node_id) {
+    std::optional<int> node_id) {
   if (node_id.has_value()) {
     node_id_for_computed_style_updated_events_ = node_id.value();
   } else {

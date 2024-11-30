@@ -118,7 +118,8 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
 
 void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
     const base::Version& component_version,
-    const base::FilePath& file_path) {
+    const base::FilePath& file_path,
+    bool is_preloaded) {
   if (data_ && data_->version > component_version) {
     DispatchComponentUpdateError(component_version,
                                  ComponentUpdateError::kStaleVersion);
@@ -130,7 +131,7 @@ void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
       FROM_HERE, base::BindOnce(&LoadKeyDistributionDataImpl, file_path),
       base::BindOnce(
           &IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded,
-          base::Unretained(this), component_version));
+          base::Unretained(this), component_version, is_preloaded));
 }
 
 IwaKeyDistributionInfoProvider::IwaKeyDistributionInfoProvider()
@@ -141,6 +142,7 @@ IwaKeyDistributionInfoProvider::~IwaKeyDistributionInfoProvider() = default;
 
 void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
     const base::Version& component_version,
+    bool is_preloaded,
     base::expected<KeyRotations, ComponentUpdateError> result) {
   if (data_ && data_->version > component_version) {
     // This might happen if two tasks with different versions have been posted
@@ -155,8 +157,9 @@ void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
                      DispatchComponentUpdateError(component_version, error);
                    });
 
-  data_ = ComponentData(component_version, std::move(key_rotations));
-  DispatchComponentUpdateSuccess(component_version);
+  data_ =
+      ComponentData(component_version, std::move(key_rotations), is_preloaded);
+  DispatchComponentUpdateSuccess(component_version, is_preloaded);
 }
 
 void IwaKeyDistributionInfoProvider::AddObserver(Observer* observer) {
@@ -173,7 +176,7 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
     const std::optional<std::vector<uint8_t>>& rotated_key) {
   GetDevModeKeyRotationData().insert_or_assign(web_bundle_id,
                                                KeyRotationInfo(rotated_key));
-  DispatchComponentUpdateSuccess(base::Version());
+  DispatchComponentUpdateSuccess(base::Version(), /*is_preloaded=*/false);
 }
 
 base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
@@ -192,6 +195,9 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
     for (const auto& [web_bundle_id, kr_info] : data_->key_rotations) {
       key_rotations->Set(web_bundle_id, kr_info.AsDebugValue());
     }
+    if (data_->is_preloaded) {
+      debug_data.Set("is_preloaded", true);
+    }
   } else {
     debug_data.Set("component_version", "null");
   }
@@ -200,9 +206,10 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
-    const base::Version& component_version) const {
+    const base::Version& component_version,
+    bool is_preloaded) const {
   for (auto& observer : observers_) {
-    observer.OnComponentUpdateSuccess(component_version);
+    observer.OnComponentUpdateSuccess(component_version, is_preloaded);
   }
 }
 
@@ -216,8 +223,11 @@ void IwaKeyDistributionInfoProvider::DispatchComponentUpdateError(
 
 IwaKeyDistributionInfoProvider::ComponentData::ComponentData(
     base::Version version,
-    KeyRotations key_rotations)
-    : version(std::move(version)), key_rotations(std::move(key_rotations)) {}
+    KeyRotations key_rotations,
+    bool is_preloaded)
+    : version(std::move(version)),
+      key_rotations(std::move(key_rotations)),
+      is_preloaded(is_preloaded) {}
 IwaKeyDistributionInfoProvider::ComponentData::~ComponentData() = default;
 IwaKeyDistributionInfoProvider::ComponentData::ComponentData(
     const ComponentData&) = default;

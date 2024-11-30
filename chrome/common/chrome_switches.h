@@ -285,6 +285,7 @@ extern const char kForceNtpMobilePromo[];
 
 #if BUILDFLAG(ENABLE_GLIC)
 extern const char kGlicGuestURL[];
+extern const char kCSPOverride[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

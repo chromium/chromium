@@ -14,6 +14,7 @@
 namespace android_autofill {
 namespace {
 
+// This test class is needed to make the constructor public.
 class TestAndroidAutofillClient : public AndroidAutofillClient {
  public:
   TestAndroidAutofillClient(content::WebContents* web_contents)

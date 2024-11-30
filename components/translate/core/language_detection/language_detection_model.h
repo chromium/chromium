@@ -71,12 +71,11 @@ class LanguageDetectionModel {
 
   std::string GetModelVersion() const;
 
- private:
-  // Execute the model on the provided |sampled_str| and return the top language
-  // and the models score/confidence in that prediction.
-  std::pair<std::string, float> DetectTopLanguage(
-      const std::u16string& sampled_str) const;
+  language_detection::LanguageDetectionModel& tflite_model() {
+    return *tflite_model_;
+  }
 
+ private:
   // The tflite classifier that can determine the language of text.
   std::unique_ptr<language_detection::LanguageDetectionModel>
       owned_tflite_model_;

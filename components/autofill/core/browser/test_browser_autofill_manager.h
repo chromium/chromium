@@ -13,10 +13,11 @@
 
 #include "base/run_loop.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/filling/test_form_filler.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
-#include "components/autofill/core/browser/test_form_filler.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
@@ -24,6 +25,7 @@ namespace autofill {
 class AutofillDriver;
 class FormStructure;
 class TestPersonalDataManager;
+class TestVotesUploader;
 
 class TestBrowserAutofillManager : public BrowserAutofillManager {
  public:
@@ -69,18 +71,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                        const mojom::SubmissionSource source) override;
 
   // BrowserAutofillManager overrides.
-  void StoreUploadVotesAndLogQualityCallback(
-      FormSignature form_signature,
-      base::OnceClosure callback) override;
-  void UploadVotesAndLogQuality(std::unique_ptr<FormStructure> submitted_form,
-                                base::TimeTicks interaction_time,
-                                base::TimeTicks submission_time,
-                                bool observed_submission,
-                                const ukm::SourceId source_id) override;
   const gfx::Image& GetCardImage(const CreditCard& credit_card) override;
-  bool MaybeStartVoteUploadProcess(
-      std::unique_ptr<FormStructure> form_structure,
-      bool observed_submission) override;
 
   // Unique to TestBrowserAutofillManager:
 
@@ -108,7 +99,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   void ClearFormStructures();
 
-  const std::string GetSubmittedFormSignature();
+  const std::string& GetSubmittedFormSignature();
 
   // Helper to skip irrelevant params.
   void OnAskForValuesToFillTest(
@@ -117,19 +108,10 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kTextFieldDidChange);
 
-  void SetExpectedSubmittedFieldTypes(
-      const std::vector<FieldTypeSet>& expected_types);
-
-  void SetExpectedObservedSubmission(bool expected);
+  TestVotesUploader& votes_uploader();
 
  private:
-  std::optional<bool> expected_observed_submission_;
   const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
-
-  std::unique_ptr<base::RunLoop> run_loop_;
-
-  std::string submitted_form_signature_;
-  std::vector<FieldTypeSet> expected_submitted_field_types_;
 
   TestAutofillManagerWaiter waiter_{*this};
 };

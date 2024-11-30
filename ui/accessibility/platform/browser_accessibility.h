@@ -77,6 +77,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
 
   bool IsLineBreakObject() const;
 
+  // Returns true if `node` has a default action that can be triggered by
+  // DoDefaultAction().
+  bool HasDefaultAction() const;
+
   // Returns true if this object can fire events.
   virtual bool CanFireEvents() const;
 

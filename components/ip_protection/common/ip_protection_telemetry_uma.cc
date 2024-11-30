@@ -193,6 +193,11 @@ void IpProtectionTelemetryUma::TokenBatchGenerationComplete(
       "NetworkService.IpProtection.TokenBatchGenerationTime", duration);
 }
 
+void IpProtectionTelemetryUma::TryGetAuthTokensError(uint32_t hash) {
+  base::UmaHistogramSparse("NetworkService.IpProtection.TryGetAuthTokensErrors",
+                           hash);
+}
+
 void IpProtectionTelemetryUma::GeoChangeTokenPresence(bool tokens_present) {
   base::UmaHistogramBoolean(
       "NetworkService.IpProtection.GeoChangeTokenPresence", tokens_present);

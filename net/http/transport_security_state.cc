@@ -772,7 +772,7 @@ bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
 
   for (size_t i = 0; canonicalized_host[i]; i += canonicalized_host[i] + 1) {
     base::span<const uint8_t> host_sub_chunk =
-        base::make_span(canonicalized_host).subspan(i);
+        base::span(canonicalized_host).subspan(i);
     auto j = enabled_sts_hosts_.find(HashHost(host_sub_chunk));
     if (j == enabled_sts_hosts_.end())
       continue;
@@ -813,7 +813,7 @@ bool TransportSecurityState::GetDynamicPKPState(const std::string& host,
 
   for (size_t i = 0; canonicalized_host[i]; i += canonicalized_host[i] + 1) {
     base::span<const uint8_t> host_sub_chunk =
-        base::make_span(canonicalized_host).subspan(i);
+        base::span(canonicalized_host).subspan(i);
     auto j = enabled_pkp_hosts_.find(HashHost(host_sub_chunk));
     if (j == enabled_pkp_hosts_.end())
       continue;

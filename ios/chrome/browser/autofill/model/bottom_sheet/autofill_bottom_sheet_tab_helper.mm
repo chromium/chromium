@@ -445,8 +445,11 @@ void AutofillBottomSheetTabHelper::AttachListenersForPaymentsForm(
   if (!form_structure || !form_structure->IsCompleteCreditCardForm()) {
     return;
   }
-  if (auto* pdm = manager.client().GetPersonalDataManager();
-      pdm->payments_data_manager().GetCreditCardsToSuggest().empty()) {
+  if (manager.client()
+          .GetPersonalDataManager()
+          .payments_data_manager()
+          .GetCreditCardsToSuggest()
+          .empty()) {
     return;
   }
   std::vector<autofill::FieldRendererId> renderer_ids;

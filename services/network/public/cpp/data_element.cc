@@ -9,6 +9,7 @@
 
 #include <algorithm>
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
@@ -112,9 +113,8 @@ DataElement DataElement::Clone() const {
     case network::DataElement::Tag::kChunkedDataPipe:
       // DataElementChunkedDataPipe is not generally copyable, especially if
       // `read_only_once` is true.
-      // We want to be strict on this case, and use CHECK rather than DCHECK.
-      CHECK(false);
-      return DataElement();
+      // We want to be strict on this case, and use NOTREACHED().
+      NOTREACHED();
   }
 }
 

@@ -41,7 +41,7 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
   ChromeVoxPanelWebContentsObserver& operator=(
       const ChromeVoxPanelWebContentsObserver&) = delete;
 
-  ~ChromeVoxPanelWebContentsObserver() override {}
+  ~ChromeVoxPanelWebContentsObserver() override = default;
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
@@ -71,7 +71,7 @@ ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context)
   SetAccessibilityPanelFullscreen(false);
 }
 
-ChromeVoxPanel::~ChromeVoxPanel() {}
+ChromeVoxPanel::~ChromeVoxPanel() = default;
 
 void ChromeVoxPanel::EnterFullscreen() {
   Focus();

@@ -604,7 +604,7 @@ bool DecodeBinary(std::string_view* slice, base::span<const uint8_t>* value) {
   if (slice->size() < size)
     return false;
 
-  *value = base::as_bytes(base::make_span(slice->substr(0, size)));
+  *value = base::as_byte_span(slice->substr(0, size));
   slice->remove_prefix(size);
   return true;
 }
@@ -1354,9 +1354,9 @@ std::string IndexedDBKeyToDebugString(std::string_view key) {
           break;
         case kScopesPrefixByte:
           result << "Scopes key: "
-                 << leveldb_scopes::KeyToDebugString(base::make_span(
-                        reinterpret_cast<const uint8_t*>(key.data()),
-                        key.size()));
+                 << leveldb_scopes::KeyToDebugString(
+                        base::span(reinterpret_cast<const uint8_t*>(key.data()),
+                                   key.size()));
           break;
         case kDatabaseFreeListTypeByte: {
           DatabaseFreeListKey db_free_list_key;
@@ -1792,8 +1792,7 @@ std::string EarliestCompactionKey::Encode() {
 std::vector<uint8_t> ScopesPrefix::Encode() {
   std::string ret = KeyPrefix::EncodeEmpty();
   ret.push_back(kScopesPrefixByte);
-  auto span = base::make_span(ret);
-  return std::vector<uint8_t>(span.begin(), span.end());
+  return std::vector<uint8_t>(ret.begin(), ret.end());
 }
 
 DatabaseFreeListKey::DatabaseFreeListKey() : database_id_(-1) {}

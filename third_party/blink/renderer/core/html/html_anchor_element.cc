@@ -542,6 +542,20 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
       HasRel(kRelationOpener) && !frame_request.GetWindowFeatures().noopener) {
     frame_request.SetExplicitOpener();
   }
+  if (completed_url.ProtocolIs("blob")) {
+    auto blob_url_site =
+        BlinkSchemefulSite(SecurityOrigin::Create(completed_url));
+    BlinkSchemefulSite top_level_site =
+        window->GetStorageKey().GetTopLevelSite();
+    if (top_level_site != blob_url_site) {
+      if (base::FeatureList::IsEnabled(
+              features::kEnforceNoopenerOnBlobURLNavigation)) {
+        frame_request.SetNoOpener();
+      }
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kCrossTopLevelSiteBlobURLNavigation);
+    }
+  }
 
   frame_request.SetTriggeringEventInfo(
       is_trusted ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent

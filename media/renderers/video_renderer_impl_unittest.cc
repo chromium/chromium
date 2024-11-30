@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/renderers/video_renderer_impl.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -14,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -33,7 +36,6 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/base/wall_clock_time_source.h"
-#include "media/renderers/video_renderer_impl.h"
 #include "media/video/mock_gpu_memory_buffer_video_frame_pool.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -256,7 +258,7 @@ class VideoRendererImplTest : public testing::Test {
         continue;
       }
 
-      CHECK(false) << "Unrecognized decoder buffer token: " << token;
+      NOTREACHED() << "Unrecognized decoder buffer token: " << token;
     }
   }
 
@@ -639,7 +641,7 @@ TEST_F(VideoRendererImplTest, FlushCallbackNoLock) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, DecodeError_Playing) {
+TEST_F(VideoRendererImplTest, DecodeErrorPlaying) {
   Initialize();
   QueueFrames("0 10 20 30");
   EXPECT_CALL(mock_cb_, FrameReceived(_)).Times(testing::AtLeast(1));
@@ -665,7 +667,7 @@ TEST_F(VideoRendererImplTest, DecodeError_Playing) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, DecodeError_DuringStartPlayingFrom) {
+TEST_F(VideoRendererImplTest, DecodeErrorDuringStartPlayingFrom) {
   Initialize();
   QueueFrames("error");
   EXPECT_CALL(mock_cb_, OnError(HasStatusCode(PIPELINE_ERROR_DECODE)));
@@ -674,7 +676,7 @@ TEST_F(VideoRendererImplTest, DecodeError_DuringStartPlayingFrom) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, StartPlayingFrom_Exact) {
+TEST_F(VideoRendererImplTest, StartPlayingFromExact) {
   Initialize();
   QueueFrames("50 60 70 80 90");
 
@@ -687,7 +689,7 @@ TEST_F(VideoRendererImplTest, StartPlayingFrom_Exact) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, StartPlayingFrom_RightBefore) {
+TEST_F(VideoRendererImplTest, StartPlayingFromRightBefore) {
   Initialize();
   QueueFrames("50 60 70 80 90");
 
@@ -701,7 +703,7 @@ TEST_F(VideoRendererImplTest, StartPlayingFrom_RightBefore) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, StartPlayingFrom_RightAfter) {
+TEST_F(VideoRendererImplTest, StartPlayingFromRightAfter) {
   Initialize();
   QueueFrames("50 60 70 80 90");
 
@@ -715,7 +717,7 @@ TEST_F(VideoRendererImplTest, StartPlayingFrom_RightAfter) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, StartPlayingFrom_LowDelay) {
+TEST_F(VideoRendererImplTest, StartPlayingFromLowDelay) {
   // In low-delay mode only one frame is required to finish preroll. But frames
   // prior to the start time will not be used.
   InitializeWithLowDelay(true);
@@ -1535,14 +1537,14 @@ class VideoRendererLatencyHintTest : public VideoRendererImplTest {
 };
 
 // Test default HaveEnough transition when no latency hint is set.
-TEST_F(VideoRendererLatencyHintTest, HaveEnough_NoLatencyHint) {
+TEST_F(VideoRendererLatencyHintTest, HaveEnoughNoLatencyHint) {
   Initialize();
   VerifyDefaultRebufferingBehavior(0);
   Destroy();
 }
 
 // Test early HaveEnough transition when low latency hint is set.
-TEST_F(VideoRendererLatencyHintTest, HaveEnough_LowLatencyHint) {
+TEST_F(VideoRendererLatencyHintTest, HaveEnoughLowLatencyHint) {
   Initialize();
 
   // Set latencyHint to bare minimum.
@@ -1587,7 +1589,7 @@ TEST_F(VideoRendererLatencyHintTest, HaveEnough_LowLatencyHint) {
 }
 
 // Test late HaveEnough transition when high latency hint is set.
-TEST_F(VideoRendererLatencyHintTest, HaveEnough_HighLatencyHint) {
+TEST_F(VideoRendererLatencyHintTest, HaveEnoughHighLatencyHint) {
   // We must provide a |buffer_duration_| for the latencyHint to take effect
   // immediately. The VideoRendererAlgorithm will eventually provide a PTS-delta
   // duration, but not until after we've started rendering.

@@ -150,7 +150,7 @@ class ArcNetHostImplTest : public testing::Test {
   std::unique_ptr<ash::NetworkHandlerTestHelper> helper_;
 };
 
-TEST_F(ArcNetHostImplTest, SetAlwaysOnVpn_SetPackage) {
+TEST_F(ArcNetHostImplTest, SetAlwaysOnVpnSetPackage) {
   EXPECT_EQ(false, pref_service()->GetBoolean(prefs::kAlwaysOnVpnLockdown));
   EXPECT_EQ("", pref_service()->GetString(prefs::kAlwaysOnVpnPackage));
 

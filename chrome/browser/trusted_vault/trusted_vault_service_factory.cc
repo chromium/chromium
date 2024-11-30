@@ -46,7 +46,7 @@ CreateChromeSyncTrustedVaultClient(Profile* profile) {
                                  base::BindRepeating(
                                      [](signin::IdentityManager*
                                             identity_manager,
-                                        const std::string& gaia_id)
+                                        const GaiaId& gaia_id)
                                          -> CoreAccountInfo {
                                        return identity_manager
                                            ->FindExtendedAccountInfoByGaiaId(

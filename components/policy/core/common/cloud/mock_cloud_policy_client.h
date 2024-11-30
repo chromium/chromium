@@ -104,7 +104,16 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               UploadPolicyValidationReport,
               (CloudPolicyValidatorBase::Status,
                const std::vector<ValueValidationIssue>&,
-               const ValidationAction,
+               ValidationAction,
+               const std::string&,
+               const std::string&,
+               ResultCallback),
+              (override));
+  MOCK_METHOD(void,
+              UploadPolicyValidationReport,
+              (CloudPolicyValidatorBase::Status,
+               const std::vector<ValueValidationIssue>&,
+               ValidationAction,
                const std::string&,
                const std::string&),
               (override));

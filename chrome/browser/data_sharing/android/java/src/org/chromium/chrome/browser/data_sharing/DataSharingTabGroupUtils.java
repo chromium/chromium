@@ -27,9 +27,9 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /** Utilities related to tab groups in data sharing. */
 public class DataSharingTabGroupUtils {
@@ -138,10 +138,10 @@ public class DataSharingTabGroupUtils {
             return Collections.emptyList();
         }
 
-        Set<Token> tabGroupIds =
-                localTabGroupIds.stream()
-                        .map(localTabGroupId -> localTabGroupId.tabGroupId)
-                        .collect(Collectors.toSet());
+        Set<Token> tabGroupIds = new HashSet<>();
+        for (LocalTabGroupId localTabGroupId : localTabGroupIds) {
+            tabGroupIds.add(localTabGroupId.tabGroupId);
+        }
         HashMap<Token, Tab> parentTabMap = new HashMap<>();
         for (int i = 0; i < tabModel.getCount(); i++) {
             Tab tab = tabModel.getTabAt(i);
@@ -197,14 +197,38 @@ public class DataSharingTabGroupUtils {
             // could optimize this with sets, but then the average case performance is likely to
             // be worse as realistically very few entries will be shared. We can revisit this if we
             // start seeing ANRs or other issues.
-            if (savedTab.localId == null
-                    || !tabsToRemove.stream()
-                            .filter(tab -> tab.getId() == savedTab.localId)
-                            .findFirst()
-                            .isPresent()) {
+            if (savedTab.localId == null) {
+                return false;
+            }
+            boolean found = false;
+            for (Tab tab : tabsToRemove) {
+                if (tab.getId() == savedTab.localId) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * @param collaborationId The sharing ID associated with the group.
+     * @param tabGroupSyncService The sync service to get tab group data form.
+     * @return The {@link SavedTabGroup} from sync service.
+     */
+    public static SavedTabGroup getTabGroupForCollabIdFromSync(
+            String collaborationId, TabGroupSyncService tabGroupSyncService) {
+        for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
+            SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);
+            assert !savedTabGroup.savedTabs.isEmpty();
+            if (savedTabGroup.collaborationId != null
+                    && savedTabGroup.collaborationId.equals(collaborationId)) {
+                return savedTabGroup;
+            }
+        }
+        return null;
     }
 }

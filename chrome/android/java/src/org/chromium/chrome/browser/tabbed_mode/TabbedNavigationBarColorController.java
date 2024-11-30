@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.InsetObserver;
@@ -140,6 +141,7 @@ class TabbedNavigationBarColorController
      *     AccessorySheetVisualStateProvider} to watch for visual changes to the keyboard accessory
      *     sheet.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
+     * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
     TabbedNavigationBarColorController(
             Window window,
@@ -156,7 +158,8 @@ class TabbedNavigationBarColorController
             @NonNull
                     ObservableSupplier<AccessorySheetVisualStateProvider>
                             accessorySheetVisualStateSupplier,
-            InsetObserver insetObserver) {
+            InsetObserver insetObserver,
+            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         this(
                 window,
                 tabModelSelector,
@@ -583,7 +586,7 @@ class TabbedNavigationBarColorController
     }
 
     private static boolean isNavBarColorAnimationDisabled() {
-        return TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM.getValue();
+        return ChromeFeatureList.sNavBarColorMatchesTabBackgroundColorAnimationDisabled.getValue();
     }
 
     @Override
@@ -594,6 +597,8 @@ class TabbedNavigationBarColorController
     @Override
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
+        observer.onNavigationBarColorChanged(mNavigationBarColor);
+        observer.onNavigationBarDividerChanged(mNavigationBarColor);
     }
 
     @Override

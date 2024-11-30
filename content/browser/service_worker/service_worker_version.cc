@@ -1116,6 +1116,14 @@ void ServiceWorkerVersion::EvictBackForwardCachedControllee(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   controllee->EvictFromBackForwardCache(reason);
   controllees_to_be_evicted_[controllee->client_uuid()] = reason;
+  // TODO(crbug.com/341322515): remove this if expression with
+  // CHECK in RemoveControlleeFromBackForwardCacheMap().
+  // As I assumed in #comment21 of the crbug, this behavior can be expected
+  // for a dedicated worker.
+  if (!BFCacheContainsControllee(controllee->client_uuid()) &&
+      controllee->IsContainerForWorkerClient()) {
+    return;
+  }
   RemoveControlleeFromBackForwardCacheMap(controllee->client_uuid());
 }
 

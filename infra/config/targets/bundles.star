@@ -74,8 +74,9 @@ targets.bundle(
     ],
 )
 
+# For Android large form factor.
 targets.bundle(
-    name = "android_12l_emulator_gtests",
+    name = "android_lff_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
         "android_trichrome_smoke_tests",
@@ -89,8 +90,9 @@ targets.bundle(
     ],
 )
 
+# For Android large form factor in landscape mode.
 targets.bundle(
-    name = "android_12l_landscape_emulator_gtests",
+    name = "android_lff_landscape_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
     ],
@@ -212,15 +214,6 @@ targets.bundle(
 targets.bundle(
     name = "android_15_emulator_fyi_gtests",
     targets = [
-        "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests",
-        "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
-        "android_smoke_tests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "linux_flavor_specific_chromium_gtests",
-        "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        "webview_ui_instrumentation_tests",
         targets.bundle(
             targets = "webview_trichrome_64_cts_tests_suite",
             variants = [
@@ -244,6 +237,29 @@ targets.bundle(
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_16_emulator_fyi_gtests",
+    targets = [
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chromium_gtests",
+        "android_emulator_specific_chrome_public_tests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "linux_flavor_specific_chromium_gtests",
+        "system_webview_shell_instrumentation_tests",  # Not an experimental test
+        "webview_ui_instrumentation_tests",
+        targets.bundle(
+            targets = "webview_trichrome_64_cts_tests_suite",
+            variants = [
+                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+            ],
+        ),
+        "webview_trichrome_64_cts_tests_no_field_trial_suite",
     ],
 )
 
@@ -1988,12 +2004,12 @@ targets.bundle(
         ),
         "graphite_enabled_blink_wpt_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 1,
             ),
         ),
         "graphite_enabled_headless_shell_wpt_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 1,
+                shards = 7,
             ),
         ),
     },
@@ -5826,6 +5842,18 @@ targets.bundle(
         ],
         "updater_tests_system": [
             "updater-mac-pool",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "updater_user_gtests_mac",
+    targets = [
+        "updater_tests",
+    ],
+    per_test_modifications = {
+        "updater_tests": [
+            "updater-default-pool",
         ],
     },
 )

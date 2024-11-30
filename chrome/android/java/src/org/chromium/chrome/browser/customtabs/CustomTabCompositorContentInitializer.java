@@ -7,13 +7,11 @@ package org.chromium.chrome.browser.customtabs;
 import android.app.Activity;
 import android.view.ViewGroup;
 
-import dagger.Lazy;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -22,36 +20,34 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 /**
  * Initializes the compositor content (calls {@link ChromeActivity#initializeCompositorContent}).
  */
-@ActivityScope
 public class CustomTabCompositorContentInitializer implements NativeInitObserver {
     private final List<Callback<LayoutManagerImpl>> mListeners = new ArrayList<>();
 
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Activity mActivity;
-    private final Lazy<CompositorViewHolder> mCompositorViewHolder;
+    private final Supplier<CompositorViewHolder> mCompositorViewHolder;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private boolean mInitialized;
 
-    @Inject
     public CustomTabCompositorContentInitializer(
-            BaseCustomTabActivity activity,
-            Lazy<CompositorViewHolder> compositorViewHolder,
+            Activity activity,
+            Supplier<CompositorViewHolder> compositorViewHolder,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            CompositorViewHolder.Initializer compositorViewHolderInitializer) {
-        mLifecycleDispatcher = activity.getLifecycleDispatcher();
+            CompositorViewHolder.Initializer compositorViewHolderInitializer,
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         mCompositorViewHolder = compositorViewHolder;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
-        mTopUiThemeColorProvider = activity.getTopUiThemeColorProvider();
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mLifecycleDispatcher = lifecycleDispatcher;
 
         mLifecycleDispatcher.register(this);
     }

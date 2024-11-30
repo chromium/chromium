@@ -65,7 +65,7 @@ class MediaPlayerBridgeTest : public testing::Test {
   MediaPlayerBridge bridge_;
 };
 
-TEST_F(MediaPlayerBridgeTest, Client_OnMediaMetadataChanged) {
+TEST_F(MediaPlayerBridgeTest, ClientOnMediaMetadataChanged) {
   const base::TimeDelta kDuration = base::Seconds(20);
 
   EXPECT_CALL(client_, OnMediaDurationChanged(kDuration));
@@ -73,7 +73,7 @@ TEST_F(MediaPlayerBridgeTest, Client_OnMediaMetadataChanged) {
   SimulateDurationChange(kDuration);
 }
 
-TEST_F(MediaPlayerBridgeTest, Client_OnVideoSizeChanged) {
+TEST_F(MediaPlayerBridgeTest, ClientOnVideoSizeChanged) {
   const int kWidth = 1600;
   const int kHeight = 900;
 
@@ -82,13 +82,13 @@ TEST_F(MediaPlayerBridgeTest, Client_OnVideoSizeChanged) {
   SimulateVideoSizeChanged(kWidth, kHeight);
 }
 
-TEST_F(MediaPlayerBridgeTest, Client_OnPlaybackComplete) {
+TEST_F(MediaPlayerBridgeTest, ClientOnPlaybackComplete) {
   EXPECT_CALL(client_, OnPlaybackComplete());
 
   SimulatePlaybackCompleted();
 }
 
-TEST_F(MediaPlayerBridgeTest, Client_OnError) {
+TEST_F(MediaPlayerBridgeTest, ClientOnError) {
   // MEDIA_ERROR_INVALID_CODE should still be propagated.
   EXPECT_CALL(client_, OnError(_)).Times(1);
   SimulateError(MediaPlayerBridge::MediaErrorType::MEDIA_ERROR_INVALID_CODE);

@@ -47,6 +47,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -299,7 +301,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #else
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -948,6 +950,17 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // this browser window.
   feature_promo_controller_ = CreateUserEducationResources(this);
 
+// Startup notices are queued here. Order of notices shown is defined by
+// show_after_ and blocked_by_ lists passed to QueueRequiredNotice() calls to
+// the product_messaging_controller. These calls usually live within individual
+// services. Queue is kicked off a frame or two later.
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* privacy_sandbox_service =
+          PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
+    privacy_sandbox_service->MaybeQueueNotice();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   browser_->tab_strip_model()->AddObserver(this);
   immersive_mode_controller_ = chrome::CreateImmersiveModeController(this);
 
@@ -1068,6 +1081,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                           base::Unretained(this), CanFullscreen()));
   UpdateFullscreenAllowedFromPolicy(CanFullscreen());
 
+#if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kCompactMode)) {
     registrar_.Init(browser_->profile()->GetPrefs());
     registrar_.Add(prefs::kCompactModeEnabled,
@@ -1075,6 +1089,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                                        base::Unretained(this)));
     ToggleCompactModeUI();
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   WebUIContentsPreloadManager::GetInstance()->WarmupForBrowser(browser_.get());
 
@@ -1263,7 +1278,7 @@ bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
 
 TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
   if (auto* tab_search_container =
-          tab_strip_region_view_->tab_search_container()) {
+          tab_strip_region_view_->GetTabSearchContainer()) {
     return tab_search_container->tab_search_button()->tab_search_bubble_host();
   }
   return nullptr;
@@ -1449,23 +1464,8 @@ bool BrowserView::IsVisible() const {
   return frame_->IsVisible();
 }
 
-bool BrowserView::CanSetBounds(const gfx::Rect& new_bounds) {
-  if (GetActiveWebContents() && !GetCanResizeFromWebAPI().value_or(true) &&
-      GetBounds().size() != new_bounds.size()) {
-    GetActiveWebContents()->GetPrimaryMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf("Resizing the window has been blocked with "
-                           "window.setResizable API."));
-    return false;
-  }
-  return true;
-}
-
 void BrowserView::SetBounds(const gfx::Rect& bounds) {
   if (IsForceFullscreen()) {
-    return;
-  }
-  if (!CanSetBounds(bounds)) {
     return;
   }
 
@@ -1670,7 +1670,7 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
   if (should_animate) {
 #if BUILDFLAG(IS_CHROMEOS)
     loading_animation_tracker_.emplace(
-        GetWidget()->GetCompositor()->RequestNewThroughputTracker());
+        GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker());
     loading_animation_tracker_->Start(ash::metrics_util::ForSmoothnessV3(
         base::BindRepeating(&RecordTabLoadingSmoothness)));
 #endif

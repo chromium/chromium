@@ -167,12 +167,4 @@ public final class WebApkActivityTest {
                 .getServer()
                 .getURL("/chrome/test/data/banners/" + relativeUrl);
     }
-
-    /** Register WebAPK with WebappDataStorage */
-    private WebappDataStorage registerWithStorage(final String webappId) throws Exception {
-        TestFetchStorageCallback callback = new TestFetchStorageCallback();
-        WebappRegistry.getInstance().register(webappId, callback);
-        callback.waitForCallback(0);
-        return WebappRegistry.getInstance().getWebappDataStorage(webappId);
-    }
 }

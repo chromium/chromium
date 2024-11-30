@@ -101,6 +101,13 @@ class Fakes {
                             public void runOnUiThread(Runnable r) {
                                 FakesJni.get().postTaskFromJava(nativeBluetoothTestAndroid, r);
                             }
+
+                            @Override
+                            public void postOnUiThreadDelayed(Runnable r, long delayMillis) {
+                                FakesJni.get()
+                                        .postDelayedTaskFromJava(
+                                                nativeBluetoothTestAndroid, r, delayMillis);
+                            }
                         };
                     }
                 });
@@ -306,6 +313,12 @@ class Fakes {
             if (mFakeScanner != null) {
                 mFakeScanner.forceIllegalStateException();
             }
+        }
+
+        @CalledByNative("FakeBluetoothAdapter")
+        public void failCurrentLeScan(int errorCode) {
+            mFakeScanner.mScanCallback.onScanFailed(errorCode);
+            mFakeScanner.mScanCallback = null;
         }
 
         // -----------------------------------------------------------------------------------------
@@ -1131,6 +1144,9 @@ class Fakes {
 
         // Bind to BluetoothTestAndroid::PostTaskFromJava.
         void postTaskFromJava(long nativeBluetoothTestAndroid, Runnable r);
+
+        // Bind to BluetoothTestAndroid::PostDelayedTaskFromJava.
+        void postDelayedTaskFromJava(long nativeBluetoothTestAndroid, Runnable r, long delayMillis);
 
         // Binds to BluetoothTestAndroid::OnFakeAdapterStateChanged.
         void onFakeAdapterStateChanged(long nativeBluetoothTestAndroid, boolean powered);

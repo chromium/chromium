@@ -403,64 +403,37 @@ void ShowWebAppDetailedInstallDialog(
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
   std::unique_ptr<ui::DialogModel> dialog_model;
-  if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
-    dialog_model =
-        ui::DialogModel::Builder(std::move(delegate))
-            .SetInternalName("WebAppDetailedInstallDialog")
-            .SetTitle(l10n_util::GetStringUTF16(IDS_INSTALL_PWA_DIALOG_TITLE))
-            .AddCustomField(
-                std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                    WebAppIconNameAndOriginView::Create(icon_image, title,
-                                                        start_url),
-                    views::BubbleDialogModelHost::FieldType::kControl))
-            .AddParagraph(
-                ui::DialogModelLabel(description).set_is_secondary(),
-                l10n_util::GetStringUTF16(
-                    IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE))
-            .AddOkButton(base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
-                                        delegate_weak_ptr),
-                         ui::DialogModel::Button::Params().SetLabel(
-                             l10n_util::GetStringUTF16(IDS_INSTALL)))
-            .AddCancelButton(base::BindOnce(
-                &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
-            .SetCloseActionCallback(base::BindOnce(
-                &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
-            .SetDialogDestroyingCallback(base::BindOnce(
-                &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
-            .AddCustomField(
-                std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                    std::make_unique<ImageCarouselView>(screenshots),
-                    views::BubbleDialogModelHost::FieldType::kControl))
-            .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
-            .Build();
-  } else {
-    // TODO(crbug.com/341254289): Completely remove after Universal Install has
-    // launched to 100% on Stable.
-    dialog_model =
-        ui::DialogModel::Builder(std::move(delegate))
-            .SetInternalName("WebAppDetailedInstallDialog")
-            .SetIcon(ui::ImageModel::FromImageSkia(icon_image))
-            .SetTitle(title)
-            .SetSubtitle(start_url_host_formatted_for_display)
-            .AddParagraph(
-                ui::DialogModelLabel(description).set_is_secondary(),
-                l10n_util::GetStringUTF16(
-                    IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE))
-            .AddOkButton(base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
-                                        delegate_weak_ptr),
-                         ui::DialogModel::Button::Params().SetLabel(
-                             l10n_util::GetStringUTF16(IDS_INSTALL)))
-            .AddCancelButton(base::BindOnce(
-                &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
-            .SetDialogDestroyingCallback(base::BindOnce(
-                &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
-            .AddCustomField(
-                std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                    std::make_unique<ImageCarouselView>(screenshots),
-                    views::BubbleDialogModelHost::FieldType::kControl))
-            .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
-            .Build();
-  }
+  dialog_model =
+      ui::DialogModel::Builder(std::move(delegate))
+          .SetInternalName("WebAppDetailedInstallDialog")
+          .SetTitle(l10n_util::GetStringUTF16(IDS_INSTALL_PWA_DIALOG_TITLE))
+          .AddCustomField(
+              std::make_unique<views::BubbleDialogModelHost::CustomView>(
+                  WebAppIconNameAndOriginView::Create(icon_image, title,
+                                                      start_url),
+                  views::BubbleDialogModelHost::FieldType::kControl))
+          .AddParagraph(
+              ui::DialogModelLabel(description).set_is_secondary(),
+              l10n_util::GetStringUTF16(
+                  IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE))
+          .AddOkButton(base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
+                                      delegate_weak_ptr),
+                       ui::DialogModel::Button::Params()
+                           .SetLabel(l10n_util::GetStringUTF16(IDS_INSTALL))
+                           .SetId(WebAppInstallDialogDelegate::
+                                      kPwaInstallDialogInstallButton))
+          .AddCancelButton(base::BindOnce(
+              &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
+          .SetCloseActionCallback(base::BindOnce(
+              &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+          .SetDialogDestroyingCallback(base::BindOnce(
+              &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
+          .AddCustomField(
+              std::make_unique<views::BubbleDialogModelHost::CustomView>(
+                  std::make_unique<ImageCarouselView>(screenshots),
+                  views::BubbleDialogModelHost::FieldType::kControl))
+          .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
+          .Build();
   auto dialog = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kChild);
 

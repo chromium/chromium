@@ -183,12 +183,11 @@ TEST_F(ImageDecoderImplTest, DecodeImageFailed) {
 }
 
 TEST_F(ImageDecoderImplTest, DecodeAnimationFailed) {
-  base::span<const uint8_t> data = base::as_bytes(
-      base::make_span("this ASCII text is *defintely* an animation"));
+  auto data = base::as_byte_span("this ASCII text is *defintely* an animation");
 
   std::vector<mojom::AnimationFramePtr> frames;
   decoder()->DecodeAnimation(
-      data, false, kTestMaxImageSize,
+      {data}, false, kTestMaxImageSize,
       base::BindLambdaForTesting(
           [&frames](std::vector<mojom::AnimationFramePtr> result) {
             frames = std::move(result);

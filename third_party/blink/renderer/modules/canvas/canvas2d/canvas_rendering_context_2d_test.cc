@@ -39,6 +39,7 @@
 #include "cc/paint/paint_op.h"
 #include "cc/test/paint_op_matchers.h"
 #include "components/viz/common/resources/release_callback.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -467,15 +468,17 @@ enum class CompositingMode {
 
 class FakeCanvasResourceProvider : public CanvasResourceProvider {
  public:
-  FakeCanvasResourceProvider(const SkImageInfo& info,
+  FakeCanvasResourceProvider(gfx::Size size,
                              RasterModeHint hint,
                              CanvasResourceHost* resource_host,
                              CompositingMode compositing_mode)
       : CanvasResourceProvider(CanvasResourceProvider::kSharedImage,
-                               info,
+                               size,
+                               kN32_SkColorType,
+                               kPremul_SkAlphaType,
+                               SkColorSpace::MakeSRGB(),
                                cc::PaintFlags::FilterQuality::kLow,
                                SharedGpuContext::ContextProviderWrapper(),
-                               /*resource_dispatcher=*/nullptr,
                                resource_host),
         is_accelerated_(hint != RasterModeHint::kPreferCPU),
         supports_direct_compositing_(
@@ -491,8 +494,13 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
     const SkImageInfo& info = GetSkImageInfo();
     return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
-        gfx::Size(info.width(), info.height()), info.colorInfo().colorType(),
-        info.colorInfo().alphaType(), info.colorInfo().refColorSpace(),
+        gfx::Size(info.width(), info.height()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(
+            info.colorInfo().colorType()),
+        info.colorInfo().alphaType(),
+        // NOTE: The SkImageInfo here is hardcoded to have a null colorspace,
+        // which corresponds to SRGB.
+        gfx::ColorSpace::CreateSRGB(),
         SharedGpuContext::ContextProviderWrapper(), CreateWeakPtr(),
         cc::PaintFlags::FilterQuality::kLow, IsAccelerated(),
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
@@ -534,8 +542,7 @@ bool SetUpFullAccelerationAndCcLayer(HTMLCanvasElement& canvas_element) {
   // succeed).
   gfx::Size size = canvas_element.Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &canvas_element,
+      size, RasterModeHint::kPreferGPU, &canvas_element,
       CompositingMode::kSupportsDirectCompositing);
   canvas_element.SetResourceProviderForTesting(std::move(provider), size);
 
@@ -620,8 +627,7 @@ TEST_P(CanvasRenderingContext2DTest,
   // Install a CanvasResourceProvider that does not support direct compositing.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kDoesNotSupportDirectCompositing);
   CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
@@ -645,8 +651,7 @@ TEST_P(CanvasRenderingContext2DTest,
   // the canvas composited.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
   CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
@@ -668,8 +673,7 @@ TEST_P(CanvasRenderingContext2DTest, HidingCanvasTurnsOffRateLimiting) {
   // the canvas composited.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
   CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
@@ -694,8 +698,7 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferCPU, &CanvasElement(),
+      size, RasterModeHint::kPreferCPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
   CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
@@ -723,7 +726,7 @@ TEST_P(CanvasRenderingContext2DTest, FallbackToSoftwareOnFailedTextureAlloc) {
   // This will cause SkSurface_Gpu creation to fail.
   SharedGpuContext::ContextProviderWrapper()
       ->ContextProvider()
-      ->GetGrContext()
+      .GetGrContext()
       ->abandonContext();
 
   // Drawing to the canvas should cause a CanvasResourceProvider to be created.
@@ -1307,8 +1310,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_FullCoverage) {
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
 
   // The recording will be cleared, so nothing will be rastered before
@@ -1340,8 +1342,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_PartialCoverage) {
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
 
   // `putImageData` forces a flush, so the `fillRect` will get rasterized before
@@ -1420,8 +1421,7 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   gfx::Size size(10, 10);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
       std::make_unique<FakeCanvasResourceProvider>(
-          SkImageInfo::MakeN32Premul(size.width(), size.height()),
-          RasterModeHint::kPreferGPU, &CanvasElement(),
+          size, RasterModeHint::kPreferGPU, &CanvasElement(),
           CompositingMode::kSupportsDirectCompositing);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1446,8 +1446,7 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   gfx::Size size2(10, 5);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
       std::make_unique<FakeCanvasResourceProvider>(
-          SkImageInfo::MakeN32Premul(size2.width(), size2.height()),
-          RasterModeHint::kPreferGPU, &CanvasElement(),
+          size2, RasterModeHint::kPreferGPU, &CanvasElement(),
           CompositingMode::kSupportsDirectCompositing);
   anotherCanvas->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   anotherCanvas->SetResourceProviderForTesting(
@@ -1953,7 +1952,7 @@ TEST_P(CanvasRenderingContext2DTest,
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
-                                     ->GetCapabilities())
+                                     .GetCapabilities())
       .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
 
   CreateContext(kNonOpaque);
@@ -1978,7 +1977,7 @@ TEST_P(CanvasRenderingContext2DTest,
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
-                                     ->GetCapabilities())
+                                     .GetCapabilities())
       .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
 
   // Draw to the canvas and verify that the canvas is not composited.
@@ -2085,7 +2084,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
                                                           &release_callback));
 
   // Put the resource in the Cc layer and then make a second call to prepare a
@@ -2095,7 +2094,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().CcLayer()->SetTransferableResource(
       resource, std::move(release_callback));
   viz::ReleaseCallback release_callback2;
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback2));
   EXPECT_FALSE(release_callback2);
 }
@@ -2128,13 +2127,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
                                                           &release_callback));
 
   // When the context is lost we are not sure if we should still be producing
   // GL frames for the compositor or not, so fail to generate frames.
   test_context_provider_->TestContextGL()->set_context_lost(true);
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
 }
 
@@ -2181,14 +2180,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
                                                           &release_callback));
 
   // Losing the context should result in the resource becoming invalid and the
   // host being unable to produce a TransferableResource from it.
   test_context_provider_->TestContextGL()->set_context_lost(true);
   EXPECT_FALSE(CanvasElement().IsResourceValid());
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
 
   // Restoration of the context should fail because
@@ -2197,7 +2196,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // while the GPU process is down.
   Context2D()->TryRestoreContextEvent(/*timer=*/nullptr);
   EXPECT_FALSE(CanvasElement().IsResourceValid());
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
 }
 
@@ -2646,13 +2645,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResourceRecycling) {
   // be present.
   CanvasElement().GetOrCreateCcLayerIfNeeded();
 
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[0], &callbacks[0]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[0],
+                                                          &callbacks[0]));
 
   Context2D()->fillRect(3, 3, 1, 1);
 
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[1], &callbacks[1]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[1],
+                                                          &callbacks[1]));
   EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
 
   // Now release the first resource and draw again. It should be reused due to
@@ -2661,8 +2660,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResourceRecycling) {
 
   Context2D()->fillRect(3, 3, 1, 1);
 
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[2], &callbacks[2]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[2],
+                                                          &callbacks[2]));
   EXPECT_EQ(resources[0].mailbox(), resources[2].mailbox());
 }
 
@@ -2684,8 +2683,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   viz::ReleaseCallback callbacks[2];
 
   // Emulate sending the canvas' resource to the display compositor.
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[0], &callbacks[0]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[0],
+                                                          &callbacks[0]));
 
   // Write to the canvas.
   Context2D()->fillRect(3, 3, 1, 1);
@@ -2697,8 +2696,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Emulate sending the canvas' resource to the display compositor, which
   // forces copy-on-write before rasterization as the display compositor has a
   // read ref on the first resource.
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[1], &callbacks[1]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[1],
+                                                          &callbacks[1]));
   EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
 
@@ -2786,7 +2785,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that PrepareTransferableResource() fails while hibernating.
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_TRUE(handler.IsHibernating());
   EXPECT_TRUE(CanvasElement().IsResourceValid());
@@ -2948,8 +2947,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
 
   gfx::Size size(100, 100);
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
 
   // Recorded draw ops are resterized on hibernation. The provider gets replaced
@@ -3170,12 +3168,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   gfx::Size size(100, 100);
   auto gpu_provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
   auto cpu_provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferCPU, &CanvasElement(),
+      size, RasterModeHint::kPreferCPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
 
   // When disabling acceleration, the raster content is read from the

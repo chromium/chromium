@@ -44,7 +44,6 @@ component("input") {
     "native_web_keyboard_event.h",
     "passthrough_touch_event_queue.cc",
     "passthrough_touch_event_queue.h",
-    "peak_gpu_memory_tracker.h",
     "render_input_router.cc",
     "render_input_router.h",
     "render_input_router_client.h",
@@ -105,6 +104,10 @@ component("input") {
   }
   if (is_android) {
     sources += [
+      "android/android_input_callback.cc",
+      "android/android_input_callback.h",
+      "android/input_receiver_data.cc",
+      "android/input_receiver_data.h",
       "android/input_token_forwarder.cc",
       "android/input_token_forwarder.h",
       "android/scoped_input_receiver.cc",

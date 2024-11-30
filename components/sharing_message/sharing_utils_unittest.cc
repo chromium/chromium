@@ -108,9 +108,9 @@ TEST_F(SharingUtilsTest, GetFCMChannel) {
   auto fcm_channel = GetFCMChannel(*device_info);
 
   ASSERT_TRUE(fcm_channel);
-  EXPECT_EQ(fcm_channel->vapid_fcm_token(), kVapidFCMToken);
-  EXPECT_EQ(fcm_channel->vapid_p256dh(), kVapidP256dh);
-  EXPECT_EQ(fcm_channel->vapid_auth_secret(), kVapidAuthSecret);
+  EXPECT_EQ(fcm_channel->vapid_fcm_token(), "");
+  EXPECT_EQ(fcm_channel->vapid_p256dh(), "");
+  EXPECT_EQ(fcm_channel->vapid_auth_secret(), "");
   EXPECT_EQ(fcm_channel->sender_id_fcm_token(), kSenderIdFCMToken);
   EXPECT_EQ(fcm_channel->sender_id_p256dh(), kSenderIdP256dh);
   EXPECT_EQ(fcm_channel->sender_id_auth_secret(), kSenderIdAuthSecret);

@@ -5,7 +5,7 @@
 #import "ios/chrome/test/fakes/fake_contained_presenter.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 
 @implementation FakeContainedPresenter
 @synthesize baseViewController = _baseViewController;

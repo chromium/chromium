@@ -150,9 +150,6 @@ class CC_EXPORT LayerTreeSettings {
   // deadlines.
   bool wait_for_all_pipeline_stages_before_draw = false;
 
-  // If enabled, the scroll deltas will be a percentage of the target scroller.
-  bool percent_based_scrolling = false;
-
   // Determines whether animated scrolling is supported. If true, and the
   // incoming gesture scroll is of a type that would normally be animated (e.g.
   // coarse granularity scrolls like those coming from an external mouse wheel),

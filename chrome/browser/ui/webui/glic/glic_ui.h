@@ -34,7 +34,6 @@ class GlicUI : public ui::MojoWebUIController,
 
  private:
   void CreatePageHandler(
-      mojo::PendingRemote<glic::mojom::Page> page,
       mojo::PendingReceiver<glic::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<GlicPageHandler> page_handler_;

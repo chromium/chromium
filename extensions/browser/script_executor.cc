@@ -133,15 +133,18 @@ class Handler : public content::WebContentsObserver {
 
  private:
   // This class manages its own lifetime.
-  ~Handler() override {}
+  ~Handler() override = default;
 
   // content::WebContentsObserver:
   // TODO(devlin): Could we just rely on the RenderFrameDeleted() notification?
   // If so, we could remove this.
   void WebContentsDestroyed() override {
     for (content::RenderFrameHost* frame : pending_render_frames_) {
-      UpdateResultWithErrorFormat(
-          frame, "Tab containing frame with ID %d was removed.");
+      ScriptExecutor::FrameResult& frame_result =
+          GetFrameResult(frame->GetFrameToken());
+      frame_result.error =
+          base::StringPrintf("Tab containing frame with ID %d was removed.",
+                             frame_result.frame_id);
     }
     pending_render_frames_.clear();
     Finish();
@@ -150,12 +153,14 @@ class Handler : public content::WebContentsObserver {
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
     int erased_count = std::erase(pending_render_frames_, render_frame_host);
-    DCHECK_LE(erased_count, 1);
     if (erased_count == 0)
       return;
+    CHECK_EQ(erased_count, 1);
 
-    UpdateResultWithErrorFormat(render_frame_host,
-                                "Frame with ID %d was removed.");
+    ScriptExecutor::FrameResult& frame_result =
+        GetFrameResult(render_frame_host->GetFrameToken());
+    frame_result.error = base::StringPrintf("Frame with ID %d was removed.",
+                                            frame_result.frame_id);
     if (pending_render_frames_.empty())
       Finish();
   }
@@ -231,14 +236,6 @@ class Handler : public content::WebContentsObserver {
     frame_result.url = url;
     if (result.has_value())
       frame_result.value = std::move(*result);
-  }
-
-  void UpdateResultWithErrorFormat(content::RenderFrameHost* render_frame_host,
-                                   const char* format) {
-    ScriptExecutor::FrameResult& frame_result =
-        GetFrameResult(render_frame_host->GetFrameToken());
-    frame_result.error =
-        base::StringPrintfNonConstexpr(format, frame_result.frame_id);
   }
 
   ScriptExecutor::FrameResult& GetFrameResult(

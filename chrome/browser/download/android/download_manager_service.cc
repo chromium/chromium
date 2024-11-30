@@ -185,7 +185,7 @@ static jlong JNI_DownloadManagerService_Init(JNIEnv* env,
 DownloadManagerService::DownloadManagerService()
     : is_manager_initialized_(false), is_pending_downloads_loaded_(false) {}
 
-DownloadManagerService::~DownloadManagerService() {}
+DownloadManagerService::~DownloadManagerService() = default;
 
 void DownloadManagerService::Init(JNIEnv* env,
                                   jobject obj,

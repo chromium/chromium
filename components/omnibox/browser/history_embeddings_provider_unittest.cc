@@ -60,9 +60,8 @@ history_embeddings::ScoredUrlRow CreateScoredUrlRow(
       history_embeddings::ScoredUrl(0, 0, {}, score));
   scored_url_row.row = history::URLRow{GURL{url}};
   scored_url_row.row.set_title(title);
-  scored_url_row.passages_embeddings.url_passages.passages.add_passages(
-      "passage");
-  scored_url_row.passages_embeddings.url_embeddings.embeddings.emplace_back(
+  scored_url_row.passages_embeddings.passages.add_passages("passage");
+  scored_url_row.passages_embeddings.embeddings.emplace_back(
       std::vector<float>(768, 1.0f));
   scored_url_row.scores.push_back(score);
   return scored_url_row;
@@ -552,15 +551,13 @@ TEST_F(HistoryEmbeddingsProviderTest,
                       u"url2.com  •  Visited Mar 23, 2025"))));
 
   // Test error cases.
-  std::u16string model_error =
-      u"Preparing AI-powered summary...check back in a few minutes.";
   std::u16string execution_error =
       u"Something went wrong. Please try again later.";
   std::u16string non_temporary_error = u"Sorry, I can't help you with that.";
   for (const auto& [status, expected_answer_text] : std::vector<
            std::pair<history_embeddings::ComputeAnswerStatus, std::u16string>>{
            {kUnanswerable, u""},
-           {kModelUnavailable, model_error},
+           {kModelUnavailable, u""},
            {kExecutionFailure, execution_error},
            {kExecutionCancelled, u""},
            {kFiltered, u""}}) {

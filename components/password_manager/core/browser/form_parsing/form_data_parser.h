@@ -57,7 +57,8 @@ enum class UsernameDetectionMethod {
   kHtmlBasedClassifier = 2,
   kAutocompleteAttribute = 3,
   kServerSidePrediction = 4,
-  kMaxValue = kServerSidePrediction,
+  kModelPrediction = 5,
+  kMaxValue = kModelPrediction,
 };
 
 // A wrapper around FormFieldData, carrying some additional data used during
@@ -177,6 +178,11 @@ class FormDataParser {
     return server_predictions_;
   }
 
+  void set_model_predictions(base::flat_map<autofill::FieldGlobalId,
+                                            autofill::FieldType> predictions) {
+    model_predictions_ = std::move(predictions);
+  }
+
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }
 
   // Parse DOM information |form_data| into Password Manager's form
@@ -200,6 +206,11 @@ class FormDataParser {
   // Server predictions are an optional source of information about field types.
   std::optional<FormPredictions> server_predictions_;
 
+  // Classification model predictions are an optional source of information
+  // about field types.
+  std::optional<base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>
+      model_predictions_;
+
   // Records whether readonly password fields were seen during the last call to
   // Parse().
   ReadonlyPasswordFields readonly_status_ =
@@ -210,10 +221,13 @@ class FormDataParser {
 // origin |url|.
 std::string GetSignonRealm(const GURL& url);
 
-// Find the first element in |username_predictions| (i.e. the most reliable
-// prediction) that occurs in |processed_fields| and has interactability level
-// at least |username_max|.
-const autofill::FormFieldData* FindUsernameInPredictions(
+// Find the first element in HTML-based `username_predictions` (i.e. the most
+// reliable prediction) that occurs in `processed_fields` and has
+// interactability level at least `username_max`.
+// TODO(crbug.com/380032954): Rename `username_predictions` into
+// html_parser_result, here in the form parser code and in
+// html_based_username_detector.cc to avoid confusion with other predictions.
+const autofill::FormFieldData* FindUsernameInHtmlParserResult(
     const std::vector<autofill::FieldRendererId>& username_predictions,
     const std::vector<ProcessedField>& processed_fields,
     Interactability username_max);

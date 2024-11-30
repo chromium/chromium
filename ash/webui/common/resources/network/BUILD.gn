@@ -19,8 +19,6 @@ js_type_check("closure_compile_module") {
     ":cr_policy_network_behavior_mojo",
     ":cr_policy_network_indicator_mojo",
     ":mojo_interface_provider",
-    ":network_choose_mobile",
-    ":network_config",
     ":network_config_element_behavior",
     ":network_config_input",
     ":network_config_select",
@@ -34,7 +32,6 @@ js_type_check("closure_compile_module") {
     ":network_password_input",
     ":network_property_list_mojo",
     ":network_proxy_exclusions",
-    ":network_proxy_input",
     ":onc_mojo",
     ":sim_lock_dialogs",
   ]
@@ -73,18 +70,6 @@ js_library("apn_list_item") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "//ash/webui/common/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js" ]
-}
-
-js_library("network_choose_mobile") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
-  ]
 }
 
 js_library("apn_detail_dialog") {
@@ -127,29 +112,6 @@ js_library("apn_selection_dialog_list_item") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = []
-}
-
-js_library("network_config") {
-  deps = [
-    ":mojo_interface_provider",
-    ":network_config_input",
-    ":network_config_select",
-    ":network_config_toggle",
-    ":network_listener_behavior",
-    ":network_password_input",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
-    "//ash/webui/common/resources/cr_elements/policy/cr_policy_indicator_externs.js",
-  ]
 }
 
 js_library("network_config_element_behavior") {
@@ -281,17 +243,6 @@ js_library("network_proxy_exclusions") {
     "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("network_proxy_input") {
-  deps = [
-    ":onc_mojo",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
 }
 

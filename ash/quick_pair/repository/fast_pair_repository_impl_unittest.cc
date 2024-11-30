@@ -286,7 +286,7 @@ TEST_F(FastPairRepositoryImplTest, GetDeviceMetadata) {
   EXPECT_EQ(1, metadata_http_fetcher_->num_gets());
 }
 
-TEST_F(FastPairRepositoryImplTest, GetDeviceMetadata_Failed_Retryable) {
+TEST_F(FastPairRepositoryImplTest, GetDeviceMetadataFailedRetryable) {
   base::RunLoop run_loop;
   metadata_http_fetcher_->set_network_error(true);
   fast_pair_repository_->GetDeviceMetadata(
@@ -297,7 +297,7 @@ TEST_F(FastPairRepositoryImplTest, GetDeviceMetadata_Failed_Retryable) {
   run_loop.Run();
 }
 
-TEST_F(FastPairRepositoryImplTest, GetDeviceMetadata_Failed_NotRetryable) {
+TEST_F(FastPairRepositoryImplTest, GetDeviceMetadataFailedNotRetryable) {
   base::RunLoop run_loop;
   fast_pair_repository_->GetDeviceMetadata(
       kInvalidModelId,
@@ -308,7 +308,7 @@ TEST_F(FastPairRepositoryImplTest, GetDeviceMetadata_Failed_NotRetryable) {
   EXPECT_EQ(1, metadata_http_fetcher_->num_gets());
 }
 
-TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_NoMatch) {
+TEST_F(FastPairRepositoryImplTest, CheckAccountKeysNoMatch) {
   AccountKeyFilter filter(kFilterBytes1, {salt});
 
   auto run_loop = base::RunLoop();
@@ -319,7 +319,7 @@ TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_NoMatch) {
   run_loop.Run();
 }
 
-TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_Match) {
+TEST_F(FastPairRepositoryImplTest, CheckAccountKeysMatch) {
   AccountKeyFilter filter(kFilterBytes1, {salt});
   nearby::fastpair::GetObservedDeviceResponse device;
   DeviceMetadata metadata(device, gfx::Image());
@@ -338,7 +338,7 @@ TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_Match) {
   run_loop.Run();
 }
 
-TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_Match_No_Name) {
+TEST_F(FastPairRepositoryImplTest, CheckAccountKeysMatchNoName) {
   AccountKeyFilter filter(kFilterBytes1, {salt});
   nearby::fastpair::GetObservedDeviceResponse device;
   DeviceMetadata metadata(device, gfx::Image());
@@ -360,7 +360,7 @@ TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_Match_No_Name) {
   run_loop.Run();
 }
 
-TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_SkipForgetPattern) {
+TEST_F(FastPairRepositoryImplTest, CheckAccountKeysSkipForgetPattern) {
   AccountKeyFilter filter(kFilterBytes1, {salt});
   nearby::fastpair::GetObservedDeviceResponse details;
   DeviceMetadata metadata(details, gfx::Image());
@@ -744,7 +744,7 @@ TEST_F(FastPairRepositoryImplTest,
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
 }
 
-TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Valid) {
+TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceValid) {
   AccountKeyFilter filter(kFilterBytes1, {salt});
   nearby::fastpair::GetObservedDeviceResponse response;
   DeviceMetadata metadata(response, gfx::Image());
@@ -775,7 +775,7 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Valid) {
   ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
 }
 
-TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Invalid) {
+TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceInvalid) {
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
   fast_pair_repository_->DeleteAssociatedDevice(
@@ -784,7 +784,7 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Invalid) {
   ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
 }
 
-TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceByAccountKey_Valid) {
+TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceByAccountKeyValid) {
   AccountKeyFilter filter(kFilterBytes1, {salt});
   nearby::fastpair::GetObservedDeviceResponse response;
   DeviceMetadata metadata(response, gfx::Image());
@@ -814,7 +814,7 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceByAccountKey_Valid) {
   ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
 }
 
-TEST_F(FastPairRepositoryImplTest, RetriesForgetDevice_AfterNetworkAvailable) {
+TEST_F(FastPairRepositoryImplTest, RetriesForgetDeviceAfterNetworkAvailable) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
   device->set_classic_address(kTestClassicAddress1);
@@ -887,13 +887,13 @@ TEST_F(FastPairRepositoryImplTest, RetriesForgetDevice_AfterNetworkAvailable) {
 
 // TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_RetriesForgetDevice_AlreadyDeleted \
-  DISABLED_RetriesForgetDevice_AlreadyDeleted
+#define MAYBE_RetriesForgetDeviceAlreadyDeleted \
+  DISABLED_RetriesForgetDeviceAlreadyDeleted
 #else
-#define MAYBE_RetriesForgetDevice_AlreadyDeleted \
+#define MAYBE_RetriesForgetDeviceAlreadyDeleted \
   RetriesForgetDevice_AlreadyDeleted
 #endif
-TEST_F(FastPairRepositoryImplTest, MAYBE_RetriesForgetDevice_AlreadyDeleted) {
+TEST_F(FastPairRepositoryImplTest, MAYBE_RetriesForgetDeviceAlreadyDeleted) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
   device->set_classic_address(kTestClassicAddress1);
@@ -949,7 +949,7 @@ TEST_F(FastPairRepositoryImplTest, MAYBE_RetriesForgetDevice_AlreadyDeleted) {
   ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
 }
 
-TEST_F(FastPairRepositoryImplTest, RetriesForgetDevice_MultipleDevices) {
+TEST_F(FastPairRepositoryImplTest, RetriesForgetDeviceMultipleDevices) {
   auto device1 = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                               Protocol::kFastPairInitial);
   device1->set_classic_address(kTestClassicAddress1);
@@ -1172,11 +1172,11 @@ TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
 
 // TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_UpdateOptInStatus_OptedIn DISABLED_UpdateOptInStatus_OptedIn
+#define MAYBE_UpdateOptInStatusOptedIn DISABLED_UpdateOptInStatusOptedIn
 #else
-#define MAYBE_UpdateOptInStatus_OptedIn UpdateOptInStatus_OptedIn
+#define MAYBE_UpdateOptInStatusOptedIn UpdateOptInStatusOptedIn
 #endif
-TEST_F(FastPairRepositoryImplTest, MAYBE_UpdateOptInStatus_OptedIn) {
+TEST_F(FastPairRepositoryImplTest, MAYBE_UpdateOptInStatusOptedIn) {
   base::MockCallback<base::OnceCallback<void(bool)>> callback1;
   EXPECT_CALL(callback1, Run(true)).Times(1);
   fast_pair_repository_->UpdateOptInStatus(
@@ -1191,7 +1191,7 @@ TEST_F(FastPairRepositoryImplTest, MAYBE_UpdateOptInStatus_OptedIn) {
   fast_pair_repository_->CheckOptInStatus(callback2.Get());
 }
 
-TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_OptedOut) {
+TEST_F(FastPairRepositoryImplTest, UpdateOptInStatusOptedOut) {
   base::MockCallback<base::OnceCallback<void(bool)>> callback1;
   EXPECT_CALL(callback1, Run(true)).Times(1);
   fast_pair_repository_->UpdateOptInStatus(
@@ -1208,12 +1208,12 @@ TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_OptedOut) {
 
 // TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_UpdateOptInStatus_StatusUnknown \
-  DISABLED_UpdateOptInStatus_StatusUnknown
+#define MAYBE_UpdateOptInStatusStatusUnknown \
+  DISABLED_UpdateOptInStatusStatusUnknown
 #else
-#define MAYBE_UpdateOptInStatus_StatusUnknown UpdateOptInStatus_StatusUnknown
+#define MAYBE_UpdateOptInStatusStatusUnknown UpdateOptInStatusStatusUnknown
 #endif
-TEST_F(FastPairRepositoryImplTest, MAYBE_UpdateOptInStatus_StatusUnknown) {
+TEST_F(FastPairRepositoryImplTest, MAYBE_UpdateOptInStatusStatusUnknown) {
   base::MockCallback<base::OnceCallback<void(bool)>> callback1;
   EXPECT_CALL(callback1, Run(true)).Times(1);
   fast_pair_repository_->UpdateOptInStatus(
@@ -1228,7 +1228,7 @@ TEST_F(FastPairRepositoryImplTest, MAYBE_UpdateOptInStatus_StatusUnknown) {
   fast_pair_repository_->CheckOptInStatus(callback2.Get());
 }
 
-TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_NoFootprintsResponse) {
+TEST_F(FastPairRepositoryImplTest, UpdateOptInStatusNoFootprintsResponse) {
   footprints_fetcher_->SetGetUserDevicesResponse(std::nullopt);
   base::MockCallback<base::OnceCallback<void(nearby::fastpair::OptInStatus)>>
       callback;
@@ -1263,7 +1263,7 @@ TEST_F(FastPairRepositoryImplTest,
   fast_pair_repository_->CheckOptInStatus(callback2.Get());
 }
 
-TEST_F(FastPairRepositoryImplTest, GetSavedDevices_OptedIn) {
+TEST_F(FastPairRepositoryImplTest, GetSavedDevicesOptedIn) {
   histogram_tester().ExpectBucketCount(kSavedDeviceGetDevicesResultMetricName,
                                        /*success=*/true, 0);
   histogram_tester().ExpectBucketCount(kSavedDeviceGetDevicesResultMetricName,
@@ -1298,7 +1298,7 @@ TEST_F(FastPairRepositoryImplTest, GetSavedDevices_OptedIn) {
                                        /*success=*/false, 0);
 }
 
-TEST_F(FastPairRepositoryImplTest, GetSavedDevices_OptedOut) {
+TEST_F(FastPairRepositoryImplTest, GetSavedDevicesOptedOut) {
   histogram_tester().ExpectBucketCount(kSavedDeviceGetDevicesResultMetricName,
                                        /*success=*/true, 0);
   histogram_tester().ExpectBucketCount(kSavedDeviceGetDevicesResultMetricName,
@@ -1319,7 +1319,7 @@ TEST_F(FastPairRepositoryImplTest, GetSavedDevices_OptedOut) {
                                        /*success=*/false, 0);
 }
 
-TEST_F(FastPairRepositoryImplTest, GetSavedDevices_OptStatusUnknown) {
+TEST_F(FastPairRepositoryImplTest, GetSavedDevicesOptStatusUnknown) {
   histogram_tester().ExpectBucketCount(kSavedDeviceGetDevicesResultMetricName,
                                        /*success=*/true, 0);
   histogram_tester().ExpectBucketCount(kSavedDeviceGetDevicesResultMetricName,
@@ -1340,7 +1340,7 @@ TEST_F(FastPairRepositoryImplTest, GetSavedDevices_OptStatusUnknown) {
                                        /*success=*/false, 0);
 }
 
-TEST_F(FastPairRepositoryImplTest, GetSavedDevices_MissingResponse) {
+TEST_F(FastPairRepositoryImplTest, GetSavedDevicesMissingResponse) {
   histogram_tester().ExpectBucketCount(kSavedDeviceGetDevicesResultMetricName,
                                        /*success=*/true, 0);
   histogram_tester().ExpectBucketCount(kSavedDeviceGetDevicesResultMetricName,
@@ -1418,7 +1418,7 @@ TEST_F(FastPairRepositoryImplTest,
   EXPECT_FALSE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey2));
 }
 
-TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_Match) {
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccountMatch) {
   nearby::fastpair::FastPairInfo info;
   auto* device = info.mutable_device();
   device->set_account_key(
@@ -1491,7 +1491,7 @@ TEST_F(FastPairRepositoryImplTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_NoMatch) {
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccountNoMatch) {
   nearby::fastpair::FastPairInfo info;
   auto* device = info.mutable_device();
   device->set_account_key(
@@ -1512,7 +1512,7 @@ TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_NoMatch) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_MissingResponse) {
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccountMissingResponse) {
   footprints_fetcher_->SetGetUserDevicesResponse(std::nullopt);
 
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
@@ -1523,7 +1523,7 @@ TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_MissingResponse) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_MissingAccountKey) {
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccountMissingAccountKey) {
   nearby::fastpair::FastPairInfo info;
   auto* device = info.mutable_device();
   device->set_sha256_account_key_public_address(
@@ -1544,13 +1544,12 @@ TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_MissingAccountKey) {
 
 // TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_IsDeviceSavedToAccount_MissingSha \
-  DISABLED_IsDeviceSavedToAccount_MissingSha
+#define MAYBE_IsDeviceSavedToAccountMissingSha \
+  DISABLED_IsDeviceSavedToAccountMissingSha
 #else
-#define MAYBE_IsDeviceSavedToAccount_MissingSha \
-  IsDeviceSavedToAccount_MissingSha
+#define MAYBE_IsDeviceSavedToAccountMissingSha IsDeviceSavedToAccountMissingSha
 #endif
-TEST_F(FastPairRepositoryImplTest, MAYBE_IsDeviceSavedToAccount_MissingSha) {
+TEST_F(FastPairRepositoryImplTest, MAYBE_IsDeviceSavedToAccountMissingSha) {
   nearby::fastpair::FastPairInfo info;
   auto* device = info.mutable_device();
   device->set_account_key(

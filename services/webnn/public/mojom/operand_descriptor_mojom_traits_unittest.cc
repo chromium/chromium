@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/test/gtest_util.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -117,6 +118,13 @@ TEST(OperandDescriptorMojomTraitsTest, ByteLengthTooLarge) {
   EXPECT_FALSE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::OperandDescriptor>(
           input, output));
+}
+
+TEST(OperandDescriptorMojomTraitsTest, DataType) {
+  auto input = webnn::OperandDataType::kUint32;
+  auto output = webnn::OperandDataType::kMinValue;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<webnn::mojom::DataType>(
+      input, output));
 }
 
 }  // namespace mojo

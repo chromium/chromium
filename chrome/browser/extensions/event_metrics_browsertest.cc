@@ -30,7 +30,7 @@ namespace {
 // TODO(crbug.com/40909770): Create test cases where we test "failures" like
 // events not acking.
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 using EventMetricsBrowserTest = ExtensionBrowserTest;
 using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
 
   ExtensionBackgroundPageWaiter(profile(), *extension).WaitForBackgroundOpen();
   ProcessManager* process_manager = ProcessManager::Get(profile());
-  ASSERT_FALSE(process_manager->IsEventPageSuspended(extension->id()));
+  ASSERT_TRUE(process_manager->GetBackgroundHostForExtension(extension->id()));
 
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener test_event_listener_fired("listener fired");
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
   ExtensionBackgroundPageWaiter(profile(), *extension)
       .WaitForBackgroundClosed();
   ProcessManager* process_manager = ProcessManager::Get(profile());
-  ASSERT_TRUE(process_manager->IsEventPageSuspended(extension->id()));
+  ASSERT_FALSE(process_manager->GetBackgroundHostForExtension(extension->id()));
 
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener test_event_listener_fired("listener fired");

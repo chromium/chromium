@@ -222,15 +222,12 @@ SearchResultsPanel::SearchResultsPanel() {
 SearchResultsPanel::~SearchResultsPanel() = default;
 
 // static
-views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(
-    aura::Window* root,
-    const gfx::Rect& bounds) {
+views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   // TODO(b/362284723): Ensure tooltips are visible over overlay container.
   params.parent = Shell::GetContainer(root, kShellWindowId_OverlayContainer);
-  params.bounds = bounds;
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = wm::kShadowElevationInactiveWindow;

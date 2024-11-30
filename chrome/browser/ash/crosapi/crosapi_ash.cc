@@ -14,11 +14,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
@@ -27,13 +22,11 @@
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/cec_private_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
-#include "chrome/browser/ash/crosapi/chrome_app_window_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
 #include "chrome/browser/ash/crosapi/debug_interface_registerer_ash.h"
@@ -47,7 +40,6 @@
 #include "chrome/browser/ash/crosapi/dlp_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
-#include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
 #include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
@@ -69,7 +61,6 @@
 #include "chrome/browser/ash/crosapi/kerberos_in_browser_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
-#include "chrome/browser/ash/crosapi/lacros_shelf_item_tracker.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
@@ -139,7 +130,6 @@
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
-#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
@@ -199,15 +189,12 @@ CrosapiAsh::CrosapiAsh()
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
       automation_ash_(std::make_unique<AutomationAsh>()),
-      browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
       cec_private_ash_(std::make_unique<CecPrivateAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
       chrome_app_kiosk_service_ash_(
           std::make_unique<ChromeAppKioskServiceAsh>()),
-      chrome_app_window_tracker_ash_(
-          std::make_unique<ChromeAppWindowTrackerAsh>()),
       clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
       debug_interface_registerer_ash_(
@@ -252,7 +239,6 @@ CrosapiAsh::CrosapiAsh()
       kerberos_in_browser_ash_(std::make_unique<KerberosInBrowserAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
-      lacros_shelf_item_tracker_(std::make_unique<LacrosShelfItemTracker>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       login_ash_(std::make_unique<LoginAsh>()),
       login_screen_storage_ash_(std::make_unique<LoginScreenStorageAsh>()),
@@ -385,18 +371,6 @@ void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
   }
 }
 
-void CrosapiAsh::BindBrowserServiceHost(
-    mojo::PendingReceiver<crosapi::mojom::BrowserServiceHost> receiver) {
-  browser_service_host_ash_->BindReceiver(receiver_set_.current_context(),
-                                          std::move(receiver));
-}
-
-void CrosapiAsh::BindBrowserShortcutPublisher(
-    mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) {
-  // TODO(b/352513798): Remove after M131.
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void CrosapiAsh::BindCecPrivate(
     mojo::PendingReceiver<mojom::CecPrivate> receiver) {
   cec_private_ash_->BindReceiver(std::move(receiver));
@@ -426,19 +400,6 @@ void CrosapiAsh::BindChapsService(
 void CrosapiAsh::BindChromeAppKioskService(
     mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) {
   chrome_app_kiosk_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindChromeAppPublisher(
-    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  apps::StandaloneBrowserExtensionApps* chrome_apps =
-      apps::StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(profile);
-  chrome_apps->RegisterCrosapiHost(std::move(receiver));
-}
-
-void CrosapiAsh::BindChromeAppWindowTracker(
-    mojo::PendingReceiver<mojom::AppWindowTracker> receiver) {
-  chrome_app_window_tracker_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindClipboardHistory(
@@ -520,20 +481,6 @@ void CrosapiAsh::BindDownloadController(
   download_controller_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindDownloadStatusUpdater(
-    mojo::PendingReceiver<mojom::DownloadStatusUpdater> receiver) {
-  // Delay creating `download_status_updater_ash_` until binding so that the Ash
-  // profile is ready.
-  if (!download_status_updater_ash_) {
-    Profile* const profile = GetAshProfile();
-    CHECK(profile);
-    download_status_updater_ash_ =
-        std::make_unique<DownloadStatusUpdaterAsh>(profile);
-  }
-
-  download_status_updater_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindDriveIntegrationService(
     mojo::PendingReceiver<crosapi::mojom::DriveIntegrationService> receiver) {
   drive_integration_service_ash_->BindReceiver(std::move(receiver));
@@ -570,15 +517,6 @@ void CrosapiAsh::BindEmojiPicker(
 void CrosapiAsh::BindExtensionInfoPrivate(
     mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) {
   extension_info_private_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindExtensionPublisher(
-    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  apps::StandaloneBrowserExtensionApps* extensions =
-      apps::StandaloneBrowserExtensionAppsFactoryForExtension::GetForProfile(
-          profile);
-  extensions->RegisterCrosapiHost(std::move(receiver));
 }
 
 void CrosapiAsh::BindEyeDropper(
@@ -679,23 +617,6 @@ void CrosapiAsh::BindKeystoreService(
 void CrosapiAsh::BindKioskSessionService(
     mojo::PendingReceiver<mojom::KioskSessionService> receiver) {
   kiosk_session_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindLacrosShelfItemTracker(
-    mojo::PendingReceiver<mojom::LacrosShelfItemTracker> receiver) {
-  lacros_shelf_item_tracker_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindLacrosAppPublisher(
-    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  apps::StandaloneBrowserApps* lacros_apps =
-      app_service_proxy->StandaloneBrowserApps();
-  if (lacros_apps) {
-    lacros_apps->RegisterCrosapiHost(std::move(receiver));
-  }
 }
 
 void CrosapiAsh::BindLocalPrinter(
@@ -1051,14 +972,6 @@ void CrosapiAsh::BindWebKioskService(
 void CrosapiAsh::BindGuestOsSkForwarderFactory(
     mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver) {
   NOTREACHED();
-}
-
-void CrosapiAsh::BindWebAppPublisher(
-    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  apps::WebAppsCrosapi* web_apps =
-      apps::WebAppsCrosapiFactory::GetForProfile(profile);
-  web_apps->RegisterWebAppsCrosapiHost(std::move(receiver));
 }
 
 void CrosapiAsh::REMOVED_29(

@@ -28,7 +28,7 @@ GFX_SKIA_EXPORT base::span<const uint8_t> SkDataToSpan(
   }
   // SAFETY: SkData is a container of bytes but the non-standard bytes()
   // accessor prevents automatic conversion to span.
-  return UNSAFE_BUFFERS(base::make_span(data->bytes(), data->size()));
+  return UNSAFE_BUFFERS(base::span(data->bytes(), data->size()));
 }
 
 }  // namespace gfx

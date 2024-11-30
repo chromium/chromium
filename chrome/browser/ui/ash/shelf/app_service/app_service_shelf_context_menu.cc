@@ -148,7 +148,7 @@ std::u16string AppServiceShelfContextMenu::GetLabelForCommandId(
   if (command_id == ash::LAUNCH_NEW) {
     CHECK_GT(launch_new_string_id_, 0)
         << "Unexpected `launch_new_string_id_` value. App id = "
-        << item().id.app_id << "; app type = " << apps::EnumToString(app_type_)
+        << item().id.app_id << "; app type = " << app_type_
         << "; submenu items count = " << submenu_->GetItemCount();
     return l10n_util::GetStringUTF16(launch_new_string_id_);
   } else if (command_id == ash::SHUTDOWN_BRUSCHETTA_OS) {
@@ -185,9 +185,6 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       if (app_type_ == apps::AppType::kCrostini ||
           app_type_ == apps::AppType::kBruschetta) {
         ShelfContextMenu::ExecuteCommand(ash::LAUNCH_NEW, event_flags);
-      } else if (app_type_ == apps::AppType::kStandaloneBrowser) {
-        crosapi::BrowserManager::Get()->NewWindow(
-            /*incognito=*/false, /*should_trigger_session_restore=*/false);
       } else {
         ash::NewWindowDelegate::GetInstance()->NewWindow(
             /*incognito=*/false,
@@ -197,14 +194,9 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
-      if (app_type_ == apps::AppType::kStandaloneBrowser) {
-        crosapi::BrowserManager::Get()->NewWindow(
-            /*incognito=*/true, /*should_trigger_session_restore=*/false);
-      } else {
-        ash::NewWindowDelegate::GetInstance()->NewWindow(
-            /*incognito=*/true,
-            /*should_trigger_session_restore=*/false);
-      }
+      ash::NewWindowDelegate::GetInstance()->NewWindow(
+          /*incognito=*/true,
+          /*should_trigger_session_restore=*/false);
       MaybeCloseFullRestoreServiceNotification(controller()->profile());
       break;
 
@@ -384,8 +376,7 @@ void AppServiceShelfContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
   size_t shortcut_index = menu_items.items.size();
   for (size_t i = index; i < menu_items.items.size(); i++) {
     // For Chrome browser, add the close item before the app info item.
-    if ((item().id.app_id == app_constants::kChromeAppId ||
-         item().id.app_id == app_constants::kLacrosAppId) &&
+    if (item().id.app_id == app_constants::kChromeAppId &&
         menu_items.items[i]->command_id == ash::SHOW_APP_INFO) {
       BuildChromeAppMenu(menu_model.get());
     }
@@ -517,10 +508,9 @@ void AppServiceShelfContextMenu::BuildCrostiniAppMenu(
 
 void AppServiceShelfContextMenu::BuildChromeAppMenu(
     ui::SimpleMenuModel* menu_model) {
-  // Don't check list of active browsers for lacros app because the list of
-  // browsers only tracks in-process browsers (i.e. instances of ash-chrome).
+  // The list of browsers only tracks in-process browsers (i.e. instances of
+  // ash-chrome).
   const bool has_active_browsers =
-      item().id.app_id != app_constants::kLacrosAppId &&
       !BrowserShortcutShelfItemController::IsListOfActiveBrowserEmpty(
           controller()->shelf_model());
   if (has_active_browsers || item().type == ash::TYPE_DIALOG ||
@@ -538,11 +528,6 @@ void AppServiceShelfContextMenu::ShowAppInfo() {
     return;
   }
 
-  // TODO(crbug.com/40176571): If this comes from Lacros app, it shows the
-  // top "Apps" settings page. This is fallback, because Lacros app is not
-  // registered. This is short term workaround to keep the relative
-  // compatibility for Lacros Primary. We should figure out what should be shown
-  // by this.
   controller()->DoShowAppInfoFlow(item().id.app_id);
 }
 

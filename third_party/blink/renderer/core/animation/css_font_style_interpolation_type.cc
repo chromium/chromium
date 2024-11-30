@@ -68,7 +68,8 @@ InterpolationValue CSSFontStyleInterpolationType::MaybeConvertValue(
   }
   // TODO(40946458): Don't resolve angle here, use unresolved version instead.
   return CreateFontStyleValue(StyleBuilderConverterBase::ConvertFontStyle(
-      state ? state->CssToLengthConversionData() : CSSToLengthConversionData(),
+      state ? state->CssToLengthConversionData()
+            : CSSToLengthConversionData(/*element=*/nullptr),
       value));
 }
 

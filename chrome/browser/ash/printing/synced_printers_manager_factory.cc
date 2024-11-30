@@ -56,7 +56,8 @@ SyncedPrintersManagerFactory::SyncedPrintersManagerFactory()
 
 SyncedPrintersManagerFactory::~SyncedPrintersManagerFactory() = default;
 
-SyncedPrintersManager* SyncedPrintersManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SyncedPrintersManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
@@ -69,7 +70,7 @@ SyncedPrintersManager* SyncedPrintersManagerFactory::BuildServiceInstanceFor(
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel()));
 
-  return SyncedPrintersManager::Create(std::move(sync_bridge)).release();
+  return SyncedPrintersManager::Create(std::move(sync_bridge));
 }
 
 }  // namespace ash

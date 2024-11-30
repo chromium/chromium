@@ -134,7 +134,7 @@ public class TabGroupListCoordinator {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         ActionConfirmationManager actionConfirmationManager =
-                new ActionConfirmationManager(profile, context, filter, modalDialogManager);
+                new ActionConfirmationManager(profile, context, modalDialogManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
 
         mTabGroupListMediator =

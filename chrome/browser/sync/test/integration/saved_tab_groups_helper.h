@@ -14,6 +14,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sync/base/data_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -51,6 +52,9 @@ class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
                        TriggerSource source) override;
   void OnTabGroupUpdated(const SavedTabGroup& group,
                          TriggerSource source) override;
+  void OnTabGroupMigrated(const SavedTabGroup& shared_group,
+                          const base::Uuid& old_sync_id,
+                          TriggerSource source) override;
 
  private:
   const base::Uuid uuid_;

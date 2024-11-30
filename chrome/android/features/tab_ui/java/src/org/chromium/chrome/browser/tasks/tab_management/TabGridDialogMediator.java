@@ -43,10 +43,10 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -73,6 +73,7 @@ import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -191,7 +192,6 @@ public class TabGridDialogMediator
     private final DialogController mDialogController;
     private final PropertyModel mModel;
     private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
-    private final TabCreatorManager mTabCreatorManager;
     private final @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
     private final Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
@@ -231,7 +231,6 @@ public class TabGridDialogMediator
             DialogController dialogController,
             PropertyModel model,
             ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            TabCreatorManager tabCreatorManager,
             @Nullable TabSwitcherResetHandler tabSwitcherResetHandler,
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
             AnimationSourceViewProvider animationSourceViewProvider,
@@ -247,7 +246,6 @@ public class TabGridDialogMediator
         mDialogController = dialogController;
         mModel = model;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
-        mTabCreatorManager = tabCreatorManager;
         mTabSwitcherResetHandler = tabSwitcherResetHandler;
         mRecyclerViewPositionSupplier = recyclerViewPositionSupplier;
         mAnimationSourceViewProvider = animationSourceViewProvider;
@@ -904,7 +902,8 @@ public class TabGridDialogMediator
             // Get the current Tab first since hideDialog causes mCurrentTabId to be
             // Tab.INVALID_TAB_ID.
             TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-            Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
+            TabModel tabModel = filter.getTabModel();
+            Tab currentTab = tabModel.getTabById(mCurrentTabId);
             hideDialog(false);
 
             // Reset the list of tabs so the new tab doesn't appear on the dialog before the
@@ -914,13 +913,13 @@ public class TabGridDialogMediator
             }
 
             if (currentTab == null) {
-                mTabCreatorManager.getTabCreator(filter.isIncognito()).launchNtp();
+                tabModel.getTabCreator().launchNtp();
                 return;
             }
 
-            TabUiUtils.openNtpInGroup(
+            TabGroupUtils.openUrlInGroup(
                     mCurrentTabGroupModelFilterSupplier.get(),
-                    mTabCreatorManager.getTabCreator(filter.isIncognito()),
+                    UrlConstants.NTP_URL,
                     currentTab.getId(),
                     TabLaunchType.FROM_TAB_GROUP_UI);
             RecordUserAction.record("MobileNewTabOpened." + mComponentName);
@@ -954,7 +953,7 @@ public class TabGridDialogMediator
             mDataSharingTabManager.showManageSharing(mActivity, collaborationId);
         } else if (menuId == R.id.recent_activity) {
             RecordUserAction.record("TabGridDialogMenu.RecentActivity");
-            mDataSharingTabManager.showRecentActivity(collaborationId);
+            mDataSharingTabManager.showRecentActivity(mActivity, collaborationId);
         } else if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
             boolean hideTabGroups = menuId == R.id.close_tab_group;
             if (hideTabGroups) {
@@ -1335,7 +1334,7 @@ public class TabGridDialogMediator
         @Nullable
         String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
         if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
-            mDataSharingTabManager.showRecentActivity(collaborationId);
+            mDataSharingTabManager.showRecentActivity(mActivity, collaborationId);
         } else {
             removeCollaborationActivityMessageCard();
         }

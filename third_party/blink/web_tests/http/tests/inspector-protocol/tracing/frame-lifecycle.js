@@ -34,34 +34,51 @@
   await tracingHelper.stopTracing(
       /loading|(disabled-by-default)?devtools.timeline(.frame)?|rail/);
 
-  const drawFrame = tracingHelper.findEvents('DrawFrame', 'I').at(-1);
-
-  function hasExpectedFrameSeqId(event) {
-    return event.args.frameSeqId === drawFrame.args.frameSeqId;
+  const loadEvent = tracingHelper.findEvent(
+    'CommitLoad', Phase.COMPLETE,
+    evt => evt.args.data.url.endsWith('/web-vitals.html'));
+  const rendererPid = loadEvent.pid;
+  function matchesRendererPid(evt) {
+    return evt.pid === rendererPid;
   }
-  function hasExpectedLayerTreeId(event) {
-    return event.args.layerTreeId === drawFrame.args.layerTreeId;
+
+  const setLayerTreeId = tracingHelper.findEvents(
+    'SetLayerTreeId', Phase.INSTANT, matchesRendererPid).at(-1);
+  const layerTreeId = setLayerTreeId.args.data.layerTreeId;
+  function matchesLayerTree(evt) {
+    return matchesRendererPid(evt) && evt.args.layerTreeId === layerTreeId;
   }
 
-  // Given a DrawFrame event, find the events marking the other steps
-  // of that frame's life cycle.
+  const beginMainThreadFrame = tracingHelper.findEvents(
+    'BeginMainThreadFrame', Phase.INSTANT, matchesLayerTree).at(-1);
+  const frameId = beginMainThreadFrame.args.data.frameId;
+  function matchesFrameId(evt) {
+    return matchesLayerTree(evt) && evt.args.frameId === frameId;
+  }
 
-  const beginFrame =
-      tracingHelper.findEvent('BeginFrame', Phase.INSTANT, hasExpectedFrameSeqId);
-  const commit =
-      tracingHelper.findEvent('Commit', Phase.COMPLETE, hasExpectedFrameSeqId);
-  const activateLayerTree =
-      tracingHelper.findEvent('ActivateLayerTree', Phase.INSTANT, hasExpectedLayerTreeId);
-  const needsBeginFrameChanged = tracingHelper.findEvent(
-      'NeedsBeginFrameChanged', Phase.INSTANT, hasExpectedLayerTreeId);
-  const beginMainThreadFrame = tracingHelper.findEvent(
-      'BeginMainThreadFrame', Phase.INSTANT, hasExpectedLayerTreeId);
+  const drawFrame = tracingHelper.findEvents(
+    'DrawFrame', Phase.INSTANT, matchesLayerTree).at(-1);
+  const frameSeqId = drawFrame.args.frameSeqId;
+  function matchesFrameSeqId(evt) {
+    return matchesLayerTree(evt) && evt.args.frameSeqId === frameSeqId;
+  }
+
+
+  const beginFrame = tracingHelper.findEvent(
+    'BeginFrame', Phase.INSTANT, matchesFrameSeqId);
+  const commit = tracingHelper.findEvent(
+    'Commit', Phase.COMPLETE, matchesFrameSeqId);
+  const activateLayerTree = tracingHelper.findEvent(
+    'ActivateLayerTree', Phase.INSTANT, matchesFrameId);
 
   // Other trace events in the frame domain that do not necessarily
   // belong to the life cycle of the DrawFrame event used above.
- const setLayerTreeId = tracingHelper.findEvent('SetLayerTreeId', Phase.INSTANT);
-  const paint = tracingHelper.findEvent('Paint', Phase.COMPLETE);
-  const screenshots = tracingHelper.findEvents('Screenshot', Phase.SNAPSHOT_OBJECT);
+  const needsBeginFrameChanged = tracingHelper.findEvent(
+    'NeedsBeginFrameChanged', Phase.INSTANT);
+  const paint = tracingHelper.findEvent(
+    'Paint', Phase.COMPLETE, matchesRendererPid);
+  const screenshots = tracingHelper.findEvents(
+    'Screenshot', Phase.SNAPSHOT_OBJECT);
 
   testRunner.log('Got SetLayerTreeId event:');
   tracingHelper.logEventShape(setLayerTreeId)

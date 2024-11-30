@@ -23,16 +23,21 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubToolbarView;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
+import org.chromium.chrome.test.util.TabBinningUtil;
+
+import java.util.List;
 
 /** The base station for Hub tab switcher stations. */
 public abstract class TabSwitcherStation extends HubBaseStation {
@@ -73,6 +78,8 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     private final boolean mIsIncognito;
 
+    private ViewElement mRecyclerViewElement;
+
     public TabSwitcherStation(
             boolean isIncognito, boolean regularTabsExist, boolean incognitoTabsExist) {
         super(regularTabsExist, incognitoTabsExist);
@@ -84,7 +91,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
         super.declareElements(elements);
 
         elements.declareView(getNewTabButtonViewSpec());
-        elements.declareView(TAB_LIST_RECYCLER_VIEW);
+        mRecyclerViewElement = elements.declareView(TAB_LIST_RECYCLER_VIEW);
     }
 
     public boolean isIncognito() {
@@ -200,5 +207,27 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                         .withIncognito(mIsIncognito)
                         .build();
         return leaveHubToPreviousTabViaBack(destination);
+    }
+
+    /** Expect a tab group card to exist. */
+    public TabSwitcherGroupCardFacility expectGroupCard(List<Integer> tabIdsInGroup, String title) {
+        TabModel currentModel = getTabModelSelectorSupplier().get().getCurrentModel();
+        int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabIdsInGroup);
+        return enterFacilitySync(
+                new TabSwitcherGroupCardFacility(expectedCardIndex, tabIdsInGroup, title),
+                /* trigger= */ null);
+    }
+
+    /** Expect a tab card to exist. */
+    public TabSwitcherTabCardFacility expectTabCard(int tabId, String title) {
+        TabModel currentModel = getTabModelSelectorSupplier().get().getCurrentModel();
+        int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabId);
+        return enterFacilitySync(
+                new TabSwitcherTabCardFacility(expectedCardIndex, tabId, title),
+                /* trigger= */ null);
+    }
+
+    public ViewElement getRecyclerViewElement() {
+        return mRecyclerViewElement;
     }
 }

@@ -46,8 +46,8 @@ ChromeDriver and the browser:
 * `ChromeImpl::web_views_` is a list of `WebView` objects,
   one for each tab active in the browser.
   These objects are used for sending commands that apply to a specific tab.
-  `Chrome::GetWebViewById` allows retrieving a `WebView` by its ID.
-  (There are additional `WebView` instances that represent frames,
+  `Chrome::GetWebViewById` allows retrieving a `WebView` (tab or page) by
+  its ID. (There are additional `WebView` instances that represent frames,
   but `ChromeImpl` is not aware of them.)
 
 ## `DevToolsClient` and `WebView`

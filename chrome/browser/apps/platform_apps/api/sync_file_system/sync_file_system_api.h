@@ -29,7 +29,7 @@ class SyncFileSystemGetFileStatusFunction : public ExtensionFunction {
                              SYNCFILESYSTEM_GETFILESYNCSTATUS)
 
  protected:
-  ~SyncFileSystemGetFileStatusFunction() override {}
+  ~SyncFileSystemGetFileStatusFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -72,7 +72,7 @@ class SyncFileSystemGetUsageAndQuotaFunction : public ExtensionFunction {
                              SYNCFILESYSTEM_GETUSAGEANDQUOTA)
 
  protected:
-  ~SyncFileSystemGetUsageAndQuotaFunction() override {}
+  ~SyncFileSystemGetUsageAndQuotaFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -87,7 +87,7 @@ class SyncFileSystemRequestFileSystemFunction : public ExtensionFunction {
                              SYNCFILESYSTEM_REQUESTFILESYSTEM)
 
  protected:
-  ~SyncFileSystemRequestFileSystemFunction() override {}
+  ~SyncFileSystemRequestFileSystemFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -108,7 +108,7 @@ class SyncFileSystemSetConflictResolutionPolicyFunction
                              SYNCFILESYSTEM_SETCONFLICTRESOLUTIONPOLICY)
 
  protected:
-  ~SyncFileSystemSetConflictResolutionPolicyFunction() override {}
+  ~SyncFileSystemSetConflictResolutionPolicyFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -119,7 +119,7 @@ class SyncFileSystemGetConflictResolutionPolicyFunction
                              SYNCFILESYSTEM_GETCONFLICTRESOLUTIONPOLICY)
 
  protected:
-  ~SyncFileSystemGetConflictResolutionPolicyFunction() override {}
+  ~SyncFileSystemGetConflictResolutionPolicyFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -129,7 +129,7 @@ class SyncFileSystemGetServiceStatusFunction : public ExtensionFunction {
                              SYNCFILESYSTEM_GETSERVICESTATUS)
 
  protected:
-  ~SyncFileSystemGetServiceStatusFunction() override {}
+  ~SyncFileSystemGetServiceStatusFunction() override = default;
   ResponseAction Run() override;
 };
 

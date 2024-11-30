@@ -33,6 +33,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -414,6 +415,10 @@ int64_t DownloadUIModel::GetCompletedBytes() const {
 }
 
 int64_t DownloadUIModel::GetTotalBytes() const {
+  return 0;
+}
+
+int64_t DownloadUIModel::GetUploadedBytes() const {
   return 0;
 }
 
@@ -976,7 +981,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       // "Blocked by your organization"
       return l10n_util::GetStringUTF16(
-          IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_BLOCKED_ORGANIZATION);
+          IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
         // "Scan for malware • Suspicious"
         return l10n_util::GetStringFUTF16(
@@ -1255,7 +1260,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInterruptedStatusText(
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_VIRUS;
       break;
     case FailState::FILE_BLOCKED:
-      string_id = IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_BLOCKED_ORGANIZATION;
+      string_id = IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION;
       break;
     case FailState::FILE_SECURITY_CHECK_FAILED:
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_SECURITY_CHECK_FAILED;

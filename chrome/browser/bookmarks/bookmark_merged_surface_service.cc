@@ -69,17 +69,6 @@ CreatePermanentFolderToTrackerMap(bookmarks::BookmarkModel* model) {
 }  // namespace
 
 // static
-BookmarkParentFolder BookmarkParentFolder::FromNonPermanentNode(
-    const bookmarks::BookmarkNode* parent_node) {
-  CHECK(parent_node);
-  CHECK(parent_node->is_folder());
-  CHECK(!parent_node->is_permanent_node())
-      << "Node is permanent: " << parent_node->uuid();
-
-  return BookmarkParentFolder(parent_node);
-}
-
-// static
 BookmarkParentFolder BookmarkParentFolder::BookmarkBarFolder() {
   return BookmarkParentFolder(PermanentFolderType::kBookmarkBarNode);
 }
@@ -97,6 +86,33 @@ BookmarkParentFolder BookmarkParentFolder::MobileFolder() {
 // static
 BookmarkParentFolder BookmarkParentFolder::ManagedFolder() {
   return BookmarkParentFolder(PermanentFolderType::kManagedNode);
+}
+
+// static
+BookmarkParentFolder BookmarkParentFolder::FromFolderNode(
+    const bookmarks::BookmarkNode* node) {
+  CHECK(node);
+  CHECK(!node->is_root());
+  CHECK(node->is_folder());
+  if (!node->is_permanent_node()) {
+    return BookmarkParentFolder(node);
+  }
+  switch (node->type()) {
+    case bookmarks::BookmarkNode::URL:
+      NOTREACHED();
+    case bookmarks::BookmarkNode::FOLDER:
+      // TODO(crbug.com/381252292): Consider extending type with a value
+      // `MANAGED_NODE`.
+      // Only other possible permanent node is the managed one.
+      return BookmarkParentFolder::ManagedFolder();
+    case bookmarks::BookmarkNode::BOOKMARK_BAR:
+      return BookmarkParentFolder::BookmarkBarFolder();
+    case bookmarks::BookmarkNode::OTHER_NODE:
+      return BookmarkParentFolder::OtherFolder();
+    case bookmarks::BookmarkNode::MOBILE:
+      return BookmarkParentFolder::MobileFolder();
+  }
+  NOTREACHED();
 }
 
 BookmarkParentFolder::BookmarkParentFolder(

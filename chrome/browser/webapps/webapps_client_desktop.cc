@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/security_state_tab_helper.h"
@@ -86,15 +85,32 @@ bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
     return false;
   }
 
+  // If there is an existing crafted or DIY app that has the same manifest_id,
+  // do not promote installation.
+  if (provider->registrar_unsafe().IsInstallState(
+          web_app::GenerateAppIdFromManifestId(manifest_id),
+          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
+    return true;
+  }
+
   // We cannot install if we are in scope of an installed crafted app, no matter
   // the user display type.
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<AppId> non_diy_app_id =
-      provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
+      provider->registrar_unsafe().FindBestAppWithUrlInScope(
           start_url,
-          /*window_only=*/false, /*exclude_diy_apps=*/true);
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          },
+          {.include_open_in_browser_tab = true, .include_diy = false});
+
   if (non_diy_app_id) {
     return true;
   }
+
   // Otherwise there is no app installed here, or there is a DIY app that
   // controls this URL but that's fine.
   return false;
@@ -103,14 +119,9 @@ bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
 bool WebappsClientDesktop::IsInAppBrowsingContext(
     content::WebContents* web_contents) const {
   CHECK(web_contents);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
-  if (!provider) {
-    return false;
-  }
-  return provider->ui_manager().IsInAppWindow(web_contents);
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  return tab_helper && tab_helper->is_in_app_window();
 }
 
 bool WebappsClientDesktop::IsAppPartiallyInstalledForSiteUrl(

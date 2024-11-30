@@ -220,14 +220,6 @@ public class AmbientBadgeManagerTest {
                 () -> !getAppBannerManager(tab.getWebContents()).isRunningForTesting());
     }
 
-    private void waitForAppBannerPipelineStatus(Tab tab, int expectedValue) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return getAppBannerManager(tab.getWebContents()).getPipelineStatusForTesting()
-                            == expectedValue;
-                });
-    }
-
     private void assertAppBannerPipelineStatus(int expectedValue) {
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(

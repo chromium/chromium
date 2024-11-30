@@ -324,7 +324,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   GetViewAccessibility().SetPosInSet(model_index_ + 1);
 }
 
-OmniboxResultView::~OmniboxResultView() {}
+OmniboxResultView::~OmniboxResultView() = default;
 
 // static
 std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(

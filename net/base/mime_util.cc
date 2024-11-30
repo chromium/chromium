@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -29,6 +30,17 @@
 using std::string;
 
 namespace net {
+
+namespace {
+
+// Overrides the mime type for "get a mime type" functions below, for test
+// purposes. (Empty string by default, indicates no override.)
+std::string& GetOverridingMimeType() {
+  static base::NoDestructor<std::string> overriding_mime_type;
+  return *overriding_mime_type;
+}
+
+}  // namespace
 
 // Singleton utility class for mime types.
 class MimeUtil : public PlatformMimeUtil {
@@ -320,6 +332,12 @@ bool MimeUtil::GetMimeTypeFromExtensionHelper(
     string* result) const {
   DCHECK(ext.empty() || ext[0] != '.')
       << "extension passed in must not include leading dot";
+
+  // Used for tests.
+  if (!GetOverridingMimeType().empty()) {
+    *result = GetOverridingMimeType();
+    return true;
+  }
 
   // Avoids crash when unable to handle a long file path. See crbug.com/48733.
   const unsigned kMaxFilePathSize = 65536;
@@ -947,6 +965,15 @@ std::optional<std::string> ExtractMimeTypeFromMediaType(
     return top_level_type + "/" + subtype;
   }
   return std::nullopt;
+}
+
+ScopedOverrideGetMimeTypeForTesting::ScopedOverrideGetMimeTypeForTesting(
+    std::string_view overriding_mime_type) {
+  GetOverridingMimeType() = overriding_mime_type;
+}
+
+ScopedOverrideGetMimeTypeForTesting::~ScopedOverrideGetMimeTypeForTesting() {
+  GetOverridingMimeType().clear();
 }
 
 }  // namespace net

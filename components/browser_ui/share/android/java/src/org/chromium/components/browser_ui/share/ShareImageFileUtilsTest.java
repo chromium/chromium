@@ -94,10 +94,6 @@ public class ShareImageFileUtilsTest {
 
     /** Convenient class to mark timestamp for ClipDescription. */
     private static class TestClipDescriptionWrapper extends ClipDescription {
-        public static ClipDescription create(ClipDescription origin) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return origin;
-            return new TestClipDescriptionWrapper(origin);
-        }
 
         private final long mTimeStamp;
 

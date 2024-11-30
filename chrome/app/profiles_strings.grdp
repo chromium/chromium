@@ -77,9 +77,6 @@
   <message name="IDS_PROFILES_EXIT_PROFILE_BUTTON" desc="Button in the avatar menu bubble view to close all windows of the current profile when there is more than one profile.">
     Exit <ph name="PROFILE_NAME">$1<ex>User</ex></ph>
   </message>
-  <message name="IDS_PROFILES_GAIA_SIGNIN_TITLE" desc="Title of the account removal view in the avatar menu bubble.">
-    Sign in
-  </message>
   <message name="IDS_PROFILES_ACCOUNT_REMOVAL_TITLE" desc="Title of the account removal view in the avatar menu bubble.">
     Remove account
   </message>
@@ -964,6 +961,18 @@
     </message>
     <message name="IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT" desc="Text shown on the avatar button pill after the user has requested to save items in their account through the Batch Upload dialog. The text is shown for few seconds then disappears.">
       Saving in your account...
+    </message>
+    <message name="IDS_BATCH_UPLOAD_LAST_ITEM_SELECTED_SCREEN_READER" desc="Text read by the screen reader after focusing the last selected item of a section of the Batch upload dialog. It will mention that it is the last item, and that unselecting it will disable the section,  given that this can be an uncommon behavior, esepcially for visually impaired users, it needs to be explicilty stated by the screen reader.">
+      Last item selected, unselecting it will exit selection mode
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SCREEN_READER_ITEM_COUNT_SELECTED" desc="Text read by the screen reader after interacting with a checkbox in a section of the Batch Upload dialog. It will read the current number of selected items in the section after the user action on that checkbox.">
+      <ph name="NUMBER_OF_ITEMS_SELECTED">$1</ph> selected
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_ALL" desc="Text read by the screen reader when focusing the toggle button of a section in the Batch Upload dialog and that toggle is turned off. Notifies that the action on the toggle would select all items in this section.">
+      Select all
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE" desc="Text read by the screen reader when focusing the toggle button of a section in the Batch Upload dialog and that toggle is turned on. Notifies that the action on the toggle would select no items in this section.">
+      Select none
     </message>
   </if>
 </grit-part>

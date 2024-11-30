@@ -54,16 +54,16 @@ constexpr char kMustSpecifyDocumentIdOrTabIdError[] =
 constexpr char kTabNotFoundError[] = "No tab with ID '*'.";
 constexpr char kInvalidDocumentIdError[] = "No document with ID '*'.";
 constexpr char kExtensionHasSiteAccessError[] =
-    "Extension cannot add a site access request for a site it already has "
+    "Extension cannot add a host access request for a host it already has "
     "access to.";
 constexpr char kExtensionHasNoHostPermissionsError[] =
-    "Extension cannot add a site access request when it does not have any host "
+    "Extension cannot add a host access request when it does not have any host "
     "permissions.";
 constexpr char kExtensionHasNoHostPermissionsForPatternError[] =
-    "Extension cannot add a site access request with a pattern that does match "
+    "Extension cannot add a host access request with a pattern that does match "
     "any of its host permissions.";
 constexpr char kExtensionRequestCannotBeRemovedError[] =
-    "Extension cannot remove a site access request that doesn't exist.";
+    "Extension cannot remove a host access request that doesn't exist.";
 constexpr char kAddRequestInvalidPatternError[] =
     "Extension cannot add a request with an invalid value for 'pattern'.";
 constexpr char kRemoveRequestInvalidPatternError[] =
@@ -540,11 +540,11 @@ PermissionsRequestFunction::TakePromptedPermissionsForTesting() {
 }
 
 ExtensionFunction::ResponseAction
-PermissionsAddSiteAccessRequestFunction::Run() {
+PermissionsAddHostAccessRequestFunction::Run() {
   CHECK(base::FeatureList::IsEnabled(
-      extensions_features::kApiPermissionsSiteAccessRequests));
-  std::optional<api::permissions::AddSiteAccessRequest::Params> params =
-      api::permissions::AddSiteAccessRequest::Params::Create(args());
+      extensions_features::kApiPermissionsHostAccessRequests));
+  std::optional<api::permissions::AddHostAccessRequest::Params> params =
+      api::permissions::AddHostAccessRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Validate request has only one of document or tab id, and its value is
@@ -628,17 +628,17 @@ PermissionsAddSiteAccessRequestFunction::Run() {
     }
   }
 
-  permissions_manager->AddSiteAccessRequest(web_contents, tab_id, *extension(),
+  permissions_manager->AddHostAccessRequest(web_contents, tab_id, *extension(),
                                             pattern);
   return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
-PermissionsRemoveSiteAccessRequestFunction::Run() {
+PermissionsRemoveHostAccessRequestFunction::Run() {
   CHECK(base::FeatureList::IsEnabled(
-      extensions_features::kApiPermissionsSiteAccessRequests));
-  std::optional<api::permissions::RemoveSiteAccessRequest::Params> params =
-      api::permissions::RemoveSiteAccessRequest::Params::Create(args());
+      extensions_features::kApiPermissionsHostAccessRequests));
+  std::optional<api::permissions::RemoveHostAccessRequest::Params> params =
+      api::permissions::RemoveHostAccessRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::optional<std::string>& document_id_param =
@@ -692,7 +692,7 @@ PermissionsRemoveSiteAccessRequestFunction::Run() {
 
   bool is_removed =
       PermissionsManager::Get(browser_context())
-          ->RemoveSiteAccessRequest(tab_id, extension()->id(), pattern);
+          ->RemoveHostAccessRequest(tab_id, extension()->id(), pattern);
   if (!is_removed) {
     return RespondNow(Error(kExtensionRequestCannotBeRemovedError));
   }

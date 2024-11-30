@@ -48,10 +48,8 @@ class OnDeviceModelComponentTest : public testing::Test {
     local_state_.SetInteger(
         model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kLow));
-    local_state_.SetTime(
-        model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
-            ModelBasedCapabilityKey::kCompose),
-        base::Time::Now());
+    model_execution::prefs::RecordFeatureUsage(
+        &local_state_, ModelBasedCapabilityKey::kCompose);
 
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
@@ -126,6 +124,11 @@ TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.All",
       true, 1);
+  // Device has disk space. Histogram should not log.
+  histograms_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+      0);
 }
 
 TEST_F(OnDeviceModelComponentTest, AlreadyInstalledFlow) {
@@ -215,12 +218,15 @@ TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.All",
       false, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+      19, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
   local_state_.ClearPref(
-      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
-          ModelBasedCapabilityKey::kCompose));
+      model_execution::prefs::localstate::kLastUsageByFeature);
 
   manager()->OnStartup();
   WaitForStartup();
@@ -233,15 +239,17 @@ TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
 }
 
 TEST_F(OnDeviceModelComponentTest, EligibleFeatureUseTooOld) {
-  local_state_.SetTime(
-      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
-          ModelBasedCapabilityKey::kCompose),
-      base::Time::Now() - base::Days(31));
+  task_environment_.FastForwardBy(base::Days(31));
 
   manager()->OnStartup();
   WaitForStartup();
 
   EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
+  // The usage should also get pruned from the pref.
+  ASSERT_TRUE(
+      local_state_
+          .GetDict(model_execution::prefs::localstate::kLastUsageByFeature)
+          .empty());
 }
 
 TEST_F(OnDeviceModelComponentTest, NoPerformanceClass) {
@@ -277,8 +285,7 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
                        base::Time::Now() - base::Minutes(1) -
                            features::GetOnDeviceModelRetentionTime());
   local_state_.ClearPref(
-      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
-          ModelBasedCapabilityKey::kCompose));
+      model_execution::prefs::localstate::kLastUsageByFeature);
 
   // Should uninstall the first time, and skip uninstallation the next time.
   manager()->OnStartup();
@@ -324,8 +331,7 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
   // is no longer eligible for download.
   on_device_component_state_manager_.Reset();
   local_state_.ClearPref(
-      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
-          ModelBasedCapabilityKey::kCompose));
+      model_execution::prefs::localstate::kLastUsageByFeature);
   manager()->OnStartup();
   WaitForStartup();
 
@@ -484,8 +490,7 @@ TEST_F(OnDeviceModelComponentTest, DontUninstallAfterPerformanceClassChanges) {
 
 TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
   local_state_.ClearPref(
-      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
-          ModelBasedCapabilityKey::kCompose));
+      model_execution::prefs::localstate::kLastUsageByFeature);
   manager()->OnStartup();
   WaitForStartup();
 

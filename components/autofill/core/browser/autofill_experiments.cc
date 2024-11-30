@@ -236,7 +236,7 @@ bool IsCreditCardUploadEnabled(
   return true;
 }
 
-bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
+bool IsCreditCardMigrationEnabled(PersonalDataManager& personal_data_manager,
                                   syncer::SyncService* sync_service,
                                   const PrefService& pref_service,
                                   bool is_test_mode,
@@ -248,7 +248,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
   }
 
   PaymentsDataManager& payments_data_manager =
-      personal_data_manager->payments_data_manager();
+      personal_data_manager.payments_data_manager();
   // If |is_test_mode| is set, assume we are in a browsertest and
   // credit card upload should be enabled by default to fix flaky
   // local card migration browsertests.

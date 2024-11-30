@@ -63,7 +63,8 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
 
     // An existing tab group was updated at the given |source|.
     // Called whenever there are an update to a tab group, which can be title,
-    // color, position, pinned state, or update to any of its tabs.
+    // color, position, pinned state, update to any of its tabs, or when a group
+    // was shared and migrated from the originating saved tab group.
     virtual void OnTabGroupUpdated(const SavedTabGroup& group,
                                    TriggerSource source) {}
 
@@ -76,6 +77,16 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     // All other consumers should use the local ID variant of this method.
     virtual void OnTabGroupRemoved(const base::Uuid& sync_id,
                                    TriggerSource source) {}
+
+    // The existing SavedTabGroup has been replaced by a new one. This happens
+    // when the originating SavedTabGroup was transitioned to a shared one. The
+    // old group is not accessible from the service anymore. This method is
+    // useful when observers store group's sync ID to update to a new one. Note
+    // that OnTabGroupUpdated() is called afterwards, so the observers don't
+    // have to always handle this event.
+    virtual void OnTabGroupMigrated(const SavedTabGroup& new_group,
+                                    const base::Uuid& old_sync_id,
+                                    TriggerSource source) {}
 
     // The local ID for a tab group was changed. This is usually fired when the
     // group is opened, closed (not always), or (desktop only) restored from
@@ -159,14 +170,15 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
 
   // SaveGroup / UnsaveGroup are temporary solutions used during desktop's
   // migration. Other clients should use AddGroup / RemoveGroup.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   virtual void SaveGroup(SavedTabGroup group) = 0;
   virtual void UnsaveGroup(const LocalTabGroupID& local_id) = 0;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Mutator methods for shared tab groups.
   // Converts the saved tab group to shared tab group and associates it with the
   // given `collaboration_id` (this is the same as data_sharing::GroupId). The
   // tab group must not be shared.
-  // TODO(crbug.com/351022699): consider using data_sharing::GroupId.
   virtual void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                                   std::string_view collaboration_id) = 0;
 
@@ -245,7 +257,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   CreateScopedLocalObserverPauser() = 0;
 
   using UrlRestrictionCallback =
-      base::OnceCallback<void(std::optional<proto::UrlRestriction>)>;
+      base::OnceCallback<void(const std::optional<proto::UrlRestriction>&)>;
   // Get the restrictions on a given URL.
   virtual void GetURLRestriction(const GURL& url,
                                  UrlRestrictionCallback callback) = 0;
@@ -253,6 +265,9 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // The list of shared tab groups is stored on startup before any local changes
   // have been applied, which enables the messaging system to safely calculate
   // deltas for changes to groups without keeping its own persistence layer.
+  // For now there is only a single user of this, so we give away ownership.
+  // If there are more users in the future, we should keep the data around in
+  // this service.
   virtual std::unique_ptr<std::vector<SavedTabGroup>>
   TakeSharedTabGroupsAvailableAtStartupForMessaging() = 0;
 

@@ -306,7 +306,7 @@ class BASE_EXPORT Pickle {
   }
 
   span<const uint8_t> payload_bytes() const {
-    return as_bytes(make_span(payload(), payload_size()));
+    return as_bytes(span(payload(), payload_size()));
   }
 
  protected:

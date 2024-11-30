@@ -26,7 +26,7 @@ void SetAlwaysShowTrafficLights(NSWindow* browser_window, bool always_show) {
 namespace remote_cocoa {
 
 ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
-    NativeWidgetMacNSWindow* browser_window,
+    BrowserNativeWidgetWindow* browser_window,
     NativeWidgetMacOverlayNSWindow* overlay_window,
     NativeWidgetMacOverlayNSWindow* tab_window)
     : ImmersiveModeControllerCocoa(browser_window, overlay_window) {

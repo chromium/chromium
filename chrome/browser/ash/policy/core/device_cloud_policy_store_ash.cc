@@ -226,18 +226,12 @@ void DeviceCloudPolicyStoreAsh::UpdateFromService() {
   const ash::DeviceSettingsService::Status service_status =
       device_settings_service_->status();
   if (service_status == ash::DeviceSettingsService::STORE_SUCCESS) {
-    auto new_policy_fetch_response =
-        std::make_unique<em::PolicyFetchResponse>();
     auto new_policy = std::make_unique<em::PolicyData>();
-    const em::PolicyFetchResponse* policy_fetch_response =
-        device_settings_service_->policy_fetch_response();
     const em::PolicyData* policy_data = device_settings_service_->policy_data();
     if (policy_data) {
-      DCHECK(policy_fetch_response);
-      new_policy_fetch_response->MergeFrom(*policy_fetch_response);
       new_policy->MergeFrom(*policy_data);
     }
-    SetPolicy(std::move(new_policy_fetch_response), std::move(new_policy));
+    SetPolicy(std::move(new_policy));
 
     PolicyMap new_policy_map;
     if (is_managed()) {

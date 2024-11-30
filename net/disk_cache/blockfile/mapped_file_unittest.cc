@@ -41,7 +41,7 @@ void FileCallbackTest::OnFileIOComplete(int bytes_copied) {
 
 }  // namespace
 
-TEST_F(DiskCacheTest, MappedFile_SyncIO) {
+TEST_F(DiskCacheTest, MappedFileSyncIO) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
   auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));
@@ -49,14 +49,14 @@ TEST_F(DiskCacheTest, MappedFile_SyncIO) {
 
   char buffer1[20];
   char buffer2[20];
-  CacheTestFillBuffer(buffer1, sizeof(buffer1), false);
+  CacheTestFillBuffer(base::as_writable_byte_span(buffer1), false);
   base::strlcpy(buffer1, "the data", std::size(buffer1));
   EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 8192));
   EXPECT_TRUE(file->Read(buffer2, sizeof(buffer2), 8192));
   EXPECT_STREQ(buffer1, buffer2);
 }
 
-TEST_F(DiskCacheTest, MappedFile_AsyncIO) {
+TEST_F(DiskCacheTest, MappedFileAsyncIO) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
   auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));
@@ -68,7 +68,7 @@ TEST_F(DiskCacheTest, MappedFile_AsyncIO) {
 
   char buffer1[20];
   char buffer2[20];
-  CacheTestFillBuffer(buffer1, sizeof(buffer1), false);
+  CacheTestFillBuffer(base::as_writable_byte_span(buffer1), false);
   base::strlcpy(buffer1, "the data", std::size(buffer1));
   bool completed;
   EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 1024 * 1024, &callback,

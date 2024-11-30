@@ -856,11 +856,6 @@ public class TouchToFillControllerTest {
             mCallback = null;
         }
 
-        private void answerWithNull() {
-            mCallback.onResult(null);
-            mCallback = null;
-        }
-
         @Override
         public void fetchImage(final ImageFetcher.Params params, Callback<Bitmap> callback) {
             mCallback = callback;

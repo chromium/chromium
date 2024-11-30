@@ -26,11 +26,13 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -41,8 +43,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using ::testing::Invoke;
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Invoke;
+using ::testing::Property;
 
 namespace {
 
@@ -358,8 +364,8 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
   MockGaiaConsumer consumer;
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   std::vector<gaia::MultiloginAccountAuthCredentials> accounts;
-  accounts.emplace_back("id1", "token1", "");
-  accounts.emplace_back("id2", "token2", "");
+  accounts.emplace_back(GaiaId("id1"), "token1", "");
+  accounts.emplace_back(GaiaId("id2"), "token2", "");
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
       "cc_result");
@@ -390,9 +396,9 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestMultiOAuthFormat) {
   MockGaiaConsumer consumer;
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   std::vector<gaia::MultiloginAccountAuthCredentials> accounts;
-  accounts.emplace_back("id1", "token1", "assertion1");
-  accounts.emplace_back("id2", "token2", "");
-  accounts.emplace_back("id3", "token3", "assertion3");
+  accounts.emplace_back(GaiaId("id1"), "token1", "assertion1");
+  accounts.emplace_back(GaiaId("id2"), "token2", "");
+  accounts.emplace_back(GaiaId("id3"), "token3", "assertion3");
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
       "cc_result");
@@ -401,6 +407,47 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestMultiOAuthFormat) {
   EXPECT_EQ(
       received_requests_[0].headers.GetHeader("Authorization"),
       base::StrCat({"MultiOAuth ", gaia::CreateMultiOAuthHeader(accounts)}));
+}
+
+TEST_F(GaiaAuthFetcherTest, MultiloginResponseEncrypted) {
+  MockGaiaConsumer consumer;
+  EXPECT_CALL(consumer,
+              OnOAuthMultiloginFinished(AllOf(
+                  Property(&OAuthMultiloginResult::status,
+                           Eq(OAuthMultiloginResponseStatus::kOk)),
+                  Property(&OAuthMultiloginResult::cookies,
+                           ElementsAre(Property(&net::CanonicalCookie::Value,
+                                                "vAlUe1.decrypted"))))));
+  TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
+  auto decryptor = [](std::string_view encrypted_cookie) {
+    return base::StrCat({encrypted_cookie, ".decrypted"});
+  };
+  auth.StartOAuthMultilogin(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      std::vector<gaia::MultiloginAccountAuthCredentials>(), std::string(),
+      base::BindRepeating(decryptor));
+  ASSERT_TRUE(auth.HasPendingFetch());
+
+  auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,
+                                     R"()]}'
+        {
+          "status": "OK",
+          "token_binding_directed_response": {},
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )");
+  EXPECT_FALSE(auth.HasPendingFetch());
 }
 
 TEST_F(GaiaAuthFetcherTest, MultiloginSuccess) {

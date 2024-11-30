@@ -23,7 +23,7 @@
 ExtensionNotifierController::ExtensionNotifierController(Observer* observer)
     : observer_(observer) {}
 
-ExtensionNotifierController::~ExtensionNotifierController() {}
+ExtensionNotifierController::~ExtensionNotifierController() = default;
 
 std::vector<ash::NotifierMetadata> ExtensionNotifierController::GetNotifierList(
     Profile* profile) {

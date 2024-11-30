@@ -8,7 +8,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_distillability.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -18,6 +17,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
@@ -73,8 +73,8 @@ bool MatchAttributes(const Element& element, const Vector<String>& words) {
   const String& classes = element.GetClassAttribute();
   const String& id = element.GetIdAttribute();
   for (const String& word : words) {
-    if (classes.FindIgnoringCase(word) != WTF::kNotFound ||
-        id.FindIgnoringCase(word) != WTF::kNotFound) {
+    if (classes.DeprecatedFindIgnoringCase(word) != WTF::kNotFound ||
+        id.DeprecatedFindIgnoringCase(word) != WTF::kNotFound) {
       return true;
     }
   }

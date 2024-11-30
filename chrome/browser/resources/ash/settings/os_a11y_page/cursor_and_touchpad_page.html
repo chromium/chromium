@@ -26,10 +26,6 @@
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
   }
-
-  #facegaze-icon {
-    padding-inline-end: var(--cr-section-padding);
-  }
 </style>
 
 <settings-toggle-button
@@ -135,9 +131,13 @@
       class="hr"
       start-icon="os-settings:face-gaze"
       label="$i18n{accessibilityFaceGazeLabel}"
-      sub-label="$i18n{accessibilityFaceGazeDescription}"
       on-click="onFaceGazeSettingsClick_"
       role-description="$i18n{subpageArrowRoleDescription}">
+    <localized-link id="faceGazeSubLabel"
+        slot="sub-label"
+        localized-string="$i18n{accessibilityFaceGazeDescription}"
+        link-url="$i18n{faceGazeLearnMoreUrl}">
+    </localized-link>
   </cr-link-row>
 </template>
 <settings-toggle-button
@@ -205,7 +205,7 @@
           aria-labelledby="disableInternalTouchpadLabel"
           pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
           menu-options="[[disableTouchpadOptions_]]"
-          deep-link-focus-id$="[[Setting.kAccessibilityDisableTrackpad]]"
+          deep-link-focus-id$="[[Setting.kDisableTouchpad]]"
           >
     </settings-dropdown-menu>
   </div>

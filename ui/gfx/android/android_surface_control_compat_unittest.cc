@@ -231,7 +231,7 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
   // P3, extended by 2x.
   {
     skcms_TransferFunction trfn_srgb_scaled =
-        skia::ScaleTransferFunction(SkNamedTransferFnExt::kSRGB, 2.f);
+        skia::ScaleTransferFunction(SkNamedTransferFn::kSRGB, 2.f);
     gfx::ColorSpace p3_scaled(
         gfx::ColorSpace::PrimaryID::P3, gfx::ColorSpace::TransferID::CUSTOM_HDR,
         gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL, nullptr,

@@ -17,6 +17,8 @@ constexpr std::pair<GattStatus, device::BluetoothGattService::GattErrorCode>
         {GattStatus::kInvalidAttributeLen, GattErrorCode::kInvalidLength},
         {GattStatus::kReadNotPermitted, GattErrorCode::kNotPermitted},
         {GattStatus::kWriteNotPermitted, GattErrorCode::kNotPermitted},
+        {GattStatus::kInsufficientAuthentication,
+         GattErrorCode::kNotAuthorized},
         {GattStatus::kInsufficientAuthorization, GattErrorCode::kNotAuthorized},
         {GattStatus::kReqNotSupported, GattErrorCode::kNotSupported},
 };
@@ -29,8 +31,10 @@ BluetoothGattServiceFloss::BluetoothGattServiceFloss(
 }
 
 BluetoothGattServiceFloss::~BluetoothGattServiceFloss() {
-  FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
-  FlossDBusManager::Get()->GetGattManagerClient()->RemoveServerObserver(this);
+  if (floss::FlossDBusManager::IsInitialized()) {
+    FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
+    FlossDBusManager::Get()->GetGattManagerClient()->RemoveServerObserver(this);
+  }
 }
 
 BluetoothAdapterFloss* BluetoothGattServiceFloss::GetAdapter() const {

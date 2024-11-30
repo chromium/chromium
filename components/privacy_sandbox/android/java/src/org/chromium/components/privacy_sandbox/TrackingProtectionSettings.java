@@ -21,13 +21,11 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
-import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -42,7 +40,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.privacy_sandbox.CustomTabs.CustomTabIntentHelper;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
@@ -52,11 +49,8 @@ import java.util.List;
 import java.util.Locale;
 
 /** Fragment to manage settings for tracking protection. */
-public class TrackingProtectionSettings extends PreferenceFragmentCompat
-        implements CustomDividerFragment,
-                OnPreferenceClickListener,
-                SiteAddedCallback,
-                EmbeddableSettingsPage {
+public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
+        implements CustomDividerFragment, OnPreferenceClickListener, SiteAddedCallback {
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
     private static final String PREF_IP_PROTECTION_TOGGLE = "ip_protection_toggle";
     private static final String PREF_IP_PROTECTION_LEARN_MORE = "ip_protection_learn_more";
@@ -86,18 +80,12 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
 
     private TrackingProtectionDelegate mDelegate;
 
-    private CustomTabIntentHelper mCustomTabIntentHelper;
-
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tracking_protection_preferences);
-        if (mDelegate.shouldShowTrackingProtectionBrandedUi()) {
-            mPageTitle.set(getString(R.string.privacy_sandbox_tracking_protection_title));
-        } else {
-            mPageTitle.set(getString(R.string.third_party_cookies_page_title));
-        }
+        mPageTitle.set(getString(R.string.third_party_cookies_page_title));
 
         setHasOptionsMenu(true);
 
@@ -129,8 +117,6 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                 (ChromeSwitchPreference) findPreference(PREF_FINGERPRINTING_PROTECTION_TOGGLE);
         TextMessagePreference fingerprintingProtectionLearnMore =
                 (TextMessagePreference) findPreference(PREF_FINGERPRINTING_PROTECTION_LEARN_MORE);
-        ChromeSwitchPreference doNotTrackSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_DNT_TOGGLE);
 
         // Block all 3rd party cookies switch.
         blockAll3pCookiesSwitch.setChecked(mDelegate.isBlockAll3pcEnabled());
@@ -195,18 +181,6 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                                         }
                                     })));
         }
-
-        // Do not track switch.
-        if (mDelegate.shouldShowTrackingProtectionBrandedUi()) {
-            doNotTrackSwitch.setVisible(true);
-            doNotTrackSwitch.setChecked(mDelegate.isDoNotTrackEnabled());
-            doNotTrackSwitch.setOnPreferenceChangeListener(
-                    (preference, newValue) -> {
-                        mDelegate.setDoNotTrack((boolean) newValue);
-                        return true;
-                    });
-        }
-
         mAllowListExpanded = true;
         mAllowedSiteCount = 0;
         ExpandablePreferenceGroup allowedGroup =
@@ -398,10 +372,6 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     }
 
     private void onLearnMoreClicked() {
-        CustomTabs.openUrlInCct(mCustomTabIntentHelper, getContext(), LEARN_MORE_URL);
-    }
-
-    public void setCustomTabIntentHelper(CustomTabIntentHelper helper) {
-        mCustomTabIntentHelper = helper;
+        getCustomTabLauncher().openUrlInCct(getContext(), LEARN_MORE_URL);
     }
 }

@@ -40,7 +40,7 @@ TemplateURLFetcherFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return std::make_unique<TemplateURLFetcher>(
       TemplateURLServiceFactory::GetForProfile(
-          static_cast<ProfileIOS*>(context)));
+          ProfileIOS::FromBrowserState(context)));
 }
 
 web::BrowserState* TemplateURLFetcherFactory::GetBrowserStateToUse(

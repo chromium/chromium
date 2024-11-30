@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
+#include "chrome/browser/ui/webui/chrome_urls/chrome_urls_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
@@ -150,7 +151,6 @@
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #else
 #include "chrome/browser/badging/badge_manager.h"
-#include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
@@ -493,6 +493,7 @@
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/ui/webui/glic/glic_ui.h"
 #endif
 
@@ -906,7 +907,7 @@ void PopulateChromeFrameBinders(
 #endif
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-  if (base::FeatureList::IsEnabled(blink::features::kEnableTranslationAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kTranslationAPI)) {
     map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
         &on_device_translation::TranslationManagerImpl::Create));
   }
@@ -959,12 +960,17 @@ void PopulateChromeWebUIFrameBinders(
       commerce::mojom::CommerceInternalsHandlerFactory,
       commerce::CommerceInternalsUI>(map);
 
+  if (base::FeatureList::IsEnabled(features::kInternalOnlyUisPref)) {
+    RegisterWebUIControllerInterfaceBinder<
+        chrome_urls::mojom::PageHandlerFactory, chrome_urls::ChromeUrlsUI>(map);
+  }
+
   RegisterWebUIControllerInterfaceBinder<
       data_sharing_internals::mojom::PageHandlerFactory,
       DataSharingInternalsUI>(map);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(features::kGlic)) {
+  if (GlicEnabling::IsEnabledByFlags()) {
     RegisterWebUIControllerInterfaceBinder<glic::mojom::PageHandlerFactory,
                                            glic::GlicUI>(map);
   }
@@ -1621,20 +1627,18 @@ void PopulateChromeWebUIFrameBinders(
   // NearbyShareDialogUI will not be created for non-primary profiles, and 2)
   // rely on the BindInterface implementation of OSSettingsUI to ensure that no
   // Nearby Share receivers are bound.
-  if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
-    RegisterWebUIControllerInterfaceBinder<
-        nearby_share::mojom::NearbyShareSettings, ash::settings::OSSettingsUI,
-        nearby_share::NearbyShareDialogUI>(map);
-    RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ContactManager,
-                                           ash::settings::OSSettingsUI,
-                                           nearby_share::NearbyShareDialogUI>(
-        map);
-    RegisterWebUIControllerInterfaceBinder<
-        nearby_share::mojom::DiscoveryManager,
-        nearby_share::NearbyShareDialogUI>(map);
-    RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ReceiveManager,
-                                           ash::settings::OSSettingsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      nearby_share::mojom::NearbyShareSettings, ash::settings::OSSettingsUI,
+      nearby_share::NearbyShareDialogUI>(map);
+  RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ContactManager,
+                                         ash::settings::OSSettingsUI,
+                                         nearby_share::NearbyShareDialogUI>(
+      map);
+  RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::DiscoveryManager,
+                                         nearby_share::NearbyShareDialogUI>(
+      map);
+  RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ReceiveManager,
+                                         ash::settings::OSSettingsUI>(map);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)

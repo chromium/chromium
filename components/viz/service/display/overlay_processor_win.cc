@@ -512,19 +512,24 @@ OverlayProcessorWin::TryDelegatedCompositing(
 
   int draw_quad_rounded_corner_count = 0;
 
-  // Try to promote all the quads in the root pass to overlay.
-  for (auto it = root_render_pass->quad_list.begin();
-       it != root_render_pass->quad_list.end(); ++it) {
-    const DrawQuad* quad = *it;
+  // The quad that renders underneath the current quad in the following loop.
+  const DrawQuad* quad_below = nullptr;
 
+  // Try to promote all the quads in the root pass to overlay.
+  for (const auto* quad : root_render_pass->quad_list.BackToFront()) {
     std::optional<OverlayCandidate> dc_layer;
     if (is_full_delegated_compositing) {
       // Try to promote videos like DCLayerOverlay does first, then fall back to
       // OverlayCandidateFactory. This is because Windows has some specific
       // details on how it promotes e.g. protected videos that we want to
       // preserve.
+      const bool is_possible_full_screen_letterboxing =
+          is_page_fullscreen_mode_ &&
+          DCLayerOverlayProcessor::IsPossibleFullScreenLetterboxing(
+              quad_below, root_render_pass->output_rect);
       dc_layer = dc_layer_overlay_processor_->FromTextureOrYuvQuad(
-          resource_provider, root_render_pass, it, is_page_fullscreen_mode_);
+          resource_provider, root_render_pass, *quad,
+          is_possible_full_screen_letterboxing);
     } else {
       // In the partial delegated compositing case, we don't expect
       // video/canvas/etc content in the UI.
@@ -576,6 +581,9 @@ OverlayProcessorWin::TryDelegatedCompositing(
         return base::unexpected(DelegationStatus::kCompositedTooManyQuads);
       }
     }
+
+    // Iterating back-to-front means this quad will appear below the next one.
+    quad_below = quad;
   }
 
   return base::ok(std::move(result));
@@ -774,13 +782,12 @@ gfx::Rect OverlayProcessorWin::InsertSurfaceContentOverlaysAndSetPlaneZOrder(
         }
       };
 
-  // We inserted into candidates in front-to-back order, but |plane_z_order|s
-  // increment back-to-front, so we want to invert the iteration so we can
-  // insert in ascending z-order.
   int current_z_index = 1;
   // We don't use an iterator since we're pushing to the end of |candidates|
   // during our iteration, which may invalidate iterators.
-  for (int rpdq_index = candidates.size() - 1; rpdq_index >= 0; rpdq_index--) {
+  const size_t size_before_surface_content_overlays = candidates.size();
+  for (size_t rpdq_index = 0; rpdq_index < size_before_surface_content_overlays;
+       rpdq_index++) {
     auto* surface_content_overlay_data = TryGetSurfaceContentOverlayData(
         surface_content_render_passes, candidates[rpdq_index]);
     if (!surface_content_overlay_data) {

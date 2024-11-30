@@ -38,6 +38,7 @@ Važne napomene:
 <translation id="1646463005043273333">Otvara postavku Chromea u kojoj se Chrome može postaviti kao zadani preglednik.</translation>
 <translation id="1670609221633730681">Savjet za Chrome: odaberite položaj adresne trake</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Spremajte zaporke u Chromeu</translation>
 <translation id="1790080846677398234">Dodaje unesene URL-ove vašim oznakama u Chromeu.</translation>
 <translation id="1799920918471566157">Savjeti za Chrome</translation>
 <translation id="1830634592642484976">Ta je adresa trenutačno spremljena u Chromeu. Da biste je upotrebljavali na Googleovim proizvodima, spremite je na svoj Google račun, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="3655656110921623717">To znači da će Chrome svaki put zahtijevati web-lokaciju za mobilne uređaje.</translation>
 <translation id="3740397331642243698">Unesene URL-ove otvara u Google Chromeu u anonimnom načinu.</translation>
 <translation id="3741995255368156336">Otvara Chromeov popis za čitanje.</translation>
+<translation id="3808570423967020928">Brže pristupite Chromeu putem donje trake početnog zaslona.</translation>
 <translation id="3827545470516145620">Imate standardnu zaštitu sigurnosti na ovom uređaju</translation>
 <translation id="384394811301901750">Google Chrome trenutačno ne može upotrebljavati vaš fotoaparat</translation>
 <translation id="3863841106411295595">Dodaje unesene URL-ove na vaš popis za čitanje u Chromeu.</translation>
@@ -219,9 +221,11 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 
 Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u Chromeu potražite u <ph name="BEGIN_LINK" />Googleovim uslugama<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Brisanje podataka o pregledavanju u Chromeu.</translation>
+<translation id="6924922227983877439">Otvarajte veze u Chromeu prema zadanim postavkama</translation>
 <translation id="6975725306479268850">Odabir Chromea za automatsko popunjavanje</translation>
 <translation id="7056826488869329999">Otvara i pokreće sigurnosnu provjeru u Chromeu.</translation>
 <translation id="7061455974939528301">Pritisnite i zadržite ikonu Chromea pa kliknite Uredite početni zaslon</translation>
+<translation id="7065813315247345131">Premjestite Chrome na donju traku</translation>
 <translation id="7124339256045485976">Ažuriranje Chromea</translation>
 <translation id="7161390184744336561">Google Chrome je zastario</translation>
 <translation id="7165736900384873061">Upotrijebite QR skener Google Chromea</translation>

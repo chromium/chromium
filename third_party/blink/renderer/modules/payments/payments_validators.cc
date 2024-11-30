@@ -29,8 +29,8 @@ bool PaymentsValidators::IsValidCurrencyCodeFormat(
     v8::Isolate* isolate,
     const String& code,
     String* optional_error_message) {
-  auto* regexp = MakeGarbageCollected<ScriptRegexp>(
-      isolate, "^[A-Z]{3}$", kTextCaseUnicodeInsensitive);
+  auto* regexp = MakeGarbageCollected<ScriptRegexp>(isolate, "^[A-Z]{3}$",
+                                                    kTextCaseASCIIInsensitive);
   if (regexp->Match(code) == 0)
     return true;
 

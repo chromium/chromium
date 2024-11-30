@@ -24,13 +24,13 @@ namespace speech {
 
 class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
  public:
-  ChromeSpeechRecognitionTest() {}
+  ChromeSpeechRecognitionTest() = default;
 
   ChromeSpeechRecognitionTest(const ChromeSpeechRecognitionTest&) = delete;
   ChromeSpeechRecognitionTest& operator=(const ChromeSpeechRecognitionTest&) =
       delete;
 
-  ~ChromeSpeechRecognitionTest() override {}
+  ~ChromeSpeechRecognitionTest() override = default;
 
   void SetUp() override {
     // SpeechRecognition test specific SetUp.
@@ -65,7 +65,7 @@ class SpeechWebContentsObserver : public content::WebContentsObserver {
   SpeechWebContentsObserver& operator=(const SpeechWebContentsObserver&) =
       delete;
 
-  ~SpeechWebContentsObserver() override {}
+  ~SpeechWebContentsObserver() override = default;
 
   // content::WebContentsObserver overrides.
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,

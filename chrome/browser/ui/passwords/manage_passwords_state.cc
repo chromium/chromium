@@ -80,7 +80,7 @@ bool RemoveFormFromVector(const PasswordForm& form_to_delete,
 ManagePasswordsState::ManagePasswordsState()
     : state_(password_manager::ui::INACTIVE_STATE), client_(nullptr) {}
 
-ManagePasswordsState::~ManagePasswordsState() {}
+ManagePasswordsState::~ManagePasswordsState() = default;
 
 void ManagePasswordsState::OnPendingPassword(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
@@ -265,6 +265,12 @@ void ManagePasswordsState::OnPasskeyNotAccepted(std::string passkey_rp_id) {
   ClearData();
   passkey_rp_id_ = std::move(passkey_rp_id);
   SetState(password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
+}
+
+void ManagePasswordsState::OnPasskeyUpgrade(std::string passkey_rp_id) {
+  ClearData();
+  passkey_rp_id_ = std::move(passkey_rp_id);
+  SetState(password_manager::ui::PASSKEY_UPGRADE_STATE);
 }
 
 void ManagePasswordsState::TransitionToState(

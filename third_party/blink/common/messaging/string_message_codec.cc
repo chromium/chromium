@@ -81,11 +81,11 @@ class BigBufferArrayBuffer : public WebMessageArrayBufferPayload {
 
   std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
-    return base::make_span(data_);
+    return base::span(data_);
   }
 
   void CopyInto(base::span<uint8_t> dest) const override {
-    dest.copy_from(base::make_span(data_));
+    dest.copy_from(base::span(data_));
   }
 
  private:
@@ -214,7 +214,7 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
             WriteUint32(0, &buffer);
 
             mojo_base::BigBuffer big_buffer(array_buffer->GetLength());
-            array_buffer->CopyInto(base::make_span(big_buffer));
+            array_buffer->CopyInto(base::span(big_buffer));
             message.array_buffer_contents_array.push_back(
                 mojom::SerializedArrayBufferContents::New(
                     std::move(big_buffer),

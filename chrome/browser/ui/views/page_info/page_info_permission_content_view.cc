@@ -175,12 +175,11 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       PageInfoViewFactory::GetSiteSettingsIcon(),
       l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON),
-      std::u16string(),
-      l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP),
       std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
   subpage_manage_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_MANAGE_BUTTON);
+  subpage_manage_button->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP));
   subpage_manage_button->title()->SetTextStyle(
       views::style::STYLE_BODY_3_MEDIUM);
   subpage_manage_button->title()->SetEnabledColorId(kColorPageInfoForeground);

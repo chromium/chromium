@@ -252,7 +252,7 @@ void AllBrowsersClosedWaiter::OnBrowserRemoved(Browser* browser) {
 
 class StartupBrowserCreatorTest : public extensions::ExtensionBrowserTest {
  protected:
-  StartupBrowserCreatorTest() {}
+  StartupBrowserCreatorTest() = default;
 
   bool SetUpUserDataDirectory() override {
     return extensions::ExtensionBrowserTest::SetUpUserDataDirectory();

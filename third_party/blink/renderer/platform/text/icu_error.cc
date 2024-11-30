@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/notreached.h"
 #include "partition_alloc/oom.h"
 
 namespace blink {
@@ -22,8 +23,7 @@ void ICUError::HandleFailure() {
       ICUOutOfMemory();
       break;
     case U_ILLEGAL_ARGUMENT_ERROR:
-      CHECK(false) << error_;
-      break;
+      NOTREACHED() << error_;
     default:
       break;
   }

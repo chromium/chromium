@@ -603,11 +603,23 @@ void ParentPermissionDialogView::CreateContents() {
 }
 
 void ParentPermissionDialogView::ShowDialog() {
-  if (is_showing_)
+  if (is_showing_) {
     return;
+  }
 
   is_showing_ = true;
   LoadParentEmailAddresses();
+
+  if (parent_permission_email_addresses_.empty()) {
+    SendResultOnce(ParentPermissionDialog::Result::kParentPermissionFailed);
+    // Record metrics.
+    supervised_user_metrics_recorder_.RecordParentPermissionDialogUmaMetrics(
+        SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
+            kNoParentError);
+    // `this` might be deleted after the call to `CloseDialoag`.
+    CloseDialog();
+    return;
+  }
 
   supervised_user_metrics_recorder_.RecordParentPermissionDialogUmaMetrics(
       SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
@@ -680,8 +692,6 @@ void ParentPermissionDialogView::ShowDialogInternal() {
 }
 
 void ParentPermissionDialogView::LoadParentEmailAddresses() {
-  // Get the parents' email addresses.  There can be a max of 2 parent email
-  // addresses, the primary and the secondary.
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
@@ -694,13 +704,6 @@ void ParentPermissionDialogView::LoadParentEmailAddresses() {
       base::UTF8ToUTF16(service->GetSecondCustodianEmailAddress());
   if (!secondary_parent_email.empty())
     parent_permission_email_addresses_.push_back(secondary_parent_email);
-
-  if (parent_permission_email_addresses_.empty()) {
-    supervised_user_metrics_recorder_.RecordParentPermissionDialogUmaMetrics(
-        SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
-            kNoParentError);
-    SendResultOnce(ParentPermissionDialog::Result::kParentPermissionFailed);
-  }
 }
 
 void ParentPermissionDialogView::CloseWithReason(
@@ -849,7 +852,7 @@ void ParentPermissionDialogView::InitializeExtensionData(
   // Create the dialog's message using the extension's name.
   params_->message = l10n_util::GetStringFUTF16(
       IDS_PARENT_PERMISSION_PROMPT_GO_GET_A_PARENT_FOR_EXTENSION_LABEL,
-      base::UTF8ToUTF16(extension->name()));
+      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
 
   ShowDialogInternal();
 }

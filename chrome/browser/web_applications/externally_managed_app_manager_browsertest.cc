@@ -170,8 +170,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   EXPECT_TRUE(registrar().IsInstallState(
       app_id.value(), {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
                        proto::INSTALLED_WITH_OS_INTEGRATION}));
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<webapps::AppId> opt_app_id =
-      registrar().FindAppWithUrlInScope(start_url);
+      registrar().FindBestAppWithUrlInScope(
+          start_url, {
+                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     });
   EXPECT_TRUE(opt_app_id.has_value());
   EXPECT_EQ(*opt_app_id, app_id);
 }
@@ -192,9 +198,18 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   ASSERT_TRUE(app_id.has_value());
   EXPECT_EQ("Web app banner test page",
             registrar().GetAppShortName(app_id.value()));
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<webapps::AppId> opt_app_id =
-      registrar().FindAppWithUrlInScope(final_url);
+      registrar().FindBestAppWithUrlInScope(
+          final_url, {
+                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     });
   ASSERT_TRUE(opt_app_id.has_value());
+  // TODO(crbug.com/340952100): Investigate the redundancy as
+  // registrar().FindBestAppWithUrlInScope() finds the `opt_app_id` based on the
+  // same `InstallState` fields being passed here.
   EXPECT_TRUE(registrar().IsInstallState(
       opt_app_id.value(), {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
                            proto::INSTALLED_WITH_OS_INTEGRATION}));
@@ -307,8 +322,15 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   const webapps::AppId new_app_id = GenerateAppId(std::nullopt, start_url);
 
   EXPECT_NE(new_app_id, placeholder_app_id);
-  EXPECT_FALSE(registrar().IsInstalled(placeholder_app_id));
-  EXPECT_TRUE(registrar().IsInstalled(new_app_id));
+  EXPECT_FALSE(registrar().IsInstallState(
+      placeholder_app_id,
+      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsInstallState(
+      new_app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_FALSE(
       registrar().IsPlaceholderApp(new_app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(0, registrar().CountUserInstalledApps());
@@ -356,8 +378,15 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   const webapps::AppId new_app_id = GenerateAppId("some_id", start_url);
 
   EXPECT_NE(new_app_id, placeholder_app_id);
-  EXPECT_FALSE(registrar().IsInstalled(placeholder_app_id));
-  EXPECT_TRUE(registrar().IsInstalled(new_app_id));
+  EXPECT_FALSE(registrar().IsInstallState(
+      placeholder_app_id,
+      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsInstallState(
+      new_app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_FALSE(
       registrar().IsPlaceholderApp(new_app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(0, registrar().CountUserInstalledApps());
@@ -537,7 +566,13 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest, ForceReinstall) {
     install_options.force_reinstall = true;
     InstallApp(std::move(install_options));
 
-    app_id = registrar().FindAppWithUrlInScope(url);
+    // TODO(crbug.com/379827962): Evaluate call sites of
+    // FindBestAppWithUrlInScope for correctness.
+    app_id = registrar().FindBestAppWithUrlInScope(
+        url, {
+                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+             });
     EXPECT_TRUE(app_id.has_value());
     EXPECT_EQ("Manifest", registrar().GetAppShortName(app_id.value()));
   }
@@ -548,8 +583,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest, ForceReinstall) {
     install_options.force_reinstall = true;
     InstallApp(std::move(install_options));
 
+    // TODO(crbug.com/379827962): Evaluate call sites of
+    // FindBestAppWithUrlInScope for correctness.
     std::optional<webapps::AppId> new_app_id =
-        registrar().FindAppWithUrlInScope(url);
+        registrar().FindBestAppWithUrlInScope(
+            url, {
+                     proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                 });
     EXPECT_TRUE(new_app_id.has_value());
     EXPECT_EQ(new_app_id, app_id);
     EXPECT_EQ("Manifest test app",
@@ -601,8 +642,15 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   // The installer falls back to installing a web app of the original URL.
   EXPECT_EQ(url, registrar().GetAppStartUrl(app_id.value()));
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   EXPECT_NE(app_id,
-            registrar().FindAppWithUrlInScope(GURL("chrome://settings")));
+            registrar().FindBestAppWithUrlInScope(
+                GURL("chrome://settings"),
+                {
+                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                }));
 }
 
 // Test that adding a web app without a manifest while using the
@@ -761,8 +809,13 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
           }));
   run_loop.Run();
 
-  std::optional<webapps::AppId> app_id =
-      registrar().FindAppWithUrlInScope(app_url);
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  std::optional<webapps::AppId> app_id = registrar().FindBestAppWithUrlInScope(
+      app_url, {
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               });
   DCHECK(app_id.has_value());
   EXPECT_EQ(registrar().GetAppDisplayMode(*app_id), DisplayMode::kBrowser);
   EXPECT_EQ(registrar().GetAppUserDisplayMode(*app_id),
@@ -1038,8 +1091,13 @@ IN_PROC_BROWSER_TEST_F(
                               /*number_of_app_instances=*/0u);
 
   // Wait for the placeholder removal task to be done.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() -> bool { return !registrar().IsInstalled(placeholder_app_id); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return !registrar().IsInstallState(
+        placeholder_app_id,
+        {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+  }));
 
   // Check that the new app is launched.
   WaitForNumberOfAppInstances(final_app_id, /*number_of_app_instances=*/1u);
@@ -1048,7 +1106,10 @@ IN_PROC_BROWSER_TEST_F(
   WaitUntilDisplayNotificationCount(/*display_count=*/0u);
 
   EXPECT_NE(final_app_id, placeholder_app_id);
-  EXPECT_TRUE(registrar().IsInstalled(final_app_id));
+  EXPECT_TRUE(registrar().IsInstallState(
+      final_app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_FALSE(
       registrar().IsPlaceholderApp(final_app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(0, registrar().CountUserInstalledApps());

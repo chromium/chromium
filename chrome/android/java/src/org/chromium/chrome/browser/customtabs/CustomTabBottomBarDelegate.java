@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,10 +46,7 @@ import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 /** Delegate that manages bottom bar area inside of {@link CustomTabActivity}. */
-@ActivityScope
 public class CustomTabBottomBarDelegate
         implements BrowserControlsStateProvider.Observer, SwipeGestureListener.SwipeHandler {
     private static final String TAG = "CustomTab";
@@ -129,21 +125,6 @@ public class CustomTabBottomBarDelegate
         Callback<ViewportInsets> insetObserver = this::onViewportInsetChange;
         // TODO(REVIEW): Is it ok this doesn't remove itself?
         mWindowAndroid.getApplicationBottomInsetSupplier().addObserver(insetObserver);
-    }
-
-    @Inject
-    public CustomTabBottomBarDelegate(
-            BaseCustomTabActivity activity,
-            WindowAndroid windowAndroid,
-            CustomTabCompositorContentInitializer compositorContentInitializer) {
-        this(
-                activity,
-                windowAndroid,
-                activity.getIntentDataProvider(),
-                activity.getBrowserControlsManager(),
-                activity.getCustomTabNightModeStateController(),
-                activity.getCustomTabActivityTabProvider(),
-                compositorContentInitializer);
     }
 
     /** Makes the bottom bar area to show, if any. */

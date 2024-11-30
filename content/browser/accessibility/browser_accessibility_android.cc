@@ -1794,7 +1794,7 @@ void BrowserAccessibilityAndroid::GetLineBoundaries(
   // If this node has no children, treat it as all one line.
   if (GetSubstringTextContentUTF16(1).size() > 0 && !InternalChildCount()) {
     line_starts->push_back(offset);
-    line_ends->push_back(offset + GetTextContentUTF16().size());
+    line_ends->push_back(offset + GetTextContentLengthUTF16());
   }
 
   // If this is a static text node, get the line boundaries from the
@@ -1816,7 +1816,7 @@ void BrowserAccessibilityAndroid::GetLineBoundaries(
         line_ends->push_back(offset);
         line_starts->push_back(offset);
       }
-      offset += child->GetTextContentUTF16().size();
+      offset += child->GetTextContentLengthUTF16();
       last_y = y;
     }
     line_ends->push_back(offset);
@@ -1828,7 +1828,7 @@ void BrowserAccessibilityAndroid::GetLineBoundaries(
     BrowserAccessibilityAndroid* child =
         static_cast<BrowserAccessibilityAndroid*>(it.get());
     child->GetLineBoundaries(line_starts, line_ends, offset);
-    offset += child->GetTextContentUTF16().size();
+    offset += child->GetTextContentLengthUTF16();
   }
 }
 
@@ -1863,7 +1863,7 @@ void BrowserAccessibilityAndroid::GetWordBoundaries(
       BrowserAccessibilityAndroid* child =
           static_cast<BrowserAccessibilityAndroid*>(it.get());
       child->GetWordBoundaries(word_starts, word_ends, offset);
-      offset += child->GetTextContentUTF16().size();
+      offset += child->GetTextContentLengthUTF16();
     }
   } else {
     // This node has its own accessible text that doesn't match its
@@ -1931,7 +1931,7 @@ void BrowserAccessibilityAndroid::GetSuggestions(
           suggestion_ends->push_back(suggestion_end);
         }
       }
-      start_offset += node->GetTextContentUTF16().length();
+      start_offset += node->GetTextContentLengthUTF16();
     }
 
     // Implementation of NextInTreeOrder, but walking the internal tree.

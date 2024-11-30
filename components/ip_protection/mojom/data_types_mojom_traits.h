@@ -7,9 +7,20 @@
 
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/mojom/data_types.mojom-shared.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
+
+// Converts ip_protection::mojom::ProxyLayer to/from ip_protection::ProxyLayer,
+// so that ip_protection::ProxyLayer can be used throughout the codebase without
+// any direct reference to ip_protection::mojom::ProxyLayer.
+template <>
+struct EnumTraits<ip_protection::mojom::ProxyLayer, ip_protection::ProxyLayer> {
+  static ip_protection::mojom::ProxyLayer ToMojom(ip_protection::ProxyLayer);
+  static bool FromMojom(ip_protection::mojom::ProxyLayer input,
+                        ip_protection::ProxyLayer* output);
+};
 
 // Converts ip_protection::mojom::GeoHint to/from ip_protection::GeoHint,
 // so that ip_protection::GeoHint can be used throughout the codebase without

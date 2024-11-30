@@ -139,12 +139,21 @@ bool VizCompositorThreadRunnerWebView::CreateHintSessionFactory(
 void VizCompositorThreadRunnerWebView::SetIOThreadId(
     base::PlatformThreadId io_thread_id) {
   if (io_thread_id != base::kInvalidThreadId) {
-    base::WaitableEvent event;
     viz_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VizCompositorThreadRunnerWebView::SetIOThreadIdOnViz,
-                       base::Unretained(this), io_thread_id, &event));
-    event.Wait();
+                       base::Unretained(this), io_thread_id));
+  }
+}
+
+void VizCompositorThreadRunnerWebView::SetGpuMainThreadId(
+    base::PlatformThreadId gpu_main_thread_id) {
+  if (gpu_main_thread_id != base::kInvalidThreadId) {
+    viz_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &VizCompositorThreadRunnerWebView::SetGpuMainThreadIdOnViz,
+            base::Unretained(this), gpu_main_thread_id));
   }
 }
 
@@ -191,11 +200,15 @@ VizCompositorThreadRunnerWebView::GetThreadIds() const {
 }
 
 void VizCompositorThreadRunnerWebView::SetIOThreadIdOnViz(
-    base::PlatformThreadId io_thread_id,
-    base::WaitableEvent* event) {
+    base::PlatformThreadId io_thread_id) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   thread_ids_.insert(io_thread_id);
-  event->Signal();
+}
+
+void VizCompositorThreadRunnerWebView::SetGpuMainThreadIdOnViz(
+    base::PlatformThreadId gpu_main_thread_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  thread_ids_.insert(gpu_main_thread_id);
 }
 
 }  // namespace android_webview

@@ -1898,6 +1898,32 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
 #endif
   }
 
+  void EnterTabFullscreenThroughWebAPI() {
+    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
+                                           {.tab_fullscreen = true});
+    EXPECT_TRUE(ExecJs(helper()->browser_view()->GetActiveWebContents(),
+                       "document.documentElement.requestFullscreen();"));
+    waiter.Wait();
+  }
+
+  void ExitTabFullscreenThroughWebAPI() {
+    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
+                                           {.tab_fullscreen = false});
+    EXPECT_TRUE(ExecJs(helper()->browser_view()->GetActiveWebContents(),
+                       "document.exitFullscreen();"));
+    waiter.Wait();
+  }
+
+  void ToggleBrowserFullscreen(bool user_initiated) {
+    bool was_fullscreen = helper()->browser_view()->IsFullscreen();
+    ui_test_utils::FullscreenWaiter waiter(
+        helper()->app_browser(),
+        {.browser_fullscreen = !was_fullscreen, .tab_fullscreen = false});
+    chrome::ToggleFullscreenMode(helper()->app_browser(), user_initiated);
+    waiter.Wait();
+    EXPECT_EQ(helper()->browser_view()->IsFullscreen(), !was_fullscreen);
+  }
+
   GURL second_page_url() { return second_page_url_; }
 
  private:
@@ -2031,107 +2057,6 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-// TODO(crbug.com/333641972): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis \
-  DISABLED_WindowSetResizableBlocksResizeToAndResizeByApis
-#else
-#define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis \
-  WindowSetResizableBlocksResizeToAndResizeByApis
-#endif
-IN_PROC_BROWSER_TEST_F(
-    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis) {
-  InstallAndLaunchWebApp();
-  helper()->GrantWindowManagementPermission();
-
-  auto* browser_view = helper()->browser_view();
-  browser_view->SetCanResize(true);
-  auto* web_contents = browser_view->GetActiveWebContents();
-
-  auto CheckAreSameSize = [](const gfx::Size& s1, const gfx::Size& s2) {
-    return s1 == s2;
-  };
-
-  // Set the initial window size to something != 1000x1000.
-  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(800,800);"));
-  EXPECT_TRUE(RunUntil([&]() {
-    return EvalJs(web_contents, "window.outerWidth").ExtractInt() == 800;
-  }));
-
-  gfx::Size client_view_size_before =
-      browser_view->frame()->client_view()->size();
-
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
-  CheckCanResize(false, false);
-
-  // window.resizeTo API no longer takes action.
-  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(1000,1000);"));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
-                               browser_view->frame()->client_view()->size()));
-
-  // window.resizeBy API no longer takes action.
-  EXPECT_TRUE(ExecJs(web_contents, "window.resizeBy(10,10);"));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
-                               browser_view->frame()->client_view()->size()));
-}
-
-// Test to ensure crbug.com/1513330 won't reproduce.
-// TODO(b/41492287, b/336264927): Flaky on Linux and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
-  DISABLED_WindowSetResizableDoesntBlockMoveToAndMoveByApis
-#else
-#define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
-  WindowSetResizableDoesntBlockMoveToAndMoveByApis
-#endif
-IN_PROC_BROWSER_TEST_F(
-    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis) {
-  InstallAndLaunchWebApp();
-  helper()->GrantWindowManagementPermission();
-
-  auto* browser_view = helper()->browser_view();
-  browser_view->SetCanResize(true);
-  auto* web_contents = browser_view->GetActiveWebContents();
-
-  auto ScreenXYMatches = [&web_contents](const gfx::Point point) {
-    return EvalJs(web_contents, "window.screenX").ExtractInt() == point.x() &&
-           EvalJs(web_contents, "window.screenY").ExtractInt() == point.y();
-  };
-
-  // Set the initial window size to something small and close to the origin of
-  // the screen.
-  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(100,100);"));
-  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(50,50);"));
-  gfx::Point initial_pos(50, 50);
-  EXPECT_TRUE(RunUntil([&]() { return ScreenXYMatches(initial_pos); }));
-
-  int initial_pos_x = EvalJs(web_contents, "window.screenX").ExtractInt();
-  int initial_pos_y = EvalJs(web_contents, "window.screenY").ExtractInt();
-
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
-  CheckCanResize(false, false);
-
-  // window.moveBy API still takes action.
-  EXPECT_TRUE(ExecJs(web_contents, "window.moveBy(10,10);"));
-  EXPECT_TRUE(RunUntil([&]() {
-    return ScreenXYMatches(
-        gfx::Point(initial_pos.x() + 10, initial_pos.y() + 10));
-  }));
-
-  EXPECT_EQ(EvalJs(web_contents, "window.screenX").ExtractInt(),
-            initial_pos_x + 10);
-  EXPECT_EQ(EvalJs(web_contents, "window.screenY").ExtractInt(),
-            initial_pos_y + 10);
-
-  // window.moveTo API still takes action.
-  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(50,50);"));
-  EXPECT_TRUE(RunUntil([&]() { return ScreenXYMatches(initial_pos); }));
-}
-
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     MinimizeWindowWithApi) {
@@ -2194,31 +2119,80 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableDoNotBlockRequestFullscreen) {
+    WindowSetResizableDoNotBlockResizingWebApis) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+
+  auto* browser_view = helper()->browser_view();
+  auto* web_contents = browser_view->GetActiveWebContents();
+  auto* client_view = browser_view->frame()->client_view();
+
+  browser_view->SetCanResize(true);
+
+  // Set the initial window size to something != 1000x1000.
+  // Accept some error margin - systems can manage border size differently
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(800,800);"));
+  EXPECT_TRUE(RunUntil([&]() {
+    return std::abs(EvalJs(web_contents, "window.outerWidth").ExtractInt() -
+                    800) < 20;
+  }));
+
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  CheckCanResize(false, false);
+
+  // Checking exact size may be flaky, so just test if was changed
+  gfx::Size client_view_size = client_view->size();
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(1000,1000);"));
+  EXPECT_TRUE(
+      RunUntil([&]() { return client_view_size != client_view->size(); }));
+  EXPECT_NE(client_view_size, client_view->size());
+
+  client_view_size = client_view->size();
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeBy(10,10);"));
+  EXPECT_TRUE(
+      RunUntil([&]() { return client_view_size != client_view->size(); }));
+  EXPECT_NE(client_view_size, client_view->size());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableDoNotBlockFullscreenWebAPI) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* browser_view = helper()->browser_view();
   auto* web_contents = browser_view->GetActiveWebContents();
 
-  SetResizableAndWait(web_contents, false, false);
-  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
-  {
-    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
-                                           {.tab_fullscreen = true});
-    EXPECT_TRUE(ExecJs(web_contents,
-                       "(async () => {await "
-                       "document.documentElement.requestFullscreen();})()"));
-    waiter.Wait();
-  }
-  EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
-  {
-    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
-                                           {.tab_fullscreen = false});
-    EXPECT_TRUE(ExecJs(web_contents,
-                       "(async () => {await document.exitFullscreen();})()"));
-    waiter.Wait();
-  }
-  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_FALSE(browser_view->IsFullscreen());
+
+  EnterTabFullscreenThroughWebAPI();
+  EXPECT_TRUE(browser_view->IsFullscreen());
+
+  ExitTabFullscreenThroughWebAPI();
+  EXPECT_FALSE(browser_view->IsFullscreen());
+}
+
+// Ensure user is not trapped in the fullscreen mode
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableDoNotBlockExitingFullscreen) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* browser_view = helper()->browser_view();
+  auto* web_contents = browser_view->GetActiveWebContents();
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+
+  // User can escape not user-initiated browser fullscreen
+  ToggleBrowserFullscreen(/*user_initiated=*/false);
+  EXPECT_TRUE(browser_view->IsFullscreen());
+  ToggleBrowserFullscreen(/*user_initiated=*/true);
+  EXPECT_FALSE(browser_view->IsFullscreen());
+
+  // User can escape not user-initiated tab fullscreen
+  EnterTabFullscreenThroughWebAPI();
+  EXPECT_TRUE(browser_view->IsFullscreen());
+  ToggleBrowserFullscreen(/*user_initiated=*/true);
+  EXPECT_FALSE(browser_view->IsFullscreen());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2476,8 +2450,14 @@ class WebAppFrameToolbarBrowserTest_OriginText
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
+// TODO(crbug.com/381106937): Re-enable this test on linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InScopeNavigation DISABLED_InScopeNavigation
+#else
+#define MAYBE_InScopeNavigation InScopeNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       InScopeNavigation) {
+                       MAYBE_InScopeNavigation) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if navigating to a URL in scope and with the

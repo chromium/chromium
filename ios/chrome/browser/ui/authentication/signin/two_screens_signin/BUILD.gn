@@ -14,6 +14,8 @@ source_set("two_screens_signin") {
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
     "//ios/chrome/browser/first_run/ui_bundled:utils",
     "//ios/chrome/browser/first_run/ui_bundled/signin",
+    "//ios/chrome/browser/screen/ui_bundled:screen_provider",
+    "//ios/chrome/browser/screen/ui_bundled:screen_type",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
@@ -23,8 +25,6 @@ source_set("two_screens_signin") {
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/signin:signin_screen_provider",
     "//ios/chrome/browser/ui/authentication/signin/logging",
-    "//ios/chrome/browser/ui/screen:screen_provider",
-    "//ios/chrome/browser/ui/screen:screen_type",
   ]
 }
 
@@ -65,6 +65,7 @@ source_set("eg2_tests") {
     "//components/sync/base:features",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model:capabilities_types",
     "//ios/chrome/browser/signin/model:fake_system_identity",
@@ -72,7 +73,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/authentication/views:views_constants",
-    "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",

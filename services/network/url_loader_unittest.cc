@@ -132,8 +132,11 @@ namespace {
 
 using ::net::test::IsError;
 using ::net::test::IsOk;
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Key;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::SizeIs;
@@ -2992,7 +2995,7 @@ TEST_F(URLLoaderTest, UploadBytes) {
   const std::string kRequestBody = "Request Body";
 
   scoped_refptr<ResourceRequestBody> request_body(new ResourceRequestBody());
-  request_body->AppendBytes(kRequestBody.c_str(), kRequestBody.length());
+  request_body->AppendCopyOfBytes(base::as_byte_span(kRequestBody));
   set_request_body(std::move(request_body));
 
   std::string response_body;
@@ -5020,7 +5023,30 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
   }
 };
 
-TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_NoStatus) {
+// Validate that Sec-Fetch-Storage-Access header cannot be overridden by
+// manually setting the value.
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       DirectlyModifiedSecFetchStorageAccess) {
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/echo"));
+  request.headers.SetHeader("Sec-Fetch-Storage-Access", "active");
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+
+  EXPECT_THAT(sent_request().headers,
+              Not(Contains(Key("Sec-Fetch-Storage-Access"))));
+}
+
+TEST_F(StorageAccessHeaderURLLoaderTest, LoadNoStatus) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5044,7 +5070,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_NoStatus) {
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_StatusNone) {
+TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusNone) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5073,8 +5099,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_StatusNone) {
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest,
-       StorageAccessHeader_Load_StatusInactive) {
+TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusInactive) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5097,8 +5122,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
   EXPECT_TRUE(client()->response_head()->load_with_storage_access);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest,
-       StorageAccessHeader_Load_StatusActive) {
+TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusActive) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5176,7 +5200,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, Load_StatusActive_IncorrectType) {
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_RedirectWithLoad) {
+TEST_F(StorageAccessHeaderURLLoaderTest, RedirectWithLoad) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL(kStorageAccessRedirectLoadPath));
@@ -5201,8 +5225,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_RedirectWithLoad) {
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest,
-       StorageAccessHeader_NoLoadWhenHeaderNotenabled) {
+TEST_F(StorageAccessHeaderURLLoaderTest, NoLoadWhenHeaderNotEnabled) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5377,6 +5400,11 @@ TEST_P(URLLoaderCookieSettingOverridesTest,
                   ExpectedCookieSettingOverridesForCrossSiteRedirect()));
 }
 
+// This test sends a request to an endpoint that is cross-site from the
+// initiator, which redirects to an endpoint that is same-site (and same-origin)
+// to the initiator. The second redirect leg should not have the
+// `kStorageAccessGrantEligible` override, since that would include cookies on
+// the request and therefore make a CSRF attack possible via that redirect.
 TEST_P(URLLoaderCookieSettingOverridesTest,
        CookieSettingOverrides_OnCrossSiteToSameSite) {
   GURL cross_site_to_same_site_redirect_url = test_server()->GetURL(
@@ -5400,12 +5428,14 @@ TEST_P(URLLoaderCookieSettingOverridesTest,
   loader->FollowRedirect({}, {}, {}, std::nullopt);
   client()->RunUntilComplete();
   delete_run_loop.Run();
-  EXPECT_THAT(test_network_delegate()->cookie_setting_overrides_records(),
-              ElementsAre(ExpectedCookieSettingOverridesForCrossSiteRedirect(),
-                          ExpectedCookieSettingOverridesForCrossSiteRedirect(),
-                          ExpectedCookieSettingOverrides(),
-                          ExpectedCookieSettingOverrides()));
+  EXPECT_THAT(
+      test_network_delegate()->cookie_setting_overrides_records(),
+      ElementsAre(ExpectedCookieSettingOverridesForCrossSiteRedirect(),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect(),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect(),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect()));
 }
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     URLLoaderCookieSettingOverridesTest,
@@ -7693,14 +7723,11 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, SimpleRequest) {
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
   EXPECT_EQ(observer_->headers_received().front().first, kTestOrigin);
-  EXPECT_THAT(
-      observer_->headers_received().front().second,
-      ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                                  /*key=*/std::nullopt, /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt),
-                  std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                                  /*key=*/"k", /*value=*/"v",
-                                  /*ignore_if_present=*/std::nullopt)));
+  EXPECT_THAT(observer_->headers_received().front().second,
+              ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
+                          SharedStorageMethodWrapper(
+                              MojomSetMethod(/*key=*/u"k", /*value=*/u"v",
+                                             /*ignore_if_present=*/false))));
 
   delete_run_loop_.Run();
 }
@@ -7726,14 +7753,11 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, SimpleRedirect) {
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
   EXPECT_EQ(observer_->headers_received().front().first, kTestOrigin);
-  EXPECT_THAT(
-      observer_->headers_received().front().second,
-      ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                                  /*key=*/std::nullopt, /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt),
-                  std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                                  /*key=*/"k", /*value=*/"v",
-                                  /*ignore_if_present=*/std::nullopt)));
+  EXPECT_THAT(observer_->headers_received().front().second,
+              ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
+                          SharedStorageMethodWrapper(
+                              MojomSetMethod(/*key=*/u"k", /*value=*/u"v",
+                                             /*ignore_if_present=*/false))));
 
   // Follow redirect is called by the client. Even if the shared storage request
   // helper updates headers, `FollowRedirect()` could still be called by the
@@ -7769,14 +7793,11 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, MultipleRedirects) {
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
   EXPECT_EQ(observer_->headers_received().front().first, kTestOrigin);
-  EXPECT_THAT(
-      observer_->headers_received().front().second,
-      ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                                  /*key=*/std::nullopt, /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt),
-                  std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                                  /*key=*/"k", /*value=*/"v",
-                                  /*ignore_if_present=*/std::nullopt)));
+  EXPECT_THAT(observer_->headers_received().front().second,
+              ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
+                          SharedStorageMethodWrapper(
+                              MojomSetMethod(/*key=*/u"k", /*value=*/u"v",
+                                             /*ignore_if_present=*/false))));
 
   client()->ClearHasReceivedRedirect();
 
@@ -7805,12 +7826,9 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, MultipleRedirects) {
   EXPECT_EQ(observer_->headers_received().back().first, kTestOrigin);
   EXPECT_THAT(
       observer_->headers_received().back().second,
-      ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kAppend,
-                                  /*key=*/"b", /*value=*/"a",
-                                  /*ignore_if_present=*/std::nullopt),
-                  std::make_tuple(mojom::SharedStorageOperationType::kDelete,
-                                  /*key=*/"k", /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt)));
+      ElementsAre(SharedStorageMethodWrapper(
+                      MojomAppendMethod(/*key=*/u"b", /*value=*/u"a")),
+                  SharedStorageMethodWrapper(MojomDeleteMethod(/*key=*/u"k"))));
 
   delete_run_loop_.Run();
 }
@@ -7854,12 +7872,9 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, CrossSiteRedirect) {
   EXPECT_EQ(observer_->headers_received().front().first, kCrossOrigin);
   EXPECT_THAT(
       observer_->headers_received().front().second,
-      ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                                  /*key=*/std::nullopt, /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt),
-                  std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                                  /*key=*/"k", /*value=*/"v",
-                                  /*ignore_if_present=*/std::nullopt)));
+      ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
+                  SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", u"v", /*ignore_if_present=*/false))));
 
   delete_run_loop_.Run();
 }
@@ -7941,14 +7956,11 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, RedirectBecomesEligible) {
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
   EXPECT_EQ(observer_->headers_received().front().first, kTestOrigin);
-  EXPECT_THAT(
-      observer_->headers_received().front().second,
-      ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                                  /*key=*/std::nullopt, /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt),
-                  std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                                  /*key=*/"k", /*value=*/"v",
-                                  /*ignore_if_present=*/std::nullopt)));
+  EXPECT_THAT(observer_->headers_received().front().second,
+              ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
+                          SharedStorageMethodWrapper(
+                              MojomSetMethod(/*key=*/u"k", /*value=*/u"v",
+                                             /*ignore_if_present=*/false))));
 
   delete_run_loop_.Run();
 }

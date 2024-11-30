@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MachineLearningService.HeatmapPalmRejection.ExecuteResult.Event"
-    enum="MachineLearningServiceExecuteResultEvent" expires_after="2025-01-17">
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="2025-06-01">
   <owner>jiwan@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
@@ -132,13 +132,23 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MachineLearningService.HeatmapPalmRejection.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHeatmapPalmRejectionResult"
-    expires_after="2025-01-17">
+    expires_after="2025-06-01">
   <owner>jiwan@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
     The result of load heatmap palm rejection module, which can be OK or some
     specific error.
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.ImageAnnotator.AnnotateEncodedImage.Event"
+    enum="Boolean" expires_after="2025-05-04">
+  <owner>chenjih@google.com</owner>
+  <owner>nbowe@chromium.org</owner>
+  <summary>
+    The result of image annotation, which can be OK or some specific error.
   </summary>
 </histogram>
 
@@ -275,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.TextSuggester.Suggest.Event"
-    enum="BooleanError" expires_after="2025-01-05">
+    enum="BooleanError" expires_after="2025-06-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>

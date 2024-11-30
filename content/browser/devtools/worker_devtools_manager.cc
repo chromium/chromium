@@ -77,4 +77,10 @@ void WorkerDevToolsManager::WorkerDestroyed(const DedicatedWorkerHost* host) {
   hosts_.erase(host);
 }
 
+void WorkerDevToolsManager::AddAllAgentHosts(DevToolsAgentHost::List* result) {
+  for (const auto& it : hosts_) {
+    result->push_back(it.second);
+  }
+}
+
 }  // namespace content

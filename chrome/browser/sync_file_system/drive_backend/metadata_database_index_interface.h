@@ -33,14 +33,14 @@ bool operator<(const ParentIDAndTitle& left, const ParentIDAndTitle& right);
 // Interface class to maintain indexes of MetadataDatabase.
 class MetadataDatabaseIndexInterface {
  public:
-  MetadataDatabaseIndexInterface() {}
+  MetadataDatabaseIndexInterface() = default;
 
   MetadataDatabaseIndexInterface(const MetadataDatabaseIndexInterface&) =
       delete;
   MetadataDatabaseIndexInterface& operator=(
       const MetadataDatabaseIndexInterface&) = delete;
 
-  virtual ~MetadataDatabaseIndexInterface() {}
+  virtual ~MetadataDatabaseIndexInterface() = default;
 
   // Removes unreachable items.
   virtual void RemoveUnreachableItems() = 0;

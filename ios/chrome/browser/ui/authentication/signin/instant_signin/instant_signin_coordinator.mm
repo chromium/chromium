@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_mediator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 
 @interface InstantSigninCoordinator () <AuthenticationFlowDelegate,
@@ -149,10 +150,9 @@
                                            completion:completion];
   } else if (_identityChooserCoordinator) {
     CHECK(!_activityOverlayCoordinator);
-    [_identityChooserCoordinator stop];
-    _identityChooserCoordinator = nil;
+    [self stopIdentityChooserCoordinator];
     [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                         completionInfo:nil];
+                     completionIdentity:nil];
     if (completion) {
       completion();
     }
@@ -164,10 +164,9 @@
     _mediator.delegate = nil;
     [_mediator interruptWithAction:action completion:nil];
     // Drop the activity overlay if it exists.
-    [_activityOverlayCoordinator stop];
-    _activityOverlayCoordinator = nil;
+    [self stopActivityOverlay];
     [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                         completionInfo:nil];
+                     completionIdentity:nil];
     if (completion) {
       completion();
     }
@@ -201,8 +200,7 @@
   CHECK_EQ(coordinator, _identityChooserCoordinator)
       << base::SysNSStringToUTF8([self description]);
   _identityChooserCoordinator.delegate = nil;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
+  [self stopIdentityChooserCoordinator];
   [self startAddAccountForSignInOnly];
 }
 
@@ -211,17 +209,14 @@
   CHECK_EQ(coordinator, _identityChooserCoordinator)
       << base::SysNSStringToUTF8([self description]);
   _identityChooserCoordinator.delegate = nil;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
+  [self stopIdentityChooserCoordinator];
   if (!identity) {
     // If no identity was selected, the coordinator can be closed.
     [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
-                         completionInfo:nil];
+                     completionIdentity:nil];
     return;
   }
   _identity = identity;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
   // The identity is now selected, the sign-in flow can be started.
   [self startSignInOnlyFlow];
 }
@@ -235,17 +230,17 @@
     case SigninCoordinatorResultSuccess: {
       signin_metrics::RecordConsistencyPromoUserAction(_actionToRecordOnSuccess,
                                                        self.accessPoint);
-      SigninCompletionInfo* info =
-          [SigninCompletionInfo signinCompletionInfoWithIdentity:_identity];
       [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
-                           completionInfo:info];
+                       completionIdentity:_identity];
       break;
     }
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
-      [self runCompletionWithSigninResult:result completionInfo:nil];
+      [self runCompletionWithSigninResult:result completionIdentity:nil];
       break;
+    case SigninCoordinatorUINotAvailable:
+      NOTREACHED();
   }
 }
 
@@ -289,30 +284,34 @@
                                           browser:self.browser
                                       accessPoint:self.accessPoint];
   __weak __typeof(self) weakSelf = self;
-  _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
-        [weakSelf addAccountDoneWithResult:result info:info];
-      };
+  _addAccountSigninCoordinator.signinCompletion = ^(
+      SigninCoordinatorResult result, id<SystemIdentity> resultIdentity) {
+    [weakSelf addAccountDoneWithResult:result resultIdentity:resultIdentity];
+  };
   [_addAccountSigninCoordinator start];
 }
 
 // Starts the sign-in flow if the identity has been selected, otherwise, it
 // ends this coordinator.
 - (void)addAccountDoneWithResult:(SigninCoordinatorResult)result
-                            info:(SigninCompletionInfo*)info {
+                  resultIdentity:(id<SystemIdentity>)resultIdentity {
   CHECK(_addAccountSigninCoordinator)
       << base::SysNSStringToUTF8([self description]);
-  _addAccountSigninCoordinator = nil;
+  [self stopAddAccountSigninCoordinator];
   switch (result) {
     case SigninCoordinatorResultSuccess:
-      _identity = info.identity;
+      _identity = resultIdentity;
       [self startSignInOnlyFlow];
       break;
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
-      [self runCompletionWithSigninResult:result completionInfo:nil];
+      [self runCompletionWithSigninResult:result completionIdentity:nil];
       break;
+    case SigninCoordinatorUINotAvailable:
+      // InstantSigninCoordinator presents its child coordinators directly and
+      // does not use `ShowSigninCommand`.
+      NOTREACHED();
   }
 }
 
@@ -328,11 +327,25 @@
 }
 
 // Removes an activity overlay to block the UI. `-[HistorySyncCoordinator
-// showActivityOverlay]` must have been called before.
+// showActivityOverlay]` must have been called before. The activity must exists.
 - (void)removeActivityOverlay {
   CHECK(_activityOverlayCoordinator);
+  [self stopActivityOverlay];
+}
+
+- (void)stopActivityOverlay {
   [_activityOverlayCoordinator stop];
   _activityOverlayCoordinator = nil;
+}
+
+- (void)stopIdentityChooserCoordinator {
+  [_identityChooserCoordinator stop];
+  _identityChooserCoordinator = nil;
+}
+
+- (void)stopAddAccountSigninCoordinator {
+  [_addAccountSigninCoordinator stop];
+  _addAccountSigninCoordinator = nil;
 }
 
 #pragma mark - NSObject

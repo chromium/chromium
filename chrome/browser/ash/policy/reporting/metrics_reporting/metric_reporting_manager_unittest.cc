@@ -673,9 +673,6 @@ TEST_P(MetricReportingManagerEventTest, Default) {
 
 TEST_F(MetricReportingManagerEventTest,
        ShouldNotCreateAppEventObserverWhenAppServiceUnavailable) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableAppEventsObserver);
-
   // Setup appropriate mocks and stubs.
   auto fake_reporting_settings =
       std::make_unique<test::FakeReportingSettings>();
@@ -829,20 +826,6 @@ INSTANTIATE_TEST_SUITE_P(
           /*has_init_delay=*/false,
           /*expected_count_before_login=*/0,
           /*expected_count_after_login=*/1},
-         {"AppEvents_FeatureFlagEnabled",
-          /*enabled_features=*/{kEnableAppEventsObserver},
-          /*disabled_features=*/{},
-          /*is_affiliated=*/true, app_event_settings,
-          /*has_init_delay=*/false,
-          /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/1},
-         {"AppEvents_FeatureFlagDisabled",
-          /*enabled_features=*/{},
-          /*disabled_features=*/{kEnableAppEventsObserver},
-          /*is_affiliated=*/true, app_event_settings,
-          /*has_init_delay=*/false,
-          /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0},
          {"WebsiteEvents_Unaffiliated",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
@@ -1140,27 +1123,13 @@ INSTANTIATE_TEST_SUITE_P(
           /*has_init_delay=*/true,
           /*expected_count_before_login=*/1,
           /*expected_count_after_login=*/1},
-         {"RuntimeCountersTelemetry_Unaffiliated_FeatureDisabled",
-          /*enabled_features=*/{},
-          /*disabled_features=*/{kEnableRuntimeCountersTelemetry},
-          /*is_affiliated=*/false, runtime_counters_telemetry_settings,
-          /*has_init_delay=*/true,
-          /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0},
          {"RuntimeCountersTelemetry_Default_FeatureUnchanged",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/true, runtime_counters_telemetry_settings,
           /*has_init_delay=*/true,
           /*expected_count_before_login=*/1,
-          /*expected_count_after_login=*/1},
-         {"RuntimeCountersTelemetry_Default_FeatureDisabled",
-          /*enabled_features=*/{},
-          /*disabled_features=*/{kEnableRuntimeCountersTelemetry},
-          /*is_affiliated=*/true, runtime_counters_telemetry_settings,
-          /*has_init_delay=*/true,
-          /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0}}),
+          /*expected_count_after_login=*/1}}),
     [](const testing::TestParamInfo<
         MetricReportingManagerTelemetryTest::ParamType>& info) {
       return info.param.test_name;

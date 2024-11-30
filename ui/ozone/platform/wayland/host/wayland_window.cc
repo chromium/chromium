@@ -23,7 +23,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
@@ -60,7 +59,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
@@ -911,19 +909,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   opacity_ = properties.opacity;
   type_ = properties.type;
 
-  // Lacros currently uses a different approach to support KeyboardLock,
-  // which relies on the Exo-specific zcr-keyboard-extension-v1 + a permanent
-  // zwp-keyboard-shortcuts-inhibitor-v1. For more details, see comments in
-  // OzonePlatformWayland::CreateKeyboardHook function.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  WaylandKeyboard* keyboard =
-      connection_->seat() ? connection_->seat()->keyboard() : nullptr;
-  if (keyboard && properties.inhibit_keyboard_shortcuts) {
-    permanent_keyboard_shortcuts_inhibitor_ =
-        keyboard->CreateShortcutsInhibitor(this);
-  }
-#endif
-
   connection_->window_manager()->AddWindow(GetWidget(), this);
 
   if (!OnInitialize(std::move(properties), &state)) {
@@ -958,7 +943,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   std::vector<gfx::Rect> region{gfx::Rect{latched_state().size_px}};
   root_surface_->set_opaque_region(region);
-  root_surface_->EnableTrustedDamageIfPossible();
   root_surface_->ApplyPendingState();
 
   connection_->Flush();
@@ -1111,7 +1095,7 @@ bool WaylandWindow::CommitOverlays(
     return true;
   }
 
-  // Lacros submits from front to back. A simple reverse can avoid a full sort.
+  // Wayland submits from front to back. A simple reverse can avoid a full sort.
   std::reverse(overlays.begin(), overlays.end());
   if (!std::is_sorted(overlays.begin(), overlays.end(),
                       OverlayStackOrderCompare)) {
@@ -1140,7 +1124,6 @@ bool WaylandWindow::CommitOverlays(
 
   gfx::SizeF visual_size = (*overlays.begin()).bounds_rect.size();
   float buffer_scale = (*overlays.begin()).surface_scale_factor;
-  auto& rounded_clip_bounds = (*overlays.begin()).rounded_clip_bounds;
 
   if (!wayland_overlay_delegation_enabled_) {
     DCHECK_EQ(overlays.size(), 1u);
@@ -1203,8 +1186,7 @@ bool WaylandWindow::CommitOverlays(
             gfx::RectF(visual_size), gfx::RectF(),
             root_surface()->use_blending(), gfx::Rect(),
             root_surface()->opacity(), gfx::OverlayPriorityHint::kNone,
-            rounded_clip_bounds.value_or(gfx::RRectF()),
-            gfx::ColorSpace::CreateSRGB(), std::nullopt),
+            gfx::RRectF(), gfx::ColorSpace::CreateSRGB(), std::nullopt),
         nullptr, root_surface()->buffer_id(), buffer_scale);
   }
 
@@ -1223,8 +1205,6 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
 
   std::optional<uint32_t> shape =
       WaylandCursorShape::ShapeFromType(cursor->type());
-  std::optional<int32_t> zcr_shape =
-      WaylandZcrCursorShapes::ShapeFromType(cursor->type());
 
   // Round cursor scale factor to ceil as wl_surface.set_buffer_scale accepts
   // only integers.
@@ -1239,15 +1219,6 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
     connection_->SetPlatformCursor(
         reinterpret_cast<wl_cursor*>(cursor->platform_data()),
         std::ceil(cursor->cursor_image_scale_factor()));
-  } else if (connection_->zcr_cursor_shapes() &&
-             zcr_shape.has_value()) {  // Check for Exo server-side cursor
-                                       // support.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Lacros should not load image assets for default cursors. See
-    // `BitmapCursorFactory::GetDefaultCursor()`.
-    DCHECK(cursor->bitmaps().empty());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    connection_->zcr_cursor_shapes()->SetCursorShape(zcr_shape.value());
   } else if (!cursor->bitmaps()
                   .empty()) {  // Use client-side bitmap cursors as fallback.
     // Translate physical pixels to DIPs.

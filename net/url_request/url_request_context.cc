@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -154,7 +155,7 @@ void URLRequestContext::AssertNoURLRequests() const {
     DEBUG_ALIAS_FOR_GURL(url_buf, request->url());
     base::debug::Alias(&num_requests);
     base::debug::Alias(&load_flags);
-    CHECK(false) << "Leaked " << num_requests << " URLRequest(s). First URL: "
+    NOTREACHED() << "Leaked " << num_requests << " URLRequest(s). First URL: "
                  << request->url().spec().c_str() << ".";
   }
 }

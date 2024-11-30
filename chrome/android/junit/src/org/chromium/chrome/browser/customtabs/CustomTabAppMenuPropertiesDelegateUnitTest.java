@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.url.GURL;
 
@@ -71,6 +72,8 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
         when(mTab.isNativePage()).thenReturn(false);
         Map<String, Boolean> featureMap = new HashMap<>();
         featureMap.put(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT, false);
+        featureMap.put(ContentFeatureList.ANDROID_OPEN_PDF_INLINE, false);
+        featureMap.put(ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT, false);
         FeatureList.setTestFeatures(featureMap);
     }
 

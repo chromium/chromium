@@ -2758,6 +2758,15 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION" desc="The extra accessible description of saved desk grid item">
         Press Ctrl+W to delete
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL" translateable="false" desc="The label visible above template items in the saved desk library.">
+        Templates
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL" translateable="false" desc="The label visible above the save and recall items in the saved desk library.">
+        Saved for later
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_CORAL_GRID_LABEL" translateable="false" desc="The label visible above the coral saved group items in the saved desk library.">
+        Saved Groups
+      </message>
 
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The new desk button's accessible name">
@@ -7747,6 +7756,13 @@ New install
       <message name="IDS_PICKER_DATE_DISAMBIGUATION_LAST_WEEK"
         desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Monday) and is capitalized when appropriate for the locale. This string indicates that the date is in the previous week. For example, suppose today is Tuesday. If the placeholder is Monday, then this string refers to the Monday last week (8 days from ago), as opposed to the Monday that just passed (1 day from now).">
         <ph name="DAY_OF_WEEK">$1<ex>Monday</ex></ph> last week
+      </message>
+      <!-- TODO: b/368442959 - Mark this string as translateable once it's finalized -->
+      <message name="IDS_QUICK_INSERT_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false">
+        Search emojis and GIFs
+      </message>
+      <message name="IDS_QUICK_INSERT_FEATURED_GIFS_CATEGORY_TYPE_SECTION_TITLE" translateable="false">
+        Featured GIFs
       </message>
 
       <!-- WM -->

@@ -2317,10 +2317,7 @@ bool CopyAuctionReportBuyerDebugModeConfigFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::
-              kPrivateAggregationAuctionReportBuyerDebugModeConfig) ||
-      !input.hasAuctionReportBuyerDebugModeConfig()) {
+  if (!input.hasAuctionReportBuyerDebugModeConfig()) {
     return true;
   }
 

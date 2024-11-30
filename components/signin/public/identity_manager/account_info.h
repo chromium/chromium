@@ -12,6 +12,7 @@
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/gfx/image/image.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -38,7 +39,7 @@ struct CoreAccountInfo {
   CoreAccountInfo& operator=(CoreAccountInfo&& other) noexcept;
 
   CoreAccountId account_id;
-  std::string gaia;
+  GaiaId gaia;
 
   // Displaying the `email` in display fields (e.g. Android View) can be
   // restricted. Please verify displayability using

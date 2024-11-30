@@ -71,14 +71,18 @@ const int32_t kInvalidSharedMemoryId = -1;
 const int32_t kCommandBufferSharedMemoryId = 4;
 
 // Namespace used to separate various command buffer types.
+//
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// CommandBufferNamespace in tools/metrics/histograms/metadata/gpu/enums.xml
 enum CommandBufferNamespace : int8_t {
   INVALID = -1,
 
-  GPU_IO,
-  IN_PROCESS,
-  VIZ_SKIA_OUTPUT_SURFACE,
-  VIZ_SKIA_OUTPUT_SURFACE_NON_DDL,
-  GPU_CHANNEL_SHARED_IMAGE_INTERFACE,
+  GPU_IO = 0,
+  IN_PROCESS = 1,
+  VIZ_SKIA_OUTPUT_SURFACE = 2,
+  VIZ_SKIA_OUTPUT_SURFACE_NON_DDL = 3,
+  GPU_CHANNEL_SHARED_IMAGE_INTERFACE = 4,
 
   NUM_COMMAND_BUFFER_NAMESPACES
 };

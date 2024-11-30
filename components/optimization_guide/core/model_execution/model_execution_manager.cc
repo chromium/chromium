@@ -163,6 +163,7 @@ ModelExecutionManager::ModelExecutionManager(
     base::WeakPtr<ModelQualityLogsUploaderService>
         model_quality_uploader_service)
     : model_quality_uploader_service_(model_quality_uploader_service),
+      on_device_component_state_manager_(on_device_component_state_manager),
       optimization_guide_logger_(optimization_guide_logger),
       model_execution_service_url_(net::AppendOrReplaceQueryParameter(
           GetModelExecutionServiceURL(),
@@ -172,7 +173,7 @@ ModelExecutionManager::ModelExecutionManager(
       identity_manager_(identity_manager),
       model_adaptation_loaders_(GetRequiredModelAdaptationLoaders(
           model_provider,
-          on_device_component_state_manager,
+          on_device_component_state_manager_,
           local_state,
           on_device_model_service_controller
               ? on_device_model_service_controller->GetWeakPtr()
@@ -192,13 +193,18 @@ ModelExecutionManager::ModelExecutionManager(
     return;
   }
 
-  if (on_device_component_state_manager &&
-      on_device_component_state_manager->IsInstallerRegistered()) {
-    RegisterTextSafetyAndLanguageModels();
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->AddObserver(this);
+    if (on_device_component_state_manager_->IsInstallerRegistered()) {
+      RegisterTextSafetyAndLanguageModels();
+    }
   }
 }
 
 ModelExecutionManager::~ModelExecutionManager() {
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->RemoveObserver(this);
+  }
   if (did_register_for_supplementary_on_device_models_) {
     model_provider_->RemoveObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY, this);

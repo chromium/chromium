@@ -460,7 +460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Interstitial.UIAction"
-    enum="DownloadInterstitialUIAction" expires_after="2024-12-08">
+    enum="DownloadInterstitialUIAction" expires_after="2025-12-08">
   <owner>alexmitra@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -733,40 +733,6 @@ chromium-metrics-reviews@google.com.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
-  </summary>
-</histogram>
-
-<histogram name="Download.PartialView.RowShownTimeToOpenDownloadClick"
-    units="ms" expires_after="2024-12-08">
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The time interval from when the partial view was shown to when the user
-    clicked on the partial view row to open it. This is only logged for
-    downloads without a warning. This is only logged if the user clcks the main
-    button to open the download at all, and is only logged for the partial view.
-    It may be logged multiple times per download, if the user clicks to open the
-    download multiple times. It is also logged when the download does not
-    actually open, due to existing clickjacking mitigations. Only short times
-    are logged because this is intended to study clickjacking potential and
-    longer times are not relevant.
-  </summary>
-</histogram>
-
-<histogram name="Download.PartialView.StartTimeToOpenDownloadClick" units="ms"
-    expires_after="2025-02-10">
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The time interval from when the download started to when the user clicked on
-    the partial view row to open it. This is only logged for downloads without a
-    warning. This is only logged if the user clcks the main button to open the
-    download at all, and is only logged for the partial view. It may be logged
-    multiple times per download, if the user clicks to open the download
-    multiple times. It is also logged when the download does not actually open,
-    due to existing clickjacking mitigations. Only short times are logged
-    because this is intended to study clickjacking potential and longer times
-    are not relevant.
   </summary>
 </histogram>
 

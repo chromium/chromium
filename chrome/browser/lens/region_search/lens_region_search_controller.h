@@ -36,7 +36,6 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // to true, the whole screen will automatically be captured.
   void Start(content::WebContents* web_contents,
              bool use_fullscreen_capture,
-             bool force_open_in_new_tab,
              bool is_google_default_search_provider,
              lens::AmbientSearchEntryPoint entry_point);
 

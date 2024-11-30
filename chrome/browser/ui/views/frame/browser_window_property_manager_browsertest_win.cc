@@ -156,7 +156,7 @@ void ValidateHostedAppWindowProperties(const Browser* browser,
 // having --user-data-dir specified.
 class BrowserTestWithProfileShortcutManager : public InProcessBrowserTest {
  public:
-  BrowserTestWithProfileShortcutManager() {}
+  BrowserTestWithProfileShortcutManager() = default;
 
   BrowserTestWithProfileShortcutManager(
       const BrowserTestWithProfileShortcutManager&) = delete;

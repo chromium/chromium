@@ -45,16 +45,10 @@ BASE_FEATURE(kOneTimePermission,
              "OneTimePermission",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a faster permission request finalization if it is displayed as a
-// quiet chip.
-BASE_FEATURE(kFailFastQuietChip,
-             "FailFastQuietChip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kKeyboardAndPointerLockPrompt,
              "KeyboardAndPointerLockPrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables different positioning of the permission dialog, so that it's placed
@@ -136,6 +130,12 @@ BASE_FEATURE(kMitigateUnpartitionedWebviewPermissions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// When enabled, site settings pages use radio button groups other than toggles.
+// In the meanwhile, CPSS if exist will be a separate radio button group.
+BASE_FEATURE(kPermissionSiteSettingsRadioButton,
+             "PermissionSiteSettingsRadioButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, blocks condition to exclude auto granted permissions for
 // storage access exceptions. This will allow RWS permission grants to be

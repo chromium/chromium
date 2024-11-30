@@ -34,7 +34,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
@@ -49,7 +48,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -173,16 +171,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             mDownloadStatus = downloadStatus;
             mIsAutoResumable = false;
             mIsUpdated = true;
-        }
-
-        DownloadProgress(DownloadProgress progress) {
-            mStartTimeInMillis = progress.mStartTimeInMillis;
-            mCanDownloadWhileMetered = progress.mCanDownloadWhileMetered;
-            mDownloadItem = progress.mDownloadItem;
-            mDownloadStatus = progress.mDownloadStatus;
-            mIsAutoResumable = progress.mIsAutoResumable;
-            mIsUpdated = progress.mIsUpdated;
-            mIsSupportedMimeType = progress.mIsSupportedMimeType;
         }
     }
 
@@ -1062,20 +1050,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.notifyEvent(EventConstants.DOWNLOAD_COMPLETED);
         }
-    }
-
-    /**
-     * Helper method to record the bytes wasted metrics when a download completes.
-     * @param name Histogram name
-     * @param bytesWasted Bytes wasted during download.
-     */
-    private void recordBytesWasted(String name, long bytesWasted) {
-        RecordHistogram.recordCustomCountHistogram(
-                name,
-                (int) ConversionUtils.bytesToKilobytes(bytesWasted),
-                1,
-                ConversionUtils.KILOBYTES_PER_GIGABYTE,
-                50);
     }
 
     /**

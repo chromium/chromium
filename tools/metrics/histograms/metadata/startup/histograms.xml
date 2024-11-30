@@ -369,7 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent4" units="ms"
-    expires_after="2025-03-20">
+    expires_after="2025-05-25">
   <owner>yfriedman@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -535,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.IsLastBackgroundTimeLogged" enum="Boolean"
-    expires_after="2024-11-17">
+    expires_after="2025-05-17">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -632,17 +632,6 @@ chromium-metrics-reviews@google.com.
     is shown on the StartSurface. This histogram is only recorded when
     StartSurface is shown at launch due to &quot;return to tab switcher&quot;
     feature.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.StartSurfaceShownAtStartup" enum="Boolean"
-    expires_after="2024-11-17">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records whether the Start surface homepage is showing at a cold startup when
-    the Start surface is enabled. This histogram is recorded in a deferred
-    startup task after Chrome is launched.
   </summary>
 </histogram>
 
@@ -823,8 +812,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.ColdStartFromMain" units="ms"
-    expires_after="2025-03-26">
-  <owner>ajuma@chromium.org</owner>
+    expires_after="2025-05-25">
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The duration of all initializations from the call to main to UI ready to
@@ -851,7 +840,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.ConsecutiveDidFinishLaunchingWithoutLaunch"
     units="count" expires_after="2024-09-18">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     [IOS] The number of time [UIApplicationDelegate
     application:didFinishLaynching] was called but no scene was activated.
@@ -862,7 +851,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.ConsecutiveLoadsWithoutLaunch" units="count"
     expires_after="2025-05-30">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     [IOS] The number of time +load was called but no scene was activated.
     Recorded when first scene is becomes active.
@@ -1084,7 +1073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.IncognitoForcedStart" enum="IncognitoForcedStart"
-    expires_after="M134">
+    expires_after="M140">
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
@@ -1242,13 +1231,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.StartupBrowserCreator.LaunchBrowser" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>alemate@chromium.org</owner>
   <owner>xiyuan@chromium.org</owner>
   <owner>cros-sw-perf+metrics@google.com</owner>
   <summary>
     The amount of time that elapsed during
     StartupBrowserCreator::LaunchBrowser().
+  </summary>
+</histogram>
+
+<histogram name="Startup.StartupTabs.IsWelcomePageSkipped"
+    enum="BooleanSkipped" expires_after="2025-11-20">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Whether a chrome://welcome page requested from startup tabs has been
+    skipped. Logged on first runs where that page is included in the startup
+    tabs, usually provided by installers in the initial_preferences files. Only
+    the positive value is logged, the histogram's purpose is to verify the
+    reduction in usage of this configuration.
   </summary>
 </histogram>
 
@@ -1269,9 +1271,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromMainToDidFinishLaunchingCall" units="ms"
-    expires_after="2025-03-26">
+    expires_after="2025-05-25">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     [IOS] The duration between the call to main and the call to
     [UIApplicationDelegate didFinishLaunching:]. Recorded when first scene is
@@ -1280,9 +1282,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromMainToSceneConnection" units="ms"
-    expires_after="2025-03-26">
+    expires_after="2025-05-25">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     [IOS] The duration between the call to main and the call to the first scene
     connection. Recorded when first scene is becomes active.

@@ -1,0 +1,47 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef PDF_PDF_INK_METRICS_HANDLER_H_
+#define PDF_PDF_INK_METRICS_HANDLER_H_
+
+#include "pdf/buildflags.h"
+#include "pdf/pdf_ink_brush.h"
+
+static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
+
+namespace chrome_pdf {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PDFInk2StrokeBrushSize)
+enum class StrokeMetricBrushSize {
+  kExtraThin = 0,
+  kThin = 1,
+  kMedium = 2,
+  kThick = 3,
+  kExtraThick = 4,
+  kMaxValue = 4,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokeBrushSize)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PDFInk2StrokeBrushType)
+enum class StrokeMetricBrushType {
+  kPen = 0,
+  kHighlighter = 1,
+  kEraser = 2,
+  kMaxValue = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokeBrushType)
+
+void ReportDrawStroke(PdfInkBrush::Type type, const ink::Brush& brush);
+
+void ReportEraseStroke(float size);
+
+}  // namespace chrome_pdf
+
+#endif  // PDF_PDF_INK_METRICS_HANDLER_H_

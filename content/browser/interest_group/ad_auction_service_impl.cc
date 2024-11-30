@@ -187,10 +187,11 @@ std::optional<std::string> MaybeGetUserAgentOverride(
               .GetDelegate()
               ->ShouldOverrideUserAgentForRendererInitiatedNavigation();
       if (override_user_agent) {
-        std::string maybe_user_agent = frame_tree_node->navigator()
-                                           .GetDelegate()
-                                           ->GetUserAgentOverride()
-                                           .ua_string_override;
+        std::string maybe_user_agent =
+            frame_tree_node->navigator()
+                .GetDelegate()
+                ->GetUserAgentOverride(frame_tree_node->frame_tree())
+                .ua_string_override;
         if (!maybe_user_agent.empty()) {
           return std::move(maybe_user_agent);
         }

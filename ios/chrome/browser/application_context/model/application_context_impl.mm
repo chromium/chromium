@@ -7,6 +7,7 @@
 #import <algorithm>
 #import <vector>
 
+#import "base/base_paths.h"
 #import "base/check_op.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
@@ -216,13 +217,13 @@ void ApplicationContextImpl::StartTearDown() {
   }
 
   // Need to clear profiles before the IO thread. In detail:
-  // - First destroy the profiles, including their keyed services, which may
-  //   depend on the AccountProfileMapper.
+  // - First unload the profiles (which deallocate them), including their
+  // keyed services, which may depend on the AccountProfileMapper.
   // - Then destroy the AccountProfileMapper, which depends on the
   //   ProfileManagerIOS.
   // - Finally destroy the ProfileManagerIOS.
   if (profile_manager_) {
-    profile_manager_->DestroyAllProfiles();
+    profile_manager_->UnloadAllProfiles();
   }
   account_profile_mapper_.reset();
   profile_manager_.reset();
@@ -461,6 +462,8 @@ SafeBrowsingService* ApplicationContextImpl::GetSafeBrowsingService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!safe_browsing_service_) {
     safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
+    safe_browsing_service_->Initialize(
+        base::PathService::CheckedGet(ios::DIR_USER_DATA));
   }
   return safe_browsing_service_.get();
 }

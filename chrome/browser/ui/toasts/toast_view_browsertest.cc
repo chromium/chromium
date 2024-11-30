@@ -35,27 +35,40 @@ class ToastViewTest : public DialogBrowserTest {
  public:
   ToastViewTest() = default;
 
+  struct ToastOptions {
+    std::u16string text;
+    bool add_close_button = false;
+    bool add_action_button = false;
+    bool add_menu = false;
+    bool add_image_override = false;
+  };
+
+  void ConfigureToast(const ToastOptions& options) { options_ = options; }
+
   void ShowUi(const std::string& name) override {
-    views::View* anchor_view =
+    anchor_view_ =
         BrowserView::GetBrowserViewForBrowser(browser())->top_container();
-    const std::u16string& toast_text =
-        l10n_util::GetStringUTF16(IDS_LINK_COPIED);
-    const gfx::VectorIcon& icon = vector_icons::kLinkIcon;
-    if (name == "Image") {
+    std::u16string toast_text = l10n_util::GetStringUTF16(IDS_LINK_COPIED);
+    if (!options_.text.empty()) {
+      toast_text = options_.text;
+    }
+    if (options_.add_image_override) {
       int size = toasts::ToastView::GetIconSize();
       image_override_ =
           std::make_unique<ui::ImageModel>(ui::ImageModel::FromImage(
               gfx::test::CreateImage(size, size, 0xff0000)));
     }
     std::unique_ptr<toasts::ToastView> toast =
-        std::make_unique<toasts::ToastView>(anchor_view, toast_text, icon,
-                                            image_override_.get(), false,
-                                            base::DoNothing());
-    if (name == "CloseButton") {
+        std::make_unique<toasts::ToastView>(
+            anchor_view_, toast_text, vector_icons::kLinkIcon,
+            image_override_.get(), false, base::DoNothing());
+    if (options_.add_close_button) {
       toast->AddCloseButton(base::DoNothing());
-    } else if (name == "ActionButton") {
+    }
+    if (options_.add_action_button) {
       toast->AddActionButton(l10n_util::GetStringUTF16(IDS_APP_OK));
-    } else if (name == "Menu") {
+    }
+    if (options_.add_menu) {
       toast->AddMenu(std::make_unique<TestMenuModel>());
     }
     toast_ = toast.get();
@@ -76,16 +89,20 @@ class ToastViewTest : public DialogBrowserTest {
   }
 
   void DismissUi() override {
+    anchor_view_ = nullptr;
     toast_ = nullptr;
     widget_ = nullptr;
   }
 
+  views::View* anchor_view() { return anchor_view_; }
   toasts::ToastView* toast() { return toast_; }
 
  private:
+  raw_ptr<views::View> anchor_view_;
   std::unique_ptr<ui::ImageModel> image_override_;
   raw_ptr<toasts::ToastView> toast_;
   raw_ptr<views::Widget> widget_;
+  ToastOptions options_;
 };
 
 IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Basic) {
@@ -93,7 +110,10 @@ IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Basic) {
 }
 
 IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_ActionButton) {
-  ShowUi("ActionButton");
+  ConfigureToast({
+      .add_action_button = true,
+  });
+  ShowUi("");
   ASSERT_TRUE(VerifyUi());
   ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
   EXPECT_TRUE(toast()->action_button_for_testing());
@@ -108,7 +128,10 @@ IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_ActionButton) {
 }
 
 IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_CloseButton) {
-  ShowUi("CloseButton");
+  ConfigureToast({
+      .add_close_button = true,
+  });
+  ShowUi("");
   ASSERT_TRUE(VerifyUi());
   ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
   EXPECT_TRUE(toast()->close_button_for_testing());
@@ -119,11 +142,36 @@ IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_CloseButton) {
 }
 
 IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Image) {
+  ConfigureToast({
+      .add_image_override = true,
+  });
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Menu) {
+  ConfigureToast({
+      .add_menu = true,
+  });
   ShowAndVerifyUi();
+}
+
+// http://crbug.com/371579791
+IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_ShrinkToFitWindow) {
+  ConfigureToast({
+      // Use an arbitrarily-long label string to force a wide toast.
+      .text = std::u16string(1000, 'a'),
+  });
+  ShowUi("");
+  const views::View* bubble = toast()->GetBubbleFrameView();
+  const int expected_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                  DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN) -
+                              views::BubbleBorder::kShadowBlur;
+  EXPECT_GT(bubble->GetPreferredSize().width(), bubble->width());
+  EXPECT_EQ(bubble->GetBoundsInScreen().x(),
+            anchor_view()->GetBoundsInScreen().x() + expected_margin);
+  EXPECT_EQ(bubble->GetBoundsInScreen().right(),
+            anchor_view()->GetBoundsInScreen().right() - expected_margin);
+  DismissUi();
 }
 
 }  // namespace

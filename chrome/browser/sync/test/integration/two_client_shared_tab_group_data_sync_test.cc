@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
 
   SavedTabGroup group(u"title", TabGroupColorId::kBlue,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId);
+  group.SetCollaborationId(CollaborationId(kCollaborationId));
   SavedTabGroupTab tab_1(GURL("http://google.com/1"), u"tab 1",
                          group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("http://google.com/2"), u"tab 2",
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
                       /*urls=*/{}, /*position=*/std::nullopt);
   FakeLocalOpeningOfGroup(group);
 
-  group.SetCollaborationId(kCollaborationId);
+  group.SetCollaborationId(CollaborationId(kCollaborationId));
   SavedTabGroupTab tab_1(GURL("http://google.com/1"), u"tab 1",
                          group.saved_guid(), /*position=*/std::nullopt);
   FakeLocalOpeningOfTab(tab_1);

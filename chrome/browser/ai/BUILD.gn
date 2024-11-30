@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//pdf/features.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("ai") {
@@ -57,13 +59,21 @@ source_set("impl") {
   ]
   deps = [
     ":ai",
+    "//components/optimization_guide/content/browser",
     "//components/site_engagement/content:content",
+    "//pdf:buildflags",
     "//skia",
   ]
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  }
+  if (enable_pdf) {
+    deps += [
+      "//components/pdf/browser",
+      "//components/pdf/common:constants",
     ]
   }
 }

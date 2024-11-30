@@ -683,39 +683,10 @@ bool IsElementInPage(content::RenderFrameHost* host,
 // suites can start running the test again.
 static const base::flat_set<std::string> disabled_flaky_tests = {
 #if defined(ADDRESS_SANITIZER)
-    // TODO(crbug.com/377425233): Fix flakiness on ASAN.
-    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_"
-    "ViaLink_MiddleClick_WithoutOpener_TargetBlank",
-    "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
-    "ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
-    "ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "FocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
-    "RightClick_WithoutOpener_TargetBlank",
-    "FocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
-    "RightClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
-    "ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
 #endif
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/372119276): Fix flakiness for `Redirection_OpenInChrome`
-    // tests on MacOS.
-    "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaB_ViaLink_"
-    "ShiftClick_WithOpener_TargetBlank",
-    "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_"
-    "ShiftClick_WithOpener_TargetBlank",
-    "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_"
-    "MiddleClick_WithOpener_TargetBlank",
+// Example string to add when disabling a test:
+// "FocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_..." (etc).
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
 #elif BUILDFLAG(IS_CHROMEOS)
@@ -772,8 +743,16 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
   // This function allows derived test suites to configure custom
-  // pre-condition steps before each test runs.
-  virtual testing::AssertionResult MaybeCustomSetup(
+  // pre-condition steps before each test runs, before test setup.
+  virtual testing::AssertionResult MaybeCustomPreSetup(
+      const webapps::AppId& app_a,
+      const webapps::AppId& app_b) {
+    return testing::AssertionSuccess();
+  }
+
+  // This function allows derived test suites to configure custom
+  // pre-condition steps before each test runs, after test setup.
+  virtual testing::AssertionResult MaybeCustomPostSetup(
       const webapps::AppId& app_a,
       const webapps::AppId& app_b) {
     return testing::AssertionSuccess();
@@ -851,19 +830,19 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
  protected:
-  void EnsureValidNewTabPage() {
+  void EnsureValidNewTabPage(Browser* browser) {
+    CHECK(browser->is_type_normal());
     // Ensure that if a fixture ended up loading a different page in the
     // starting tab, create a new tab for the navigation.
-    GURL last_committed_url = browser()
-                                  ->tab_strip_model()
+    GURL last_committed_url = browser->tab_strip_model()
                                   ->GetActiveWebContents()
                                   ->GetLastCommittedURL();
     bool is_at_new_tab_page =
-        IsNewTabOrAboutBlankUrl(browser(), last_committed_url);
+        IsNewTabOrAboutBlankUrl(browser, last_committed_url);
     if (!is_at_new_tab_page) {
       LOG(ERROR) << "opening new tab due to "
                  << last_committed_url.possibly_invalid_spec();
-      chrome::NewTab(browser());
+      chrome::NewTab(browser);
     }
   }
 
@@ -1274,8 +1253,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return command_line.HasSwitch("run-all-tests");
   }
 
-  Profile* profile() { return browser()->profile(); }
-
   void SetUpOnMainThread() override {
     WebAppBrowserTestBase::SetUpOnMainThread();
 
@@ -1285,7 +1262,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
 
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), embedded_test_server()->GetOrigin().GetURL(),
+        profile(), embedded_test_server()->GetOrigin().GetURL(),
         CONTENT_SETTING_ALLOW);
     notification_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
@@ -1393,6 +1370,9 @@ class WebAppLinkCapturingParameterizedBrowserTest
     }
 
     AssertValidTestConfiguration();
+    if (testing::Test::HasFatalFailure()) {
+      return;
+    }
 
     DLOG(INFO) << "Installing apps.";
 
@@ -1456,7 +1436,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
     DLOG(INFO) << "Setting up.";
 
-    ASSERT_TRUE(MaybeCustomSetup(app_a, app_b));
+    ASSERT_TRUE(MaybeCustomPreSetup(app_a, app_b));
 
     // Setup the initial page.
     Browser* browser_a;
@@ -1466,7 +1446,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
         GURL url_a = embedded_test_server()->GetURL(kStartPageScopeA);
         contents_a = LaunchStartPageAsApp(app_a, url_a);
       } else {
-        EnsureValidNewTabPage();
+        EnsureValidNewTabPage(browser());
         GURL url_a = embedded_test_server()->GetURL(kStartPageScopeA);
         contents_a = LaunchPageInTab(url_a);
       }
@@ -1488,6 +1468,9 @@ class WebAppLinkCapturingParameterizedBrowserTest
                                    : Browser::Type::TYPE_NORMAL,
                 browser_a->type());
     }
+
+    ASSERT_TRUE(MaybeCustomPostSetup(app_a, app_b));
+
     // Ensure that all `WebContents` has finished loading.
     test::CompletePageLoadForAllWebContents();
 
@@ -1673,14 +1656,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
   RunTest();
 }
 
-// TODO(crbug.com/359600606): Enable on CrOS if needed.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CleanupExpectations DISABLED_CleanupExpectations
-#else
-#define MAYBE_CleanupExpectations CleanupExpectations
-#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedBrowserTest,
-                       MAYBE_CleanupExpectations) {
+                       CleanupExpectations) {
   PerformTestCleanupIfNeeded(
       {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
@@ -2125,7 +2102,7 @@ class NavigationCapturingTestWithAppBLaunched
     return "navigation_capture_expectations_with_b_launched_in_setup";
   }
 
-  testing::AssertionResult MaybeCustomSetup(
+  testing::AssertionResult MaybeCustomPreSetup(
       const webapps::AppId& app_a,
       const webapps::AppId& app_b) override {
     DLOG(INFO) << "Launching App B.";
@@ -2161,7 +2138,7 @@ IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithAppBLaunched,
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithAppBLaunched,
-                       MAYBE_CleanupExpectations) {
+                       CleanupExpectations) {
   PerformTestCleanupIfNeeded(
       {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
@@ -2268,7 +2245,7 @@ class NavigationCapturingTestWithBLaunchedAndBrowserTab
     return "navigation_capturing_with_b_lauched_and_browser_tab";
   }
 
-  testing::AssertionResult MaybeCustomSetup(
+  testing::AssertionResult MaybeCustomPreSetup(
       const webapps::AppId& app_a,
       const webapps::AppId& app_b) override {
     DLOG(INFO) << "Launching App B.";
@@ -2298,7 +2275,7 @@ class NavigationCapturingTestWithBLaunchedAndBrowserTab
     }
 
     DLOG(INFO) << "Navigating to browser tab b.";
-    EnsureValidNewTabPage();
+    EnsureValidNewTabPage(browser());
 
     GURL url_b_dest = embedded_test_server()->GetURL(kDestinationPageScopeB);
     if (!LaunchPageInTab(url_b_dest)) {
@@ -2318,7 +2295,7 @@ IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithBLaunchedAndBrowserTab,
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithBLaunchedAndBrowserTab,
-                       MAYBE_CleanupExpectations) {
+                       CleanupExpectations) {
   PerformTestCleanupIfNeeded(
       {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
@@ -2367,10 +2344,10 @@ class NavigationCapturingTestWithExtraBrowserTabB
     return "navigation_capturing_with_extra_browser_tab_b";
   }
 
-  testing::AssertionResult MaybeCustomSetup(
+  testing::AssertionResult MaybeCustomPreSetup(
       const webapps::AppId& app_a,
       const webapps::AppId& app_b) override {
-    EnsureValidNewTabPage();
+    EnsureValidNewTabPage(browser());
     if (!LaunchPageInTab(
             embedded_test_server()->GetURL(kDestinationPageScopeB))) {
       return testing::AssertionFailure() << "Could not launch the tab in setup";
@@ -2389,7 +2366,7 @@ IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithExtraBrowserTabB,
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithExtraBrowserTabB,
-                       MAYBE_CleanupExpectations) {
+                       CleanupExpectations) {
   PerformTestCleanupIfNeeded(
       {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
   PerformTestCleanupIfNeeded(
@@ -2420,6 +2397,88 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
-}  // namespace
 
+class NavigationCapturingTestNoBrowser
+    : public WebAppLinkCapturingParameterizedBrowserTest {
+ public:
+  std::string GetExpectationsFileBaseName() const override {
+    return "navigation_capturing_no_browser";
+  }
+
+  testing::AssertionResult MaybeCustomPostSetup(
+      const webapps::AppId& app_a,
+      const webapps::AppId& app_b) override {
+    CloseBrowserSynchronously(browser());
+    return testing::AssertionSuccess();
+  }
+
+  std::string GetTestClassName() const override {
+    return "NavigationCapturingTestNoBrowser";
+  }
+
+  void AssertValidTestConfiguration() override {
+    WebAppLinkCapturingParameterizedBrowserTest::AssertValidTestConfiguration();
+    ASSERT_NE(GetStartingPoint(), StartingPoint::kTab)
+        << "This test fixture is designed to run the action with no browser "
+           "open. Tests that start from a tab should just use the base "
+           "fixture.";
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationCapturingTestNoBrowser,
+                       CheckLinkCaptureCombinations) {
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingTestNoBrowser, CleanupExpectations) {
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kEnabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothBrowser, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded(
+      {AppUserDisplayMode::kBothStandalone, LinkCapturing::kDisabled});
+  PerformTestCleanupIfNeeded({AppUserDisplayMode::kAppAStandaloneAppBBrowser,
+                              LinkCapturing::kDisabled});
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ReparentingNoBrowser,
+    NavigationCapturingTestNoBrowser,
+    testing::Combine(
+        testing::Values(ClientModeCombination::kAuto),
+        testing::Values(AppUserDisplayMode::kBothStandalone),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow),
+        testing::Values(Destination::kScopeA2X),
+        testing::Values(RedirectType::kNone, RedirectType::kServerSideViaB),
+        testing::Values(NavigationElement::kElementLink,
+                        NavigationElement::kElementServiceWorkerButton,
+                        NavigationElement::kElementButton),
+        testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
+    ReparentingNoBrowserModified,
+    NavigationCapturingTestNoBrowser,
+    testing::Combine(testing::Values(ClientModeCombination::kAuto),
+                     testing::Values(AppUserDisplayMode::kBothStandalone),
+                     testing::Values(LinkCapturing::kEnabled),
+                     testing::Values(StartingPoint::kAppWindow),
+                     testing::Values(Destination::kScopeA2X),
+                     testing::Values(RedirectType::kNone,
+                                     RedirectType::kServerSideViaA),
+                     testing::Values(NavigationElement::kElementLink,
+                                     NavigationElement::kElementButton),
+                     testing::Values(test::ClickMethod::kMiddleClick),
+                     testing::Values(OpenerMode::kNoOpener),
+                     testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+}  // namespace
 }  // namespace web_app

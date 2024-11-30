@@ -335,13 +335,8 @@ void PaymentMethodAccessoryControllerImpl::OnPersonalDataChanged() {
 }
 
 void PaymentMethodAccessoryControllerImpl::OnCreditCardFetched(
-    CreditCardFetchResult result,
-    const CreditCard* credit_card) {
-  if (result != CreditCardFetchResult::kSuccess)
-    return;
-  DCHECK(credit_card);
-
-  ApplyToField(credit_card->number());
+    const CreditCard& credit_card) {
+  ApplyToField(credit_card.number());
 }
 
 void PaymentMethodAccessoryControllerImpl::ApplyToField(

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/trace_event_impl.h"
@@ -26,11 +27,8 @@ class TraceBufferRingBuffer : public TraceBuffer {
  public:
   TraceBufferRingBuffer(size_t max_chunks)
       : max_chunks_(max_chunks),
-        recyclable_chunks_queue_(new size_t[queue_capacity()]),
-        queue_head_(0),
-        queue_tail_(max_chunks),
-        current_iteration_index_(0),
-        current_chunk_seq_(1) {
+        recyclable_chunks_queue_(HeapArray<size_t>::Uninit(queue_capacity())),
+        queue_tail_(max_chunks) {
     chunks_.reserve(max_chunks);
     for (size_t i = 0; i < max_chunks; ++i)
       recyclable_chunks_queue_[i] = i;
@@ -149,12 +147,12 @@ class TraceBufferRingBuffer : public TraceBuffer {
   size_t max_chunks_;
   std::vector<std::unique_ptr<TraceBufferChunk>> chunks_;
 
-  std::unique_ptr<size_t[]> recyclable_chunks_queue_;
-  size_t queue_head_;
+  HeapArray<size_t> recyclable_chunks_queue_;
+  size_t queue_head_ = 0;
   size_t queue_tail_;
 
-  size_t current_iteration_index_;
-  uint32_t current_chunk_seq_;
+  size_t current_iteration_index_ = 0;
+  uint32_t current_chunk_seq_ = 1;
 };
 
 class TraceBufferVector : public TraceBuffer {

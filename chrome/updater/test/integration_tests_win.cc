@@ -1640,24 +1640,16 @@ void InvokeTestServiceFunction(const std::string& function_name,
 std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
   std::vector<std::wstring> supported_archs;
 
-// TODO(crbug.com/374217027): Test with newer x64 chrome-branded executables
-// that install to %ProgramFiles(x86)%.
-#if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
   supported_archs = {
-      L"chromium_win_arm64",
-      L"chromium_win_x86_64",
-      L"chromium_win_x86",
+      L"" BROWSER_NAME_STRING "_win_arm64",
+      L"" BROWSER_NAME_STRING "_win_x86_64",
+      L"" BROWSER_NAME_STRING "_win_x86",
   };
 #elif defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_X86)
   supported_archs = {
-      L"chromium_win_x86_64",
-      L"chromium_win_x86",
-  };
-#endif
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  supported_archs = {
-      L"chrome_win_x86",
+      L"" BROWSER_NAME_STRING "_win_x86_64",
+      L"" BROWSER_NAME_STRING "_win_x86",
   };
 #endif
 

@@ -11,23 +11,33 @@ import '//resources/ash/common/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
-import './pages/generic_chart.js';
-import './pages/process.js';
-import './pages/telemetry.js';
-import './settings/settings_dialog.js';
+import './view/pages/system_trend.js';
+import './view/pages/process.js';
+import './view/pages/telemetry.js';
+import './view/settings/settings_dialog.js';
 
 import {sendWithPromise} from '//resources/js/cr.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {PagePath} from './constants.js';
-import {DataManager} from './data_manager.js';
-import type {HealthdInternalsFeatureFlagResult} from './externs.js';
-import type {HealthdInternalsGenericChartElement} from './pages/generic_chart.js';
-import type {HealthdInternalsProcessElement} from './pages/process.js';
-import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
-import {HealthdInternalsPage} from './pages/utils/page_interface.js';
-import type {HealthdInternalsSettingsDialogElement} from './settings/settings_dialog.js';
+import {DataManager} from './model/data_manager.js';
+import type {HealthdInternalsFeatureFlagResult} from './utils/externs.js';
+import {HealthdInternalsPage} from './utils/page_interface.js';
+import type {HealthdInternalsProcessElement} from './view/pages/process.js';
+import type {HealthdInternalsSystemTrendElement} from './view/pages/system_trend.js';
+import type {HealthdInternalsTelemetryElement} from './view/pages/telemetry.js';
+import type {HealthdInternalsSettingsDialogElement} from './view/settings/settings_dialog.js';
+
+/**
+ * The enum for displayed pages in chrome://healthd-internals.
+ */
+export enum PagePath {
+  // Only used when menu tabs are not displayed. No page should be displayed.
+  NONE = '/',
+  TELEMETRY = '/telemetry',
+  PROCESS = '/process',
+  SYSTEM_TREND = '/system_trend'
+}
 
 // Interface of pages in chrome://healthd-internals.
 interface Page {
@@ -40,12 +50,7 @@ export interface HealthdInternalsAppElement {
   $: {
     telemetryPage: HealthdInternalsTelemetryElement,
     processPage: HealthdInternalsProcessElement,
-    batteryChart: HealthdInternalsGenericChartElement,
-    cpuFrequencyChart: HealthdInternalsGenericChartElement,
-    cpuUsageChart: HealthdInternalsGenericChartElement,
-    memoryChart: HealthdInternalsGenericChartElement,
-    thermalChart: HealthdInternalsGenericChartElement,
-    zramChart: HealthdInternalsGenericChartElement,
+    systemTrendPage: HealthdInternalsSystemTrendElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
     appContainer: HTMLElement,
     sidebar: HTMLElement,
@@ -79,17 +84,9 @@ export class HealthdInternalsAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.initLineChartPages();
     this.dataManager = new DataManager(
         this.$.settingsDialog.getDataRetentionDuration(), this.$.telemetryPage,
-        {
-          battery: this.$.batteryChart,
-          cpuFrequency: this.$.cpuFrequencyChart,
-          cpuUsage: this.$.cpuUsageChart,
-          memory: this.$.memoryChart,
-          thermal: this.$.thermalChart,
-          zram: this.$.zramChart
-        });
+        this.$.systemTrendPage.getController());
 
     this.$.settingsDialog.addEventListener('ui-update-interval-updated', () => {
       this.updateUiUpdateInterval();
@@ -122,34 +119,9 @@ export class HealthdInternalsAppElement extends PolymerElement {
               obj: this.$.processPage,
             },
             {
-              name: 'Battery Chart',
-              path: PagePath.BATTERY,
-              obj: this.$.batteryChart,
-            },
-            {
-              name: 'CPU Frequency Chart',
-              path: PagePath.CPU_FREQUENCY,
-              obj: this.$.cpuFrequencyChart,
-            },
-            {
-              name: 'CPU Usage Chart',
-              path: PagePath.CPU_USAGE,
-              obj: this.$.cpuUsageChart,
-            },
-            {
-              name: 'Memory Chart',
-              path: PagePath.MEMORY,
-              obj: this.$.memoryChart,
-            },
-            {
-              name: 'Thermal Chart',
-              path: PagePath.THERMAL,
-              obj: this.$.thermalChart,
-            },
-            {
-              name: 'Zram Chart',
-              path: PagePath.ZRAM,
-              obj: this.$.zramChart,
+              name: 'System Trend',
+              path: PagePath.SYSTEM_TREND,
+              obj: this.$.systemTrendPage,
             },
           ];
 
@@ -179,28 +151,6 @@ export class HealthdInternalsAppElement extends PolymerElement {
   // Return true if the menu tabs are not displayed.
   private areTabsHidden(): boolean {
     return !this.pageList.length;
-  }
-
-  // Init all line chart pages.
-  private initLineChartPages() {
-    this.$.batteryChart.setupChartHeader('Battery');
-    this.$.batteryChart.initCanvasDrawer([''], 1);
-
-    this.$.cpuFrequencyChart.setupChartHeader('CPU Frequency');
-    this.$.cpuFrequencyChart.initCanvasDrawer(['kHz', 'mHz', 'GHz'], 1000);
-
-    this.$.cpuUsageChart.setupChartHeader('CPU Usage');
-    this.$.cpuUsageChart.initCanvasDrawer(['%'], 1);
-    this.$.cpuUsageChart.setChartMaxValue(100);
-
-    this.$.memoryChart.setupChartHeader('Memory');
-    this.$.memoryChart.initCanvasDrawer(['KiB', 'MiB', 'GiB'], 1024);
-
-    this.$.thermalChart.setupChartHeader('Thermal');
-    this.$.thermalChart.initCanvasDrawer(['°C'], 1);
-
-    this.$.zramChart.setupChartHeader('Zram');
-    this.$.zramChart.initCanvasDrawer(['B', 'KiB', 'MiB', 'GiB'], 1024);
   }
 
   // Handle path changes caused by popstate events (back/forward navigation).

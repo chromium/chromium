@@ -119,18 +119,6 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c> {
         Ok(())
     }
 
-    fn visit_borrowed_str<E: serde::de::Error>(self, value: &'de str) -> Result<Self::Value, E> {
-        match self.aggregate {
-            DeserializationTarget::List { ctx } => self.fns.list_append_str(ctx, value),
-            DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_str(ctx, &key, value),
-        };
-        Ok(())
-    }
-
-    fn visit_string<E: serde::de::Error>(self, value: String) -> Result<Self::Value, E> {
-        self.visit_str(&value)
-    }
-
     fn visit_none<E: serde::de::Error>(self) -> Result<Self::Value, E> {
         match self.aggregate {
             DeserializationTarget::List { ctx } => self.fns.list_append_none(ctx),

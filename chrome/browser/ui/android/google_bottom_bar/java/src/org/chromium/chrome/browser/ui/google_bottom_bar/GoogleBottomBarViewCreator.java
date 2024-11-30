@@ -231,10 +231,12 @@ public class GoogleBottomBarViewCreator {
     }
 
     private @Nullable ButtonConfig findButtonConfig(@ButtonId int buttonId) {
-        return mConfig.getButtonList().stream()
-                .filter(config -> config.getId() == buttonId)
-                .findFirst()
-                .orElse(null);
+        for (ButtonConfig config : mConfig.getButtonList()) {
+            if (config.getId() == buttonId) {
+                return config;
+            }
+        }
+        return null;
     }
 
     private ViewGroup createGoogleBottomBarEvenLayoutView() {

@@ -260,12 +260,12 @@ bool BrowserCommandHandler::BrowserSupportsTabGroups() {
 
 bool BrowserCommandHandler::ActiveTabSupportsCustomizeChrome() {
   Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  tabs::TabModel* tab = browser->tab_strip_model()->GetActiveTab();
-  if (!tab || !tab->tab_features()) {
+  tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab();
+  if (!tab || !tab->GetTabFeatures()) {
     return false;
   }
   customize_chrome::SidePanelController* side_panel_controller =
-      tab->tab_features()->customize_chrome_side_panel_controller();
+      tab->GetTabFeatures()->customize_chrome_side_panel_controller();
   return side_panel_controller &&
          side_panel_controller->IsCustomizeChromeEntryAvailable();
 }

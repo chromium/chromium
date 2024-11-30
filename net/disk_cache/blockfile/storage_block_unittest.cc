@@ -12,7 +12,7 @@
 
 typedef disk_cache::StorageBlock<disk_cache::EntryStore> CacheEntryBlock;
 
-TEST_F(DiskCacheTest, StorageBlock_LoadStore) {
+TEST_F(DiskCacheTest, StorageBlockLoadStore) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
   auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));
@@ -32,7 +32,7 @@ TEST_F(DiskCacheTest, StorageBlock_LoadStore) {
   EXPECT_EQ(0xa0010002, entry1.Data()->rankings_node);
 }
 
-TEST_F(DiskCacheTest, StorageBlock_SetData) {
+TEST_F(DiskCacheTest, StorageBlockSetData) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
   auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));
@@ -52,7 +52,7 @@ TEST_F(DiskCacheTest, StorageBlock_SetData) {
   EXPECT_TRUE(entry2.Data() == entry1.Data());
 }
 
-TEST_F(DiskCacheTest, StorageBlock_SetModified) {
+TEST_F(DiskCacheTest, StorageBlockSetModified) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
   auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));
@@ -71,7 +71,7 @@ TEST_F(DiskCacheTest, StorageBlock_SetModified) {
   EXPECT_TRUE(0x45687912 == entry2.Data()->hash);
 }
 
-TEST_F(DiskCacheTest, StorageBlock_DifferentNumBuffers) {
+TEST_F(DiskCacheTest, StorageBlockDifferentNumBuffers) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
   auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));

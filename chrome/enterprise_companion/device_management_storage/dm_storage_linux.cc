@@ -39,9 +39,8 @@ std::string DetermineDeviceID() {
   std::string_view trimmed_machine_id =
       base::TrimWhitespaceASCII(machine_id, base::TRIM_TRAILING);
   if (trimmed_machine_id.size() != kExpectedMachineIdSize) {
-    LOG(ERROR) << "Error: /etc/machine-id contains "
-               << trimmed_machine_id.size() << " characters ("
-               << kExpectedMachineIdSize << " were expected).";
+    VLOG(1) << "Error: /etc/machine-id contains " << trimmed_machine_id.size()
+            << " characters (" << kExpectedMachineIdSize << " were expected).";
     return std::string();
   }
 

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, TabSearchSection, UserFeedback} from './tab_search.mojom-webui.js';
+import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, TabSearchSection, UnusedTabInfo, UserFeedback} from './tab_search.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
 /**
@@ -19,7 +20,7 @@ export enum RecentlyClosedItemOpenAction {
 export interface TabSearchApiProxy {
   closeTab(tabId: number): void;
 
-  declutterTabs(tabIds: number[]): void;
+  declutterTabs(tabIds: number[], urls: Url[]): void;
 
   acceptTabOrganization(sessionId: number, organizationId: number, tabs: Tab[]):
       void;
@@ -31,9 +32,11 @@ export interface TabSearchApiProxy {
 
   excludeFromStaleTabs(tabId: number): void;
 
+  excludeFromDuplicateTabs(url: Url): void;
+
   getProfileData(): Promise<{profileData: ProfileData}>;
 
-  getStaleTabs(): Promise<{tabs: Tab[]}>;
+  getUnusedTabs(): Promise<{tabs: UnusedTabInfo}>;
 
   getTabSearchSection(): Promise<{section: TabSearchSection}>;
 
@@ -62,8 +65,6 @@ export interface TabSearchApiProxy {
 
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
-  setTabSearchSection(section: TabSearchSection): void;
-
   setOrganizationFeature(feature: TabOrganizationFeature): void;
 
   startTabGroupTutorial(): void;
@@ -75,6 +76,8 @@ export interface TabSearchApiProxy {
   openHelpPage(): void;
 
   setTabOrganizationModelStrategy(strategy: TabOrganizationModelStrategy): void;
+
+  setTabOrganizationUserInstruction(user_instruction: string): void;
 
   setUserFeedback(
       sessionId: number, organizationId: number, feedback: UserFeedback): void;
@@ -99,8 +102,8 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.closeTab(tabId);
   }
 
-  declutterTabs(tabIds: number[]) {
-    this.handler.declutterTabs(tabIds);
+  declutterTabs(tabIds: number[], urls: Url[]) {
+    this.handler.declutterTabs(tabIds, urls);
   }
 
   acceptTabOrganization(
@@ -122,12 +125,16 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.excludeFromStaleTabs(tabId);
   }
 
+  excludeFromDuplicateTabs(url: Url) {
+    this.handler.excludeFromDuplicateTabs(url);
+  }
+
   getProfileData() {
     return this.handler.getProfileData();
   }
 
-  getStaleTabs() {
-    return this.handler.getStaleTabs();
+  getUnusedTabs() {
+    return this.handler.getUnusedTabs();
   }
 
   getTabSearchSection() {
@@ -191,10 +198,6 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.saveRecentlyClosedExpandedPref(expanded);
   }
 
-  setTabSearchSection(section: TabSearchSection) {
-    this.handler.setTabSearchSection(section);
-  }
-
   setOrganizationFeature(feature: TabOrganizationFeature) {
     this.handler.setOrganizationFeature(feature);
   }
@@ -217,6 +220,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   setTabOrganizationModelStrategy(strategy: TabOrganizationModelStrategy) {
     this.handler.setTabOrganizationModelStrategy(strategy);
+  }
+
+  setTabOrganizationUserInstruction(userInstruction: string) {
+    this.handler.setTabOrganizationUserInstruction(userInstruction);
   }
 
   setUserFeedback(

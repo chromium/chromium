@@ -11,15 +11,12 @@
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/ui/device_orientation/portait_orientation_manager.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
 @class CommandDispatcher;
 @class SceneState;
-@class MemoryWarningHelper;
-@class MetricsMediator;
-@class ProfileState;
 @class DeferredInitializationRunner;
 @protocol StartupInformation;
 
@@ -59,16 +56,8 @@ enum class PostCrashAction {
 // Most features should use the browser-level dispatcher instead.
 @property(nonatomic, strong) CommandDispatcher* appCommandDispatcher;
 
-// The ProfileState associated with the main Profile.
-// TODO(crbug.com/324417250) remove this property.
-@property(nonatomic, weak) ProfileState* mainProfile;
-
 // Container for startup information.
 @property(nonatomic, weak) id<StartupInformation> startupInformation;
-
-// YES if the user has ever interacted with the application. May be NO if the
-// application has been woken up by the system for background work.
-@property(nonatomic, readonly) BOOL userInteracted;
 
 // YES if the sign-in upgrade promo has been presented to the user, once.
 @property(nonatomic) BOOL signinUpgradePromoPresentedOnce;
@@ -90,40 +79,12 @@ enum class PostCrashAction {
 // orientation.
 @property(nonatomic, readonly) BOOL portraitOnly;
 
-// YES if the application is getting terminated.
-@property(nonatomic, readonly) BOOL appIsTerminating;
-
 // All agents that have been attached. Use -addAgent: and -removeAgent: to
 // add and remove agents.
 @property(nonatomic, readonly) NSArray<id<AppStateAgent>>* connectedAgents;
 
 // Can be used to schedule deferred initialization tasks.
 @property(nonatomic, readonly) DeferredInitializationRunner* deferredRunner;
-
-// Logs duration of the session and records that chrome is no longer in cold
-// start.
-- (void)willResignActive;
-
-// Called when the application is getting terminated. It stops all outgoing
-// requests, config updates, clears the device sharing manager and stops the
-// mainChrome instance.
-- (void)applicationWillTerminate:(UIApplication*)application;
-
-// Called when the application discards set of scene sessions, these sessions
-// can no longer be accessed and all their associated data should be destroyed.
-- (void)application:(UIApplication*)application
-    didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions;
-
-// Called when going into the background. iOS already broadcasts, so
-// stakeholders can register for it directly.
-- (void)applicationDidEnterBackground:(UIApplication*)application
-                         memoryHelper:(MemoryWarningHelper*)memoryHelper;
-
-// Called when returning to the foreground. Resets and uploads the metrics.
-// Starts the browser to foreground if needed.
-- (void)applicationWillEnterForeground:(UIApplication*)application
-                       metricsMediator:(MetricsMediator*)metricsMediator
-                          memoryHelper:(MemoryWarningHelper*)memoryHelper;
 
 // Returns the foreground and active scene, if there is one.
 - (SceneState*)foregroundActiveScene;

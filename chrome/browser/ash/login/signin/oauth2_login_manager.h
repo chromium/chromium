@@ -47,7 +47,7 @@ class OAuth2LoginManager : public KeyedService,
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Raised when merge session state changes.
     virtual void OnSessionRestoreStateChanged(Profile* user_profile,

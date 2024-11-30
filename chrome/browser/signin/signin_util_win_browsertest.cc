@@ -43,7 +43,7 @@ class SigninUIError;
 namespace {
 
 class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
-  ~TestTurnSyncOnHelperDelegate() override {}
+  ~TestTurnSyncOnHelperDelegate() override = default;
 
   // TurnSyncOnHelper::Delegate:
   void ShowLoginError(const SigninUIError& error) override {}

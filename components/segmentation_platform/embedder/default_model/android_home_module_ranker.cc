@@ -22,7 +22,7 @@ using proto::SegmentId;
 // Default parameters for AndroidHomeModuleRanker model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER;
-constexpr int64_t kModelVersion = 6;
+constexpr int64_t kModelVersion = 7;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
 // Wait until we have 0 days of data.
@@ -30,12 +30,14 @@ constexpr int64_t kMinSignalCollectionLength = 0;
 // Refresh the result every time.
 constexpr int64_t kResultTTLMinutes = 5;
 
-constexpr std::array<const char*, 4> kAndroidHomeModuleLabels = {
-    kPriceChange, kSingleTab, kTabResumptionForAndroidHome, kSafetyHub};
+constexpr std::array<const char*, 5> kAndroidHomeModuleLabels = {
+    kPriceChange, kSingleTab, kTabResumptionForAndroidHome, kSafetyHub,
+    kAuxiliarySearch};
 
-constexpr std::array<const char*, 4> kAndroidHomeModuleInputContextKeys = {
+constexpr std::array<const char*, 5> kAndroidHomeModuleInputContextKeys = {
     kPriceChangeFreshness, kSingleTabFreshness,
-    kTabResumptionForAndroidHomeFreshness, kSafetyHubFreshness};
+    kTabResumptionForAndroidHomeFreshness, kSafetyHubFreshness,
+    kAuxiliarySearchFreshness};
 
 // InputFeatures.
 
@@ -49,9 +51,11 @@ constexpr std::array<int32_t, 1> kEnumValueForTabResumption{
     /*TabResumption=*/2};
 
 constexpr std::array<int32_t, 1> kEnumValueForSafetyHub{/*SafetyHub=*/3};
+constexpr std::array<int32_t, 1> kEnumValueForAuxiliarySearch{
+    /*AuxiliarySearch=*/4};
 
 // Set UMA metrics to use as input.
-constexpr std::array<MetadataWriter::UMAFeature, 8> kUMAFeatures = {
+constexpr std::array<MetadataWriter::UMAFeature, 10> kUMAFeatures = {
     // Single Tab Module
     // 0 : click
     MetadataWriter::UMAFeature::FromEnumHistogram(
@@ -104,6 +108,19 @@ constexpr std::array<MetadataWriter::UMAFeature, 8> kUMAFeatures = {
         28,
         kEnumValueForSafetyHub.data(),
         kEnumValueForSafetyHub.size()),
+    // Auxiliary Search Module
+    // 8 : click
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "MagicStack.Clank.NewTabPage.Module.Click",
+        28,
+        kEnumValueForAuxiliarySearch.data(),
+        kEnumValueForAuxiliarySearch.size()),
+    // 9 : impression
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
+        28,
+        kEnumValueForAuxiliarySearch.data(),
+        kEnumValueForAuxiliarySearch.size()),
 };
 
 float TransformFreshness(float freshness_score, float freshness_threshold) {
@@ -164,6 +181,8 @@ AndroidHomeModuleRanker::GetModelConfig() {
     writer.AddFromInputContext("tab_resumption_input",
                                kTabResumptionForAndroidHomeFreshness);
     writer.AddFromInputContext("safety_hub_input", kSafetyHubFreshness);
+    writer.AddFromInputContext("auxiliary_search_input",
+                               kAuxiliarySearchFreshness);
   }
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
@@ -189,7 +208,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   float single_tab_engagement = inputs[0];
   float single_tab_impression = inputs[1];
   float single_tab_freshness = is_android_home_module_ranker_v2_enabled
-                                   ? TransformFreshness(inputs[8], 1.0)
+                                   ? TransformFreshness(inputs[10], 1.0)
                                    : 0.0;
   float single_tab_score = single_tab_weights[0] * single_tab_engagement +
                            single_tab_weights[1] * single_tab_impression +
@@ -200,7 +219,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   float price_change_engagement = inputs[2];
   float price_change_impression = inputs[3];
   float price_change_freshness = is_android_home_module_ranker_v2_enabled
-                                     ? TransformFreshness(inputs[9], 1.0)
+                                     ? TransformFreshness(inputs[11], 1.0)
                                      : 0.0;
   float price_change_score = price_change_weights[0] * price_change_engagement +
                              price_change_weights[1] * price_change_impression +
@@ -211,7 +230,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   float tab_resumption_engagement = inputs[4];
   float tab_resumption_impression = inputs[5];
   float tab_resumption_freshness = is_android_home_module_ranker_v2_enabled
-                                       ? TransformFreshness(inputs[10], 1.0)
+                                       ? TransformFreshness(inputs[12], 1.0)
                                        : 0.0;
   float tab_resumption_score =
       tab_resumption_weights[0] * tab_resumption_engagement +
@@ -223,11 +242,23 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   float safety_hub_engagement = inputs[6];
   float safety_hub_impression = inputs[7];
   float safety_hub_freshness = is_android_home_module_ranker_v2_enabled
-                                   ? TransformFreshness(inputs[11], 1.0)
+                                   ? TransformFreshness(inputs[13], 1.0)
                                    : 0.0;
   float safety_hub_score = safety_hub_weights[0] * safety_hub_engagement +
                            safety_hub_weights[1] * safety_hub_impression +
                            safety_hub_weights[2] * safety_hub_freshness;
+
+  // Auxiliary Search score calculation.
+  float auxiliary_search_weights[3] = {0, 0, 10};
+  float auxiliary_search_engagement = inputs[8];
+  float auxiliary_search_impression = inputs[9];
+  float auxiliary_search_freshness = is_android_home_module_ranker_v2_enabled
+                                         ? TransformFreshness(inputs[14], 1.0)
+                                         : 0.0;
+  float auxiliary_search_score =
+      auxiliary_search_weights[0] * auxiliary_search_engagement +
+      auxiliary_search_weights[1] * auxiliary_search_impression +
+      auxiliary_search_weights[2] * auxiliary_search_freshness;
 
   ModelProvider::Response response(kAndroidHomeModuleLabels.size(), 0);
   // Default ranking
@@ -235,6 +266,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   response[1] = single_tab_score;      // Single tab
   response[2] = tab_resumption_score;  // Tab Resumption
   response[3] = safety_hub_score;      // Safety Hub
+  response[4] = auxiliary_search_score;  // Auxiliary Search
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));

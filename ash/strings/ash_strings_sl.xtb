@@ -1529,7 +1529,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6121838516699723042">Potrditev prenosa datoteke <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Pomočnik Google ni na voljo v gostujoči seji.</translation>
 <translation id="6127395413317891856">Nimate vzpostavljene povezave. Preverite povezavo in poskusite znova.</translation>
-<translation id="6129953537138746214">Presledek</translation>
+<translation id="6129953537138746214">Preslednica</translation>
 <translation id="6137566720514957455">Odpri pogovorno okno za odstranjevanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na kaj se želite osredotočiti?</translation>
 <translation id="6141988275892716286">Potrdi prenos</translation>
@@ -2124,6 +2124,7 @@ Nova namestitev</translation>
 <translation id="8142699993796781067">Zasebno omrežje</translation>
 <translation id="8144760705599030999">Shranite napravo <ph name="NAME" /> v račun <ph name="EMAIL" /> za hitrejše seznanjanje z drugimi vašimi napravami</translation>
 <translation id="8144914663975476336">Izbira oblike zapisa za snemanje</translation>
+<translation id="8145272500474066209">Generativna umetna inteligenca se lahko zmoti, tudi o ljudeh, zato preverite odgovore. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Prikaz nastavitev Bluetootha. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Pritisnite Ctrl + W, če ga želite zapreti.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, samodokončanje</translation>

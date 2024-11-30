@@ -22,6 +22,8 @@ class DedicatedWorkerDevToolsAgentHost final
   static DedicatedWorkerDevToolsAgentHost* GetFor(
       const DedicatedWorkerHost* host);
 
+  static void AddAllAgentHosts(DevToolsAgentHost::List* result);
+
   DedicatedWorkerDevToolsAgentHost(
       int process_id,
       const GURL& url,

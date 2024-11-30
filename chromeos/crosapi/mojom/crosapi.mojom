@@ -10,7 +10,6 @@ import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/app_service.mojom";
-import "chromeos/crosapi/mojom/app_window_tracker.mojom";
 import "chromeos/crosapi/mojom/arc.mojom";
 import "chromeos/crosapi/mojom/audio_service.mojom";
 import "chromeos/crosapi/mojom/authentication.mojom";
@@ -39,7 +38,6 @@ import "chromeos/crosapi/mojom/digital_goods.mojom";
 import "chromeos/crosapi/mojom/dlp.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
-import "chromeos/crosapi/mojom/download_status_updater.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
 import "chromeos/crosapi/mojom/editor_panel.mojom";
@@ -62,7 +60,6 @@ import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/input_methods.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
-import "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
@@ -202,24 +199,9 @@ interface Crosapi {
   [MinVersion=50] BindBrowserAppInstanceRegistry@54(
       pending_receiver<BrowserAppInstanceRegistry> receiver);
 
+  // BindBrowserServiceHost@20 was removed.
   // BindBrowserVersionService@50 was removed.
-
-  // Binds the BrowserServiceHost interface to prepare registering
-  // a BrowserService to crosapi.
-  // This is a part of lacros-chrome bootstrap sequence. First, Crosapi
-  // interface is bound, and then lacros-chrome calls this so that it
-  // obtains BrowserServiceHost proxy. Finally, lacros-chrome calls
-  // BrowserServiceHost::AddBrowserService to register its BrowserService
-  // so that ash-chrome can call it to ask browser operations to lacros-chrome.
-  // Added in M90.
-  [MinVersion=15]
-  BindBrowserServiceHost@20(pending_receiver<BrowserServiceHost> receiver);
-
-  // Binds the browser shortcuts publisher service to allow browser shortcuts
-  // publishing from lacros-chrome to the App Service in ash-chrome.
-  [MinVersion=123]
-  BindBrowserShortcutPublisher@125(
-      pending_receiver<AppShortcutPublisher> receiver);
+  // BindBrowserShortcutPublisher@125 was removed.
 
   // Binds the BrowserCdmFactory interface for proxying communication to the
   // HWDRM CDM hosted in a ChromeOS daemon process. We need to use a
@@ -256,17 +238,9 @@ interface Crosapi {
   [MinVersion=125] BindChapsService@127(
       pending_receiver<ChapsService> receiver);
 
-  // Binds the chrome app publisher service, which allows Lacros to connect its
-  // Chrome apps to the app service.
-  // Added in M93.
-  [MinVersion=38]
-  BindChromeAppPublisher@43(pending_receiver<AppPublisher> receiver);
+  // BindChromeAppPublisher@43 was removed.
 
-  // Binds the window tracker for chrome apps. This allows Lacros to inform Ash
-  // of the relationship between AppService app_ids and exo/Wayland/aura
-  // windows.
-  [MinVersion=44]
-  BindChromeAppWindowTracker@49(pending_receiver<AppWindowTracker> receiver);
+  // BindChromeAppWindowTracker@49 was removed.
 
   // BindClipboard@15 was removed.
 
@@ -347,13 +321,6 @@ interface Crosapi {
   [MinVersion=28] BindDownloadController@33(
       pending_receiver<DownloadController> receiver);
 
-  // Binds the DownloadStatusUpdater interface, which allows Lacros download
-  // status updates to be passed into Ash Chrome for rendering in the
-  // appropriate System UI surface(s).
-  // Added in M115.
-  [MinVersion=107] BindDownloadStatusUpdater@110(
-      pending_receiver<DownloadStatusUpdater> receiver);
-
   // Binds the DriveIntegrationService interface for getting information about
   // the local Google Drive mount.
   // Added in M93.
@@ -393,11 +360,7 @@ interface Crosapi {
   [MinVersion=80] BindNetworkingPrivate@83(
       pending_receiver<NetworkingPrivate> receiver);
 
-  // Binds the extension publisher service, which allows Lacros to connect its
-  // extensions to the app service.
-  // Added in M93.
-  [MinVersion=70]
-  BindExtensionPublisher@73(pending_receiver<AppPublisher> receiver);
+  // BindExtensionPublisher@73 was removed.
 
   // Binds the bridge implemented in Ash which is connected to the
   // `FileChangeServiceBridge` in Lacros via crosapi. This bridge enables file
@@ -482,17 +445,9 @@ interface Crosapi {
   // Added in M87.
   BindKeystoreService@2(pending_receiver<KeystoreService> receiver);
 
-  // Binds the LacrosShelfItemTracker interface for integrating ephemeral Lacros
-  // Windows with Ash Shelf.
-  [MinVersion=126]
-  BindLacrosShelfItemTracker@128(
-      pending_receiver<LacrosShelfItemTracker> receiver);
+  // BindLacrosShelfItemTracker@128 was removed.
 
-  // Binds the Lacros app publisher service, which allows Lacros to connect the
-  // Lacros app to the app service.
-  // Added in M118.
-  [MinVersion=116]
-  BindLacrosAppPublisher@119(pending_receiver<AppPublisher> receiver);
+  // BindLacrosAppPublisher@119 was removed.
 
   // Binds the LocalPrinter interface for printing.
   // Added in M91.
@@ -847,12 +802,7 @@ interface Crosapi {
       pending_receiver<VpnService> receiver);
 
   // BindWebPageInfoFactory@39 was removed.
-
-  // Binds the web app publisher service to allow web app publishing from
-  // lacros-chrome to the App Service in ash-chrome.
-  // Added in M92.
-  [MinVersion=22]
-  BindWebAppPublisher@27(pending_receiver<AppPublisher> receiver);
+  // BindWebAppPublisher@27 was removed.
 
   // Binds the service to allow web-app-related queries and actions between
   // lacros-chrome and ash-chrome. This is a web-app-specific interface,
@@ -1193,13 +1143,8 @@ struct BrowserInitParams {
   [MinVersion=10]
   string? cros_user_id_hash@10;
 
-  // Policy blob of the device account. If present, it's a managed account with
-  // policy data. If empty, it's unmanaged account. If absent, an error occurred
-  // while loading policy data. The format is serialized PolicyFetchResponse
-  // object. See components/policy/proto/device_management_backend.proto for
-  // details.
   [MinVersion=11]
-  array<uint8>? device_account_policy@11;
+  array<uint8>? REMOVED_11@11;
 
   // Timestamp (seconds since epoch in UTC) at which last device account policy
   // fetch was attempted.
@@ -1518,10 +1463,8 @@ struct BrowserInitParams {
   [MinVersion=66]
   bool is_floss_available@66;
 
-  // Indicates whether the new downloads integration with System UI surfaces is
-  // enabled in Ash, so as to allow the browser to disable competing behaviors.
   [MinVersion=67]
-  bool is_sys_ui_downloads_integration_v2_enabled@67;
+  bool REMOVED_67@67;
 
   // Indicates whether ChromeOS Battery Saver is available, so browser specific
   // energy saving UI should defer to the OS.

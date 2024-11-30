@@ -37,6 +37,10 @@
 #include "ui/base/ui_base_features.h"
 #endif
 
+#if BUILDFLAG(USE_BLINK)
+#include "ui/base/accelerators/media_keys_listener.h"
+#endif
+
 namespace ui {
 
 namespace {
@@ -177,6 +181,16 @@ bool Accelerator::IsFunctionDown() const {
 bool Accelerator::IsRepeat() const {
   return (modifiers_ & EF_IS_REPEAT) != 0;
 }
+
+#if BUILDFLAG(USE_BLINK)
+bool Accelerator::IsMediaKey() const {
+  if (modifiers_ != EF_NONE) {
+    return false;
+  }
+
+  return ui::MediaKeysListener::IsMediaKeycode(key_code_);
+}
+#endif
 
 std::u16string Accelerator::GetShortcutText() const {
   std::u16string shortcut;

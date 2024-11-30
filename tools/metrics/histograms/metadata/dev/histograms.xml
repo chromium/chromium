@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DevTools.LegacyResourceTypeFilterItemSelected"
     enum="DevToolsLegacyResourceTypeFilterItemSelected"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>wolfi@google.com</owner>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DevTools.LegacyResourceTypeFilterNumberOfSelectedChanged"
     enum="DevToolsLegacyResourceTypeFilterNumberOfSelectedChanged"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>wolfi@google.com</owner>
@@ -360,18 +360,8 @@ chromium-metrics-reviews@google.com.
   <summary>Records which Lighthouse mode was used to audit the page.</summary>
 </histogram>
 
-<histogram name="DevTools.ManifestSectionSelected"
-    enum="DevToolsManifestSection" expires_after="2024-12-31">
-  <owner>bmeurer@google.com</owner>
-  <owner>edgedevtools@microsoft.com</owner>
-  <summary>
-    Records when certain items of the Manifest dropdown submenu in the
-    Application Tool are selected.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.NetworkPanelResponsePreviewOpened"
-    enum="DevToolsMediaType" expires_after="2024-12-31">
+    enum="DevToolsMediaType" expires_after="2025-05-04">
   <owner>bmeurer@google.com</owner>
   <owner>szuend@google.com</owner>
   <summary>
@@ -443,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingExported" enum="DevToolsRecordingExported"
-    expires_after="2025-03-01">
+    expires_after="2025-05-18">
   <owner>alexrudenko@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>

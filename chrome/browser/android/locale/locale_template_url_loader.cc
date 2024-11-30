@@ -191,4 +191,4 @@ int LocaleTemplateUrlLoader::GetDesignatedSearchEngineForChina() {
   return TemplateURLPrepopulateData::sogou.id;
 }
 
-LocaleTemplateUrlLoader::~LocaleTemplateUrlLoader() {}
+LocaleTemplateUrlLoader::~LocaleTemplateUrlLoader() = default;

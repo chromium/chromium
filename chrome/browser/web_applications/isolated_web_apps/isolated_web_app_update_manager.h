@@ -75,8 +75,18 @@ enum class IsolatedWebAppUpdateError {
 };
 
 struct IsolatedWebAppUpdateOptions {
+  IsolatedWebAppUpdateOptions(
+      const GURL& update_manifest_url,
+      UpdateChannel update_channel,
+      const std::optional<base::Version>& pinned_version);
+
+  IsolatedWebAppUpdateOptions(const IsolatedWebAppUpdateOptions& other);
+  IsolatedWebAppUpdateOptions& operator=(IsolatedWebAppUpdateOptions&& other);
+  ~IsolatedWebAppUpdateOptions();
+
   GURL update_manifest_url;
   UpdateChannel update_channel;
+  std::optional<base::Version> pinned_version;
 };
 
 // The `IsolatedWebAppUpdateManager` is responsible for discovery, download, and
@@ -166,11 +176,17 @@ class IsolatedWebAppUpdateManager
 
   // Queues an update discovery task (and potentially an apply update task
   // afterwards if the discovery leads to a pending update) for the provided
-  // `url_info.app_id`. The result of the discover & apply chain will be
-  // communicated via observers.
+  // `url_info.app_id` and `update_channel`.
+  // If `pinned_version` is set, this specifies the version to which the IWA
+  // should be pinned, otherwise defaults to the latest version.
+  // Version pinning prevents any updates to a different version,
+  // effectively locking the IWA to the specified version.
+  // The result of the discover & apply chain will be communicated via
+  // observers.
   void DiscoverUpdatesForApp(const IsolatedWebAppUrlInfo& url_info,
                              const GURL& update_manifest_url,
                              const UpdateChannel& update_channel,
+                             const std::optional<base::Version>& pinned_version,
                              bool dev_mode);
 
   // Used to queue update discovery tasks manually from the
@@ -282,8 +298,8 @@ class IsolatedWebAppUpdateManager
   };
 
   // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(
-      const base::Version& component_version) override;
+  void OnComponentUpdateSuccess(const base::Version& version,
+                                bool is_preloaded) override;
 
   bool IsAnyIwaInstalled();
 

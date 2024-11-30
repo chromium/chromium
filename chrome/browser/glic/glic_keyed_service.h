@@ -5,12 +5,18 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_H_
 #define CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
+
+class GlicWindowController;
 
 class GlicKeyedService : public KeyedService {
  public:
@@ -22,8 +28,26 @@ class GlicKeyedService : public KeyedService {
   // Launches the Glic UI.
   void LaunchUI();
 
+  GlicWindowController* window_controller() { return window_controller_.get(); }
+
+  // Private API for the glic WebUI.
+  void CreateTab(const ::GURL& url,
+                 bool open_in_background,
+                 const std::optional<int32_t>& window_id,
+                 glic::mojom::WebClientHandler::CreateTabCallback callback);
+  void ClosePanel();
+  std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
+
+  void GetContextFromFocusedTab(
+      bool include_inner_text,
+      bool include_viewport_screenshot,
+      glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
+
  private:
+  content::WebContents* GetWebContentsForContext();
   raw_ptr<content::BrowserContext> browser_context_;
+
+  std::unique_ptr<GlicWindowController> window_controller_;
 };
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_H_

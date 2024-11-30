@@ -128,6 +128,25 @@ OpenXrLightEstimatorAndroidFactory::GetSupportedFeatures(
   return {device::mojom::XRSessionFeature::LIGHT_ESTIMATION};
 }
 
+void OpenXrLightEstimatorAndroidFactory::ProcessSystemProperties(
+    const OpenXrExtensionEnumeration* extension_enum,
+    XrInstance instance,
+    XrSystemId system) {
+  XrSystemLightEstimationPropertiesANDROID light_estimation_properties{
+      XR_TYPE_SYSTEM_LIGHT_ESTIMATION_PROPERTIES_ANDROID};
+
+  XrSystemProperties system_properties{XR_TYPE_SYSTEM_PROPERTIES};
+  system_properties.next = &light_estimation_properties;
+
+  bool lighting_supported = false;
+  XrResult result = xrGetSystemProperties(instance, system, &system_properties);
+  if (XR_SUCCEEDED(result)) {
+    lighting_supported = light_estimation_properties.supportsLightEstimation;
+  }
+
+  SetSystemPropertiesSupport(lighting_supported);
+}
+
 std::unique_ptr<OpenXrLightEstimator>
 OpenXrLightEstimatorAndroidFactory::CreateLightEstimator(
     const OpenXrExtensionHelper& extension_helper,

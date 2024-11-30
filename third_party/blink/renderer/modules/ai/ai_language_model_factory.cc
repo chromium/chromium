@@ -7,8 +7,10 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
@@ -93,6 +95,7 @@ class CreateLanguageModelClient
     visitor->Trace(receiver_);
   }
 
+  // mojom::blink::AIManagerCreateLanguageModelClient implementation.
   void OnResult(
       mojo::PendingRemote<mojom::blink::AILanguageModel> language_model_remote,
       mojom::blink::AILanguageModelInfoPtr info) override {
@@ -100,15 +103,36 @@ class CreateLanguageModelClient
       return;
     }
 
-    if (info) {
-      AILanguageModel* language_model = MakeGarbageCollected<AILanguageModel>(
-          ai_->GetExecutionContext(), std::move(language_model_remote),
-          ai_->GetTaskRunner(), std::move(info), /*current_tokens=*/0);
-      GetResolver()->Resolve(language_model);
-    } else {
-      GetResolver()->RejectWithDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          kExceptionMessageUnableToCreateSession);
+    CHECK(info);
+    AILanguageModel* language_model = MakeGarbageCollected<AILanguageModel>(
+        ai_->GetExecutionContext(), std::move(language_model_remote),
+        ai_->GetTaskRunner(), std::move(info), /*current_tokens=*/0);
+    GetResolver()->Resolve(language_model);
+
+    Cleanup();
+  }
+
+  void OnError(mojom::blink::AIManagerCreateLanguageModelError error) override {
+    if (!GetResolver()) {
+      return;
+    }
+
+    using mojom::blink::AIManagerCreateLanguageModelError;
+
+    switch (error) {
+      case AIManagerCreateLanguageModelError::kUnableToCreateSession:
+      case AIManagerCreateLanguageModelError::kUnableToCalculateTokenSize: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            kExceptionMessageUnableToCreateSession);
+        break;
+      }
+      case AIManagerCreateLanguageModelError::kInitialPromptsTooLarge: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kQuotaExceededError,
+            kExceptionMessageInitialPromptTooLarge);
+        break;
+      }
     }
     Cleanup();
   }

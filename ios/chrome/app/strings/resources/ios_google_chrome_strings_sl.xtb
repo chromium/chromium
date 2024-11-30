@@ -38,6 +38,7 @@ Kaj je treba upoštevati:
 <translation id="1646463005043273333">Odpre nastavitev za Chrome za nastavitev Chromiuma kot privzetega brskalnika.</translation>
 <translation id="1670609221633730681">Nasvet za Chrome: Izberite položaj naslovne vrstice</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Shranjevanje gesel v Chromu</translation>
 <translation id="1790080846677398234">Vnesene URL-je doda med zaznamke v Chromu.</translation>
 <translation id="1799920918471566157">Nasveti za Chrome</translation>
 <translation id="1830634592642484976">Ta naslov je trenutno shranjen v Chromu. Če ga želite uporabiti v Googlovih izdelkih, ga shranite v računu Google (<ph name="USER_EMAIL" />).</translation>
@@ -109,6 +110,7 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="3655656110921623717">To pomeni, da bo Chrome vsakič zahteval spletno mesto za mobilne naprave.</translation>
 <translation id="3740397331642243698">Odpre vnesene URL-je v Google Chromu v anonimnem načinu.</translation>
 <translation id="3741995255368156336">Odpre bralni seznam v Chromu.</translation>
+<translation id="3808570423967020928">Hitrejši dostop do Chroma iz vrstice Dock na začetnem zaslonu.</translation>
 <translation id="3827545470516145620">V tej napravi uporabljate standardno varnostno zaščito</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne more uporabljati fotoaparata</translation>
 <translation id="3863841106411295595">Doda vnesene URL-je na bralni seznam v Chromu.</translation>
@@ -219,9 +221,11 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 
 Če želite več nastavitev, ki uporabljajo podatke za izboljšanje izkušnje v Chromu, odprite <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Brisanje podatkov brskanja v Chromu.</translation>
+<translation id="6924922227983877439">Privzeto odpiranje povezav v Chromu</translation>
 <translation id="6975725306479268850">Izbira Chroma za samodejno izpolnjevanje</translation>
 <translation id="7056826488869329999">Odpre in izvede varnostno preverjanje v Chromu.</translation>
 <translation id="7061455974939528301">Pridržite ikono Chroma in kliknite »Uredi začetni zaslon«</translation>
+<translation id="7065813315247345131">Premaknite Chrome v vrstico z aplikacijami</translation>
 <translation id="7124339256045485976">Posodobitev Chroma</translation>
 <translation id="7161390184744336561">Google Chrome je zastarel</translation>
 <translation id="7165736900384873061">Začetek uporabe bralnika kod QR Google Chroma</translation>

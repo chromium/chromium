@@ -201,7 +201,8 @@ def DFS(node: Node):
 
     if not node.replacement.endswith('<empty>'):
         node.component.changes.add(node.replacement)
-        node.component.changes.add(node.include_directive)
+        if node.include_directive:
+            node.component.changes.add(node.include_directive)
 
     for neighbour in node.neighbors_directed:
         DFS(neighbour)

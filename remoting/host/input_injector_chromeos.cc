@@ -196,8 +196,9 @@ void InputInjectorChromeos::Core::InjectTextEvent(const TextEvent& event) {
     return;
   }
   ui::TextInputClient* text_input_client = input_method->GetTextInputClient();
-  if (!text_input_client) {
-    LOG(ERROR) << "text_input_client is null, can't inject text.";
+  if (!text_input_client ||
+      text_input_client->GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE) {
+    LOG(ERROR) << "text_input_client is null or none, can't inject text.";
     return;
   }
 

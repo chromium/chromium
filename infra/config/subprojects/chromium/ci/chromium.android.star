@@ -940,7 +940,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "android_12l_emulator_gtests",
+            "android_lff_emulator_gtests",
         ],
         mixins = [
             "12l-x64-emulator",
@@ -1060,7 +1060,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "android_12l_landscape_emulator_gtests",
+            "android_lff_landscape_emulator_gtests",
         ],
         mixins = [
             "12l-landscape-x64-emulator",
@@ -1458,6 +1458,8 @@ ci.builder(
 ci.builder(
     name = "android-cronet-arm64-gn2bp-dbg",
     description_html = "Builds the gn2bp verification workflow.",
+    schedule = "0 */6 * * *",  # Run every 6 hours.
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1490,6 +1492,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         additional_compile_targets = [
+            "cronet_gn2bp_aosp_feedback_loop",
             "cronet_package",
             "cronet_package_ci",
         ],
@@ -4043,7 +4046,7 @@ ci.builder(
             ),
             "base_unittests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.base_unittests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter",
                 ],
             ),
             "chrome_public_test_apk": targets.mixin(
@@ -4082,7 +4085,7 @@ ci.builder(
             ),
             "content_shell_test_apk": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.content_shell_test_apk.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.content_shell_test_apk.filter",
                 ],
             ),
             "content_unittests": targets.mixin(
@@ -4102,7 +4105,7 @@ ci.builder(
             ),
             "gwp_asan_unittests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.gwp_asan_unittests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
                 ],
             ),
             "media_unittests": targets.mixin(
@@ -4118,7 +4121,7 @@ ci.builder(
             ),
             "unit_tests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.unit_tests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.unit_tests.filter",
                 ],
             ),
             "webkit_unit_tests": targets.mixin(
@@ -4154,6 +4157,7 @@ ci.builder(
 
 ci.builder(
     name = "android-14-tablet-landscape-arm64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run chromium tests on Android 14 tablets in Landscape Mode.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -4263,9 +4267,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
-    # TODO(crbug.com/371224006 ): Enable gardening and tree closing once tests are stable
-    gardener_rotations = args.ignore_default(None),
-    # tree_closing = True,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
         short_name = "14T-L",
@@ -4339,7 +4341,7 @@ ci.builder(
             ),
             "base_unittests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.base_unittests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter",
                 ],
             ),
             "chrome_public_test_apk": targets.mixin(
@@ -4362,12 +4364,12 @@ ci.builder(
             ),
             "content_shell_test_apk": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.content_shell_test_apk.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.content_shell_test_apk.filter",
                 ],
             ),
             "content_unittests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_unittests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
                 ],
             ),
             "crashpad_tests": targets.mixin(
@@ -4382,7 +4384,7 @@ ci.builder(
             ),
             "gwp_asan_unittests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.gwp_asan_unittests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
                 ],
             ),
             "media_unittests": targets.mixin(
@@ -4398,7 +4400,7 @@ ci.builder(
             ),
             "unit_tests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.unit_tests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.unit_tests.filter",
                 ],
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
@@ -4421,6 +4423,113 @@ ci.builder(
     ),
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = 4 * time.hour,
+)
+
+ci.thin_tester(
+    name = "android-15-tablet-x64-dbg-tests",
+    description_html = "Run chromium tests on Android 15 tablet emulators.",
+    triggered_by = ["Android x64 Builder (dbg)"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x64_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_lff_emulator_gtests",
+        ],
+        mixins = [
+            "15-tablet-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
+    # TODO(crbug.com/376748979 ): Enable gardening once tests are stable
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|tablet",
+        short_name = "15T",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+)
+
+ci.thin_tester(
+    name = "android-15-tablet-landscape-x64-dbg-tests",
+    description_html = "Run chromium tests on Android 15 tablet emulators " +
+                       "in Landscape mode.",
+    triggered_by = ["Android x64 Builder (dbg)"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x64_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_lff_landscape_emulator_gtests",
+        ],
+        mixins = [
+            "15-tablet-landscape-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
+    # TODO(crbug.com/376748979 ): Enable gardening once tests are stable
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|tablet",
+        short_name = "15T-L",
+    ),
+    contact_team_email = "clank-engprod@google.com",
 )
 
 ci.builder(

@@ -88,6 +88,10 @@ class DesktopAndroidExtensionSystem : public ExtensionSystem {
   void Shutdown() override;
 
   bool AddExtension(scoped_refptr<Extension> extension, std::string& error);
+  void DisableExtension(const std::string& extension_id, int disable_reasons);
+  void ReloadExtension(const std::string& extension_id);
+
+  const Extension* LoadExtensionFromDirectory(const base::FilePath& file_path);
 
   // ExtensionSystem implementation:
   void InitForRegularProfile(bool extensions_enabled) override;

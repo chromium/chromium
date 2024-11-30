@@ -39,7 +39,7 @@ class ProfileOAuth2TokenServiceDelegateTest : public testing::Test {
 };
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, FireRefreshTokenRevoked) {
-  CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id1");
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("account_id1"));
   delegate.UpdateCredentials(account_id, "refresh_token1");
   testing::InSequence sequence;
   EXPECT_CALL(mock_observer, OnRefreshTokenRevoked(account_id));
@@ -63,8 +63,10 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, InvalidateTokensForMultilogin) {
                   testing::_))
       .Times(0);
 
-  const CoreAccountId account_id1 = CoreAccountId::FromGaiaId("account_id1");
-  const CoreAccountId account_id2 = CoreAccountId::FromGaiaId("account_id2");
+  const CoreAccountId account_id1 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id1"));
+  const CoreAccountId account_id2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id2"));
 
   delegate.UpdateCredentials(account_id1, "refresh_token1");
   delegate.UpdateCredentials(account_id2, "refresh_token2");
@@ -92,7 +94,8 @@ const GoogleServiceAuthError::State table[] = {
 };
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistenErrors) {
-  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
   delegate.UpdateCredentials(account_id, "refresh_token");
 
   static_assert(
@@ -121,7 +124,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistenErrors) {
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorTransientErrors) {
-  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
   delegate.UpdateCredentials(account_id, "refresh_token");
 
   static_assert(
@@ -157,7 +161,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorTransientErrors) {
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest,
        UpdateAuthErrorScopePersistenErrors) {
-  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
   delegate.UpdateCredentials(account_id, "refresh_token");
   GoogleServiceAuthError error(
       GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
@@ -178,7 +183,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest,
        UpdateAuthErrorRefreshTokenNotAvailable) {
-  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
   EXPECT_FALSE(delegate.RefreshTokenIsAvailable(account_id));
   EXPECT_CALL(mock_observer,
               OnAuthErrorChanged(::testing::_, ::testing::_, testing::_))
@@ -194,7 +200,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest,
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, AuthErrorChanged) {
-  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
   delegate.UpdateCredentials(account_id, "refresh_token");
 
   GoogleServiceAuthError error(
@@ -228,7 +235,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, AuthErrorChanged) {
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest,
        OnAuthErrorChangedAfterUpdatingCredentials) {
-  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
 
   {
     testing::InSequence sequence;

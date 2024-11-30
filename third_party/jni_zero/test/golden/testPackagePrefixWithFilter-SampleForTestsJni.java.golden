@@ -8,19 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jni_zero.CheckDiscard;
-import org.jni_zero.JniStaticTestMocker;
+import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForTests;
 import org.jni_zero.SampleUnderSamePackage;
-import org.jni_zero.internal.JniOverrideHolder;
 import this.is.a.package.prefix.org.jni_zero.GEN_JNI;
 
 @CheckDiscard("crbug.com/993421")
 public class SampleForTestsJni implements SampleForTests.Natives {
-  private static JniOverrideHolder sOverride;
+  private static JniTestInstanceHolder sOverride;
 
   public static SampleForTests.Natives get() {
-    JniOverrideHolder holder = sOverride;
+    JniTestInstanceHolder holder = sOverride;
     if (holder != null && holder.value != null) {
       return (SampleForTests.Natives) holder.value;
     }
@@ -30,13 +29,10 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   public static void setInstanceForTesting(SampleForTests.Natives impl) {
     if (sOverride == null) {
-      sOverride = JniOverrideHolder.create();
+      sOverride = JniTestInstanceHolder.create();
     }
     sOverride.value = impl;
   }
-
-  // TODO(crbug.com/329069277): Delete.
-  public static final JniStaticTestMocker TEST_HOOKS = x -> setInstanceForTesting((SampleForTests.Natives) x);
 
 
   @Override
@@ -50,8 +46,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public void classUnderSamePackageTest(SampleUnderSamePackage arg) {
-    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_classUnderSamePackageTest(
-        arg);
+    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_classUnderSamePackageTest(arg);
   }
 
   @Override
@@ -65,8 +60,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public Class getClass(Class env) {
-    return (Class) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getClass(
-        env);
+    return (Class) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getClass(env);
   }
 
   @Override
@@ -112,14 +106,12 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public List listTest2(Set items) {
-    return (List) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_listTest2(
-        items);
+    return (List) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_listTest2(items);
   }
 
   @Override
   public Map mapTest2(Map arg0) {
-    return (Map) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_mapTest2(
-        arg0);
+    return (Map) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_mapTest2(arg0);
   }
 
   @Override
@@ -161,8 +153,6 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public void setNonPODDatatype(SampleForTests obj, Rect rect) {
-    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_setNonPODDatatype(
-        obj,
-        rect);
+    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_setNonPODDatatype(obj, rect);
   }
 }

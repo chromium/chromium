@@ -216,7 +216,10 @@ public class HomepagePolicyManager implements PrefObserver {
 
     /** Called when the native library has finished loading. */
     private void onFinishNativeInitialization() {
-        if (!mIsInitializedWithNative) initializeWithNative(new PrefChangeRegistrar());
+        if (!mIsInitializedWithNative) {
+            initializeWithNative(
+                    new PrefChangeRegistrar(ProfileManager.getLastUsedRegularProfile()));
+        }
     }
 
     private PrefService getPrefService() {

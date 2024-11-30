@@ -20,13 +20,17 @@ class PrefService;
 @protocol SigninPromoViewConsumer;
 @protocol SystemIdentity;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace signin_metrics {
 enum class AccessPoint;
-}
+}  // namespace signin_metrics
 
 namespace syncer {
 class SyncService;
-}
+}  // namespace syncer
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -125,15 +129,15 @@ enum class SigninPromoAction {
 // Designated initializer.
 // `baseViewController` is the view to present UI for sign-in.
 - (instancetype)
-    initWithAccountManagerService:
-        (ChromeAccountManagerService*)accountManagerService
-                      authService:(AuthenticationService*)authService
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint
-                  signinPresenter:(id<SigninPresenter>)signinPresenter
-         accountSettingsPresenter:
-             (id<AccountSettingsPresenter>)accountSettingsPresenter
+     initWithIdentityManager:(signin::IdentityManager*)identityManager
+       accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                 authService:(AuthenticationService*)authService
+                 prefService:(PrefService*)prefService
+                 syncService:(syncer::SyncService*)syncService
+                 accessPoint:(signin_metrics::AccessPoint)accessPoint
+             signinPresenter:(id<SigninPresenter>)signinPresenter
+    accountSettingsPresenter:
+        (id<AccountSettingsPresenter>)accountSettingsPresenter
     NS_DESIGNATED_INITIALIZER;
 
 - (SigninPromoViewConfigurator*)createConfigurator;

@@ -134,11 +134,14 @@ const char kHttpRespData[] = "hello world";
 
 struct TestParams {
   quic::ParsedQuicVersion version;
+  bool happy_eyeballs_v3_enabled = false;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return ParsedQuicVersionToString(p.version);
+  return base::StrCat(
+      {ParsedQuicVersionToString(p.version), "_",
+       p.happy_eyeballs_v3_enabled ? "HEv3Enabled" : "HEv3Disabled"});
 }
 
 // Run QuicNetworkTransactionWithDestinationTest instances with all value
@@ -146,6 +149,7 @@ std::string PrintToString(const TestParams& p) {
 struct PoolingTestParams {
   quic::ParsedQuicVersion version;
   DestinationType destination_type;
+  bool happy_eyeballs_v3_enabled = false;
 };
 
 // Used by ::testing::PrintToStringParamName().
@@ -163,7 +167,8 @@ std::string PrintToString(const PoolingTestParams& p) {
       break;
   }
   return base::StrCat(
-      {ParsedQuicVersionToString(p.version), "_", destination_string});
+      {ParsedQuicVersionToString(p.version), "_", destination_string,
+       p.happy_eyeballs_v3_enabled ? "_HEv3Enabled" : "_HEv3Disabled"});
 }
 
 std::string GenerateQuicAltSvcHeaderValue(
@@ -204,7 +209,8 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    params.push_back(TestParams{version});
+    params.push_back(TestParams{version, true});
+    params.push_back(TestParams{version, false});
   }
   return params;
 }
@@ -214,9 +220,12 @@ std::vector<PoolingTestParams> GetPoolingTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND});
-    params.push_back(PoolingTestParams{version, DIFFERENT});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false});
+    params.push_back(PoolingTestParams{version, DIFFERENT, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true});
+    params.push_back(PoolingTestParams{version, DIFFERENT, true});
   }
   return params;
 }
@@ -329,6 +338,15 @@ class QuicNetworkTransactionTest
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         ssl_data_(ASYNC, OK) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().happy_eyeballs_v3_enabled) {
+      enabled_features.emplace_back(features::kHappyEyeballsV3);
+    } else {
+      disabled_features.emplace_back(features::kHappyEyeballsV3);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     FLAGS_quic_enable_http3_grease_randomness = false;
     request_.method = "GET";
     std::string url("https://");
@@ -1016,6 +1034,7 @@ class QuicNetworkTransactionTest
     EXPECT_EQ(alt_svc_negotiated_alpn, supported_alpn);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   const quic::ParsedQuicVersion version_;
   const std::string alt_svc_header_ =
       GenerateQuicAltSvcHeader({version_}) + "\r\n";
@@ -4357,8 +4376,19 @@ TEST_P(QuicNetworkTransactionTest,
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  std::vector<base::test::FeatureRef> enable_features;
+  std::vector<base::test::FeatureRef> disable_features;
+  enable_features.emplace_back(
       features::kPartitionConnectionsByNetworkIsolationKey);
+  // Disable AsyncQuicSession for HappyEyeballsV3 because AsyncQuicSession
+  // delays QUIC session establishment and requires another mock TCP socket
+  // in the HappyEyeballsV3 code path.
+  // TODO(crbug.com/346835898): Avoid disable AsyncQuicSession if possible.
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    disable_features.emplace_back(features::kAsyncQuicSession);
+  }
+  feature_list.InitWithFeatures(enable_features, disable_features);
+
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   http_server_properties_ = std::make_unique<HttpServerProperties>();
@@ -6143,6 +6173,20 @@ class QuicNetworkTransactionWithDestinationTest
             ConfiguredProxyResolutionService::CreateDirect()),
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         ssl_data_(ASYNC, OK) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().happy_eyeballs_v3_enabled) {
+      enabled_features.emplace_back(features::kHappyEyeballsV3);
+      // Disable AsyncQuicSession to simplify tests since HappyEyeballsV3
+      // may attempt both the origin and alternative endpoint when
+      // AsyncQuicSession is enabled.
+      // TODO(crbug.com/346835898): Avoid disabling AsyncQuicSession.
+      disabled_features.emplace_back(features::kAsyncQuicSession);
+    } else {
+      disabled_features.emplace_back(features::kHappyEyeballsV3);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     FLAGS_quic_enable_http3_grease_randomness = false;
   }
 
@@ -6152,7 +6196,7 @@ class QuicNetworkTransactionWithDestinationTest
 
     HttpNetworkSessionParams session_params;
     session_params.enable_quic = true;
-    // To simplefy tests, we disable UseDnsHttpsSvcbAlpn feature. If this is
+    // To simplify tests, we disable UseDnsHttpsSvcbAlpn feature. If this is
     // enabled, we need to prepare mock sockets for `dns_alpn_h3_job_`. Also
     // AsyncQuicSession feature makes it more complecated because it changes the
     // socket call order.
@@ -6326,6 +6370,7 @@ class QuicNetworkTransactionWithDestinationTest
         version_.transport_version, n);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   const quic::ParsedQuicVersion version_;
   quic::ParsedQuicVersionVector supported_versions_;

@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">साइटला तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती द्या</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1384959399684842514">डाउनलोडला विराम दिला</translation>
+<translation id="1396327438254055134">साइटला V8 ऑप्टिमायझर वापरण्याची अनुमती द्या.</translation>
 <translation id="1415402041810619267">URL कापली गेली</translation>
 <translation id="1448064542941920355">झूम कमी करते</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइट}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">इमेज डीकोडर</translation>
 <translation id="1785415724048343560">सर्वोत्तम अनुभवासाठी शिफारस केलेले</translation>
 <translation id="1799920918471566157">Chrome शी संबंधित टिपा</translation>
+<translation id="1816835383954230954">सुरू असताना, Chrome अधिक जलद रन होते आणि JavaScript वापरणारी वैशिष्ट्ये डिझाइन केल्यानुसार कार्य करतात. बंद असताना, हे परफॉर्मन्स कमी करते, पण हल्ल्यांविरुद्ध V8 ला अधिक रोधक बनवते.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ला AR वापरू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" />मध्ये कॅमेरादेखील सुरू करा.</translation>
 <translation id="1887786770086287077">या डिव्हाइसाठी स्थान अ‍ॅक्सेस बंद आहे, <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="1915307458270490472">बंद करा</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">सुरू असताना, साइट तुमचा कॅमेरा वापरण्याची विनंती करू शकतात. बंद असताना, साइट तुमचा कॅमेरा वापरू शकत नाहीत.</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> अंतर्गत साइट</translation>
 <translation id="3523447078673133727">साइटना तुमचे हात ट्रॅक करण्याची अनुमती देऊ नका</translation>
+<translation id="3532312529397438268">साइट V8 ऑप्टिमायझर वापरू शकत नाहीत</translation>
 <translation id="3536227077203206203">यावेळी अनुमती दिली आहे</translation>
 <translation id="3538390592868664640">तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करण्यापासून किंवा कॅमेर्‍याचे स्थान ट्रॅक करण्यापासून साइट ब्लॉक करा</translation>
 <translation id="3544058026430919413">गटामध्ये तुमच्या अ‍ॅक्टिव्हिटी शेअर करण्यासाठी कुकीज वापरू शकणार्‍या साइटचा गट कंपनी नमूद करू शकते. हे गुप्त मोड मध्ये बंद आहे.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">झूम</translation>
 <translation id="4807122856660838973">सुरक्षित ब्राउझिंग सुरू करा</translation>
 <translation id="4811450222531576619">त्याचे स्रोत आणि विषय यांबद्दल जाणून घ्या</translation>
+<translation id="481168145262973879">साइट V8 ऑप्टिमायझर वापरू शकतात</translation>
 <translation id="4816495437032298535">साइटसाठी झूम सेव्ह केले आहे</translation>
 <translation id="4836046166855586901">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे कधी वापरता हे साइटला जाणून घ्यायचे असते तेव्हा विचारा</translation>
 <translation id="483914009762354899">या डोमेन अंतर्गत असलेल्या सर्व साइट समाविष्ट करा</translation>
@@ -330,6 +334,7 @@
 <translation id="5968921426641056619">वेब अ‍ॅड्रेस एंटर करा</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">तुम्ही आता तुमच्या डिव्हाइसच्या अ‍ॅप सूचीमधून आणि डिव्हाइस शोध परिणामांमध्ये सुचवलेले टॅब झटपट अ‍ॅक्सेस करू शकता. Chrome सेटिंग्जमध्ये हे कधीही बंद करा.</translation>
 <translation id="6015775454662021376">या साइटला तुमच्‍या डिव्हाइसचा असलेला अ‍ॅक्सेस नियंत्रित करा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6042308850641462728">अधिक</translation>
@@ -337,10 +342,8 @@
 <translation id="6071501408666570960">तुम्हाला या साइटमधून साइन आउट केले जाऊ शकते</translation>
 <translation id="6085954183010297841">फाइल संपादन मंजुरी हटवायची आहे का? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">सुरू असताना, साइट तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरत आहात हे जाणून घेण्याची विनंती करू शकतात. बंद असताना, साइट तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरत आहात हे जाणून घेऊ शकत नाहीत.</translation>
-<translation id="6140839633433422817">तुम्हाला नक्की परवानग्या रीसेट करणे आणि कुकी व साइट डेटा हटवणे हे करायचे आहे का?</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6171020522141473435">सुरू असताना, साइट ब्लूटूथ डिव्हाइस वापरण्याची विनंती करू शकतात. बंद असताना, साइट ब्लूटूथ डिव्हाइस वापरू शकत नाहीत.</translation>
-<translation id="6177111841848151710">सध्याच्या शोध इंजीनसाठी ब्लॉक केले</translation>
 <translation id="6177128806592000436">या साइटवरील तुमचे कनेक्शन सुरक्षित नाही</translation>
 <translation id="6181444274883918285">साइट एक्सेप्शन जोडा</translation>
 <translation id="6192792657125177640">अपवाद</translation>
@@ -405,8 +408,8 @@
 <translation id="6980861169612950611">साइट डेटा हटवायचा आहे का? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="6992289844737586249">साइटना तुमचा मायक्रोफोन वापरण्याची अनुमती देण्यापूर्वी प्रथम विचारा (शिफारस केलेले)</translation>
+<translation id="6999131147875565462">Chrome अधिक जलद रन होते आणि JavaScript वापरणारी वैशिष्ट्ये डिझाइन केल्यानुसार कार्य करतात</translation>
 <translation id="7000754031042624318">Android सेटिंग्जमध्‍ये बंद केले</translation>
-<translation id="7016516562562142042">वर्तमान शोध इंजिनसाठी अनुमती दिली</translation>
 <translation id="702275896380648118">ही साइट तुमच्या पसंतीच्या गोष्टी निर्धारित करते आणि इतर साइटना जाहिराती सुचवते. तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी, ही साइट Chrome मधून तुमचे जाहिरातीचे विषयदेखील मिळवते.</translation>
 <translation id="7053983685419859001">ब्लॉक करा</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 निवडला}other{# निवडले}}</translation>
@@ -425,7 +428,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> निवडले</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला अनुमती दिली</translation>
 <translation id="7276071417425470385">सुरू असताना, साइट व्हर्च्युअल रीअ‍ॅलिटी डिव्हाइस वापरण्याची विनंती करू शकतात. बंद असताना, साइट व्हर्च्युअल रीअ‍ॅलिटी डिव्हाइस वापरू शकत नाहीत.</translation>
-<translation id="7302486331832100261">तुम्ही सहसा सूचना ब्लॉक करता. अनुमती देण्यासाठी, तपशील वर टॅप करा.</translation>
 <translation id="7366415735885268578">एक साइट जोडा</translation>
 <translation id="7368695150573390554">कोणताही ऑफलाइन डेटा हटवला जाईल</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> साठी सेटिंग्ज</translation>
@@ -434,6 +436,7 @@
 <translation id="7423098979219808738">प्रथम विचारा</translation>
 <translation id="7423538860840206698">क्लिपबोर्ड वाचणे ब्लॉक केले</translation>
 <translation id="7425915948813553151">साइटसाठी गडद थीम</translation>
+<translation id="7488573225650545859">तुमच्या अ‍ॅप सूचीमध्ये टॅब पहा हे लपवा</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">सुरू असताना, साइट साइन-इन प्रॉम्प्ट दाखवू शकतात. बंद असताना, साइट साइन-इन प्रॉम्प्ट दाखवू शकत नाहीत.</translation>
 <translation id="7553211568594248088">हबसंबंधित शोधामधून बाहेर पडा</translation>
@@ -473,6 +476,7 @@
 <translation id="8087000398470557479">Google ने वितरित केलेली ही आशय, <ph name="DOMAIN_NAME" /> मधील आहे.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> मध्ये आणखी पर्याय</translation>
 <translation id="8090579562279016251">परफॉर्मन्स कमी करते, पण हल्ल्यांविरुद्ध V8 चा अवरोध वाढवते</translation>
+<translation id="8112925981674547014">तुमच्या अ‍ॅप सूचीमध्ये टॅब पहा</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome उद्या पुन्हा कुकी मर्यादित करेल}other{Chrome # दिवसांनी पुन्हा कुकी मर्यादित करेल}}</translation>
 <translation id="8116925261070264013">म्यूट केले</translation>
 <translation id="8117244575099414087">सुरू असताना, साइट तुमच्या डिव्हाइसची सेन्सर वापरू शकतात. बंद असताना, साइट सेन्सर वापरू शकत नाहीत.</translation>
@@ -542,7 +546,6 @@
 <translation id="8928445016601307354">NFC डिव्हाइसवर माहिती पाहण्यापासून आणि बदलण्यापासून साइटना ब्लॉक करा</translation>
 <translation id="8944485226638699751">मर्यादित</translation>
 <translation id="8959122750345127698">नेव्हिगेशन आवाक्याबाहेर आहे: <ph name="URL" /></translation>
-<translation id="8986362086234534611">विसरा</translation>
 <translation id="8990043154272859344">तुम्हाला सर्व साइटमधून साइन आउट केले जाईल</translation>
 <translation id="8993853206419610596">सर्व विनंत्यांचा विस्तार करा</translation>
 <translation id="9002538116239926534">सुरू असताना, साइट तुमच्या डिव्हाइसवर डेटा सेव्ह करू शकतात. बंद असताना, साइट तुमच्या डिव्हाइसवर डेटा सेव्ह करू शकत नाहीत.</translation>
@@ -555,8 +558,8 @@
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्‍ये <ph name="APP_NAME" /> साठी परवानग्या सुरू करा.</translation>
 <translation id="9138217887606523162">सध्याचे झूम <ph name="ZOOM_LEVEL" /> %% आहे</translation>
 <translation id="9162462602695099906">हे पेज धोकादायक आहे</translation>
-<translation id="930525582205581608">ही साइट विसरायची का?</translation>
 <translation id="947156494302904893">तुम्ही खरी व्यक्ती आहात आणि बॉट नाही याची तुम्ही भेट देता त्या साइट पडताळणी करू शकतात</translation>
 <translation id="959682366969460160">व्यवस्‍थापित करा</translation>
 <translation id="967624055006145463">डेटा स्टोअर केला</translation>
+<translation id="969975166333045662">V8 ऑप्टिमायझर वापरण्यापासून साइट ब्लॉक करा.</translation>
 </translationbundle>

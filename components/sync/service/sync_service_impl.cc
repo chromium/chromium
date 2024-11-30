@@ -985,6 +985,16 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
 
 void SyncServiceImpl::NotifyObservers() {
   CHECK(observers_);
+  SyncService::UserActionableError user_actionable_error =
+      GetUserActionableError();
+  // Exclude kNone bucket as it doesn't provide any useful information. The
+  // metric is recorded at most once per browser / profile session.
+  if (user_actionable_error != UserActionableError::kNone &&
+      encountered_user_actionable_errors_.insert(user_actionable_error)
+          .second) {
+    base::UmaHistogramEnumeration("Sync.UserActionableError",
+                                  user_actionable_error);
+  }
   for (SyncServiceObserver& observer : *observers_) {
     observer.OnStateChanged(this);
   }

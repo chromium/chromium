@@ -94,6 +94,9 @@ class FingerprintingProtectionFilterDryRunBrowserTest
 
   ~FingerprintingProtectionFilterDryRunBrowserTest() override;
 
+ protected:
+  void SetUpOnMainThread() override;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -112,6 +115,9 @@ class FingerprintingProtectionFilterEnabledInIncognitoBrowserTest
 
   ~FingerprintingProtectionFilterEnabledInIncognitoBrowserTest() override;
 
+ protected:
+  void SetUpOnMainThread() override;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -127,6 +133,9 @@ class FingerprintingProtectionFilterDisabledBrowserTest
       const FingerprintingProtectionFilterDisabledBrowserTest&) = delete;
 
   ~FingerprintingProtectionFilterDisabledBrowserTest() override;
+
+ protected:
+  void SetUpOnMainThread() override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

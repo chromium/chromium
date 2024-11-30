@@ -12,9 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
+#include "chrome/browser/printing/print_preview_test.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,7 +50,7 @@
 
 namespace printing {
 
-using PrintViewManagerTest = BrowserWithTestWindowTest;
+using PrintViewManagerTest = PrintPreviewTest;
 
 namespace {
 

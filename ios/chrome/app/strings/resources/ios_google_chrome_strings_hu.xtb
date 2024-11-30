@@ -38,6 +38,7 @@ Megjegyzések:
 <translation id="1646463005043273333">Megnyitja a Chrome beállításait a Chrome alapértelmezett böngészőként való beállításához.</translation>
 <translation id="1670609221633730681">Chrome-tipp: Válassza ki a címsáv helyét</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Jelszavak mentése a Chrome-ban</translation>
 <translation id="1790080846677398234">A bevitt URL-eket felveszi a könyvjelzők közé a Chrome-ban.</translation>
 <translation id="1799920918471566157">Chrome-tippek</translation>
 <translation id="1830634592642484976">A címet jelenleg a Chrome-ba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
@@ -109,6 +110,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="3655656110921623717">Ez azt jelenti, hogy a Chrome mindig a mobilwebhelyet kéri majd.</translation>
 <translation id="3740397331642243698">A megadott URL-eket a Google Chrome böngészőben, inkognitó módban nyitja meg.</translation>
 <translation id="3741995255368156336">Megnyitja a Chrome-olvasólistát.</translation>
+<translation id="3808570423967020928">Gyorsabb hozzáférés a Chrome-hoz a kezdőképernyő Dockjáról.</translation>
 <translation id="3827545470516145620">Normál biztonsági védelemben részesül ezen az eszközön</translation>
 <translation id="384394811301901750">A Google Chrome jelenleg nem tudja használni a kamerát</translation>
 <translation id="3863841106411295595">A bevitt URL-eket felveszi a Chrome-ban használt olvasólistájára.</translation>
@@ -219,9 +221,11 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 
 Az adatokat a Chrome-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
 <translation id="6922332667202044570">A Chrome-ban tárolt böngészési adatok törlése.</translation>
+<translation id="6924922227983877439">A linkek megnyitása a Chrome-ban alapértelmezés szerint</translation>
 <translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>
 <translation id="7056826488869329999">Megnyitja és futtatja a biztonsági ellenőrzést a Chrome-ban.</translation>
 <translation id="7061455974939528301">Tartsa nyomva a Chrome ikont, majd kattintson a „Főképernyő szerkesztése” lehetőségre</translation>
+<translation id="7065813315247345131">A Chrome áthelyezése a Dockra</translation>
 <translation id="7124339256045485976">Chrome böngészője legyen mindig naprakész</translation>
 <translation id="7161390184744336561">A Google Chrome elavult</translation>
 <translation id="7165736900384873061">A Google Chrome QR-olvasójának használata</translation>

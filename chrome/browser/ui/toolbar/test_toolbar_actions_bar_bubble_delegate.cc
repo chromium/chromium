@@ -20,7 +20,7 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
   DelegateImpl(const DelegateImpl&) = delete;
   DelegateImpl& operator=(const DelegateImpl&) = delete;
 
-  ~DelegateImpl() override {}
+  ~DelegateImpl() override = default;
 
  private:
   bool ShouldShow() override { return !parent_->shown_; }

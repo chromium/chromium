@@ -752,6 +752,7 @@ void PepperPluginInstanceImpl::PassCommittedTextureToTextureLayer() {
       weak_factory_.GetWeakPtr(), committed_texture_,
       committed_texture_graphics_3d_));
 
+  committed_texture_.origin = kBottomLeft_GrSurfaceOrigin;
   IncrementTextureReferenceCount(committed_texture_);
   texture_layer_->SetTransferableResource(committed_texture_,
                                           std::move(callback));
@@ -1783,7 +1784,6 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
       texture_layer_ = cc::TextureLayer::CreateForMailbox(this);
       bound_graphics_2d_platform_->AttachedToNewLayer();
       opaque = bound_graphics_2d_platform_->IsAlwaysOpaque();
-      texture_layer_->SetFlipped(false);
     }
 
     // Ignore transparency in fullscreen.
@@ -1799,7 +1799,6 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
 }
 
 bool PepperPluginInstanceImpl::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* transferable_resource,
     viz::ReleaseCallback* release_callback) {
   if (!bound_graphics_2d_platform_)

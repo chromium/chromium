@@ -24,6 +24,7 @@ enum class ResourceRequestBlockedReason {
   kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
   kCorpNotSameSite,
   kConversionRequest,
+  kSRIMessageSignatureMismatch,
   kMax = kConversionRequest,
 };
 

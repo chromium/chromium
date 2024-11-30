@@ -1,13 +1,118 @@
 This is a testharness.js-based test.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] requestClose requires user activation in order to be cancelable
   promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
-[FAIL] Non-modal: requestClose closes the dialog
+[FAIL] requestClose basic behavior for modeless dialog with closedby=null
   promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
-[FAIL] Non-modal: requestClose can be cancelled
+[FAIL] requestClose fires both cancel and close for modeless dialog with closedby=null
   promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
-[FAIL] Modal: requestClose closes the dialog
+[FAIL] changing closedby from 'none' to 'null' for modeless dialog
   promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
-[FAIL] Modal: requestClose can be cancelled
+[FAIL] Removing closedby when closedby='null' for modeless dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose can be cancelled for modeless dialog with closedby=null
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) passes along the return value for modeless dialog with closedby=null
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) doesn't change returnvalue when cancelled for modeless dialog with closedby=null
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose basic behavior for modeless dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose fires both cancel and close for modeless dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] changing closedby from 'none' to 'any' for modeless dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Removing closedby when closedby='any' for modeless dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose can be cancelled for modeless dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) passes along the return value for modeless dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) doesn't change returnvalue when cancelled for modeless dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose basic behavior for modeless dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose fires both cancel and close for modeless dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] changing closedby from 'none' to 'closedrequest' for modeless dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Removing closedby when closedby='closedrequest' for modeless dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose can be cancelled for modeless dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) passes along the return value for modeless dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) doesn't change returnvalue when cancelled for modeless dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose basic behavior for modeless dialog with closedby=none
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose fires both cancel and close for modeless dialog with closedby=none
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] changing closedby from 'none' to 'none' for modeless dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Removing closedby when closedby='none' for modeless dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose can be cancelled for modeless dialog with closedby=none
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) passes along the return value for modeless dialog with closedby=none
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) doesn't change returnvalue when cancelled for modeless dialog with closedby=none
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose basic behavior for modal dialog with closedby=null
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose fires both cancel and close for modal dialog with closedby=null
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] changing closedby from 'none' to 'null' for modal dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Removing closedby when closedby='null' for modal dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose can be cancelled for modal dialog with closedby=null
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) passes along the return value for modal dialog with closedby=null
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) doesn't change returnvalue when cancelled for modal dialog with closedby=null
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose basic behavior for modal dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose fires both cancel and close for modal dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] changing closedby from 'none' to 'any' for modal dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Removing closedby when closedby='any' for modal dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose can be cancelled for modal dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) passes along the return value for modal dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) doesn't change returnvalue when cancelled for modal dialog with closedby=any
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose basic behavior for modal dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose fires both cancel and close for modal dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] changing closedby from 'none' to 'closedrequest' for modal dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Removing closedby when closedby='closedrequest' for modal dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose can be cancelled for modal dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) passes along the return value for modal dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) doesn't change returnvalue when cancelled for modal dialog with closedby=closedrequest
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose basic behavior for modal dialog with closedby=none
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose fires both cancel and close for modal dialog with closedby=none
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] changing closedby from 'none' to 'none' for modal dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] Removing closedby when closedby='none' for modal dialog
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose can be cancelled for modal dialog with closedby=none
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) passes along the return value for modal dialog with closedby=none
+  promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
+[FAIL] requestClose(returnValue) doesn't change returnvalue when cancelled for modal dialog with closedby=none
   promise_test: Unhandled rejection with value: object "TypeError: dialog.requestClose is not a function"
 Harness: the test ran to completion.
 

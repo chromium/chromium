@@ -1,11 +1,16 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer ignored
-++++++splitter horizontal name='Outside custom element'
-++++++genericContainer
-++++++++staticText name='a'
-++++++++++inlineTextBox name='a'
-++++++splitter horizontal name='Inside custom element'
-++++++genericContainer ignored
-++++++++staticText name='a'
-++++++++++inlineTextBox name='a'
+++++genericContainer
+++++++genericContainer ignored invisible
+++++++group className='has-role-group' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++genericContainer className='described' description='description' htmlTag='test-element' descriptionFrom=ariaDescription
+++++++++genericContainer ignored invisible
+++++++genericContainer className='labeled' htmlTag='test-element' name='label'
+++++++++genericContainer ignored invisible
+++++++genericContainer className='focusable' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++genericContainer className='live' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++genericContainer className='owner' htmlTag='test-element'
+++++++++genericContainer ignored invisible

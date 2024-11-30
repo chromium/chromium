@@ -88,8 +88,4 @@ void BirchPrivacyNudgeController::MaybeShowNudge(views::View* anchor_view) {
   prefs->SetTime(prefs::kBirchPrivacyNudgeLastShownTime, base::Time::Now());
 }
 
-void BirchPrivacyNudgeController::MaybeHideNudge() {
-  Shell::Get()->anchored_nudge_manager()->Cancel(kNudgeId);
-}
-
 }  // namespace ash

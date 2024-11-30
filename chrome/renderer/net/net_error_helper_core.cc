@@ -75,7 +75,6 @@ void NetErrorHelperCore::OnCommitLoad(FrameType frame_type, const GURL& url) {
 #if BUILDFLAG(IS_ANDROID)
   // Don't need this state. It will be refreshed if another error page is
   // loaded.
-  available_content_helper_.Reset();
   page_auto_fetcher_helper_->OnCommitLoad();
 #endif
 
@@ -105,12 +104,6 @@ void NetErrorHelperCore::ErrorPageLoadedWithFinalErrorCode() {
     RecordEvent(error_page::NETWORK_ERROR_PAGE_OFFLINE_ERROR_SHOWN);
 
 #if BUILDFLAG(IS_ANDROID)
-  // The fetch functions shouldn't be triggered multiple times per page load.
-  if (page_info->page_state.offline_content_feature_enabled) {
-    available_content_helper_.FetchAvailableContent(base::BindOnce(
-        &Delegate::OfflineContentAvailable, base::Unretained(delegate_)));
-  }
-
   // |TrySchedule()| shouldn't be called more than once per page.
   if (page_info->page_state.auto_fetch_allowed) {
     page_auto_fetcher_helper_->TrySchedule(
@@ -315,19 +308,6 @@ void NetErrorHelperCore::ExecuteButtonPress(Button button) {
   }
 }
 
-void NetErrorHelperCore::LaunchOfflineItem(const std::string& id,
-                                           const std::string& name_space) {
-#if BUILDFLAG(IS_ANDROID)
-  available_content_helper_.LaunchItem(id, name_space);
-#endif
-}
-
-void NetErrorHelperCore::LaunchDownloadsPage() {
-#if BUILDFLAG(IS_ANDROID)
-  available_content_helper_.LaunchDownloadsPage();
-#endif
-}
-
 void NetErrorHelperCore::SavePageForLater() {
 #if BUILDFLAG(IS_ANDROID)
   page_auto_fetcher_helper_->TrySchedule(
@@ -339,11 +319,5 @@ void NetErrorHelperCore::SavePageForLater() {
 void NetErrorHelperCore::CancelSavePage() {
 #if BUILDFLAG(IS_ANDROID)
   page_auto_fetcher_helper_->CancelSchedule();
-#endif
-}
-
-void NetErrorHelperCore::ListVisibilityChanged(bool is_visible) {
-#if BUILDFLAG(IS_ANDROID)
-  available_content_helper_.ListVisibilityChanged(is_visible);
 #endif
 }

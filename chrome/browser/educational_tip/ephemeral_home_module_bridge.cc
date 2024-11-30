@@ -51,3 +51,31 @@ static void JNI_EducationalTipModuleMediator_NotifyCardShown(JNIEnv* env,
       return;
   }
 }
+
+static void JNI_EducationalTipModuleMediator_NotifyCardInteracted(
+    JNIEnv* env,
+    Profile* profile,
+    jint card_type) {
+  DCHECK(profile);
+  segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetHomeModulesCardRegistry(profile);
+  switch (static_cast<EducationalTipCardType>(card_type)) {
+    case EducationalTipCardType::kDefaultBrowserPromo:
+      registry->NotifyCardInteracted(
+          segmentation_platform::kDefaultBrowserPromo);
+      return;
+    case EducationalTipCardType::kTabGroups:
+      // TODO(crbug.com/355015904): add notify process for tab groups promo
+      // card.
+      return;
+    case EducationalTipCardType::kTabGroupSync:
+      // TODO(crbug.com/355015904): add notify process for tab group sync promo
+      // card.
+      return;
+    case EducationalTipCardType::kQuickDelete:
+      // TODO(crbug.com/355015904): add notify process for quick delete promo
+      // card.
+      return;
+  }
+}

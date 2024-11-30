@@ -12,6 +12,9 @@ public class ContentFeatureList {
     // Features files, then remove the constants below.
 
     // Alphabetical:
+    public static final String ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE =
+            "AccessibilityDeprecateTypeAnnounce";
+
     public static final String ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION =
             "AccessibilityIncludeLongClickAction";
 
@@ -27,8 +30,6 @@ public class ContentFeatureList {
     public static final String ANDROID_OPEN_PDF_INLINE = "AndroidOpenPdfInline";
 
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
-
-    public static final String MOUSE_AND_TRACKPAD_DROPDOWN_MENU = "MouseAndTrackpadDropdownMenu";
 
     public static final String INPUT_ON_VIZ = "InputOnViz";
 
@@ -49,6 +50,9 @@ public class ContentFeatureList {
     public static final String WEB_NFC = "WebNFC";
 
     public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS = "WebIdentityDigitalCredentials";
+
+    public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS_CREATION =
+            "WebIdentityDigitalCredentialsCreation";
 
     public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =
             "PrefetchBrowserInitiatedTriggers";

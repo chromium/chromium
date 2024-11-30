@@ -46,9 +46,13 @@ void PartialFailureSDKDelegateWrapper::ReadGroups(
   ongoing_read_groups_callback_ = std::move(callback);
 
   ongoing_read_groups_groups_count_ = params.group_ids_size();
-  for (const auto& group_id : params.group_ids()) {
+  CHECK_EQ(params.group_ids_size(), params.group_params_size());
+  for (int i = 0; i < params.group_ids_size(); ++i) {
+    const std::string& group_id = params.group_ids(i);
     data_sharing_pb::ReadGroupsParams single_read_group_params;
     single_read_group_params.add_group_ids(group_id);
+    *single_read_group_params.add_group_params() =
+        params.group_params(i);
     sdk_delegate_->ReadGroups(
         single_read_group_params,
         base::BindOnce(

@@ -73,8 +73,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
 #endif
 
   std::string metrics_key_;
-  std::string client_ids_[CLIENT_NUM_ITEMS];
-  std::string client_secrets_[CLIENT_NUM_ITEMS];
+  std::array<std::string, CLIENT_NUM_ITEMS> client_ids_;
+  std::array<std::string, CLIENT_NUM_ITEMS> client_secrets_;
 };
 
 }  // namespace google_apis

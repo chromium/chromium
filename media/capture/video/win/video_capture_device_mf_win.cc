@@ -4,6 +4,7 @@
 
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 
+#include <d3d11.h>
 #include <d3d11_4.h>
 #include <ks.h>
 #include <ksmedia.h>
@@ -13,7 +14,6 @@
 #include <wincodec.h>
 #include <wrl/implements.h>
 
-#include <d3d11.h>
 #include <memory>
 #include <optional>
 #include <thread>
@@ -1831,31 +1831,15 @@ void VideoCaptureDeviceMFWin::GetPhotoState(GetPhotoStateCallback callback) {
   }
 
   if (extended_camera_controller_) {
-    ComPtr<IMFExtendedCameraControl> extended_camera_control;
-    // KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION is supported in
-    // Windows 10 version 20H2. It was updated in Windows 11 version 22H2 to
-    // support optional shallow focus capability (according to
-    // https://docs.microsoft.com/en-us/windows-hardware/drivers/stream/ksproperty-cameracontrol-extended-backgroundsegmentation)
-    // but that support is not needed here.
-    hr = extended_camera_controller_->GetExtendedCameraControl(
-        MF_CAPTURE_ENGINE_MEDIASOURCE,
-        KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION,
-        &extended_camera_control);
-    DLOG_IF_FAILED_WITH_HRESULT(
-        "Failed to retrieve IMFExtendedCameraControl for background "
-        "segmentation",
-        hr);
-    if (SUCCEEDED(hr) && (extended_camera_control->GetCapabilities() &
-                          KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_BLUR)) {
+    if (auto blur_state = GetBackgroundBlurState()) {
       photo_capabilities->supported_background_blur_modes = {
           mojom::BackgroundBlurMode::OFF, mojom::BackgroundBlurMode::BLUR};
       photo_capabilities->background_blur_mode =
-          (extended_camera_control->GetFlags() &
-           KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_BLUR)
-              ? mojom::BackgroundBlurMode::BLUR
-              : mojom::BackgroundBlurMode::OFF;
+          blur_state->enabled ? mojom::BackgroundBlurMode::BLUR
+                              : mojom::BackgroundBlurMode::OFF;
     }
 
+    ComPtr<IMFExtendedCameraControl> extended_camera_control;
     hr = extended_camera_controller_->GetExtendedCameraControl(
         MF_CAPTURE_ENGINE_MEDIASOURCE,
         KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW,
@@ -2338,6 +2322,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
 
   VideoFrameMetadata frame_metadata;
   frame_metadata.transformation = VideoTransformation(frame_rotation);
+  frame_metadata.background_blur = GetBackgroundBlurState();
 
   client_->OnIncomingCapturedBufferExt(
       std::move(capture_buffer),
@@ -2395,6 +2380,9 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
     }
   }
 
+  VideoFrameMetadata frame_metadata;
+  frame_metadata.background_blur = GetBackgroundBlurState();
+
   // Set reused |token| and |share_handle| to gmb handle.
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
@@ -2418,7 +2406,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
   client_->OnIncomingCapturedExternalBuffer(
       std::move(external_buffer), reference_time, timestamp,
       MaybeForwardCaptureBeginTime(capture_begin_time), gfx::Rect(texture_size),
-      /*metadata=*/std::nullopt);
+      frame_metadata);
   return hr;
 }
 
@@ -2781,6 +2769,38 @@ void VideoCaptureDeviceMFWin::OnCameraInUseReport(bool in_use,
   if (activity_monitor_) {
     activity_monitor_->Stop();
   }
+}
+
+std::optional<media::EffectInfo>
+VideoCaptureDeviceMFWin::GetBackgroundBlurState() {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMFWin::GetBackgroundBlurState");
+  if (!extended_camera_controller_) {
+    return std::nullopt;
+  }
+
+  ComPtr<IMFExtendedCameraControl> extended_camera_control;
+  // KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION is supported in
+  // Windows 10 version 20H2. It was updated in Windows 11 version 22H2 to
+  // support optional shallow focus capability (according to
+  // https://docs.microsoft.com/en-us/windows-hardware/drivers/stream/ksproperty-cameracontrol-extended-backgroundsegmentation)
+  // but that support is not needed here.
+  HRESULT hr = extended_camera_controller_->GetExtendedCameraControl(
+      MF_CAPTURE_ENGINE_MEDIASOURCE,
+      KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION,
+      &extended_camera_control);
+  DLOG_IF_FAILED_WITH_HRESULT(
+      "Failed to retrieve IMFExtendedCameraControl for background "
+      "segmentation",
+      hr);
+  if (FAILED(hr) || !(extended_camera_control->GetCapabilities() &
+                      KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_BLUR)) {
+    return std::nullopt;
+  }
+
+  return EffectInfo{.enabled =
+                        !!(extended_camera_control->GetFlags() &
+                           KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_BLUR)};
 }
 
 bool CreateMFSensorActivityMonitor(

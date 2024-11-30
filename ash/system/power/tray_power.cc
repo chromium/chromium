@@ -78,10 +78,6 @@ views::View* PowerTrayView::GetTooltipHandlerForPoint(const gfx::Point& point) {
   return GetLocalBounds().Contains(point) ? this : nullptr;
 }
 
-std::u16string PowerTrayView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_;
-}
-
 void PowerTrayView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
   UpdateStatus(false);
@@ -121,7 +117,7 @@ void PowerTrayView::UpdateStatus(bool icon_color_changed) {
   UpdateImage(icon_color_changed);
   SetVisible(PowerStatus::Get()->IsBatteryPresent());
   UpdateAccessibleName();
-  tooltip_ = PowerStatus::Get()->GetInlinedStatusString();
+  SetCachedTooltipText(PowerStatus::Get()->GetInlinedStatusString());
   // Currently ChromeVox only reads the inner view when touching the icon.
   // As a result this node's accessible node data will not be read.
   // TODO(crbug.com/325137417): This line should not be needed. Investigate to

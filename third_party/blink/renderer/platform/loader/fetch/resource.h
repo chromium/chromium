@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_status.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
+#include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -357,13 +358,13 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // integrity metadata and checks were destined for this request, so we cannot
   // skip the integrity check.
   //
-  // TODO(375343417): This will also be the case for server-initiated integrity
-  // checks like `Identity-Digest`.
-  bool ForceIntegrityChecks() const { return IsLinkPreload(); }
+  // We also force integrity checks for resources that declare their own
+  // integrity information via an `Identity-Digest` header. Those should be
+  // checked regardless of any given page's assertion through `integrity`
+  // attributes.
+  bool ForceIntegrityChecks() const;
 
-  const SubresourceIntegrity::ReportInfo& IntegrityReportInfo() const {
-    return integrity_report_info_;
-  }
+  const IntegrityReport& IntegrityReport() const { return integrity_report_; }
   bool MustRefetchDueToIntegrityMetadata(const FetchParameters&) const;
 
   bool IsAlive() const { return is_alive_; }
@@ -566,21 +567,21 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   void AppendDataImpl(base::span<const char>);
 
   ResourceType type_;
-  ResourceStatus status_;
+  ResourceStatus status_ = ResourceStatus::kNotStarted;
 
   std::optional<ResourceError> error_;
 
   base::TimeTicks load_response_end_;
   base::TimeTicks memory_cache_last_accessed_;
 
-  size_t encoded_size_;
-  size_t decoded_size_;
+  size_t encoded_size_ = 0u;
+  size_t decoded_size_ = 0u;
 
   String cache_identifier_;
 
-  bool link_preload_;
-  bool is_alive_;
-  bool is_add_remove_client_prohibited_;
+  bool link_preload_ = false;
+  bool is_alive_ = false;
+  bool is_add_remove_client_prohibited_ = false;
   bool is_revalidation_start_forbidden_ = false;
   bool is_unused_preload_ = false;
   bool stale_revalidation_started_ = false;
@@ -593,10 +594,12 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
                               // network response
     kRevalidated,             // revalidate success by 304 Not Modified
   };
-  RevalidationStatus revalidation_status_;
+  RevalidationStatus revalidation_status_ =
+      RevalidationStatus::kNoRevalidatingOrFailed;
 
-  ResourceIntegrityDisposition integrity_disposition_;
-  SubresourceIntegrity::ReportInfo integrity_report_info_;
+  ResourceIntegrityDisposition integrity_disposition_ =
+      ResourceIntegrityDisposition::kNotChecked;
+  class IntegrityReport integrity_report_;
 
   // Ordered list of all redirects followed while fetching this resource.
   Vector<RedirectPair> redirect_chain_;

@@ -95,11 +95,19 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
-                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html?id-BTN-A_TO_B-BLANK-OPENER&click=Middle",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html?id-BTN-A_TO_B-BLANK-OPENER&click=Middle"
                   } ]
                } ]
             }, {
@@ -117,19 +125,6 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
-               } ]
-            }, {
-               "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP",
-               "tabs": [ {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html?id-BTN-A_TO_B-BLANK-OPENER&click=Middle",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html?id-BTN-A_TO_B-BLANK-OPENER&click=Middle"
-                  } ]
                } ]
             } ],
             "launch_metric_buckets": [  ]
@@ -275,11 +270,19 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
-                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
+                  } ]
+               }, {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-OPENER&click=Left",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-OPENER&click=Left"
                   } ]
                } ]
             }, {
@@ -297,19 +300,6 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
-               } ]
-            }, {
-               "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP",
-               "tabs": [ {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-OPENER&click=Left",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-OPENER&click=Left"
-                  } ]
                } ]
             } ],
             "launch_metric_buckets": [  ]

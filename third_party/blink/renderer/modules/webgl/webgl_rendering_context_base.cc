@@ -833,7 +833,8 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        image_info, GetDrawingBuffer()->FilterQuality(),
+        size, image_info.colorType(), image_info.alphaType(),
+        image_info.refColorSpace(), GetDrawingBuffer()->FilterQuality(),
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
@@ -1425,13 +1426,6 @@ void WebGLRenderingContextBase::InitializeNewContext() {
       WTF::BindRepeating(&WebGLRenderingContextBase::OnErrorMessage,
                          WrapWeakPersistent(this)));
 
-  // If the context has the flip_y extension, it will behave as having the
-  // origin of coordinates on the top left.
-  is_origin_top_left_ = GetDrawingBuffer()
-                            ->ContextProvider()
-                            ->GetCapabilities()
-                            .mesa_framebuffer_flip_y;
-
   // If WebGL 2, the PRIMITIVE_RESTART_FIXED_INDEX should be always enabled.
   // See the section <Primitive Restart is Always Enabled> in WebGL 2 spec:
   // https://www.khronos.org/registry/webgl/specs/latest/2.0/#4.1.4
@@ -1804,12 +1798,6 @@ bool WebGLRenderingContextBase::UsingSwapChain() const {
   return GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
 }
 
-bool WebGLRenderingContextBase::IsOriginTopLeft() const {
-  if (isContextLost())
-    return false;
-  return is_origin_top_left_;
-}
-
 void WebGLRenderingContextBase::PageVisibilityChanged() {
   if (GetDrawingBuffer())
     GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
@@ -1902,10 +1890,11 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   if (resource_provider->IsAccelerated()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
         SharedGpuContext::ContextProviderWrapper();
-    if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
+    if (!shared_context_wrapper) {
       return false;
+    }
     gpu::raster::RasterInterface* raster_interface =
-        shared_context_wrapper->ContextProvider()->RasterInterface();
+        shared_context_wrapper->ContextProvider().RasterInterface();
     auto client_si =
         resource_provider->GetBackingClientSharedImageForOverwrite();
     if (!client_si) {
@@ -1923,9 +1912,8 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
 
   // As the resource provider is not accelerated, we don't need an accelerated
   // image.
-  const bool flip_y = IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
   scoped_refptr<StaticBitmapImage> image =
-      GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(flip_y);
+      GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage();
 
   if (!image || !image->PaintImageForCurrentFrame())
     return false;
@@ -3204,15 +3192,15 @@ WebGLActiveInfo* WebGLRenderingContextBase::getActiveAttrib(
                       "no active attributes exist");
     return nullptr;
   }
-  LChar* name_ptr;
-  scoped_refptr<StringImpl> name_impl =
-      StringImpl::CreateUninitialized(max_name_length, name_ptr);
   GLsizei length = 0;
   GLint size = -1;
   GLenum type = 0;
+  base::span<LChar> name_buffer;
+  scoped_refptr<StringImpl> name_impl =
+      StringImpl::CreateUninitialized(max_name_length, name_buffer);
   ContextGL()->GetActiveAttrib(program_id, index, max_name_length, &length,
                                &size, &type,
-                               reinterpret_cast<GLchar*>(name_ptr));
+                               reinterpret_cast<GLchar*>(name_buffer.data()));
   if (size < 0)
     return nullptr;
   return MakeGarbageCollected<WebGLActiveInfo>(name_impl->Substring(0, length),
@@ -3235,15 +3223,15 @@ WebGLActiveInfo* WebGLRenderingContextBase::getActiveUniform(
                       "no active uniforms exist");
     return nullptr;
   }
-  LChar* name_ptr;
-  scoped_refptr<StringImpl> name_impl =
-      StringImpl::CreateUninitialized(max_name_length, name_ptr);
   GLsizei length = 0;
   GLint size = -1;
   GLenum type = 0;
+  base::span<LChar> name_buffer;
+  scoped_refptr<StringImpl> name_impl =
+      StringImpl::CreateUninitialized(max_name_length, name_buffer);
   ContextGL()->GetActiveUniform(program_id, index, max_name_length, &length,
                                 &size, &type,
-                                reinterpret_cast<GLchar*>(name_ptr));
+                                reinterpret_cast<GLchar*>(name_buffer.data()));
   if (size < 0)
     return nullptr;
   return MakeGarbageCollected<WebGLActiveInfo>(name_impl->Substring(0, length),
@@ -4262,24 +4250,24 @@ ScriptValue WebGLRenderingContextBase::getUniform(
   GLint active_uniforms = 0;
   ContextGL()->GetProgramiv(program_id, GL_ACTIVE_UNIFORMS, &active_uniforms);
   for (GLint i = 0; i < active_uniforms; i++) {
-    LChar* name_ptr;
+    base::span<LChar> name_buffer;
     scoped_refptr<StringImpl> name_impl =
-        StringImpl::CreateUninitialized(max_name_length, name_ptr);
+        StringImpl::CreateUninitialized(max_name_length, name_buffer);
     GLsizei name_length = 0;
     GLint size = -1;
     GLenum type = 0;
-    ContextGL()->GetActiveUniform(program_id, i, max_name_length, &name_length,
-                                  &size, &type,
-                                  reinterpret_cast<GLchar*>(name_ptr));
+    ContextGL()->GetActiveUniform(
+        program_id, i, max_name_length, &name_length, &size, &type,
+        reinterpret_cast<GLchar*>(name_buffer.data()));
     if (size < 0)
       return ScriptValue::CreateNull(script_state->GetIsolate());
     String name(name_impl->Substring(0, name_length));
-    StringBuilder name_builder;
     // Strip "[0]" from the name if it's an array.
     if (size > 1 && name.EndsWith("[0]"))
       name = name.Left(name.length() - 3);
     // If it's an array, we need to iterate through each element, appending
     // "[index]" to the name.
+    StringBuilder name_builder;
     for (GLint index = 0; index < size; ++index) {
       name_builder.Clear();
       name_builder.Append(name);
@@ -5898,7 +5886,8 @@ void WebGLRenderingContextBase::TexImageViaGPU(
       return;
     }
     source_size = source_canvas_webgl_context->GetDrawingBuffer()->Size();
-    is_source_origin_top_left = source_canvas_webgl_context->IsOriginTopLeft();
+    is_source_origin_top_left =
+        source_canvas_webgl_context->GetDrawingBuffer()->IsOriginTopLeft();
   }
   if (!params.width)
     params.width = source_size.width();
@@ -6075,7 +6064,8 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
       DynamicTo<StaticBitmapImage>(image.get());
   DCHECK(static_bitmap_image);
 
-  const bool source_has_flip_y = is_origin_top_left_ && context_host->IsWebGL();
+  const bool source_has_flip_y =
+      GetDrawingBuffer()->IsOriginTopLeft() && context_host->IsWebGL();
   const bool allow_copy_via_gpu = true;
   TexImageStaticBitmapImage(params, static_bitmap_image, source_has_flip_y,
                             allow_copy_via_gpu);
@@ -6240,8 +6230,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      if (auto* context_provider = wrapper->ContextProvider())
-        raster_context_provider = context_provider->RasterContextProvider();
+      raster_context_provider =
+          wrapper->ContextProvider().RasterContextProvider();
     }
 
     // Go through the fast path doing a GPU-GPU textures copy without a readback
@@ -8612,14 +8602,16 @@ CanvasResourceProvider* WebGLRenderingContextBase::
   if (type_ == CacheType::kVideo) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      if (auto* context_provider = wrapper->ContextProvider())
-        raster_context_provider = context_provider->RasterContextProvider();
+      raster_context_provider =
+          wrapper->ContextProvider().RasterContextProvider();
     }
     temp = CreateResourceProviderForVideoFrame(info, raster_context_provider);
   } else {
     // TODO(fserb): why is this a BITMAP?
     temp = CanvasResourceProvider::CreateBitmapProvider(
-        info, cc::PaintFlags::FilterQuality::kLow,
+        gfx::Size(info.width(), info.height()), info.colorType(),
+        info.alphaType(), info.refColorSpace(),
+        cc::PaintFlags::FilterQuality::kLow,
         CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
                                                          // use the canvas's
   }

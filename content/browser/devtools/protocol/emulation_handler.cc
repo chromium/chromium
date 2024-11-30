@@ -258,7 +258,7 @@ Response ConvertSensorReading(device::mojom::SensorType type,
 }
 
 base::expected<device::mojom::VirtualSensorMetadataPtr, Response>
-ParseSensorMetadata(Maybe<Emulation::SensorMetadata>& metadata) {
+ParseSensorMetadata(std::unique_ptr<Emulation::SensorMetadata>& metadata) {
   if (!metadata) {
     return device::mojom::VirtualSensorMetadata::New();
   }
@@ -329,7 +329,7 @@ void EmulationHandler::GetOverriddenSensorInformation(
 Response EmulationHandler::SetSensorOverrideEnabled(
     bool enabled,
     const Emulation::SensorType& type,
-    Maybe<Emulation::SensorMetadata> metadata) {
+    std::unique_ptr<Emulation::SensorMetadata> metadata) {
   if (!host_) {
     return Response::InternalError();
   }
@@ -417,7 +417,7 @@ void EmulationHandler::SetSensorOverrideReadings(
 namespace {
 
 device::mojom::VirtualPressureSourceMetadataPtr ConvertPressureMetadata(
-    Maybe<Emulation::PressureMetadata>& metadata) {
+    std::unique_ptr<Emulation::PressureMetadata>& metadata) {
   auto pressure_metadata = device::mojom::VirtualPressureSourceMetadata::New();
   if (metadata) {
     pressure_metadata->available = metadata->GetAvailable(true);
@@ -457,7 +457,7 @@ Response ConvertPressureState(const Emulation::PressureState& state,
 Response EmulationHandler::SetPressureSourceOverrideEnabled(
     bool enabled,
     const Emulation::PressureSource& source,
-    Maybe<Emulation::PressureMetadata> metadata) {
+    std::unique_ptr<Emulation::PressureMetadata> metadata) {
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   if (!host_) {
     return Response::InternalError();
@@ -539,9 +539,10 @@ Response EmulationHandler::ClearIdleOverride() {
   return Response::Success();
 }
 
-Response EmulationHandler::SetGeolocationOverride(Maybe<double> latitude,
-                                                  Maybe<double> longitude,
-                                                  Maybe<double> accuracy) {
+Response EmulationHandler::SetGeolocationOverride(
+    std::optional<double> latitude,
+    std::optional<double> longitude,
+    std::optional<double> accuracy) {
   if (!host_)
     return Response::InternalError();
 
@@ -579,7 +580,7 @@ Response EmulationHandler::ClearGeolocationOverride() {
 
 Response EmulationHandler::SetEmitTouchEventsForMouse(
     bool enabled,
-    Maybe<std::string> configuration) {
+    std::optional<std::string> configuration) {
   if (!host_)
     return Response::InternalError();
 
@@ -611,16 +612,16 @@ Response EmulationHandler::SetDeviceMetricsOverride(
     int height,
     double device_scale_factor,
     bool mobile,
-    Maybe<double> scale,
-    Maybe<int> screen_width,
-    Maybe<int> screen_height,
-    Maybe<int> position_x,
-    Maybe<int> position_y,
-    Maybe<bool> dont_set_visible_size,
-    Maybe<Emulation::ScreenOrientation> screen_orientation,
-    Maybe<protocol::Page::Viewport> viewport,
-    Maybe<protocol::Emulation::DisplayFeature> display_feature,
-    Maybe<protocol::Emulation::DevicePosture> device_posture) {
+    std::optional<double> scale,
+    std::optional<int> screen_width,
+    std::optional<int> screen_height,
+    std::optional<int> position_x,
+    std::optional<int> position_y,
+    std::optional<bool> dont_set_visible_size,
+    std::unique_ptr<Emulation::ScreenOrientation> screen_orientation,
+    std::unique_ptr<protocol::Page::Viewport> viewport,
+    std::unique_ptr<protocol::Emulation::DisplayFeature> display_feature,
+    std::unique_ptr<protocol::Emulation::DevicePosture> device_posture) {
   const static int max_size = 10000000;
   const static double max_scale = 10;
   const static int max_orientation_angle = 360;
@@ -812,9 +813,9 @@ Response EmulationHandler::SetVisibleSize(int width, int height) {
 
 Response EmulationHandler::SetUserAgentOverride(
     const std::string& user_agent,
-    Maybe<std::string> accept_language,
-    Maybe<std::string> platform,
-    Maybe<Emulation::UserAgentMetadata> ua_metadata_override) {
+    std::optional<std::string> accept_language,
+    std::optional<std::string> platform,
+    std::unique_ptr<Emulation::UserAgentMetadata> ua_metadata_override) {
   if (!user_agent.empty() && !net::HttpUtil::IsValidHeaderValue(user_agent))
     return Response::InvalidParams("Invalid characters found in userAgent");
   std::string accept_lang = accept_language.value_or(std::string());
@@ -943,8 +944,9 @@ Response EmulationHandler::SetFocusEmulationEnabled(bool enabled) {
 }
 
 Response EmulationHandler::SetEmulatedMedia(
-    Maybe<std::string> media,
-    Maybe<protocol::Array<protocol::Emulation::MediaFeature>> features) {
+    std::optional<std::string> media,
+    std::unique_ptr<protocol::Array<protocol::Emulation::MediaFeature>>
+        features) {
   if (!host_)
     return Response::InternalError();
 

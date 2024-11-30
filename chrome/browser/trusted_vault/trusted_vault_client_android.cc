@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_id.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TrustedVaultClient_jni.h"
@@ -84,7 +85,7 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
       absl::get<OngoingFetchKeys>(ongoing_request);
 
   DCHECK_EQ(ongoing_fetch_keys.account_info.gaia,
-            base::android::ConvertJavaStringToUTF8(env, gaia_id))
+            GaiaId(base::android::ConvertJavaStringToUTF8(env, gaia_id)))
       << "User mismatch in FetchKeys() response";
 
   std::vector<std::vector<uint8_t>> converted_keys;
@@ -169,7 +170,7 @@ void TrustedVaultClientAndroid::FetchKeys(
 }
 
 void TrustedVaultClientAndroid::StoreKeys(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
   // Not supported on Android, where keys are fetched outside the browser.
@@ -219,7 +220,7 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
 }
 
 void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure cb) {

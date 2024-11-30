@@ -271,6 +271,9 @@ class CC_EXPORT LayerImpl {
     Region main_thread_scroll_hit_test_region;
     std::vector<ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     Region wheel_event_handler_region;
+    PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kLow;
+    PaintFlags::DynamicRangeLimitMixture dynamic_range_limit{
+        PaintFlags::DynamicRangeLimit::kHigh};
   };
 
   RareProperties& EnsureRareProperties() {
@@ -462,6 +465,20 @@ class CC_EXPORT LayerImpl {
   // GetIdealContentsScale().
   gfx::Vector2dF GetIdealContentsScale() const;
   float GetIdealContentsScaleKey() const;
+
+  void SetFilterQuality(PaintFlags::FilterQuality);
+  PaintFlags::FilterQuality GetFilterQuality() const {
+    return rare_properties_ ? rare_properties_->filter_quality
+                            : PaintFlags::FilterQuality::kLow;
+  }
+
+  void SetDynamicRangeLimit(
+      PaintFlags::DynamicRangeLimitMixture dynamic_range_limit);
+  PaintFlags::DynamicRangeLimitMixture GetDynamicRangeLimit() const {
+    return rare_properties_ ? rare_properties_->dynamic_range_limit
+                            : PaintFlags::DynamicRangeLimitMixture(
+                                  PaintFlags::DynamicRangeLimit::kHigh);
+  }
 
   void NoteLayerPropertyChanged();
   void NoteLayerPropertyChangedFromPropertyTrees();

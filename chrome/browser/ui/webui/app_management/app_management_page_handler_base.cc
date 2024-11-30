@@ -29,6 +29,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -303,6 +304,9 @@ AppManagementPageHandlerBase::CreateAppFromAppUpdate(
   }
 
   app->publisher_id = update.PublisherId();
+  app->disable_user_choice_navigation_capturing =
+      (update.AppType() == apps::AppType::kWeb) &&
+      (update.WindowMode() == apps::WindowMode::kBrowser);
 
   return app;
 }

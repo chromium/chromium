@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_VIEW_H_
 #define CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_VIEW_H_
 
+#include <memory>
+
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 
 namespace content {
@@ -15,7 +17,7 @@ namespace autofill {
 class AutofillBubbleBase;
 
 // Shows a modal dialog for editing an Autofill profile.
-AutofillBubbleBase* ShowEditAddressProfileDialogView(
+std::unique_ptr<AutofillBubbleBase> ShowEditAddressProfileDialogView(
     content::WebContents* web_contents,
     EditAddressProfileDialogController* controller);
 

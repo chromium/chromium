@@ -71,8 +71,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/mock_session_service.h"
 #include "net/device_bound_sessions/session_service.h"
-#include "net/device_bound_sessions/test_util.h"
 #endif
 
 using net::test::IsError;
@@ -2082,7 +2082,7 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
 
 // Test that cookies are annotated with the appropriate exclusion reason when
 // privacy mode is enabled.
-TEST_F(URLRequestHttpJobTest, PrivacyMode_ExclusionReason) {
+TEST_F(URLRequestHttpJobTest, PrivacyModeExclusionReason) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 

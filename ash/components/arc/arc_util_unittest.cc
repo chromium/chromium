@@ -127,7 +127,7 @@ class ArcUtilTest : public ash::AshTestBase {
   TestingPrefServiceSimple profile_prefs_;
 };
 
-TEST_F(ArcUtilTest, IsArcAvailable_None) {
+TEST_F(ArcUtilTest, IsArcAvailableNone) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
   command_line->InitFromArgv({"", "--arc-availability=none"});
@@ -142,7 +142,7 @@ TEST_F(ArcUtilTest, IsArcAvailable_None) {
 }
 
 // Test --arc-available with EnableARC feature combination.
-TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
+TEST_F(ArcUtilTest, IsArcAvailableInstalled) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
   // If ARC is not installed, IsArcAvailable() should return false,
@@ -194,7 +194,7 @@ TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
   }
 }
 
-TEST_F(ArcUtilTest, IsArcAvailable_OfficiallySupported) {
+TEST_F(ArcUtilTest, IsArcAvailableOfficiallySupported) {
   // Regardless of FeatureList, IsArcAvailable() should return true.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--enable-arc"});
@@ -416,7 +416,7 @@ TEST_F(ArcUtilTest, ScaleFactorToDensity) {
   EXPECT_EQ(240, GetLcdDensityForDeviceScaleFactor(2.0));
 }
 
-TEST_F(ArcUtilTest, ConfigureUpstartJobs_Success) {
+TEST_F(ArcUtilTest, ConfigureUpstartJobsSuccess) {
   std::deque<JobDesc> jobs{
       JobDesc{"Job_2dA", UpstartOperation::JOB_STOP, {}},
       JobDesc{"Job_2dB", UpstartOperation::JOB_STOP_AND_START, {}},
@@ -451,7 +451,7 @@ TEST_F(ArcUtilTest, ConfigureUpstartJobs_Success) {
   EXPECT_EQ(ops[4].type, ash::FakeUpstartClient::UpstartOperationType::START);
 }
 
-TEST_F(ArcUtilTest, ConfigureUpstartJobs_StopFail) {
+TEST_F(ArcUtilTest, ConfigureUpstartJobsStopFail) {
   std::deque<JobDesc> jobs{
       JobDesc{"Job_2dA", UpstartOperation::JOB_STOP, {}},
       JobDesc{"Job_2dB", UpstartOperation::JOB_STOP_AND_START, {}},
@@ -484,7 +484,7 @@ TEST_F(ArcUtilTest, ConfigureUpstartJobs_StopFail) {
   EXPECT_TRUE(result);
 }
 
-TEST_F(ArcUtilTest, ConfigureUpstartJobs_StartFail) {
+TEST_F(ArcUtilTest, ConfigureUpstartJobsStartFail) {
   std::deque<JobDesc> jobs{
       JobDesc{"Job_2dA", UpstartOperation::JOB_STOP, {}},
       JobDesc{"Job_2dB", UpstartOperation::JOB_STOP_AND_START, {}},
@@ -601,7 +601,7 @@ TEST_F(ArcUtilTest, SetAndGetArcVmDataMigrationStrategy) {
 
 // Tests that ShouldUseVirtioBlkData() returns true when virtio-blk /data is
 // enabled via the kEnableVirtioBlkForData feature.
-TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_VirtioBlkForDataFeatureEnabled) {
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkDataVirtioBlkForDataFeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableVirtioBlkForData);
   EXPECT_FALSE(base::FeatureList::IsEnabled(kEnableArcVmDataMigration));
@@ -610,7 +610,7 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_VirtioBlkForDataFeatureEnabled) {
 
 // Tests that ShouldUseVirtioBlkData() returns false when ARCVM /data is enabled
 // but the user has not been notified yet.
-TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Unnotified) {
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkDataArcVmDataMigrationUnnotified) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   SetArcVmDataMigrationStatus(profile_prefs(),
@@ -620,7 +620,7 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Unnotified) {
 
 // Tests that ShouldUseVirtioBlkData() returns false when ARCVM /data is enabled
 // but the user has just been notified of its availability.
-TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Notified) {
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkDataArcVmDataMigrationNotified) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   SetArcVmDataMigrationStatus(profile_prefs(),
@@ -630,7 +630,7 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Notified) {
 
 // Tests that ShouldUseVirtioBlkData() returns false when ARCVM /data is enabled
 // but the user has just confirmed the migration.
-TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Confirmed) {
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkDataArcVmDataMigrationConfirmed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   SetArcVmDataMigrationStatus(profile_prefs(),
@@ -640,7 +640,7 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Confirmed) {
 
 // Tests that ShouldUseVirtioBlkData() returns false when ARCVM /data is enabled
 // and the migration has started, but not finished yet.
-TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Started) {
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkDataArcVmDataMigrationStarted) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   SetArcVmDataMigrationStatus(profile_prefs(),
@@ -650,7 +650,7 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Started) {
 
 // Tests that ShouldUseVirtioBlkData() returns true when ARCVM /data is enabled
 // and the migration has finished.
-TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Finished) {
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkDataArcVmDataMigrationFinished) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   SetArcVmDataMigrationStatus(profile_prefs(),
@@ -676,7 +676,7 @@ TEST_F(ArcUtilTest,
 
 // Tests that GetDaysUntilArcVmDataMigrationDeadline() returns the correct value
 // when it is called after kArcVmDataMigrationDismissibleTimeDelta has passed.
-TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_JustAfterDeadline) {
+TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadlineJustAfterDeadline) {
   // Remaining days should be 1 (i.e., the migration should be done today).
   profile_prefs()->SetTime(
       prefs::kArcVmDataMigrationNotificationFirstShownTime,
@@ -687,7 +687,7 @@ TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_JustAfterDeadline) {
 // Tests that GetDaysUntilArcVmDataMigrationDeadline() returns the correct value
 // when it is called after more days than kArcVmDataMigrationDismissibleDays
 // have passed.
-TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_Overdue) {
+TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadlineOverdue) {
   // Remaining days should be kept 1.
   profile_prefs()->SetTime(
       prefs::kArcVmDataMigrationNotificationFirstShownTime,
@@ -698,7 +698,7 @@ TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_Overdue) {
 
 // Tests that GetDaysUntilArcVmDataMigrationDeadline() returns the correct value
 // when the migration is in progress.
-TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_MigrationStarted) {
+TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadlineMigrationStarted) {
   SetArcVmDataMigrationStatus(profile_prefs(),
                               ArcVmDataMigrationStatus::kStarted);
   profile_prefs()->SetTime(prefs::kArcVmDataMigrationNotificationFirstShownTime,
@@ -751,14 +751,14 @@ TEST_F(ArcUtilTest, GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes) {
 }
 
 // Checks that the callback is invoked with false when ARCVM is not stopped.
-TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_StopVmFailure) {
+TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStoppedStopVmFailure) {
   ash::FakeConciergeClient::Get()->set_stop_vm_response(std::nullopt);
   base::test::TestFuture<bool> future_no_response;
   EnsureStaleArcVmAndArcVmUpstartJobsStopped("0123456789abcdef",
                                              future_no_response.GetCallback());
   EXPECT_FALSE(future_no_response.Get());
 
-  vm_tools::concierge::StopVmResponse stop_vm_response;
+  vm_tools::concierge::SuccessFailureResponse stop_vm_response;
   stop_vm_response.set_success(false);
   ash::FakeConciergeClient::Get()->set_stop_vm_response(stop_vm_response);
   base::test::TestFuture<bool> future_failure;
@@ -771,7 +771,7 @@ TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_StopVmFailure) {
 // StopJob() is called for each of `kArcVmUpstartJobsToBeStoppedOnRestart`.
 // Note that StopJob() failures are not treated as fatal; see the comment on
 // ConfigureUpstartJobs().
-TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_Success) {
+TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStoppedSuccess) {
   std::set<std::string> jobs_to_be_stopped(
       std::begin(kArcVmUpstartJobsToBeStoppedOnRestart),
       std::end(kArcVmUpstartJobsToBeStoppedOnRestart));
@@ -783,7 +783,7 @@ TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_Success) {
         return (jobs_to_be_stopped.size() % 2) == 0;
       }));
 
-  vm_tools::concierge::StopVmResponse stop_vm_response;
+  vm_tools::concierge::SuccessFailureResponse stop_vm_response;
   stop_vm_response.set_success(true);
   ash::FakeConciergeClient::Get()->set_stop_vm_response(stop_vm_response);
 

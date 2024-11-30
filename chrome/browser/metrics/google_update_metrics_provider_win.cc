@@ -61,7 +61,7 @@ uint32_t GetHashedCohortName() {
 
 }  // namespace
 
-GoogleUpdateMetricsProviderWin::GoogleUpdateMetricsProviderWin() {}
+GoogleUpdateMetricsProviderWin::GoogleUpdateMetricsProviderWin() = default;
 
 GoogleUpdateMetricsProviderWin::~GoogleUpdateMetricsProviderWin() {
 }

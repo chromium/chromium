@@ -341,7 +341,7 @@
 <translation id="3702842351052426940">ممکن است سیم‌کارت یا نمایه سیم‌کارت داخلی‌تان غیرفعال شده باشد. سیم‌کارت را عوض کنید یا نمایه سیم‌کارت داخلی را تغییر دهید.</translation>
 <translation id="3722341589402358578">خطایی رخ داد. ممکن است برخی‌از موارد به «حذف‌شده‌ها» منتقل نشده باشد.</translation>
 <translation id="3726463242007121105">این دستگاه باز نمی‌شود زیرا سیستم فایل آن پشتیبانی نمی‌شود.</translation>
-<translation id="3727148787322499904">تغییر این تنظیم همه شبکه‌های به اشتراک‌گذاشته‌شده را تحت تأثیر قرار می‌دهد</translation>
+<translation id="3727148787322499904">تغییر این تنظیم همه شبکه‌های هم‌رسانی‌شده را تحت تأثیر قرار می‌دهد</translation>
 <translation id="3737576078404241332">حذف از نوار کناری</translation>
 <translation id="3749289110408117711">نام فایل</translation>
 <translation id="3786301125658655746">شما آفلاین هستید</translation>
@@ -422,6 +422,7 @@
 <translation id="4387004326333427325">گواهینامه راستی‌آزمایی، ازراه‌دور، رد شد</translation>
 <translation id="4394214039309501350">پیوند خارجی</translation>
 <translation id="4394980935660306080">اوایل این هفته</translation>
+<translation id="4397435965699247285">‏‫OneDrive در حالت آفلاین دردسترس نیست</translation>
 <translation id="4398096759193130964">موارد را بازیابی کنید یا آن‌ها را به پوشه جدیدی خارج از «حذف‌شده‌ها» بکشید</translation>
 <translation id="4401287888955153199">استخراج همه</translation>
 <translation id="4410695710508688828">عملیات استخراج انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
@@ -663,7 +664,7 @@
 <translation id="6096979789310008754">نوشتار جستجو پاک شد، همه فایل‌ها و پوشه‌ها نشان داده می‌شود.</translation>
 <translation id="610101264611565198">درحال انتقال <ph name="FILE_NAME" /> به <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">‏نوشتار CSV</translation>
-<translation id="6129953537138746214">فاصله</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527">در حال انتقال <ph name="FILE_NAME" /></translation>
 <translation id="6133877453787250710">سرپرست بر موارد زیر نظارت دارد:</translation>
 <translation id="613750717151263950">ژاپنی با صفحه‌کلید انگلیسی آمریکایی</translation>

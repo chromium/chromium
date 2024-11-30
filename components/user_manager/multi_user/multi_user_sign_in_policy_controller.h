@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_export.h"
 
 class PrefChangeRegistrar;
@@ -27,7 +29,8 @@ class UserManager;
 // multi user sign-in session. It caches the multi user sign-in behavior pref
 // backed by user policy into local state so that the value is available before
 // the user login and checks if the meaning of the value is respected.
-class USER_MANAGER_EXPORT MultiUserSignInPolicyController {
+class USER_MANAGER_EXPORT MultiUserSignInPolicyController
+    : public UserManager::Observer {
  public:
   MultiUserSignInPolicyController(PrefService* local_state,
                                   UserManager* user_manager);
@@ -37,7 +40,7 @@ class USER_MANAGER_EXPORT MultiUserSignInPolicyController {
   MultiUserSignInPolicyController& operator=(
       const MultiUserSignInPolicyController&) = delete;
 
-  ~MultiUserSignInPolicyController();
+  ~MultiUserSignInPolicyController() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -48,13 +51,18 @@ class USER_MANAGER_EXPORT MultiUserSignInPolicyController {
   bool IsUserAllowedInSession(const std::string& user_email) const;
 
   // Starts to observe the multi-user signin policy for the given user.
-  void StartObserving(User* user);
+  void StartObserving(User& user);
 
   // Stops to observe the multi-user signin policy for the given user.
-  void StopObserving(User* user);
+  void StopObserving(const User& user);
 
   // Removes the cached values for the given user.
   void RemoveCachedValues(std::string_view user_email);
+
+  // UserManager::Observer:
+  void OnUserProfileCreated(const User& user) override;
+  void OnUserProfileWillBeDestroyed(const User& user) override;
+  void OnUserToBeRemoved(const AccountId& account_id) override;
 
  private:
   friend class MultiUserSignInPolicyControllerTest;
@@ -71,6 +79,8 @@ class USER_MANAGER_EXPORT MultiUserSignInPolicyController {
 
   raw_ptr<PrefService, DanglingUntriaged> local_state_;
   raw_ptr<UserManager> user_manager_;
+  base::ScopedObservation<UserManager, UserManager::Observer> observation_{
+      this};
   std::vector<std::unique_ptr<PrefChangeRegistrar>> pref_watchers_;
 };
 

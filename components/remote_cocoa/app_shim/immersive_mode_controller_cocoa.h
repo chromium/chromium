@@ -11,6 +11,7 @@
 
 #include "base/scoped_observation.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
+#import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_overlay_nswindow.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
@@ -49,7 +50,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa
     : public display::DisplayObserver {
  public:
   explicit ImmersiveModeControllerCocoa(
-      NativeWidgetMacNSWindow* browser_window,
+      BrowserNativeWidgetWindow* browser_window,
       NativeWidgetMacOverlayNSWindow* overlay_window);
   ~ImmersiveModeControllerCocoa() override;
 
@@ -176,6 +177,12 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa
   // display::DisplayObserver:
   void OnPrimaryDisplayChanged() override;
 
+  // See comment for `thin_titlebar_view_controller_`. These helpers abstract
+  // manipulating it for the `kFullscreenPermanentThinController` feature.
+  // TODO(https://crbug.com/373722654): Clean these up.
+  void CreateThinControllerIfNecessary();
+  void DisableThinControllerIfNecessary();
+
   bool initialized_ = false;
 
   int reveal_lock_count_ = 0;
@@ -190,7 +197,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa
   // complete.
   bool fullscreen_transition_complete_ = false;
 
-  NativeWidgetMacNSWindow* __weak browser_window_;
+  BrowserNativeWidgetWindow* __weak browser_window_;
   NativeWidgetMacOverlayNSWindow* __weak overlay_window_;
   BridgedContentView* __weak overlay_content_view_;
 

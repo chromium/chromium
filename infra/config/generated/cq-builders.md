@@ -29,8 +29,6 @@ These builders must pass before a CL may land that affects files outside of
 
 * [android-cronet-arm-rel](https://ci.chromium.org/p/chromium/builders/try/android-cronet-arm-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-arm-rel""))
 
-* [android-desktop-x64-compile-rel](https://ci.chromium.org/p/chromium/builders/try/android-desktop-x64-compile-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-desktop-x64-compile-rel""))
-
 * [android-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x64-rel""))
 
 * [android-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x86-rel""))
@@ -767,6 +765,9 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 ### chromium
+* [android-desktop-x64-compile-rel](https://ci.chromium.org/p/chromium/builders/try/android-desktop-x64-compile-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-desktop-x64-compile-rel""))
+  * Experiment percentage: 100.0
+
 * [chromeos-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-js-coverage-rel""))
   * Experiment percentage: 50.0
 

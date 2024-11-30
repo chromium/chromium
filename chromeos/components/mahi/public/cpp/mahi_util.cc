@@ -25,6 +25,8 @@ ActionType MatchButtonTypeToActionType(const ButtonType button_type) {
       return ActionType::kQA;
     case ButtonType::kElucidation:
       return ActionType::kElucidation;
+    case ButtonType::kSummaryOfSelection:
+      return ActionType::kSummaryOfSelection;
   }
 }
 

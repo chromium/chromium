@@ -39,6 +39,13 @@ class MockDigitalIdentityProvider : public DigitalIdentityProvider {
                const base::Value request,
                DigitalIdentityCallback),
               (override));
+  MOCK_METHOD(void,
+              Create,
+              (WebContents*,
+               const url::Origin& origin,
+               base::ValueView request,
+               DigitalIdentityCallback),
+              (override));
 };
 
 }  // namespace content

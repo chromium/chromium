@@ -9,9 +9,9 @@
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-HttpsEngagementMetricsProvider::HttpsEngagementMetricsProvider() {}
+HttpsEngagementMetricsProvider::HttpsEngagementMetricsProvider() = default;
 
-HttpsEngagementMetricsProvider::~HttpsEngagementMetricsProvider() {}
+HttpsEngagementMetricsProvider::~HttpsEngagementMetricsProvider() = default;
 
 void HttpsEngagementMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {

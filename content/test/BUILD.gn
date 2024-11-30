@@ -678,6 +678,15 @@ static_library("test_support") {
       ]
       deps += [ "//components/soda:soda" ]
     }
+
+    if (is_win) {
+      sources += [
+        "../browser/renderer_host/input/mock_tfhandwriting.cc",
+        "../browser/renderer_host/input/mock_tfhandwriting.h",
+        "../browser/renderer_host/input/stylus_handwriting_win_test_helper.cc",
+        "../browser/renderer_host/input/stylus_handwriting_win_test_helper.h",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {
@@ -2102,8 +2111,6 @@ test("content_browsertests") {
       "../browser/renderer_host/direct_manipulation_test_helper_win.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.h",
       "../browser/renderer_host/direct_manipulation_win_browsertest.cc",
-      "../browser/renderer_host/input/mock_tfhandwriting.cc",
-      "../browser/renderer_host/input/mock_tfhandwriting.h",
       "../browser/renderer_host/input/stylus_handwriting_controller_win_browsertest.cc",
       "../browser/renderer_host/render_process_host_sandbox_policy_win_browsertest.cc",
       "../browser/scheduler/responsiveness/native_event_observer_browsertest_win.cc",
@@ -2540,6 +2547,9 @@ test("content_unittests") {
     "../browser/content_index/content_index_database_unittest.cc",
     "../browser/content_index/content_index_service_impl_unittest.cc",
     "../browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl_unittest.cc",
+    "../browser/cookie_insight_list/cookie_insight_list_handler_unittest.cc",
+    "../browser/cookie_insight_list/cookie_insight_list_unittest.cc",
+    "../browser/cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
     "../browser/devtools/devtools_background_services_context_impl_unittest.cc",
     "../browser/devtools/devtools_frontend_host_impl_unittest.cc",
@@ -2565,6 +2575,7 @@ test("content_unittests") {
     "../browser/file_system_access/file_system_access_handle_base_unittest.cc",
     "../browser/file_system_access/file_system_access_lock_manager_unittest.cc",
     "../browser/file_system_access/file_system_access_manager_impl_unittest.cc",
+    "../browser/file_system_access/file_system_access_observer_quota_manager_unittest.cc",
     "../browser/file_system_access/file_system_access_safe_move_helper_unittest.cc",
     "../browser/file_system_access/file_system_access_watch_scope_unittest.cc",
     "../browser/file_system_access/file_system_access_watcher_manager_unittest.cc",
@@ -2830,6 +2841,7 @@ test("content_unittests") {
     "../browser/service_worker/service_worker_version_unittest.cc",
     "../browser/shareable_file_reference_unittest.cc",
     "../browser/shared_storage/shared_storage_header_observer_unittest.cc",
+    "../browser/shared_storage/shared_storage_lock_manager_unittest.cc",
     "../browser/shared_storage/shared_storage_url_loader_factory_proxy_unittest.cc",
     "../browser/site_instance_group_unittest.cc",
     "../browser/site_instance_impl_unittest.cc",
@@ -2939,6 +2951,7 @@ test("content_unittests") {
     "../common/service_worker/service_worker_router_evaluator_unittest.cc",
     "../common/url_utils_unittest.cc",
     "../common/user_agent_unittest.cc",
+    "../common/web_ui_loading_util_unittest.cc",
     "../common/webid/identity_url_loader_throttle_unittest.cc",
     "../common/webplugininfo_unittest.cc",
     "../public/test/browser_task_environment_unittest.cc",
@@ -3016,6 +3029,7 @@ test("content_unittests") {
       "../browser/display_cutout/display_cutout_host_impl_unittest.cc",
       "../browser/display_cutout/safe_area_insets_host_impl_unittest.cc",
       "../browser/navigation_transitions/physics_model_unittest.cc",
+      "../browser/renderer_host/input/input_transfer_handler_android_unittest.cc",
       "../browser/web_contents/color_chooser_unittest.cc",
       "../common/android/cpu_time_metrics_unittest.cc",
       "../common/android/gin_java_bridge_value_unittest.cc",
@@ -3189,6 +3203,7 @@ test("content_unittests") {
     "//services/video_capture/public/cpp:mocks",
     "//services/video_capture/public/mojom",
     "//services/video_capture/public/mojom:constants",
+    "//services/video_effects/buildflags",
     "//services/viz/public/cpp/gpu",
     "//skia",
     "//sql",
@@ -3371,6 +3386,7 @@ test("content_unittests") {
     ]
     deps += [
       "//components/services/font_data/public/mojom",
+      "//components/stylus_handwriting/win:win",
       "//sandbox/policy:sandbox_test_utils",
       "//sandbox/win:sandbox",
       "//third_party/blink/public/common",

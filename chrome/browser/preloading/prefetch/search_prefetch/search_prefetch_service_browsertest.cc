@@ -360,8 +360,6 @@ class SearchPrefetchHoldbackBrowserTest : public SearchPrefetchBaseBrowserTest {
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             chrome_preloading_predictor::kDefaultSearchEngine);
-    scoped_test_timer_ =
-        std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
@@ -374,11 +372,11 @@ class SearchPrefetchHoldbackBrowserTest : public SearchPrefetchBaseBrowserTest {
   }
 
  private:
+  base::ScopedMockElapsedTimersForTest scoped_test_timer_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchHoldbackBrowserTest,
@@ -452,8 +450,6 @@ class SearchPrefetchServiceEnabledBrowserTest
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             chrome_preloading_predictor::kDefaultSearchEngine);
-    scoped_test_timer_ =
-        std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void AddCacheEntry(const GURL& search_url, const GURL& prefetch_url) {
@@ -484,11 +480,11 @@ class SearchPrefetchServiceEnabledBrowserTest
   }
 
  private:
+  base::ScopedMockElapsedTimersForTest scoped_test_timer_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
@@ -3448,8 +3444,6 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
     SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
     // Initialize PreloadingAttempt for this test suite.
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    scoped_test_timer_ =
-        std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
@@ -3469,9 +3463,9 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
   }
 
  private:
+  base::ScopedMockElapsedTimersForTest scoped_test_timer_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,

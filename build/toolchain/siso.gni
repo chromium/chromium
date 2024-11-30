@@ -1,7 +1,16 @@
 # Defines the configuration of siso (next-gen build system)
 
+use_siso_default = false
+if (current_toolchain == default_toolchain) {
+  use_siso_default =
+      exec_script(rebase_path("//build/toolchain/use_siso_default.py"),
+                  [],
+                  "value",
+                  [])
+}
+
 declare_args() {
   # Placeholder to allow having use_siso in args.gn file.
-  # autoninja switches from Ninja to Siso when use_siso=true.
-  use_siso = false
+  # Explicit `use_siso` in args.gn can override default.
+  use_siso = use_siso_default
 }

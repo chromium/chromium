@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/geometry/rect.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -62,6 +63,24 @@ int GetAxNodeID(const ::screenai::UiElement& ui_element) {
       return attribute.int_value();
   }
   return static_cast<int>(ui::kInvalidAXNodeID);
+}
+
+gfx::RectF GetBoundingBox(const ::screenai::UiElement& ui_element) {
+  return gfx::RectF(ui_element.bounding_box().left(),
+                    ui_element.bounding_box().top(),
+                    ui_element.bounding_box().right() -
+                        ui_element.bounding_box().left(),
+                    ui_element.bounding_box().bottom() -
+                        ui_element.bounding_box().top());
+}
+
+gfx::RectF GetBoundingBoxPixels(const ::screenai::UiElement& ui_element) {
+  return gfx::RectF(ui_element.bounding_box_pixels().left(),
+                    ui_element.bounding_box_pixels().top(),
+                    ui_element.bounding_box_pixels().right() -
+                        ui_element.bounding_box_pixels().left(),
+                    ui_element.bounding_box_pixels().bottom() -
+                        ui_element.bounding_box_pixels().top());
 }
 
 base::FilePath GetTestFilePath(std::string_view file_name) {
@@ -190,6 +209,61 @@ ui::AXTree CreateSampleTree() {
   return ui::AXTree(initial_state);
 }
 
+ui::AXTree CreateSampleTreeWithBounds() {
+  // AXTree title=Test Tree
+  // id=1 rootWebArea child_ids=2,4,5 (0, 0)-(1, 1)
+  // ++id=2 genericContainer child_ids=3 (0, 0)-(10, 20) clips_children=true
+  // ++++id=3 genericContainer (0, 0)-(30, 40)
+  // ++id=4 genericContainer (0, 0)-(50, 60) ignored=true
+  // ++id=5 genericContainer (0, 0)-(70, 80) invisible=true
+
+  ui::AXNodeData root;
+  ui::AXNodeData generic_container_2;
+  ui::AXNodeData generic_container_3;
+  ui::AXNodeData generic_container_4;
+  ui::AXNodeData generic_container_5;
+
+  root.id = 1;
+  generic_container_2.id = 2;
+  generic_container_3.id = 3;
+  generic_container_4.id = 4;
+  generic_container_5.id = 5;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.relative_bounds.bounds = gfx::RectF(0, 0, 1, 1);
+  root.child_ids = {generic_container_2.id, generic_container_4.id, generic_container_5.id};
+
+  generic_container_2.role = ax::mojom::Role::kGenericContainer;
+  generic_container_2.relative_bounds.bounds = gfx::RectF(0, 0, 10, 20);
+  generic_container_2.AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren,
+                               true);
+  generic_container_2.child_ids = {generic_container_3.id};
+
+  generic_container_3.role = ax::mojom::Role::kGenericContainer;
+  generic_container_3.relative_bounds.bounds = gfx::RectF(0, 0, 30, 40);
+
+  generic_container_4.role = ax::mojom::Role::kGenericContainer;
+  generic_container_4.relative_bounds.bounds = gfx::RectF(0, 0, 50, 60);
+  generic_container_4.AddState(ax::mojom::State::kIgnored);
+
+  generic_container_5.role = ax::mojom::Role::kGenericContainer;
+  generic_container_5.relative_bounds.bounds = gfx::RectF(0, 0, 70, 80);
+  generic_container_5.AddState(ax::mojom::State::kInvisible);
+
+  ui::AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root, generic_container_2, generic_container_3,
+                         generic_container_4, generic_container_5};
+  initial_state.has_tree_data = true;
+
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_data.title = "Test Tree";
+  initial_state.tree_data = tree_data;
+
+  return ui::AXTree(initial_state);
+}
+
 }  // namespace
 
 namespace screen_ai {
@@ -256,5 +330,23 @@ TEST_F(MainContentExtractorProtoConvertorTest, ProtoTest) {
                                      &expected_proto));
   ASSERT_EQ(generated_proto, expected_proto);
 }
+
+// Tests if the bounds are computed correctly.
+TEST_F(MainContentExtractorProtoConvertorTest, BoundsComputation) {
+  ui::AXTree tree = CreateSampleTreeWithBounds();
+  std::optional<ViewHierarchyAndTreeSize> result =
+      SnapshotToViewHierarchy(tree);
+  ASSERT_TRUE(result);
+  screenai::ViewHierarchy view_hierarchy;
+  ASSERT_TRUE(view_hierarchy.ParseFromString(result->serialized_proto));
+
+  // The root element should have the same bounds as the tree. The tree should
+  // have the bounds of (0, 0)-(10, 20) because the other elements are ignored,
+  // invisible, or clipped.
+  const screenai::UiElement& root_ui_element = view_hierarchy.ui_elements(0);
+  EXPECT_EQ(gfx::RectF(0, 0, 10, 20), GetBoundingBoxPixels(root_ui_element));
+  EXPECT_EQ(gfx::RectF(0, 0, 1, 1), GetBoundingBox(root_ui_element));
+}
+
 
 }  // namespace screen_ai

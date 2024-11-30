@@ -12,7 +12,6 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/feature_list.h"
@@ -61,8 +60,7 @@ void OnBrowsingDataRemoverDone(const ScopedJavaGlobalRef<jobject>& callback,
   Java_OnClearBrowsingDataListener_onBrowsingDataCleared(env, callback);
 }
 
-PrefService* GetPrefService(const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = Profile::FromJavaObject(jprofile);
+PrefService* GetPrefService(Profile* profile) {
   return profile->GetOriginalProfile()->GetPrefs();
 }
 
@@ -88,23 +86,18 @@ void OnBrowsingDataModelBuilt(JNIEnv* env,
 
 static void JNI_BrowsingDataBridge_ClearBrowsingData(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     const JavaParamRef<jobject>& jcallback,
-    const JavaParamRef<jintArray>& data_types,
+    std::vector<int>& data_types_vector,
     jint time_period,
-    const JavaParamRef<jobjectArray>& jexcluding_domains,
-    const JavaParamRef<jintArray>& jexcluding_domain_reasons,
-    const JavaParamRef<jobjectArray>& jignoring_domains,
-    const JavaParamRef<jintArray>& jignoring_domain_reasons) {
+    std::vector<std::string>& excluding_domains,
+    std::vector<int32_t>& excluding_domain_reasons,
+    std::vector<std::string>& ignoring_domains,
+    std::vector<int32_t>& ignoring_domain_reasons) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_ClearBrowsingData");
 
-  Profile* profile = Profile::FromJavaObject(jprofile);
   BrowsingDataRemover* browsing_data_remover =
       profile->GetBrowsingDataRemover();
-
-  std::vector<int> data_types_vector;
-  base::android::JavaIntArrayToIntVector(env, data_types, &data_types_vector);
 
   uint64_t remove_mask = 0;
   for (const int data_type : data_types_vector) {
@@ -138,18 +131,6 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
         NOTREACHED();
     }
   }
-  std::vector<std::string> excluding_domains;
-  std::vector<int32_t> excluding_domain_reasons;
-  std::vector<std::string> ignoring_domains;
-  std::vector<int32_t> ignoring_domain_reasons;
-  base::android::AppendJavaStringArrayToStringVector(env, jexcluding_domains,
-                                                     &excluding_domains);
-  base::android::JavaIntArrayToIntVector(env, jexcluding_domain_reasons,
-                                         &excluding_domain_reasons);
-  base::android::AppendJavaStringArrayToStringVector(env, jignoring_domains,
-                                                     &ignoring_domains);
-  base::android::JavaIntArrayToIntVector(env, jignoring_domain_reasons,
-                                         &ignoring_domain_reasons);
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder(
       content::BrowsingDataFilterBuilder::Create(
           content::BrowsingDataFilterBuilder::Mode::kPreserve));
@@ -186,14 +167,12 @@ static void EnableDialogAboutOtherFormsOfBrowsingHistory(
 
 static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     const JavaParamRef<jobject>& listener) {
   TRACE_EVENT0(
       "browsing_data",
       "BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory");
   // The one-time notice in the dialog.
-  Profile* profile = Profile::FromJavaObject(jprofile);
   browsing_data::ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
       SyncServiceFactory::GetForProfile(profile),
       WebHistoryServiceFactory::GetForProfile(profile), chrome::GetChannel(),
@@ -203,10 +182,9 @@ static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
 
 static void JNI_BrowsingDataBridge_FetchImportantSites(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     const JavaParamRef<jobject>& java_callback) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_FetchImportantSites");
-  Profile* profile = Profile::FromJavaObject(jprofile);
   std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>
       important_sites =
           site_engagement::ImportantSitesUtil::GetImportantRegisterableDomains(
@@ -224,16 +202,9 @@ static void JNI_BrowsingDataBridge_FetchImportantSites(
     important_domain_examples.push_back(info.example_origin.spec());
   }
 
-  ScopedJavaLocalRef<jobjectArray> java_domains =
-      base::android::ToJavaArrayOfStrings(env, important_domains);
-  ScopedJavaLocalRef<jintArray> java_reasons =
-      base::android::ToJavaIntArray(env, important_domain_reasons);
-  ScopedJavaLocalRef<jobjectArray> java_origins =
-      base::android::ToJavaArrayOfStrings(env, important_domain_examples);
-
   Java_ImportantSitesCallback_onImportantRegisterableDomainsReady(
-      env, java_callback, java_domains, java_origins, java_reasons,
-      dialog_disabled);
+      env, java_callback, important_domains, important_domain_examples,
+      important_domain_reasons, dialog_disabled);
 }
 
 // This value should not change during a sessions, as it's used for UMA metrics.
@@ -243,18 +214,17 @@ static jint JNI_BrowsingDataBridge_GetMaxImportantSites(JNIEnv* env) {
 
 static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     const JavaParamRef<jstring>& jorigin) {
   GURL origin(base::android::ConvertJavaStringToUTF8(jorigin));
   CHECK(origin.is_valid());
-  site_engagement::ImportantSitesUtil::MarkOriginAsImportantForTesting(
-      Profile::FromJavaObject(jprofile), origin);
+  site_engagement::ImportantSitesUtil::MarkOriginAsImportantForTesting(profile,
+                                                                       origin);
 }
 
 static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     jint data_type,
     jint clear_browsing_data_tab) {
   DCHECK_GE(data_type, 0);
@@ -272,13 +242,12 @@ static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
     return false;
   }
 
-  return GetPrefService(jprofile)->GetBoolean(pref);
+  return GetPrefService(profile)->GetBoolean(pref);
 }
 
 static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     jint data_type,
     jint clear_browsing_data_tab,
     jboolean value) {
@@ -293,23 +262,21 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
     return;
   }
 
-  GetPrefService(jprofile)->SetBoolean(pref, value);
+  GetPrefService(profile)->SetBoolean(pref, value);
 }
 
 static jint JNI_BrowsingDataBridge_GetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     jint clear_browsing_data_tab) {
-  return GetPrefService(jprofile)->GetInteger(
+  return GetPrefService(profile)->GetInteger(
       browsing_data::GetTimePeriodPreferenceName(
           ToTabEnum(clear_browsing_data_tab)));
 }
 
 static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     jint clear_browsing_data_tab,
     jint time_period) {
   DCHECK_GE(time_period, 0);
@@ -317,7 +284,7 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
             static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST));
   const char* pref_name = browsing_data::GetTimePeriodPreferenceName(
       ToTabEnum(clear_browsing_data_tab));
-  PrefService* prefs = GetPrefService(jprofile);
+  PrefService* prefs = GetPrefService(profile);
   int previous_value = prefs->GetInteger(pref_name);
   if (time_period != previous_value) {
     browsing_data::RecordTimePeriodChange(
@@ -328,28 +295,24 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
 
 static jint JNI_BrowsingDataBridge_GetLastClearBrowsingDataTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile) {
-  return GetPrefService(jprofile)->GetInteger(
+    Profile* profile) {
+  return GetPrefService(profile)->GetInteger(
       browsing_data::prefs::kLastClearBrowsingDataTab);
 }
 
-static void JNI_BrowsingDataBridge_SetLastClearBrowsingDataTab(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
-    jint tab_index) {
+static void JNI_BrowsingDataBridge_SetLastClearBrowsingDataTab(JNIEnv* env,
+                                                               Profile* profile,
+                                                               jint tab_index) {
   DCHECK_GE(tab_index, 0);
   DCHECK_LT(tab_index, 2);
-  GetPrefService(jprofile)->SetInteger(
+  GetPrefService(profile)->SetInteger(
       browsing_data::prefs::kLastClearBrowsingDataTab, tab_index);
 }
 
 static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     const JavaParamRef<jobject>& java_callback) {
-  Profile* profile = Profile::FromJavaObject(jprofile);
   BrowsingDataModel::BuildFromDisk(
       profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
       base::BindOnce(&OnBrowsingDataModelBuilt, env,

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE;
@@ -38,7 +37,6 @@ import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappDeferredStartupWithStorageHandler;
@@ -57,7 +55,6 @@ public class WebappDisclosureControllerTest {
     private static final String SCOPE = "https://www.example.com";
 
     @Mock public CurrentPageVerifier mCurrentPageVerifier;
-    @Mock public BaseCustomTabActivity mActivity;
 
     @Captor public ArgumentCaptor<Runnable> mVerificationObserverCaptor;
 
@@ -78,14 +75,12 @@ public class WebappDisclosureControllerTest {
         BrowserServicesIntentDataProvider intentDataProvider =
                 new WebApkIntentDataProviderBuilder(webApkPackageName, "https://pwa.rocks/")
                         .build();
-        when(mActivity.getIntentDataProvider()).thenReturn(intentDataProvider);
-        when(mActivity.getLifecycleDispatcher())
-                .thenReturn(mock(ActivityLifecycleDispatcher.class));
         return new WebappDisclosureController(
-                mock(WebappDeferredStartupWithStorageHandler.class),
                 mModel,
+                mock(ActivityLifecycleDispatcher.class),
                 mCurrentPageVerifier,
-                mActivity);
+                intentDataProvider,
+                mock(WebappDeferredStartupWithStorageHandler.class));
     }
 
     private WebappDataStorage registerStorageForWebApk(String packageName) {

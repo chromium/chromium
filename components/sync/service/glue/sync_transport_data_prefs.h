@@ -49,7 +49,7 @@ class SyncTransportDataPrefs {
   // The Gaia ID for which the sync machinery was last active, and for which
   // there may be data around. Cleared when sync gets disabled (typically on
   // signout) and data was removed.
-  void SetCurrentSyncingGaiaId(const std::string& gaia_id);
+  void SetCurrentSyncingGaiaId(const GaiaId& gaia_id);
   std::string GetCurrentSyncingGaiaId() const;
   void ClearCurrentSyncingGaiaId();
   static bool HasCurrentSyncingGaiaId(const PrefService* pref_service);

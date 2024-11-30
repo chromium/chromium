@@ -12,6 +12,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchConfigManager.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchController.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactory.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImpl.java",
@@ -20,13 +21,21 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetrics.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProvider.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchUtils.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleBuilder.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleCoordinator.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleProperties.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleView.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleViewBinder.java",
   ]
 
   deps = [
     ":java_resources",
+    "//base:base_shared_preferences_java",
     "//base:callback_java",
     "//base:log_java",
     "//base:metrics_java",
+    "//base:resetters_java",
     "//base:service_loader_java",
     "//base:stream_util_java",
     "//base:tasks_java",
@@ -34,6 +43,8 @@ android_library("java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/auxiliary_search/proto:proto_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
@@ -50,6 +61,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:gendeps_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
     "//url:url_java",
   ]
 
@@ -61,7 +73,12 @@ generate_jni("jni_headers") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/values/dimens.xml" ]
+  sources = [
+    "java/res/drawable/auxiliary_search_module_icon.xml",
+    "java/res/layout/auxiliary_search_module_layout.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
 }
 
 robolectric_library("junit") {
@@ -71,6 +88,8 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTaskUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchConfigManagerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactoryUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImplUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProviderTest.java",
@@ -84,11 +103,13 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
+    "//base:base_shared_preferences_java",
     "//base:callback_java",
     "//base:time_utils_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/auxiliary_search/proto:proto_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",

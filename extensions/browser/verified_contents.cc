@@ -319,18 +319,17 @@ bool VerifiedContents::VerifySignature(const std::string& protected_value,
   crypto::SignatureVerifier signature_verifier;
   if (!signature_verifier.VerifyInit(
           crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-          base::as_bytes(base::make_span(signature_bytes)), public_key_)) {
+          base::as_byte_span(signature_bytes), public_key_)) {
     VLOG(1) << "Could not verify signature - VerifyInit failure";
     return false;
   }
 
-  signature_verifier.VerifyUpdate(
-      base::as_bytes(base::make_span(protected_value)));
+  signature_verifier.VerifyUpdate(base::as_byte_span(protected_value));
 
   std::string dot(".");
-  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(dot)));
+  signature_verifier.VerifyUpdate(base::as_byte_span(dot));
 
-  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(payload)));
+  signature_verifier.VerifyUpdate(base::as_byte_span(payload));
 
   if (!signature_verifier.VerifyFinal()) {
     VLOG(1) << "Could not verify signature - VerifyFinal failure";

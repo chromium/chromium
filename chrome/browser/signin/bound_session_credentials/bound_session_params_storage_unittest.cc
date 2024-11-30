@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -249,6 +250,22 @@ TEST_P(BoundSessionParamsStorageTest, Persistence) {
     EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
                 testing::Pointwise(base::test::EqualsProto(), {params}));
   }
+}
+
+TEST_P(BoundSessionParamsStorageTest, SaveAndReadReportsUma) {
+  // Histograms are only recorded by the prefs storage.
+  int expected_bucket_count = IsOffTheRecord() ? 0 : 1;
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(storage().SaveParams(params));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.StorageWriteError", 0 /*kNone*/,
+      expected_bucket_count);
+  storage().ReadAllParamsAndCleanStorageIfNecessary();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.StorageReadError", 0 /*kNone*/,
+      expected_bucket_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

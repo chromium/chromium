@@ -443,6 +443,25 @@ NET_EXPORT extern const base::FeatureParam<bool>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kIpPrivacyExpirationFuzz;
 
+// Backoff time applied when fetching tokens from the IP Protection auth
+// token server encounters an error indicating that the primary account is not
+// eligible (e.g., user is signed in but not eligible for IP protection) or
+// a 403 (FORBIDDEN) status code (e.g., quota exceeded).
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensNotEligibleBackoff;
+
+// Backoff time applied when fetching tokens from the IP Protection auth
+// token server encounters a transient error, such as a failure to fetch
+// an OAuth token for a primary account or a network issue.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensTransientBackoff;
+
+// Backoff time applied when fetching tokens from the IP Protection auth
+// token server encounters a 400 (BAD REQUEST) or 401 (UNAUTHORIZED) status code
+// which suggests a bug.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensBugBackoff;
+
 // If true, only proxy traffic when the top-level site uses the http:// or
 // https:// schemes. This prevents attempts to proxy from top-level sites with
 // chrome://, chrome-extension://, or other non-standard schemes, in addition to
@@ -532,9 +551,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableEarlyHintsOnHttp11);
 
 // Enables draft-07 version of WebTransport over HTTP/3.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebTransportDraft07);
-
-// Enables Zstandard Content-Encoding support.
-NET_EXPORT BASE_DECLARE_FEATURE(kZstdContentEncoding);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault);
 
@@ -645,6 +661,19 @@ NET_EXPORT extern const base::FeatureParam<DiskCacheBackend>
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.
 NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreHSTSForLocalhost);
+
+// If enabled, main frame navigation resources will be prioritized in Simple
+// Cache. So they will be less likely to be evicted.
+NET_EXPORT BASE_DECLARE_FEATURE(kSimpleCachePrioritizedCaching);
+// This is a factor by which we divide the size of an entry that has the
+// HINT_HIGH_PRIORITY flag set to prioritize it for eviction to be less likely
+// evicted.
+NET_EXPORT extern const base::FeatureParam<int>
+    kSimpleCachePrioritizedCachingPrioritizationFactor;
+// The period of time that the entry with HINT_HIGH_PRIORITY flag is considered
+// prioritized.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSimpleCachePrioritizedCachingPrioritizationPeriod;
 
 }  // namespace net::features
 

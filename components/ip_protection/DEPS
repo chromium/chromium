@@ -1,5 +1,8 @@
 include_rules = [
   "+components/privacy_sandbox/masked_domain_list",
+  "+components/signin/public",
+  "+content/public/browser",
+  "+content/public/test",
   "+mojo/public/cpp/bindings",
   "+mojo/core/embedder",
   "+net",

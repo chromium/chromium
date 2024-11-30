@@ -1419,8 +1419,7 @@ bool SimpleSynchronousEntry::CheckHeaderAndKey(base::File* file,
   }
 
   const char* key_data = header_data.data() + sizeof(*header);
-  base::span<const char> key_span =
-      base::make_span(key_data, header->key_length);
+  base::span key_span(key_data, header->key_length);
   if (base::PersistentHash(base::as_bytes(key_span)) != header->key_hash) {
     RecordSyncOpenResult(cache_type_, OPEN_ENTRY_KEY_HASH_MISMATCH);
     return false;

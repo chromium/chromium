@@ -18,7 +18,7 @@ ts_library("library") {
   # it requires unsafe-eval CSP header to work. Use Lit templates instead.
   # TODO(crbug.com/40433145): Replace remaining usages with alternatives.
   visibility = [
-    "//components/ntp_tiles/webui/resources:build_ts",
+    "//components/neterror/resources:build_ts",
     "//components/sync/service/resources:build_ts",
     "//content/browser/resources/service_worker:build_ts",
   ]

@@ -13,6 +13,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -75,12 +77,6 @@ class SubresourceIntegrityTest : public testing::Test {
         context(MakeGarbageCollected<MockFetchContext>()) {}
 
  protected:
-  SubresourceIntegrity::IntegrityFeatures Features() const {
-    return RuntimeEnabledFeatures::SignatureBasedIntegrityEnabledByRuntimeFlag()
-               ? SubresourceIntegrity::IntegrityFeatures::kSignatures
-               : SubresourceIntegrity::IntegrityFeatures::kDefault;
-  }
-
   void ExpectAlgorithm(const String& text,
                        IntegrityAlgorithm expected_algorithm) {
     Vector<UChar> characters;
@@ -90,8 +86,8 @@ class SubresourceIntegrityTest : public testing::Test {
     IntegrityAlgorithm algorithm;
 
     EXPECT_EQ(SubresourceIntegrity::kAlgorithmValid,
-              SubresourceIntegrity::ParseAttributeAlgorithm(
-                  position, end, Features(), algorithm));
+              SubresourceIntegrity::ParseAttributeAlgorithm(position, end,
+                                                            algorithm));
     EXPECT_EQ(expected_algorithm, algorithm);
     EXPECT_EQ(end, position);
   }
@@ -107,7 +103,7 @@ class SubresourceIntegrityTest : public testing::Test {
     IntegrityAlgorithm algorithm;
 
     EXPECT_EQ(expected_result, SubresourceIntegrity::ParseAttributeAlgorithm(
-                                   position, end, Features(), algorithm));
+                                   position, end, algorithm));
     EXPECT_EQ(begin, position);
   }
 
@@ -138,7 +134,7 @@ class SubresourceIntegrityTest : public testing::Test {
                    IntegrityAlgorithm expected_algorithm) {
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  Features(), metadata_set);
+                                                  metadata_set);
     EXPECT_EQ(1u, metadata_set.size());
     if (metadata_set.size() > 0) {
       IntegrityMetadata metadata = *metadata_set.begin();
@@ -157,7 +153,7 @@ class SubresourceIntegrityTest : public testing::Test {
     }
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  Features(), metadata_set);
+                                                  metadata_set);
     EXPECT_TRUE(
         IntegrityMetadata::SetsEqual(expected_metadata_set, metadata_set));
   }
@@ -165,7 +161,7 @@ class SubresourceIntegrityTest : public testing::Test {
   void ExpectParseFailure(const char* integrity_attribute) {
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  Features(), metadata_set);
+                                                  metadata_set);
     EXPECT_EQ(metadata_set.size(), 0u);
   }
 
@@ -173,7 +169,7 @@ class SubresourceIntegrityTest : public testing::Test {
     IntegrityMetadataSet metadata_set;
 
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  Features(), metadata_set);
+                                                  metadata_set);
     EXPECT_EQ(0u, metadata_set.size());
   }
 
@@ -202,17 +198,17 @@ class SubresourceIntegrityTest : public testing::Test {
                               const TestCase& test,
                               Expectation expectation) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(String(integrity), Features(),
+    SubresourceIntegrity::ParseIntegrityAttribute(String(integrity),
                                                   metadata_set);
     SegmentedBuffer buffer;
     buffer.Append(base::make_span(kBasicScript, strlen(kBasicScript)));
-    SubresourceIntegrity::ReportInfo report_info;
+    IntegrityReport integrity_report;
     EXPECT_EQ(expectation == kIntegritySuccess,
               SubresourceIntegrity::CheckSubresourceIntegrity(
                   metadata_set, &buffer, test.url,
                   *CreateTestResource(test.url, test.request_mode,
                                       test.response_type),
-                  report_info));
+                  integrity_report));
   }
 
   Resource* CreateTestResource(
@@ -273,8 +269,6 @@ TEST_F(SubresourceIntegrityTest, ParseAlgorithm) {
   ExpectAlgorithm("sha-256-", IntegrityAlgorithm::kSha256);
   ExpectAlgorithm("sha-384-", IntegrityAlgorithm::kSha384);
   ExpectAlgorithm("sha-512-", IntegrityAlgorithm::kSha512);
-
-  ScopedSignatureBasedIntegrityForTest signature_based_integrity(false);
 
   ExpectAlgorithmFailure("sha1-", SubresourceIntegrity::kAlgorithmUnknown);
   ExpectAlgorithmFailure("sha-1-", SubresourceIntegrity::kAlgorithmUnknown);

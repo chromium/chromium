@@ -21,20 +21,6 @@
 
 #define CHECK_CLAZZ(env, jcaller, clazz, ...) JNI_ZERO_DCHECK(clazz);
 
-#if defined(__clang__) && __has_attribute(noinline)
-#define JNI_ZERO_NOINLINE [[clang::noinline]]
-#elif __has_attribute(noinline)
-#define JNI_ZERO_NOINLINE __attribute__((noinline))
-#endif
-
-#if defined(__clang__) && defined(NDEBUG) && __has_attribute(always_inline)
-#define JNI_ZERO_ALWAYS_INLINE [[clang::always_inline]] inline
-#elif defined(NDEBUG) && __has_attribute(always_inline)
-#define JNI_ZERO_ALWAYS_INLINE inline __attribute__((__always_inline__))
-#else
-#define JNI_ZERO_ALWAYS_INLINE inline
-#endif
-
 namespace jni_zero::internal {
 
 inline void HandleRegistrationError(JNIEnv* env,
@@ -76,11 +62,11 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContext {
 
   // Force no inline to reduce code size.
   template <MethodID::Type type>
-  JNI_ZERO_NOINLINE void Init(JNIEnv* env,
-                              jclass clazz,
-                              const char* method_name,
-                              const char* jni_signature,
-                              std::atomic<jmethodID>* atomic_method_id) {
+  JNI_ZERO_NEVER_INLINE void Init(JNIEnv* env,
+                                  jclass clazz,
+                                  const char* method_name,
+                                  const char* jni_signature,
+                                  std::atomic<jmethodID>* atomic_method_id) {
     env_ = env;
 
     // Make sure compiler doesn't optimize out the assignment.
@@ -92,7 +78,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContext {
                                          atomic_method_id);
   }
 
-  JNI_ZERO_NOINLINE ~JniJavaCallContext() {
+  JNI_ZERO_NEVER_INLINE ~JniJavaCallContext() {
     // Reset so that spurious marker finds are avoided.
     memset(&marker_, 0, sizeof(marker_));
     if (checked) {

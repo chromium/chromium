@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/command_event.h"
@@ -441,43 +440,57 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
            !DynamicTo<HTMLButtonElement>(this)->commandForElement());
 
     if (popover.popover) {
-      // Buttons with a popovertarget will invoke popovers, which is the same
-      // logic as an invoketarget with an appropriate command (e.g.
-      // togglePopover), sans the `CommandEvent` dispatch. Calling
-      // `HandleCommandInternal()` does not dispatch the event but can handle
-      // the popover triggering logic. `popovertargetaction` must also be mapped
-      // to the equivalent `command` string:
-      //  popovertargetaction=toggle -> command=togglePopover
-      //  popovertargetaction=show -> command=showPopover
-      //  popovertargetaction=hide -> command=hidePopover
-      // We must check to ensure the action is one of the available popover
-      // invoker actions so that popovertargetaction cannot be set to something
-      // like showModal.
-      auto trigger_support = SupportsPopoverTriggering();
-      CHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
-      CHECK_NE(popover.action, PopoverTriggerAction::kNone);
-      CommandEventType action;
-
-      switch (popover.action) {
-        case PopoverTriggerAction::kToggle:
-          action = CommandEventType::kTogglePopover;
-          break;
-        case PopoverTriggerAction::kShow:
-          action = CommandEventType::kShowPopover;
-          break;
-        case PopoverTriggerAction::kHide:
-          action = CommandEventType::kHidePopover;
-          break;
-        case PopoverTriggerAction::kHover:
-          CHECK(RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled());
-          action = CommandEventType::kShowPopover;
-          break;
-        case PopoverTriggerAction::kNone:
-          NOTREACHED();
+      bool event_target_was_nested_popover = false;
+      if (RuntimeEnabledFeatures::PopoverButtonNestingBehaviorEnabled()) {
+        if (auto* target_node = event.target()->ToNode()) {
+          bool button_is_ancestor_of_popover =
+              IsShadowIncludingAncestorOf(*popover.popover);
+          event_target_was_nested_popover =
+              button_is_ancestor_of_popover &&
+              popover.popover->IsShadowIncludingInclusiveAncestorOf(
+                  *target_node);
+        }
       }
 
-      CHECK(popover.popover->IsValidBuiltinCommand(*this, action));
-      popover.popover->HandleCommandInternal(*this, action);
+      if (!event_target_was_nested_popover) {
+        // Buttons with a popovertarget will invoke popovers, which is the same
+        // logic as an invoketarget with an appropriate command (e.g.
+        // togglePopover), sans the `CommandEvent` dispatch. Calling
+        // `HandleCommandInternal()` does not dispatch the event but can handle
+        // the popover triggering logic. `popovertargetaction` must also be
+        // mapped to the equivalent `command` string:
+        //  popovertargetaction=toggle -> command=togglePopover
+        //  popovertargetaction=show -> command=showPopover
+        //  popovertargetaction=hide -> command=hidePopover
+        // We must check to ensure the action is one of the available popover
+        // invoker actions so that popovertargetaction cannot be set to
+        // something like showModal.
+        auto trigger_support = SupportsPopoverTriggering();
+        CHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
+        CHECK_NE(popover.action, PopoverTriggerAction::kNone);
+        CommandEventType action;
+
+        switch (popover.action) {
+          case PopoverTriggerAction::kToggle:
+            action = CommandEventType::kTogglePopover;
+            break;
+          case PopoverTriggerAction::kShow:
+            action = CommandEventType::kShowPopover;
+            break;
+          case PopoverTriggerAction::kHide:
+            action = CommandEventType::kHidePopover;
+            break;
+          case PopoverTriggerAction::kHover:
+            CHECK(RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled());
+            action = CommandEventType::kShowPopover;
+            break;
+          case PopoverTriggerAction::kNone:
+            NOTREACHED();
+        }
+
+        CHECK(popover.popover->IsValidBuiltinCommand(*this, action));
+        popover.popover->HandleCommandInternal(*this, action);
+      }
     }
   }
   HTMLElement::DefaultEventHandler(event);

@@ -316,7 +316,7 @@ base::Value ResultAnalyzer::GetResult() {
 // Returns the path containing test input files,
 // components/test/data/autofill/heuristics-json/.
 const base::FilePath& GetInputDir() {
-  static base::NoDestructor<base::FilePath> dir([]() {
+  static base::NoDestructor<base::FilePath> dir([] {
     base::FilePath dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")

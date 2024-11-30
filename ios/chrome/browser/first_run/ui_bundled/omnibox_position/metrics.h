@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_OMNIBOX_POSITION_METRICS_H_
 
 #import "base/time/time.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h"
 
 namespace segmentation_platform {
 class DeviceSwitcherResultDispatcher;

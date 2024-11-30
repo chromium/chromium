@@ -154,6 +154,7 @@
 
 <AudioDataInit> = { data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: <int min=0 max=100>, sampleRate: <SampleRate>, timestamp: <int min=0 max=100> }
 <AudioDataInit> = { data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: <int>, sampleRate: <SampleRate>, timestamp: <int> }
+<AudioDataInit> = { data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, sampleRate: <SampleRate>, numberOfFrames: sampleRate/100, timestamp: <int min=0 max=100> }
 
 <VideoFrameBufferInit> = { codedHeight: <int>, codedWidth: <int>, format: <VideoPixelFormat>, timestamp: <int> }
 <VideoFrameBufferInit> = { codedHeight: <int min=80 max=1280>, codedWidth: <int min=80 max=1280>, format: <VideoPixelFormat>, timestamp: <int min=0 min=100> }
@@ -223,7 +224,7 @@ await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
 await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
 await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
 <VideoEncoder>.reset();
-#<VideoEncoder>.close();
+<VideoEncoder>.close();
 
 
 #~~~~~~~~~~~~~~~~AudioEncoder~~~~~~~~~~~~~~~~#
@@ -270,7 +271,7 @@ await <AudioEncoder>.flush();
 await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
 await <AudioEncoder>.flush();
 <AudioEncoder>.reset();
-# <AudioEncoder>.close();
+<AudioEncoder>.close();
 
 
 #~~~~~~~~~~~~~~~~MediaStreamTrackGenerator~~~~~~~~~~~~~~~~#
@@ -289,7 +290,6 @@ await <AudioEncoder>.flush();
 
 #~~~~~~~~~~~~~~~~AudioData~~~~~~~~~~~~~~~~#
 <new AudioData> = new AudioData(<AudioDataInit>);
-let sampleRate = <SampleRate>; let numberOfFrames = sampleRate / 100; <new AudioData> = new AudioData({ data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: numberOfFrames, sampleRate: sampleRate, timestamp: <int min=0 max=100> });
 <new AudioData> = <AudioData>.clone();
 
 #~~~~~~~~~~~~~~~~VideoFrame~~~~~~~~~~~~~~~~#

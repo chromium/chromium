@@ -100,12 +100,12 @@ class TestWebApkInstaller : public WebApkInstaller {
 // Runs the WebApkInstaller installation process/update and blocks till done.
 class WebApkInstallerRunner {
  public:
-  WebApkInstallerRunner() {}
+  WebApkInstallerRunner() = default;
 
   WebApkInstallerRunner(const WebApkInstallerRunner&) = delete;
   WebApkInstallerRunner& operator=(const WebApkInstallerRunner&) = delete;
 
-  ~WebApkInstallerRunner() {}
+  ~WebApkInstallerRunner() = default;
 
   void RunInstallWebApk(std::unique_ptr<WebApkInstaller> installer,
                         content::WebContents* web_contents,
@@ -159,7 +159,7 @@ class WebApkInstallerRunner {
 // synchronously.
 class UpdateRequestStorer {
  public:
-  UpdateRequestStorer() {}
+  UpdateRequestStorer() = default;
 
   UpdateRequestStorer(const UpdateRequestStorer&) = delete;
   UpdateRequestStorer& operator=(const UpdateRequestStorer&) = delete;
@@ -224,7 +224,7 @@ class WebApkInstallerBrowserTest : public AndroidBrowserTest {
       std::unique_ptr<net::test_server::HttpResponse>(void)>
       WebApkResponseBuilder;
 
-  WebApkInstallerBrowserTest() {}
+  WebApkInstallerBrowserTest() = default;
 
   WebApkInstallerBrowserTest(const WebApkInstallerBrowserTest&) = delete;
   WebApkInstallerBrowserTest& operator=(const WebApkInstallerBrowserTest&) =

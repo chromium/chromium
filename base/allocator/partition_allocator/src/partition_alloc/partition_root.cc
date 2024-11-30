@@ -105,6 +105,10 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
 
 namespace partition_alloc {
 
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+internal::SharedMutex PartitionRoot::g_shadow_metadata_init_mutex_;
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+
 #if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
 namespace {
@@ -1966,6 +1970,7 @@ void PartitionRoot::EnableShadowMetadata(internal::PoolHandleMask mask) {
   // This is required to enable ShadowMetadata on utility processes.
   { close(memfd_create("module_cache", MFD_CLOEXEC)); }
 #endif
+  internal::UniqueLock unique_lock(g_shadow_metadata_init_mutex_);
 
   internal::ScopedGuard guard(g_root_enumerator_lock);
   // Must lock all PartitionRoot-s and ThreadCache.

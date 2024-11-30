@@ -141,7 +141,11 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     // Clear out all archived tabs between tests.
-                    mArchivedTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                    mArchivedTabModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeAllTabs().build(),
+                                    /* allowDialog= */ false);
                 });
     }
 
@@ -515,11 +519,10 @@ public class TabArchiverTest {
                         /* incognito= */ false);
 
         TabState state = runOnUiThreadBlocking(() -> TabStateExtractor.from(tab));
-        Tab archivedTab =
-                runOnUiThreadBlocking(
-                        () ->
-                                mArchivedTabCreator.createFrozenTab(
-                                        state, tab.getId(), TabModel.INVALID_TAB_INDEX));
+        runOnUiThreadBlocking(
+                () ->
+                        mArchivedTabCreator.createFrozenTab(
+                                state, tab.getId(), TabModel.INVALID_TAB_INDEX));
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
@@ -573,10 +576,8 @@ public class TabArchiverTest {
                     mTabArchiveSettings.setAutoDeleteTimeDeltaHours(0);
                 });
 
-        Tab tab =
-                sActivityTestRule.loadUrlInNewTab(
-                        sActivityTestRule.getTestServer().getURL(TEST_PATH),
-                        /* incognito= */ false);
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());

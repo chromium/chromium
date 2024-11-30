@@ -156,15 +156,65 @@ class CORE_EXPORT SelectorChecker {
     // https://crrev.com/c/3362008
     const CSSSelector* selector = nullptr;
 
-    // TODO(dbaron): I'm suspicious of how accurate the comments describing
-    // the following three members are.  We should review them for accuracy.
-    // Used to match the :scope pseudo-class.  It also tells us which
-    // TreeScope the selectors are associated with.
+    // The "tree context" [1] whenever the selector is "matched against
+    // a tree" [2].
+    //
+    // This can most easily be understood as "where a given selector
+    // comes from":
+    //
+    //  - For style rules at the document level, this is a Document.
+    //  - For style rules inside a shadow tree, this is a ShadowRoot.
+    //  - For querySelector, this is the root [3] of the node querySelector
+    //    was called on, meaning it can either be a Document, ShadowRoot,
+    //    or DocumentFragment.
+    //
+    // Some selector matching in Blink takes place with tree_scope==nullptr,
+    // for example UA rules. This should be functionally identical to providing
+    // the Document associated with `element` as the tree scope.
+    //
+    // [1] https://drafts.csswg.org/selectors-4/#match-a-selector-against-a-tree
+    // [2] https://drafts.csswg.org/css-scoping-1/#tree-context
+    // [3] https://dom.spec.whatwg.org/#concept-tree-root
+    const TreeScope* tree_scope = nullptr;
+    // The scoping root [1], whenever the selector is scoped [2].
+    //
+    // This is often the same node as `tree_scope`, but differs when selectors
+    // are scoped to some specific Element within that tree. For example,
+    // for Element.querySelector, `scope` is set to the element querySelector
+    // is invoked on.
+    //
+    // If `scope` is an element, the :scope pseudo-class matches that element,
+    // and only that element. Otherwise, it matches what :root matches.
+    // This behavior is different from what specs expect, see discussion
+    // in Issue 7261 [3].
+    //
+    // See also documentation on `style_scope` below, as it is relevant for
+    // how `scope` is used throughout the evaluation of the selector.
+    //
+    // [1] https://drafts.csswg.org/selectors-4/#scoping-root
+    // [2] https://drafts.csswg.org/selectors-4/#scoped-selector
+    // [3] https://github.com/w3c/csswg-drafts/issues/7261
     const ContainerNode* scope = nullptr;
-    // If `style_scope` is specified, that is used to match the :scope
-    // pseudo-class instead (and `scope` is ignored).
+    // The StyleScope (i.e. @scope) associated with the selector.
+    //
+    // This points to the innermost StyleScope, i.e. the StyleScope holding
+    // on to the style rule directly.
+    //
+    // A non-nullptr `style_scope` causes "scope activation" [1] at some point
+    // during selector matching, which is basically lazy evaluation of what
+    // the scoping roots are. For each found scoping root, we'll match the
+    // selector (perhaps partially) with `scope` set to that root.
+    //
+    // Both `scope` and `style_scope` may be specified on the
+    // SelectorCheckingContext passed to SelectorChecker::Match,
+    // but if `style_scope` is non-nullptr, then `scope` is effectively ignored:
+    // `scope` will be assigned a value by the "scope activation" process
+    // referenced above.
+    //
+    // [1] SelectorChecker::MatchForScopeActivation
     const StyleScope* style_scope = nullptr;
-    // StyleScopeFrame is required if style_scope is non-nullptr.
+    // A cache used to carry out the work described for `style_scope`.
+    // Must be non-nullptr when `style_scope` is non-nullptr.
     StyleScopeFrame* style_scope_frame = nullptr;
 
     Element* element = nullptr;
@@ -185,7 +235,6 @@ class CORE_EXPORT SelectorChecker {
     bool is_sub_selector = false;
     bool in_rightmost_compound = true;
     bool has_scrollbar_pseudo = false;
-    bool treat_shadow_host_as_normal_scope = false;
     bool in_nested_complex_selector = false;
     // If true, elements that are links will match :visited. Otherwise,
     // they will match :link.
@@ -400,6 +449,7 @@ class CORE_EXPORT SelectorChecker {
   const StyleScopeActivations& EnsureActivations(const SelectorCheckingContext&,
                                                  const StyleScope&) const;
   const StyleScopeActivations* CalculateActivations(
+      const TreeScope*,
       Element&,
       const StyleScope&,
       const StyleScopeActivations& outer_activations,
@@ -407,11 +457,13 @@ class CORE_EXPORT SelectorChecker {
       bool match_visited) const;
   bool MatchesWithScope(Element&,
                         const CSSSelector& selector_list,
+                        const TreeScope*,
                         const ContainerNode* scope,
                         bool match_visited,
                         MatchFlags&) const;
   // https://drafts.csswg.org/css-cascade-6/#scoping-limit
-  bool ElementIsScopingLimit(const StyleScope&,
+  bool ElementIsScopingLimit(const TreeScope*,
+                             const StyleScope&,
                              const StyleScopeActivation&,
                              Element& element,
                              bool match_visited,

@@ -26,6 +26,15 @@
   return self;
 }
 
++ (instancetype)autoLanguageWithLocalizedName:(NSString*)localizedName
+                                   nativeName:(NSString*)nativeName {
+  std::u16string validLocalizedName = base::SysNSStringToUTF16(localizedName);
+  std::u16string validNativeName = base::SysNSStringToUTF16(nativeName);
+  return [[CWVTranslationLanguage alloc] initWithLanguageCode:"auto"
+                                                localizedName:validLocalizedName
+                                                   nativeName:validNativeName];
+}
+
 - (BOOL)isEqual:(id)object {
   if (self == object) {
     return YES;

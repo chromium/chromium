@@ -87,7 +87,7 @@ class ZoomLevelChangeObserver {
 
 class HostZoomMapBrowserTest : public InProcessBrowserTest {
  public:
-  HostZoomMapBrowserTest() {}
+  HostZoomMapBrowserTest() = default;
 
   HostZoomMapBrowserTest(const HostZoomMapBrowserTest&) = delete;
   HostZoomMapBrowserTest& operator=(const HostZoomMapBrowserTest&) = delete;

@@ -118,8 +118,8 @@ class DIPSStorage {
       const GURL& url);
 
   // Returns time and type of the most recent interaction with the given url.
-  std::pair<std::optional<base::Time>, bool> LastInteractionTimeAndType(
-      const GURL& url);
+  std::pair<std::optional<base::Time>, DIPSInteractionType>
+  LastInteractionTimeAndType(const GURL& url);
 
   std::optional<base::Time> GetTimerLastFired();
   bool SetTimerLastFired(base::Time time);

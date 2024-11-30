@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Откроются настройки, где можно сделать Chrome браузером по умолчанию.</translation>
 <translation id="1670609221633730681">Совет по работе с Chrome: выберите удобное расположение адресной строки</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Сохраняйте пароли в браузер Chrome</translation>
 <translation id="1790080846677398234">Указанные URL будут добавлены в закладки в Chrome.</translation>
 <translation id="1799920918471566157">Советы по работе с Chrome</translation>
 <translation id="1830634592642484976">Адрес добавлен в Chrome. Сохраните его в аккаунте Google (<ph name="USER_EMAIL" />), чтобы использовать в других продуктах Google.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">Chrome всегда будет запрашивать мобильный сайт.</translation>
 <translation id="3740397331642243698">Введенные URL будут открываться в Google Chrome в режиме инкогнито.</translation>
 <translation id="3741995255368156336">Позволяет открыть список для чтения в Chrome.</translation>
+<translation id="3808570423967020928">Добавьте Chrome на панель Dock для быстрого доступа.</translation>
 <translation id="3827545470516145620">На этом устройстве используется стандартная система защиты.</translation>
 <translation id="384394811301901750">Google Chrome не может получить доступ к камере.</translation>
 <translation id="3863841106411295595">Указанные URL будут добавлены в список для чтения в Chrome.</translation>
@@ -219,9 +221,11 @@
 
 Чтобы посмотреть дополнительные настройки, которые используют информацию для улучшения работы Chrome, перейдите к <ph name="BEGIN_LINK" />сервисам Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Удалить данные о работе в браузере Chrome.</translation>
+<translation id="6924922227983877439">Открывайте по умолчанию ссылки через Chrome</translation>
 <translation id="6975725306479268850">Используйте Chrome для автозаполнения</translation>
 <translation id="7056826488869329999">Начнется проверка безопасности в Chrome.</translation>
 <translation id="7061455974939528301">Нажмите на значок Chrome и удерживайте его, затем выберите "Изменить экран "Домой"</translation>
+<translation id="7065813315247345131">Добавьте Chrome на панель Dock</translation>
 <translation id="7124339256045485976">Обновить Chrome до последней версии</translation>
 <translation id="7161390184744336561">Версия Google Chrome устарела.</translation>
 <translation id="7165736900384873061">Используйте QR-сканер в Google Chrome</translation>

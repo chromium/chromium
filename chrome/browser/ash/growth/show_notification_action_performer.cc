@@ -140,7 +140,7 @@ HandleNotificationClickAndCloseDelegate::
         const CloseCallback& close_callback)
     : click_callback_(click_callback), close_callback_(close_callback) {}
 HandleNotificationClickAndCloseDelegate::
-    ~HandleNotificationClickAndCloseDelegate() {}
+    ~HandleNotificationClickAndCloseDelegate() = default;
 
 void HandleNotificationClickAndCloseDelegate::Click(
     const std::optional<int>& button_index,

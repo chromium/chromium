@@ -153,7 +153,7 @@ public class HiddenTabHolder {
         if (!warmupManager.hasSpareTab(profile, /* targetsNetwork= */ false)) return;
         Tab tab =
                 warmupManager.takeSpareTab(
-                        profile, TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION);
+                        profile, true, TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION);
 
         tabCreatedCallback.onResult(tab);
 
@@ -272,7 +272,8 @@ public class HiddenTabHolder {
                         intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
 
         Tab tab =
-                WarmupManager.getInstance().takeSpareTab(profile, TabLaunchType.FROM_EXTERNAL_APP);
+                WarmupManager.getInstance()
+                        .takeSpareTab(profile, false, TabLaunchType.FROM_EXTERNAL_APP);
 
         String url = IntentHandler.getUrlFromIntent(intent);
         LoadUrlParams params = new LoadUrlParams(url);

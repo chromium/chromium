@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,8 +14,9 @@ using base::test::FeatureRef;
 class GlicEnablingTest : public testing::Test {
  public:
   void SetUp() override {
-    // Enable kGlic by default for testing.
-    scoped_feature_list_.InitWithFeatures({features::kGlic}, {});
+    // Enable kGlic and kTabstripComboButton by default for testing.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
   }
 
   void TearDown() override {
@@ -26,13 +28,20 @@ class GlicEnablingTest : public testing::Test {
 };
 
 // Test
-TEST_F(GlicEnablingTest, FeatureNotEnabledTest) {
+TEST_F(GlicEnablingTest, GlicFeatureEnabledTest) {
+  EXPECT_EQ(GlicEnabling::IsEnabledByFlags(), true);
+}
+
+TEST_F(GlicEnablingTest, GlicFeatureNotEnabledTest) {
   // Turn feature flag off
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures({}, {features::kGlic});
-  EXPECT_EQ(GlicEnabling::IsEnabled(), false);
+  EXPECT_EQ(GlicEnabling::IsEnabledByFlags(), false);
 }
 
-TEST_F(GlicEnablingTest, FeatureEnabledTest) {
-  EXPECT_EQ(GlicEnabling::IsEnabled(), true);
+TEST_F(GlicEnablingTest, TabStripComboButtonFeatureNotEnabledTest) {
+  // Turn tab strip combo button feature flag off
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures({}, {features::kTabstripComboButton});
+  EXPECT_EQ(GlicEnabling::IsEnabledByFlags(), false);
 }

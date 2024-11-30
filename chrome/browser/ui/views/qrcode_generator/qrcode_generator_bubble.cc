@@ -101,8 +101,8 @@ QRCodeGeneratorBubble::QRCodeGeneratorBubble(
 }
 
 QRCodeGeneratorBubble::~QRCodeGeneratorBubble() {
-  if (qrcode_action_item_) {
-    qrcode_action_item_->SetIsShowingBubble(false);
+  if (qrcode_action_item_.get()) {
+    qrcode_action_item_.get()->SetIsShowingBubble(false);
   }
 }
 
@@ -113,9 +113,12 @@ void QRCodeGeneratorBubble::Show() {
   ShowForReason(USER_GESTURE);
   Browser* browser = chrome::FindLastActive();
   if (browser && base::FeatureList::IsEnabled(features::kToolbarPinning)) {
-    qrcode_action_item_ = actions::ActionManager::Get().FindAction(
-        kActionQrCodeGenerator, browser->browser_actions()->root_action_item());
-    qrcode_action_item_->SetIsShowingBubble(true);
+    qrcode_action_item_ =
+        actions::ActionManager::Get()
+            .FindAction(kActionQrCodeGenerator,
+                        browser->browser_actions()->root_action_item())
+            ->GetAsWeakPtr();
+    qrcode_action_item_.get()->SetIsShowingBubble(true);
   }
 }
 
@@ -123,8 +126,8 @@ void QRCodeGeneratorBubble::Hide() {
   if (on_closing_)
     std::move(on_closing_).Run();
   CloseBubble();
-  if (qrcode_action_item_) {
-    qrcode_action_item_->SetIsShowingBubble(false);
+  if (qrcode_action_item_.get()) {
+    qrcode_action_item_.get()->SetIsShowingBubble(false);
   }
 }
 

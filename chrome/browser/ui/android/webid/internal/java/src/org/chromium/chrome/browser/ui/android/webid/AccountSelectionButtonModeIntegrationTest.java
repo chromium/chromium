@@ -212,7 +212,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                         TEST_PROFILE_PIC,
                         null,
                         /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ false);
+                        /* isBrowserTrustedSignIn= */ false,
+                        /* isFilteredOut= */ false);
 
         runOnUiThreadBlocking(
                 () -> {

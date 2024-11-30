@@ -31,6 +31,21 @@ reviewer.
       summary="Facilitate a Pix based payment using Google Pay."/>
 </variants>
 
+<histogram name="FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy"
+    units="ms" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for Pix payments, this histogram logs the
+    latency for seeing the FOP selector since a user copies the Pix payment code
+    on the browser. [Frequency] Logged once per Pix payflow. Pix payflow is
+    triggered at most once per page load. [Trigger] The histogram is logged when
+    the Pix FOP selector is shown.
+  </summary>
+</histogram>
+
 <histogram
     name="FacilitatedPayments.Pix.PaymentCodeValidation.{PaymentCodeValidationResult}.Latency"
     units="ms" expires_after="2025-07-01">
@@ -193,7 +208,25 @@ reviewer.
 </histogram>
 
 <histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Latency"
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Attempt"
+    enum="BooleanAttempted" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when a request is sent to to payments platform (client) which
+    faciliates the payment. It should never log a false case. [Frequency] Logged
+    at most once per {FacilitatedPaymentsType} flow. [Trigger] User selects a
+    payment instrument from the list of options shown in the
+    {FacilitatedPaymentsType} UI and the backend returns the instruction to
+    trigger the purchase action flow in GMSCore.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.{Result}.Latency"
     units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
@@ -201,29 +234,19 @@ reviewer.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs the latency for the call made to payments platform (client) which
-    faciliates the payment. [Frequency] Logged at most once per page load.
-    [Trigger] User selects a payment instrument from the list of options shown
-    in the {FacilitatedPaymentsType} UI and the backend returns the instruction
-    to trigger the purchase action flow in GMSCore.
+    faciliates the payment and breaks it down by the result of the call. The
+    result is {Result}. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} payflow. [Trigger] User selects a payment
+    instrument from the list of options shown in the {FacilitatedPaymentsType}
+    UI and the backend returns the instruction to trigger the purchase action
+    flow in GMSCore.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
-</histogram>
-
-<histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Result"
-    enum="Boolean" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Logs the result returned for the call made to payments platform (client)
-    which facilitates the payment. [Frequency] Logged at most once per page
-    load. [Trigger] User selects a payment instrument from the list of options
-    shown in the {FacilitatedPaymentsType} UI and the backend returns the
-    instruction to trigger the purchase action flow in GMSCore.
-  </summary>
-  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result">
+    <variant name="Abandoned" summary="Abandoned InitiatePurchaseAction call"/>
+    <variant name="Failed" summary="Failed InitiatePurchaseAction call"/>
+    <variant name="Succeeded" summary="Successful InitiatePurchaseAction call"/>
+  </token>
 </histogram>
 
 <histogram

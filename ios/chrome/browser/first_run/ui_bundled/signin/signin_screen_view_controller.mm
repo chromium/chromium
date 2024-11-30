@@ -6,12 +6,12 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
-#import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -25,8 +25,8 @@ namespace {
 // Top margin for the managed icon in the enteprised image view
 constexpr CGFloat kTopMarginForManagedIcon = 16.;
 
-// Enterprise icon in the bottom view.
-NSString* const kEnterpriseIconName = @"enterprise_icon";
+// Point size of enterprise icon in the bottom view.
+constexpr CGFloat kEnterpriseIconPointSize = 13;
 
 }  // namespace
 
@@ -145,7 +145,9 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
         self.signinStatus == SigninScreenConsumerSigninStatusDisabled
             ? self.specificContentView.topAnchor
             : self.identityControl.bottomAnchor;
-    UIImage* image = [UIImage imageNamed:kEnterpriseIconName];
+    UIImage* image = SymbolWithPalette(
+        CustomSymbolWithPointSize(kEnterpriseSymbol, kEnterpriseIconPointSize),
+        @[ [UIColor colorNamed:kStaticGrey600Color] ]);
     UIImageView* enterpriseImageView =
         [[UIImageView alloc] initWithImage:image];
     enterpriseImageView.translatesAutoresizingMaskIntoConstraints = NO;

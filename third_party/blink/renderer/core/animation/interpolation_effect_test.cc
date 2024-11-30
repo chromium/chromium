@@ -23,7 +23,7 @@ double GetInterpolableNumber(Interpolation* value) {
   TypedInterpolationValue* interpolated_value =
       interpolation->GetInterpolatedValue();
   return To<InterpolableNumber>(interpolated_value->GetInterpolableValue())
-      .Value(CSSToLengthConversionData());
+      .Value(CSSToLengthConversionData(/*element=*/nullptr));
 }
 
 Interpolation* CreateInterpolation(int from, int to) {

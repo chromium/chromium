@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/immediate_crash.h"
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -151,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RendererCrashCallStack) {
 #pragma clang optimize off
 #endif
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_BrowserCrash) {
-  CHECK(false);
+  base::ImmediateCrash();
 }
 #ifdef __clang__
 #pragma clang optimize on

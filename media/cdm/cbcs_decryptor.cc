@@ -43,8 +43,9 @@ bool DecryptWithPattern(const crypto::SymmetricKey& key,
                         uint8_t* output_data) {
   // The AES_CBC decryption is reset for each subsample.
   AesCbcCrypto aes_cbc_crypto;
-  if (!aes_cbc_crypto.Initialize(key, iv))
+  if (!aes_cbc_crypto.Initialize(base::as_byte_span(key.key()), iv)) {
     return false;
+  }
 
   // |total_blocks| is the number of blocks in the buffer, ignoring any
   // partial block at the end. |remaining_bytes| is the number of bytes

@@ -619,7 +619,11 @@ TEST_F(ExternalAppResolutionCommandTest,
                     .GetAppById(placeholder_app_id)
                     ->HasOnlySource(WebAppManagement::Type::kPolicy));
     EXPECT_TRUE(IsPlaceholderAppId(placeholder_app_id));
-    EXPECT_TRUE(registrar().IsInstalled(placeholder_app_id));
+    EXPECT_TRUE(registrar().IsInstallState(
+        placeholder_app_id,
+        {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   }
 
   // Replace the placeholder with a real app.

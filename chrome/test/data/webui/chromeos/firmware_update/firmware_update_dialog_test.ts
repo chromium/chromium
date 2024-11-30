@@ -150,6 +150,24 @@ suite('FirmwareUpdateDialogTest', () => {
         updateDialogElement.shadowRoot.querySelector('#updateDoneButton')));
   });
 
+  test('RestartButtonsNotShownForFailedUpdate', async () => {
+    createUpdateDialogElement();
+    assert(updateDialogElement?.shadowRoot);
+
+    // Finish Update
+    await setInstallationProgress(0, UpdateState.kFailed);
+
+    // Check that the "Restart Later" and "Restart Now" buttons aren't visible.
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartNowButton')));
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartLaterButton')));
+
+    // Check that the "Update Done" button is visible.
+    assertTrue(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#updateDoneButton')));
+  });
+
   test('DeviceRestarting', async () => {
     createUpdateDialogElement();
     assert(updateDialogElement?.shadowRoot);

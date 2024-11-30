@@ -5,6 +5,7 @@
 #include "content/public/app/content_main_delegate.h"
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -37,8 +38,7 @@ void ContentMainDelegate::ZygoteStarting(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 int ContentMainDelegate::TerminateForFatalInitializationError() {
-  CHECK(false);
-  return 0;
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_WIN)

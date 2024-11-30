@@ -29,7 +29,7 @@ class MimeHandlerStreamManagerFactory
 
  private:
   // BrowserContextKeyedServiceFactory overrides.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
@@ -53,9 +53,10 @@ MimeHandlerStreamManager* MimeHandlerStreamManagerFactory::Get(
       GetServiceForBrowserContext(context, true));
 }
 
-KeyedService* MimeHandlerStreamManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+MimeHandlerStreamManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new MimeHandlerStreamManager();
+  return std::make_unique<MimeHandlerStreamManager>();
 }
 
 content::BrowserContext*

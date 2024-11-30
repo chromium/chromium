@@ -29,14 +29,10 @@ DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond1);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond2);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond3);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond4);
-constexpr FeaturePromoResult::Failure kFailure1 =
-    FeaturePromoResult::kBlockedByPromo;
 constexpr FeaturePromoResult::Failure kFailure2 =
     FeaturePromoResult::kBlockedByConfig;
 constexpr FeaturePromoResult::Failure kFailure3 =
     FeaturePromoResult::kBlockedByCooldown;
-constexpr FeaturePromoResult::Failure kFailure4 =
-    FeaturePromoResult::kBlockedByGracePeriod;
 constexpr char kPrecond1Name[] = "Precond1";
 constexpr char kPrecond2Name[] = "Precond2";
 constexpr char kPrecond3Name[] = "Precond3";
@@ -52,8 +48,8 @@ TEST(PreconditionListProviderTest,
 
   // Create an inner provider with two preconditions, one of which fails.
   test::TestPreconditionListProvider inner;
-  inner.Add(kPrecond1, kFailure1, kPrecond1Name, true);
-  inner.Add(kPrecond2, kFailure2, kPrecond2Name, false);
+  inner.Add(kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
+  inner.Add(kPrecond2, kPrecond2Name, kFailure2);
 
   // Wrap the inner provider in a composing provider.
   ComposingPreconditionListProvider provider;
@@ -67,7 +63,7 @@ TEST(PreconditionListProviderTest,
   EXPECT_EQ(kPrecond2, result.failed_precondition());
 
   // Modify the inner provider so all its preconditions pass and try again.
-  inner.SetDefault(kPrecond2, true);
+  inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
   result = provider.GetPreconditions(spec).CheckPreconditions();
   EXPECT_EQ(FeaturePromoResult::Success(), result.result());
@@ -81,13 +77,13 @@ TEST(PreconditionListProviderTest,
 
   // Create an inner provider with two preconditions, one of which fails.
   test::TestPreconditionListProvider inner;
-  inner.Add(kPrecond1, kFailure1, kPrecond1Name, true);
-  inner.Add(kPrecond2, kFailure2, kPrecond2Name, false);
+  inner.Add(kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
+  inner.Add(kPrecond2, kPrecond2Name, kFailure2);
 
   // Create a second inner provider, also with a failing condition.
   test::TestPreconditionListProvider inner2;
-  inner2.Add(kPrecond3, kFailure3, kPrecond3Name, false);
-  inner2.Add(kPrecond4, kFailure4, kPrecond4Name, true);
+  inner2.Add(kPrecond3, kPrecond3Name, kFailure3);
+  inner2.Add(kPrecond4, kPrecond4Name, FeaturePromoResult::Success());
 
   // Wrap the inner provider in a composing provider.
   ComposingPreconditionListProvider provider;
@@ -104,7 +100,7 @@ TEST(PreconditionListProviderTest,
 
   // Modify the first inner provider so all its preconditions pass and try
   // again.
-  inner.SetDefault(kPrecond2, true);
+  inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
   result = provider.GetPreconditions(spec).CheckPreconditions();
@@ -112,7 +108,7 @@ TEST(PreconditionListProviderTest,
   EXPECT_EQ(kPrecond3, result.failed_precondition());
 
   // Modify the second inner provider so that all preconditions pass.
-  inner2.SetDefault(kPrecond3, true);
+  inner2.SetDefault(kPrecond3, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
   result = provider.GetPreconditions(spec).CheckPreconditions();

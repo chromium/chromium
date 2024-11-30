@@ -150,7 +150,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
   if (expect_popup_to_be_shown) {
     // `base::RunLoop().RunUntilIdle()` can cause flakiness when waiting for the
     // popup to be shown.
-    if (!base::test::RunUntil([&]() { return !delegate->popup_hidden(); })) {
+    if (!base::test::RunUntil([&] { return !delegate->popup_hidden(); })) {
       return testing::AssertionFailure()
              << " " << __func__ << "(): Showing the autofill popup timed out.";
     }

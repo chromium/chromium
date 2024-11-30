@@ -517,7 +517,7 @@ targets.legacy_basic_suite(
         # running WPTs with forced device scale factor.
         "high_dpi_headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 1,
+                shards = 3,
             ),
         ),
     },
@@ -543,7 +543,7 @@ targets.legacy_basic_suite(
         ),
         "headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 4,
+                shards = 18,
             ),
         ),
     },
@@ -668,7 +668,7 @@ targets.legacy_basic_suite(
         ),
         "headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 4,
+                shards = 18,
             ),
         ),
         "content_shell_crash_test": targets.legacy_test_config(),
@@ -1705,7 +1705,7 @@ targets.legacy_basic_suite(
         ),
         "not_site_per_process_headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 3,
+                shards = 11,
             ),
         ),
         "webdriver_wpt_tests": targets.legacy_test_config(
@@ -1820,11 +1820,31 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "ondevice_stability_tests_light_suite",
+    tests = {
+        "ondevice_stability_tests_light": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            args = [
+                "--out_dir=.",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "ondevice_stability_tests_suite",
     tests = {
         "ondevice_stability_tests": targets.legacy_test_config(
             mixins = [
                 "has_native_resultdb_integration",
+            ],
+            args = [
+                "--out_dir=.",
             ],
             linux_args = [
                 "--chromedriver",

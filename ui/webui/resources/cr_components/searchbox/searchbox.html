@@ -137,6 +137,10 @@
     visibility: hidden;
   }
 
+  :host([is-lens-searchbox_]) input:focus::placeholder{
+    visibility: visible;
+  }
+
   input:focus,
   :host([dropdown-is-visible]) input {
     background-color: var(--color-searchbox-results-background);

@@ -269,6 +269,16 @@ void PageInfoBubbleView::OpenCookiesPage() {
   AnnouncePageOpened(l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES));
 }
 
+void PageInfoBubbleView::OpenMerchantTrustPage() {
+  // TODO(crbug.com/378854730): Record open action.
+  std::unique_ptr<views::View> page_view =
+      view_factory_->CreateMerchantTrustPageView();
+  page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_->SwitchToPage(std::move(page_view));
+  AnnouncePageOpened(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER));
+}
+
 void PageInfoBubbleView::CloseBubble() {
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);

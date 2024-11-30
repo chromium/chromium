@@ -27,6 +27,8 @@ constexpr int kHeaderChipVerticalInset = 2;
 constexpr int kTitleAdjustmentForNonEmptyHeader = -2;
 // The width of the sync icon when a tab group is saved.
 constexpr int kSyncIconWidth = 16;
+// The width of the attention indicator icon for a shared tab group.
+constexpr int kAttentionIndicatorWidth = 8;
 // The size of the empty chip.
 constexpr int kEmptyChipSize = 20;
 constexpr int kSyncIconLeftMargin = 2;
@@ -124,6 +126,13 @@ float TabGroupStyle::GetEmptyChipSize() const {
 
 float TabGroupStyle::GetSyncIconWidth() const {
   return kSyncIconWidth;
+}
+
+float TabGroupStyle::GetAttentionIndicatorWidth(bool needs_attention) const {
+  if (!needs_attention) {
+    return 0;
+  }
+  return kAttentionIndicatorWidth;
 }
 
 int TabGroupStyle::GetChipCornerRadius() const {

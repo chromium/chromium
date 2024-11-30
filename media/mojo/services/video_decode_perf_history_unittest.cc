@@ -367,7 +367,7 @@ class VideoDecodePerfHistoryParamTest
     : public testing::WithParamInterface<PerfHistoryTestParams>,
       public VideoDecodePerfHistoryTest {};
 
-TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_Smooth) {
+TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfoSmooth) {
   // NOTE: The when the DB initialization is deferred, All EXPECT_CALLs are then
   // delayed until we db_->CompleteInitialize(). testing::InSequence enforces
   // that EXPECT_CALLs arrive in top-to-bottom order.
@@ -441,7 +441,7 @@ TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_Smooth) {
   }
 }
 
-TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_PowerEfficient) {
+TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfoPowerEfficient) {
   // NOTE: The when the DB initialization is deferred, All EXPECT_CALLs are then
   // delayed until we db_->CompleteInitialize(). testing::InSequence enforces
   // that EXPECT_CALLs arrive in top-to-bottom order.
@@ -540,7 +540,7 @@ TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_PowerEfficient) {
   }
 }
 
-TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_FailedInitialize) {
+TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfoFailedInitialize) {
   PerfHistoryTestParams params = GetParam();
   // Fail initialization in advance of API calls when not asked to defer.
   if (!params.defer_initialize)

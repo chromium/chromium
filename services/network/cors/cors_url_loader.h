@@ -241,15 +241,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // then returns true (as no shared storage response header is required).
   //
   // Otherwise, there is a value for the "Sec-Shared-Storage-Data-Origin"
-  // request header. Parses this request header value into a URL. CHECKs that
-  // the parsed data origin URL is valid and same-origin to the request's URL
-  // (as regular JavaScript is unable modify this forbidden header, and any
-  // modifications modae by extensions will not be propagated back to the
-  // request' sheaders here).
+  // request header. Parses this request header value into a URL. If the parsed
+  // data origin URL is valid and cross-origin to the request's URL, returns
+  // true, as again no shared storage response header is required. (Note that
+  // regular JavaScript is unable to modify the forbidden
+  // "Sec-Shared-Storage-Data-Origin" request header, and any modifications made
+  // by extensions will not be propagated back to the request's headers here).
   //
-  // Parses the "Shared-Storage-Cross-Origin-Worklet-Allowed" response
-  // header into a Structured Fields Boolean, and returns the result. Returns
-  // false if the header does not exist or if the parsing fails.
+  // Finally, in the case where the parsed data origin URL is valid and
+  // same-origin to the request's URL, the
+  // "Shared-Storage-Cross-Origin-Worklet-Allowed" header is required. Parses
+  // the "Shared-Storage-Cross-Origin-Worklet-Allowed" response header into a
+  // Structured Fields Boolean, and returns the result. Returns false if the
+  // header does not exist or if the parsing fails.
   bool CheckSharedStorageCrossOriginWorkletAllowedResponseHeaderIfNeeded(
       const mojom::URLResponseHead& response);
 

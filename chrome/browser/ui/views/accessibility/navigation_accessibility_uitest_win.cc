@@ -189,8 +189,8 @@ class NavigationAccessibilityTest : public InProcessBrowserTest {
       delete;
 
  protected:
-  NavigationAccessibilityTest() {}
-  ~NavigationAccessibilityTest() override {}
+  NavigationAccessibilityTest() = default;
+  ~NavigationAccessibilityTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");

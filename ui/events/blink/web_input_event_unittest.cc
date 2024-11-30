@@ -12,10 +12,8 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/event.h"
@@ -354,6 +352,77 @@ TEST(WebInputEventTest, TestMakeWebMouseEvent) {
   }
 }
 
+TEST(WebInputEventTest, TestMakeWebMouseEventWithMultiButtons) {
+  {
+    // Left pressed while middle depressed.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(EventType::kMousePressed, gfx::Point(123, 321),
+                        gfx::Point(123, 321), timestamp,
+                        EF_LEFT_MOUSE_BUTTON | EF_MIDDLE_MOUSE_BUTTON,
+                        EF_LEFT_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(EventFlagsToWebEventModifiers(ui_event.flags()),
+              webkit_event.GetModifiers());
+    EXPECT_EQ(timestamp, webkit_event.TimeStamp());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kLeft, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown, webkit_event.GetType());
+    EXPECT_EQ(ui_event.GetClickCount(), webkit_event.click_count);
+    EXPECT_EQ(123, webkit_event.PositionInWidget().x());
+    EXPECT_EQ(321, webkit_event.PositionInWidget().y());
+  }
+  {
+    // Left released while middle depressed.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(EventType::kMouseReleased, gfx::Point(123, 321),
+                        gfx::Point(123, 321), timestamp, EF_MIDDLE_MOUSE_BUTTON,
+                        EF_LEFT_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(EventFlagsToWebEventModifiers(ui_event.flags()),
+              webkit_event.GetModifiers());
+    EXPECT_EQ(timestamp, webkit_event.TimeStamp());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kLeft, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseUp, webkit_event.GetType());
+    EXPECT_EQ(ui_event.GetClickCount(), webkit_event.click_count);
+    EXPECT_EQ(123, webkit_event.PositionInWidget().x());
+    EXPECT_EQ(321, webkit_event.PositionInWidget().y());
+  }
+  {
+    // Middle pressed while left and right depressed.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(
+        EventType::kMousePressed, gfx::Point(123, 321), gfx::Point(123, 321),
+        timestamp,
+        EF_LEFT_MOUSE_BUTTON | EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON,
+        EF_MIDDLE_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(EventFlagsToWebEventModifiers(ui_event.flags()),
+              webkit_event.GetModifiers());
+    EXPECT_EQ(timestamp, webkit_event.TimeStamp());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kMiddle, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown, webkit_event.GetType());
+    EXPECT_EQ(ui_event.GetClickCount(), webkit_event.click_count);
+    EXPECT_EQ(123, webkit_event.PositionInWidget().x());
+    EXPECT_EQ(321, webkit_event.PositionInWidget().y());
+  }
+  {
+    // Right released while left and middle depressed.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(EventType::kMouseReleased, gfx::Point(123, 321),
+                        gfx::Point(123, 321), timestamp,
+                        EF_LEFT_MOUSE_BUTTON | EF_MIDDLE_MOUSE_BUTTON,
+                        EF_RIGHT_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(EventFlagsToWebEventModifiers(ui_event.flags()),
+              webkit_event.GetModifiers());
+    EXPECT_EQ(timestamp, webkit_event.TimeStamp());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kRight, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseUp, webkit_event.GetType());
+    EXPECT_EQ(ui_event.GetClickCount(), webkit_event.click_count);
+    EXPECT_EQ(123, webkit_event.PositionInWidget().x());
+    EXPECT_EQ(321, webkit_event.PositionInWidget().y());
+  }
+}
+
 TEST(WebInputEventTest, TestMakeWebMouseWheelEvent) {
   {
     // Mouse wheel.
@@ -412,9 +481,6 @@ TEST(WebInputEventTest, KeyEvent) {
 }
 
 TEST(WebInputEventTest, WheelEvent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kWindowsScrollingPersonality);
   const int kDeltaX = 14;
   const int kDeltaY = -3;
   ui::MouseWheelEvent ui_event(

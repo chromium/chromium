@@ -32,8 +32,8 @@ TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
 
   scoped_refptr<CanvasResource> canvas_resource =
       CanvasResourceSharedBitmap::Create(
-          gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
-          /*sk_color_space=*/nullptr,
+          gfx::Size(10, 10), viz::SinglePlaneFormat::kRGBA_8888,
+          kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
           /*CanvasResourceProvider=*/nullptr, shared_image_interface_provider,
           cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);

@@ -56,7 +56,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The editor dialog. Can be used for editing contact information, shipping address, billing
@@ -307,18 +306,6 @@ public class EditorDialogView extends AlwaysDismissedDialog
                 .getViewTreeObserver()
                 .addOnScrollChangedListener(
                         SettingsUtils.getShowShadowOnScrollListener(scrollView, shadow));
-    }
-
-    /** @return The validatable item for the given view. */
-    @Nullable
-    private FieldView getTextFieldView(View v) {
-        if (v instanceof TextView && v.getParent() != null && v.getParent() instanceof FieldView) {
-            return (FieldView) v.getParent();
-        } else if (v instanceof Spinner && v.getTag() != null) {
-            return (FieldView) v.getTag();
-        } else {
-            return null;
-        }
     }
 
     @Override
@@ -579,10 +566,11 @@ public class EditorDialogView extends AlwaysDismissedDialog
                 () -> {
                     List<FieldView> invalidViews = new ArrayList<>();
                     if (mValidateOnShow) {
-                        invalidViews =
-                                mFieldViews.stream()
-                                        .filter(view -> !view.validate())
-                                        .collect(Collectors.toList());
+                        for (FieldView view : mFieldViews) {
+                            if (!view.validate()) {
+                                invalidViews.add(view);
+                            }
+                        }
                     }
 
                     // If TalkBack is enabled, we want to keep the focus at the top

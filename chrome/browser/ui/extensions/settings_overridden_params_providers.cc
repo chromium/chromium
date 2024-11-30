@@ -7,6 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -205,7 +206,7 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
 
   std::u16string dialog_message = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_NTP_OVERRIDDEN_DIALOG_BODY_GENERIC,
-      base::UTF8ToUTF16(extension->name().c_str()));
+      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
 
   return ExtensionSettingsOverriddenDialog::Params(
       extension->id(), preference_name, histogram_name, std::move(dialog_title),
@@ -295,7 +296,7 @@ GetSearchOverriddenParams(Profile* profile) {
   }
   std::u16string dialog_message = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_GENERIC, formatted_search_url,
-      base::UTF8ToUTF16(extension->name().c_str()));
+      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
 
   return ExtensionSettingsOverriddenDialog::Params(
       extension->id(), preference_name, histogram_name, std::move(dialog_title),

@@ -535,7 +535,7 @@ TEST_F(AppListShowSourceMetricTest, ToggleDoesNotRecordOnHide) {
 using AppListPeriodicMetricsTest = AshTestBase;
 
 // Verify that the number of items in the app list are recorded correctly.
-TEST_F(AppListPeriodicMetricsTest, PeriodicAppListMetrics_NumberOfApps) {
+TEST_F(AppListPeriodicMetricsTest, PeriodicAppListMetricsNumberOfApps) {
   base::HistogramTester histogram;
   histogram.ExpectTotalCount("Apps.AppList.NumberOfApps", 0);
   histogram.ExpectTotalCount("Apps.AppList.NumberOfRootLevelItems", 0);
@@ -570,7 +570,7 @@ TEST_F(AppListPeriodicMetricsTest, PeriodicAppListMetrics_NumberOfApps) {
   histogram.ExpectBucketCount("Apps.AppList.NumberOfRootLevelItems", 6, 1);
 }
 
-TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_ZeroFolders) {
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetricsZeroFolders) {
   base::HistogramTester histogram;
   GetAppListTestHelper()->model()->PopulateApps(2);
 
@@ -586,7 +586,7 @@ TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_ZeroFolders) {
                    "Apps.AppList.NumberOfAppsInNonSystemFolders", 0));
 }
 
-TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_OneRegularFolder) {
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetricsOneRegularFolder) {
   base::HistogramTester histogram;
   GetAppListTestHelper()->model()->CreateAndPopulateFolderWithApps(2);
 
@@ -602,7 +602,7 @@ TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_OneRegularFolder) {
                    "Apps.AppList.NumberOfAppsInNonSystemFolders", 2));
 }
 
-TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_SystemFolder) {
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetricsSystemFolder) {
   base::HistogramTester histogram;
   AppListFolderItem* folder =
       GetAppListTestHelper()->model()->CreateSingleItemFolder("folder_id",

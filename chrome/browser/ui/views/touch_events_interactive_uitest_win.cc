@@ -30,7 +30,7 @@ class TouchEventHandler : public ui::EventHandler {
   TouchEventHandler(const TouchEventHandler&) = delete;
   TouchEventHandler& operator=(const TouchEventHandler&) = delete;
 
-  ~TouchEventHandler() override {}
+  ~TouchEventHandler() override = default;
 
   // OnTouchEvent will simulate a second touch event (at |touch_point|) to force
   // recursion in event handling.
@@ -205,7 +205,7 @@ VIEW_TEST(TouchEventsViewTest, MAYBE_CheckWindowsNativeMessageForTouchEvents)
 
 class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
  public:
-  TouchEventsRecursiveViewTest() {}
+  TouchEventsRecursiveViewTest() = default;
 
   TouchEventsRecursiveViewTest(const TouchEventsRecursiveViewTest&) = delete;
   TouchEventsRecursiveViewTest& operator=(const TouchEventsRecursiveViewTest&) =

@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
+#include "chrome/browser/ash/policy/skyvault/odfs_file_deleter.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/skyvault_capture_upload_notification.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
@@ -56,7 +57,7 @@
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "components/drive/file_errors.h"
-#include "components/lens/lens_overlay_page_content_mime_type.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/audio_service.h"
@@ -66,6 +67,8 @@
 #include "content/public/browser/video_capture_service.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -306,6 +309,15 @@ base::FilePath ChromeCaptureModeDelegate::GetLinuxFilesPath() const {
 }
 
 base::FilePath ChromeCaptureModeDelegate::GetOneDriveMountPointPath() const {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  if (!profile) {
+    return base::FilePath();
+  }
+  const auto odfs_info = ash::cloud_upload::GetODFSInfo(profile);
+  return odfs_info ? odfs_info->mount_path() : base::FilePath();
+}
+
+base::FilePath ChromeCaptureModeDelegate::GetOneDriveVirtualPath() const {
   return policy::local_user_files::GetODFSVirtualPath();
 }
 
@@ -438,7 +450,7 @@ base::FilePath ChromeCaptureModeDelegate::RedirectFilePath(
   if (odfs_temp_dir_.GetPath().empty()) {
     return path;
   }
-  base::FilePath odfs_path = GetOneDriveMountPointPath();
+  base::FilePath odfs_path = GetOneDriveVirtualPath();
   if (!odfs_path.empty() && path.DirName() == odfs_path) {
     return odfs_temp_dir_.GetPath().Append(path.BaseName());
   }
@@ -537,7 +549,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
       /*page_title=*/std::nullopt, /*significant_region_boxes=*/
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/base::span<const uint8_t>(),
-      /*underlying_content_type=*/lens::PageContentMimeType(),
+      /*underlying_content_type=*/lens::MimeType(),
       /*ui_scale_factor=*/1.f);
   lens_overlay_query_controller_->SendRegionSearch(
       lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
@@ -569,6 +581,14 @@ void ChromeCaptureModeDelegate::SendMultimodalSearch(
           MULTIMODAL_SEARCH, /*additional_search_query_params=*/
       std::map<std::string, std::string>(),
       /*region_bytes=*/image);
+}
+
+void ChromeCaptureModeDelegate::DeleteRemoteFile(
+    const base::FilePath& path,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(GetOneDriveMountPointPath().IsParent(path));
+  ash::cloud_upload::OdfsFileDeleter::Delete(path, std::move(callback));
 }
 
 void ChromeCaptureModeDelegate::HandleStartQueryResponse(

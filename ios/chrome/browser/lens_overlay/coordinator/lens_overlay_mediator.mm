@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_coordinator.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
@@ -27,7 +28,8 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "net/base/apple/url_conversions.h"
@@ -53,6 +55,8 @@
   std::unique_ptr<LensOverlayNavigationManager> _navigationManager;
   /// Time where lens started the search request.
   base::ElapsedTimer _lensStartSearchRequestTime;
+  /// Whether the thumbnail/selection of the `currentLensResult` was removed.
+  BOOL _thumbnailRemoved;
 }
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
@@ -99,19 +103,34 @@
 
 - (void)omniboxDidAcceptText:(const std::u16string&)text
               destinationURL:(const GURL&)destinationURL
-            thumbnailRemoved:(BOOL)thumbnailRemoved {
+               textClobbered:(BOOL)textClobbered {
   [self defocusOmnibox];
-  // Start new unimodal searches in a new tab.
-  if (thumbnailRemoved || _currentLensResult.isTextSelection) {
-    [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
-    [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
-    [self updateForLensResult:_currentLensResult];
-  } else {
+
+  const BOOL isUnimodalTextQuery =
+      _thumbnailRemoved || _currentLensResult.isTextSelection;
+  if (isUnimodalTextQuery) {
+    if (textClobbered) {
+      [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
+      [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
+      if (_omniboxClient) {
+        [self updateOmniboxText:_omniboxClient->GetOmniboxSteadyStateText()];
+      }
+    } else if (_navigationManager) {
+      // Hide the Lens selection as the omnibox content no longer reflect it.
+      [self.lensHandler hideUserSelection];
+      _navigationManager->LoadUnimodalOmniboxNavigation(destinationURL, text);
+    }
+  } else {  // Multimodal query.
     // Setting the query text generates new results.
     NSString* nsText = base::SysUTF16ToNSString(text);
     [self updateOmniboxText:nsText];
-    [self.lensHandler setQueryText:nsText clearSelection:thumbnailRemoved];
+    [self.lensHandler setQueryText:nsText clearSelection:_thumbnailRemoved];
   }
+}
+
+- (void)omniboxDidRemoveThumbnail {
+  _thumbnailRemoved = YES;
+  [self.lensHandler hideUserSelection];
 }
 
 #pragma mark LensToolbarMutator
@@ -153,11 +172,13 @@
 - (void)lensOverlayDidStartSearchRequest:(id<ChromeLensOverlay>)lensOverlay {
   [self.resultConsumer handleSearchRequestStarted];
   _lensStartSearchRequestTime = base::ElapsedTimer();
+  [self.toolbarConsumer setOmniboxEnabled:YES];
 }
 
 // The lens overlay search request produced an error.
 - (void)lensOverlayDidReceiveError:(id<ChromeLensOverlay>)lensOverlay {
   [self.resultConsumer handleSearchRequestErrored];
+  [self.toolbarConsumer setOmniboxEnabled:YES];
 }
 
 // The lens overlay search request produced a valid result.
@@ -168,6 +189,7 @@
   if (_navigationManager) {
     _navigationManager->LensOverlayDidGenerateResult(result);
   }
+  [self.toolbarConsumer setOmniboxEnabled:YES];
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {
@@ -194,12 +216,17 @@
 }
 
 - (void)lensOverlayDidDeferGesture:(id<ChromeLensOverlay>)lensOverlay {
+  [self.resultConsumer handleSlowRequestHasStarted];
+  UIImage* placeholder = ImageWithColor([UIColor colorNamed:kGrey200Color]);
+  [self.omniboxCoordinator setThumbnailImage:placeholder];
+  [self.toolbarConsumer setOmniboxEnabled:NO];
 }
 
 #pragma mark - LensOverlayNavigationMutator
 
 - (void)loadLensResult:(id<ChromeLensOverlayResult>)result {
   _currentLensResult = result;
+  _thumbnailRemoved = NO;
   // Load the URL, it will start the result UI.
   [self.resultConsumer loadResultsURL:result.searchResultURL];
   [self updateForLensResult:result];
@@ -212,7 +239,8 @@
   [self.lensHandler reloadResult:result];
 }
 
-- (void)reloadURL:(GURL)URL {
+- (void)loadURL:(const GURL&)URL omniboxText:(NSString*)omniboxText {
+  [self updateOmniboxText:omniboxText];
   [self.resultConsumer loadResultsURL:URL];
 }
 

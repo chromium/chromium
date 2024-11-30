@@ -44,9 +44,9 @@
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
-ChromeLocationBarModelDelegate::ChromeLocationBarModelDelegate() {}
+ChromeLocationBarModelDelegate::ChromeLocationBarModelDelegate() = default;
 
-ChromeLocationBarModelDelegate::~ChromeLocationBarModelDelegate() {}
+ChromeLocationBarModelDelegate::~ChromeLocationBarModelDelegate() = default;
 
 content::NavigationEntry* ChromeLocationBarModelDelegate::GetNavigationEntry()
     const {

@@ -14,22 +14,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kAutocompleteEntry";
     case SuggestionType::kAddressEntry:
       return "kAddressEntry";
-    case SuggestionType::kFillFullAddress:
-      return "kFillFullAddress";
-    case SuggestionType::kFillFullName:
-      return "kFillFullName";
-    case SuggestionType::kFillEverythingFromAddressProfile:
-      return "kFillEverythingFromAddressProfile";
-    case SuggestionType::kFillFullPhoneNumber:
-      return "kFillFullPhoneNumber";
-    case SuggestionType::kFillFullEmail:
-      return "kFillFullEmail";
     case SuggestionType::kAddressFieldByFieldFilling:
       return "kAddressFieldByFieldFilling";
-    case SuggestionType::kEditAddressProfile:
-      return "kEditAddressProfile";
-    case SuggestionType::kDeleteAddressProfile:
-      return "kDeleteAddressProfile";
     case SuggestionType::kManageAddress:
       return "kManageAddress";
     case SuggestionType::kManageCreditCard:
@@ -80,12 +66,12 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kCreditCardEntry";
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
       return "kInsecureContextPaymentDisabledMessage";
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+      return "KSaveAndFillCreditCardEntry";
     case SuggestionType::kScanCreditCard:
       return "kScanCreditCard";
     case SuggestionType::kVirtualCreditCardEntry:
       return "kVirtualCreditCardEntry";
-    case SuggestionType::kCreditCardFieldByFieldFilling:
-      return "kCreditCardFieldByFieldFilling";
     case SuggestionType::kIbanEntry:
       return "kIbanEntry";
     case SuggestionType::kBnplEntry:

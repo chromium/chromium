@@ -36,7 +36,6 @@ class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
   // TrayBackgroundView:
   void OnThemeChanged() override;
   void UpdateAfterLoginStatusChange() override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override {}

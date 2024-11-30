@@ -23,7 +23,7 @@ class Browser;
 ///////////////////////////////////////////////////////////////////////////////
 class TabMenuModelDelegate {
  public:
-  virtual ~TabMenuModelDelegate() {}
+  virtual ~TabMenuModelDelegate() = default;
 
   // Returns a list of other existing browser windows that can accept menu
   // operations (i.e. Move tab to new window, Add tab to group) that are not the

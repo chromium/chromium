@@ -249,6 +249,9 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     kModal,
     // Passkey autofill UI for .get() requests with `mediation = "conditional"`.
     kAutofill,
+    // Passkey upgrade request, i.e. .create() requests with `mediation =
+    // "conditional"`.
+    kPasskeyUpgrade,
     // No WebAuthn UI shown. This is used for some internal requests that
     // originate outside of WebAuthn (e.g. payments) and provide their own
     // request UI.

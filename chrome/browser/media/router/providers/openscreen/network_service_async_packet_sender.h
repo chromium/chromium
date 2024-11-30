@@ -17,7 +17,7 @@ namespace media_router {
 
 class AsyncPacketSender {
  public:
-  virtual ~AsyncPacketSender() {}
+  virtual ~AsyncPacketSender() = default;
 
   virtual net::Error SendTo(const net::IPEndPoint& dest_addr,
                             base::span<const uint8_t> data,

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
@@ -142,8 +143,9 @@ class VIEWS_EXPORT LabelButton : public Button,
   bool GetImageCentered() const;
   void SetImageCentered(bool image_centered);
 
-  // Sets the corner radius of the focus ring around the button.
-  float GetFocusRingCornerRadius() const;
+  // Sets the corner radii of the focus ring around the button.
+  gfx::RoundedCornersF GetFocusRingCornerRadii() const;
+  void SetFocusRingCornerRadii(const gfx::RoundedCornersF& radii);
   void SetFocusRingCornerRadius(float radius);
 
   // Creates the default border for this button. This can be overridden by
@@ -322,8 +324,9 @@ class VIEWS_EXPORT LabelButton : public Button,
   // UI direction).
   gfx::HorizontalAlignment horizontal_alignment_ = gfx::ALIGN_LEFT;
 
-  // Corner radius of the focus ring.
-  float focus_ring_corner_radius_ = FocusRing::kDefaultCornerRadiusDp;
+  // Corner radii of the focus ring.
+  gfx::RoundedCornersF focus_ring_corner_radii_ =
+      gfx::RoundedCornersF(FocusRing::kDefaultCornerRadiusDp);
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

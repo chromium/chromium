@@ -12,9 +12,13 @@
             }
         },
         "crossbench": {
-            "speedometer_3.0": {
-                "display_name": "speedometer3.crossbench",
-                "arguments": ["--fileserver"]
+            "speedometer_2.0": {
+              "display_name": "speedometer2.0.crossbench",
+              "arguments": ["--fileserver"]
+            },
+            "speedometer_2.1": {
+              "display_name": "speedometer2.1.crossbench",
+              "arguments": ["--fileserver"]
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -39,9 +43,13 @@
             }
         },
         "crossbench": {
-            "speedometer_3.0": {
-                "display_name": "speedometer3.crossbench",
-                "arguments": ["--fileserver"]
+            "speedometer_2.0": {
+              "display_name": "speedometer2.0.crossbench",
+              "arguments": ["--fileserver"]
+            },
+            "speedometer_2.1": {
+              "display_name": "speedometer2.1.crossbench",
+              "arguments": ["--fileserver"]
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -66,9 +74,13 @@
             }
         },
         "crossbench": {
-            "speedometer_3.0": {
-                "display_name": "speedometer3.crossbench",
-                "arguments": ["--fileserver"]
+            "speedometer_2.0": {
+              "display_name": "speedometer2.0.crossbench",
+              "arguments": ["--fileserver"]
+            },
+            "speedometer_2.1": {
+              "display_name": "speedometer2.1.crossbench",
+              "arguments": ["--fileserver"]
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -93,9 +105,13 @@
             }
         },
         "crossbench": {
-            "speedometer_3.0": {
-                "display_name": "speedometer3.crossbench",
-                "arguments": ["--fileserver"]
+            "speedometer_2.0": {
+              "display_name": "speedometer2.0.crossbench",
+              "arguments": ["--fileserver"]
+            },
+            "speedometer_2.1": {
+              "display_name": "speedometer2.1.crossbench",
+              "arguments": ["--fileserver"]
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",

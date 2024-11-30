@@ -49,9 +49,9 @@ const extensions::Extension* GetExtension(Profile* profile,
 
 }  // namespace
 
-AppListControllerDelegate::AppListControllerDelegate() {}
+AppListControllerDelegate::AppListControllerDelegate() = default;
 
-AppListControllerDelegate::~AppListControllerDelegate() {}
+AppListControllerDelegate::~AppListControllerDelegate() = default;
 
 void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
                                                   const std::string& app_id) {

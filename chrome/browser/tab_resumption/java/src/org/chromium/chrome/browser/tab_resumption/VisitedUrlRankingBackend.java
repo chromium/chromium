@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.visited_url_ranking.ScoredURLUserAction;
@@ -41,7 +42,7 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
         mNativeVisitedUrlRankingBackend = VisitedUrlRankingBackendJni.get().init(this, profile);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mFetchHisotryEnabled =
-                TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.getValue();
+                ChromeFeatureList.sTabResumptionModuleAndroidFetchHistoryBackend.getValue();
     }
 
     /** Implements {@link SuggestionBackend} */

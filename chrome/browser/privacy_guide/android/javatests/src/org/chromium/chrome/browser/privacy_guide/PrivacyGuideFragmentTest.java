@@ -147,12 +147,6 @@ public class PrivacyGuideFragmentTest {
         onViewWaiting(withText(R.string.privacy_guide_fragment_title));
     }
 
-    private void launchPrivacySettingsAndOpenPrivacyGuide() {
-        mPrivacySettingsTestRule.startSettingsActivity();
-        onViewWaiting(withText(R.string.privacy_guide_pref_summary)).perform(click());
-        onViewWaiting(withText(R.string.privacy_guide_fragment_title));
-    }
-
     private Map<Integer, Integer> mTitleNames =
             Map.of(
                     FragmentType.MSBB,

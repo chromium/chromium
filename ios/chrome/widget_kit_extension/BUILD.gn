@@ -44,6 +44,7 @@ swift_source_set("widget_kit_extension_swift") {
     "quick_actions_widget.swift",
     "search_passwords_widget.swift",
     "search_widget.swift",
+    "timeline_provider_util.swift",
     "widget_constants.swift",
   ]
   bridge_header = "widget_kit_swift_bridge.h"
@@ -74,6 +75,8 @@ swift_source_set("widget_kit_extension_swift") {
 
   if (ios_enable_widgets_for_mim) {
     configs += [ ":ios_enable_widgets_for_mim" ]
+    generate_intents = true
+    sources += [ "select_profile_intent.swift" ]
   }
 
   frameworks = [

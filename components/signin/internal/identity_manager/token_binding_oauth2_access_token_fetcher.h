@@ -33,10 +33,10 @@ class TokenBindingOAuth2AccessTokenFetcher : public OAuth2AccessTokenFetcher {
   // - if `Start()` was called prior to this method, starts a new fetch;
   // - otherwise, the next `Start()` call will start a new fetch immediately.
   // An empty `assertion` signifies that the assertion generation failed.
-  // `ephemeral_key`, if set, should be used to decrypt credentials in the
-  // response message. The key is ignored if `assertion` is empty.
-  void SetBindingKeyAssertion(std::string assertion,
-                              std::optional<HybridEncryptionKey> ephemeral_key);
+  // `ephemeral_key` should be used to decrypt credentials in the response
+  // message. The key is ignored if `assertion` is empty.
+  void SetBindingKeyAssertion(std::optional<HybridEncryptionKey> ephemeral_key,
+                              std::string assertion);
 
   // OAuth2AccessTokenFetcher:
   void Start(const std::string& client_id,

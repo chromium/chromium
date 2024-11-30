@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
@@ -276,7 +277,7 @@ BASE_FEATURE(kIPHDataSaverPreviewFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDefaultBrowserPromoMagicStackFeature,
              "IPH_DefaultBrowserPromoMagicStack",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDefaultBrowserPromoMessagesFeature,
              "IPH_DefaultBrowserPromoMessages",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -309,9 +310,6 @@ BASE_FEATURE(kIPHDownloadInfoBarDownloadContinuingFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDownloadInfoBarDownloadsAreFasterFeature,
              "IPH_DownloadInfoBarDownloadsAreFaster",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHQuietNotificationPromptsFeature,
-             "IPH_QuietNotificationPrompts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHReadAloudAppMenuFeature,
              "IPH_ReadAloudAppMenuFeature",
@@ -628,6 +626,9 @@ BASE_FEATURE(kIPHHomeCustomizationMenuFeature,
 BASE_FEATURE(kIPHiOSLensOverlayEntrypointTipFeature,
              "IPH_iOSLensOverlayEntrypointTip",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSSharedTabGroupForeground,
+             "IPH_iOSSharedTabGroupForeground",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
@@ -647,6 +648,9 @@ BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+BASE_FEATURE(kIPHAutofillCardInfoRetrievalSuggestionFeature,
+             "IPH_AutofillCardInfoRetrievalSuggestion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillCreditCardBenefitFeature,
              "IPH_AutofillCreditCardBenefit",
              base::FEATURE_DISABLED_BY_DEFAULT);

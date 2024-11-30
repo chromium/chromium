@@ -38,6 +38,7 @@ Considerações:
 <translation id="1646463005043273333">Abre as configurações para definir o Chrome como navegador padrão.</translation>
 <translation id="1670609221633730681">Dica do Chrome: escolha a posição da barra de endereço</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Salvar suas senhas no Chrome</translation>
 <translation id="1790080846677398234">Adiciona os URLs inseridos aos seus favoritos no Chrome.</translation>
 <translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1830634592642484976">Este endereço está salvo no Chrome. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="3655656110921623717">Isso significa que o Chrome vai solicitar sempre o site para dispositivo móvel.</translation>
 <translation id="3740397331642243698">Abre os URLs inseridos na navegação anônima do Google Chrome.</translation>
 <translation id="3741995255368156336">Abre a Lista de leitura do Chrome.</translation>
+<translation id="3808570423967020928">Acesse o Chrome com mais rapidez no Dock da tela inicial.</translation>
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode usar a câmera agora</translation>
 <translation id="3863841106411295595">Adiciona os URLs inseridos à sua Lista de leitura no Chrome.</translation>
@@ -186,7 +188,7 @@ Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, 
 <translation id="6181652351336379338">Pesquise recursos visuais no Chrome.</translation>
 <translation id="6200694931081795166">Para tornar o Chrome seu navegador padrão:
   1. Abra as Configurações.
-  2. Toque em App do navegador padrão.
+  2. Toque em App de navegação padrão.
   3. Selecione o Chrome.</translation>
 <translation id="6238746320622508509">Permita que o Chrome bloqueie suas guias anônimas.</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
@@ -219,9 +221,11 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 
 Para conferir mais configurações que usam dados para melhorar sua experiência do Chrome, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Exclui dados de navegação no Chrome.</translation>
+<translation id="6924922227983877439">Abrir links no Chrome por padrão</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
 <translation id="7056826488869329999">Abre e realiza a Confirmação de segurança no Chrome.</translation>
 <translation id="7061455974939528301">Toque no ícone do Chrome, pressione e clique em "Editar tela inicial"</translation>
+<translation id="7065813315247345131">Mover o Chrome para o Dock</translation>
 <translation id="7124339256045485976">Manter o Chrome atualizado</translation>
 <translation id="7161390184744336561">O Google Chrome está desatualizado</translation>
 <translation id="7165736900384873061">Começar a usar o leitor de QR do Google Chrome</translation>

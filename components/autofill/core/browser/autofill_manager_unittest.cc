@@ -681,5 +681,33 @@ TEST_F(
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(AutofillManagerTest, GetHeursticPredictionForForm) {
+  FormData seen_form = test::CreateTestAddressFormData();
+  OnFormsSeenWithExpectations(manager(), {seen_form}, {}, {seen_form});
+
+  FormData unseen_form = test::CreateTestAddressFormData();
+  ASSERT_NE(seen_form.global_id(), unseen_form.global_id());
+
+  // Check that predictions are returned for the form that was seen.
+  EXPECT_EQ(manager()
+                .GetHeursticPredictionForForm(
+                    autofill::HeuristicSource::kPasswordManagerMachineLearning,
+                    seen_form.global_id(),
+                    base::ToVector(seen_form.fields(),
+                                   &autofill::FormFieldData::global_id))
+                .size(),
+            seen_form.fields().size());
+
+  // Check that no predictions are returned for the unseen form.
+  EXPECT_TRUE(
+      manager()
+          .GetHeursticPredictionForForm(
+              autofill::HeuristicSource::kPasswordManagerMachineLearning,
+              unseen_form.global_id(),
+              base::ToVector(unseen_form.fields(),
+                             &autofill::FormFieldData::global_id))
+          .empty());
+}
+
 }  // namespace
 }  // namespace autofill

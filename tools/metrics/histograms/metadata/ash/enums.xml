@@ -1387,6 +1387,16 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="9" label="Parent access button"/>
 </enum>
 
+<!-- LINT.IfChange(LoginReadaheadResult) -->
+
+<enum name="LoginReadaheadResult">
+  <int value="0" label="Failed"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Canceled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/login/readahead/login_readahead_performer.cc:LoginReadaheadResult) -->
+
 <enum name="LoginScreenUserClickTarget">
   <int value="0" label="Shut down button"/>
   <int value="1" label="Restart button"/>
@@ -1583,6 +1593,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="36" label="Video Conference Tray Sidetone Not Supported"/>
   <int value="37" label="Video Conference Tray Sidetone Enabled"/>
   <int value="38" label="Content Transfer App Enabled"/>
+  <int value="39" label="Sunfish Launcher Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">

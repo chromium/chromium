@@ -6,7 +6,12 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+
 import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+import "components/optimization_guide/proto/common_types.proto";
+
+import "components/optimization_guide/proto/features/forms_predictions.proto";
 
 import "components/optimization_guide/proto/model_quality_metadata.proto";
 
@@ -123,6 +128,98 @@ message ConversationTurn {
   string mime_type = 3;
 }
 
+// All the information collected from the browser along with the user input
+// (for features like Compose).
+// NEXT ID: 14
+message BrowserCollectedInformation {
+  // The page context of the page the model is acting on.
+  PageContext page_context = 1;
+
+  // Deprecated, but still sent by older clients. Use page_context instead.
+  string inner_text = 2;
+
+  // Deprecated, but still sent by older clients. Use page_context instead.
+  uint64 inner_text_offset = 3;
+
+  // Custom text that a prototyper can inject into prompts. If the browser
+  // collected information is not sufficient, an early stage prototype can
+  // build a string in Chrome/colab to be used in the prompt. This allows
+  // separation of prompt definition and call specific data.
+  repeated string custom_data = 4;
+
+  // The form to predict values for. It is expected for the values for each
+  // field to be empty.
+  FormData form_data = 5;
+
+  // The current entries in the user annotations database helpful for filling
+  // out this form.
+  repeated UserAnnotationsEntry entries = 6;
+
+  // The ungrouped tabs that are requested to be organized.
+  repeated Tab tabs = 7;
+
+  // The tab that was active at the time the user requested tab organization.
+  int64 active_tab_id = 8;
+
+  // All pre-existing tab groups.
+  repeated TabGroup pre_existing_tab_groups = 9;
+
+  // The site engagement information for the user.
+  SiteEngagement site_engagement = 10;
+
+  // The recent historical page data.
+  repeated HistoryQueryResult history_query_result = 11;
+
+  // Forms predictions metadata used for data collection/evaluations.
+  FormsPredictionsRequest forms_predictions_request = 12;
+
+  FormsPredictionsResponse forms_predictions_response = 13;
+}
+
+message HistoryQueryResult {
+  // The history data.
+  HistoryVisitData history_data = 1;
+
+  // The query that generated this history data.
+  HistoryQuery query = 2;
+}
+
+// The requested history data.
+message HistoryVisitData {
+  repeated HistoryVisitItem visit_item = 1;
+}
+
+// The data for a single history item.
+message HistoryVisitItem {
+  string page_title = 1;
+
+  string page_url = 2;
+
+  Timestamp visit_time = 3;
+
+  repeated string passages = 4;
+}
+
+
+message HistoryQuery {
+  // The text used to find matching history items.
+  // If empty returns all entries matching the other query parameters.
+  string query = 1;
+
+  // The number of history items to fetch.
+  int32 num_history_visits = 2;
+
+  // The start and end time to fetch history items.
+  DateTimeRange history_search_time_range = 3;
+}
+
+message DateTimeRange {
+  // Both fields are inclusive.
+  Timestamp start_time = 1;
+
+  Timestamp end_time = 2;
+}
+
 message ModelPrototypingResponse {
   // The series of prompts sent to the model corresponding to the
   // |prototyping_prompts| in the request.
@@ -142,4 +239,8 @@ message ModelPrototypingMetadata {
   // An optional description to provide more context about the data uploaded by
   // the user.
   string logging_description = 2;
+
+  // The email address of the user who uploaded the data. This will only be
+  // populated for the TVC data upload.
+  string user_email = 3;
 }

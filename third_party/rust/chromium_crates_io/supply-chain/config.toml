@@ -62,7 +62,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."bitflags:2.6.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."bstr:1.10.0"]
+[policy."bstr:1.11.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bytemuck:1.19.0"]
@@ -77,19 +77,19 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."bytes:1.8.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cc:1.1.37"]
+[policy."cc:1.2.1"]
 criteria = []
 
 [policy."cfg-if:1.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."clap:4.5.20"]
+[policy."clap:4.5.21"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_builder:4.5.20"]
+[policy."clap_builder:4.5.21"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_lex:0.7.2"]
+[policy."clap_lex:0.7.3"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."codespan-reporting:0.11.1"]
@@ -98,16 +98,16 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."crc32fast:1.4.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx:1.0.129"]
+[policy."cxx:1.0.130"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.129"]
+[policy."cxxbridge-cmd:1.0.131"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.129"]
+[policy."cxxbridge-flags:1.0.130"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.129"]
+[policy."cxxbridge-macro:1.0.130"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."either:1.13.0"]
@@ -116,10 +116,10 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."fdeflate:0.3.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."fend-core:1.5.3"]
+[policy."fend-core:1.5.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."flate2:1.0.34"]
+[policy."flate2:1.0.35"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."font-types:0.7.3"]
@@ -143,13 +143,13 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."itertools:0.11.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."itoa:1.0.11"]
+[policy."itoa:1.0.14"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."lazy_static:1.5.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."libc:0.2.162"]
+[policy."libc:0.2.164"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."link-cplusplus:1.0.9"]
@@ -245,13 +245,13 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."semver:1.0.23"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."serde:1.0.214"]
+[policy."serde:1.0.215"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_derive:1.0.214"]
+[policy."serde_derive:1.0.215"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_json:1.0.132"]
+[policy."serde_json:1.0.133"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."serde_json_lenient:0.2.3"]
@@ -345,7 +345,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [[exemptions.cxx]]
-version = "1.0.129"
+version = "1.0.130"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -361,10 +361,11 @@ Exemption updated to 1.0.124 in June 2024.
 Exemption updated to 1.0.126 in August 2024.
 Exemption updated to 1.0.128 in September 2024.
 Exemption updated to 1.0.129 in October 2024.
+Exemption updated to 1.0.130 in November 2024.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.129"
+version = "1.0.130"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -380,6 +381,7 @@ Exemption updated to 1.0.124 in June 2024.
 Exemption updated to 1.0.126 in August 2024.
 Exemption updated to 1.0.128 in September 2024.
 Exemption updated to 1.0.129 in October 2024.
+Exemption updated to 1.0.130 in October 2024.
 """
 
 [[exemptions.memchr]]

@@ -184,10 +184,6 @@ class PaymentManifestDownloader {
       scoped_refptr<net::HttpResponseHeaders> headers,
       int net_error);
 
-  void TryFallbackToDownloadingResponseBody(
-      const GURL& url_to_download,
-      std::unique_ptr<Download> download_info);
-
   // Called by unittests to get the one in-progress loader.
   network::SimpleURLLoader* GetLoaderForTesting();
 

@@ -366,6 +366,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ManagePasswords"/>
     <variant name="MandatoryReauth"/>
     <variant name="MemorySaver"/>
+    <variant name="OptimizationGuide"/>
     <variant name="PaymentsOfferNotification"/>
     <variant name="PriceInsights"/>
     <variant name="PriceTracking"/>
@@ -514,7 +515,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAndDeviceAuctions"
-    units="ms" expires_after="2025-02-23">
+    units="ms" expires_after="2025-05-25">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -693,40 +694,6 @@ chromium-metrics-reviews@google.com.
     AMP document to the time that the navigation for the AMP document is
     initiated in the AMP frame. This gives insight into how often AMP documents
     are navigated to via same document navigations without being prerendered.
-
-    This histogram has incomplete data. It expired after M78 and was re-added in
-    M90.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.AMP.Experimental.PageTiming.MainFrameToSubFrameNavigationDelta.Subframe"
-    units="ms" expires_after="2023-04-11">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    The time from the main frame navigation to the subsequent subframe
-    navigation for the AMP document. Only recorded for non-same-page
-    navigations.
-
-    This histogram has incomplete data. It expired after M78 and was re-added in
-    M90.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.AMP.InteractiveTiming.FirstInputDelay4.Subframe.FullNavigation"
-    units="ms" expires_after="M97">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures First Input Delay, the duration between the hardware timestamp and
-    the start of event processing on the main thread for the first meaningful
-    input per navigation, in an AMP subframe document. Recorded on first page
-    interaction. See https://goo.gl/tr1oTZ for a detailed explanation. Excludes
-    scrolls. Only non-same-document navigations are included.
 
     This histogram has incomplete data. It expired after M78 and was re-added in
     M90.
@@ -1521,7 +1488,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.SyntheticResponse.HeaderMismatchType"
-    units="count" expires_after="2025-08-01">
+    enum="HeaderMismatchType" expires_after="2025-08-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1604,8 +1571,76 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.LCPP.Subresource.Count.Precision" units="%"
+    expires_after="2025-05-14">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the subresource prediction precision of LCP critical path predictor
+    (LCPP). For example, If LCPP predicts subresource type A, B, C and D for a
+    page and the page actually loads A and E before LCP, then precision = [A] /
+    [A, B, C, D] = 25%, and recall = [A] / [A, E] = 50%.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.Subresource.Count.Recall" units="%"
+    expires_after="2025-05-14">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the subresource prediction recall of LCP critical path predictor
+    (LCPP). For example, If LCPP predicts subresource type A, B, C and D for a
+    page and the page actually loads A and E before LCP, then precision = [A] /
+    [A, B, C, D] = 25%, and recall = [A] / [A, E] = 50%.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.Subresource.Count.SameSiteRatio"
+    units="%" expires_after="2025-05-14">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the subresource's same site ratio of LCP critical path predictor
+    (LCPP).
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.Subresource.Count.Type"
+    enum="RequestDestination" expires_after="2025-05-14">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the subresource type distribution of LCP critical path predictor
+    (LCPP).
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Clients.LinkPreview.Usage" enum="LinkPreviewUsage"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>toyoshim@chromium.org</owner>
   <owner>src/chrome/browser/preloading/preview/OWNERS</owner>
   <summary>
@@ -1693,7 +1728,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout"
+<histogram name="PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout2"
     enum="Boolean" expires_after="2025-06-01">
   <owner>awillia@chromium.org</owner>
   <owner>sergiog@microsoft.com</owner>
@@ -1703,7 +1738,11 @@ chromium-metrics-reviews@google.com.
     painted content before the maximum timeout allowed. The histogram will be
     emitted with true value once timeout expires and first contentful paint is
     not reached, and it will be emitted with false value if first contentful
-    paint is reached before expiring the timeout.
+    paint is reached before expiring the timeout. The navigation is considered
+    as suspended, and thus the timeout timer will be stopped, when page is going
+    to back and forward cache or is hidden. Timeout timer will be restarted when
+    page is restored from back and forward cache or is back to shown from hidden
+    and first contentful paint was not yet reached.
   </summary>
 </histogram>
 
@@ -2459,7 +2498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.DocumentTiming.NavigationToLoadEventFired" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3162,7 +3201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.INPTime" units="ms"
-    expires_after="2024-11-15">
+    expires_after="2025-11-15">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3803,7 +3842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToFirstPaint" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -4042,7 +4081,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.ParseTiming.NavigationToParseStart" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

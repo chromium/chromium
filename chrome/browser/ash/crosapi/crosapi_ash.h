@@ -17,7 +17,6 @@
 #include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
-#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom-forward.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom-forward.h"
@@ -58,13 +57,11 @@ namespace crosapi {
 class ArcAsh;
 class AudioServiceAsh;
 class AutomationAsh;
-class BrowserServiceHostAsh;
 class CecPrivateAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
 class ChapsServiceAsh;
 class ChromeAppKioskServiceAsh;
-class ChromeAppWindowTrackerAsh;
 class ClipboardHistoryAsh;
 class ContentProtectionAsh;
 class DebugInterfaceRegistererAsh;
@@ -78,7 +75,6 @@ class DeviceSettingsAsh;
 class DlpAsh;
 class DocumentScanAsh;
 class DownloadControllerAsh;
-class DownloadStatusUpdaterAsh;
 class DriveIntegrationServiceAsh;
 class EchoPrivateAsh;
 class EmbeddedAccessibilityHelperClientAsh;
@@ -100,7 +96,6 @@ class InputMethodsAsh;
 class KerberosInBrowserAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
-class LacrosShelfItemTracker;
 class LocalPrinterAsh;
 class LoginAsh;
 class LoginScreenStorageAsh;
@@ -171,10 +166,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver)
       override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
-  void BindBrowserServiceHost(
-      mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
-  void BindBrowserShortcutPublisher(
-      mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) override;
   void BindCecPrivate(
       mojo::PendingReceiver<mojom::CecPrivate> receiver) override;
   void BindCertDatabase(
@@ -188,10 +179,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ChapsService> receiver) override;
   void BindChromeAppKioskService(
       mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) override;
-  void BindChromeAppPublisher(
-      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
-  void BindChromeAppWindowTracker(
-      mojo::PendingReceiver<mojom::AppWindowTracker> receiver) override;
   void BindClipboardHistory(
       mojo::PendingReceiver<mojom::ClipboardHistory> receiver) override;
   void BindContentProtection(
@@ -224,8 +211,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
   void BindDownloadController(
       mojo::PendingReceiver<mojom::DownloadController> receiver) override;
-  void BindDownloadStatusUpdater(
-      mojo::PendingReceiver<mojom::DownloadStatusUpdater> receiver) override;
   void BindDriveIntegrationService(
       mojo::PendingReceiver<mojom::DriveIntegrationService> receiver) override;
   void BindEchoPrivate(
@@ -240,8 +225,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::EmojiPicker> receiver) override;
   void BindExtensionInfoPrivate(
       mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) override;
-  void BindExtensionPublisher(
-      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindEyeDropper(
       mojo::PendingReceiver<mojom::EyeDropper> receiver) override;
   void BindFieldTrialService(
@@ -281,10 +264,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindKioskSessionService(
       mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
-  void BindLacrosShelfItemTracker(
-      mojo::PendingReceiver<mojom::LacrosShelfItemTracker> receiver) override;
-  void BindLacrosAppPublisher(
-      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
@@ -417,8 +396,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
   void BindWallpaper(
       mojo::PendingReceiver<crosapi::mojom::Wallpaper> receiver) override;
-  void BindWebAppPublisher(
-      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindWebAppService(
       mojo::PendingReceiver<mojom::WebAppService> receiver) override;
   void BindWebKioskService(
@@ -434,10 +411,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::AuthenticationDeprecated> receiver) override;
 
   AutomationAsh* automation_ash() { return automation_ash_.get(); }
-
-  BrowserServiceHostAsh* browser_service_host_ash() {
-    return browser_service_host_ash_.get();
-  }
 
   CecPrivateAsh* cec_private_ash() { return cec_private_ash_.get(); }
 
@@ -476,10 +449,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   DownloadControllerAsh* download_controller_ash() {
     return download_controller_ash_.get();
-  }
-
-  DownloadStatusUpdaterAsh* download_status_updater_ash() {
-    return download_status_updater_ash_.get();
   }
 
   EchoPrivateAsh* echo_private_ash() { return echo_private_ash_.get(); }
@@ -630,13 +599,11 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ArcAsh> arc_ash_;
   std::unique_ptr<AudioServiceAsh> audio_service_ash_;
   std::unique_ptr<AutomationAsh> automation_ash_;
-  std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
   std::unique_ptr<CecPrivateAsh> cec_private_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
-  std::unique_ptr<ChromeAppWindowTrackerAsh> chrome_app_window_tracker_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
   std::unique_ptr<DebugInterfaceRegistererAsh> debug_interface_registerer_ash_;
@@ -653,7 +620,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DlpAsh> dlp_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
   std::unique_ptr<DownloadControllerAsh> download_controller_ash_;
-  std::unique_ptr<DownloadStatusUpdaterAsh> download_status_updater_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
   std::unique_ptr<EchoPrivateAsh> echo_private_ash_;
   std::unique_ptr<EmbeddedAccessibilityHelperClientAsh>
@@ -678,7 +644,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<KerberosInBrowserAsh> kerberos_in_browser_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
-  std::unique_ptr<LacrosShelfItemTracker> lacros_shelf_item_tracker_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
   std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;

@@ -119,7 +119,7 @@ void SharingFCMSender::SendMessageToFcmTarget(
     return;
   }
 
-  // TODO(crbug.com/40253551): This can probably go away.
+  // TODO(crbug.com/40253551): This is used for the ACK messages only.
   if (canSendViaVapid) {
     std::optional<SharingSyncPreference::FCMRegistration> fcm_registration =
         sync_preference_->GetFCMRegistration();
@@ -369,11 +369,6 @@ bool SharingFCMSender::SetMessageSenderInfo(SharingMessage* message) {
   }
 
   auto* fcm_configuration = message->mutable_fcm_channel_configuration();
-  fcm_configuration->set_vapid_fcm_token(
-      sharing_info->vapid_target_info.fcm_token);
-  fcm_configuration->set_vapid_p256dh(sharing_info->vapid_target_info.p256dh);
-  fcm_configuration->set_vapid_auth_secret(
-      sharing_info->vapid_target_info.auth_secret);
   fcm_configuration->set_sender_id_fcm_token(
       sharing_info->sender_id_target_info.fcm_token);
   fcm_configuration->set_sender_id_p256dh(

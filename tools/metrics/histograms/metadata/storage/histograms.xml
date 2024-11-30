@@ -63,18 +63,27 @@ chromium-metrics-reviews@google.com.
   <variant name="KAnonKeyProtos" summary="KAnonKeyProtos"/>
 </variants>
 
-<histogram name="API.StorageAccess.AllowedRequests3" enum="StorageAccessResult"
-    expires_after="2024-07-28">
+<histogram name="API.EffectiveStorageAccess.AllowedByStorageAccessType"
+    enum="AllowedByStorageAccessType" expires_after="2025-11-10">
+  <owner>selya@chromium.org</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Records whether storage-access or top-level-storage-access allow access to
+    cookies in a given context. This will be recorded every time cookies are
+    read or set.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.AllowedRequests4" enum="StorageAccessResult"
+    expires_after="2025-06-28">
   <owner>mkwst@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
+  <owner>cfredric@chromium.org</owner>
   <summary>
     Records if various requests to access storage are allowed or not and if the
     Storage Access API unblocked the request or not. Recorded whenever a
     decision to access storage like getting/setting cookies or opening an
     indexeddb connection is made in CookieSettings.
-
-    Warning: this histogram was expired from 2022-03-27 to 08-12-2022; data may
-    be missing.
   </summary>
 </histogram>
 
@@ -471,6 +480,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sql.Database.Success.OpenInternalTime.{DatabaseTag}"
+    units="microseconds" expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the time spent in OpenInternal, in microseconds, when opening the
+    {DatabaseTag} database.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Success.SqliteOpenTime.{DatabaseTag}"
+    units="microseconds" expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the time spent in the sqlite3_open_v2 library call, in microseconds,
+    when opening the {DatabaseTag} database.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
 <histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"
     expires_after="2025-09-15">
   <owner>asully@chromium.org</owner>
@@ -514,6 +549,34 @@ chromium-metrics-reviews@google.com.
     recovery succeeded (see Sql.Recovery.Result for that information), since not
     all recoveries fail due to SQLite errors (e.g. if a version number could not
     be read from the meta table).
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Statement.ExecutionTime.{DatabaseTag}"
+    units="microseconds" expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the total time spent stepping for a given statement in database
+    {DatabaseTag}, in microseconds. Recorded when the statement is
+    reset/destructed, but only includes the time spent in `StepInternal` since
+    the statement's last reset.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Statement.StepTime.{DatabaseTag}" units="microseconds"
+    expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the time of a single step of a statement running against
+    {DatabaseTag}, in microseconds. Recorded every time `Step` is called.
+
+    Only reported for clients with high-resolution clocks.
   </summary>
   <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
@@ -682,6 +745,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.FileSystemAccess.ObserverUsage" units="count"
+    expires_after="2025-07-02">
+  <owner>memmott@chromium.org</owner>
+  <owner>dslee@chromium.org</owner>
+  <owner>christinesm@chromium.org</owner>
+  <summary>
+    Records the high water mark of OS-specific observer resource usage for a
+    given StorageKey. Recorded when FileSystemAccessObserverQuotaManager is
+    destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Storage.FileSystemAccess.ObserverUsageQuotaExceeded"
+    enum="Boolean" expires_after="2025-07-02">
+  <owner>memmott@chromium.org</owner>
+  <owner>dslee@chromium.org</owner>
+  <owner>christinesm@chromium.org</owner>
+  <summary>
+    Records whether FileSystemObserver usage change caused quota to be exceeded.
+    Recorded when FileSystemAccessObserverQuotaManager is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Storage.FileSystemAccess.RestorePermissionPromptOutcome"
     enum="FileSystemAccessRestorePermissionPromptOutcome"
     expires_after="2025-09-01">
@@ -844,7 +930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.AdProtoCompressionTime" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>caraitto@chromium.org</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -866,7 +952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.AdProtoDecompressionTime" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>caraitto@chromium.org</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -1967,7 +2053,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Timing.UsefulResourceDuration"
-    units="%" expires_after="2025-01-31">
+    units="%" expires_after="2025-05-25">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>

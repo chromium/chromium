@@ -176,6 +176,27 @@ std::unique_ptr<net::CanonicalCookie> FromSyncProto(
   return cookie;
 }
 
+std::optional<std::string> SerializedKey(const net::CanonicalCookie& cookie) {
+  base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                 std::string>
+      serialized_partition_key =
+          net::CookiePartitionKey::Serialize(cookie.PartitionKey());
+  if (!serialized_partition_key.has_value()) {
+    return std::nullopt;
+  }
+
+  const auto& [partition_key, name, domain, path, source_scheme, source_port] =
+      cookie.StrictlyUniqueKey();
+  // We just concatenate all involved strings.
+  std::string serialized_key = base::StrCat(
+      {serialized_partition_key->TopLevelSite(),
+       (serialized_partition_key->has_cross_site_ancestor() ? "true" : "false"),
+       name, domain, path,
+       base::NumberToString(static_cast<int>(source_scheme)),
+       base::NumberToString(source_port)});
+  return serialized_key;
+}
+
 std::optional<sync_pb::CookieSpecifics> ToSyncProto(
     const net::CanonicalCookie& cookie) {
   base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
@@ -186,23 +207,13 @@ std::optional<sync_pb::CookieSpecifics> ToSyncProto(
     return std::nullopt;
   }
 
-  // Serialize StrictlyUniqueKey: it will be written to specifics proto
-  // and used as a client tag.
-  // TODO(b/318391357): move serialization of the key elsewhere when
-  // implementing CookieSyncBridge. We should guarantee that we don't update it
-  // for existing entities.
-  net::CookieBase::StrictlyUniqueCookieKey key = cookie.StrictlyUniqueKey();
-  const auto& [partition_key, name, domain, path, source_scheme, source_port] =
-      key;
-  std::string serialized_key = base::StrCat(
-      {serialized_partition_key->TopLevelSite(),
-       (serialized_partition_key->has_cross_site_ancestor() ? "true" : "false"),
-       name, domain, path,
-       base::NumberToString(static_cast<int>(source_scheme)),
-       base::NumberToString(source_port)});
+  std::optional<std::string> serialized_key = SerializedKey(cookie);
+  // The only way for this to not have value is when partition key can't
+  // be serialized, but we already handled it above.
+  CHECK(serialized_key.has_value());
 
   sync_pb::CookieSpecifics proto;
-  proto.set_unique_key(serialized_key);
+  proto.set_unique_key(serialized_key.value());
   proto.set_name(cookie.Name());
   proto.set_value(cookie.Value());
   proto.set_domain(cookie.Domain());

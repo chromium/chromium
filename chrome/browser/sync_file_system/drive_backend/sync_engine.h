@@ -74,12 +74,12 @@ class SyncEngine
 
   class DriveServiceFactory {
    public:
-    DriveServiceFactory() {}
+    DriveServiceFactory() = default;
 
     DriveServiceFactory(const DriveServiceFactory&) = delete;
     DriveServiceFactory& operator=(const DriveServiceFactory&) = delete;
 
-    virtual ~DriveServiceFactory() {}
+    virtual ~DriveServiceFactory() = default;
     virtual std::unique_ptr<drive::DriveServiceInterface> CreateDriveService(
         signin::IdentityManager* identity_manager,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

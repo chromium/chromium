@@ -4,6 +4,7 @@
 
 import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("js_messaging") {
   deps = [
@@ -69,4 +70,31 @@ optimize_js("gcrweb_js") {
   output_name = "gcrweb"
 
   deps = [ ":gcrweb" ]
+}
+
+source_set("unittests") {
+  testonly = true
+
+  deps = [
+    ":util_test_api",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/public/test:javascript_test",
+    "//ios/web/public/test:util",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  sources = [ "utils_javascript_test.mm" ]
+}
+
+optimize_ts("util_test_api") {
+  testonly = true
+
+  sources = [ "resources/utils_test_api.ts" ]
+
+  deps = [
+    ":gcrweb",
+    ":util_scripts",
+  ]
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -580,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
 
   std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmEntry> entries =
       ukm_recorder.GetEntries("OpenerHeuristic.PopupPastInteraction",
-                              {"HoursSinceLastInteraction"});
+                              {"HoursSinceLastInteraction", "InteractionType"});
   ASSERT_EQ(entries.size(), 1u);
   EXPECT_EQ(ukm::GetSourceIdType(entries[0].source_id),
             ukm::SourceIdType::NAVIGATION_ID);
@@ -588,8 +590,9 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
             popup_url);
   // Since there was no prior or current interaction, the
   // HoursSinceLastInteraction field is set to -1.
-  EXPECT_THAT(entries[0].metrics,
-              ElementsAre(Pair("HoursSinceLastInteraction", -1)));
+  EXPECT_EQ(entries[0].metrics["HoursSinceLastInteraction"], -1);
+  EXPECT_EQ(entries[0].metrics["InteractionType"],
+            static_cast<int32_t>(DIPSInteractionType::NoInteraction));
 }
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -1012,8 +1015,9 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicInteractionTypesBrowserTest,
   SimulateInteraction(popup);
 
   std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmEntry> entries =
-      ukm_recorder.GetEntries("OpenerHeuristic.PopupInteraction",
-                              {"SecondsSinceCommitted", "UrlIndex"});
+      ukm_recorder.GetEntries(
+          "OpenerHeuristic.PopupInteraction",
+          {"SecondsSinceCommitted", "UrlIndex", "InteractionType"});
   ASSERT_EQ(entries.size(), 1u);
   EXPECT_EQ(ukm::GetSourceIdType(entries[0].source_id),
             ukm::SourceIdType::NAVIGATION_ID);
@@ -1026,6 +1030,10 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicInteractionTypesBrowserTest,
                 base::BindRepeating(&base::TimeDelta::InSeconds)));
   // The user clicked on *final_url*, which was the third URL.
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 3);
+  EXPECT_EQ(entries[0].metrics["InteractionType"],
+            isAuthenticationInteraction()
+                ? static_cast<int32_t>(DIPSInteractionType::Authentication)
+                : static_cast<int32_t>(DIPSInteractionType::UserActivation));
 }
 
 // chrome/browser/ui/browser.h (for changing profile prefs) is not available on

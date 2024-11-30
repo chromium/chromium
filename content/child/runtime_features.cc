@@ -225,10 +225,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {wf::EnableSharedStorageAPI,
            raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
-          {wf::EnableSharedStorageAPIM118,
-           raw_ref(blink::features::kSharedStorageAPIM118), kDefault},
-          {wf::EnableSharedStorageAPIM125,
-           raw_ref(blink::features::kSharedStorageAPIM125), kDefault},
           {wf::EnableFedCmMultipleIdentityProviders,
            raw_ref(features::kFedCmMultipleIdentityProviders),
            kSetOnlyIfOverridden},
@@ -262,8 +258,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kNotificationContentImage), kSetOnlyIfOverridden},
           {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},
           {wf::EnablePaymentRequest, raw_ref(features::kWebPayments)},
-          {wf::EnablePercentBasedScrolling,
-           raw_ref(features::kWindowsScrollingPersonality)},
           {wf::EnablePeriodicBackgroundSync,
            raw_ref(features::kPeriodicBackgroundSync)},
           {wf::EnablePushMessagingSubscriptionChange,
@@ -275,8 +269,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,
            raw_ref(features::kSendBeaconThrowForBlobWithNonSimpleType)},
           {wf::EnableSharedArrayBuffer, raw_ref(features::kSharedArrayBuffer)},
-          {wf::EnableSharedArrayBufferOnDesktop,
-           raw_ref(features::kSharedArrayBufferOnDesktop)},
 #if BUILDFLAG(IS_ANDROID)
           {wf::EnableSmartZoom, raw_ref(features::kSmartZoom)},
 #endif
@@ -286,6 +278,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kUserActivationSameOriginVisibility)},
           {wf::EnableWebAuthenticationAmbient,
            raw_ref(device::kWebAuthnAmbientSignin)},
+          {wf::EnableWebAuthenticationConditionalCreate,
+           raw_ref(device::kWebAuthnPasskeyUpgrade)},
           {wf::EnableWebBluetooth, raw_ref(features::kWebBluetooth),
            kSetOnlyIfOverridden},
           {wf::EnableWebBluetoothGetDevices,
@@ -647,28 +641,6 @@ void ResolveInvalidConfigurations() {
         << switches::kEnableFeatures << "="
         << blink::features::kSharedStorageAPI.name << " in addition.";
     WebRuntimeFeatures::EnableSharedStorageAPI(false);
-  }
-
-  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118) ||
-      !base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsSharedStorageAPIM118Enabled())
-        << "SharedStorage for M118+ cannot be enabled in this "
-           "configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << blink::features::kSharedStorageAPI.name << ","
-        << blink::features::kSharedStorageAPIM118.name << " in addition.";
-    WebRuntimeFeatures::EnableSharedStorageAPIM118(false);
-  }
-
-  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM125) ||
-      !base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsSharedStorageAPIM125Enabled())
-        << "SharedStorage for M125+ cannot be enabled in this "
-           "configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << blink::features::kSharedStorageAPI.name << ","
-        << blink::features::kSharedStorageAPIM125.name << " in addition.";
-    WebRuntimeFeatures::EnableSharedStorageAPIM125(false);
   }
 
   if (!base::FeatureList::IsEnabled(

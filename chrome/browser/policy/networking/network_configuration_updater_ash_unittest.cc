@@ -113,7 +113,7 @@ class FakeCertificateImporter : public ash::onc::CertificateImporter {
   FakeCertificateImporter(const FakeCertificateImporter&) = delete;
   FakeCertificateImporter& operator=(const FakeCertificateImporter&) = delete;
 
-  ~FakeCertificateImporter() override {}
+  ~FakeCertificateImporter() override = default;
 
   void SetExpectedONCClientCertificates(
       const std::vector<OncParsedCertificates::ClientCertificate>&

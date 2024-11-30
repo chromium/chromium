@@ -341,6 +341,7 @@ enum Setting {
   kFaceGaze = 1553,
   kBounceKeys = 1554,
   kSlowKeys = 1555,
+  kDisableTouchpad = 1556,
 
   // Reset section.
   kPowerwash = 1600,

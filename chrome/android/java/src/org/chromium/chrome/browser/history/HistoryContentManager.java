@@ -274,7 +274,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         IdentityServicesProvider.get().getSigninManager(profile).addSignInStateObserver(this);
 
         // Create PrefChangeRegistrar to receive notifications on preference changes.
-        mPrefChangeRegistrar = new PrefChangeRegistrar();
+        mPrefChangeRegistrar = new PrefChangeRegistrar(profile);
         mPrefChangeRegistrar.addObserver(Pref.ALLOW_DELETING_BROWSER_HISTORY, this);
         mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, this);
 

@@ -15,8 +15,6 @@ import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 import ScreenPoint = chrome.accessibilityPrivate.ScreenPoint;
 import SyntheticMouseEventButton = chrome.accessibilityPrivate.SyntheticMouseEventButton;
 
-type PrefObject = chrome.settingsPrivate.PrefObject;
-
 // A ScreenPoint represents an integer screen coordinate, whereas
 // a FloatingPoint2D represents a (x, y) floating point number
 // (which may be used for screen position or velocity).
@@ -34,26 +32,65 @@ enum LandmarkType {
   ROTATION = 'rotation',
 }
 
+/** Default values for members that track preferences. */
+const DEFAULT_MOUSE_SPEED = 10;
+const DEFAULT_USE_MOUSE_ACCELERATION = true;
+const DEFAULT_BUFFER_SIZE = 7;
+const DEFAULT_PRECISION_SPEED_FACTOR = 50;
+const DEFAULT_VELOCITY_FACTOR = 0.45;
+
+/**
+ * How long to wait after the user moves the mouse with a physical device
+ * before moving the mouse with facegaze.
+ */
+const IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS = 500;
+
+/**
+ * The indices of the tracked landmarks in a FaceLandmarkerResult.
+ * See all landmarks at
+ * https://storage.googleapis.com/mediapipe-assets/documentation/mediapipe_face_landmark_fullsize.png.
+ */
+const LANDMARK_INDICES = [
+  {name: LandmarkType.FOREHEAD, index: 8},
+  {name: LandmarkType.FOREHEAD_TOP, index: 10},
+  {name: LandmarkType.NOSE_TIP, index: 4},
+  {name: LandmarkType.RIGHT_TEMPLE, index: 127},
+  {name: LandmarkType.LEFT_TEMPLE, index: 356},
+  // Rotation does not have a landmark index, but is included in this list
+  // because it can be used as a landmark.
+  {name: LandmarkType.ROTATION, index: -1},
+];
+
+/**
+ * The maximum value for the velocity threshold pref. We use this to ensure
+ * this.velocityThresholdFactor_ is a decimal.
+ */
+const MAX_VELOCITY_THRESHOLD_PREF_VALUE = 20;
+
+/** How frequently to run the mouse movement logic. */
+const MOUSE_INTERVAL_MS = 16;
+
 /** Handles all interaction with the mouse. */
 export class MouseController {
+  // References to core classes.
+  private scrollModeController_: ScrollModeController;
+  private bubbleController_: BubbleController;
+
   /** Last seen mouse location (cached from event in onMouseMovedOrDragged_). */
   private mouseLocation_: ScreenPoint|undefined;
   private onMouseMovedHandler_: EventHandler;
   private onMouseDraggedHandler_: EventHandler;
   private screenBounds_: ScreenRect|undefined;
 
-  private prefsListener_: ((prefs: PrefObject[]) => void);
-
-  // These values will be updated when prefs are received in init_().
-  private targetBufferSize_ = MouseController.DEFAULT_BUFFER_SIZE;
-  private useMouseAcceleration_ =
-      MouseController.DEFAULT_USE_MOUSE_ACCELERATION;
-  private spdRight_ = MouseController.DEFAULT_MOUSE_SPEED;
-  private spdLeft_ = MouseController.DEFAULT_MOUSE_SPEED;
-  private spdUp_ = MouseController.DEFAULT_MOUSE_SPEED;
-  private spdDown_ = MouseController.DEFAULT_MOUSE_SPEED;
+  // Members that track preferences.
+  private targetBufferSize_ = DEFAULT_BUFFER_SIZE;
+  private useMouseAcceleration_ = DEFAULT_USE_MOUSE_ACCELERATION;
+  private spdRight_ = DEFAULT_MOUSE_SPEED;
+  private spdLeft_ = DEFAULT_MOUSE_SPEED;
+  private spdUp_ = DEFAULT_MOUSE_SPEED;
+  private spdDown_ = DEFAULT_MOUSE_SPEED;
   private velocityThreshold_ = 0;
-  private velocityThresholdFactor_ = MouseController.DEFAULT_VELOCITY_FACTOR;
+  private velocityThresholdFactor_ = DEFAULT_VELOCITY_FACTOR;
   private useVelocityThreshold_ = true;
 
   /** The most recent raw face landmark mouse locations. */
@@ -73,9 +110,12 @@ export class MouseController {
   private landmarkWeights_: Map<string, number>;
   private paused_ = false;
 
-  private scrollModeController_: ScrollModeController;
-  private bubbleController_: BubbleController;
   private longClickActive_ = false;
+
+  // Precision-related members.
+  private usePrecision_ = false;
+  private precisionActive_ = false;
+  private precisionSpeedFactor_ = DEFAULT_PRECISION_SPEED_FACTOR;
 
   constructor(bubbleController: BubbleController) {
     this.bubbleController_ = bubbleController;
@@ -100,7 +140,6 @@ export class MouseController {
     this.landmarkWeights_.set(LandmarkType.RIGHT_TEMPLE, 0.0336);
     this.landmarkWeights_.set(LandmarkType.ROTATION, 0.3960);
 
-    this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init();
   }
 
@@ -121,10 +160,27 @@ export class MouseController {
     return this.longClickActive_;
   }
 
+  usePrecision(): boolean {
+    return this.usePrecision_;
+  }
+
+  isPrecisionActive(): boolean {
+    return this.precisionActive_;
+  }
+
+  togglePrecision(): void {
+    if (!this.usePrecision_) {
+      return;
+    }
+
+    this.precisionActive_ = !this.precisionActive_;
+    if (!this.precisionActive_) {
+      this.bubbleController_.resetBubble();
+    }
+  }
+
   async start(): Promise<void> {
     this.paused_ = false;
-    chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
-    chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
 
     // TODO(b/309121742): Handle display bounds changed.
     const screens = await new Promise<ScreenRect[]>((resolve) => {
@@ -147,8 +203,8 @@ export class MouseController {
     }
 
     // Start the logic to move the mouse.
-    this.mouseInterval_ = setInterval(
-        () => this.updateMouseLocation_(), MouseController.MOUSE_INTERVAL_MS);
+    this.mouseInterval_ =
+        setInterval(() => this.updateMouseLocation_(), MOUSE_INTERVAL_MS);
   }
 
   /** Update the current location of the tracked face landmark. */
@@ -161,7 +217,7 @@ export class MouseController {
     // These scale from 0 to 1.
     const avgLandmarkLocation = {x: 0, y: 0};
     let hasLandmarks = false;
-    for (const landmark of MouseController.LANDMARK_INDICES) {
+    for (const landmark of LANDMARK_INDICES) {
       let landmarkLocation;
       if (landmark.name === 'rotation' && result.facialTransformationMatrixes &&
           result.facialTransformationMatrixes.length) {
@@ -284,7 +340,7 @@ export class MouseController {
     // Only update if it's been long enough since the last time the user
     // touched their physical mouse or trackpad.
     if (new Date().getTime() - this.lastMouseMovedTime_ >
-        MouseController.IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS) {
+        IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS) {
       EventGenerator.sendMouseMove(
           this.mouseLocation_.x, this.mouseLocation_.y, {useRewriters: true});
       chrome.accessibilityPrivate.setCursorPosition(this.mouseLocation_);
@@ -334,6 +390,11 @@ export class MouseController {
           this.mouseLocation_.x, this.mouseLocation_.y);
       this.longClickActive_ = false;
     }
+
+    if (this.precisionActive_) {
+      this.togglePrecision();
+    }
+
     if (this.mouseInterval_ !== -1) {
       clearInterval(this.mouseInterval_);
       this.mouseInterval_ = -1;
@@ -344,7 +405,6 @@ export class MouseController {
     this.lastMouseMovedTime_ = 0;
     this.buffer_ = [];
     this.paused_ = false;
-    chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
   }
 
   togglePaused(): void {
@@ -456,15 +516,31 @@ export class MouseController {
    * to get to the edges of the screens.
    */
   private asymmetryScale_(vel: FloatingPoint2D): FloatingPoint2D {
+    // If precision mode is active, reduce the mouse speed.
+    const precisionClickMultiplier = (100 - this.precisionSpeedFactor_) / 100;
+
+    const spdRight = this.usePrecision_ && this.precisionActive_ ?
+        this.spdRight_ * precisionClickMultiplier :
+        this.spdRight_;
+    const spdLeft = this.usePrecision_ && this.precisionActive_ ?
+        this.spdLeft_ * precisionClickMultiplier :
+        this.spdLeft_;
+    const spdDown = this.usePrecision_ && this.precisionActive_ ?
+        this.spdDown_ * precisionClickMultiplier :
+        this.spdDown_;
+    const spdUp = this.usePrecision_ && this.precisionActive_ ?
+        this.spdUp_ * precisionClickMultiplier :
+        this.spdUp_;
+
     if (vel.x > 0) {
-      vel.x *= this.spdRight_;
+      vel.x *= spdRight;
     } else {
-      vel.x *= this.spdLeft_;
+      vel.x *= spdLeft;
     }
     if (vel.y > 0) {
-      vel.y *= this.spdDown_;
+      vel.y *= spdDown;
     } else {
-      vel.y *= this.spdUp_;
+      vel.y *= spdUp;
     }
     return vel;
   }
@@ -485,52 +561,6 @@ export class MouseController {
     return multiply * sig;
   }
 
-  private updateFromPrefs_(prefs: PrefObject[]): void {
-    prefs.forEach(pref => {
-      switch (pref.key) {
-        case MouseController.PREF_SPD_UP:
-          if (pref.value) {
-            this.spdUp_ = pref.value;
-            this.calcVelocityThreshold_();
-          }
-          break;
-        case MouseController.PREF_SPD_DOWN:
-          if (pref.value) {
-            this.spdDown_ = pref.value;
-            this.calcVelocityThreshold_();
-          }
-          break;
-        case MouseController.PREF_SPD_LEFT:
-          if (pref.value) {
-            this.spdLeft_ = pref.value;
-            this.calcVelocityThreshold_();
-          }
-          break;
-        case MouseController.PREF_SPD_RIGHT:
-          if (pref.value) {
-            this.spdRight_ = pref.value;
-            this.calcVelocityThreshold_();
-          }
-          break;
-        case MouseController.PREF_CURSOR_USE_ACCELERATION:
-          if (pref.value !== undefined) {
-            this.useMouseAcceleration_ = pref.value;
-          }
-          break;
-        case MouseController.PREF_VELOCITY_THRESHOLD:
-          if (pref.value !== undefined) {
-            // Ensure threshold factor is a decimal value.
-            this.velocityThresholdFactor_ =
-                pref.value / MouseController.MAX_VELOCITY_THRESHOLD_PREF_VALUE;
-            this.calcVelocityThreshold_();
-          }
-          break;
-        default:
-          return;
-      }
-    });
-  }
-
   private calcVelocityThreshold_(): void {
     // Threshold is a function of speed. Threshold increases as speed increases
     // because it's easier to move the mouse accidentally at high mouse speeds.
@@ -541,7 +571,9 @@ export class MouseController {
   }
 
   private exceedsVelocityThreshold_(velocity: number): boolean {
-    if (!this.useVelocityThreshold_) {
+    if (!this.useVelocityThreshold_ ||
+        (this.usePrecision_ && this.precisionActive_)) {
+      // Do not use velocity threshold during a precision click.
       return true;
     }
 
@@ -549,7 +581,9 @@ export class MouseController {
   }
 
   private applyVelocityThreshold_(velocity: number): number {
-    if (!this.useVelocityThreshold_) {
+    if (!this.useVelocityThreshold_ ||
+        (this.usePrecision_ && this.precisionActive_)) {
+      // Do not apply velocity threshold during a precision click.
       return velocity;
     }
 
@@ -581,57 +615,47 @@ export class MouseController {
       this.buffer_.shift();
     }
   }
-}
 
-export namespace MouseController {
-  /**
-   * The indices of the tracked landmarks in a FaceLandmarkerResult.
-   * See all landmarks at
-   * https://storage.googleapis.com/mediapipe-assets/documentation/mediapipe_face_landmark_fullsize.png.
-   */
-  export const LANDMARK_INDICES = [
-    {name: LandmarkType.FOREHEAD, index: 8},
-    {name: LandmarkType.FOREHEAD_TOP, index: 10},
-    {name: LandmarkType.NOSE_TIP, index: 4},
-    {name: LandmarkType.RIGHT_TEMPLE, index: 127},
-    {name: LandmarkType.LEFT_TEMPLE, index: 356},
-    // Rotation does not have a landmark index, but is included in this list
-    // because it can be used as a landmark.
-    {name: LandmarkType.ROTATION, index: -1},
-  ];
+  speedUpChanged(speed: number): void {
+    this.spdUp_ = speed;
+    this.calcVelocityThreshold_();
+  }
 
-  /**
-   * The maximum value for the velocity threshold pref. We use this to ensure
-   * this.velocityThresholdFactor_ is a decimal.
-   */
-  export const MAX_VELOCITY_THRESHOLD_PREF_VALUE = 20;
+  speedDownChanged(speed: number): void {
+    this.spdDown_ = speed;
+    this.calcVelocityThreshold_();
+  }
 
-  /** How frequently to run the mouse movement logic. */
-  export const MOUSE_INTERVAL_MS = 16;
+  speedLeftChanged(speed: number): void {
+    this.spdLeft_ = speed;
+    this.calcVelocityThreshold_();
+  }
 
-  /**
-   * How long to wait after the user moves the mouse with a physical device
-   * before moving the mouse with facegaze.
-   */
-  export const IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS = 500;
+  speedRightChanged(speed: number): void {
+    this.spdRight_ = speed;
+    this.calcVelocityThreshold_();
+  }
 
-  // Pref names. Should be in sync with with values at ash_pref_names.h.
-  export const PREF_SPD_UP = 'settings.a11y.face_gaze.cursor_speed_up';
-  export const PREF_SPD_DOWN = 'settings.a11y.face_gaze.cursor_speed_down';
-  export const PREF_SPD_LEFT = 'settings.a11y.face_gaze.cursor_speed_left';
-  export const PREF_SPD_RIGHT = 'settings.a11y.face_gaze.cursor_speed_right';
-  export const PREF_CURSOR_USE_ACCELERATION =
-      'settings.a11y.face_gaze.cursor_use_acceleration';
-  export const PREF_VELOCITY_THRESHOLD =
-      'settings.a11y.face_gaze.velocity_threshold';
+  useCursorAccelerationChanged(useAcceleration: boolean): void {
+    this.useMouseAcceleration_ = useAcceleration;
+  }
 
-  // Default values. Will be overwritten by prefs.
-  export const DEFAULT_MOUSE_SPEED = 10;
-  export const DEFAULT_USE_MOUSE_ACCELERATION = true;
-  export const DEFAULT_BUFFER_SIZE = 7;
-  export const DEFAULT_VELOCITY_FACTOR = 0.45;
+  velocityThresholdChanged(threshold: number): void {
+    // Ensure threshold factor is a decimal value.
+    this.velocityThresholdFactor_ =
+        threshold / MAX_VELOCITY_THRESHOLD_PREF_VALUE;
+    this.calcVelocityThreshold_();
+  }
 
-  export function calculateRotationFromFacialTransformationMatrix(
+  precisionClickChanged(usePrecision: boolean): void {
+    this.usePrecision_ = usePrecision;
+  }
+
+  precisionSpeedFactorChanged(speedFactor: number): void {
+    this.precisionSpeedFactor_ = speedFactor;
+  }
+
+  static calculateRotationFromFacialTransformationMatrix(
       facialTransformationMatrix: Matrix): {x: number, y: number}|undefined {
     const mat = facialTransformationMatrix.data;
     const m11 = mat[0];

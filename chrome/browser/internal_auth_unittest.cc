@@ -20,7 +20,7 @@ class InternalAuthTest : public ::testing::Test {
     for (int i = 20; i--;)
       long_string_ += long_string_;
   }
-  ~InternalAuthTest() override {}
+  ~InternalAuthTest() override = default;
 
   void SetUp() override {}
 

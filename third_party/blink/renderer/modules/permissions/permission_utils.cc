@@ -71,10 +71,6 @@ V8PermissionState ToV8PermissionState(mojom::blink::PermissionStatus status) {
   return V8PermissionState(ToPermissionStateEnum(status));
 }
 
-String PermissionStatusToString(mojom::blink::PermissionStatus status) {
-  return ToV8PermissionState(status).AsString();
-}
-
 String PermissionNameToString(PermissionName name) {
   // TODO(crbug.com/1395451): Change these strings to match the JS permission
   // strings (dashes instead of underscores).

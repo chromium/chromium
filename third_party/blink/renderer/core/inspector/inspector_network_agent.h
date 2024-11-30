@@ -214,9 +214,9 @@ class CORE_EXPORT InspectorNetworkAgent final
   void IsCacheDisabled(bool* is_cache_disabled) const;
 
   // Called from frontend
-  protocol::Response enable(Maybe<int> total_buffer_size,
-                            Maybe<int> resource_buffer_size,
-                            Maybe<int> max_post_data_size) override;
+  protocol::Response enable(std::optional<int> total_buffer_size,
+                            std::optional<int> resource_buffer_size,
+                            std::optional<int> max_post_data_size) override;
   protocol::Response disable() override;
   protocol::Response setExtraHTTPHeaders(
       std::unique_ptr<protocol::Network::Headers>) override;
@@ -226,8 +226,8 @@ class CORE_EXPORT InspectorNetworkAgent final
   protocol::Response searchInResponseBody(
       const String& request_id,
       const String& query,
-      Maybe<bool> case_sensitive,
-      Maybe<bool> is_regex,
+      std::optional<bool> case_sensitive,
+      std::optional<bool> is_regex,
       std::unique_ptr<
           protocol::Array<v8_inspector::protocol::Debugger::API::SearchMatch>>*
           matches) override;
@@ -245,10 +245,10 @@ class CORE_EXPORT InspectorNetworkAgent final
       double latency,
       double download_throughput,
       double upload_throughput,
-      Maybe<String> connection_type,
-      Maybe<double> packet_loss,
-      Maybe<int> packet_queue_length,
-      Maybe<bool> packet_reordering) override;
+      std::optional<String> connection_type,
+      std::optional<double> packet_loss,
+      std::optional<int> packet_queue_length,
+      std::optional<bool> packet_reordering) override;
   protocol::Response setCacheDisabled(bool) override;
   protocol::Response setBypassServiceWorker(bool) override;
   protocol::Response getCertificate(

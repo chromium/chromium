@@ -97,7 +97,7 @@ int ScopedProcess::WaitForExit(bool* got_signaled) {
              process_info.si_code == CLD_DUMPED) {
     *got_signaled = true;
   } else {
-    CHECK(false) << "ScopedProcess needs to be extended for si_code "
+    NOTREACHED() << "ScopedProcess needs to be extended for si_code "
                  << process_info.si_code;
   }
   return process_info.si_status;

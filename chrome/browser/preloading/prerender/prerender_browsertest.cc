@@ -690,7 +690,6 @@ class PrerenderNewTabPageBrowserTest
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void SimulateNewTabNavigation(const GURL& url) {
@@ -739,11 +738,11 @@ class PrerenderNewTabPageBrowserTest
   }
 
  private:
+  // This timer is for making TimeToNextNavigation in UKM consistent.
+  base::ScopedMockElapsedTimersForTest test_timer_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
-  // This timer is for making TimeToNextNavigation in UKM consistent.
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,

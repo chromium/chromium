@@ -108,11 +108,12 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
           browser()->profile());
   ASSERT_TRUE(provided_file_system);
   EXPECT_FALSE(delegate->GetOneDriveMountPointPath().empty());
+  EXPECT_FALSE(delegate->GetOneDriveVirtualPath().empty());
 
   // Check that file going to OneDrive will be redirected to /tmp.
   const std::string test_file_name = "capture_mode_delegate.test";
   base::FilePath original_file =
-      delegate->GetOneDriveMountPointPath().Append(test_file_name);
+      delegate->GetOneDriveVirtualPath().Append(test_file_name);
   base::FilePath redirected_path = delegate->RedirectFilePath(original_file);
   EXPECT_NE(redirected_path, original_file);
   base::FilePath tmp_dir;
@@ -143,6 +144,22 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
 
   // Original file was moved.
   EXPECT_FALSE(base::PathExists(redirected_path));
+
+  // Delete the file using delegate.
+  base::test::TestFuture<bool> deletion_future;
+  delegate->DeleteRemoteFile(path_future.Get<1>(),
+                             deletion_future.GetCallback());
+  EXPECT_TRUE(deletion_future.Get<0>());
+
+  // Check that file now does not in OneDrive.
+  base::test::TestFuture<
+      std::unique_ptr<ash::file_system_provider::EntryMetadata>,
+      base::File::Error>
+      deleted_metadata_future;
+  provided_file_system->GetMetadata(base::FilePath("/").Append(test_file_name),
+                                    {}, deleted_metadata_future.GetCallback());
+  EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_FOUND,
+            deleted_metadata_future.Get<base::File::Error>());
 }
 
 // The OCR service is not supported on ChromeOS browser tests, so we can't check

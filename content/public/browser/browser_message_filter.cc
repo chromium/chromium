@@ -170,7 +170,7 @@ void BrowserMessageFilter::ShutdownForBadMessage() {
 
   if (base::Process::Current().Handle() == peer_process_.Handle()) {
     // Just crash in single process. Matches RenderProcessHostImpl behavior.
-    CHECK(false);
+    NOTREACHED();
   }
 
   ChildProcessLauncher::TerminateProcess(

@@ -40,7 +40,14 @@ interface AI {
   readonly attribute AIRewriterFactory rewriter;
 
   [
+    Exposed=(Window),
     RuntimeEnabled=LanguageDetectionAPI
   ]
   readonly attribute AILanguageDetectorFactory languageDetector;
+
+  [
+    Exposed=(Window),
+    RuntimeEnabled=TranslationAPI
+  ]
+  readonly attribute AITranslatorFactory translator;
 };

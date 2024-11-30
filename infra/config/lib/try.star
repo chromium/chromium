@@ -197,7 +197,6 @@ def try_builder(
         main_list_view = args.DEFAULT,
         subproject_list_view = args.DEFAULT,
         tryjob = None,
-        experiments = None,
         resultdb_bigquery_exports = args.DEFAULT,
         **kwargs):
     """Define a try builder.
@@ -230,8 +229,6 @@ def try_builder(
         default that defaults to None.
       tryjob - A struct containing the details of the tryjob verifier for the
         builder, obtained by calling the `tryjob` function.
-      experiments - a dict of experiment name to the percentage chance (0-100)
-        that it will apply to builds generated from this builder.
       resultdb_bigquery_exports - a list of resultdb.export_test_results(...)
         specifying additional parameters for exporting test results to BigQuery.
         Will always upload to the following tables in addition to any tables
@@ -241,22 +238,6 @@ def try_builder(
     """
     if not branches.matches(branch_selector):
         return None
-
-    experiments = experiments or {}
-
-    # TODO(crbug.com/40232671): Remove when the experiment is the default.
-    experiments.setdefault(
-        "chromium_swarming.expose_merge_script_failures",
-        5 if settings.project.startswith("chrome") else 100,
-    )
-
-    # TODO(crbug.com/40276579): Remove when the experiment is the default.
-    if settings.project.startswith("chromium"):
-        experiments.setdefault("swarming.prpc.cli", 100)
-
-    # TODO(crbug.com/355218109): Remove when the experiment is the default.
-    if settings.project.startswith("chromium"):
-        experiments.setdefault("chromium.use_per_builder_build_dir_name", 100)
 
     bq_dataset_name = "chrome"
     if settings.project.startswith("chromium"):
@@ -344,7 +325,6 @@ def try_builder(
         branch_selector = branch_selector,
         list_view = list_view,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
-        experiments = experiments,
         resultdb_index_by_timestamp = settings.project.startswith("chromium"),
         properties = properties,
         **kwargs

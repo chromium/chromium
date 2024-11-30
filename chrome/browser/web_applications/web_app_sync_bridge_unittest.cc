@@ -1275,8 +1275,14 @@ TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
   database_factory().WriteRegistry(registry);
   StartWebAppProvider();
 
-  EXPECT_FALSE(registrar().IsInstalled(app_id1));
-  EXPECT_TRUE(registrar().IsInstalled(app_id2));
+  EXPECT_FALSE(registrar().IsInstallState(
+      app_id1, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsInstallState(
+      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 // Tests that OnWebAppsWillBeUpdatedFromSync observer notification is called

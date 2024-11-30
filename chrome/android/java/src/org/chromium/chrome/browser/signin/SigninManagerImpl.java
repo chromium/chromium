@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -753,7 +754,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                                                 notifyCallbacksWaitingForOperation();
                                             }
                                         },
-                                        clearedTypes.stream().mapToInt(Integer::intValue).toArray(),
+                                        CollectionUtil.integerCollectionToIntArray(clearedTypes),
                                         TimePeriod.ALL_TIME);
                     }
                 });
@@ -770,11 +771,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     public boolean getUserAcceptedAccountManagement() {
         return SigninManagerImplJni.get()
                 .getUserAcceptedAccountManagement(mNativeSigninManagerAndroid);
-    }
-
-    private boolean isGooglePlayServicesPresent() {
-        return !ExternalAuthUtils.getInstance()
-                .isGooglePlayServicesMissing(ContextUtils.getApplicationContext());
     }
 
     private void fetchAndApplyCloudPolicy(CoreAccountInfo account, final Runnable callback) {

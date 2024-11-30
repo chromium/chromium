@@ -23,12 +23,6 @@
 
 class PrefService;
 
-// Feature used to disable the culling of legacy profiles (i.e. old profile
-// dating back from many years ago when a first experimentation was done to
-// try to support multi-profiles before WKWebView added the required API in
-// iOS 17.0).
-BASE_DECLARE_FEATURE(kHideLegacyProfiles);
-
 // ProfileManagerIOS implementation.
 class ProfileManagerIOSImpl : public ProfileManagerIOS,
                               public ProfileIOS::Delegate {
@@ -47,11 +41,11 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   // ProfileManagerIOS:
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
-  void LoadProfiles() override;
   ProfileIOS* GetProfileWithName(std::string_view name) override;
   std::vector<ProfileIOS*> GetLoadedProfiles() const override;
   bool HasProfileWithName(std::string_view name) const override;
   bool CanCreateProfileWithName(std::string_view name) const override;
+  std::string ReserveNewProfileName() override;
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override;
@@ -60,7 +54,8 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
                           ProfileLoadedCallback created_callback) override;
   ProfileIOS* LoadProfile(std::string_view name) override;
   ProfileIOS* CreateProfile(std::string_view name) override;
-  void DestroyAllProfiles() override;
+  void UnloadProfile(std::string_view name) override;
+  void UnloadAllProfiles() override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // ProfileIOS::Delegate:
@@ -78,24 +73,20 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   using CreationMode = ProfileIOS::CreationMode;
   using ProfileMap = std::map<std::string, ProfileInfo, std::less<>>;
 
-  // Creates or loads the Profile known by `name` using the `creation_mode`. The
-  // callbacks have the same meaning as the method CreateProfileAsync(...).
+  // Creates or loads the Profile known by `name` using the `creation_mode`.
+  // The callbacks have the same meaning as the method CreateProfileAsync().
   // Returns whether a Profile with that name already exists or it can be
-  // created.
+  // created. If `load_only_do_not_create` is true, then the method will fail
+  // if the profile does not exists on disk yet.
   bool CreateProfileWithMode(std::string_view name,
                              CreationMode creation_mode,
+                             bool load_only_do_not_create,
                              ProfileLoadedCallback initialized_callback,
                              ProfileLoadedCallback created_callback);
 
   // Final initialization of the profile.
   void DoFinalInit(ProfileIOS* profile);
   void DoFinalInitForServices(ProfileIOS* profile);
-
-  // Hides legacy profiles (i.e. all known profiles not listed in `profiles`).
-  void HideLegacyProfiles(const std::set<std::string>& profiles);
-
-  // Restores legacy profiles (if any).
-  void RestoreLegacyProfiles(const std::set<std::string>& profiles);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

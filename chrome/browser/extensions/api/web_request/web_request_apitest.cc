@@ -36,6 +36,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/devtools/url_constants.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -542,9 +543,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   }
 }
 
-// TODO(crbug.com/371324825): Enable more tests for Android build.
-#if !BUILDFLAG(IS_ANDROID)
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 enum class BackgroundResourceFetchTestCase {
   kBackgroundResourceFetchEnabled,
@@ -599,6 +598,48 @@ class ExtensionWebRequestApiTestWithContextType
   base::test::ScopedFeatureList feature_background_resource_fetch_;
 };
 
+// This test suite verifies extension functionality in the service worker
+// context, required for Manifest V3 and later.
+//
+// The test harness attempts to automatically convert Manifest V2 extensions to
+// Manifest V3 for testing in ContextType::kServiceWorker. However, some
+// Manifest V2 features are incompatible with Manifest V3 (e.g.,
+// `webRequestBlocking`) and prevent automatic conversion. Extensions using
+// these features must be manually migrated to Manifest V3 to be included in
+// this test suite.
+class ExtensionWebRequestApiTestWithContextTypeMV3
+    : public ExtensionWebRequestApiTestWithContextType {
+ public:
+  ExtensionWebRequestApiTestWithContextTypeMV3() = default;
+  ExtensionWebRequestApiTestWithContextTypeMV3(
+      const ExtensionWebRequestApiTestWithContextTypeMV3&) = delete;
+  ExtensionWebRequestApiTestWithContextTypeMV3& operator=(
+      const ExtensionWebRequestApiTestWithContextTypeMV3&) = delete;
+  ~ExtensionWebRequestApiTestWithContextTypeMV3() override = default;
+};
+
+#if BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    ExtensionWebRequestApiTestWithContextTypeMV3,
+    ::testing::Values(
+        std::make_pair(
+            ContextType::kServiceWorker,
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
+        std::make_pair(
+            ContextType::kServiceWorker,
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
+    ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextTypeMV3,
+                       WebRequestApi) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webrequest/test_api")) << message_;
+}
+#endif
+
+// TODO(crbug.com/371324825): Enable more tests for Android build.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     PersistentBackground,
     ExtensionWebRequestApiTestWithContextType,

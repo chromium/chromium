@@ -250,7 +250,7 @@ public class OmniboxTest {
                 R.id.location_bar_status_icon,
                 securityView.getId());
         Assert.assertTrue(securityView.isShown());
-        Assert.assertEquals(R.drawable.omnibox_https_valid_refresh,
+        Assert.assertEquals(R.drawable.omnibox_https_valid_page_info,
                 statusCoordinator.getSecurityIconResourceIdForTesting());
     }
 
@@ -322,7 +322,7 @@ public class OmniboxTest {
                     securityView.getId());
             Assert.assertTrue(securityView.isShown());
             Assert.assertEquals(
-                    R.drawable.omnibox_https_valid_refresh,
+                    R.drawable.omnibox_https_valid_page_info,
                     statusCoordinator.getSecurityIconResourceIdForTesting());
         } finally {
             restoreDefaultSearchEngine();

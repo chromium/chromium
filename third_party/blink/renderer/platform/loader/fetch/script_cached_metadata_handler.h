@@ -40,8 +40,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   void Trace(Visitor*) const override;
   void SetCachedMetadata(CodeCacheHost*,
                          uint32_t,
-                         const uint8_t*,
-                         size_t) override;
+                         base::span<const uint8_t>) override;
   void ClearCachedMetadata(CodeCacheHost*, ClearCacheType) override;
   scoped_refptr<CachedMetadata> GetCachedMetadata(
       uint32_t,

@@ -102,7 +102,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
     if (data == nullptr) {
       return std::nullopt;
     }
-    return std::make_optional(make_span(data, counts_size_));
+    return span(data, counts_size_);
   }
 
   std::optional<span<const HistogramBase::AtomicCount>> counts() const {
@@ -111,7 +111,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
     if (data == nullptr) {
       return std::nullopt;
     }
-    return std::make_optional(make_span(data, counts_size_));
+    return span(data, counts_size_);
   }
 
   void set_counts(span<HistogramBase::AtomicCount> counts) const {

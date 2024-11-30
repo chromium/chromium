@@ -60,7 +60,7 @@ class SafeBrowsingServiceInterface
       const = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-  virtual ReferringAppInfo GetReferringAppInfo(
+  virtual internal::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) = 0;
 #endif
 

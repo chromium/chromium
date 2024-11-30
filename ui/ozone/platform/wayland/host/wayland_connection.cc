@@ -38,7 +38,6 @@
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 #include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
-#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/toplevel_icon_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -58,8 +57,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_touchpad_haptics.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
@@ -94,7 +91,6 @@ constexpr uint32_t kMaxExtendedDragVersion = 1;
 constexpr uint32_t kMaxXdgToplevelDragVersion = 1;
 constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
 constexpr uint32_t kMaxKeyboardShortcutsInhibitManagerVersion = 1;
-constexpr uint32_t kMaxStylusVersion = 2;
 constexpr uint32_t kMaxWpContentTypeVersion = 1;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
@@ -164,8 +160,6 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &OverlayPrioritizer::Instantiate);
   RegisterGlobalObjectFactory(SinglePixelBuffer::kInterfaceName,
                               &SinglePixelBuffer::Instantiate);
-  RegisterGlobalObjectFactory(SurfaceAugmenter::kInterfaceName,
-                              &SurfaceAugmenter::Instantiate);
   RegisterGlobalObjectFactory(ToplevelIconManager::kInterfaceName,
                               &ToplevelIconManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandDataDeviceManager::kInterfaceName,
@@ -180,10 +174,6 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &WaylandShm::Instantiate);
   RegisterGlobalObjectFactory(WaylandCursorShape::kInterfaceName,
                               &WaylandCursorShape::Instantiate);
-  RegisterGlobalObjectFactory(WaylandZcrCursorShapes::kInterfaceName,
-                              &WaylandZcrCursorShapes::Instantiate);
-  RegisterGlobalObjectFactory(WaylandZcrTouchpadHaptics::kInterfaceName,
-                              &WaylandZcrTouchpadHaptics::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpLinuxDmabuf::kInterfaceName,
                               &WaylandZwpLinuxDmabuf::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpPointerConstraints::kInterfaceName,
@@ -739,13 +729,6 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
     // Recognized but not yet supported.
     NOTIMPLEMENTED_LOG_ONCE();
     ReportShellUMA(UMALinuxWaylandShell::kZwlrLayerShellV1);
-  } else if (!zcr_stylus_v2_ && strcmp(interface, "zcr_stylus_v2") == 0) {
-    zcr_stylus_v2_ = wl::Bind<zcr_stylus_v2>(
-        registry, name, std::min(version, kMaxStylusVersion));
-    if (!zcr_stylus_v2_) {
-      LOG(ERROR) << "Failed to bind to zcr_stylus_v2";
-      return;
-    }
   }
 
   available_globals_.emplace_back(interface, version);

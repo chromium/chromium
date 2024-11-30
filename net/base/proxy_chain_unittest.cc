@@ -541,7 +541,7 @@ TEST(ProxyChainTest, PickleDirect) {
   proxy_chain.Persist(&pickle);
   base::PickleIterator iter(pickle);
   ProxyChain proxy_chain_from_pickle;
-  proxy_chain_from_pickle.InitFromPickle(&iter);
+  EXPECT_TRUE(proxy_chain_from_pickle.InitFromPickle(&iter));
   EXPECT_EQ(proxy_chain, proxy_chain_from_pickle);
 }
 
@@ -552,8 +552,25 @@ TEST(ProxyChainTest, PickleOneProxy) {
   proxy_chain.Persist(&pickle);
   base::PickleIterator iter(pickle);
   ProxyChain proxy_chain_from_pickle;
-  proxy_chain_from_pickle.InitFromPickle(&iter);
+  EXPECT_TRUE(proxy_chain_from_pickle.InitFromPickle(&iter));
   EXPECT_EQ(proxy_chain, proxy_chain_from_pickle);
+}
+
+TEST(ProxyChainTest, UnpickleInvalidProxy) {
+  ProxyServer invalid_proxy_server;
+  // Manually pickle a proxcy chain with an invalid proxy server.
+  base::Pickle pickle;
+  pickle.WriteInt(ProxyChain::kNotIpProtectionChainId);
+  pickle.WriteInt(1);  // Length of the chain
+  invalid_proxy_server.Persist(&pickle);
+
+  base::PickleIterator iter(pickle);
+  ProxyChain invalid_proxy_chain_from_pickle;
+  // Unpickling should fail and leave us with an invalid proxy chain.
+  EXPECT_FALSE(invalid_proxy_chain_from_pickle.InitFromPickle(&iter));
+  // Make sure that we unpickled the invalid proxy server.
+  EXPECT_TRUE(iter.ReachedEnd());
+  EXPECT_FALSE(invalid_proxy_chain_from_pickle.IsValid());
 }
 
 #if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
@@ -633,7 +650,7 @@ TEST(ProxyChainTest, PickleTwoProxies) {
   proxy_chain.Persist(&pickle);
   base::PickleIterator iter(pickle);
   ProxyChain proxy_chain_from_pickle;
-  proxy_chain_from_pickle.InitFromPickle(&iter);
+  EXPECT_TRUE(proxy_chain_from_pickle.InitFromPickle(&iter));
   EXPECT_EQ(proxy_chain, proxy_chain_from_pickle);
 }
 #endif

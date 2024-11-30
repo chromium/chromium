@@ -93,7 +93,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
@@ -170,8 +170,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
-     * @param edgeToEdgeStateProvider Provides the edge-to-edge state and allows for requests to
-     *     draw edge-to-edge.
+     * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
     public BaseCustomTabRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -210,7 +209,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<CustomTabMinimizeDelegate> minimizeDelegateSupplier,
             @NonNull Supplier<CustomTabFeatureOverridesManager> featureOverridesManagerSupplier,
             @Nullable View baseChromeLayout,
-            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
+            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         super(
                 activity,
                 null,
@@ -252,7 +251,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 null,
                 /* overviewColorSupplier= */ null,
                 baseChromeLayout,
-                edgeToEdgeStateProvider);
+                edgeToEdgeManager);
         mToolbarCoordinator = customTabToolbarCoordinator;
         mIntentDataProvider = intentDataProvider;
         mCustomTabSearchClient = new SearchActivityClientImpl(activity, IntentOrigin.CUSTOM_TAB);
@@ -311,10 +310,23 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         && SigninFeatureMap.isEnabled(SigninFeatures.CCT_SIGN_IN_PROMPT);
         if (!signInPromptEnabled) return null;
 
-        if (isMismatchNotificationSuppressed()) return null;
+        if (isMismatchNotificationSuppressed()) {
+            MismatchNotificationController.recordMismatchNoticeSuppressedHistogram(
+                    MismatchNotificationController.SuppressedReason.FRE_COMPLETED_RECENTLY);
+            return null;
+        }
+
+        if (!mProfileSupplier.hasValue()) {
+            return null;
+        }
 
         Profile profile = mProfileSupplier.get();
-        if (profile == null) return null;
+        // Exclude incognito and ephemeral sessions.
+        if (profile.isOffTheRecord()) {
+            MismatchNotificationController.recordMismatchNoticeSuppressedHistogram(
+                    MismatchNotificationController.SuppressedReason.CCT_IS_OFF_THE_RECORD);
+            return null;
+        }
         return new MismatchNotificationChecker(
                 profile,
                 IdentityServicesProvider.get().getIdentityManager(profile),
@@ -650,7 +662,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         // Currently edge to edge only supports CCT media viewer.
         return EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity)
                 && EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()
-                && !EdgeToEdgeUtils.DISABLE_CCT_MEDIA_VIEWER_E2E.getValue()
+                && !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableCctMediaViewerE2e.getValue()
                 && mIntentDataProvider.get() != null
                 && mIntentDataProvider.get().shouldEnableEmbeddedMediaExperience();
     }

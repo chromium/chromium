@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -70,7 +72,7 @@ public class AuthTabIntentDataProviderUnitTest {
 
     @Test
     public void testOverriddenDefaults() {
-        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
         assertEquals(
                 "ActivityType should be AUTH_TAB.",
                 ActivityType.AUTH_TAB,
@@ -102,7 +104,7 @@ public class AuthTabIntentDataProviderUnitTest {
                                 CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_LAUNCH_AUTH_TAB)
                         .allowExtraRecordsForHistogramsAbove()
                         .build();
-        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
 
         assertEquals("Intent doesn't match expectation.", mIntent, mIntentDataProvider.getIntent());
         assertEquals("Wrong package name", PACKAGE, mIntentDataProvider.getClientPackageName());
@@ -124,7 +126,7 @@ public class AuthTabIntentDataProviderUnitTest {
                         .allowExtraRecordsForHistogramsAbove()
                         .build();
         mIntent.putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, SCHEME);
-        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
 
         assertEquals("Wrong redirect scheme.", SCHEME, mIntentDataProvider.getAuthRedirectScheme());
         histogramWatcher.assertExpected();
@@ -142,7 +144,7 @@ public class AuthTabIntentDataProviderUnitTest {
                         .build();
         mIntent.putExtra(AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST, HOST);
         mIntent.putExtra(AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH, PATH);
-        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
 
         assertEquals("Wrong https redirect host.", HOST, mIntentDataProvider.getAuthRedirectHost());
         assertEquals("Wrong https redirect path.", PATH, mIntentDataProvider.getAuthRedirectPath());
@@ -161,7 +163,7 @@ public class AuthTabIntentDataProviderUnitTest {
                         .allowExtraRecordsForHistogramsAbove()
                         .build();
         mIntent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
-        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
 
         assertEquals(
                 "CustomTabMode should be ephemeral.",

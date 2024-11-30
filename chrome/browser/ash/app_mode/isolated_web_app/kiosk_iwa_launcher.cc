@@ -91,7 +91,11 @@ void KioskIwaLauncher::CheckAppInstallState() {
   auto& web_app_registrar = provider->registrar_unsafe();
 
   // TODO(crbug.com/372848695): is "kKioskWebAppOfflineEnabled" needed for IWA?
-  if (!web_app_registrar.IsInstalled(iwa_data().app_id())) {
+  if (!web_app_registrar.IsInstallState(
+          iwa_data().app_id(),
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     delegate_->InitializeNetwork();
     return;
   }

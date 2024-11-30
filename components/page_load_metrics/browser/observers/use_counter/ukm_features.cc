@@ -389,7 +389,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kFedCmContinueOnResponse,
           WebFeature::kSchedulingIsInputPending,
           WebFeature::kV8DocumentPictureInPicture_RequestWindow_Method,
-          WebFeature::kV8GPUAdapter_RequestAdapterInfo_Method,
           WebFeature::
               kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin,
           WebFeature::kSharedStorageAPI_AddModule_CrossOriginScript,
@@ -413,6 +412,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::
               kServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement,
           WebFeature::kThirdPartyCookieBlocked,
+          WebFeature::kStorageAccessAPI_requestStorageAccessFor_Method,
+          WebFeature::kSharedWorkerScriptUnderServiceWorkerControlIsBlob,
       }));
   return *opt_in_features;
 }

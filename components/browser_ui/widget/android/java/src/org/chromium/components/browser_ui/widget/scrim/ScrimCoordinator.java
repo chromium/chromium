@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,16 +20,17 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /**
  * The coordinator for the scrim widget used to bring focus to certain elements on screen.
  *
- * To use the scrim, {@link #showScrim(PropertyModel)} must be called to set the params for
- * how the scrim will behave:
+ * <p>To use the scrim, {@link #showScrim(PropertyModel)} must be called to set the params for how
+ * the scrim will behave:
  *
- * PropertyModel model = new PropertyModel.Builder(ScrimProperties.ALL_KEYS)...
+ * <p>PropertyModel model = new PropertyModel.Builder(ScrimProperties.ALL_KEYS)...
  *
- * After that, users can either allow the default animation to run or change the view's alpha
- * manually using {@link #setAlpha(float)}. Once the scrim is done being used,
- * {@link #hideScrim(boolean)} should be called.
+ * <p>After that, users can either allow the default animation to run or change the view's alpha
+ * manually using {@link #setAlpha(float)}. Once the scrim is done being used, {@link
+ * #hideScrim(boolean)} should be called.
  */
 public class ScrimCoordinator {
+
     /** The duration for the scrim animation. */
     private static final int ANIM_DURATION_MS = 300;
 
@@ -68,7 +70,15 @@ public class ScrimCoordinator {
         boolean onTouchEvent(MotionEvent event);
     }
 
-    /** A supplier of new {@link ScrimView}s to use when {@link #showScrim(PropertyModel)} is called. */
+    public interface Observer {
+        void scrimVisibilityChanged(boolean scrimVisible);
+    }
+
+    private final ObserverList<Observer> mScrimVisibilityObservers = new ObserverList<>();
+
+    /**
+     * A supplier of new {@link ScrimView}s to use when {@link #showScrim(PropertyModel)} is called.
+     */
     private final Supplier<ScrimView> mScrimViewBuilder;
 
     /** The component's mediator for handling animation and model management. */
@@ -113,10 +123,12 @@ public class ScrimCoordinator {
 
     /**
      * Show the scrim.
+     *
      * @param model The property model of {@link ScrimProperties} that define the scrim behavior.
      */
     public void showScrim(PropertyModel model) {
         assert model != null : "Showing the scrim requires a model.";
+        boolean isShowingScrim = isShowingScrim();
 
         // Ensure the previous scrim is hidden before showing the new one. This logic should be in
         // the mediator, but it depends on the old view and binder being available which are
@@ -128,10 +140,14 @@ public class ScrimCoordinator {
         mView = mScrimViewBuilder.get();
         mChangeProcessor = PropertyModelChangeProcessor.create(model, mView, ScrimViewBinder::bind);
         mMediator.showScrim(model, ANIM_DURATION_MS);
+        if (isShowingScrim != isShowingScrim()) {
+            notifyVisibilityObservers();
+        }
     }
 
     /**
      * Hide the scrim.
+     *
      * @param animate Whether the scrim should animate and fade out.
      */
     public void hideScrim(boolean animate) {
@@ -140,16 +156,38 @@ public class ScrimCoordinator {
 
     /**
      * Hide the scrim.
+     *
      * @param animate Whether the scrim should animate and fade out.
      * @param duration Duration for animation.
      */
     public void hideScrim(boolean animate, int duration) {
+        boolean isShowingScrim = isShowingScrim();
         mMediator.hideScrim(animate, duration);
+        if (isShowingScrim != isShowingScrim()) {
+            notifyVisibilityObservers();
+        }
     }
 
-    /** @return Whether the scrim is being shown. */
+    /**
+     * @return Whether the scrim is being shown.
+     */
     public boolean isShowingScrim() {
         return mMediator.isActive();
+    }
+
+    public void addObserver(Observer observer) {
+        mScrimVisibilityObservers.addObserver(observer);
+    }
+
+    public void removeObserver(Observer observer) {
+        mScrimVisibilityObservers.removeObserver(observer);
+    }
+
+    private void notifyVisibilityObservers() {
+        boolean isShowingScrim = isShowingScrim();
+        for (Observer observer : mScrimVisibilityObservers) {
+            observer.scrimVisibilityChanged(isShowingScrim);
+        }
     }
 
     /** Forces the current scrim fade animation to complete if one is running. */

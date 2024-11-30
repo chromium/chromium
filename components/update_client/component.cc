@@ -475,7 +475,6 @@ void Component::StateCanUpdate::DoHandle() {
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::UPDATE_DISABLED);
     component.extra_code1_ = 0;
-    metrics::RecordCanUpdateResult(metrics::CanUpdateResult::kUpdatesDisabled);
     TransitionState(std::make_unique<StateUpdateError>(&component));
     return;
   }
@@ -484,7 +483,6 @@ void Component::StateCanUpdate::DoHandle() {
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
-    metrics::RecordCanUpdateResult(metrics::CanUpdateResult::kCanceled);
     return;
   }
 
@@ -495,12 +493,8 @@ void Component::StateCanUpdate::DoHandle() {
     component.extra_code1_ = 0;
     component.AppendEvent(component.MakeEventUpdateComplete());
     EndState();
-    metrics::RecordCanUpdateResult(
-        metrics::CanUpdateResult::kCheckForUpdateOnly);
     return;
   }
-
-  metrics::RecordCanUpdateResult(metrics::CanUpdateResult::kCanUpdate);
 
   // Start computing the cost of the this update from here on.
   component.update_begin_ = base::TimeTicks::Now();

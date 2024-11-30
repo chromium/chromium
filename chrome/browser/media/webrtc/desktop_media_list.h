@@ -78,7 +78,7 @@ class DesktopMediaList {
 
   using UpdateCallback = base::OnceClosure;
 
-  virtual ~DesktopMediaList() {}
+  virtual ~DesktopMediaList() = default;
 
   // Sets time interval between updates. By default list of sources and their
   // thumbnail are updated once per second. If called after StartUpdating() then

@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -507,8 +508,7 @@ class NetworkResponder {
     // that request .well-known URLs.
     if (params->url_request.url.path_piece() ==
         "/.well-known/interest-group/permissions/") {
-      CHECK(false);
-      return false;
+      NOTREACHED();
     }
 
     // Check if this is a non-update error.
@@ -10321,9 +10321,6 @@ function scoreAd(
 
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
        PrivateAggregationFilteringIdUseCounterLogged) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      blink::features::kPrivateAggregationApiFilteringIds};
-
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -10387,81 +10384,6 @@ function scoreAd(
       LogWebFeatureForCurrentPage(
           main_rfh(),
           blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds));
-
-  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, std::nullopt);
-  InvokeCallbackForURN(*auction_result);
-}
-
-TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
-       PrivateAggregationFilteringIdUseCounterNotLoggedIfFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kPrivateAggregationApiFilteringIds);
-
-  constexpr char kBiddingScript[] = R"(
-function generateBid(
-    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-    browserSignals) {
-  privateAggregation.enableDebugMode();
-  privateAggregation.contributeToHistogram(
-      {bucket: 1n, value: 2, filteringId: 3n});
-  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
-}
-)";
-
-  constexpr char kDecisionScript[] = R"(
-function scoreAd(
-    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  return bid;
-}
-)";
-
-  PrivateAggregationUseCounterContentBrowserClient browser_client;
-  ScopedContentBrowserClientSetting setting(&browser_client);
-
-  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
-  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
-
-  blink::InterestGroup interest_group = CreateInterestGroup();
-  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
-  interest_group.priority = 2;
-  interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/std::nullopt);
-  interest_group.ads->emplace_back(std::move(ad));
-  JoinInterestGroupAndFlush(interest_group);
-
-  blink::AuctionConfig auction_config;
-  auction_config.seller = kOriginA;
-  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-
-  EXPECT_CALL(
-      browser_client,
-      LogWebFeatureForCurrentPage(
-          main_rfh(), blink::mojom::WebFeature::kPrivateAggregationApiAll));
-  EXPECT_CALL(
-      browser_client,
-      LogWebFeatureForCurrentPage(
-          main_rfh(), blink::mojom::WebFeature::kPrivateAggregationApiFledge));
-  EXPECT_CALL(
-      browser_client,
-      LogWebFeatureForCurrentPage(
-          main_rfh(),
-          blink::mojom::WebFeature::kPrivateAggregationApiFledgeExtensions))
-      .Times(0);
-  EXPECT_CALL(
-      browser_client,
-      LogWebFeatureForCurrentPage(
-          main_rfh(),
-          blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode));
-  EXPECT_CALL(browser_client,
-              LogWebFeatureForCurrentPage(
-                  main_rfh(),
-                  blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
-      .Times(0);
 
   std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   ASSERT_NE(auction_result, std::nullopt);
@@ -10546,9 +10468,6 @@ function scoreAd(
 // multiple times (and different functions are used).
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
        PrivateAggregationUseCountersLoggedOnlyOnce) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      blink::features::kPrivateAggregationApiFilteringIds};
-
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -12377,8 +12296,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   // The generation ID is random, so match against everything before and
   // everything after.
   std::string got_str = cbor::DiagnosticWriter::Write(
-      cbor::Reader::Read(base::as_bytes(base::make_span(
-                             plaintext_data.substr(5, request_size))))
+      cbor::Reader::Read(
+          base::as_byte_span(plaintext_data.substr(5, request_size)))
           .value());
   EXPECT_THAT(got_str,
               testing::StartsWith(R"({"version": 0, "publisher": "a.test", )"
@@ -12464,8 +12383,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithDebugReportLockout) {
   }
 
   std::string got_str = cbor::DiagnosticWriter::Write(
-      cbor::Reader::Read(base::as_bytes(base::make_span(
-                             plaintext_data.substr(5, request_size))))
+      cbor::Reader::Read(
+          base::as_byte_span(plaintext_data.substr(5, request_size)))
           .value());
   EXPECT_THAT(got_str,
               testing::EndsWith(R"(, "enableDebugReporting": false})"));
@@ -12570,8 +12489,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
   // The generation ID is random, so match against everything before and
   // everything after.
   std::string got_str = cbor::DiagnosticWriter::Write(
-      cbor::Reader::Read(base::as_bytes(base::make_span(
-                             plaintext_data.substr(5, request_size))))
+      cbor::Reader::Read(
+          base::as_byte_span(plaintext_data.substr(5, request_size)))
           .value());
   EXPECT_THAT(got_str,
               testing::StartsWith(R"({"version": 0, "publisher": "a.test", )"
@@ -12700,8 +12619,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -12844,8 +12762,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionComponentCheckWithNone) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_FALSE(result);
@@ -12911,8 +12828,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_FALSE(result);
@@ -13001,8 +12917,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_FALSE(result);
@@ -13090,8 +13005,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
   // The generation ID is random, so match against everything before and
   // everything after.
   std::string got_str = cbor::DiagnosticWriter::Write(
-      cbor::Reader::Read(base::as_bytes(base::make_span(
-                             plaintext_data.substr(5, request_size))))
+      cbor::Reader::Read(
+          base::as_byte_span(plaintext_data.substr(5, request_size)))
           .value());
   EXPECT_THAT(got_str,
               testing::StartsWith(R"({"version": 0, "publisher": "a.test", )"
@@ -13135,8 +13050,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -13231,8 +13145,7 @@ TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_FALSE(result);
@@ -13316,8 +13229,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   // A component auction response cannot be used for a regular auction.
@@ -13421,8 +13333,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   // A regular response can't be used for a component auction.
@@ -13511,8 +13422,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunMultiSellerBAndAAuctionWrongSeller) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   // A component auction response cannot be used if the top level seller doesn't
@@ -13622,8 +13532,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -13820,8 +13729,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -13954,8 +13862,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -14155,8 +14062,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -14342,8 +14248,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -14542,8 +14447,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -14685,8 +14589,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -14798,8 +14701,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -14933,8 +14835,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -15051,8 +14952,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -15178,8 +15078,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -15302,8 +15201,7 @@ function reportResult(auctionConfig, browserSignals) {
                                          runner) {
         runner->ResolvedAuctionAdResponsePromise(
             blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-            mojo_base::BigBuffer(
-                base::as_bytes(base::make_span(encrypted_response))));
+            mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
 
         // Add an extra delay to ensure that the response was processed first.
         task_environment()->RunUntilIdle();
@@ -15501,8 +15399,7 @@ function reportResult(auctionConfig, browserSignals) {
         task_environment()->RunUntilIdle();
         runner->ResolvedAuctionAdResponsePromise(
             blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-            mojo_base::BigBuffer(
-                base::as_bytes(base::make_span(encrypted_response))));
+            mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
       }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -15638,8 +15535,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -15786,8 +15682,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -16184,8 +16079,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -16312,8 +16206,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_FALSE(result);
@@ -16414,8 +16307,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_FALSE(result);
@@ -16517,8 +16409,7 @@ function reportResult(auctionConfig, browserSignals) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_FALSE(result);
@@ -16630,8 +16521,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunServerMultiSellerBAndAAuction) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -16764,8 +16654,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithBid) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -16870,8 +16759,7 @@ TEST_F(AdAuctionServiceImplBAndALocalKAnonTest, RunBAndAAuctionWithLocalKAnon) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   EXPECT_TRUE(result);
@@ -17043,8 +16931,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, NoKAnonInResponse) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
 
@@ -17171,8 +17058,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, AdInResponseNotInGroup) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
 
@@ -17284,8 +17170,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, OnlyGhostWinner) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
 
@@ -17309,6 +17194,231 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, OnlyGhostWinner) {
               HashedKAnonKeyForAdNameReporting(
                   interest_group2, interest_group2.ads.value()[0],
                   /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerBadAdHash) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     /*ad_render_id=*/"1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 1u);
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0)))))
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(blink::HashedKAnonKeyForAdComponentBid(
+                                "BadHash")))
+                       .Set("reportingIdHash",
+                            AsBlobValue(HashedKAnonKeyForAdNameReporting(
+                                interest_group1, interest_group1.ads.value()[0],
+                                /*selected_buyer_and_seller_reporting_id=*/
+                                std::nullopt))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
+          }),
+      main_rfh());
+
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      ASSERT_TRUE(result);
+      InvokeCallbackForURN(*result);
+      // Fast forward enough for all k-anon joins to be sent.
+      task_environment()->FastForwardBy(base::Hours(1));
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      // Since the ad ID hash sent by the server doesn't match, fail the
+      // auction.
+      EXPECT_FALSE(result);
+      break;
+    }
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerBadReportingHash) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     /*ad_render_id=*/"1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 1u);
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0)))))
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(HashedKAnonKeyForAdBid(
+                                interest_group1,
+                                interest_group1.ads.value()[0].render_url())))
+                       .Set("reportingIdHash",
+                            AsBlobValue(blink::HashedKAnonKeyForAdComponentBid(
+                                "BadHash"))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
+          }),
+      main_rfh());
+
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      ASSERT_TRUE(result);
+      InvokeCallbackForURN(*result);
+      // Fast forward enough for all k-anon joins to be sent.
+      task_environment()->FastForwardBy(base::Hours(1));
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      // Since the reporting ID hash sent by the server doesn't match, fail the
+      // auction.
+      EXPECT_FALSE(result);
       break;
     }
   }
@@ -17432,8 +17542,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerAndGhostWinner) {
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
 
@@ -17628,8 +17737,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
 
@@ -17794,8 +17902,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
 
@@ -17962,8 +18069,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
 
@@ -18172,8 +18278,7 @@ function reportResult(auctionConfig, browserSignals) {}
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -18386,8 +18491,7 @@ function reportResult(auctionConfig, browserSignals) {}
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);
@@ -18591,8 +18695,7 @@ function reportResult(auctionConfig, browserSignals) {}
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
             runner->ResolvedAuctionAdResponsePromise(
                 blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
-                mojo_base::BigBuffer(
-                    base::as_bytes(base::make_span(encrypted_response))));
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
           }),
       main_rfh());
   ASSERT_TRUE(result);

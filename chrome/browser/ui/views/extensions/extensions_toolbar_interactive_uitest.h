@@ -116,7 +116,7 @@ class ExtensionsToolbarUITest : public DialogBrowserTest {
   void NavigateTo(const GURL& url);
 
   // Adds a a site access request for `extension` in `web_contents`.
-  void AddSiteAccessRequest(const extensions::Extension& extension,
+  void AddHostAccessRequest(const extensions::Extension& extension,
                             content::WebContents* web_contents);
 
   // Waits for the extensions container to animate (on pin, unpin, pop-out,

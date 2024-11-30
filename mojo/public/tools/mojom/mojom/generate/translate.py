@@ -542,12 +542,13 @@ def _LookupValue(module, parent_kind, implied_kind, ast_leaf_node):
   raise ValueError('Unknown identifier %s' % identifier)
 
 
-def _Kind(kinds, spec, scope):
+def _Kind(module, kinds, spec, scope):
   """Convert a type name into a mojom.Kind object.
 
   As a side-effect this function adds the result to 'kinds'.
 
   Args:
+    module: {mojom.Module} Module currently being constructed.
     kinds: {Dict[str, mojom.Kind]} All known kinds up to this point, indexed by
         their names.
     spec: {str} A name uniquely identifying a type.
@@ -563,22 +564,26 @@ def _Kind(kinds, spec, scope):
     return kind
 
   if spec.startswith('?'):
-    kind = _Kind(kinds, spec[1:], scope)
+    kind = _Kind(module, kinds, spec[1:], scope)
+    if not hasattr(kind, 'MakeNullableKind'):
+      raise Exception("Unknown spec: %s. Check for missing imports in %s" %
+                      (spec, module.path))
     kind = kind.MakeNullableKind()
   elif spec.startswith('a:'):
-    kind = mojom.Array(_Kind(kinds, spec[2:], scope))
+    kind = mojom.Array(_Kind(module, kinds, spec[2:], scope))
   elif spec.startswith('a'):
     colon = spec.find(':')
     length = int(spec[1:colon])
-    kind = mojom.Array(_Kind(kinds, spec[colon + 1:], scope), length)
+    kind = mojom.Array(_Kind(module, kinds, spec[colon + 1:], scope), length)
   elif spec.startswith('rmt:'):
-    kind = mojom.PendingRemote(_Kind(kinds, spec[4:], scope))
+    kind = mojom.PendingRemote(_Kind(module, kinds, spec[4:], scope))
   elif spec.startswith('rcv:'):
-    kind = mojom.PendingReceiver(_Kind(kinds, spec[4:], scope))
+    kind = mojom.PendingReceiver(_Kind(module, kinds, spec[4:], scope))
   elif spec.startswith('rma:'):
-    kind = mojom.PendingAssociatedRemote(_Kind(kinds, spec[4:], scope))
+    kind = mojom.PendingAssociatedRemote(_Kind(module, kinds, spec[4:], scope))
   elif spec.startswith('rca:'):
-    kind = mojom.PendingAssociatedReceiver(_Kind(kinds, spec[4:], scope))
+    kind = mojom.PendingAssociatedReceiver(_Kind(module, kinds, spec[4:],
+                                                 scope))
   elif spec.startswith('m['):
     # Isolate the two types from their brackets.
 
@@ -591,8 +596,8 @@ def _Kind(kinds, spec, scope):
     first_kind = spec[2:key_end]
     second_kind = spec[key_end + 2:-1]
 
-    kind = mojom.Map(
-        _Kind(kinds, first_kind, scope), _Kind(kinds, second_kind, scope))
+    kind = mojom.Map(_Kind(module, kinds, first_kind, scope),
+                     _Kind(module, kinds, second_kind, scope))
   else:
     kind = mojom.Kind(spec)
 
@@ -721,7 +726,7 @@ def _StructField(module, parsed_field, struct):
   """
   field = mojom.StructField()
   field.mojom_name = parsed_field.mojom_name.name
-  field.kind = _Kind(module.kinds, _MapKind(parsed_field.typename),
+  field.kind = _Kind(module, module.kinds, _MapKind(parsed_field.typename),
                      (module.mojom_namespace, struct.mojom_name))
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = _LookupValue(module, struct, field.kind,
@@ -746,7 +751,7 @@ def _UnionField(module, parsed_field, union):
   # Disallow unions from being self-recursive.
   parsed_typename = parsed_field.typename.identifier.id
   assert parsed_typename != union.mojom_name
-  field.kind = _Kind(module.kinds, _MapKind(parsed_field.typename),
+  field.kind = _Kind(module, module.kinds, _MapKind(parsed_field.typename),
                      (module.mojom_namespace, union.mojom_name))
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = None
@@ -772,7 +777,7 @@ def _Parameter(module, parsed_param, interface):
   """
   parameter = mojom.Parameter()
   parameter.mojom_name = parsed_param.mojom_name.name
-  parameter.kind = _Kind(module.kinds, _MapKind(parsed_param.typename),
+  parameter.kind = _Kind(module, module.kinds, _MapKind(parsed_param.typename),
                          (module.mojom_namespace, interface.mojom_name))
   parameter.ordinal = (parsed_param.ordinal.value
                        if parsed_param.ordinal else None)
@@ -987,7 +992,8 @@ def _Constant(module, parsed_const, parent_kind):
   else:
     scope = (module.mojom_namespace, )
   # TODO(mpcomplete): maybe we should only support POD kinds.
-  constant.kind = _Kind(module.kinds, _MapKind(parsed_const.typename), scope)
+  constant.kind = _Kind(module, module.kinds, _MapKind(parsed_const.typename),
+                        scope)
   constant.parent_kind = parent_kind
   constant.value = _LookupValue(module, parent_kind, constant.kind,
                                 parsed_const.value)
@@ -1029,7 +1035,8 @@ def _CollectReferencedKinds(module, all_defined_kinds):
   def sanitize_kind(kind):
     """Removes nullability from a kind"""
     if kind.spec.startswith('?'):
-      return _Kind(module.kinds, kind.spec[1:], (module.mojom_namespace, ''))
+      return _Kind(module, module.kinds, kind.spec[1:],
+                   (module.mojom_namespace, ''))
     return kind
 
   referenced_user_kinds = {}

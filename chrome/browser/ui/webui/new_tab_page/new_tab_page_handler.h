@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -80,24 +81,23 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           public PromoServiceObserver,
                           public optimization_guide::SettingsEnabledObserver {
  public:
-  NewTabPageHandler(
-      mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
-          pending_page_handler,
-      mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
-      Profile* profile,
-      NtpCustomBackgroundService* ntp_custom_background_service,
-      ThemeService* theme_service,
-      search_provider_logos::LogoService* logo_service,
-      syncer::SyncService* sync_service,
-      segmentation_platform::SegmentationPlatformService*
-          segmentation_platform_service,
-      content::WebContents* web_contents,
-      std::unique_ptr<NewTabPageFeaturePromoHelper>
-          customize_chrome_feature_promo_helper,
-      const base::Time& ntp_navigation_start_time,
-      const std::vector<std::pair<const std::string, int>>* module_id_names,
-      customize_chrome::SidePanelController*
-          customize_chrome_side_panel_controller);
+  NewTabPageHandler(mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
+                        pending_page_handler,
+                    mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
+                    Profile* profile,
+                    NtpCustomBackgroundService* ntp_custom_background_service,
+                    ThemeService* theme_service,
+                    search_provider_logos::LogoService* logo_service,
+                    syncer::SyncService* sync_service,
+                    segmentation_platform::SegmentationPlatformService*
+                        segmentation_platform_service,
+                    content::WebContents* web_contents,
+                    std::unique_ptr<NewTabPageFeaturePromoHelper>
+                        customize_chrome_feature_promo_helper,
+                    const base::Time& ntp_navigation_start_time,
+                    const std::vector<ntp::ModuleIdDetail>* module_id_details,
+                    customize_chrome::SidePanelController*
+                        customize_chrome_side_panel_controller);
 
   NewTabPageHandler(const NewTabPageHandler&) = delete;
   NewTabPageHandler& operator=(const NewTabPageHandler&) = delete;
@@ -270,8 +270,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<NewTabPageFeaturePromoHelper> feature_promo_helper_;
   base::Time ntp_navigation_start_time_;
-  raw_ptr<const std::vector<std::pair<const std::string, int>>>
-      module_id_names_;
+  raw_ptr<const std::vector<ntp::ModuleIdDetail>> module_id_details_;
   NTPUserDataLogger logger_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>

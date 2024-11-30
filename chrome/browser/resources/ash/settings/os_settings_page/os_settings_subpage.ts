@@ -29,7 +29,6 @@ import {listenOnce} from 'chrome://resources/js/util.js';
 import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
@@ -127,14 +126,6 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
         observer: 'onActiveChanged_',
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
       /**
        * Whether the subpage allows multiple cards or a single card.
        *
@@ -165,7 +156,6 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   private active_: boolean;
   private lastActiveValue_: boolean = false;
   private eventTracker_: EventTracker|null = null;
-  private readonly isRevampWayfindingEnabled_: boolean;
 
   constructor() {
     super();

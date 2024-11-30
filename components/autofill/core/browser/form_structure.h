@@ -131,6 +131,12 @@ class FormStructure {
   // crowd-sourcing server. It is not applied for Password Manager votes.
   bool ShouldBeUploaded() const;
 
+  // Returns whether the form is considered parseable and meets a couple of
+  // other requirements which makes uploading UKM data worthwhile. E.g. the
+  // form should not be a search form, the forms should have at least one
+  // focusable input field with a type from heuristics or the server.
+  bool ShouldUploadUkm(bool require_classified_field) const;
+
   // This enum defines the behavior of RetrieveFromCache, which needs to adapt
   // to the reason for retrieving data from the cache.
   enum class RetrieveFromCacheReason {
@@ -393,7 +399,11 @@ class FormStructure {
   FormAssociations form_associations() const { return form_associations_; }
 
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-  GetServerPredictions() const;
+  GetServerPredictions(const std::vector<FieldGlobalId>& field_ids) const;
+
+  base::flat_map<FieldGlobalId, FieldType> GetHeuristicPredictions(
+      HeuristicSource source,
+      const std::vector<FieldGlobalId>& field_ids) const;
 
  private:
   friend class FormStructureTestApi;

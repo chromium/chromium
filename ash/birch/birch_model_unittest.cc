@@ -728,7 +728,7 @@ TEST_F(BirchModelTest, EnableWeatherPrefDuringFetchCausesDataFetchRequest) {
 }
 
 // Regression test for missing attachment type check in IsDataFresh().
-TEST_F(BirchModelTest, IsDataFresh_Attachments) {
+TEST_F(BirchModelTest, IsDataFreshAttachments) {
   BirchModel* model = Shell::Get()->birch_model();
   ASSERT_FALSE(model->IsDataFresh());
 
@@ -1195,7 +1195,7 @@ TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
   histograms.ExpectBucketCount("Ash.Birch.ResultsReturned.ReleaseNotes", 1, 1);
 }
 
-TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
+TEST_F(BirchModelTest, GetItemsForDisplayEnoughTypes) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert two calendar items.
@@ -1242,7 +1242,7 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
   EXPECT_EQ(items[3]->GetType(), BirchItemType::kCalendar);
 }
 
-TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
+TEST_F(BirchModelTest, GetItemsForDisplayIncludesDuplicateTypes) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert 2 calendar events with high priority.
@@ -1285,7 +1285,7 @@ TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
   EXPECT_EQ(items[4]->GetType(), BirchItemType::kFile);
 }
 
-TEST_F(BirchModelTest, GetItemsForDisplay_TwoDuplicateTypes) {
+TEST_F(BirchModelTest, GetItemsForDisplayTwoDuplicateTypes) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert 2 items of the same type.
@@ -1315,7 +1315,7 @@ TEST_F(BirchModelTest, GetItemsForDisplay_TwoDuplicateTypes) {
   EXPECT_EQ(items[3]->GetType(), BirchItemType::kAttachment);
 }
 
-TEST_F(BirchModelTest, GetItemsForDisplay_NotEnoughItems) {
+TEST_F(BirchModelTest, GetItemsForDisplayNotEnoughItems) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert 3 items of the same type.
@@ -1338,7 +1338,7 @@ TEST_F(BirchModelTest, GetItemsForDisplay_NotEnoughItems) {
   EXPECT_EQ(items[2]->GetType(), BirchItemType::kCalendar);
 }
 
-TEST_F(BirchModelTest, GetItemsForDisplay_NotRankedItem) {
+TEST_F(BirchModelTest, GetItemsForDisplayNotRankedItem) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert 1 regular item and 1 item with no ranking.
@@ -1355,7 +1355,7 @@ TEST_F(BirchModelTest, GetItemsForDisplay_NotRankedItem) {
   EXPECT_EQ(items[0]->GetType(), BirchItemType::kCalendar);
 }
 
-TEST_F(BirchModelTest, GetItemsForDisplay_NoTitle) {
+TEST_F(BirchModelTest, GetItemsForDisplayNoTitle) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Add an item with an empty title.

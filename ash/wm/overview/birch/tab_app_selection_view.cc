@@ -195,7 +195,7 @@ class TabAppSelectionView::TabAppSelectionItemView
 
     switch (params.type) {
       case InitParams::Type::kTab: {
-        delegate->GetFaviconForUrl(params.identifier, /*lacros_profile_id=*/0,
+        delegate->GetFaviconForUrl(params.identifier,
                                    std::move(set_icon_image_callback),
                                    &cancelable_favicon_task_tracker_);
         return;

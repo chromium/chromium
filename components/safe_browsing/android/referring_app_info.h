@@ -9,14 +9,13 @@
 #include "url/gurl.h"
 
 namespace safe_browsing {
-
+namespace internal {
 struct ReferringAppInfo {
-  LoginReputationClientRequest::ReferringAppInfo::ReferringAppSource
-      referring_app_source;
+  safe_browsing::ReferringAppInfo::ReferringAppSource referring_app_source;
   std::string referring_app_name;
   GURL target_url;
 };
-
+}  // namespace internal
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_ANDROID_REFERRING_APP_INFO_H_

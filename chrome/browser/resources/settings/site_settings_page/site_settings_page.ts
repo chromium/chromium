@@ -368,6 +368,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       label: 'siteDataPageTitle',
       icon: 'privacy:database',
     },
+    // <if expr="is_chromeos">
     {
       route: routes.SITE_SETTINGS_SMART_CARD_READERS,
       id: Id.SMART_CARD_READERS,
@@ -378,6 +379,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       shouldShow: () =>
           loadTimeData.getBoolean('enableSmartCardReadersContentSetting'),
     },
+    // </if>
     {
       route: routes.SITE_SETTINGS_SOUND,
       id: Id.SOUND,
@@ -443,23 +445,13 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       label: 'siteSettingsZoomLevels',
       icon: 'privacy:zoom-in',
     },
-  ];
-  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled') &&
-      loadTimeData.getBoolean('isTrackingProtectionUxEnabled')) {
-    categoryList.push({
-      route: routes.TRACKING_PROTECTION,
-      id: Id.COOKIES,
-      label: 'trackingProtectionLinkRowLabel',
-      icon: 'settings:visibility-off',
-    });
-  } else {
-    categoryList.push({
+    {
       route: routes.COOKIES,
       id: Id.COOKIES,
       label: 'thirdPartyCookiesLinkRowLabel',
       icon: 'privacy:cookie',
-    });
-  }
+    },
+  ];
   categoryItemMap = new Map(categoryList.map(item => [item.id, item]));
   return categoryItemMap;
 }
@@ -542,7 +534,9 @@ export class SettingsSiteSettingsPageElement extends
               Id.CAPTURED_SURFACE_CONTROL,
               Id.KEYBOARD_LOCK,
               Id.POINTER_LOCK,
+              // <if expr="is_chromeos">
               Id.SMART_CARD_READERS,
+              // </if>
               Id.WEB_APP_INSTALLATION,
             ]),
             contentBasic: buildItemListFromIds([
@@ -584,14 +578,6 @@ export class SettingsSiteSettingsPageElement extends
         value: false,
       },
 
-      unusedSitePermissionsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'safetyCheckUnusedSitePermissionsEnabled');
-        },
-      },
-
       safetyHubAbusiveNotificationRevocationEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean(
@@ -629,7 +615,6 @@ export class SettingsSiteSettingsPageElement extends
   private contentExpanded_: boolean;
   private noRecentSitePermissions_: boolean;
   private showUnusedSitePermissions_: boolean;
-  private unusedSitePermissionsEnabled_: boolean;
   private safetyHubAbusiveNotificationRevocationEnabled_: boolean;
   private unusedSitePermissionsHeader_: string;
   private unusedSitePermissionsSubheader_: string;
@@ -683,8 +668,6 @@ export class SettingsSiteSettingsPageElement extends
     }
 
     this.showUnusedSitePermissions_ =
-        (this.unusedSitePermissionsEnabled_ ||
-         this.safetyHubAbusiveNotificationRevocationEnabled_) &&
         permissions.length > 0 && !loadTimeData.getBoolean('isGuest');
     this.unusedSitePermissionsHeader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(

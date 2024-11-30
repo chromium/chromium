@@ -316,8 +316,6 @@ struct PolicyTestParam {
   const std::string key;
   const std::string value;  // As JSON string, base::Value is not copy-friendly.
   const bool should_open_fre = false;
-  // This param is only effective with BrowserSignin = 2.
-  const bool with_force_signin_in_profile_picker = false;
 };
 
 const PolicyTestParam kPolicyTestParams[] = {
@@ -326,12 +324,7 @@ const PolicyTestParam kPolicyTestParams[] = {
     {.key = policy::key::kBrowserSignin, .value = "0"},
     {.key = policy::key::kBrowserSignin, .value = "1", .should_open_fre = true},
 #if !BUILDFLAG(IS_LINUX)
-    {.key = policy::key::kBrowserSignin,
-     .value = "2",
-     .with_force_signin_in_profile_picker = false},
-    {.key = policy::key::kBrowserSignin,
-     .value = "2",
-     .with_force_signin_in_profile_picker = true},
+    {.key = policy::key::kBrowserSignin, .value = "2"},
 #endif  // BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     {.key = policy::key::kPromotionalTabsEnabled, .value = "false"},
@@ -340,27 +333,13 @@ const PolicyTestParam kPolicyTestParams[] = {
 std::string PolicyParamToTestSuffix(
     const ::testing::TestParamInfo<PolicyTestParam>& info) {
   std::string force_signin_profile_picker_feature;
-  return info.param.key + "_" + info.param.value +
-         (info.param.with_force_signin_in_profile_picker
-              ? "_WithForceSigninInProfilePicker"
-              : "");
+  return info.param.key + "_" + info.param.value;
 }
 
 class FirstRunServicePolicyBrowserTest
     : public FirstRunServiceBrowserTest,
       public testing::WithParamInterface<PolicyTestParam> {
  public:
-  FirstRunServicePolicyBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam().with_force_signin_in_profile_picker) {
-      enabled_features.push_back(kForceSigninFlowInProfilePicker);
-    } else {
-      disabled_features.push_back(kForceSigninFlowInProfilePicker);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     FirstRunServiceBrowserTest::SetUpInProcessBrowserTestFixture();
     policy_provider_.SetDefaultReturns(
@@ -398,12 +377,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
 
   signin_util::ResetForceSigninForTesting();
   SetPolicy(GetParam().key, GetParam().value);
-
-  if (GetParam().with_force_signin_in_profile_picker) {
-    // `with_force_signin_in_profile_picker` should not be set if force signin
-    // is not enabled.
-    ASSERT_TRUE(signin_util::IsForceSigninEnabled());
-  }
 
   // The attempt to run the FRE should not be blocked
   EXPECT_TRUE(ShouldOpenFirstRun(browser()->profile()));
@@ -448,8 +421,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
   //
   // If force sign in is active and through the profile picker, the profile
   // finalisation is not expected to happen, so the default name should remain.
-  if (!GetParam().should_open_fre &&
-      !GetParam().with_force_signin_in_profile_picker) {
+  if (!GetParam().should_open_fre && !signin_util::IsForceSigninEnabled()) {
     expected_profile_name = l10n_util::GetStringUTF16(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
   }

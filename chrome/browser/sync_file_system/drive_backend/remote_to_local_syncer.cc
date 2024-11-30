@@ -104,7 +104,7 @@ RemoteToLocalSyncer::RemoteToLocalSyncer(SyncEngineContext* sync_context)
       prepared_(false),
       sync_root_deletion_(false) {}
 
-RemoteToLocalSyncer::~RemoteToLocalSyncer() {}
+RemoteToLocalSyncer::~RemoteToLocalSyncer() = default;
 
 void RemoteToLocalSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
   token->InitializeTaskLog("Remote -> Local");

@@ -52,7 +52,9 @@ void MigrateCertsOnBackgroundThread(
     cert_info.cert_metadata.mutable_trust()->set_trust_type(
         MapTrust(cert_to_migrate.trust));
 
-    bool ok = server_cert_database->InsertOrUpdateCert(cert_info);
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+    cert_infos.push_back(std::move(cert_info));
+    bool ok = server_cert_database->InsertOrUpdateCerts(cert_infos);
     if (!ok) {
       result.error_count++;
       LOG(ERROR) << "error importing cert " << cert_info.sha256hash_hex;

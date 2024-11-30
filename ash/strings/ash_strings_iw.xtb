@@ -1568,7 +1568,7 @@
 <translation id="6237231532760393653">‎1X‎</translation>
 <translation id="6240551054644725950">הסיסמה חייבת להכיל תווים תקפים בלבד</translation>
 <translation id="6240603910551255087">הלחצן העליון</translation>
-<translation id="6240821072888636753">יש לשאול בכל פעם</translation>
+<translation id="6240821072888636753">לשאול בכל פעם</translation>
 <translation id="6247728804802644171">פתיחת ההתראות</translation>
 <translation id="6249795363855770621">לא ניתן לסמן כ'הושלמה'. אפשר לנסות שוב כשיהיה חיבור לאינטרנט.</translation>
 <translation id="6254629735336163724">נעול במצב אופקי</translation>
@@ -2126,6 +2126,7 @@
 <translation id="8142699993796781067">רשת פרטית</translation>
 <translation id="8144760705599030999">שמירה של <ph name="NAME" /> בחשבון <ph name="EMAIL" /> מאפשרת התאמה מהירה יותר למכשירים אחרים</translation>
 <translation id="8144914663975476336">בחירת הפורמט להקלטה</translation>
+<translation id="8145272500474066209">בינה מלאכותית גנרטיבית עלולה לטעות, גם לגבי אנשים, אז כדאי לבדוק היטב את התשובות. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">‏צפייה בהגדרות Bluetooth‏. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">‏כדי לסגור, יש להקיש על Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, השלמה אוטומטית</translation>

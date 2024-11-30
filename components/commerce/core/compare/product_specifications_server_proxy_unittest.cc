@@ -53,7 +53,8 @@ const std::string kSimpleResponse = R"(
                     "url": "http://example.com/circle/",
                     "title": "Circles",
                     "faviconUrl": "http://example.com/favicon.png",
-                    "thumbnailImageUrl": "http://example.com/thumbnail.png"
+                    "thumbnailImageUrl": "http://example.com/thumbnail.png",
+                    "text": "Summary of page content"
                   }
                 ]
               }
@@ -193,6 +194,8 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
                           .urls[0]
                           .thumbnail_url.value()
                           .spec());
+            ASSERT_EQ("Summary of page content",
+                      spec->products[0].summary[0].urls[0].previewText.value());
             ASSERT_EQ(u"Circles", spec->products[0].summary[0].urls[0].title);
 
             const ProductSpecifications::Description& color_desc =

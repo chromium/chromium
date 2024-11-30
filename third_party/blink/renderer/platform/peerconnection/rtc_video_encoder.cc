@@ -52,6 +52,7 @@
 #include "media/parsers/h264_parser.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator.h"
+#include "media/webrtc/webrtc_features.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -543,6 +544,20 @@ bool CreateSpatialLayersConfig(
       return SetLayerConfigForTemporalScalability(
           codec_settings, *spatial_layers, number_of_temporal_layers);
     }
+#if BUILDFLAG(RTC_USE_H265)
+    case webrtc::kVideoCodecH265: {
+      int number_of_temporal_layers = 1;
+      if (!IsValidTemporalSVC(scalability_mode, number_of_temporal_layers) ||
+          (number_of_temporal_layers == 2 &&
+           !base::FeatureList::IsEnabled(::features::kWebRtcH265L1T2)) ||
+          (number_of_temporal_layers == 3 &&
+           !base::FeatureList::IsEnabled(::features::kWebRtcH265L1T3))) {
+        return false;
+      }
+      return SetLayerConfigForTemporalScalability(
+          codec_settings, *spatial_layers, number_of_temporal_layers);
+    }
+#endif  // BUILDFLAG(RTC_USE_H265)
     default:
       break;
   }
@@ -1036,7 +1051,11 @@ RTCVideoEncoder::Impl::Impl(
       std::make_unique<EncodedBufferReferenceHolder>(weak_this_);
   weak_this_for_client = weak_this_;
   if (scalability_mode_.has_value() &&
-      video_codec_type == webrtc::kVideoCodecAV1) {
+      (
+#if BUILDFLAG(RTC_USE_H265)
+          video_codec_type == webrtc::kVideoCodecH265 ||
+#endif
+          video_codec_type == webrtc::kVideoCodecAV1)) {
     svc_controller_ =
         webrtc::CreateScalabilityStructure(scalability_mode.value());
     if (!svc_controller_) {
@@ -1456,21 +1475,28 @@ void RTCVideoEncoder::Impl::FillGenericFrameInfo(
     const media::BitstreamBufferMetadata& metadata) {
   CHECK(svc_controller_);
   CHECK(metadata.svc_generic.has_value());
+
   const media::SVCGenericMetadata& md_generic = metadata.svc_generic.value();
+  // Some codecs, like H.265, may produce output bitstream that does not follow
+  // SVC spec and there is no parsing on the bitstream to get the reference
+  // structure. For them, we don't fill in generic frame info, which will be
+  // used to create dependency descriptor.
+  if (!md_generic.follow_svc_spec &&
+      (!md_generic.reference_flags || !md_generic.refresh_flags)) {
+    return;
+  }
+
   std::vector<webrtc::ScalableVideoController::LayerFrameConfig> layer_frames =
       svc_controller_->NextFrameConfig(metadata.key_frame);
   CHECK_EQ(layer_frames.size(), 1ull /*num_of_spatial_layers*/);
   CHECK_EQ(layer_frames[0].TemporalId(), md_generic.temporal_idx);
+
   webrtc::GenericFrameInfo generic =
       svc_controller_->OnEncodeDone(layer_frames[0]);
 
   // If VEA doesn't follow the SVC spec, we need to check whether
   // the reference dependency is allowed.
   if (!md_generic.follow_svc_spec) {
-    if (!md_generic.reference_flags || !md_generic.refresh_flags) {
-      DLOG(ERROR) << "Missing reference flags or refresh flags";
-      return;
-    }
     if (*md_generic.refresh_flags >= 1 << webrtc::kMaxEncoderBuffers) {
       DLOG(ERROR) << "Invalid refreshed encode buffer flags: "
                   << *md_generic.refresh_flags;
@@ -1848,6 +1874,13 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         FillGenericFrameInfo(info, metadata);
       }
       break;
+#if BUILDFLAG(RTC_USE_H265)
+    case webrtc::kVideoCodecH265:
+      if (metadata.svc_generic) {
+        FillGenericFrameInfo(info, metadata);
+      }
+      break;
+#endif  // BUILDFLAG(RTC_USE_H265)
     default:
       break;
   }
@@ -2482,8 +2515,12 @@ int32_t RTCVideoEncoder::InitEncode(
     return initialization_error_message;
   }
 
-  // Fallback to SW if VEA does not support VP9/AV1 SVC encoding.
+  // Fallback to SW if VEA does not support VP9/AV1 SVC encoding. For H.265,
+  // this will fail the initialization as there is no fallback.
   if ((codec_settings_.codecType == webrtc::kVideoCodecVP9 ||
+#if BUILDFLAG(RTC_USE_H265)
+       codec_settings_.codecType == webrtc::kVideoCodecH265 ||
+#endif
        codec_settings_.codecType == webrtc::kVideoCodecAV1) &&
       !!spatial_layers.size()) {
     const auto vea_supported_profiles =
@@ -2540,7 +2577,7 @@ int32_t RTCVideoEncoder::InitEncode(
                      vea_profile.min_resolution.height();
         });
 
-    if (!vea_supported_profiles.empty() && it == vea_supported_profiles.end()) {
+    if (vea_supported_profiles.empty() || it == vea_supported_profiles.end()) {
       LOG(ERROR) << "Requested dimensions (" << input_visible_size.ToString()
                  << ") beyond accelerator limits.";
       return initialization_error_message;

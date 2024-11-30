@@ -33,6 +33,7 @@
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -149,7 +150,16 @@ WebUIDataSourceImpl::WebUIDataSourceImpl(const std::string& source_name)
     : URLDataSourceImpl(source_name,
                         std::make_unique<InternalDataSource>(this)),
       source_name_(source_name),
-      default_resource_(kNonExistentResource) {}
+      default_resource_(kNonExistentResource) {
+  // |source_name| is assumed to match one of the following patterns:
+  //
+  // some-host
+  // chrome-untrusted://some-host/
+  // some-scheme://
+  //
+  // Source names of the form "some-scheme://" are explicitly disallowed.
+  CHECK(!source_name.ends_with("://"));
+}
 
 WebUIDataSourceImpl::~WebUIDataSourceImpl() = default;
 
@@ -297,12 +307,28 @@ std::string WebUIDataSourceImpl::GetSource() {
   return source_name_;
 }
 
-std::string WebUIDataSourceImpl::GetScheme() {
-  auto pos = source_name_.find("://");
-  if (pos == std::string::npos) {
-    return kChromeUIScheme;
+url::Origin WebUIDataSourceImpl::GetOrigin() {
+  // |source_name_| is assumed to match one of the following patterns:
+  //
+  // some-host
+  // chrome-untrusted://some-host/
+  //
+  // so we use the GURL parser to differentiate the two cases.
+  url::Origin result;
+  GURL url(source_name_);
+  if (url.is_valid()) {
+    // |source_name_| must be of the form "chrome-untrusted://some-host/",
+    // which means it serves URLs of the form "chrome-untrusted://some-host/".
+    CHECK(url.SchemeIs(kChromeUIUntrustedScheme));
+    result = url::Origin::Create(url);
+  } else {
+    // |source_name_| must be of the form "some-host", which means it serves
+    // URLs of the form "chrome://some-host/".
+    result = url::Origin::CreateFromNormalizedTuple(kChromeUIScheme,
+                                                    source_name_, 0);
   }
-  return source_name_.substr(0, pos);
+  CHECK(!result.opaque());
+  return result;
 }
 
 void WebUIDataSourceImpl::SetSupportedScheme(std::string_view scheme) {

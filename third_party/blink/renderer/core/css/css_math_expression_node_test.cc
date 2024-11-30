@@ -103,7 +103,7 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
       *style, style, style, CSSToLengthConversionData::ViewportSize(nullptr),
       CSSToLengthConversionData::ContainerSizes(),
       CSSToLengthConversionData::AnchorData(), style->EffectiveZoom(),
-      ignored_flags);
+      ignored_flags, /*element=*/nullptr);
 
   TestAccumulatePixelsAndPercent(
       conversion_data,
@@ -373,7 +373,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctions) {
         CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
-    CSSToLengthConversionData resolver{};
+    CSSToLengthConversionData resolver{/*element=*/nullptr};
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -398,7 +398,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctionsToCalculationExpression) {
             10, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
         kCalcNumber, std::move(operands), test_case.op);
-    CSSToLengthConversionData resolver{};
+    CSSToLengthConversionData resolver{/*element=*/nullptr};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -445,7 +445,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctions) {
         CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
-    CSSToLengthConversionData resolver;
+    CSSToLengthConversionData resolver{/*element=*/nullptr};
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -490,7 +490,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsToCalculationExpression) {
             4.0f, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
         kCalcNumber, std::move(operands), test_case.op);
-    CSSToLengthConversionData resolver{};
+    CSSToLengthConversionData resolver{/*element=*/nullptr};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -507,7 +507,8 @@ TEST(CSSMathExpressionNode, IdentifierLiteralConversion) {
   EXPECT_EQ(css_node->Category(), kCalcIdent);
   EXPECT_EQ(css_node->GetValue(), AtomicString("test"));
   scoped_refptr<const CalculationExpressionNode> calc_node =
-      css_node->ToCalculationExpression(CSSToLengthConversionData());
+      css_node->ToCalculationExpression(
+          CSSToLengthConversionData(/*element=*/nullptr));
   EXPECT_TRUE(calc_node->IsIdentifier());
   EXPECT_EQ(To<CalculationExpressionIdentifierNode>(*calc_node).Value(),
             AtomicString("test"));
@@ -526,7 +527,8 @@ TEST(CSSMathExpressionNode, ColorChannelKeywordConversion) {
   EXPECT_EQ(css_node->Category(), kCalcNumber);
   EXPECT_EQ(css_node->GetValue(), CSSValueID::kAlpha);
   scoped_refptr<const CalculationExpressionNode> calc_node =
-      css_node->ToCalculationExpression(CSSToLengthConversionData());
+      css_node->ToCalculationExpression(
+          CSSToLengthConversionData(/*element=*/nullptr));
   EXPECT_TRUE(calc_node->IsColorChannelKeyword());
   EXPECT_EQ(
       To<CalculationExpressionColorChannelKeywordNode>(*calc_node).Value(),
@@ -555,7 +557,7 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
         CSSValueID::kCalc, stream, *context, Flags({Flag::AllowPercent}),
         kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
-    CSSToLengthConversionData resolver;
+    CSSToLengthConversionData resolver(/*element=*/nullptr);
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
@@ -579,7 +581,7 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
         kCSSAnchorQueryTypesNone);
     EXPECT_TRUE(res);
     EXPECT_TRUE(res->IsOperation());
-    CSSToLengthConversionData resolver;
+    CSSToLengthConversionData resolver(/*element=*/nullptr);
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     // Very close to 0.0f, but not exactly 0.0f for unknown reason.
@@ -629,7 +631,8 @@ TEST(CSSMathExpressionNode, TestFunctionsWithNumberReturn) {
     EXPECT_EQ(css_node->Category(), test_case.category);
     EXPECT_TRUE(css_node->IsOperation());
     scoped_refptr<const CalculationExpressionNode> calc_node =
-        css_node->ToCalculationExpression(CSSToLengthConversionData());
+        css_node->ToCalculationExpression(
+            CSSToLengthConversionData(/*element=*/nullptr));
     EXPECT_TRUE(calc_node->IsOperation());
     EXPECT_EQ(calc_node->Evaluate(100.0, {}), test_case.output);
     css_node = CSSMathExpressionNode::Create(*calc_node);
@@ -664,7 +667,8 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithSubstitution) {
     EXPECT_EQ(css_node->Category(), test_case.category);
     EXPECT_TRUE(css_node->IsNumericLiteral());
     scoped_refptr<const CalculationExpressionNode> calc_node =
-        css_node->ToCalculationExpression(CSSToLengthConversionData());
+        css_node->ToCalculationExpression(
+            CSSToLengthConversionData(/*element=*/nullptr));
     EXPECT_TRUE(calc_node->IsNumber());
     EXPECT_EQ(calc_node->Evaluate(FLT_MAX, {}), test_case.output);
   }
@@ -727,7 +731,7 @@ TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
   EXPECT_EQ(keyword->GetContext(),
             CSSMathExpressionKeywordLiteral::Context::kColorChannel);
 
-  CSSToLengthConversionData resolver{};
+  CSSToLengthConversionData resolver{/*element=*/nullptr};
   scoped_refptr<const CalculationExpressionNode> node =
       css_node->ToCalculationExpression(resolver);
   EXPECT_TRUE(node->IsOperation());

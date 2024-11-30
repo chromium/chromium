@@ -259,8 +259,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The DOMContentLoaded handler in the frame has completed.
   virtual void DOMContentLoaded(RenderFrameHostImpl* render_frame_host) {}
 
-  // The onload handler in the frame has completed. Only called for the top-
-  // level frame.
+  // The onload handler in the frame has completed. Only called for the main
+  // frames.
   virtual void DocumentOnLoadCompleted(RenderFrameHostImpl* render_frame_host) {
   }
 
@@ -642,6 +642,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnSharedDictionaryAccessed(
       RenderFrameHostImpl* render_frame_host,
       const network::mojom::SharedDictionaryAccessDetails& details) {}
+  virtual void OnDeviceBoundSessionAccessed(
+      RenderFrameHostImpl* render_frame_host,
+      const net::device_bound_sessions::SessionKey& session) {}
 
   virtual void NotifyStorageAccessed(
       RenderFrameHostImpl* render_frame_host,
@@ -710,8 +713,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                   bool is_hung) {}
 #endif
 
-  // The load progress for the primary main frame was changed.
-  virtual void DidChangeLoadProgressForPrimaryMainFrame() {}
+  // The load progress for the main frame was changed.
+  virtual void DidChangeLoadProgressForMainFrame(RenderFrameHostImpl* source) {}
 
   // Document load in |render_frame_host| failed.
   virtual void DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,

@@ -168,4 +168,12 @@
   <message name="IDS_FACEGAZE_STATE_DICTATION_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that dictation is currently active, that other gestures cannot currently be triggered, and how to stop Dictation.">
     Dictation active. <ph name="gesture">$1<ex>Smile</ex></ph> to stop. Other gestures temporarily unavailable.
   </message>
+  <!-- TODO(crbug.com/376478655): Update string after it's finalized by UX writing. -->
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_PRECISION_ON" desc="This text describes an action to start precision click." translateable="false">
+    Start precision click
+  </message>
+  <!-- TODO(crbug.com/376478655): Update string after it's finalized by UX writing. -->
+  <message name="IDS_FACEGAZE_STATE_PRECISION_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that precision click is currently active." translateable="false">
+    Precision click active, mouse speed reduced
+  </message>
 </grit-part>

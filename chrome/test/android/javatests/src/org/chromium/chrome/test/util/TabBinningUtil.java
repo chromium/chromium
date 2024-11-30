@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.util;
 
+import org.junit.Assert;
+
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -21,6 +23,21 @@ import java.util.Set;
 
 /** Utility class for binning tabs into groups for testing purposes. */
 public class TabBinningUtil {
+
+    /** Return the expected tab group card position in the tab switcher. */
+    public static int getBinIndex(TabModel currentModel, List<Integer> tabIdsInGroup) {
+        Integer firstTabId = tabIdsInGroup.get(0);
+        return getBinIndex(currentModel, firstTabId);
+    }
+
+    /** Return the expected tab card or tab group card position in the tab switcher. */
+    public static int getBinIndex(TabModel currentModel, Integer tabId) {
+        TabBinList tabBinList = TabBinningUtil.binTabsByCard(currentModel);
+        TabBinPosition tabPosition = tabBinList.tabIdToPositionMap.get(tabId);
+
+        assert tabPosition != null;
+        return tabPosition.cardIndexInTabSwitcher;
+    }
 
     /** Places tabs into bins representing how they are grouped in the Tab Switcher. */
     public static TabBinList binTabsByCard(TabModel tabModel) {
@@ -84,5 +101,41 @@ public class TabBinningUtil {
             binIndex++;
         }
         return map;
+    }
+
+    /** Asserts the |tabModel| gets binned into the |expectedBins|. */
+    public static void assertBinsEqual(TabModel tabModel, Object... expectedBins) {
+        String binSeparator = "";
+        StringBuilder sb = new StringBuilder("{");
+        for (Object expectedBin : expectedBins) {
+            sb.append(binSeparator);
+            binSeparator = ", ";
+            if (expectedBin instanceof Integer tabId) {
+                sb.append(tabId);
+            } else if (expectedBin instanceof List<?> list) {
+                List<Integer> tabIdsInGroup = (List<Integer>) list;
+                sb.append("[");
+                String separator = "";
+                for (Integer tabId : tabIdsInGroup) {
+                    sb.append(separator);
+                    separator = ", ";
+                    sb.append(tabId);
+                }
+                sb.append("]");
+            } else {
+                sb.append("-");
+            }
+        }
+        sb.append("}");
+        String expectedString = sb.toString();
+
+        TabBinList actual = TabBinningUtil.binTabsByCard(tabModel);
+
+        Assert.assertEquals(expectedString, actual.getTabIdsAsString());
+    }
+
+    /** Create a group for |assertBinsEqual|. */
+    public static List<Integer> group(Integer... tabIds) {
+        return List.of(tabIds);
     }
 }

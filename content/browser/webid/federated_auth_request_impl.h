@@ -227,6 +227,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     return idps_user_tried_to_signin_to_.contains(idp_config_url);
   }
 
+  FedCmUseOtherAccountResult ComputeUseOtherAccountResult(
+      blink::mojom::FederatedAuthRequestResult result,
+      const std::optional<GURL>& selected_idp_config_url);
+
  private:
   friend class FederatedAuthRequestImplTest;
 
@@ -617,6 +621,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // such that the previous user gesture is expired. Therefore we store the
   // information to use it during the entire the active flow.
   bool had_transient_user_activation_{false};
+
+  // Keeps track of the state of the use other account flow. Is std::nullopt
+  // when the flow is not active.
+  std::optional<FedCmUseOtherAccountResult> use_other_account_account_result_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };

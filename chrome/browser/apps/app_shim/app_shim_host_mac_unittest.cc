@@ -142,7 +142,7 @@ class AppShimHostTest : public testing::Test,
   }
   AppShimHostTest(const AppShimHostTest&) = delete;
   AppShimHostTest& operator=(const AppShimHostTest&) = delete;
-  ~AppShimHostTest() override {}
+  ~AppShimHostTest() override = default;
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
   scoped_refptr<base::SingleThreadTaskRunner> task_runner() {

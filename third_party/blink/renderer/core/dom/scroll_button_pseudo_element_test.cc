@@ -40,7 +40,7 @@ TEST_F(ScrollButtonPseudoElementTest, ScrollButtonsRetainFocus) {
     height: 20px;
     width: 40px;
   }
-  #scroller::scroll-next-button {
+  #scroller::scroll-button(right) {
     content: ">";
     background: blue;
     display: flex;
@@ -70,7 +70,7 @@ TEST_F(ScrollButtonPseudoElementTest, ScrollButtonsRetainFocus) {
   Element* body = GetDocument().body();
   Element* scroller = body->QuerySelector(AtomicString("#scroller"));
   auto* scroll_button = To<ScrollButtonPseudoElement>(
-      scroller->GetPseudoElement(kPseudoIdScrollNextButton));
+      scroller->GetPseudoElement(kPseudoIdScrollRightButton));
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
   auto* mouse_event = MakeGarbageCollected<MouseEvent>(event_type_names::kClick,
                                                        &mouse_event_init);

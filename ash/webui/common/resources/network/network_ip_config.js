@@ -12,12 +12,12 @@ import '//resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import './network_property_list_mojo.js';
 import './network_shared.css.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {IPConfigProperties, ManagedProperties, NO_ROUTING_PREFIX} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {IPConfigType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
 import {getTemplate} from './network_ip_config.html.js';
 import {OncMojo} from './onc_mojo.js';
 
@@ -103,83 +103,104 @@ const getRoutingPrefixAsLength = function(netmask) {
   return prefixLength;
 };
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-ip-config',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {CrPolicyNetworkBehaviorMojoInterface}
+ */
+const NetworkIpConfigElementBase =
+    mixinBehaviors([I18nBehavior, CrPolicyNetworkBehaviorMojo], PolymerElement);
 
-  behaviors: [I18nBehavior, CrPolicyNetworkBehaviorMojo],
+/** @polymer */
+class NetworkIpConfigElement extends NetworkIpConfigElementBase {
+  static get is() {
+    return 'network-ip-config';
+  }
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /** @type {!ManagedProperties|undefined} */
-    managedProperties: {
-      type: Object,
-      observer: 'managedPropertiesChanged_',
-    },
-
-    /**
-     * State of 'Configure IP Addresses Automatically'.
-     * @private
-     */
-    automatic_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * The currently visible IP Config property dictionary.
-     * @private {{
-     *   ipv4: (OncMojo.IPConfigUIProperties|undefined),
-     *   ipv6: (OncMojo.IPConfigUIProperties|undefined)
-     * }|undefined}
-     */
-    ipConfig_: Object,
-
-    /**
-     * Array of properties to pass to the property list.
-     * @private {!Array<string>}
-     */
-    ipConfigFields_: {
-      type: Array,
-      value() {
-        return [
-          'ipv4.ipAddress',
-          'ipv4.netmask',
-          'ipv4.gateway',
-          'ipv6.ipAddress',
-        ];
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        value: false,
       },
-      readOnly: true,
-    },
+
+      /** @type {!ManagedProperties|undefined} */
+      managedProperties: {
+        type: Object,
+        observer: 'managedPropertiesChanged_',
+      },
+
+      /**
+       * State of 'Configure IP Addresses Automatically'.
+       * @private
+       */
+      automatic_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * The currently visible IP Config property dictionary.
+       * @private {{
+       *   ipv4: (OncMojo.IPConfigUIProperties|undefined),
+       *   ipv6: (OncMojo.IPConfigUIProperties|undefined)
+       * }|undefined}
+       */
+      ipConfig_: Object,
+
+      /**
+       * Array of properties to pass to the property list.
+       * @private {!Array<string>}
+       */
+      ipConfigFields_: {
+        type: Array,
+        value() {
+          return [
+            'ipv4.ipAddress',
+            'ipv4.netmask',
+            'ipv4.gateway',
+            'ipv6.ipAddress',
+          ];
+        },
+        readOnly: true,
+      },
+
+      /**
+       * True if automatically-configured IP address toggle should be visible.
+       * @private
+       */
+      shouldShowAutoIpConfigToggle_: {
+        type: Boolean,
+        value: true,
+        computed: 'computeShouldShowAutoIpConfigToggle_(managedProperties)',
+      },
+    };
+  }
+
+  /** @override */
+  constructor() {
+    super();
 
     /**
-     * True if automatically-configured IP address toggle should be visible.
-     * @private
+     * Saved static IP configuration properties when switching to 'automatic'.
+     * @private {!OncMojo.IPConfigUIProperties|undefined}
      */
-    shouldShowAutoIpConfigToggle_: {
-      type: Boolean,
-      value: true,
-      computed: 'computeShouldShowAutoIpConfigToggle_(managedProperties)',
-    },
-  },
+    this.savedStaticIp_ = undefined;
+  }
 
   /**
    * Returns the automatically configure IP CrToggleElement.
    * @return {?CrToggleElement}
    */
   getAutoConfigIpToggle() {
-    return /** @type {?CrToggleElement} */ (this.$$('#autoConfigIpToggle'));
-  },
-
-  /**
-   * Saved static IP configuration properties when switching to 'automatic'.
-   * @private {!OncMojo.IPConfigUIProperties|undefined}
-   */
-  savedStaticIp_: undefined,
+    return /** @type {?CrToggleElement} */ (
+        this.shadowRoot.querySelector('#autoConfigIpToggle'));
+  }
 
   /** @private */
   managedPropertiesChanged_(newValue, oldValue) {
@@ -218,7 +239,7 @@ Polymer({
     } else {
       this.ipConfig_ = undefined;
     }
-  },
+  }
 
   /**
    * Checks whether IP address config type can be changed.
@@ -236,7 +257,7 @@ Polymer({
     }
     const ipConfigType = managedProperties.ipAddressConfigType;
     return !ipConfigType || !this.isNetworkPolicyEnforced(ipConfigType);
-  },
+  }
 
   /**
    * Overrides null values of this.ipConfig_.ipv4 with defaults so that
@@ -259,7 +280,7 @@ Polymer({
     if (!this.ipConfig_.ipv4.netmask) {
       this.set('ipConfig_.ipv4.netmask', '255.255.255.0');
     }
-  },
+  }
 
   /** @private */
   onAutomaticChange_() {
@@ -284,11 +305,12 @@ Polymer({
     if (this.ipConfig_) {
       this.savedStaticIp_ = this.ipConfig_.ipv4;
     }
-    this.fire('ip-change', {
-      field: 'ipAddressConfigType',
-      value: 'DHCP',
-    });
-  },
+    this.dispatchEvent(new CustomEvent('ip-change', {
+      bubbles: true,
+      composed: true,
+      detail: {field: 'ipAddressConfigType', value: 'DHCP'}
+    }));
+  }
 
   /**
    * @param {!IPConfigProperties|undefined}
@@ -317,7 +339,7 @@ Polymer({
     }
 
     return ipconfigUI;
-  },
+  }
 
   /**
    * @param {!OncMojo.IPConfigUIProperties} ipconfigUI
@@ -336,7 +358,7 @@ Polymer({
     ipconfig.webProxyAutoDiscoveryUrl = ipconfigUI.webProxyAutoDiscoveryUrl;
 
     return ipconfig;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -354,7 +376,7 @@ Polymer({
       }
     }
     return false;
-  },
+  }
 
   /**
    * @param {?OncMojo.ManagedProperty|undefined} property
@@ -363,7 +385,7 @@ Polymer({
    */
   getIPFieldEditType_(property) {
     return this.isNetworkPolicyEnforced(property) ? undefined : 'String';
-  },
+  }
 
   /**
    * @return {Object} An object with the edit type for each editable field.
@@ -383,7 +405,7 @@ Polymer({
       'ipv4.netmask': this.getIPFieldEditType_(staticIpConfig.routingPrefix),
       'ipv4.gateway': this.getIPFieldEditType_(staticIpConfig.gateway),
     };
-  },
+  }
 
   /**
    * Event triggered when the network property list changes.
@@ -400,18 +422,22 @@ Polymer({
     // Note: |field| includes the 'ipv4.' prefix.
     this.set('ipConfig_.' + field, value);
     this.sendStaticIpConfig_();
-  },
+  }
 
   /** @private */
   sendStaticIpConfig_() {
     // This will also set IPAddressConfigType to STATIC.
-    this.fire('ip-change', {
-      field: 'staticIpConfig',
-      value: this.ipConfig_.ipv4 ?
-          this.getIPConfigProperties_(this.ipConfig_.ipv4) :
-          {},
-    });
-  },
+    this.dispatchEvent(new CustomEvent('ip-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        field: 'staticIpConfig',
+        value: this.ipConfig_.ipv4 ?
+            this.getIPConfigProperties_(this.ipConfig_.ipv4) :
+            {}
+      }
+    }));
+  }
 
   /**
    * @return {boolean}
@@ -422,7 +448,7 @@ Polymer({
       return false;
     }
     return true;
-  },
+  }
 
   /**
    * @return {string}
@@ -434,5 +460,7 @@ Polymer({
       classes += ' indented';
     }
     return classes;
-  },
-});
+  }
+}
+
+customElements.define(NetworkIpConfigElement.is, NetworkIpConfigElement);

@@ -37,6 +37,7 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
         current = ElementTraversal::Next(*current, select_);
       }
     } else {
+      DCHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
       if (IsA<HTMLOptGroupElement>(current) &&
           current->parentNode() == select_) {
         if ((current_ = Traversal<HTMLOptionElement>::FirstChild(*current))) {
@@ -46,6 +47,47 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
       current = ElementTraversal::NextSkippingChildren(*current, select_);
     }
   }
+  current_ = nullptr;
+}
+
+void OptionListIterator::Retreat(HTMLOptionElement* next) {
+  // This function returns only
+  // - An OPTION child of select_, or
+  // - An OPTION child of an OPTGROUP child of select_.
+  // - An OPTION descendant of select_ if SelectParserRelaxation is enabled.
+
+  Element* current;
+  if (next) {
+    DCHECK_EQ(next->OwnerSelectElement(), select_);
+    current = ElementTraversal::PreviousAbsoluteSibling(*next, select_);
+  } else {
+    current = ElementTraversal::LastChild(*select_);
+  }
+
+  while (current) {
+    if (auto* option = DynamicTo<HTMLOptionElement>(current)) {
+      current_ = option;
+      return;
+    }
+
+    if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+      if (IsA<HTMLSelectElement>(current)) {
+        current = ElementTraversal::PreviousAbsoluteSibling(*next, select_);
+      } else {
+        current = ElementTraversal::Previous(*current, select_);
+      }
+    } else {
+      DCHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
+      if (IsA<HTMLOptGroupElement>(current) &&
+          current->parentNode() == select_) {
+        if ((current_ = Traversal<HTMLOptionElement>::LastChild(*current))) {
+          return;
+        }
+      }
+      current = ElementTraversal::PreviousAbsoluteSibling(*next, select_);
+    }
+  }
+
   current_ = nullptr;
 }
 

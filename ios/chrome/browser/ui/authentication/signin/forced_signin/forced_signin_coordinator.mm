@@ -11,13 +11,13 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_coordinator.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
-#import "ios/chrome/browser/ui/screen/screen_type.h"
 
 @interface ForcedSigninCoordinator () <FirstRunScreenDelegate>
 
@@ -72,6 +72,11 @@
 }
 
 #pragma mark - Private
+
+- (void)stopChildCoordinator {
+  [self.childCoordinator stop];
+  self.childCoordinator = nil;
+}
 
 // Dismiss the main navigation view controller with an animation and run the
 // sign-in completion callback on completion of the animation to finish
@@ -129,13 +134,12 @@
 
 - (void)finishWithResult:(SigninCoordinatorResult)result
                 identity:(id<SystemIdentity>)identity {
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
+  [self stopChildCoordinator];
   self.navigationController = nil;
   self.screenProvider = nil;
-  SigninCompletionInfo* completionInfo =
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
+  id<SystemIdentity> completionIdentity = identity;
+  [self runCompletionWithSigninResult:result
+                   completionIdentity:completionIdentity];
 }
 
 #pragma mark - FirstRunScreenDelegate
@@ -143,8 +147,7 @@
 // This is called before finishing the presentation of a screen.
 // Stops the child coordinator and prepares the next screen to present.
 - (void)screenWillFinishPresenting {
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
+  [self stopChildCoordinator];
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 

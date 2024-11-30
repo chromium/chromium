@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -601,10 +600,10 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
       // Parse a selector from rawSelector. If the result is failure, then
       // return null. Otherwise, let selector be the result.
-      base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
-          css_parser_context, CSSNestingType::kNone,
-          /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
-          nullptr, raw_selector_string, arena);
+      base::span<CSSSelector> selector_vector =
+          CSSParser::ParseSelector(css_parser_context, CSSNestingType::kNone,
+                                   /*parent_rule_for_nesting=*/nullptr, nullptr,
+                                   raw_selector_string, arena);
       if (selector_vector.empty()) {
         SetParseErrorMessage(
             out_error, String::Format("\"%s\" is not a valid selector.",

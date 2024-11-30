@@ -177,6 +177,9 @@ public class PdfUtils {
     }
 
     static String getFileNameFromUrl(String url, String defaultTitle) {
+        if (url == null) {
+            return defaultTitle;
+        }
         Uri uri = Uri.parse(url);
         String scheme = uri.getScheme();
         assert scheme != null;
@@ -202,6 +205,9 @@ public class PdfUtils {
     }
 
     static String getFilePathFromUrl(String url) {
+        if (url == null) {
+            return null;
+        }
         GURL gurl = new GURL(url);
         if (getPdfPageTypeInternal(gurl, false) == PdfPageType.LOCAL) {
             return url;
@@ -347,6 +353,10 @@ public class PdfUtils {
 
     static void recordPdfLoadTimePaired(long duration) {
         RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime.Paired", duration);
+    }
+
+    static void recordPdfLoadTimeFirstPaired(long duration) {
+        RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime.FirstPaired", duration);
     }
 
     static void recordFindInPage(int findInPageCounts) {

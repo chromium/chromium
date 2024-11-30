@@ -1155,8 +1155,8 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
     download_params->set_method(method_string);
   if (options.body) {
     download_params->set_post_body(
-        network::ResourceRequestBody::CreateFromBytes(options.body->data(),
-                                                      options.body->size()));
+        network::ResourceRequestBody::CreateFromCopyOfBytes(
+            base::as_byte_span(*options.body)));
   }
 
   download_params->set_callback(

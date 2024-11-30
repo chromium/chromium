@@ -76,6 +76,9 @@ class RuleInvalidationDataVisitor {
       const CSSSelector&,
       unsigned max_direct_adjacent_selectors,
       FeatureMetadata&);
+  void CollectMetadataFromSelectorList(const CSSSelector* selector_list,
+                                       unsigned max_direct_adjacent_selectors,
+                                       FeatureMetadata&);
 
   void UpdateInvalidationSets(const CSSSelector&, const StyleScope*);
 

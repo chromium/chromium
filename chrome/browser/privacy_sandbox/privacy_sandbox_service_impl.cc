@@ -26,6 +26,9 @@
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -42,6 +45,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -65,6 +69,8 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
+
+DEFINE_REQUIRED_NOTICE_IDENTIFIER(kPrivacySandboxNotice);
 
 namespace {
 
@@ -376,7 +382,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
       browsing_topics_service_(browsing_topics_service),
       first_party_sets_policy_service_(first_party_sets_service),
       privacy_sandbox_countries_(privacy_sandbox_countries) {
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
   // Create notice storage
   notice_storage_ =
       std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
@@ -425,12 +430,24 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
         prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
   }
 
+  PromptSuppressedReason prompt_suppressed_reason =
+      static_cast<PromptSuppressedReason>(
+          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed));
+
   // kRestricted prompt suppression reason must be cleared at startup when
   // restricted notice feature is enabled.
   if (privacy_sandbox::IsRestrictedNoticeRequired() &&
-      static_cast<PromptSuppressedReason>(
-          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed)) ==
-          PromptSuppressedReason::kRestricted) {
+      prompt_suppressed_reason == PromptSuppressedReason::kRestricted) {
+    pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
+  }
+
+  // Special usecase for Third Party Coookies: Make sure the 3PC suppression
+  // value is overridden in case 3PC Blocking is not a valid reason to block the
+  // Prompt.
+  if (prompt_suppressed_reason ==
+          PromptSuppressedReason::kThirdPartyCookiesBlocked &&
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
     pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
   }
 
@@ -440,6 +457,20 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
 
   // Record preference state for UMA at each startup.
   LogPrivacySandboxState();
+
+  // Init the Identity Manager Observation and metrics.
+  MaybeInitIdentityManager();
+}
+
+PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
+
+void PrivacySandboxServiceImpl::MaybeInitIdentityManager() {
+  // Non Regular Profiles are excluded from anything Dark Launch related.
+  if (!IsRegularProfile(profile_type_)) {
+    return;
+  }
+
+  identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
 
   if (!identity_manager_) {
     base::UmaHistogramBoolean(
@@ -458,8 +489,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   // Account capabilities are updated asynchronously, so metrics relating to
   // those will be recorded once in `OnExtendedAccountInfoUpdated`.
 }
-
-PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 
 void PrivacySandboxServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
@@ -551,6 +580,12 @@ void PrivacySandboxServiceImpl::OnExtendedAccountInfoRemoved(
 PrivacySandboxService::PromptType
 // TODO(crbug.com/352575567): Use the SurfaceType passed in.
 PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
+  // We delay emitting the metrics here so the profile manager can finish
+  // setting up and retrieving the profile buckets.
+  if (should_emit_dark_launch_startup_metrics_) {
+    MaybeEmitPromptStartupAccountMetrics();
+    should_emit_dark_launch_startup_metrics_ = false;
+  }
   bool third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
       cookie_settings_.get(), pref_service_, tracking_protection_settings_);
   return GetRequiredPromptTypeInternal(
@@ -635,11 +670,92 @@ void UpdateNoticeStorage(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+user_education::ProductMessagingController*
+PrivacySandboxServiceImpl::GetProductMessagingController() {
+  if (!product_messaging_controller_) {
+    auto* service = UserEducationServiceFactory::GetForBrowserContext(profile_);
+    // Ensure this service is created for queueing purposes.
+    CHECK(service);
+    product_messaging_controller_ = &service->product_messaging_controller();
+  }
+  return product_messaging_controller_;
+}
+
+bool PrivacySandboxServiceImpl::IsHoldingHandle() {
+  return static_cast<bool>(notice_handle_);
+  // TODO(crbug.com/379900298): Add timeout for notice collision handle
+}
+
+void PrivacySandboxServiceImpl::HoldQueueHandle(
+    user_education::RequiredNoticePriorityHandle messaging_priority_handle) {
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxNoticeQueue)) {
+    return;
+  }
+  notice_handle_ = std::move(messaging_priority_handle);
+}
+
+void SetQueueHandleShown(
+    user_education::RequiredNoticePriorityHandle* notice_handle) {
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxNoticeQueue)) {
+    return;
+  }
+  notice_handle->SetShown();
+}
+
+void PrivacySandboxServiceImpl::MaybeUnqueueNotice() {
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxNoticeQueue)) {
+    return;
+  }
+
+  // Release the handle if we are holding it (checked by controller).
+  notice_handle_.Release();
+  // Unqueue if we are in the queue (checked by controller).
+  GetProductMessagingController()->UnqueueRequiredNotice(kPrivacySandboxNotice);
+}
+
+bool PrivacySandboxServiceImpl::IsNoticeQueued() {
+  return GetProductMessagingController()->IsNoticeQueued(kPrivacySandboxNotice);
+}
+
+void PrivacySandboxServiceImpl::MaybeQueueNotice() {
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxNoticeQueue) ||
+      suppress_queue) {
+    return;
+  }
+  // We don't want to queue in the case the profile does not require a prompt.
+  if (GetRequiredPromptType(SurfaceType::kDesktop) == PromptType::kNone) {
+    return;
+  }
+  // If we are already holding the handle or in the queue, we don't want to
+  // requeue.
+  if (IsHoldingHandle() || IsNoticeQueued()) {
+    return;
+  }
+
+  GetProductMessagingController()->QueueRequiredNotice(
+      kPrivacySandboxNotice,
+      base::BindOnce(&PrivacySandboxServiceImpl::HoldQueueHandle, weak_factory_.GetWeakPtr()), {/* TODO(crbug.com/370804492): When we add the DMA notice, add it to this show_after_ list*/});
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
                                                      SurfaceType surface_type) {
   RecordPromptActionMetrics(action);
   UpdateNoticeStorage(action, notice_storage_.get(), pref_service_.get(),
                       surface_type);
+
+  if (PromptAction::kNoticeShown == action ||
+      PromptAction::kConsentShown == action ||
+      PromptAction::kRestrictedNoticeShown == action) {
+#if !BUILDFLAG(IS_ANDROID)
+    SetQueueHandleShown(&notice_handle_);
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
 
   if (PromptAction::kNoticeAcknowledge == action ||
       PromptAction::kNoticeOpenSettings == action) {
@@ -717,9 +833,11 @@ void PrivacySandboxServiceImpl::ForceChromeBuildForTests(
   force_chrome_build_for_tests_ = force_chrome_build;
 }
 
-// TODO(crbug.com/376285112): Create a bridge for this and use it in clank.
-void PrivacySandboxServiceImpl::
-    EmitPrivacySandboxAccountPromptStartupMetrics() {
+void PrivacySandboxServiceImpl::MaybeEmitPromptStartupAccountMetrics() {
+  // No Startup Metrics emitted if the profile isn't regular.
+  if (!IsRegularProfile(profile_type_)) {
+    return;
+  }
   std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
   if (profile_bucket.empty()) {
     return;
@@ -1397,8 +1515,11 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
   }
 
   // If third party cookies are blocked, set the suppression reason as such, and
-  // do not show a prompt.
-  if (third_party_cookies_blocked) {
+  // do not show a prompt. Unless the prompt is allowed when 3P Cookies are
+  // blocked.
+  if (third_party_cookies_blocked &&
+      !base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
     pref_service->SetInteger(
         prefs::kPrivacySandboxM1PromptSuppressed,
         static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
@@ -1570,6 +1691,9 @@ void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
     CHECK(prompt);
     prompt->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
+
+  // After we are done closing the last prompt, release the handle
+  MaybeUnqueueNotice();
 }
 #endif
 

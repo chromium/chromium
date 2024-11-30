@@ -254,7 +254,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
       if (context_provider) {
         const gpu::SharedImageUsageSet shared_image_usage_flags =
             context_provider->ContextProvider()
-                ->SharedImageInterface()
+                .SharedImageInterface()
                 ->UsageForMailbox(source->GetMailboxHolder().mailbox);
         resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
             dest_info, kFilterQuality, kShouldInitialize, context_provider,
@@ -264,7 +264,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     // If not (or if the SharedImage provider fails), fall back to software.
     if (!resource_provider) {
       resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-          dest_info, kFilterQuality, kShouldInitialize);
+          gfx::Size(dest_size.width(), dest_size.height()), dest_color_type,
+          dest_alpha_type, std::move(dest_color_space), kFilterQuality,
+          kShouldInitialize);
     }
   }
 

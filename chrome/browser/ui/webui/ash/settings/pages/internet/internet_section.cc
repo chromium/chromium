@@ -781,9 +781,6 @@ InternetSection::InternetSection(Profile* profile,
 InternetSection::~InternetSection() = default;
 
 void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool isRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"deviceInfoPopupMenuItemTitle",
        IDS_SETTINGS_DEVICE_INFO_POPUP_MENU_ITEM_TITLE},
@@ -844,8 +841,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"knownNetworksAll", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_ALL},
       {"knownNetworksButton", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_BUTTON},
       {"knownNetworksMessage",
-       isRevampEnabled ? IDS_OS_SETTINGS_REVAMP_INTERNET_KNOWN_NETWORKS_MESSAGE
-                       : IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MESSAGE},
+       IDS_OS_SETTINGS_REVAMP_INTERNET_KNOWN_NETWORKS_MESSAGE},
       {"knownNetworksPreferred",
        IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_PREFFERED},
       {"knownNetworksMenuAddPreferred",
@@ -935,8 +931,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY_ACCESSIBILITY_LABEL},
       {"networkShared", IDS_SETTINGS_INTERNET_NETWORK_SHARED},
       {"networkSharedOwner",
-       isRevampEnabled ? IDS_OS_SETTINGS_REVAMP_INTERNET_NETWORK_SHARED_OWNER
-                       : IDS_SETTINGS_INTERNET_NETWORK_SHARED_OWNER},
+       IDS_OS_SETTINGS_REVAMP_INTERNET_NETWORK_SHARED_OWNER},
       {"networkSharedNotOwner", IDS_SETTINGS_INTERNET_NETWORK_SHARED_NOT_OWNER},
       {"networkVpnBuiltin", IDS_NETWORK_TYPE_VPN_BUILTIN},
       {"networkOutOfRange", IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE},
@@ -1406,27 +1401,29 @@ std::string InternetSection::ModifySearchResultUrl(
   std::string modified_url =
       OsSettingsSection::ModifySearchResultUrl(type, id, url_to_modify);
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kEthernetDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kEthernetDetails) &&
+      connected_ethernet_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_ethernet_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kWifiDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kWifiDetails) &&
+      connected_wifi_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_wifi_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kCellularDetails)) {
+  if ((IsPartOfDetailsSubpage(type, id, mojom::Subpage::kCellularDetails) ||
+       IsPartOfDetailsSubpage(type, id, mojom::Subpage::kApn)) &&
+      active_cellular_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kApn)) {
-    return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
-  }
-
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails) &&
+      connected_tether_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_tether_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kVpnDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kVpnDetails) &&
+      connected_vpn_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_vpn_guid_);
   }
 

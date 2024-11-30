@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -42,15 +43,15 @@ class SystemTracingSessionTest : public ::testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(scoped_com_initializer_.Succeeded());
-    ASSERT_HRESULT_SUCCEEDED(service_main_.RegisterClassObjects());
+    ASSERT_HRESULT_SUCCEEDED(
+        Service::RegisterClassObjects(service_delegate_, {}, cookies_));
   }
 
-  void TearDown() override { service_main_.UnregisterClassObjects(); }
+  void TearDown() override { Service::UnregisterClassObjects(cookies_); }
 
   elevated_tracing_service::Delegate& service_delegate() {
     return service_delegate_;
   }
-  Service& service_main() { return service_main_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -58,7 +59,7 @@ class SystemTracingSessionTest : public ::testing::Test {
   scoped_refptr<elevated_tracing_service::SessionRegistry> session_registry_{
       base::MakeRefCounted<elevated_tracing_service::SessionRegistry>()};
   elevated_tracing_service::Delegate service_delegate_;
-  Service service_main_{service_delegate_};
+  base::HeapArray<DWORD> cookies_;
 };
 
 TEST_F(SystemTracingSessionTest, GetLogEventCategory) {

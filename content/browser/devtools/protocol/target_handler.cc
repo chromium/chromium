@@ -234,8 +234,8 @@ class BrowserToPageConnector {
     base::Value message(std::move(message_dict));
     std::string json_message;
     base::JSONWriter::Write(message, &json_message);
-    page_host_->DispatchProtocolMessage(
-        page_host_client_.get(), base::as_bytes(base::make_span(json_message)));
+    page_host_->DispatchProtocolMessage(page_host_client_.get(),
+                                        base::as_byte_span(json_message));
   }
 
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
@@ -269,9 +269,8 @@ class BrowserToPageConnector {
       if (!payload) {
         return;
       }
-      browser_host_->DispatchProtocolMessage(
-          browser_host_client_.get(),
-          base::as_bytes(base::make_span(*payload)));
+      browser_host_->DispatchProtocolMessage(browser_host_client_.get(),
+                                             base::as_byte_span(*payload));
       return;
     }
     DCHECK(agent_host == browser_host_.get());
@@ -649,7 +648,7 @@ class TargetHandler::TargetFilter {
     default_filter.push_back(protocol::Target::FilterEntry::Create().Build());
     return base::WrapUnique(new TargetFilter(std::move(default_filter)));
   }
-  static std::unique_ptr<TargetFilter> Create(Maybe<Filter> filter) {
+  static std::unique_ptr<TargetFilter> Create(std::unique_ptr<Filter> filter) {
     if (!filter) {
       return CreateDefault();
     }
@@ -928,8 +927,8 @@ void TargetHandler::DisableAutoAttachOfServiceWorkers() {
   auto_attach_service_workers_ = false;
 }
 
-Response TargetHandler::FindSession(Maybe<std::string> session_id,
-                                    Maybe<std::string> target_id,
+Response TargetHandler::FindSession(std::optional<std::string> session_id,
+                                    std::optional<std::string> target_id,
                                     Session** session) {
   *session = nullptr;
   if (session_id.has_value()) {
@@ -959,7 +958,7 @@ Response TargetHandler::FindSession(Maybe<std::string> session_id,
 
 Response TargetHandler::SetDiscoverTargets(
     bool discover,
-    Maybe<protocol::Array<protocol::Target::FilterEntry>> filter) {
+    std::unique_ptr<protocol::Array<protocol::Target::FilterEntry>> filter) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
   if (!discover && filter && !filter->empty()) {
@@ -986,8 +985,8 @@ Response TargetHandler::SetDiscoverTargets(
 void TargetHandler::SetAutoAttach(
     bool auto_attach,
     bool wait_for_debugger_on_start,
-    Maybe<bool> flatten,
-    Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
+    std::optional<bool> flatten,
+    std::unique_ptr<protocol::Array<protocol::Target::FilterEntry>> filter,
     std::unique_ptr<SetAutoAttachCallback> callback) {
   if (access_mode_ == AccessMode::kBrowser && !flatten.value_or(false)) {
     callback->sendFailure(Response::InvalidParams(
@@ -1017,7 +1016,7 @@ void TargetHandler::SetAutoAttach(
 void TargetHandler::AutoAttachRelated(
     const std::string& targetId,
     bool wait_for_debugger_on_start,
-    Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
+    std::unique_ptr<protocol::Array<protocol::Target::FilterEntry>> filter,
     std::unique_ptr<AutoAttachRelatedCallback> callback) {
   if (access_mode_ != AccessMode::kBrowser) {
     callback->sendFailure(Response::ServerError(
@@ -1065,7 +1064,7 @@ Response TargetHandler::SetRemoteLocations(
 }
 
 Response TargetHandler::AttachToTarget(const std::string& target_id,
-                                       Maybe<bool> flatten,
+                                       std::optional<bool> flatten,
                                        std::string* out_session_id) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
@@ -1089,8 +1088,8 @@ Response TargetHandler::AttachToBrowserTarget(std::string* out_session_id) {
   return Response::Success();
 }
 
-Response TargetHandler::DetachFromTarget(Maybe<std::string> session_id,
-                                         Maybe<std::string> target_id) {
+Response TargetHandler::DetachFromTarget(std::optional<std::string> session_id,
+                                         std::optional<std::string> target_id) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
   Session* session = nullptr;
@@ -1102,9 +1101,10 @@ Response TargetHandler::DetachFromTarget(Maybe<std::string> session_id,
   return Response::Success();
 }
 
-Response TargetHandler::SendMessageToTarget(const std::string& message,
-                                            Maybe<std::string> session_id,
-                                            Maybe<std::string> target_id) {
+Response TargetHandler::SendMessageToTarget(
+    const std::string& message,
+    std::optional<std::string> session_id,
+    std::optional<std::string> target_id) {
   Session* session = nullptr;
   Response response =
       FindSession(std::move(session_id), std::move(target_id), &session);
@@ -1115,12 +1115,12 @@ Response TargetHandler::SendMessageToTarget(const std::string& message,
         "When using flat protocol, messages are routed to the target "
         "via the sessionId attribute.");
   }
-  session->SendMessageToAgentHost(base::as_bytes(base::make_span(message)));
+  session->SendMessageToAgentHost(base::as_byte_span(message));
   return Response::Success();
 }
 
 Response TargetHandler::GetTargetInfo(
-    Maybe<std::string> maybe_target_id,
+    std::optional<std::string> maybe_target_id,
     std::unique_ptr<Target::TargetInfo>* target_info) {
   const std::string& target_id = maybe_target_id.value_or(owner_target_id_);
   if (access_mode_ == AccessMode::kAutoAttachOnly &&
@@ -1164,7 +1164,7 @@ Response TargetHandler::CloseTarget(const std::string& target_id,
 
 Response TargetHandler::ExposeDevToolsProtocol(
     const std::string& target_id,
-    Maybe<std::string> binding_name) {
+    std::optional<std::string> binding_name) {
   if (access_mode_ != AccessMode::kBrowser)
     return Response::InvalidParams(kNotAllowedError);
   scoped_refptr<DevToolsAgentHost> agent_host =
@@ -1186,15 +1186,16 @@ Response TargetHandler::ExposeDevToolsProtocol(
   return Response::Success();
 }
 
-Response TargetHandler::CreateTarget(const std::string& url,
-                                     Maybe<int> width,
-                                     Maybe<int> height,
-                                     Maybe<std::string> context_id,
-                                     Maybe<bool> enable_begin_frame_control,
-                                     Maybe<bool> new_window,
-                                     Maybe<bool> background,
-                                     Maybe<bool> for_tab,
-                                     std::string* out_target_id) {
+Response TargetHandler::CreateTarget(
+    const std::string& url,
+    std::optional<int> width,
+    std::optional<int> height,
+    std::optional<std::string> context_id,
+    std::optional<bool> enable_begin_frame_control,
+    std::optional<bool> new_window,
+    std::optional<bool> background,
+    std::optional<bool> for_tab,
+    std::string* out_target_id) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
   DevToolsManagerDelegate* delegate =
@@ -1219,7 +1220,7 @@ Response TargetHandler::CreateTarget(const std::string& url,
 }
 
 Response TargetHandler::GetTargets(
-    Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
+    std::unique_ptr<protocol::Array<protocol::Target::FilterEntry>> filter,
     std::unique_ptr<protocol::Array<Target::TargetInfo>>* target_infos) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
@@ -1291,10 +1292,11 @@ void TargetHandler::DevToolsAgentHostCrashed(DevToolsAgentHost* host,
 // ----------------- More protocol methods -------------------
 
 void TargetHandler::CreateBrowserContext(
-    Maybe<bool> in_disposeOnDetach,
-    Maybe<String> in_proxyServer,
-    Maybe<String> in_proxyBypassList,
-    Maybe<protocol::Array<String>> in_originsToGrantUniversalNetworkAccess,
+    std::optional<bool> in_disposeOnDetach,
+    std::optional<String> in_proxyServer,
+    std::optional<String> in_proxyBypassList,
+    std::unique_ptr<protocol::Array<String>>
+        in_originsToGrantUniversalNetworkAccess,
     std::unique_ptr<CreateBrowserContextCallback> callback) {
   if (access_mode_ != AccessMode::kBrowser) {
     callback->sendFailure(Response::ServerError(kNotAllowedError));

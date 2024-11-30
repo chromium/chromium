@@ -26,8 +26,8 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_modifier_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_set_method_options.h"
@@ -155,15 +155,21 @@ bool CanGetOutsideWorklet(ScriptState* script_state) {
   return frame->IsInFencedFrameTree();
 }
 
-SharedStorageDataOrigin EnumToDataOrigin(
-    V8SharedStorageDataOrigin::Enum data_origin_value) {
-  switch (data_origin_value) {
-    case V8SharedStorageDataOrigin::Enum::kContextOrigin:
-      return SharedStorageDataOrigin::kContextOrigin;
-    case V8SharedStorageDataOrigin::Enum::kScriptOrigin:
-      return SharedStorageDataOrigin::kScriptOrigin;
+std::tuple<SharedStorageDataOrigin, scoped_refptr<SecurityOrigin>>
+ParseDataOrigin(const String& data_origin_value) {
+  String data_origin_value_lower = data_origin_value.LowerASCII();
+  if (data_origin_value_lower == "context-origin") {
+    return std::make_tuple(SharedStorageDataOrigin::kContextOrigin, nullptr);
   }
-  NOTREACHED();
+  if (data_origin_value_lower == "script-origin") {
+    return std::make_tuple(SharedStorageDataOrigin::kScriptOrigin, nullptr);
+  }
+  KURL data_origin_url(data_origin_value);
+  if (!data_origin_url.IsValid()) {
+    return std::make_tuple(SharedStorageDataOrigin::kInvalid, nullptr);
+  }
+  return std::make_tuple(SharedStorageDataOrigin::kCustomOrigin,
+                         SecurityOrigin::Create(data_origin_url));
 }
 
 }  // namespace
@@ -423,15 +429,21 @@ ScriptPromise<IDLAny> SharedStorage::set(
   bool ignore_if_present =
       options->hasIgnoreIfPresent() && options->ignoreIfPresent();
 
+  String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewSetMethod(
           network::mojom::blink::SharedStorageSetMethod::New(
               key, value, ignore_if_present));
 
+  auto method_with_options =
+      network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kSet, GlobalScope::kWindow,
@@ -439,7 +451,7 @@ ScriptPromise<IDLAny> SharedStorage::set(
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kSet,
@@ -453,6 +465,16 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
                                             const String& key,
                                             const String& value,
                                             ExceptionState& exception_state) {
+  return append(script_state, key, value,
+                SharedStorageModifierMethodOptions::Create(), exception_state);
+}
+
+ScriptPromise<IDLAny> SharedStorage::append(
+    ScriptState* script_state,
+    const String& key,
+    const String& value,
+    const SharedStorageModifierMethodOptions* options,
+    ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow() ||
@@ -492,14 +514,20 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
     return promise;
   }
 
+  String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewAppendMethod(
           network::mojom::blink::SharedStorageAppendMethod::New(key, value));
 
+  auto method_with_options =
+      network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kAppend,
@@ -507,7 +535,7 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kAppend,
@@ -520,6 +548,15 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
 ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
                                             const String& key,
                                             ExceptionState& exception_state) {
+  return Delete(script_state, key, SharedStorageModifierMethodOptions::Create(),
+                exception_state);
+}
+
+ScriptPromise<IDLAny> SharedStorage::Delete(
+    ScriptState* script_state,
+    const String& key,
+    const SharedStorageModifierMethodOptions* options,
+    ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow() ||
@@ -552,14 +589,20 @@ ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
     return promise;
   }
 
+  String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewDeleteMethod(
           network::mojom::blink::SharedStorageDeleteMethod::New(key));
 
+  auto method_with_options =
+      network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kDelete,
@@ -567,7 +610,7 @@ ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kDelete,
@@ -579,6 +622,14 @@ ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
 
 ScriptPromise<IDLAny> SharedStorage::clear(ScriptState* script_state,
                                            ExceptionState& exception_state) {
+  return clear(script_state, SharedStorageModifierMethodOptions::Create(),
+               exception_state);
+}
+
+ScriptPromise<IDLAny> SharedStorage::clear(
+    ScriptState* script_state,
+    const SharedStorageModifierMethodOptions* options,
+    ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow() ||
@@ -604,14 +655,20 @@ ScriptPromise<IDLAny> SharedStorage::clear(ScriptState* script_state,
     return promise;
   }
 
+  String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewClearMethod(
           network::mojom::blink::SharedStorageClearMethod::New());
 
+  auto method_with_options =
+      network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kClear,
@@ -619,7 +676,7 @@ ScriptPromise<IDLAny> SharedStorage::clear(ScriptState* script_state,
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kClear,
@@ -910,14 +967,20 @@ ScriptPromise<SharedStorageWorklet> SharedStorage::createWorklet(
     const String& module_url,
     const SharedStorageWorkletOptions* options,
     ExceptionState& exception_state) {
-  SharedStorageWorklet* worklet = SharedStorageWorklet::Create(
-      script_state, /*cross_origin_script_allowed=*/true);
+  SharedStorageWorklet* worklet = SharedStorageWorklet::Create(script_state);
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<SharedStorageWorklet>>(
           script_state);
   auto promise = resolver->Promise();
-  SharedStorageDataOrigin data_origin_type =
-      EnumToDataOrigin(options->dataOrigin().AsEnum());
+  std::tuple<SharedStorageDataOrigin, scoped_refptr<SecurityOrigin>>
+      parse_results = ParseDataOrigin(options->dataOrigin());
+  SharedStorageDataOrigin data_origin_type = std::get<0>(parse_results);
+  if (data_origin_type == SharedStorageDataOrigin::kInvalid) {
+    resolver->Reject(v8::Exception::TypeError(V8String(
+        script_state->GetIsolate(),
+        "The \"dataOrigin\" parameter is not a valid keyword or URL.")));
+    return promise;
+  }
 
   // We intentionally allow the implicit downcast of `options` to a
   // `WorkletOptions*` here.
@@ -927,17 +990,15 @@ ScriptPromise<SharedStorageWorklet> SharedStorage::createWorklet(
   // `SharedStorageWorklet::AddModuleHelper()`.
   worklet->AddModuleHelper(script_state, resolver, module_url, options,
                            exception_state, /*resolve_to_worklet=*/true,
-                           data_origin_type);
+                           data_origin_type,
+                           std::move(std::get<1>(parse_results)));
   return promise;
 }
 
 SharedStorageWorklet* SharedStorage::worklet(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   if (!shared_storage_worklet_) {
-    shared_storage_worklet_ = SharedStorageWorklet::Create(
-        script_state,
-        /*cross_origin_script_allowed=*/base::FeatureList::IsEnabled(
-            features::kSharedStorageCrossOriginScript));
+    shared_storage_worklet_ = SharedStorageWorklet::Create(script_state);
   }
 
   return shared_storage_worklet_.Get();

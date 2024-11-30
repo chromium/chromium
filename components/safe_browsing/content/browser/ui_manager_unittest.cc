@@ -11,10 +11,10 @@
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -160,7 +160,6 @@ class TestSafeBrowsingBlockingPageFactory
     return new TestSafeBrowsingBlockingPage(delegate, web_contents,
                                             main_frame_url, unsafe_resources);
   }
-#if !BUILDFLAG(IS_ANDROID)
   security_interstitials::SecurityInterstitialPage* CreateEnterpriseWarnPage(
       BaseUIManager* ui_manager,
       content::WebContents* web_contents,
@@ -178,7 +177,6 @@ class TestSafeBrowsingBlockingPageFactory
       override {
     NOTREACHED();
   }
-#endif
 };
 
 class TestSafeBrowsingUIManagerDelegate
@@ -202,13 +200,11 @@ class TestSafeBrowsingUIManagerDelegate
       const GURL& page_url,
       const std::string& reason,
       int net_error_code) override {}
-#if !BUILDFLAG(IS_ANDROID)
   void TriggerUrlFilteringInterstitialExtensionEventIfDesired(
       content::WebContents* web_contents,
       const GURL& page_url,
       const std::string& threat_type,
       safe_browsing::RTLookupResponse rt_lookup_response) override {}
-#endif
   prerender::NoStatePrefetchContents* GetNoStatePrefetchContentsIfExists(
       content::WebContents* web_contents) override {
     return nullptr;

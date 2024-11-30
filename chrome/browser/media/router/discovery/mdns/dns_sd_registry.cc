@@ -20,7 +20,7 @@ DnsSdRegistry::ServiceTypeData::ServiceTypeData(
     std::unique_ptr<DnsSdDeviceLister> lister)
     : ref_count(1), lister_(std::move(lister)) {}
 
-DnsSdRegistry::ServiceTypeData::~ServiceTypeData() {}
+DnsSdRegistry::ServiceTypeData::~ServiceTypeData() = default;
 
 void DnsSdRegistry::ServiceTypeData::ListenerAdded() {
   ref_count++;

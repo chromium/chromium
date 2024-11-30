@@ -128,11 +128,6 @@ struct CRDTP_EXPORT ProtocolTypeTraits<Binary> {
   static void Serialize(const Binary& value, std::vector<uint8_t>* bytes);
 };
 
-template <>
-struct detail::MaybeTypedef<Binary> {
-  typedef std::optional<Binary> type;
-};
-
 }  // namespace crdtp
 
 #endif  // CRDTP_CHROMIUM_PROTOCOL_TYPE_TRAITS_H_

@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -201,20 +202,20 @@ Bus::~Bus() {
   // DCHECK_EQ(0, num_pending_timeouts_);
 }
 
-ObjectProxy* Bus::GetObjectProxy(const std::string& service_name,
+ObjectProxy* Bus::GetObjectProxy(std::string_view service_name,
                                  const ObjectPath& object_path) {
   return GetObjectProxyWithOptions(service_name, object_path,
                                    ObjectProxy::DEFAULT_OPTIONS);
 }
 
-ObjectProxy* Bus::GetObjectProxyWithOptions(const std::string& service_name,
+ObjectProxy* Bus::GetObjectProxyWithOptions(std::string_view service_name,
                                             const ObjectPath& object_path,
                                             int options) {
   AssertOnOriginThread();
 
   // Check if we already have the requested object proxy.
-  const ObjectProxyTable::key_type key(service_name + object_path.value(),
-                                       options);
+  const ObjectProxyTable::key_type key(
+      base::StrCat({service_name, object_path.value()}), options);
   ObjectProxyTable::iterator iter = object_proxy_table_.find(key);
   if (iter != object_proxy_table_.end()) {
     return iter->second.get();
@@ -227,7 +228,7 @@ ObjectProxy* Bus::GetObjectProxyWithOptions(const std::string& service_name,
   return object_proxy.get();
 }
 
-bool Bus::RemoveObjectProxy(const std::string& service_name,
+bool Bus::RemoveObjectProxy(std::string_view service_name,
                             const ObjectPath& object_path,
                             base::OnceClosure callback) {
   return RemoveObjectProxyWithOptions(service_name, object_path,
@@ -235,15 +236,15 @@ bool Bus::RemoveObjectProxy(const std::string& service_name,
                                       std::move(callback));
 }
 
-bool Bus::RemoveObjectProxyWithOptions(const std::string& service_name,
+bool Bus::RemoveObjectProxyWithOptions(std::string_view service_name,
                                        const ObjectPath& object_path,
                                        int options,
                                        base::OnceClosure callback) {
   AssertOnOriginThread();
 
   // Check if we have the requested object proxy.
-  const ObjectProxyTable::key_type key(service_name + object_path.value(),
-                                       options);
+  const ObjectProxyTable::key_type key(
+      base::StrCat({service_name, object_path.value()}), options);
   ObjectProxyTable::iterator iter = object_proxy_table_.find(key);
   if (iter != object_proxy_table_.end()) {
     scoped_refptr<ObjectProxy> object_proxy = iter->second;

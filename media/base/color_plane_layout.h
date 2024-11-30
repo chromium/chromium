@@ -15,21 +15,20 @@
 namespace media {
 
 // Encapsulates a color plane's memory layout: (stride, offset, size)
-// stride: in bytes of a plane. Note that stride can be negative if the image
-//         layout is bottom-up.
+// stride: the number of bytes, including padding, used by each row of a plane.
 // offset: in bytes of a plane, which stands for the offset of a start point of
 //         a color plane from a buffer FD.
 // size:   in bytes of a plane. This |size| bytes data must contain all the data
 //         a decoder will access (e.g. visible area and padding).
 struct MEDIA_EXPORT ColorPlaneLayout {
   ColorPlaneLayout();
-  ColorPlaneLayout(int32_t stride, size_t offset, size_t size);
+  ColorPlaneLayout(size_t stride, size_t offset, size_t size);
   ~ColorPlaneLayout();
 
   bool operator==(const ColorPlaneLayout& rhs) const;
   bool operator!=(const ColorPlaneLayout& rhs) const;
 
-  int32_t stride = 0;
+  size_t stride = 0;
   size_t offset = 0;
   size_t size = 0;
 };

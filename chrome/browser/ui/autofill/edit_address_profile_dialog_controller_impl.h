@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -24,7 +27,7 @@ class EditAddressProfileDialogControllerImpl
           EditAddressProfileDialogControllerImpl> {
  public:
   using EditAddressProfileViewTestingFactory =
-      base::RepeatingCallback<AutofillBubbleBase*(
+      base::RepeatingCallback<std::unique_ptr<AutofillBubbleBase>(
           content::WebContents*,
           EditAddressProfileDialogController*)>;
 
@@ -75,7 +78,7 @@ class EditAddressProfileDialogControllerImpl
   void HideDialog();
 
   // nullptr if no dialog is currently shown.
-  raw_ptr<AutofillBubbleBase> dialog_view_ = nullptr;
+  std::unique_ptr<AutofillBubbleBase> dialog_view_;
 
   // Editor's overridden title, if empty, the default "Edit address" is used.
   std::u16string title_override_;

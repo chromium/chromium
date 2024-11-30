@@ -133,13 +133,11 @@ class CORE_EXPORT CSSParserImpl {
       const CSSParserContext*,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
-      bool is_within_scope,
       StringView);
   static StyleRuleBase* ParseRule(const String&,
                                   const CSSParserContext*,
                                   CSSNestingType,
                                   StyleRule* parent_rule_for_nesting,
-                                  bool is_within_scope,
                                   StyleSheetContents*,
                                   AllowedRulesType);
   static ParseSheetResult ParseStyleSheet(
@@ -196,26 +194,22 @@ class CORE_EXPORT CSSParserImpl {
                        RuleListType,
                        CSSNestingType,
                        StyleRule* parent_rule_for_nesting,
-                       bool is_within_scope,
                        T callback);
 
   // These functions update the stream they're given
   StyleRuleBase* ConsumeAtRule(CSSParserTokenStream&,
                                AllowedRulesType,
                                CSSNestingType,
-                               StyleRule* parent_rule_for_nesting,
-                               bool is_within_scope);
+                               StyleRule* parent_rule_for_nesting);
   StyleRuleBase* ConsumeAtRuleContents(CSSAtRuleID id,
                                        CSSParserTokenStream& stream,
                                        AllowedRulesType allowed_rules,
                                        CSSNestingType,
-                                       StyleRule* parent_rule_for_nesting,
-                                       bool is_within_scope);
+                                       StyleRule* parent_rule_for_nesting);
   StyleRuleBase* ConsumeQualifiedRule(CSSParserTokenStream&,
                                       AllowedRulesType,
                                       CSSNestingType,
-                                      StyleRule* parent_rule_for_nesting,
-                                      bool is_within_scope);
+                                      StyleRule* parent_rule_for_nesting);
 
   StyleRulePageMargin* ConsumePageMarginRule(CSSAtRuleID rule_id,
                                              CSSParserTokenStream& stream);
@@ -225,17 +219,14 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleNamespace* ConsumeNamespaceRule(CSSParserTokenStream&);
   StyleRuleMedia* ConsumeMediaRule(CSSParserTokenStream& stream,
                                    CSSNestingType,
-                                   StyleRule* parent_rule_for_nesting,
-                                   bool is_within_scope);
+                                   StyleRule* parent_rule_for_nesting);
   StyleRuleSupports* ConsumeSupportsRule(CSSParserTokenStream& stream,
                                          CSSNestingType,
-                                         StyleRule* parent_rule_for_nesting,
-                                         bool is_within_scope);
+                                         StyleRule* parent_rule_for_nesting);
   StyleRuleStartingStyle* ConsumeStartingStyleRule(
       CSSParserTokenStream& stream,
       CSSNestingType,
-      StyleRule* parent_rule_for_nesting,
-      bool is_within_scope);
+      StyleRule* parent_rule_for_nesting);
   StyleRuleFontFace* ConsumeFontFaceRule(CSSParserTokenStream&);
   StyleRuleFontPaletteValues* ConsumeFontPaletteValuesRule(
       CSSParserTokenStream&);
@@ -250,18 +241,15 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleCounterStyle* ConsumeCounterStyleRule(CSSParserTokenStream&);
   StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&,
                                   CSSNestingType,
-                                  StyleRule* parent_rule_for_nesting,
-                                  bool is_within_scope);
+                                  StyleRule* parent_rule_for_nesting);
   StyleRuleViewTransition* ConsumeViewTransitionRule(
       CSSParserTokenStream& stream);
   StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream& stream,
                                            CSSNestingType,
-                                           StyleRule* parent_rule_for_nesting,
-                                           bool is_within_scope);
+                                           StyleRule* parent_rule_for_nesting);
   StyleRuleBase* ConsumeLayerRule(CSSParserTokenStream&,
                                   CSSNestingType,
-                                  StyleRule* parent_rule_for_nesting,
-                                  bool is_within_scope);
+                                  StyleRule* parent_rule_for_nesting);
   StyleRulePositionTry* ConsumePositionTryRule(CSSParserTokenStream&);
 
   StyleRuleFunction* ConsumeFunctionRule(CSSParserTokenStream& stream);
@@ -280,8 +268,6 @@ class CORE_EXPORT CSSParserImpl {
   // - CSSNestingType determines which implicit selector to insert for relative
   //   selectors ('&' for kNesting, and ':scope' for kScope).
   // - `parent_rule_for_nesting` determines what '&' points to.
-  // - `is_within_scope` is true if we're within the body of an @scope rule,
-  //    causing any selectors parsed to gain kScopeActivations when needed.
   // - `nested` refers to the "nested" flag referenced by the linked
   //    parser algorithm.
   // - `invalid_rule_error` (output parameter) is set when the selector list
@@ -289,19 +275,16 @@ class CORE_EXPORT CSSParserImpl {
   StyleRule* ConsumeStyleRule(CSSParserTokenStream&,
                               CSSNestingType,
                               StyleRule* parent_rule_for_nesting,
-                              bool is_within_scope,
                               bool nested,
                               bool& invalid_rule_error);
   StyleRule* ConsumeStyleRuleContents(base::span<CSSSelector> selector_vector,
                                       CSSParserTokenStream& stream,
-                                      bool is_within_scope,
                                       bool has_visited_pseudo);
 
   void ConsumeBlockContents(CSSParserTokenStream&,
                             StyleRule::RuleType,
                             CSSNestingType,
                             StyleRule* parent_rule_for_nesting,
-                            bool is_within_scope,
                             wtf_size_t nested_declarations_start_index,
                             HeapVector<Member<StyleRuleBase>, 4>* child_rules,
                             bool has_visited_pseudo = false);
@@ -311,7 +294,6 @@ class CORE_EXPORT CSSParserImpl {
       bool is_nested_group_rule,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
-      bool is_within_scope,
       HeapVector<Member<StyleRuleBase>, 4>* child_rules);
 
   // If id is std::nullopt, we're parsing a qualified style rule;
@@ -321,7 +303,6 @@ class CORE_EXPORT CSSParserImpl {
                                    CSSParserTokenStream& stream,
                                    CSSNestingType,
                                    StyleRule* parent_rule_for_nesting,
-                                   bool is_within_scope,
                                    bool& invalid_rule_error);
 
   // Returns true if a declaration was parsed and added to parsed_properties_,
@@ -341,17 +322,6 @@ class CORE_EXPORT CSSParserImpl {
   static std::unique_ptr<Vector<KeyframeOffset>> ConsumeKeyframeKeyList(
       const CSSParserContext*,
       CSSParserTokenStream&);
-
-  // Create an implicit & {} rule to wrap properties in, and insert every
-  // property from parsed_properties_ in it. Used when there are properties
-  // directly in @media, @supports or similar (which cannot hold properties
-  // by themselves, only rules; see
-  // https://github.com/w3c/csswg-drafts/issues/7850).
-  //
-  // If CSSNestingType::kScope is provided, an implicit :scope {} rule
-  // is created instead.
-  StyleRule* CreateImplicitNestedRule(CSSNestingType,
-                                      StyleRule* parent_rule_for_nesting);
 
   // CSSNestedDeclarations
   // =====================

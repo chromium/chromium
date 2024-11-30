@@ -129,6 +129,7 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -1472,21 +1473,6 @@ void WebFrameWidgetImpl::SendEndOfScrollEvents(
   }
 }
 
-void WebFrameWidgetImpl::HandleScrollMarkerUpdates(
-    const cc::CompositorCommitData& commit_data) {
-  for (const auto& scroll : commit_data.scrolls) {
-    Node* node =
-        View()->FindNodeFromScrollableCompositorElementId(scroll.element_id);
-    if (!node) {
-      continue;
-    }
-    if (ScrollableArea* scrollable_area =
-            ScrollableArea::GetForScrolling(node->GetLayoutBox())) {
-      scrollable_area->UpdateScrollMarkers(scrollable_area->GetScrollOffset());
-    }
-  }
-}
-
 void WebFrameWidgetImpl::SendScrollSnapChangingEventIfNeeded(
     const cc::CompositorCommitData& commit_data) {
   Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
@@ -1520,8 +1506,6 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
                                       commit_data.scroll_latched_element_id);
     }
   }
-
-  HandleScrollMarkerUpdates(commit_data);
 
   // TODO(bokan): If a scroll ended and a new one began in the same Blink frame
   // (e.g. during a long running main thread task), this will erroneously
@@ -1725,18 +1709,25 @@ void WebFrameWidgetImpl::OnTaskCompletedForFrame(
   }
 }
 
+void WebFrameWidgetImpl::RecordRenderingUpdateEndTime(
+    base::TimeTicks rendering_update_time) {
+  if (!animation_frame_timing_monitor_) {
+    return;
+  }
+
+  LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
+  CHECK(local_root_frame);
+  CHECK(local_root_frame->DomWindow());
+  animation_frame_timing_monitor_->RecordRenderingUpdateEndTime(
+      *local_root_frame->DomWindow(), rendering_update_time);
+}
+
 void WebFrameWidgetImpl::DidBeginMainFrame() {
   LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
   CHECK(local_root_frame);
 
   if (LocalFrameView* frame_view = local_root_frame->View()) {
     frame_view->RunPostLifecycleSteps();
-  }
-
-  if (animation_frame_timing_monitor_) {
-    CHECK(local_root_frame->DomWindow());
-    animation_frame_timing_monitor_->DidBeginMainFrame(
-        *local_root_frame->DomWindow());
   }
 
   if (Page* page = local_root_frame->GetPage()) {
@@ -2178,6 +2169,11 @@ void WebFrameWidgetImpl::SetBrowserControlsShownRatio(float top_ratio,
 void WebFrameWidgetImpl::SetBrowserControlsParams(
     cc::BrowserControlsParams params) {
   widget_base_->LayerTreeHost()->SetBrowserControlsParams(params);
+}
+
+void WebFrameWidgetImpl::SetMaxSafeAreaInsets(
+    const gfx::Insets& max_safe_area_insets) {
+  widget_base_->LayerTreeHost()->SetMaxSafeAreaInsets(max_safe_area_insets);
 }
 
 void WebFrameWidgetImpl::SynchronouslyCompositeForTesting(
@@ -4814,8 +4810,7 @@ bool WebFrameWidgetImpl::UpdateScreenRects(
 }
 
 void WebFrameWidgetImpl::EnqueueMoveEvent() {
-  if (!RuntimeEnabledFeatures::
-          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+  if (!RuntimeEnabledFeatures::WindowOnMoveEventEnabled()) {
     return;
   }
 

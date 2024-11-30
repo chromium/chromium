@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/threading/thread_restrictions.h"
+#import "base/uuid.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -49,6 +50,12 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
+
+// TODO(crbug.com/369296278): Remove when MaybeMigrateSyncingUserToSignedIn()
+// is no longer used (i.e. ~one year after kForceMigrateSyncingUserToSignedIn
+// is fully launched).
+#import "base/task/bind_post_task.h"
+#import "components/browser_sync/sync_to_signin_migration.h"
 
 // Helper class to create the Profile's directory.
 //
@@ -241,18 +248,23 @@ ProfileIOSImpl::ProfileIOSImpl(
   // initialized that we might be reading from the IO thread.
   io_data_->Init(cookie_path, cache_path, cache_max_size, state_path);
 
-  const bool is_new_profile = directories_creation_result.created;
-  if (creation_mode == CreationMode::kAsynchronous) {
+  const InitInfo init_info{
+      .creation_mode = creation_mode,
+      .is_new_profile = directories_creation_result.created,
+  };
+  if (init_info.creation_mode == CreationMode::kAsynchronous) {
     // It is safe to use base::Unretained(...) here since `this` owns the
     // PrefService and the callback will not be invoked after destruction
     // of the PrefService.
-    prefs_->AddPrefInitObserver(base::BindOnce(&ProfileIOSImpl::OnPrefsLoaded,
-                                               base::Unretained(this),
-                                               creation_mode, is_new_profile));
-  } else {
-    // Prefs were loaded synchronously so we can continue immediately.
-    OnPrefsLoaded(creation_mode, is_new_profile, true);
+    prefs_->AddPrefInitObserver(base::BindOnce(
+        &ProfileIOSImpl::PrefsInitStage1, base::Unretained(this), init_info));
+
+    return;
   }
+
+  // Either the operation was synchronous or unnecessary, move to the
+  // next stage of the profile initialisation.
+  PrefsInitStage1(init_info, true);
 }
 
 ProfileIOSImpl::~ProfileIOSImpl() {
@@ -323,7 +335,7 @@ bool ProfileIOSImpl::IsOffTheRecord() const {
   return false;
 }
 
-const std::string& ProfileIOSImpl::GetWebKitStorageID() const {
+const base::Uuid& ProfileIOSImpl::GetWebKitStorageID() const {
   return storage_uuid_;
 }
 
@@ -333,13 +345,12 @@ void ProfileIOSImpl::SetOffTheRecordProfileIOS(
   otr_state_ = std::move(otr_state);
 }
 
-void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
-                                   bool is_new_profile,
-                                   bool success) {
+void ProfileIOSImpl::PrefsInitStage1(InitInfo init_info, bool success) {
   // Early return in case of failure to load the preferences.
   if (!success) {
     if (delegate_) {
-      delegate_->OnProfileCreationFinished(this, creation_mode, is_new_profile,
+      delegate_->OnProfileCreationFinished(this, init_info.creation_mode,
+                                           init_info.is_new_profile,
                                            /*success=*/false);
     }
     return;
@@ -348,7 +359,7 @@ void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
   // If the initialisation is asynchronous, then we also need to wait for
   // the SupervisedUserSettingsService to complete its initialisation, if
   // is not yet complete.
-  if (creation_mode == CreationMode::kAsynchronous) {
+  if (init_info.creation_mode == CreationMode::kAsynchronous) {
     supervised_user::SupervisedUserSettingsService* supervised_user_settings =
         SupervisedUserSettingsServiceFactory::GetForProfile(this);
     if (!supervised_user_settings->IsReady()) {
@@ -356,14 +367,48 @@ void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
       // SupervisedUserSettingsService and the callback will not be invoked
       // after destruction of the SupervisedUserSettingsService.
       supervised_user_settings->WaitUntilReadyToSync(
-          base::BindOnce(&ProfileIOSImpl::OnPrefsLoaded, base::Unretained(this),
-                         creation_mode, is_new_profile, success));
+          base::BindOnce(&ProfileIOSImpl::PrefsInitStage2,
+                         base::Unretained(this), init_info, success));
       return;
     }
   }
 
-  // Migrate obsolete prefs.
-  MigrateObsoleteProfilePrefs(GetStatePath(), prefs_.get());
+  // Either the operation was synchronous or unnecessary, move to the
+  // next stage of the profile initialisation.
+  PrefsInitStage2(init_info, success);
+}
+
+void ProfileIOSImpl::PrefsInitStage2(InitInfo init_info, bool success) {
+  CHECK(success);
+
+  // Migrate the preferences, unless the profile has just been created.
+  if (!init_info.is_new_profile) {
+    MigrateObsoleteProfilePrefs(prefs_.get());
+
+    // TODO(crbug.com/369296278): Remove ~one year after the full launch of
+    // kForceMigrateSyncingUserToSignedIn (also remove the corresponding
+    // tests and -signinAndEnableLegacySyncFeature: test helper).
+    //
+    // MaybeMigrateSyncingUserToSignedIn(...) may perform disk IO which is
+    // not permitted if the Profile is loaded asynchronously.
+    if (init_info.creation_mode == CreationMode::kAsynchronous) {
+      browser_sync::MaybeMigrateSyncingUserToSignedInAsync(
+          GetStatePath(), GetPrefs(),
+          base::BindOnce(&ProfileIOSImpl::PrefsInitStage3,
+                         weak_ptr_factory_.GetWeakPtr(), init_info, success));
+      return;
+    }
+
+    browser_sync::MaybeMigrateSyncingUserToSignedIn(GetStatePath(), GetPrefs());
+  }
+
+  // Either the operation was synchronous or unnecessary, move to the
+  // next stage of the profile initialisation.
+  PrefsInitStage3(init_info, success);
+}
+
+void ProfileIOSImpl::PrefsInitStage3(InitInfo init_info, bool success) {
+  CHECK(success);
 
   // Initialize `storage_uuid_` from the prefs. In case of a new Profile,
   // generate a new value (this avoid losing data when migrating from an old
@@ -371,10 +416,13 @@ void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
   //
   // TODO(crbug.com/346754380): Remove when all Profile use a non-default
   // storage (since there is no automatic migration, this could take years).
-  storage_uuid_ = GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
-  if (storage_uuid_.empty() && is_new_profile) {
-    storage_uuid_ = base::SysNSStringToUTF8([NSUUID UUID].UUIDString);
-    GetPrefs()->SetString(prefs::kBrowserStateStorageIdentifier, storage_uuid_);
+  const std::string& uuid_string =
+      GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
+  if (!uuid_string.empty()) {
+    storage_uuid_ = base::Uuid::ParseCaseInsensitive(uuid_string);
+    DCHECK(storage_uuid_.is_valid());
+  } else if (init_info.is_new_profile) {
+    storage_uuid_ = base::Uuid::GenerateRandomV4();
   }
 
   // DO NOT ADD ANY INITIALISATION AFTER THIS LINE.
@@ -385,8 +433,9 @@ void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
       this);
 
   if (delegate_) {
-    delegate_->OnProfileCreationFinished(this, creation_mode, is_new_profile,
-                                         success);
+    delegate_->OnProfileCreationFinished(this, init_info.creation_mode,
+                                         init_info.is_new_profile,
+                                         /*success=*/true);
   }
 }
 

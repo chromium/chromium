@@ -42,16 +42,17 @@ void NinePatchLayerImpl::PushPropertiesTo(LayerImpl* layer) {
 void NinePatchLayerImpl::SetLayout(const gfx::Rect& aperture,
                                    const gfx::Rect& border,
                                    const gfx::Rect& layer_occlusion,
-                                   bool fill_center,
-                                   bool nearest_neighbor) {
+                                   bool fill_center) {
   // This check imposes an ordering on the call sequence.  An UIResource must
   // exist before SetLayout can be called.
   DCHECK(ui_resource_id_);
 
-  if (!quad_generator_.SetLayout(image_bounds_, bounds(), aperture, border,
-                                 layer_occlusion, fill_center,
-                                 nearest_neighbor))
+  if (!quad_generator_.SetLayout(
+          image_bounds_, bounds(), aperture, border, layer_occlusion,
+          fill_center,
+          GetFilterQuality() == PaintFlags::FilterQuality::kNone)) {
     return;
+  }
 
   NoteLayerPropertyChanged();
 }

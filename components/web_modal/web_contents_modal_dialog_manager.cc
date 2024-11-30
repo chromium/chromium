@@ -39,6 +39,7 @@ void WebContentsModalDialogManager::SetDelegate(
 void WebContentsModalDialogManager::ShowDialogWithManager(
     gfx::NativeWindow dialog,
     std::unique_ptr<SingleWebContentsDialogManager> manager) {
+  observer_list_.Notify(&Observer::OnWillShow);
   if (delegate_)
     manager->HostChanged(delegate_->GetWebContentsModalDialogHost());
   child_dialogs_.emplace_back(dialog, std::move(manager));
@@ -59,14 +60,12 @@ void WebContentsModalDialogManager::FocusTopmostDialog() const {
   child_dialogs_.front().manager->Focus();
 }
 
-void WebContentsModalDialogManager::AddCloseOnNavigationObserver(
-    CloseOnNavigationObserver* observer) {
-  close_on_navigation_observer_list_.AddObserver(observer);
+void WebContentsModalDialogManager::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
 }
 
-void WebContentsModalDialogManager::RemoveCloseOnNavigationObserver(
-    CloseOnNavigationObserver* observer) {
-  close_on_navigation_observer_list_.RemoveObserver(observer);
+void WebContentsModalDialogManager::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 content::WebContents* WebContentsModalDialogManager::GetWebContents() const {
@@ -163,10 +162,7 @@ void WebContentsModalDialogManager::DidFinishNavigation(
           navigation_handle->GetPreviousPrimaryMainFrameURL(),
           navigation_handle->GetURL(),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    for (auto& observer : close_on_navigation_observer_list_) {
-      observer.OnWillClose();
-    }
-
+    observer_list_.Notify(&Observer::OnWillCloseOnNavigation);
     CloseAllDialogs();
   }
 }

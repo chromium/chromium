@@ -74,6 +74,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "services/network/public/mojom/web_transport.mojom-forward.h"
 #include "services/network/public/mojom/websocket.mojom-forward.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -97,9 +98,12 @@
 #include "content/public/browser/posix_file_descriptor_info.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom-forward.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -241,6 +245,7 @@ class DipsDelegate;
 class DirectSocketsDelegate;
 class FeatureObserverClient;
 class FontAccessDelegate;
+class GuestPageHolder;
 class HidDelegate;
 class IdentityRequestDialogController;
 class LoginDelegate;
@@ -1784,8 +1789,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldEnableAudioProcessHighPriority();
 
   // Returns true if a site_url should launch a renderer that resolves
-  // fonts via the SkiaFontManager.
-  virtual bool ShouldUseSkiaFontManager(const GURL& site_url);
+  // fonts via the FontDataManager.
+  virtual bool ShouldUseFontDataManager(const GURL& site_url);
 #endif
 
   // Binds a new media remoter service to |receiver|, if supported by the
@@ -2361,6 +2366,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // for a navigation of the primary main frame.
   // |is_request_for_navigation| is whether the request is for a navigation.
   // |first_auth_attempt| is needed by AwHttpAuthHandler constructor.
+  // |guest_page_holder| is set if the auth is occurring in the context of
+  // a guest view.
   // |auth_required_callback| is used to transfer auth credentials to
   // URLRequest::SetAuth(). The credentials parameter of the callback
   // is std::nullopt if the request should be cancelled; otherwise
@@ -2399,6 +2406,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
+      GuestPageHolder* guest_page_holder,
       LoginAuthRequiredCallback auth_required_callback);
 
   // Launches the url for the given tab. Returns true if an attempt to handle
@@ -2908,6 +2916,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::BrowserContext* browser_context,
       const url::Origin& top_level_origin);
 
+  // This functions returns whether or not the user's preferences allow access
+  // to unpartitioned storage in a third-party context for the given url.
+  virtual bool IsUnpartitionedStorageAccessAllowedByUserPreference(
+      content::BrowserContext* browser_context,
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin);
+
   // Checks whether credentials should be included in fenced frame automatic
   // beacon requests, based on user cookie settings. Any cookies sent in an
   // automatic beacon response header will be honored and stored.
@@ -2982,7 +2998,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // where the Web application is trusted.
   virtual bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   // Allows the embedder to correlate backend media services with profile-keyed
   // effect settings.
   virtual void BindVideoEffectsManager(
@@ -2998,7 +3014,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
           video_effects_processor);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
   // Re-order audio device `infos` based on user preference. The ordering will
   // be from most preferred to least preferred.
@@ -3107,6 +3123,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldDispatchPagehideDuringCommit(
       BrowserContext* browser_context,
       const GURL& destination_url);
+
+  // Called when the tracing service is started.
+  virtual void OnTracingServiceStarted() {}
+
+  // Called when the tracing service has stopped.
+  virtual void OnTracingServiceStopped() {}
 };
 
 }  // namespace content

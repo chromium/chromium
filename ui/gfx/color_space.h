@@ -61,6 +61,8 @@ class ColorSpaceDataView;
 // between any processes.
 class COLOR_SPACE_EXPORT ColorSpace {
  public:
+  // TODO(https://crbug.com/380457000): Delete this enum and use
+  // `SkNamedPrimaries::CicpId` instead.
   enum class PrimaryID : uint8_t {
     // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
     // add them at the end and increment kMaxValue.
@@ -89,6 +91,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
     kMaxValue = EBU_3213_E,
   };
 
+  // TODO(https://crbug.com/380457000): Delete this enum and use
+  // `SkNamedTransferFn::CicpId` instead.
   enum class TransferID : uint8_t {
     // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
     // add them at the end and increment kMaxValue.
@@ -125,8 +129,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
     CUSTOM,
     // An HDR parametric transfer function defined by |transfer_params_|.
     CUSTOM_HDR,
-    // An HDR transfer function that is piecewise sRGB, and piecewise linear.
-    PIECEWISE_HDR,
     // An HDR transfer function that is linear, with the value 1 at 80 nits.
     // This transfer function is not SDR-referred, and therefore can only be
     // used (e.g, by ToSkColorSpace or GetTransferFunction) when an SDR white
@@ -240,21 +242,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // Uses P3 primaries. An HDR ColorSpace suitable for blending and compositing.
   static ColorSpace CreateExtendedSRGB10Bit();
 
-  // Create a piecewise-HDR color space.
-  // - If |primaries| is CUSTOM, then |custom_primary_matrix| must be
-  //   non-nullptr.
-  // - The SDR joint is the encoded pixel value where the SDR portion reaches 1,
-  //   usually 0.25 or 0.5, corresponding to giving 8 or 9 of 10 bits to SDR.
-  //   This must be in the open interval (0, 1).
-  // - The HDR level the value that the transfer function will evaluate to at 1,
-  //   and represents the maximum HDR brightness relative to the maximum SDR
-  //   brightness. This must be strictly greater than 1.
-  static ColorSpace CreatePiecewiseHDR(
-      PrimaryID primaries,
-      float sdr_joint,
-      float hdr_level,
-      const skcms_Matrix3x3* custom_primary_matrix = nullptr);
-
   // TODO(ccameron): Remove these, and replace with more generic constructors.
   static constexpr ColorSpace CreateJpeg() {
     // TODO(ccameron): Determine which primaries and transfer function were
@@ -364,10 +351,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
   bool GetInverseTransferFunction(
       skcms_TransferFunction* fn,
       std::optional<float> sdr_white_level = std::nullopt) const;
-
-  // Returns the parameters for a PIECEWISE_HDR transfer function. See
-  // CreatePiecewiseHDR for parameter meanings.
-  bool GetPiecewiseHDRParams(float* sdr_point, float* hdr_level) const;
 
   // Returns the transfer matrix for |bit_depth|. For most formats, this is the
   // RGB to YUV matrix.

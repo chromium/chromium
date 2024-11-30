@@ -17,7 +17,7 @@ class DownloadStartedAnimation {
   static void Show(content::WebContents* web_contents);
 
  private:
-  DownloadStartedAnimation() {}
+  DownloadStartedAnimation() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_STARTED_ANIMATION_H_

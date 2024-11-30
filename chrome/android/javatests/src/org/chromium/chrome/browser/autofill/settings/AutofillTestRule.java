@@ -15,6 +15,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -132,6 +133,16 @@ class AutofillTestRule extends ChromeBrowserTestRule
                             .dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keycode));
                 });
         mClickUpdate.waitForCallback(callCount);
+    }
+
+    protected void clickOnPreferenceAndWait(ChromeSwitchPreference preference)
+            throws TimeoutException {
+        int callCount = mFragmentShown.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    preference.performClick();
+                });
+        mFragmentShown.waitForCallback(callCount);
     }
 
     protected void setEditorDialogAndWait(EditorDialogView editorDialog) throws TimeoutException {

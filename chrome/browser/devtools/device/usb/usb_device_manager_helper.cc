@@ -142,7 +142,7 @@ void UsbDeviceManagerHelper::SetUsbManagerForTesting(
   GetInstance()->SetUsbManagerForTestingInternal(std::move(fake_usb_manager));
 }
 
-UsbDeviceManagerHelper::UsbDeviceManagerHelper() {}
+UsbDeviceManagerHelper::UsbDeviceManagerHelper() = default;
 
 UsbDeviceManagerHelper::~UsbDeviceManagerHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

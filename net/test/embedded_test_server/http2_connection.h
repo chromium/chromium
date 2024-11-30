@@ -58,6 +58,11 @@ class Http2Connection : public HttpConnection,
   bool OnEndStream(StreamId stream_id) override;
   bool OnCloseStream(StreamId stream_id,
                      http2::adapter::Http2ErrorCode error_code) override;
+  DataFrameHeaderInfo OnReadyToSendDataForStream(StreamId stream_id,
+                                                 size_t max_length) override;
+  bool SendDataFrame(StreamId stream_id,
+                     absl::string_view frame_header,
+                     size_t payload_bytes) override;
   // Unused functions
   void OnConnectionError(ConnectionError /*error*/) override {}
   bool OnFrameHeader(StreamId /*stream_id*/,

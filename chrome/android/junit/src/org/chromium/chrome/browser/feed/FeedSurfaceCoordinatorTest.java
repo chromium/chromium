@@ -155,12 +155,6 @@ public class FeedSurfaceCoordinatorTest {
         public void addObserver(TabModelObserver observer) {
             mObservers.add(observer);
         }
-
-        void selectTab() {
-            for (TabModelObserver observer : mObservers) {
-                observer.didSelectTab(null, 0, 0);
-            }
-        }
     }
 
     private TestTabModel mTabModel = new TestTabModel();

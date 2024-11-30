@@ -141,9 +141,10 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
       : receiver_(this, std::move(receiver)) {}
 
   void SharedStorageUpdate(
-      network::mojom::SharedStorageModifierMethodPtr method,
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr
+          method_with_options,
       SharedStorageUpdateCallback callback) override {
-    observed_update_params_.push_back(std::move(method));
+    observed_update_params_.push_back(std::move(method_with_options));
 
     std::move(callback).Run(update_result_error_message_);
   }
@@ -227,7 +228,7 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
   std::deque<mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>>
       pending_entries_listeners_;
 
-  std::vector<network::mojom::SharedStorageModifierMethodPtr>
+  std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
       observed_update_params_;
   std::vector<std::u16string> observed_get_params_;
   size_t observed_length_count_ = 0;
@@ -481,9 +482,6 @@ class SharedStorageWorkletTest : public PageTestBase {
   }
 
  protected:
-  ScopedSharedStorageAPIM125ForTest shared_storage_m125_runtime_enabled_feature{
-      /*enabled=*/true};
-
   ScopedInterestGroupsInSharedStorageWorkletForTest
       interest_groups_in_shared_storage_worklet_runtime_enabled_feature{
           /*enabled=*/true};
@@ -1834,7 +1832,7 @@ TEST_F(SharedStorageWorkletTest, Set_ClientError) {
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
   network::mojom::SharedStorageSetMethodPtr& observed_params =
-      test_client_->observed_update_params_[0]->get_set_method();
+      test_client_->observed_update_params_[0]->method->get_set_method();
   EXPECT_EQ(observed_params->key, u"key0");
   EXPECT_EQ(observed_params->value, u"value0");
 }
@@ -2201,7 +2199,7 @@ TEST_F(SharedStorageWorkletTest, Set_Success) {
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
   network::mojom::SharedStorageSetMethodPtr& observed_params =
-      test_client_->observed_update_params_[0]->get_set_method();
+      test_client_->observed_update_params_[0]->method->get_set_method();
   EXPECT_EQ(observed_params->key, u"key0");
   EXPECT_EQ(observed_params->value, u"value0");
 }
@@ -2232,14 +2230,40 @@ TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_True) {
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 3u);
   EXPECT_TRUE(test_client_->observed_update_params_[0]
-                  ->get_set_method()
+                  ->method->get_set_method()
                   ->ignore_if_present);
   EXPECT_TRUE(test_client_->observed_update_params_[1]
-                  ->get_set_method()
+                  ->method->get_set_method()
                   ->ignore_if_present);
   EXPECT_TRUE(test_client_->observed_update_params_[2]
-                  ->get_set_method()
+                  ->method->get_set_method()
                   ->ignore_if_present);
+}
+
+TEST_F(SharedStorageWorkletTest, Set_WithLock) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          await sharedStorage.set("key", "value");
+          await sharedStorage.set("key", "value", {withLock: "lock1"});
+          await sharedStorage.set("key", "value", {withLock: ""});
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
+
+  EXPECT_TRUE(run_result.success);
+  EXPECT_TRUE(run_result.error_message.empty());
+
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 3u);
+  EXPECT_FALSE(test_client_->observed_update_params_[0]->with_lock);
+  EXPECT_EQ(test_client_->observed_update_params_[1]->with_lock, "lock1");
+  EXPECT_EQ(test_client_->observed_update_params_[2]->with_lock, "");
 }
 
 TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_False) {
@@ -2266,19 +2290,19 @@ TEST_F(SharedStorageWorkletTest, Set_IgnoreIfPresent_False) {
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 5u);
   EXPECT_FALSE(test_client_->observed_update_params_[0]
-                   ->get_set_method()
+                   ->method->get_set_method()
                    ->ignore_if_present);
   EXPECT_FALSE(test_client_->observed_update_params_[1]
-                   ->get_set_method()
+                   ->method->get_set_method()
                    ->ignore_if_present);
   EXPECT_FALSE(test_client_->observed_update_params_[2]
-                   ->get_set_method()
+                   ->method->get_set_method()
                    ->ignore_if_present);
   EXPECT_FALSE(test_client_->observed_update_params_[3]
-                   ->get_set_method()
+                   ->method->get_set_method()
                    ->ignore_if_present);
   EXPECT_FALSE(test_client_->observed_update_params_[4]
-                   ->get_set_method()
+                   ->method->get_set_method()
                    ->ignore_if_present);
 }
 
@@ -2306,22 +2330,22 @@ TEST_F(SharedStorageWorkletTest, Set_KeyAndValueConvertedToString) {
   EXPECT_EQ(test_client_->observed_update_params_.size(), 4u);
 
   network::mojom::SharedStorageSetMethodPtr& observed_params_0 =
-      test_client_->observed_update_params_[0]->get_set_method();
+      test_client_->observed_update_params_[0]->method->get_set_method();
   EXPECT_EQ(observed_params_0->key, u"123");
   EXPECT_EQ(observed_params_0->value, u"456");
 
   network::mojom::SharedStorageSetMethodPtr& observed_params_1 =
-      test_client_->observed_update_params_[1]->get_set_method();
+      test_client_->observed_update_params_[1]->method->get_set_method();
   EXPECT_EQ(observed_params_1->key, u"null");
   EXPECT_EQ(observed_params_1->value, u"null");
 
   network::mojom::SharedStorageSetMethodPtr& observed_params_2 =
-      test_client_->observed_update_params_[2]->get_set_method();
+      test_client_->observed_update_params_[2]->method->get_set_method();
   EXPECT_EQ(observed_params_2->key, u"undefined");
   EXPECT_EQ(observed_params_2->value, u"undefined");
 
   network::mojom::SharedStorageSetMethodPtr& observed_params_3 =
-      test_client_->observed_update_params_[3]->get_set_method();
+      test_client_->observed_update_params_[3]->method->get_set_method();
   EXPECT_EQ(observed_params_3->key, u"[object Object]");
   EXPECT_EQ(observed_params_3->value, u"[object Object]");
 }
@@ -2494,7 +2518,7 @@ TEST_F(SharedStorageWorkletTest, Append_ClientError) {
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
   network::mojom::SharedStorageAppendMethodPtr& observed_params =
-      test_client_->observed_update_params_[0]->get_append_method();
+      test_client_->observed_update_params_[0]->method->get_append_method();
   EXPECT_EQ(observed_params->key, u"key0");
   EXPECT_EQ(observed_params->value, u"value0");
 }
@@ -2519,7 +2543,7 @@ TEST_F(SharedStorageWorkletTest, Append_Success) {
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
   network::mojom::SharedStorageAppendMethodPtr& observed_params =
-      test_client_->observed_update_params_[0]->get_append_method();
+      test_client_->observed_update_params_[0]->method->get_append_method();
   EXPECT_EQ(observed_params->key, u"key0");
   EXPECT_EQ(observed_params->value, u"value0");
 }
@@ -2575,7 +2599,7 @@ TEST_F(SharedStorageWorkletTest, Delete_InvalidKey_TooLong) {
           R"(
       class TestClass {
         async run() {
-          await sharedStorage.delete("a".repeat($1), "value");
+          await sharedStorage.delete("a".repeat($1));
         }
       }
 
@@ -2618,7 +2642,7 @@ TEST_F(SharedStorageWorkletTest, Delete_ClientError) {
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
   network::mojom::SharedStorageDeleteMethodPtr& observed_params =
-      test_client_->observed_update_params_[0]->get_delete_method();
+      test_client_->observed_update_params_[0]->method->get_delete_method();
   EXPECT_EQ(observed_params->key, u"key0");
 }
 
@@ -2642,7 +2666,7 @@ TEST_F(SharedStorageWorkletTest, Delete_Success) {
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 1u);
   network::mojom::SharedStorageDeleteMethodPtr& observed_params =
-      test_client_->observed_update_params_[0]->get_delete_method();
+      test_client_->observed_update_params_[0]->method->get_delete_method();
   EXPECT_EQ(observed_params->key, u"key0");
 }
 
@@ -4224,21 +4248,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
   run_loop.Run();
 }
 
-class SharedStoragePrivateAggregationFilteringIdTest
-    : public SharedStoragePrivateAggregationTest {
- public:
-  SharedStoragePrivateAggregationFilteringIdTest() = default;
-
- private:
-  // The features are not necessarily synchronized in the unit test, so we
-  // enable both.
-  base::test::ScopedFeatureList scoped_base_feature_{
-      features::kPrivateAggregationApiFilteringIds};
-  ScopedPrivateAggregationApiFilteringIdsForTest scoped_rte_feature{
-      /*enabled=*/true};
-};
-
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest, BasicFilteringId) {
+TEST_F(SharedStoragePrivateAggregationTest, BasicFilteringId) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
       "{bucket: 1n, value: 2, filteringId: 3n});",
@@ -4247,8 +4257,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest, BasicFilteringId) {
       /*filtering_id=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
-       FilteringIdWithDebugMode) {
+TEST_F(SharedStoragePrivateAggregationTest, FilteringIdWithDebugMode) {
   ExecuteScriptAndValidateContribution(
       R"(privateAggregation.enableDebugMode();
          privateAggregation.contributeToHistogram(
@@ -4260,7 +4269,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        NoFilteringIdSpecified_FilteringIdNull) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram({bucket: 1n, value: 2});",
@@ -4269,7 +4278,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/std::nullopt);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        ExplicitDefaultFilteringId_FilteringIdNotNull) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
@@ -4279,8 +4288,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/0);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
-       MaxFilteringIdForByteSize_Success) {
+TEST_F(SharedStoragePrivateAggregationTest, MaxFilteringIdForByteSize_Success) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
       "{bucket: 1n, value: 2, filteringId: 255n});",
@@ -4289,7 +4297,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/255);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        FilteringIdTooBigForByteSize_Error) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.contributeToHistogram("
@@ -4304,8 +4312,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
                                  "does not fit in byte size"));
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
-       FilteringIdNegative_Error) {
+TEST_F(SharedStoragePrivateAggregationTest, FilteringIdNegative_Error) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.contributeToHistogram("
       "{bucket: 1n, value: 2, filteringId: -1n});",
@@ -4319,8 +4326,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
                                  "does not fit in byte size"));
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
-       NoFilteringIdWithCustomByteSize) {
+TEST_F(SharedStoragePrivateAggregationTest, NoFilteringIdWithCustomByteSize) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram({bucket: 1n, value: 2});",
       /*expected_bucket=*/1, /*expected_value=*/2,
@@ -4328,7 +4334,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/std::nullopt, /*filtering_id_max_bytes=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        FilteringIdWithCustomByteSize_Success) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
@@ -4338,7 +4344,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/3, /*filtering_id_max_bytes=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        MaxFilteringIdWithCustomByteSize_Success) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
@@ -4348,7 +4354,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/16777215, /*filtering_id_max_bytes=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        TooBigFilteringIdWithCustomByteSize_Error) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.contributeToHistogram("
@@ -4364,7 +4370,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
                                  "does not fit in byte size"));
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest, MaxPossibleFilteringId) {
+TEST_F(SharedStoragePrivateAggregationTest, MaxPossibleFilteringId) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
       "{bucket: 1n, value: 2, filteringId: (1n << 64n) - 1n});",
@@ -4374,7 +4380,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest, MaxPossibleFilteringId) {
       /*filtering_id_max_bytes=*/8);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        TooBigFilteringIdWithMaxByteSize_Error) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.contributeToHistogram("
@@ -4388,49 +4394,6 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
   EXPECT_THAT(error_str,
               testing::HasSubstr("contribution['filteringId'] is negative or "
                                  "does not fit in byte size"));
-}
-
-class SharedStoragePrivateAggregationFilteringIdDisabledTest
-    : public SharedStoragePrivateAggregationTest {
- public:
-  SharedStoragePrivateAggregationFilteringIdDisabledTest() {
-    scoped_base_feature_.InitAndDisableFeature(
-        features::kPrivateAggregationApiFilteringIds);
-  }
-
- private:
-  // The features are not necessarily synchronized in the unit test, so we
-  // disable both.
-  base::test::ScopedFeatureList scoped_base_feature_;
-  ScopedPrivateAggregationApiFilteringIdsForTest scoped_rte_feature{
-      /*enabled=*/false};
-};
-
-TEST_F(SharedStoragePrivateAggregationFilteringIdDisabledTest,
-       ValidFilteringId_Ignored) {
-  ExecuteScriptAndValidateContribution(
-      "privateAggregation.contributeToHistogram("
-      "{bucket: 1n, value: 2, filteringId: 3n});",
-      /*expected_bucket=*/1, /*expected_value=*/2,
-      /*expected_debug_mode_details=*/mojom::blink::DebugModeDetails::New(),
-      /*filtering_id=*/std::nullopt);
-}
-TEST_F(SharedStoragePrivateAggregationFilteringIdDisabledTest,
-       InvalidFilteringId_Ignored) {
-  ExecuteScriptAndValidateContribution(
-      "privateAggregation.contributeToHistogram("
-      "{bucket: 1n, value: 2, filteringId: -1});",
-      /*expected_bucket=*/1, /*expected_value=*/2,
-      /*expected_debug_mode_details=*/mojom::blink::DebugModeDetails::New(),
-      /*filtering_id=*/std::nullopt);
-}
-TEST_F(SharedStoragePrivateAggregationFilteringIdDisabledTest,
-       CustomFilteringIdMaxBytes_Ignored) {
-  ExecuteScriptAndValidateContribution(
-      "privateAggregation.contributeToHistogram({bucket: 1n, value: 2});",
-      /*expected_bucket=*/1, /*expected_value=*/2,
-      /*expected_debug_mode_details=*/mojom::blink::DebugModeDetails::New(),
-      /*filtering_id=*/std::nullopt, /*filtering_id_max_bytes=*/3);
 }
 
 class SharedStorageWorkletThreadTest : public testing::Test {};

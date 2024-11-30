@@ -27,7 +27,7 @@ DriveUploaderOnWorker::DriveUploaderOnWorker(
   DETACH_FROM_SEQUENCE(sequece_checker_);
 }
 
-DriveUploaderOnWorker::~DriveUploaderOnWorker() {}
+DriveUploaderOnWorker::~DriveUploaderOnWorker() = default;
 
 void DriveUploaderOnWorker::StartBatchProcessing() {
 }

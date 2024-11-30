@@ -161,7 +161,7 @@ TEST_F(SerialRunnerTest, Single) {
   EXPECT_EQ(PIPELINE_OK, done_status());
 }
 
-TEST_F(SerialRunnerTest, Single_Error) {
+TEST_F(SerialRunnerTest, SingleError) {
   PushBoundFunction(PIPELINE_ERROR_ABORT);
   RunSerialRunner();
 
@@ -170,7 +170,7 @@ TEST_F(SerialRunnerTest, Single_Error) {
   EXPECT_EQ(PIPELINE_ERROR_ABORT, done_status());
 }
 
-TEST_F(SerialRunnerTest, Single_Cancel) {
+TEST_F(SerialRunnerTest, SingleCancel) {
   PushBoundFunction(PIPELINE_OK);
   PushCancellation();
   RunSerialRunner();
@@ -190,7 +190,7 @@ TEST_F(SerialRunnerTest, Multiple) {
   EXPECT_EQ(PIPELINE_OK, done_status());
 }
 
-TEST_F(SerialRunnerTest, Multiple_Error) {
+TEST_F(SerialRunnerTest, MultipleError) {
   PushBoundFunction(PIPELINE_ERROR_ABORT);
   PushBoundFunction(PIPELINE_OK);
   RunSerialRunner();
@@ -201,7 +201,7 @@ TEST_F(SerialRunnerTest, Multiple_Error) {
   EXPECT_EQ(PIPELINE_ERROR_ABORT, done_status());
 }
 
-TEST_F(SerialRunnerTest, Multiple_Cancel) {
+TEST_F(SerialRunnerTest, MultipleCancel) {
   PushBoundFunction(PIPELINE_OK);
   PushCancellation();
   PushBoundFunction(PIPELINE_OK);

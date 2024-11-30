@@ -19,18 +19,19 @@ message Action {
   // stability across Chromium versions.
   ControlPath path_to_control = 1;
 
-  // Wait until idle after the action.
-  bool wait_afterwards = 2;
+  ActionVerb verb = 2;
+}
 
+message ActionVerb {
   oneof action_choice {
     // Take an "action" in an ATSPI sense, e.g. click a button
-    TakeAction take_action = 3;
+    TakeAction take_action = 1;
 
     // Edit some text.
-    ReplaceText replace_text = 4;
+    ReplaceText replace_text = 2;
 
     // Select items from a list.
-    SetSelection set_selection = 5;
+    SetSelection set_selection = 3;
   }
 
   message TakeAction {

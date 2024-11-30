@@ -13,7 +13,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {DeclutterPageElement} from './declutter/declutter_page.js';
 import {getCss} from './tab_organization_selector.css.js';
 import {getHtml} from './tab_organization_selector.html.js';
-import type {Tab} from './tab_search.mojom-webui.js';
+import type {UnusedTabInfo} from './tab_search.mojom-webui.js';
 import {DeclutterCTREvent, SelectorCTREvent, TabDeclutterEntryPoint, TabOrganizationFeature} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
@@ -67,7 +67,7 @@ export class TabOrganizationSelectorElement extends CrLitElement {
 
     this.visibilityChangedListener_ = () => {
       if (document.visibilityState === 'visible') {
-        this.apiProxy_.getStaleTabs().then(
+        this.apiProxy_.getUnusedTabs().then(
             ({tabs}) => this.updateDeclutterTabs_(tabs));
       }
     };
@@ -75,12 +75,12 @@ export class TabOrganizationSelectorElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.apiProxy_.getStaleTabs().then(
+    this.apiProxy_.getUnusedTabs().then(
         ({tabs}) => this.updateDeclutterTabs_(tabs));
     this.apiProxy_.getTabOrganizationFeature().then(
         ({feature}) => this.updateSelectedFeature_(feature));
     const callbackRouter = this.apiProxy_.getCallbackRouter();
-    this.listenerIds_.push(callbackRouter.staleTabsChanged.addListener(
+    this.listenerIds_.push(callbackRouter.unusedTabsChanged.addListener(
         this.updateDeclutterTabs_.bind(this)));
     this.listenerIds_.push(
         callbackRouter.tabOrganizationFeatureChanged.addListener(
@@ -113,13 +113,19 @@ export class TabOrganizationSelectorElement extends CrLitElement {
           break;
         case TabOrganizationFeature.kSelector:
           if (this.prevSelectedState_ ===
-              TabOrganizationFeature.kAutoTabGroups) {
+                  TabOrganizationFeature.kAutoTabGroups ||
+              this.disableDeclutter_) {
             this.$.autoTabGroupsButton.focus();
           } else {
             this.$.declutterButton.focus();
           }
           break;
       }
+    } else if (
+        changedPrivateProperties.has('disableDeclutter_') &&
+        this.selectedState_ === TabOrganizationFeature.kDeclutter &&
+        this.disableDeclutter_) {
+      this.$.autoTabGroupsButton.focus();
     }
   }
 
@@ -166,8 +172,11 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
   }
 
-  private async updateDeclutterTabs_(tabs: Tab[]): Promise<void> {
-    const declutterTabCount = tabs.length;
+  private async updateDeclutterTabs_(tabs: UnusedTabInfo): Promise<void> {
+    let declutterTabCount = tabs.staleTabs.length;
+    for (const url in tabs.duplicateTabs) {
+      declutterTabCount += tabs.duplicateTabs[url]!.length;
+    }
     this.disableDeclutter_ = declutterTabCount === 0;
     this.declutterHeading_ =
         await PluralStringProxyImpl.getInstance().getPluralString(

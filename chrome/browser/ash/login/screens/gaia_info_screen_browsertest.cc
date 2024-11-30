@@ -94,7 +94,6 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTest, BackFlow) {
 class GaiaInfoScreenTestQuickStartEnabled : public GaiaInfoScreenTest {
  public:
   GaiaInfoScreenTestQuickStartEnabled() {
-    feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
     connection_broker_factory_.set_initial_feature_support_status(
         quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
             kUndetermined);

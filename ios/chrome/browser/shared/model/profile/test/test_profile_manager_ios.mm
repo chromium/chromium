@@ -34,10 +34,10 @@ TestProfileManagerIOS::~TestProfileManagerIOS() {
     observer.OnProfileManagerDestroyed(this);
   }
 
-  // The profiles must be destroyed before the AccountProfileMapper is removed
+  // The profiles must be unloaded before the AccountProfileMapper is removed
   // from the ApplicationContext, since some keyed services (owned by the
   // profiles) might access the AccountProfileMapper during their destruction.
-  DestroyAllProfiles();
+  UnloadAllProfiles();
 
   TestingApplicationContext* app_context =
       TestingApplicationContext::GetGlobal();
@@ -57,8 +57,6 @@ void TestProfileManagerIOS::RemoveObserver(
     ProfileManagerObserverIOS* observer) {
   observers_.RemoveObserver(observer);
 }
-
-void TestProfileManagerIOS::LoadProfiles() {}
 
 ProfileIOS* TestProfileManagerIOS::GetProfileWithName(std::string_view name) {
   auto iterator = profiles_map_.find(name);
@@ -80,6 +78,10 @@ bool TestProfileManagerIOS::HasProfileWithName(std::string_view name) const {
 bool TestProfileManagerIOS::CanCreateProfileWithName(
     std::string_view name) const {
   return true;
+}
+
+std::string TestProfileManagerIOS::ReserveNewProfileName() {
+  NOTREACHED();
 }
 
 bool TestProfileManagerIOS::LoadProfileAsync(
@@ -124,8 +126,23 @@ ProfileIOS* TestProfileManagerIOS::CreateProfile(std::string_view name) {
   return GetProfileWithName(name);
 }
 
-void TestProfileManagerIOS::DestroyAllProfiles() {
-  profiles_map_.clear();
+void TestProfileManagerIOS::UnloadProfile(std::string_view name) {
+  auto iter = profiles_map_.find(name);
+  DCHECK(iter != profiles_map_.end());
+  std::unique_ptr<ProfileIOS> profile = std::move(iter->second);
+  profiles_map_.erase(iter);
+  for (auto& observer : observers_) {
+    observer.OnProfileUnloaded(this, profile.get());
+  }
+}
+
+void TestProfileManagerIOS::UnloadAllProfiles() {
+  ProfileMap profiles_map = std::exchange(profiles_map_, {});
+  for (auto& [_, profile] : profiles_map) {
+    for (auto& observer : observers_) {
+      observer.OnProfileUnloaded(this, profile.get());
+    }
+  }
 }
 
 ProfileAttributesStorageIOS*
@@ -135,6 +152,17 @@ TestProfileManagerIOS::GetProfileAttributesStorage() {
 
 TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
     TestProfileIOS::Builder builder) {
+  // The ProfileAttributesStorage entry needs to be created before the actual
+  // profile initialization gets kicked off, because the AccountProfileMapper
+  // depends on it.
+  profile_attributes_storage_.AddProfile(builder.GetEffectiveName());
+
+  // If this is the first profile ever loaded, mark it as the personal profile.
+  if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
+    profile_attributes_storage_.SetPersonalProfileName(
+        builder.GetEffectiveName());
+  }
+
   // Ensure that the created Profile will store its data in sub-directory of
   // `profile_data_dir_` (i.e. GetStatePath().DirName() == `profile_data_dir_`).
   auto profile = std::move(builder).Build(profile_data_dir_);
@@ -143,8 +171,6 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   auto [iterator, insertion_success] =
       profiles_map_.insert(std::make_pair(profile_name, std::move(profile)));
   DCHECK(insertion_success);
-
-  profile_attributes_storage_.AddProfile(profile_name);
 
   for (auto& observer : observers_) {
     observer.OnProfileCreated(this, iterator->second.get());

@@ -27,7 +27,7 @@ void DestroyOTRProfileWhenAppropriate(base::WeakPtr<Profile> weak_profile) {
 
 }  // namespace
 
-DevToolsBrowserContextManager::DevToolsBrowserContextManager() {}
+DevToolsBrowserContextManager::DevToolsBrowserContextManager() = default;
 
 DevToolsBrowserContextManager::~DevToolsBrowserContextManager() = default;
 

@@ -107,7 +107,12 @@ public class PaneTransitionHelper {
     }
 
     private Optional<TransitionData> findTransitionForPaneId(@PaneId int paneId) {
-        return mTransitions.stream().filter(data -> data.paneId == paneId).findFirst();
+        for (TransitionData data : mTransitions) {
+            if (data.paneId == paneId) {
+                return Optional.of(data);
+            }
+        }
+        return Optional.empty();
     }
 
     private void processNextTransition() {

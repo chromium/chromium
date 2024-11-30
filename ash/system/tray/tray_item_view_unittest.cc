@@ -118,7 +118,7 @@ class TrayItemViewTest : public AshTestBase {
     // animation throughput data to be passed from cc to ui.
     ui::Compositor* const compositor =
         tray_item()->GetWidget()->GetCompositor();
-    while (compositor->has_throughput_trackers_for_testing()) {
+    while (compositor->has_compositor_metrics_trackers_for_testing()) {
       compositor->ScheduleFullRedraw();
       std::ignore = ui::WaitForNextFrameToBePresented(compositor,
                                                       base::Milliseconds(500));

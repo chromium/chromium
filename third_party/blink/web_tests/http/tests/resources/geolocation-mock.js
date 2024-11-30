@@ -66,7 +66,7 @@ export class GeolocationMock {
     this.geolocationServiceReceiver_.$.bindHandle(handle);
   }
 
-  setHighAccuracy(highAccuracy) {
+  setHighAccuracyHint(highAccuracy) {
     // FIXME: We need to add some tests regarding "high accuracy" mode.
     // See https://bugs.webkit.org/show_bug.cgi?id=49438
   }

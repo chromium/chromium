@@ -1276,8 +1276,7 @@ TEST(BiddingAndAuctionResponseTest, BAndAPrivateAggregationDisabled) {
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{blink::features::kPrivateAggregationApi,
-        {{"enabled_in_fledge", "true"}}},
-       {blink::features::kPrivateAggregationApiFilteringIds, {}}},
+        {{"enabled_in_fledge", "true"}}}},
       /*disabled_features=*/{features::kEnableBandAPrivateAggregation});
 
   base::Value::Dict response = CreateResponseDictWithPAggResponse(
@@ -2050,7 +2049,6 @@ class BiddingAndAuctionPAggResponseTest : public testing::Test {
         /*enabled_features=*/
         {{blink::features::kPrivateAggregationApi,
           {{"enabled_in_fledge", "true"}}},
-         {blink::features::kPrivateAggregationApiFilteringIds, {}},
          {features::kEnableBandAPrivateAggregation, {}}},
         /*disabled_features=*/{});
   }

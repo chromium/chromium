@@ -33,7 +33,7 @@ static_library("core_internal") {
     "empty_collaboration_service.h",
   ]
 
-  deps = []
+  deps = [ "//components/sync/service:service" ]
 
   public_deps = [
     "//base",
@@ -76,6 +76,11 @@ static_library("messaging_internal") {
     "messaging/empty_messaging_backend_service.h",
     "messaging/messaging_backend_service_impl.cc",
     "messaging/messaging_backend_service_impl.h",
+    "messaging/storage/collaboration_message_util.cc",
+    "messaging/storage/collaboration_message_util.h",
+    "messaging/storage/messaging_backend_store.h",
+    "messaging/storage/messaging_backend_store_impl.cc",
+    "messaging/storage/messaging_backend_store_impl.h",
     "messaging/tab_group_change_notifier.cc",
     "messaging/tab_group_change_notifier.h",
     "messaging/tab_group_change_notifier_impl.cc",
@@ -84,6 +89,7 @@ static_library("messaging_internal") {
 
   deps = [
     "//base",
+    "//components/collaboration/internal/messaging/storage/protocol",
     "//components/collaboration/public:messaging_public",
     "//components/saved_tab_groups/public",
   ]
@@ -122,6 +128,7 @@ source_set("core_unit_tests") {
   visibility = [ ":*" ]
 
   sources = [
+    "collaboration_controller_unittest.cc",
     "collaboration_service_impl_unittest.cc",
     "empty_collaboration_service_unittest.cc",
   ]
@@ -129,9 +136,12 @@ source_set("core_unit_tests") {
   deps = [
     ":internal",
     "//base/test:test_support",
+    "//components/collaboration:test_support",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
+    "//components/saved_tab_groups/test_support:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
     "//testing/gtest",
   ]
 }
@@ -140,6 +150,7 @@ source_set("messaging_unit_tests") {
   testonly = true
   sources = [
     "messaging/messaging_backend_service_impl_unittest.cc",
+    "messaging/storage/messaging_backend_store_impl_unittest.cc",
     "messaging/tab_group_change_notifier_impl_unittest.cc",
   ]
   deps = [

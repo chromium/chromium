@@ -6,9 +6,10 @@
 
 #include <windows.h>
 
-#include <memory>
+#include <algorithm>
 #include <numeric>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -40,7 +41,7 @@ class SharedSamplerTest : public testing::Test {
 
   SharedSamplerTest(const SharedSamplerTest&) = delete;
   SharedSamplerTest& operator=(const SharedSamplerTest&) = delete;
-  ~SharedSamplerTest() override {}
+  ~SharedSamplerTest() override = default;
 
  protected:
   base::Time start_time() const { return start_time_; }
@@ -165,37 +166,39 @@ TEST_F(SharedSamplerTest, MultipleRefreshTypes) {
             finished_refresh_type());
 }
 
-static int ReturnZeroThreadProcessInformation(unsigned char* buffer,
-                                              int buffer_size) {
+static int ReturnZeroThreadProcessInformation(base::span<uint8_t> buffer) {
   // Calculate the number of bytes required for the structure, and ImageName.
   std::wstring image_name =
       base::PathService::CheckedGet(base::FILE_EXE).BaseName().value();
 
-  const int kImageNameBytes = image_name.length() * sizeof(char16_t);
-  const int kRequiredBytes =
-      sizeof(SYSTEM_PROCESS_INFORMATION) + kImageNameBytes + sizeof(char16_t);
-  if (kRequiredBytes > buffer_size)
-    return kRequiredBytes;
+  const size_t image_name_bytes = image_name.length() * sizeof(char16_t);
+  const size_t required_bytes =
+      sizeof(SYSTEM_PROCESS_INFORMATION) + image_name_bytes + sizeof(char16_t);
+  if (required_bytes > buffer.size()) {
+    return required_bytes;
+  }
 
   // Create a zero'd structure, so that fields such as thread count will be zero
   // by default.
   // Set process handle and image name, so the SharedSampler will match us.
-  memset(buffer, 0, kRequiredBytes);
+  std::ranges::fill(buffer, 0);
   SYSTEM_PROCESS_INFORMATION* process_info =
-      reinterpret_cast<SYSTEM_PROCESS_INFORMATION*>(buffer);
+      reinterpret_cast<SYSTEM_PROCESS_INFORMATION*>(buffer.data());
   process_info->ProcessId = reinterpret_cast<HANDLE>(base::GetCurrentProcId());
   process_info->ImageName.Length = process_info->ImageName.MaximumLength =
-      kImageNameBytes;
-  process_info->ImageName.Buffer = reinterpret_cast<LPWSTR>(process_info + 1);
+      image_name_bytes;
+  auto image_name_buffer =
+      buffer.subspan(sizeof(SYSTEM_PROCESS_INFORMATION), image_name_bytes);
+  process_info->ImageName.Buffer =
+      reinterpret_cast<LPWSTR>(image_name_buffer.data());
   process_info->NumberOfThreads = 0u;
   process_info->WorkingSetPrivateSize = 1024ull;
-  buffer += sizeof(SYSTEM_PROCESS_INFORMATION);
 
-  // Copy the image name into place. The earlier memset() provides null
+  // Copy the image name into place. Buffer is zero-filled what assures null
   // termination.
-  memcpy(buffer, image_name.data(), kImageNameBytes);
+  image_name_buffer.copy_from(base::as_byte_span(image_name));
 
-  return kRequiredBytes;
+  return required_bytes;
 }
 
 // Verifies that the SharedSampler copes with zero-thread processes.

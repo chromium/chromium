@@ -37,14 +37,14 @@ namespace media {
 AesCbcCrypto::AesCbcCrypto() = default;
 AesCbcCrypto::~AesCbcCrypto() = default;
 
-bool AesCbcCrypto::Initialize(const crypto::SymmetricKey& key,
+bool AesCbcCrypto::Initialize(base::span<const uint8_t> key,
                               base::span<const uint8_t> iv) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   // This uses AES-CBC-128, so the key must be 128 bits.
   const EVP_CIPHER* cipher = EVP_aes_128_cbc();
-  const uint8_t* key_data = reinterpret_cast<const uint8_t*>(key.key().data());
-  if (key.key().length() != EVP_CIPHER_key_length(cipher)) {
+  const uint8_t* key_data = reinterpret_cast<const uint8_t*>(key.data());
+  if (key.size() != EVP_CIPHER_key_length(cipher)) {
     DVLOG(1) << "Key length is incorrect.";
     return false;
   }
@@ -66,6 +66,11 @@ bool AesCbcCrypto::Initialize(const crypto::SymmetricKey& key,
   }
 
   return true;
+}
+
+bool AesCbcCrypto::Initialize(const crypto::SymmetricKey& key,
+                              base::span<const uint8_t> iv) {
+  return Initialize(base::as_byte_span(key.key()), iv);
 }
 
 bool AesCbcCrypto::Decrypt(base::span<const uint8_t> encrypted_data,

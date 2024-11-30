@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 
@@ -50,8 +49,7 @@ class TokenBindingHelper {
   static constexpr Error kNoErrorForMetrics = static_cast<Error>(0);
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:TokenBindingGenerateAssertionResult)
 
-  using GenerateAssertionCallback =
-      base::OnceCallback<void(std::string, std::optional<HybridEncryptionKey>)>;
+  using GenerateAssertionCallback = base::OnceCallback<void(std::string)>;
 
   explicit TokenBindingHelper(
       unexportable_keys::UnexportableKeyService& unexportable_key_service);
@@ -82,8 +80,11 @@ class TokenBindingHelper {
   // Asynchronously generates a binding key assertion with a key associated with
   // `account_id`. The result is returned through `callback`. Returns an empty
   // string if the generation fails.
+  // If not empty, `ephemeral_public_key` will be added to the assertion,
+  // instructing the recipient to encrypt sensitive data with this key.
   void GenerateBindingKeyAssertion(const CoreAccountId& account_id,
                                    std::string_view challenge,
+                                   std::string_view ephemeral_public_key,
                                    const GURL& destination_url,
                                    GenerateAssertionCallback callback);
 
@@ -117,6 +118,7 @@ class TokenBindingHelper {
 
   void SignAssertionToken(
       std::string_view challenge,
+      std::string_view ephemeral_public_key,
       const GURL& destination_url,
       GenerateAssertionCallback callback,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>

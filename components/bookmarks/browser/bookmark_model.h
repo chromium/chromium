@@ -36,6 +36,7 @@
 
 namespace base {
 class FilePath;
+class Location;
 }  // namespace base
 
 namespace favicon_base {
@@ -191,6 +192,15 @@ class BookmarkModel : public BookmarkUndoProvider,
   void Remove(const BookmarkNode* node,
               metrics::BookmarkEditSource source,
               const base::Location& location);
+
+  // Removes the last child under `parent`. This is identical to invoking
+  // `Remove()` for the actual child, i.e.
+  // `Remove(parent->children()[parent->children().size() - 1].get())`. The
+  // only difference is that `RemoveLastChild()` is guaranteed to require
+  // constant time, for advanced cases where performance is a concern.
+  void RemoveLastChild(const BookmarkNode* parent,
+                       metrics::BookmarkEditSource source,
+                       const base::Location& location);
 
   // Removes all the non-permanent bookmark nodes that are editable by the user.
   // Observers are only notified when all nodes have been removed. There is no
@@ -472,11 +482,14 @@ class BookmarkModel : public BookmarkUndoProvider,
   void AddNodeToIndicesRecursive(const BookmarkNode* node,
                                  NodeTypeForUuidLookup type_for_uuid_lookup);
 
-  // Removes `node` and notifies its observers, returning and transferring
-  // ownership of the node removed. The caller is responsible for allowing undo,
-  // if applicable.
-  std::unique_ptr<BookmarkNode> RemoveNode(const BookmarkNode* node,
-                                           const base::Location& location);
+  // Removes a child under `parent` at position `index` and notifies its
+  // observers. `is_undoable` determines whether the deletion should be
+  // propagated via BookmarkClient to the undo stack.
+  void RemoveChildAt(const BookmarkNode* parent,
+                     size_t index,
+                     const base::Location& location,
+                     std::optional<metrics::BookmarkEditSource> source,
+                     bool is_undoable);
 
   // Removes the node from internal maps and recurses through all children. If
   // the node is a url, its url is added to removed_urls.

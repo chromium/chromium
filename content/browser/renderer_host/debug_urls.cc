@@ -12,6 +12,7 @@
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/profiler.h"
 #include "base/functional/bind.h"
+#include "base/immediate_crash.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/utf_string_conversions.h"
@@ -117,7 +118,7 @@ NOINLINE void CrashBrowserProcessIntentionally() {
   // with crash triage.
   NO_CODE_FOLDING();
   // Induce an intentional crash in the browser process.
-  CHECK(false);
+  base::ImmediateCrash();
 }
 
 }  // namespace

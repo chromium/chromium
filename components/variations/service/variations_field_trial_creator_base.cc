@@ -732,6 +732,10 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   }
 
   base::UmaHistogramCounts1M("Variations.AppliedSeed.Size", seed_data.size());
+#if BUILDFLAG(IS_WIN)
+  base::UmaHistogramCounts10M("Variations.AppliedSeed.Size.V2",
+                              seed_data.size());
+#endif  // BUILDFLAG(IS_WIN)
   base::UmaHistogramTimes("Variations.SeedProcessingTime",
                           base::TimeTicks::Now() - start_time);
   return true;

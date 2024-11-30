@@ -252,30 +252,56 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     unsigned last_queued_frame_index) {
   while (!images_queued_for_paint_time_.empty()) {
     ImageRecord* record = images_queued_for_paint_time_.front();
+    // Skip any null records at the start of the queue
     if (!record) {
       images_queued_for_paint_time_.pop_front();
       continue;
     }
+    // Not ready for this frame yet - we're done with the queue for now.
     if (record->frame_index > last_queued_frame_index) {
       break;
     }
+
+    images_queued_for_paint_time_.pop_front();
+
     if (record->queue_animated_paint) {
       record->first_animated_frame_time = timestamp;
       record->queue_animated_paint = false;
     }
-    auto it = pending_images_.find(record->hash);
-    images_queued_for_paint_time_.pop_front();
-    // A record may be in |images_queued_for_paint_time_| twice, for instance if
-    // is already loaded by the time of its first paint.
-    if (!record->loaded || !record->paint_time.is_null() ||
-        it == pending_images_.end()) {
+
+    // TODO(crbug.com/364860066): When cleaning up the flag, remove this whole
+    // block. This re-enables the old behavior where animated images were not
+    // reported until fully loaded.
+    if (!record->loaded && !base::FeatureList::IsEnabled(
+                               features::kReportFirstFrameTimeAsRenderTime)) {
       continue;
     }
-    record->paint_time = timestamp;
+
+    // For non-animated images, if it's not loaded yet (too early) or already
+    // painted (too late), move on.
+    if ((!record->loaded && record->first_animated_frame_time.is_null()) ||
+        !record->paint_time.is_null()) {
+      continue;
+    }
+
+    // A record may be in |images_queued_for_paint_time_| twice, for instance if
+    // is already loaded by the time of its first paint.
+    // If it's no longer pending for any other reason, move on.
+    auto it = pending_images_.find(record->hash);
+    if (it == pending_images_.end()) {
+      continue;
+    }
+
+    // Set paint time.
+    if (record->paint_time.is_null()) {
+      record->paint_time = timestamp;
+    }
+    // Update largest if necessary.
     if (!largest_painted_image_ ||
         largest_painted_image_->recorded_size < record->recorded_size) {
       largest_painted_image_ = std::move(it->value);
     }
+    // Remove from pending.
     pending_images_.erase(it);
   }
 }
@@ -326,8 +352,7 @@ bool ImagePaintTimingDetector::RecordImage(
     ImageRecord* record = records_manager_.GetPendingImage(record_id_hash);
     if (!record)
       return false;
-    if (media_timing.IsPaintedFirstFrame() &&
-        RuntimeEnabledFeatures::LCPAnimatedImagesWebExposedEnabled()) {
+    if (media_timing.IsPaintedFirstFrame()) {
       added_entry_in_latest_frame_ |=
           records_manager_.OnFirstAnimatedFramePainted(record_id_hash,
                                                        frame_index_);
@@ -368,8 +393,7 @@ bool ImagePaintTimingDetector::RecordImage(
   if (!added_pending)
     return false;
 
-  if (media_timing.IsPaintedFirstFrame() &&
-      RuntimeEnabledFeatures::LCPAnimatedImagesWebExposedEnabled()) {
+  if (media_timing.IsPaintedFirstFrame()) {
     added_entry_in_latest_frame_ |=
         records_manager_.OnFirstAnimatedFramePainted(record_id_hash,
                                                      frame_index_);
@@ -455,8 +479,12 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
     // ImageRecord object.
     record->first_animated_frame_time =
         record->media_timing->GetFirstVideoFrameTime();
+    if (base::FeatureList::IsEnabled(
+            features::kReportFirstFrameTimeAsRenderTime)) {
+      record->paint_time = record->first_animated_frame_time;
+    }
   } else if (record->first_animated_frame_time.is_null()) {
-    // Otherwise, this is an animated images, and so we should wait for the
+    // Otherwise, this is an animated image, and so we should wait for the
     // presentation callback to fire to set the first frame presentation time.
     record->queue_animated_paint = true;
     QueueToMeasurePaintTime(record, current_frame_index);

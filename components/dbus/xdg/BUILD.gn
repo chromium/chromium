@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("xdg") {
+  sources = [
+    "request.cc",
+    "request.h",
+    "systemd.cc",
+    "systemd.h",
+  ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/dbus/properties",
+    "//dbus",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "systemd_unittest.cc" ]
+  deps = [
+    ":xdg",
+    "//base",
+    "//base/test:test_support",
+    "//dbus",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

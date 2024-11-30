@@ -138,6 +138,8 @@ suite('UpdateVoicePack', () => {
         await microtasksFinished();
 
         assertFalse(app.enabledLangs.includes(lang));
+        assertFalse(
+            chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
       });
 
       test(
@@ -151,6 +153,8 @@ suite('UpdateVoicePack', () => {
             await microtasksFinished();
 
             assertFalse(app.enabledLangs.includes(lang));
+            assertFalse(
+                chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
           });
 
       test(
@@ -164,6 +168,8 @@ suite('UpdateVoicePack', () => {
             await microtasksFinished();
 
             assertFalse(app.enabledLangs.includes('it-it'));
+            assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
+                'it-it'));
           });
 
       test(
@@ -179,20 +185,24 @@ suite('UpdateVoicePack', () => {
             await microtasksFinished();
 
             assertFalse(app.enabledLangs.includes('it-it'));
+            assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
+                'it-it'));
           });
 
       test(
           'and has other Google voices for language, keeps language enabled',
           async () => {
             createAndSetVoices(app, speechSynthesis, [
-              {lang: lang, name: 'ChromeOS Portuguese 1'},
-              {lang: lang, name: 'ChromeOS Portuguese 2'},
+              {lang: lang, name: 'Google Portuguese 1'},
+              {lang: lang, name: 'Google Portuguese 2'},
             ]);
             app.onVoicesChanged();
             app.updateVoicePackStatus(lang, 'kOther');
             await microtasksFinished();
 
             assertTrue(app.enabledLangs.includes(lang));
+            assertTrue(
+                chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
           });
     });
   });
@@ -383,7 +393,6 @@ suite('UpdateVoicePack', () => {
       'with flag switches to newly available voices if it\'s for the current language',
       async () => {
         const lang = 'en-us';
-        chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
         chrome.readingMode.baseLanguageForSpeech = lang;
         app.enabledLangs = [lang];
         chrome.readingMode.getStoredVoice = () => '';
@@ -401,7 +410,6 @@ suite('UpdateVoicePack', () => {
       'with flag does not switch to newly available voices if it\'s not for the current language',
       () => {
         const installedLang = 'en-us';
-        chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
         chrome.readingMode.baseLanguageForSpeech = 'pt-br';
         app.enabledLangs = [chrome.readingMode.baseLanguageForSpeech];
         const currentVoice = createSpeechSynthesisVoice({

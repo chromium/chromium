@@ -402,6 +402,13 @@ struct StructTraits<blink::mojom::WebNNContextTokenDataView,
           blink::WebNNContextToken> {};
 
 template <>
+struct StructTraits<blink::mojom::WebNNPendingConstantTokenDataView,
+                    blink::WebNNPendingConstantToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::WebNNPendingConstantTokenDataView,
+          blink::WebNNPendingConstantToken> {};
+
+template <>
 struct StructTraits<blink::mojom::WebNNTensorTokenDataView,
                     blink::WebNNTensorToken>
     : public blink::TokenMojomTraitsHelper<

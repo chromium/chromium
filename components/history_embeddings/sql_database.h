@@ -46,32 +46,32 @@ class SqlDatabase : public VectorDatabase {
   // `visit_time` are needed too, to respect History deletions and expirations.
   // If there are existing passages for `url_id`, they are replaced. Returns
   // whether this operation was successful.
-  bool InsertOrReplacePassages(const UrlPassages& url_passages);
+  bool InsertOrReplacePassages(const UrlData& url_passages);
 
   // Store embeddings; this is part of the implementation for `AddUrlData`.
-  bool InsertOrReplaceEmbeddings(const UrlEmbeddings& url_embeddings);
+  bool InsertOrReplaceEmbeddings(const UrlData& url_embeddings);
 
   // Gets the passages associated with `url_id`. Returns nullopt if there's
   // nothing available.
   std::optional<proto::PassagesValue> GetPassages(history::URLID url_id);
 
   // Gets passages and embeddings for given `url_id` if data is found.
-  std::optional<UrlPassagesEmbeddings> GetUrlData(history::URLID url_id);
+  std::optional<UrlData> GetUrlData(history::URLID url_id);
 
   // Gets passages and embeddings with visit times within specified range,
   // using `limit` and `offset` to control data range returned.
-  std::vector<UrlPassagesEmbeddings> GetUrlDataInTimeRange(base::Time from_time,
-                                                           base::Time to_time,
-                                                           size_t limit,
-                                                           size_t offset);
+  std::vector<UrlData> GetUrlDataInTimeRange(base::Time from_time,
+                                             base::Time to_time,
+                                             size_t limit,
+                                             size_t offset);
 
   // Gets all rows from passages where a corresponding row in embeddings
   // does not exist, keyed on url_id.
-  std::vector<UrlPassages> GetUrlPassagesWithoutEmbeddings();
+  std::vector<UrlData> GetUrlPassagesWithoutEmbeddings();
 
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
-  bool AddUrlData(UrlPassagesEmbeddings url_passages_embeddings) override;
+  bool AddUrlData(UrlData url_passages_embeddings) override;
   std::unique_ptr<UrlDataIterator> MakeUrlDataIterator(
       std::optional<base::Time> time_range_start) override;
 

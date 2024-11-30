@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
-#include "components/supervised_user/test_support/browser_state_management.h"
+#include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -314,10 +314,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
 
   // Set the FL switch in the value that require parent approvals for
   // extension installation.
-  RunTestSequence(
-      Log("Set config that requires parental approvals."),
-      WaitForStateSeeding(kResetStateObserverId, child(),
-                          BrowserState::SetAdvancedSettingsDefault()));
+  RunTestSequence(Log("Set config that requires parental approvals."),
+                  WaitForStateSeeding(
+                      kResetStateObserverId, child(),
+                      FamilyLinkSettingsState::SetAdvancedSettingsDefault()));
 
   InstallExtension(&child().profile());
 
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       // Only one of them impacts the handling of supervised user extensions.
       WaitForStateSeeding(
           kDefineStateObserverId, child(),
-          BrowserState::AdvancedSettingsToggles(
+          FamilyLinkSettingsState::AdvancedSettingsToggles(
               {FamilyLinkToggleConfiguration(
                    {.type = FamilyLinkToggleType::kExtensionsToggle,
                     .state = GetExtensionsSwitchTargetState()}),

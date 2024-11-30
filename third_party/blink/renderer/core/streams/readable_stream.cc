@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/pipe_options.h"
 #include "third_party/blink/renderer/core/streams/pipe_to_engine.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/read_into_request.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
@@ -60,9 +59,9 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
   explicit PullAlgorithm(UnderlyingByteSourceBase* underlying_byte_source)
       : underlying_byte_source_(underlying_byte_source) {}
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 0);
     DCHECK(controller_);
     ScriptPromise<IDLUndefined> promise;
@@ -76,15 +75,16 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
             controller_, PassThroughException(script_state->GetIsolate()));
       }
       if (try_catch.HasCaught()) {
-        return PromiseReject(script_state, try_catch.Exception());
+        return ScriptPromise<IDLUndefined>::Reject(script_state,
+                                                   try_catch.Exception());
       }
     } else {
-      return PromiseReject(script_state,
-                           V8ThrowException::CreateTypeError(
-                               script_state->GetIsolate(), "invalid realm"));
+      return ScriptPromise<IDLUndefined>::Reject(
+          script_state, V8ThrowException::CreateTypeError(
+                            script_state->GetIsolate(), "invalid realm"));
     }
 
-    return promise.V8Promise();
+    return promise;
   }
 
   // SetController() must be called before Run() is.
@@ -109,9 +109,9 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
   explicit CancelAlgorithm(UnderlyingByteSourceBase* underlying_byte_source)
       : underlying_byte_source_(underlying_byte_source) {}
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
     ScriptPromise<IDLUndefined> promise;
     if (script_state->ContextIsValid()) {
@@ -123,15 +123,16 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
         promise = underlying_byte_source_->Cancel(argv[0]);
       }
       if (try_catch.HasCaught()) {
-        return PromiseReject(script_state, try_catch.Exception());
+        return ScriptPromise<IDLUndefined>::Reject(script_state,
+                                                   try_catch.Exception());
       }
     } else {
-      return PromiseReject(script_state,
-                           V8ThrowException::CreateTypeError(
-                               script_state->GetIsolate(), "invalid realm"));
+      return ScriptPromise<IDLUndefined>::Reject(
+          script_state, V8ThrowException::CreateTypeError(
+                            script_state->GetIsolate(), "invalid realm"));
     }
 
-    return promise.V8Promise();
+    return promise;
   }
 
   void Trace(Visitor* visitor) const override {
@@ -1085,44 +1086,20 @@ ScriptPromise<IDLUndefined> ReadableStream::Cancel(
 
   // 7. Let sourceCancelPromise be !
   // stream.[[controller]].[[CancelSteps]](reason).
-  v8::Local<v8::Promise> source_cancel_promise =
+  ScriptPromise<IDLUndefined> source_cancel_promise =
       stream->readable_stream_controller_->CancelSteps(script_state, reason);
 
-  enum FunctionType { kResolve, kReject };
-  class ResolveUndefinedFunction final : public PromiseHandler {
+  class ResolveUndefinedFunction final
+      : public ThenCallable<IDLUndefined, ResolveUndefinedFunction> {
    public:
-    ResolveUndefinedFunction(ScriptPromiseResolver<IDLUndefined>* resolver,
-                             FunctionType type)
-        : resolver_(resolver), type_(type) {}
-
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> value) override {
-      if (type_ == kResolve) {
-        resolver_->Resolve();
-      } else {
-        resolver_->Reject(value);
-      }
-    }
-
-    void Trace(Visitor* visitor) const override {
-      PromiseHandler::Trace(visitor);
-      visitor->Trace(resolver_);
-    }
-
-   private:
-    Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
-    FunctionType type_;
+    // Dummy callable to insert a reaction step.
+    void React(ScriptState*) {}
   };
 
   // 8. Return the result of reacting to sourceCancelPromise with a
   //    fulfillment step that returns undefined.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-  StreamThenPromise(
-      script_state, source_cancel_promise,
-      MakeGarbageCollected<ResolveUndefinedFunction>(resolver, kResolve),
-      MakeGarbageCollected<ResolveUndefinedFunction>(resolver, kReject));
-  return resolver->Promise();
+  return source_cancel_promise.Then(
+      script_state, MakeGarbageCollected<ResolveUndefinedFunction>());
 }
 
 void ReadableStream::Close(ScriptState* script_state, ReadableStream* stream) {

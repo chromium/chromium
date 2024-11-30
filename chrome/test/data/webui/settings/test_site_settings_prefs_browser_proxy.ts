@@ -139,6 +139,12 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       this.categoryList_.push(ContentSettingsTypes.POINTER_LOCK);
     }
 
+    // <if expr="is_chromeos">
+    if (loadTimeData.getBoolean('enableSmartCardReadersContentSetting')) {
+      this.categoryList_.push(ContentSettingsTypes.SMART_CARD_READERS);
+    }
+    // </if>
+
     this.prefs_ = createSiteSettingsPrefs([], [], []);
   }
 

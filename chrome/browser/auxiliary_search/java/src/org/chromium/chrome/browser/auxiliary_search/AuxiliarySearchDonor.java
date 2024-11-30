@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.CONTENT_TTL_HOURS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationV2ContentTtlHours;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -34,10 +34,13 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
@@ -60,6 +63,7 @@ public class AuxiliarySearchDonor {
 
     private static final Executor UI_THREAD_EXECUTOR =
             (Runnable r) -> PostTask.postTask(TaskTraits.UI_DEFAULT, r);
+    private static boolean sSkipInitializationForTesting;
 
     private final Context mContext;
     private final String mNamespace;
@@ -79,12 +83,14 @@ public class AuxiliarySearchDonor {
 
     /** Creates a session and initializes the schema type. */
     void createSessionAndInit() {
+        if (sSkipInitializationForTesting) return;
+
         if (mAppSearchSession != null) {
             return;
         }
 
         mAppSearchSession = createAppSearchSession();
-        setSchema();
+        maySetSchema();
     }
 
     /** Creates a session asynchronously. */
@@ -95,9 +101,19 @@ public class AuxiliarySearchDonor {
                         .build());
     }
 
-    /** Sets the document schema for the current session. */
+    /**
+     * Sets the document schema for the current session.
+     *
+     * @return false if the schema has been set before.
+     */
     @SuppressLint({"CheckResult", "NewApi"})
-    private void setSchema() {
+    @VisibleForTesting
+    boolean maySetSchema() {
+        mIsSchemaSet =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false);
+        if (mIsSchemaSet) return false;
+
         Futures.transformAsync(
                 mAppSearchSession,
                 session -> {
@@ -116,6 +132,7 @@ public class AuxiliarySearchDonor {
                     return responseFutureCallback;
                 },
                 AsyncTask.THREAD_POOL_EXECUTOR);
+        return true;
     }
 
     @NonNull
@@ -125,22 +142,25 @@ public class AuxiliarySearchDonor {
                     new SetSchemaRequest.Builder()
                             .setForceOverride(true)
                             .addDocumentClasses(WebPage.class);
-            AuxiliarySearchControllerFactory.setSchemaTypeVisibilityForPackage(
-                    (packageName, sha256Certificate) -> {
-                        try {
-                            requestBuilder.setDocumentClassVisibilityForPackage(
-                                    WebPage.class,
-                                    /* visible= */ true,
-                                    new PackageIdentifier(
-                                            packageName,
-                                            new Signature(sha256Certificate).toByteArray()));
-                        } catch (AppSearchException e) {
-                            Log.i(
-                                    TAG,
-                                    "Failed to set document class visibility for package %s.",
-                                    packageName);
-                        }
-                    });
+            AuxiliarySearchControllerFactory.getInstance()
+                    .setSchemaTypeVisibilityForPackage(
+                            (packageName, sha256Certificate) -> {
+                                try {
+                                    requestBuilder.setDocumentClassVisibilityForPackage(
+                                            WebPage.class,
+                                            /* visible= */ true,
+                                            new PackageIdentifier(
+                                                    packageName,
+                                                    new Signature(sha256Certificate)
+                                                            .toByteArray()));
+                                } catch (AppSearchException e) {
+                                    Log.i(
+                                            TAG,
+                                            "Failed to set document class visibility for package"
+                                                    + " %s.",
+                                            packageName);
+                                }
+                            });
             return requestBuilder.build();
         } catch (AppSearchException e) {
             Log.i(TAG, "Failed to add document when building SetSchemaRequest.");
@@ -153,6 +173,8 @@ public class AuxiliarySearchDonor {
         if (response == null || !response.getMigrationFailures().isEmpty()) return;
 
         mIsSchemaSet = true;
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
 
         // If there is any pending donation, donates the documents now.
         if (mPendingDocuments != null) {
@@ -386,7 +408,8 @@ public class AuxiliarySearchDonor {
     @VisibleForTesting
     public long getDocumentTtlMs() {
         if (mTtlMillis == null) {
-            mTtlMillis = TimeUnit.HOURS.toMillis(CONTENT_TTL_HOURS.getValue());
+            mTtlMillis =
+                    TimeUnit.HOURS.toMillis(sAndroidAppIntegrationV2ContentTtlHours.getValue());
         }
 
         return mTtlMillis;
@@ -450,5 +473,10 @@ public class AuxiliarySearchDonor {
 
     public void setPendingDocumentsForTesting(List<WebPage> docs) {
         mPendingDocuments = docs;
+    }
+
+    public static void setSkipInitializationForTesting(boolean skipInitializationForTesting) {
+        sSkipInitializationForTesting = skipInitializationForTesting;
+        ResettersForTesting.register(() -> sSkipInitializationForTesting = false);
     }
 }

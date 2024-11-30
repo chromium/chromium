@@ -143,6 +143,11 @@ public class OmniboxFeatures {
     public static final BooleanCachedFieldTrialParameter sJumpStartOmniboxCoverRecentlyVisitedPage =
             newBooleanParam(sJumpStartOmnibox, "jump_start_cover_recently_visited_page", false);
 
+    // This parameter allows the user to click enter when on hub search to perform a search on the
+    // listed suggestions or perform a google search on the query if no suggestions are found.
+    public static final BooleanCachedFieldTrialParameter sAndroidHubSearchEnterPerformsSearch =
+            newBooleanParam(sAndroidHubSearch, "enable_press_enter_to_search", false);
+
     /** See {@link #setShouldRetainOmniboxOnFocusForTesting(boolean)}. */
     private static Boolean sShouldRetainOmniboxOnFocusForTesting;
 

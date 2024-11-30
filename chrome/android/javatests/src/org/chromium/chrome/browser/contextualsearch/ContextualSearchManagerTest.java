@@ -943,7 +943,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 () ->
                         activity2
                                 .getCurrentTabModel()
-                                .closeTabs(TabClosureParams.closeAllTabs().build()));
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeAllTabs().build(),
+                                        /* allowDialog= */ false));
         ApplicationTestUtils.finishActivity(activity2);
     }
 

@@ -212,6 +212,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.ShareTabsWithOs" enum="Boolean"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the whether the sharing Tabs with OS config is enabled. The
+    histogram is logged when the user changes the config on Tabs settings.
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
     enum="SearchEngineChoiceScrollState" expires_after="2025-04-13">
   <owner>jyammine@google.com</owner>
@@ -236,6 +248,23 @@ chromium-metrics-reviews@google.com.
 
     This histogram might be recorded at each navigation, in a sparse histogram,
     until the choice screen ends up being shown.
+  </summary>
+</histogram>
+
+<histogram name="Search.ChoiceDebug.UnknownCountryIdStored"
+    enum="UnknownCountryIdStored" expires_after="2025-11-18">
+  <owner>cschlosser@chromium.org</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records if the pref storing the current country ID of the device is invalid.
+    Through some code paths it's possible that a placeholder value could be
+    persisted in the prefs. Earlier there were less checks in place for valid
+    country IDs which makes it possible that old profiles still have the invalid
+    values stored in prefs. As the prefs take precedence over other mechanisms
+    when determining the country for the device an invalid value can lead to the
+    actual country not being assigned correctly. This histogram is emitted when
+    trying to read the pref for the profile and iff the pref exists.
   </summary>
 </histogram>
 
@@ -602,18 +631,6 @@ chromium-metrics-reviews@google.com.
     Records whether the user opened the panel when it was shown in response to a
     tap gesture, for all users. Recorded when the UX is hidden. Implemented for
     Android. (Expired in M77. Revived in M120.)
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen"
-    enum="Boolean" expires_after="2025-11-01">
-  <owner>gangwu@chromium.org</owner>
-  <owner>contextual-search-eng@google.com</owner>
-  <summary>
-    Records whether the user opened the panel when it was shown for sync-enabled
-    users only (this is an approximation for the population that logs to UKM).
-    Recorded for all gestures for users with sync enabled when the UX is hidden.
-    Implemented for Android. (Expired in M76. Revived in M120.)
   </summary>
 </histogram>
 
@@ -1486,6 +1503,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.SearchPolicyConflict.HasConflictWith.{ConflictType}"
+    enum="Boolean" expires_after="2025-01-02">
+  <owner>ftirelo@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Records whether at least one search engine created by SiteSearchSettings
+    policy and {ConflictType} has the same keyword as an existing search engine
+    the user manually edited, counted once per user regardless of the number of
+    conflicting search engines the policy creates.
+
+    Search engines created by the policy can be marked as &quot;featured&quot;,
+    and they override search engines with the same keyword that were manually
+    edited by the user. Search engine created by the policy and not marked as
+    featured do not override search engines manually edited by the user.
+
+    Use &quot;Search.SearchPolicyConflict.NumberOfSearchEngines&quot; for the
+    number of search engines created by policy that conflict with search engines
+    manually edited by the user.
+
+    Collected when the SiteSearchSettings policy is enabled or updated and after
+    that on every browser start.
+  </summary>
+  <token key="ConflictType">
+    <variant name="Featured" summary="marked as 'featured'"/>
+    <variant name="NonFeatured" summary="not marked as 'featured'"/>
+  </token>
+</histogram>
+
+<histogram name="Search.SearchPolicyConflict.NumberOfSearchEngines"
+    enum="SearchPolicyConflictType" expires_after="2025-05-22">
+  <owner>ftirelo@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Records the number of search engines created by SiteSearchSettings policy
+    with the same keyword as an existing search engine the user manually edited.
+
+    Search engines created by the policy can be marked as &quot;featured&quot;,
+    and they override search engines with the same keyword that were manually
+    edited by the user. Search engine created by the policy and not marked as
+    featured do not override search engines manually edited by the user.
+
+    Each count corresponds to one search engine, so the total count per user
+    equals the number of search engines created by the policy.
+
+    Use &quot;Search.SearchPolicyConflict.HasConflictWith.*&quot; for the number
+    of users that have at least one conflict with featured or non-featured
+    search engines created by policy.
+
+    Collected when the SiteSearchSettings policy is enabled or updated and after
+    that on every browser start.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchProviderOverrideStatus"
     enum="SearchProviderOverrideStatus" expires_after="2025-04-13">
   <owner>dgn@chromium.org</owner>
@@ -1506,60 +1576,6 @@ chromium-metrics-reviews@google.com.
     The current state for search widget use and whether the device is a
     partnership device related with the Android Search Widget. Collected on
     every cold start.
-  </summary>
-</histogram>
-
-<histogram
-    name="Search.SiteSearchPolicyConflict.HasConflictWith.{ConflictType}"
-    enum="Boolean" expires_after="2025-01-02">
-  <owner>ftirelo@chromium.org</owner>
-  <owner>pastarmovj@chromium.org</owner>
-  <summary>
-    Records whether at least one search engine created by SiteSearchSettings
-    policy and {ConflictType} has the same keyword as an existing search engine
-    the user manually edited, counted once per user regardless of the number of
-    conflicting search engines the policy creates.
-
-    Search engines created by the policy can be marked as &quot;featured&quot;,
-    and they override search engines with the same keyword that were manually
-    edited by the user. Search engine created by the policy and not marked as
-    featured do not override search engines manually edited by the user.
-
-    Use &quot;Search.SiteSearchPolicyConflict.NumberOfSearchEngines&quot; for
-    the number of search engines created by policy that conflict with search
-    engines manually edited by the user.
-
-    Collected when the SiteSearchSettings policy is enabled or updated and after
-    that on every browser start.
-  </summary>
-  <token key="ConflictType">
-    <variant name="Featured" summary="marked as 'featured'"/>
-    <variant name="NonFeatured" summary="not marked as 'featured'"/>
-  </token>
-</histogram>
-
-<histogram name="Search.SiteSearchPolicyConflict.NumberOfSearchEngines"
-    enum="SiteSearchPolicyConflictType" expires_after="2025-01-02">
-  <owner>ftirelo@chromium.org</owner>
-  <owner>pastarmovj@chromium.org</owner>
-  <summary>
-    Records the number of search engines created by SiteSearchSettings policy
-    with the same keyword as an existing search engine the user manually edited.
-
-    Search engines created by the policy can be marked as &quot;featured&quot;,
-    and they override search engines with the same keyword that were manually
-    edited by the user. Search engine created by the policy and not marked as
-    featured do not override search engines manually edited by the user.
-
-    Each count corresponds to one search engine, so the total count per user
-    equals the number of search engines created by the policy.
-
-    Use &quot;Search.SiteSearchPolicyConflict.HasConflictWith.*&quot; for the
-    number of users that have at least one conflict with featured or
-    non-featured search engines created by policy.
-
-    Collected when the SiteSearchSettings policy is enabled or updated and after
-    that on every browser start.
   </summary>
 </histogram>
 

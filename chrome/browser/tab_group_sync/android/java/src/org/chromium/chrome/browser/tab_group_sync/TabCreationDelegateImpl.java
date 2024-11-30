@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;

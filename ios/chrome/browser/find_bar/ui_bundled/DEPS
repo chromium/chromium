@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/find_in_page/model",
-  "+ios/chrome/browser/ui/presenters",
-  "+ios/chrome/browser/ui/toolbar/accessory",
+  "+ios/chrome/browser/presenters/ui_bundled",
+  "+ios/chrome/browser/toolbar/ui_bundled/accessory",
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
 ]
 

@@ -1,5 +1,11 @@
 This is a testharness.js-based test.
 [FAIL] Basic B&A auction - updateIfOlderThanMs
   assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - winner with candidates
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - winner with bad render hash
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - winner with bad reporting hash
+  assert_true: valid key Id expected true got false
 Harness: the test ran to completion.
 

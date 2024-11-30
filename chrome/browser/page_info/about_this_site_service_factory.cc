@@ -45,8 +45,9 @@ std::unique_ptr<KeyedService>
 AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
   if (!page_info::IsAboutThisSiteFeatureEnabled(
-          g_browser_process->GetApplicationLocale()))
+          g_browser_process->GetApplicationLocale())) {
     return nullptr;
+  }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
@@ -68,7 +69,7 @@ AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
 }
 
 bool AboutThisSiteServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  // This service needs to be created at startup in order to register its OptimizationType with
-  // OptimizationGuideDecider.
+  // This service needs to be created at startup in order to register its
+  // OptimizationType with OptimizationGuideDecider.
   return true;
 }

@@ -105,6 +105,10 @@ Task::Type TestTaskManager::GetType(TaskId task_id) const {
   return Task::UNKNOWN;
 }
 
+Task::SubType TestTaskManager::GetSubType(TaskId task_id) const {
+  return Task::SubType::kNoSubType;
+}
+
 SessionID TestTaskManager::GetTabId(TaskId task_id) const {
   return SessionID::InvalidValue();
 }

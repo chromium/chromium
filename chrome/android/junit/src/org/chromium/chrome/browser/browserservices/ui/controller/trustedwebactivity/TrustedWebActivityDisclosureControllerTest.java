@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_FIRST_TIME;
@@ -35,7 +34,6 @@ import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /** Tests for {@link TrustedWebActivityDisclosureController}. */
@@ -48,7 +46,6 @@ public class TrustedWebActivityDisclosureControllerTest {
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock public CurrentPageVerifier mCurrentPageVerifier;
     @Mock public ClientPackageNameProvider mClientPackageNameProvider;
-    @Mock public BaseCustomTabActivity mActivity;
 
     @Captor public ArgumentCaptor<Runnable> mVerificationObserverCaptor;
 
@@ -63,11 +60,13 @@ public class TrustedWebActivityDisclosureControllerTest {
         doNothing()
                 .when(mCurrentPageVerifier)
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
-        when(mActivity.getClientPackageNameProvider()).thenReturn(mClientPackageNameProvider);
-        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
 
         mController =
-                new TrustedWebActivityDisclosureController(mModel, mCurrentPageVerifier, mActivity);
+                new TrustedWebActivityDisclosureController(
+                        mModel,
+                        mLifecycleDispatcher,
+                        mCurrentPageVerifier,
+                        mClientPackageNameProvider);
     }
 
     @Test

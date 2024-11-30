@@ -58,7 +58,6 @@
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -330,17 +329,6 @@ std::optional<apps::ShareTarget> ToWebAppShareTarget(
   }
 
   return std::move(apps_share_target);
-}
-
-apps::UrlHandlers ToWebAppUrlHandlers(
-    const std::vector<blink::mojom::ManifestUrlHandlerPtr>& url_handlers) {
-  apps::UrlHandlers apps_url_handlers;
-  for (const auto& url_handler : url_handlers) {
-    DCHECK(url_handler);
-    apps_url_handlers.emplace_back(url_handler->origin,
-                                   url_handler->has_origin_wildcard);
-  }
-  return apps_url_handlers;
 }
 
 ScopeExtensions ToWebAppScopeExtensions(
@@ -778,8 +766,6 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   web_app_info->protocol_handlers =
       ToWebAppProtocolHandlers(manifest.protocol_handlers);
 
-  web_app_info->url_handlers = ToWebAppUrlHandlers(manifest.url_handlers);
-
   web_app_info->scope_extensions =
       ToWebAppScopeExtensions(manifest.scope_extensions);
 
@@ -1177,7 +1163,6 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetFileHandlers(web_app_info.file_handlers);
   web_app.SetShareTarget(web_app_info.share_target);
   web_app.SetProtocolHandlers(web_app_info.protocol_handlers);
-  web_app.SetUrlHandlers(web_app_info.url_handlers);
   web_app.SetScopeExtensions(web_app_info.scope_extensions);
 
   if (base::FeatureList::IsEnabled(features::kWebLockScreenApi))

@@ -574,8 +574,6 @@ crbug.com/1473838 [ android angle-opengles passthrough ] conformance2/extensions
 
 # Failing on some platforms.
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ amd-0x7340 angle-metal mac-x86_64 no-asan oop-c sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/366502831 [ mac angle-metal intel-0x3e9b passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
@@ -645,17 +643,13 @@ crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles
 crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/reading/format-r11f-g11f-b10f.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
-crbug.com/338008895 [ win11 angle-d3d11 qualcomm-0x41333430 passthrough release ] conformance2/textures/image_bitmap_from_video/tex-3d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderindexing/tmp.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderindexing/varying.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shadertexturefunction/texelfetchoffset.html [ Failure ]
-crbug.com/41496352 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_float.html [ RetryOnFailure ]
+crbug.com/41496352 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_float.html [ Failure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_int.html [ Failure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_uint.html [ Failure ]
 crbug.com/338348432 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
-crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
-crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
-crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
 crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 # Graphite
@@ -790,7 +784,7 @@ crbug.com/1278935 [ amd-0x67ef angle-opengl mac renderer-skia-gl ] deqp/function
 
 crbug.com/angleproject/5224 [ amd-0x67ef angle-opengl mac passthrough ] conformance2/rendering/instanced-arrays.html [ Failure ]
 crbug.com/angleproject/5225 [ amd-0x67ef angle-opengl mac passthrough ] conformance2/rendering/vertex-id.html [ Failure ]
-crbug.com/angleproject/7412 [ mac passthrough angle-opengl amd ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
+crbug.com/angleproject/7412 [ amd-0x67ef angle-opengl mac no-asan passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/framebufferblit/conversion_04.html [ Failure ]
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/framebufferblit/conversion_08.html [ Failure ]
@@ -889,8 +883,6 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/i
 
 ## Mesa issues ##
 
-# Driver tag doesn't work on the passthrough command decoder because the detected driver version is ANGLE's version.
-crbug.com/1081978 [ angle-opengl intel-0x9bc5 linux passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Failure ]
 
 ## Linux NVIDIA ##
 
@@ -934,8 +926,8 @@ crbug.com/906742 [ android-pie android-pixel-2 no-passthrough qualcomm ] conform
 crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
 crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
-crbug.com/375117795 [ android android-pixel-2 ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
-crbug.com/375128676 [ android android-pixel-2 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
+crbug.com/375117795 [ android android-pixel-2 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
+crbug.com/375128676 [ android android-pixel-2 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
 ## Pixel 4 ##
 
@@ -947,8 +939,12 @@ crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conform
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 
 
-crbug.com/335857348 [ android android-pixel-4 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
-crbug.com/375117795 [ android android-pixel-4 ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
+crbug.com/335857348 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
+crbug.com/375117795 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
+
+## DrDc being re-enabled ##
+crbug.com/380250262 [ android android-pixel-2 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
+crbug.com/380250262 [ android android-pixel-4 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 #####################
 # ChromeOS failures #
@@ -981,15 +977,11 @@ crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/renderi
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 
-crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
-
-
 
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-
-
+crbug.com/379667913 [ chromeos chromeos-board-amd64-generic angle-opengles graphite-disabled passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 
 # ANGLE disallows WEBGL_clip_cull_distance if the underlying GL extension doesn't support requirements for number of distances.
 crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
@@ -1027,8 +1019,8 @@ crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/*
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/* [ RetryOnFailure ]
 
 ## Volteer ##
-crbug.com/1507164 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
-crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/extensions/oes-draw-buffers-indexed.html [ RetryOnFailure ]
+crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
+crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 
 #####################
 # Lacros failures #
@@ -1144,17 +1136,12 @@ crbug.com/332743717 [ android android-pixel-4 ] conformance2/canvas/drawingbuffe
 crbug.com/332743717 [ linux ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ mac intel angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
-crbug.com/332743717 [ chromeos chromeos-board-volteer ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ android android-pixel-2 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
 
 #################################################################
 # Temporary suppressions for introduction of drawingBufferStorage
 #################################################################
-crbug.com/1230619 conformance/offscreencanvas/methods-worker.html [ Failure ]
-crbug.com/1230619 conformance/offscreencanvas/methods.html [ Failure ]
-crbug.com/1230619 conformance2/context/constants-and-properties-2.html [ Failure ]
-crbug.com/1230619 conformance2/offscreencanvas/methods-2-worker.html [ Failure ]
 crbug.com/1230619 conformance2/offscreencanvas/methods-2.html [ Failure ]
 
 #######################################################################

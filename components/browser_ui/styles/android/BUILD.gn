@@ -22,6 +22,10 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/anim-v33/shared_x_axis_close_enter.xml",
+    "java/res/anim-v33/shared_x_axis_close_exit.xml",
+    "java/res/anim-v33/shared_x_axis_open_enter.xml",
+    "java/res/anim-v33/shared_x_axis_open_exit.xml",
     "java/res/anim/shared_x_axis_close_enter.xml",
     "java/res/anim/shared_x_axis_close_exit.xml",
     "java/res/anim/shared_x_axis_open_enter.xml",

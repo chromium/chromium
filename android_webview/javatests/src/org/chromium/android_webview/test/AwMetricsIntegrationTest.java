@@ -15,9 +15,7 @@ import android.os.Process;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +26,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwWindowCoverageTracker;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
@@ -49,7 +48,6 @@ import org.chromium.components.metrics.InstallerPackageType;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
-import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.ChromeComponent;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -487,31 +485,6 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         assertEquals(appPackageName, systemProfile.getAppPackageName());
     }
 
-    private static TypeSafeMatcher<ChromeComponent> matchesChromeComponent(
-            ChromeComponent expected) {
-        return new TypeSafeMatcher<ChromeComponent>() {
-            @Override
-            @SuppressWarnings("LiteProtoToString")
-            public void describeTo(Description description) {
-                description.appendText(expected.toString());
-            }
-
-            @Override
-            @SuppressWarnings("LiteProtoToString")
-            protected void describeMismatchSafely(
-                    ChromeComponent item, Description mismatchDescription) {
-                mismatchDescription.appendText("Doesn't match " + item.toString());
-            }
-
-            @Override
-            public boolean matchesSafely(ChromeComponent item) {
-                return expected.getComponentId() == item.getComponentId()
-                        && expected.getVersion().equals(item.getVersion())
-                        && expected.getOmahaFingerprint() == item.getOmahaFingerprint();
-            }
-        };
-    }
-
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
@@ -621,11 +594,9 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                 totalSamples);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertEquals(
-                            1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                    assertEquals(1, AwWindowCoverageTracker.sWindowCoverageTrackers.size());
                     mAwContents.onDetachedFromWindow();
-                    assertEquals(
-                            0, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                    assertEquals(0, AwWindowCoverageTracker.sWindowCoverageTrackers.size());
                 });
     }
 

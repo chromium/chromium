@@ -153,7 +153,7 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_Widevine) {
+TEST_F(MediaDrmBridgeTest, IsKeySystemSupportedWidevine) {
   // TODO(xhwang): Enable when b/13564917 is fixed.
   // EXPECT_TRUE_IF_AVAILABLE(
   //     IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioMp4));
@@ -173,7 +173,7 @@ TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_Widevine) {
   EXPECT_FALSE(IsKeySystemSupportedWithType(kWidevineKeySystem, "audio/mp3"));
 }
 
-TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_ExternalClearKey) {
+TEST_F(MediaDrmBridgeTest, IsKeySystemSupportedExternalClearKey) {
   // Testing that 'kExternalClearKeyForTesting' is disabled by default.
   EXPECT_FALSE(
       base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting));
@@ -186,7 +186,7 @@ TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_ExternalClearKey) {
 }
 
 // Invalid key system is NOT supported regardless whether MediaDrm is available.
-TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_InvalidKeySystem) {
+TEST_F(MediaDrmBridgeTest, IsKeySystemSupportedInvalidKeySystem) {
   EXPECT_FALSE(MediaDrmBridge::IsKeySystemSupported(kInvalidKeySystem));
   EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, kAudioMp4));
   EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, kVideoMp4));
@@ -197,14 +197,14 @@ TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_InvalidKeySystem) {
   EXPECT_FALSE(IsKeySystemSupportedWithType(kInvalidKeySystem, "audio/mp3"));
 }
 
-TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_Widevine) {
+TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupportWidevine) {
   CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kDefault);
   EXPECT_VALUE_IF_KEY_SYSTEM_AVAILABLE_OR_ERROR(
       media_drm_bridge_, kWidevineKeySystem,
       CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
 }
 
-TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_ExternalClearKey) {
+TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupportExternalClearKey) {
   CreateWithoutSessionSupport(kExternalClearKeyKeySystem, kTestOrigin,
                               kDefault);
   EXPECT_EQ(media_drm_bridge_.code(),
@@ -220,14 +220,14 @@ TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_ExternalClearKey) {
 }
 
 // Invalid key system is NOT supported regardless whether MediaDrm is available.
-TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_InvalidKeySystem) {
+TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupportInvalidKeySystem) {
   CreateWithoutSessionSupport(kInvalidKeySystem, kTestOrigin, kDefault);
   EXPECT_FALSE(media_drm_bridge_.has_value());
   EXPECT_EQ(media_drm_bridge_.code(),
             CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
 }
 
-TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_Widevine) {
+TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevelWidevine) {
   // We test "L3" fully. But for "L1" we don't check the result as it depends on
   // whether the test device supports "L1".
   CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kL3);
@@ -238,7 +238,7 @@ TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_Widevine) {
   CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kL1);
 }
 
-TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_ExternalClearKey) {
+TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevelExternalClearKey) {
   scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
                                         {});
 
@@ -250,7 +250,7 @@ TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_ExternalClearKey) {
       CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
 }
 
-TEST_F(MediaDrmBridgeTest, Provision_Widevine) {
+TEST_F(MediaDrmBridgeTest, ProvisionWidevine) {
   // Only test this if Widevine is supported. Otherwise
   // CreateWithoutSessionSupport() will return null and it can't be tested.
   if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
@@ -279,7 +279,7 @@ TEST_F(MediaDrmBridgeTest, Provision_Widevine) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaDrmBridgeTest, Provision_Widevine_NoOrigin) {
+TEST_F(MediaDrmBridgeTest, ProvisionWidevineNoOrigin) {
   // Only test this if Widevine is supported. Otherwise
   // CreateWithoutSessionSupport() will return null and it can't be tested.
   if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
@@ -303,7 +303,7 @@ TEST_F(MediaDrmBridgeTest, Provision_Widevine_NoOrigin) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MediaDrmBridgeTest, Unprovision_Widevine) {
+TEST_F(MediaDrmBridgeTest, UnprovisionWidevine) {
   // Only test this if Widevine is supported. Otherwise
   // CreateWithoutSessionSupport() will return null and it can't be tested.
   if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
@@ -320,7 +320,7 @@ TEST_F(MediaDrmBridgeTest, Unprovision_Widevine) {
   Unprovision();
 }
 
-TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_FeatureFlagDisabled) {
+TEST_F(MediaDrmBridgeTest, GetStatusForPolicyFeatureFlagDisabled) {
   // Only test this if Widevine is supported. Otherwise
   // CreateWithoutSessionSupport() will return null and it can't be
   // tested.
@@ -345,7 +345,7 @@ TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_FeatureFlagDisabled) {
   EXPECT_EQ(exception, CdmPromise::Exception::NOT_SUPPORTED_ERROR);
 }
 
-TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_ExternalClearKey) {
+TEST_F(MediaDrmBridgeTest, GetStatusForPolicyExternalClearKey) {
   scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
                                         {});
 
@@ -378,7 +378,7 @@ TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_ExternalClearKey) {
   EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
 }
 
-TEST_F(MediaDrmBridgeTest, GetStatusForPolicyL3_Widevine) {
+TEST_F(MediaDrmBridgeTest, GetStatusForPolicyL3Widevine) {
   // Only test this if Widevine is supported. Otherwise
   // CreateWithoutSessionSupport() will return null and it can't be
   // tested.

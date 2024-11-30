@@ -107,6 +107,11 @@ class PasswordManager : public PasswordManagerInterface {
       const base::flat_map<autofill::FieldGlobalId,
                            autofill::AutofillType::ServerPrediction>&
           field_predictions) override;
+  void ProcessClassificationModelPredictions(
+      PasswordManagerDriver* driver,
+      const autofill::FormData& form,
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+          field_predictions) override;
   bool HaveFormManagersReceivedData(
       const PasswordManagerDriver* driver) const override;
 
@@ -189,7 +194,7 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns form cache containing information about parsed password forms on
   // the web page.
-  const PasswordFormCache* GetPasswordFormCache() const override;
+  PasswordFormCache* GetPasswordFormCache() override;
 
   // Returns the observed parsed password form to which the field with the
   // renderer id `field_id` belongs.
@@ -226,8 +231,14 @@ class PasswordManager : public PasswordManagerInterface {
   }
 
   const std::map<autofill::FormSignature, FormPredictions>&
-  GetFormPredictionsForTesting() const {
-    return predictions_;
+  GetServerPredictionsForTesting() const {
+    return server_predictions_;
+  }
+
+  const std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
+                 base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>&
+  GetClassifierModelPredictionsForTesting() const {
+    return classifier_model_predictions_;
   }
 
   void set_leak_factory(std::unique_ptr<LeakDetectionCheckFactory> factory) {
@@ -344,15 +355,15 @@ class PasswordManager : public PasswordManagerInterface {
       PasswordManagerDriver* driver,
       autofill::FieldRendererId field_id);
 
-  // Finds FormPredictions for a form containing field identified by |field_id|
-  // and |driver_id|.
-  std::optional<FormPredictions> FindPredictionsForField(
+  // Finds server FormPredictions for a form containing field identified by
+  // `field_id` and `driver_id`.
+  std::optional<FormPredictions> FindServerPredictionsForField(
       autofill::FieldRendererId field_id,
       int driver_id);
 
-  //  If |possible_username_.form_predictions| is missing, this functions tries
-  //  to find predictions for the forms which contains |possible_usernames_| in
-  //  |predictions_|.
+  //  If `possible_username_.form_predictions` is missing, this functions tries
+  //  to find predictions for the forms which contains `possible_usernames_` in
+  //  `server_predictions_`.
   void TryToFindPredictionsToPossibleUsernames();
 
   // Handles a request to show manual fallback for password saving, i.e. the
@@ -367,6 +378,10 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns the timeout for the disabling Password Manager's prompts.
   base::TimeDelta GetTimeoutForDisablingPrompts();
+
+  // Cleans the `password_form_cache_`, and the cached server and model
+  // predictions.
+  void ResetFormsAndPredictionsCache();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Triggers a user survey to rate Password Manager, if the user actively
@@ -435,7 +450,14 @@ class PasswordManager : public PasswordManagerInterface {
   std::vector<autofill::FormData> visible_forms_data_;
 
   // Server predictions for the forms on the page.
-  std::map<autofill::FormSignature, FormPredictions> predictions_;
+  std::map<autofill::FormSignature, FormPredictions> server_predictions_;
+
+  // Classification model predictions for the forms on the page, keyed by
+  // the combination of the driver and the renderer id of the form, that allow
+  // to uniquely identify forms on the page.
+  std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
+           base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>
+      classifier_model_predictions_;
 
   // The URL of the last submitted form.
   GURL submitted_form_url_;

@@ -97,6 +97,13 @@ class TabOrganizationRequest {
   }
 
   void SetBaseTabID(TabData::TabID base_tab_id) { base_tab_id_ = base_tab_id; }
+  void SetUserInstruction(const std::string& user_instruction) {
+    user_instruction_ = user_instruction;
+  }
+
+  const std::optional<std::string>& user_instruction() const {
+    return user_instruction_;
+  }
 
   void SetResponseCallback(OnResponseCallback callback);
   TabData* AddTabData(std::unique_ptr<TabData> tab_data);
@@ -120,6 +127,7 @@ class TabOrganizationRequest {
   TabDatas tab_datas_;
   GroupDatas group_datas_;
   std::optional<TabData::TabID> base_tab_id_ = std::nullopt;
+  std::optional<std::string> user_instruction_ = std::nullopt;
 
   // Time measurements for the request, used to log latency metrics.
   std::optional<base::Time> request_start_time_ = std::nullopt;

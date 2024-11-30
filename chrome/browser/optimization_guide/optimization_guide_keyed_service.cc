@@ -419,10 +419,6 @@ void OptimizationGuideKeyedService::Initialize() {
               model_quality_logs_uploader_service_
                   ? model_quality_logs_uploader_service_->GetWeakPtr()
                   : nullptr);
-      if (on_device_component_manager_) {
-        on_device_component_manager_->AddObserver(
-            model_execution_manager_.get());
-      }
 
       RecordModelExecutionFeatureSyntheticFieldTrial(
           optimization_guide::UserVisibleFeatureKey::kHistorySearch,
@@ -455,6 +451,14 @@ void OptimizationGuideKeyedService::Initialize() {
 optimization_guide::ChromeHintsManager*
 OptimizationGuideKeyedService::GetHintsManager() {
   return hints_manager_.get();
+}
+
+mojom::OnDeviceInternalsDataPtr
+OptimizationGuideKeyedService::GetOnDeviceInternalsModelData() {
+  auto data = mojom::OnDeviceInternalsData::New();
+  data->base_model_ready =
+      on_device_component_manager_->IsInstallerRegistered();
+  return data;
 }
 
 void OptimizationGuideKeyedService::OnNavigationStartOrRedirect(

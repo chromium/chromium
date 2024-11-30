@@ -24,11 +24,13 @@ struct UserAgentOverride;
 
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
+class DeviceBoundSession;
 }  // namespace network::mojom
 
 namespace content {
 
 class CommitDeferringCondition;
+class FrameTree;
 class NavigationHandle;
 class NavigationRequest;
 class RenderFrameHostImpl;
@@ -107,7 +109,8 @@ class NavigatorDelegate {
       bool is_outermost_main_frame_navigation) = 0;
 
   // Returns the overridden user agent string if it's set.
-  virtual const blink::UserAgentOverride& GetUserAgentOverride() = 0;
+  virtual const blink::UserAgentOverride& GetUserAgentOverride(
+      FrameTree& frame_tree) = 0;
 
   // Returns the value to use for NavigationEntry::IsOverridingUserAgent() for
   // a renderer initiated navigation.
@@ -154,6 +157,12 @@ class NavigatorDelegate {
   virtual void OnSharedDictionaryAccessed(
       NavigationHandle* navigation,
       const network::mojom::SharedDictionaryAccessDetails& details) = 0;
+
+  // Called when a network request issued by this navigation accesses a
+  // device bound session.
+  virtual void OnDeviceBoundSessionAccessed(
+      NavigationHandle* navigation,
+      const net::device_bound_sessions::SessionKey& session) = 0;
 
   // Does a global walk of the session history and all committed/pending-commit
   // origins, and registers origins that match |origin| to their respective

@@ -65,10 +65,6 @@ NSString* const kAuthenticationSnackbarCategory =
 
 @implementation AuthenticationFlowPerformer {
   __weak id<AuthenticationFlowPerformerDelegate> _delegate;
-  // This code uses three variables for alert coordinators in order to clarify
-  // crash reports related to crbug.com/1482623
-  // TODO(crbug.com/40072272): The 2 alert coordinator variables can be merged
-  // into one alert coordinator once the bug is fixed.
   // Dialog for the managed confirmation dialog.
   AlertCoordinator* _managedConfirmationAlertCoordinator;
   // Dialog to display an error.
@@ -153,42 +149,17 @@ NSString* const kAuthenticationSnackbarCategory =
                               "ManagedConfirmationDialog_Presented"));
 
   __weak AuthenticationFlowPerformer* weakSelf = self;
-  __weak AlertCoordinator* weakAlert = _managedConfirmationAlertCoordinator;
-
   ProceduralBlock acceptBlock = ^{
     base::RecordAction(
         base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                                 "ManagedConfirmationDialog_Confirmed"));
-
-    AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-
-    // TODO(crbug.com/40225944): Nullify the browser object in the
-    // AlertCoordinator when the coordinator is stopped to avoid using the
-    // browser object at that moment, in which case the browser object may have
-    // been deleted before the callback block is called. This is to avoid
-    // potential bad memory accesses.
-    Browser* alertedBrowser = weakAlert.browser;
-    if (alertedBrowser) {
-      PrefService* prefService = alertedBrowser->GetProfile()->GetPrefs();
-      // TODO(crbug.com/40225352): Remove this line once we determined that the
-      // notification isn't needed anymore.
-      [strongSelf updateUserPolicyNotificationStatusIfNeeded:prefService];
-    }
-
-    [strongSelf alertControllerDidDisappear:weakAlert];
-    [[strongSelf delegate] didAcceptManagedConfirmation];
+    [weakSelf managedConfirmationAlertAccepted];
   };
   ProceduralBlock cancelBlock = ^{
     base::RecordAction(
         base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                                 "ManagedConfirmationDialog_Canceled"));
-    AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    [strongSelf alertControllerDidDisappear:weakAlert];
-    [[strongSelf delegate] didCancelManagedConfirmation];
+    [weakSelf managedConfirmationAlertCanceled];
   };
   _managedConfirmationAlertCoordinator =
       ManagedConfirmationDialogContentForHostedDomain(
@@ -473,11 +444,36 @@ NSString* const kAuthenticationSnackbarCategory =
 - (void)alertControllerDidDisappear:(AlertCoordinator*)alertCoordinator {
   if (_managedConfirmationAlertCoordinator == alertCoordinator) {
     _managedConfirmationAlertCoordinator = nil;
+    return;
   } else if (_errorAlertCoordinator == alertCoordinator) {
     _errorAlertCoordinator = nil;
+    return;
   }
-  // TODO(crbug.com/40072272): This code needs to be simpler and clearer.
-  // At least NOTREACHED should be added here.
+  NOTREACHED(base::NotFatalUntil::M136);
+}
+
+- (void)managedConfirmationAlertAccepted {
+  CHECK(_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
+  // TODO(crbug.com/40225944): Nullify the browser object in the
+  // AlertCoordinator when the coordinator is stopped to avoid using the
+  // browser object at that moment, in which case the browser object may have
+  // been deleted before the callback block is called. This is to avoid
+  // potential bad memory accesses.
+  if (Browser* alertedBrowser = _managedConfirmationAlertCoordinator.browser) {
+    PrefService* prefService = alertedBrowser->GetProfile()->GetPrefs();
+    // TODO(crbug.com/40225352): Remove this line once we determined that the
+    // notification isn't needed anymore.
+    [self updateUserPolicyNotificationStatusIfNeeded:prefService];
+  }
+
+  [self alertControllerDidDisappear:_managedConfirmationAlertCoordinator];
+  [self.delegate didAcceptManagedConfirmation];
+}
+
+- (void)managedConfirmationAlertCanceled {
+  CHECK(_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
+  [self alertControllerDidDisappear:_managedConfirmationAlertCoordinator];
+  [self.delegate didCancelManagedConfirmation];
 }
 
 @end

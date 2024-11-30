@@ -22,7 +22,7 @@ namespace translate {
 // page is truncated to `kTextSampleLength`
 BASE_FEATURE(kTruncateLanguageDetectionSample,
              "TruncateLanguageDetectionSample",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 LanguageDetectionModel::LanguageDetectionModel(
     language_detection::LanguageDetectionModel& shared_tflite_model)
@@ -50,21 +50,6 @@ void LanguageDetectionModel::UpdateWithFileAsync(base::File model_file,
 
 bool LanguageDetectionModel::IsAvailable() const {
   return tflite_model_->IsAvailable();
-}
-
-std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
-    const std::u16string& sampled_str) const {
-  TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
-
-  auto categories =
-      tflite_model_->Predict(sampled_str,
-                             /*truncate=*/base::FeatureList::IsEnabled(
-                                 kTruncateLanguageDetectionSample));
-  auto top_category = language_detection::TopPrediction((categories));
-  base::UmaHistogramSparse(
-      "LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage",
-      base::HashMetricName(top_category.language));
-  return std::make_pair(top_category.language, top_category.score);
 }
 
 std::string LanguageDetectionModel::DeterminePageLanguage(
@@ -110,42 +95,14 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
 language_detection::Prediction LanguageDetectionModel::DetectLanguage(
     const std::u16string& contents) const {
   base::ElapsedTimer timer;
-  if (!tflite_model_->IsAvailable()) {
-    return language_detection::Prediction{translate::kUnknownLanguageCode,
-                                          0.0f};
-  }
-
-  std::vector<std::pair<std::string, float>> model_predictions;
-  // First evaluate the model on the entire contents based on the model's
-  // implementation, for v1 it is the first 128 tokens that are unicode
-  // "letters". We do not need to have the model's length in sync with
-  // the sampling logic for v1 as 128 tokens is unlikely to be changed.
-  model_predictions.emplace_back(DetectTopLanguage(contents));
-  if (contents.length() > kNumTextSamples * kTextSampleLength) {
-    // Strings with UTF-8 have different widths so substr should be performed on
-    // the UTF16 strings to ensure alignment and then convert down to UTF-8
-    // strings for model evaluation.
-    std::u16string sampled_str = contents.substr(
-        contents.length() - kTextSampleLength, kTextSampleLength);
-    // Evaluate on the last |kTextSampleLength| characters.
-    model_predictions.emplace_back(DetectTopLanguage(sampled_str));
-
-    // Sample and evaluate on the middle |kTextSampleLength| characters.
-    sampled_str = contents.substr(contents.length() / 2, kTextSampleLength);
-    model_predictions.emplace_back(DetectTopLanguage(sampled_str));
-  }
-
-  const auto top_language_result = std::max_element(
-      model_predictions.begin(), model_predictions.end(),
-      [](auto& left, auto& right) { return left.second < right.second; });
+  auto prediction = tflite_model_->PredictTopLanguageWithSamples(contents);
   base::UmaHistogramTimes(
       "LanguageDetection.TFLiteModel.DetectPageLanguage.Duration",
       timer.Elapsed());
   base::UmaHistogramCounts1M(
       "LanguageDetection.TFLiteModel.DetectPageLanguage.Size", contents.size());
 
-  return language_detection::Prediction{top_language_result->first,
-                                        top_language_result->second};
+  return prediction;
 }
 
 std::string LanguageDetectionModel::GetModelVersion() const {

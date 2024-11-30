@@ -29,9 +29,6 @@
 
 // TODO(crbug.com/354918794): Add an API for removing a provider if needed.
 
-// TODO(crbug.com/354918794): Add an API for recurring refreshes, or make that
-// the default.
-
 // TODO(crbug.com/354918794): Add an API for cancelling any pending refresh, if
 // needed.
 

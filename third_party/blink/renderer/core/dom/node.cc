@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -64,7 +65,6 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -119,6 +119,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
@@ -362,6 +363,15 @@ NodeRareData& Node::CreateRareData() {
   return *data_;
 }
 
+void Node::MaybeAddNodeInsertedTraceEvent() {
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
+      "StyleRecalcInvalidationTracking",
+      inspector_style_recalc_invalidation_tracking_event::Data, this,
+      kLocalStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kNodeInserted));
+}
+
 Node* Node::ToNode() {
   return this;
 }
@@ -389,7 +399,8 @@ Node* Node::PseudoAwarePreviousSibling() const {
 
   // Note the [[fallthrough]] attributes, the order of the cases matters and
   // corresponds to the ordering of pseudo elements in a traversal:
-  // ::scroll-marker-group(before), ::marker, ::scroll-marker, ::check,
+  // ::scroll-marker-group(before), ::marker, ::scroll-marker,
+  // ::scroll-button(), ::checkmark,
   // ::before, non-pseudo Elements, ::after, ::select-arrow,
   // ::scroll-marker-group(after), ::view-transition. The fallthroughs ensure
   // this ordering by checking for each kind of node in-turn.
@@ -398,12 +409,6 @@ Node* Node::PseudoAwarePreviousSibling() const {
       if (Node* previous =
               parent->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
         return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollNextButton:
-      if (Node* next =
-              parent->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
-        return next;
       }
       [[fallthrough]];
     case kPseudoIdScrollMarkerGroupAfter:
@@ -425,16 +430,53 @@ Node* Node::PseudoAwarePreviousSibling() const {
         return previous;
       [[fallthrough]];
     case kPseudoIdBefore:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdCheck)) {
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdCheckMark)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
+      if (Node* previous =
+              parent->GetPseudoElement(kPseudoIdScrollRightButton)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollRightButton:
+      if (Node* previous =
+              parent->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollLeftButton:
+      if (Node* previous =
+              parent->GetPseudoElement(kPseudoIdScrollDownButton)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollDownButton:
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdScrollUpButton)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollUpButton:
       if (Node* previous = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
         return previous;
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
+      if (const ColumnPseudoElementsVector* columns =
+              parent->GetColumnPseudoElements();
+          columns && !columns->empty()) {
+        return columns->back();
+      }
+      [[fallthrough]];
+    case kPseudoIdColumn:
+      if (auto* column = DynamicTo<ColumnPseudoElement>(this)) {
+        const ColumnPseudoElementsVector* columns =
+            parent->GetColumnPseudoElements();
+        if (column->Index() > 0) {
+          return columns->at(column->Index() - 1u);
+        }
+      }
       if (Node* previous = parent->GetPseudoElement(kPseudoIdMarker)) {
         return previous;
       }
@@ -446,11 +488,6 @@ Node* Node::PseudoAwarePreviousSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarkerGroupBefore:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollPrevButton)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollPrevButton:
       return nullptr;
     // The pseudos of the view transition subtree have a known structure and
     // cannot create other pseudos so these are handled separately of the above
@@ -491,28 +528,56 @@ Node* Node::PseudoAwareNextSibling() const {
 
   // See comments in PseudoAwarePreviousSibling.
   switch (GetPseudoId()) {
-    case kPseudoIdScrollPrevButton:
-      if (Node* next =
-              parent->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
-        return next;
-      }
-      [[fallthrough]];
     case kPseudoIdScrollMarkerGroupBefore:
       if (Node* next = parent->GetPseudoElement(kPseudoIdMarker)) {
         return next;
       }
       [[fallthrough]];
     case kPseudoIdMarker:
+      if (const ColumnPseudoElementsVector* columns =
+              parent->GetColumnPseudoElements();
+          columns && !columns->empty()) {
+        return columns->front();
+      }
+      [[fallthrough]];
+    case kPseudoIdColumn:
+      if (auto* column = DynamicTo<ColumnPseudoElement>(this)) {
+        const ColumnPseudoElementsVector* columns =
+            parent->GetColumnPseudoElements();
+        if (column->Index() + 1u < columns->size()) {
+          return columns->at(column->Index() + 1u);
+        }
+      }
       if (Node* next = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
         return next;
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdCheck)) {
+      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollUpButton)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdCheck:
+    case kPseudoIdScrollUpButton:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollDownButton)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollDownButton:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollLeftButton:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollRightButton)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollRightButton:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdCheckMark)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdCheckMark:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
         return next;
       [[fallthrough]];
@@ -536,11 +601,6 @@ Node* Node::PseudoAwareNextSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarkerGroupAfter:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollNextButton)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollNextButton:
       if (Node* next = parent->GetPseudoElement(kPseudoIdViewTransition)) {
         return next;
       }
@@ -603,21 +663,40 @@ Node* Node::PseudoAwareFirstChild() const {
       return current_element->GetPseudoElement(kPseudoIdViewTransitionNew,
                                                name);
     }
-    if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollPrevButton)) {
-      return first;
-    }
     if (Node* first = current_element->GetPseudoElement(
             kPseudoIdScrollMarkerGroupBefore)) {
       return first;
     }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdMarker))
       return first;
+    if (const ColumnPseudoElementsVector* columns =
+            current_element->GetColumnPseudoElements();
+        columns && !columns->empty()) {
+      if (Node* first = columns->front()) {
+        return first;
+      }
+    }
     if (Node* first =
             current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
       return first;
     }
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdCheck)) {
+    if (Node* first =
+            current_element->GetPseudoElement(kPseudoIdScrollUpButton)) {
+      return first;
+    }
+    if (Node* first =
+            current_element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+      return first;
+    }
+    if (Node* first =
+            current_element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+      return first;
+    }
+    if (Node* first =
+            current_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+      return first;
+    }
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
       return first;
     }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
@@ -632,10 +711,6 @@ Node* Node::PseudoAwareFirstChild() const {
     }
     if (Node* first = current_element->GetPseudoElement(
             kPseudoIdScrollMarkerGroupAfter)) {
-      return first;
-    }
-    if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollNextButton)) {
       return first;
     }
     return current_element->GetPseudoElement(kPseudoIdViewTransition);
@@ -677,10 +752,6 @@ Node* Node::PseudoAwareLastChild() const {
             current_element->GetPseudoElement(kPseudoIdViewTransition)) {
       return last;
     }
-    if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollNextButton)) {
-      return last;
-    }
     if (Node* last = current_element->GetPseudoElement(
             kPseudoIdScrollMarkerGroupAfter)) {
       return last;
@@ -694,20 +765,39 @@ Node* Node::PseudoAwareLastChild() const {
       return last;
     if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
       return last;
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdCheck)) {
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
+      return last;
+    }
+    if (Node* last =
+            current_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+      return last;
+    }
+    if (Node* last =
+            current_element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+      return last;
+    }
+    if (Node* last =
+            current_element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+      return last;
+    }
+    if (Node* last =
+            current_element->GetPseudoElement(kPseudoIdScrollUpButton)) {
       return last;
     }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
       return last;
     }
+    if (const ColumnPseudoElementsVector* columns =
+            current_element->GetColumnPseudoElements();
+        columns && !columns->empty()) {
+      if (Node* last = columns->back()) {
+        return last;
+      }
+    }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdMarker)) {
       return last;
     }
-    if (Node* last = current_element->GetPseudoElement(
-            kPseudoIdScrollMarkerGroupBefore)) {
-      return last;
-    }
-    return current_element->GetPseudoElement(kPseudoIdScrollPrevButton);
+    return current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
   }
 
   return lastChild();
@@ -758,8 +848,11 @@ Node* Node::moveBefore(Node* new_child,
   // `Node::DidNotifySubtreeInsertionsToDocument()`), and no script is permitted
   // to run during atomic moves.
   const bool perform_state_preserving_atomic_move =
-      // "If either parent or node are not connected, then..."
-      isConnected() && new_child->isConnected() &&
+      // "If any of the following conditions are true"
+      // " - parent is connected and node is not connected; or"
+      // " - parent is not connected and node is connected,"
+      // "then..."
+      isConnected() == new_child->isConnected() &&
       // "If parent’s shadow-including root is not the same as node’s
       // shadow-including root, then..."
       GetDocument() == new_child->GetDocument() &&
@@ -2725,7 +2818,7 @@ static void AppendMarkedTree(const String& base_indent,
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
       }
-      if (Element* pseudo = element->GetPseudoElement(kPseudoIdCheck)) {
+      if (Element* pseudo = element->GetPseudoElement(kPseudoIdCheckMark)) {
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
       }

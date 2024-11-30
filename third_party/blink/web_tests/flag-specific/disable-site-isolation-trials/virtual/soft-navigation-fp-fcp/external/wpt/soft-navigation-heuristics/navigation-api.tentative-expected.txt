@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test soft navigation with the Navigation API
-  assert_greater_than: Soft navigation should have triggered at least an LCP entry expected a number greater than 1 but got 1
-Harness: the test ran to completion.
-

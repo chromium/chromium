@@ -193,7 +193,7 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
   void UnmapAndCreateTransferCacheEntry(uint32_t type, uint32_t id) override {
     transfer_cache_helper_->CreateEntryDirect(
         MakeEntryKey(type, id),
-        base::make_span(mapped_entry_.get(), mapped_entry_size_));
+        base::span(mapped_entry_.get(), mapped_entry_size_));
     mapped_entry_ = nullptr;
     mapped_entry_size_ = 0;
   }

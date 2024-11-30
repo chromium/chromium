@@ -189,6 +189,11 @@ const gfx::HDRMetadata& DisplayResourceProvider::GetHDRMetadata(
   return resource->transferable.hdr_metadata;
 }
 
+GrSurfaceOrigin DisplayResourceProvider::GetOrigin(ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
+  return resource->transferable.origin;
+}
+
 int DisplayResourceProvider::CreateChild(ReturnCallback return_callback,
                                          const SurfaceId& surface_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

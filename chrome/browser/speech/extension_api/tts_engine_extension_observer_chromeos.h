@@ -24,6 +24,12 @@ class TtsEngineExtensionObserverChromeOS
       public extensions::EventRouter::Observer,
       public extensions::ExtensionRegistryObserver {
  public:
+  // Use
+  // TtsEngineExtensionObserverChromeOSFactory::
+  // BuildServiceInstanceForBrowserContext
+  // instead.
+  explicit TtsEngineExtensionObserverChromeOS(Profile* profile);
+  ~TtsEngineExtensionObserverChromeOS() override;
   TtsEngineExtensionObserverChromeOS(
       const TtsEngineExtensionObserverChromeOS&) = delete;
   TtsEngineExtensionObserverChromeOS& operator=(
@@ -61,9 +67,6 @@ class TtsEngineExtensionObserverChromeOS
   }
 
  private:
-  explicit TtsEngineExtensionObserverChromeOS(Profile* profile);
-  ~TtsEngineExtensionObserverChromeOS() override;
-
   bool IsLoadedTtsEngine(const std::string& extension_id);
 
   void OnAccessibilityStatusChanged(

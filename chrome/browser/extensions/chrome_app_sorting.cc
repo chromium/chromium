@@ -343,8 +343,16 @@ void ChromeAppSorting::OnExtensionMoved(
 
 syncer::StringOrdinal ChromeAppSorting::GetAppLaunchOrdinal(
     const ExtensionId& extension_id) const {
-  if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id))
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
+  if (web_app_registrar_ &&
+      web_app_registrar_->IsInstallState(
+          extension_id,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return web_app_registrar_->GetAppById(extension_id)->user_launch_ordinal();
+  }
 
   std::string raw_value;
   // If the preference read fails then raw_value will still be unset and we
@@ -369,7 +377,14 @@ void ChromeAppSorting::SetAppLaunchOrdinal(
       extension_id, page_ordinal, GetAppLaunchOrdinal(extension_id));
   AddOrdinalMapping(extension_id, page_ordinal, new_app_launch_ordinal);
 
-  if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id)) {
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
+  if (web_app_registrar_ &&
+      web_app_registrar_->IsInstallState(
+          extension_id,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     web_app_sync_bridge_->SetUserLaunchOrdinal(extension_id,
                                                new_app_launch_ordinal);
     return;
@@ -433,8 +448,16 @@ syncer::StringOrdinal ChromeAppSorting::GetNaturalAppPageOrdinal() const {
 
 syncer::StringOrdinal ChromeAppSorting::GetPageOrdinal(
     const ExtensionId& extension_id) const {
-  if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id))
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
+  if (web_app_registrar_ &&
+      web_app_registrar_->IsInstallState(
+          extension_id,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return web_app_registrar_->GetAppById(extension_id)->user_page_ordinal();
+  }
 
   std::string raw_data;
   // If the preference read fails then raw_data will still be unset and we will
@@ -456,7 +479,14 @@ void ChromeAppSorting::SetPageOrdinal(
       extension_id, GetPageOrdinal(extension_id), app_launch_ordinal);
   AddOrdinalMapping(extension_id, new_page_ordinal, app_launch_ordinal);
 
-  if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id)) {
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
+  if (web_app_registrar_ &&
+      web_app_registrar_->IsInstallState(
+          extension_id,
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     web_app_sync_bridge_->SetUserPageOrdinal(extension_id, new_page_ordinal);
     return;
   }

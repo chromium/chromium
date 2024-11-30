@@ -331,7 +331,7 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kSkiaFontService)) {
+  if (base::FeatureList::IsEnabled(features::kFontDataService)) {
     if (auto font_data_receiver =
             receiver.As<font_data_service::mojom::FontDataService>()) {
       font_data_service::FontDataServiceImpl::ConnectToFontService(

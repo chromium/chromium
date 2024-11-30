@@ -74,7 +74,8 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override;
   void SharedStorageUpdate(
-      network::mojom::SharedStorageModifierMethodPtr method,
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr
+          method_with_options,
       SharedStorageUpdateCallback callback) override;
 
   base::WeakPtr<SharedStorageDocumentServiceImpl> GetWeakPtr();

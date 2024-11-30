@@ -1117,7 +1117,7 @@ TEST_F(SequencedSocketDataTest, MixedReentrantOperationsThenSynchronousWrite) {
 }
 
 // Test the basic case where a read is paused.
-TEST_F(SequencedSocketDataTest, PauseAndResume_PauseRead) {
+TEST_F(SequencedSocketDataTest, PauseAndResumePauseRead) {
   MockRead reads[] = {
       MockRead(ASYNC, ERR_IO_PENDING, 0), MockRead(ASYNC, kMsg1, kLen1, 1),
   };
@@ -1144,7 +1144,7 @@ TEST_F(SequencedSocketDataTest, PauseAndResume_PauseRead) {
 
 // Test the case where a read that will be paused is started before write that
 // completes before the pause.
-TEST_F(SequencedSocketDataTest, PauseAndResume_WritePauseRead) {
+TEST_F(SequencedSocketDataTest, PauseAndResumeWritePauseRead) {
   MockWrite writes[] = {
       MockWrite(SYNCHRONOUS, kMsg1, kLen1, 0),
   };
@@ -1182,7 +1182,7 @@ TEST_F(SequencedSocketDataTest, PauseAndResume_WritePauseRead) {
 }
 
 // Test the basic case where a write is paused.
-TEST_F(SequencedSocketDataTest, PauseAndResume_PauseWrite) {
+TEST_F(SequencedSocketDataTest, PauseAndResumePauseWrite) {
   MockWrite writes[] = {
       MockWrite(ASYNC, ERR_IO_PENDING, 0), MockWrite(ASYNC, kMsg1, kLen1, 1),
   };
@@ -1208,7 +1208,7 @@ TEST_F(SequencedSocketDataTest, PauseAndResume_PauseWrite) {
 
 // Test the case where a write that will be paused is started before read that
 // completes before the pause.
-TEST_F(SequencedSocketDataTest, PauseAndResume_ReadPauseWrite) {
+TEST_F(SequencedSocketDataTest, PauseAndResumeReadPauseWrite) {
   MockWrite writes[] = {
       MockWrite(ASYNC, ERR_IO_PENDING, 1), MockWrite(ASYNC, kMsg2, kLen2, 2),
   };

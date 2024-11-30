@@ -393,7 +393,7 @@ void OverlayAgentViews::SetPinnedNodeId(int node_id) {
 
 protocol::Response OverlayAgentViews::setInspectMode(
     const protocol::String& in_mode,
-    protocol::Maybe<protocol::Overlay::HighlightConfig> in_highlightConfig) {
+    std::unique_ptr<protocol::Overlay::HighlightConfig> in_highlightConfig) {
   pinned_id_ = 0;
   if (in_mode.compare("searchForNode") == 0) {
     InstallPreTargetHandler();
@@ -405,7 +405,7 @@ protocol::Response OverlayAgentViews::setInspectMode(
 
 protocol::Response OverlayAgentViews::highlightNode(
     std::unique_ptr<protocol::Overlay::HighlightConfig> highlight_config,
-    protocol::Maybe<int> node_id) {
+    std::optional<int> node_id) {
   return HighlightNode(node_id.value());
 }
 

@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.view.View;
 
@@ -23,8 +22,9 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -47,6 +47,7 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 
 /** Integration tests for ClearBrowsingDataFragmentBasic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -66,6 +67,8 @@ public class ClearBrowsingDataFragmentBasicTest {
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -80,7 +83,6 @@ public class ClearBrowsingDataFragmentBasicTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        initMocks(this);
         SyncServiceFactory.setInstanceForTesting(mMockSyncService);
         setSyncable(false);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -93,8 +95,7 @@ public class ClearBrowsingDataFragmentBasicTest {
                     when(mMockSyncService.getActiveDataTypes())
                             .thenReturn(
                                     syncable
-                                            ? CollectionUtil.newHashSet(
-                                                    DataType.HISTORY_DELETE_DIRECTIVES)
+                                            ? Set.of(DataType.HISTORY_DELETE_DIRECTIVES)
                                             : new HashSet<Integer>());
                 });
     }

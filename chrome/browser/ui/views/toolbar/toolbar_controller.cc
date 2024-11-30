@@ -96,13 +96,23 @@ void ToolbarController::PopOutHandler::OnElementHidden(
   controller_->EndPopOut(identifier_);
 }
 
+ToolbarController::ElementIdInfo::ElementIdInfo(
+    ui::ElementIdentifier overflow_identifier,
+    int menu_text_id,
+    raw_ptr<const gfx::VectorIcon> menu_icon,
+    ui::ElementIdentifier activate_identifier,
+    std::optional<ui::ElementIdentifier> observed_identifier)
+    : overflow_identifier(overflow_identifier),
+      menu_text_id(menu_text_id),
+      menu_icon(menu_icon),
+      activate_identifier(activate_identifier),
+      observed_identifier(observed_identifier) {}
+
 ToolbarController::ResponsiveElementInfo::ResponsiveElementInfo(
     absl::variant<ElementIdInfo, actions::ActionId> overflow_id,
-    bool is_section_end,
-    std::optional<ui::ElementIdentifier> observed_identifier)
-    : overflow_id(overflow_id),
-      is_section_end(is_section_end),
-      observed_identifier(observed_identifier) {}
+    bool is_section_end)
+    : overflow_id(overflow_id), is_section_end(is_section_end) {}
+
 ToolbarController::ResponsiveElementInfo::ResponsiveElementInfo(
     const ResponsiveElementInfo& info) = default;
 ToolbarController::ResponsiveElementInfo::~ResponsiveElementInfo() = default;
@@ -143,7 +153,6 @@ ToolbarController::ToolbarController(
       CalculateFlexOrder(elements_in_overflow_order, element_flex_order_start);
   for (const auto& element : responsive_elements) {
     const auto& overflow_id = element.overflow_id;
-    const auto& observed_identifier = element.observed_identifier;
 
     absl::visit(
         base::Overloaded{
@@ -171,7 +180,7 @@ ToolbarController::ToolbarController(
               toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
 
               // Create pop out state and pop out handlers to support pop out.
-              if (observed_identifier.has_value()) {
+              if (id.observed_identifier.has_value()) {
                 auto state = std::make_unique<PopOutState>();
                 if (original_spec) {
                   state->original_spec =
@@ -182,7 +191,7 @@ ToolbarController::ToolbarController(
                     this,
                     views::ElementTrackerViews::GetContextForView(
                         toolbar_container_view),
-                    id.overflow_identifier, observed_identifier.value());
+                    id.overflow_identifier, id.observed_identifier.value());
                 pop_out_state_[id.overflow_identifier] = std::move(state);
               }
             }},
@@ -200,15 +209,18 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
   // TODO(crbug.com/40912482): Fill in observed identifier.
   // Order matters because it should match overflow menu order top to bottom.
   std::vector<ToolbarController::ResponsiveElementInfo> elements = {
-      {ToolbarController::ElementIdInfo{
-           kToolbarForwardButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
-           &vector_icons::kForwardArrowChromeRefreshIcon,
-           kToolbarForwardButtonElementId},
-       /*is_section_end=*/false},
-      {ToolbarController::ElementIdInfo{
-           kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
-           &kNavigateHomeChromeRefreshIcon, kToolbarHomeButtonElementId},
-       /*is_section_end=*/true}};
+      ToolbarController::ResponsiveElementInfo(
+          ToolbarController::ElementIdInfo{
+              kToolbarForwardButtonElementId,
+              IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
+              &vector_icons::kForwardArrowChromeRefreshIcon,
+              kToolbarForwardButtonElementId},
+          /*is_section_end=*/false),
+      ToolbarController::ResponsiveElementInfo(
+          ToolbarController::ElementIdInfo{
+              kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
+              &kNavigateHomeChromeRefreshIcon, kToolbarHomeButtonElementId},
+          /*is_section_end=*/false)};
 
   // Support actions items.
   const auto* const browser_actions = browser->browser_actions();
@@ -232,37 +244,46 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
 
   elements.insert(
       elements.end(),
-      {{ToolbarController::ElementIdInfo{
-            kToolbarChromeLabsButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
-            &kScienceIcon, kToolbarChromeLabsButtonElementId},
-        /*is_section_end=*/false, kToolbarChromeLabsBubbleElementId},
-       {ToolbarController::ElementIdInfo{
-            kToolbarMediaButtonElementId,
-            IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
-            &kMediaToolbarButtonChromeRefreshIcon,
-            kToolbarMediaButtonElementId},
-        /*is_section_end=*/false, kToolbarMediaBubbleElementId},
-       {ToolbarController::ElementIdInfo{
-            kToolbarDownloadButtonElementId,
-            IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
-            &kDownloadToolbarButtonChromeRefreshIcon,
-            kToolbarDownloadButtonElementId},
-        /*is_section_end=*/true, kToolbarDownloadBubbleElementId},
-       {ToolbarController::ElementIdInfo{kToolbarNewTabButtonElementId,
-                                         IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB,
+      {ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo(kToolbarChromeLabsButtonElementId,
+                                            IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
+                                            &kScienceIcon,
+                                            kToolbarChromeLabsButtonElementId,
+                                            kToolbarChromeLabsBubbleElementId),
+           /*is_section_end=*/false),
+       ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo(
+               kToolbarMediaButtonElementId,
+               IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
+               &kMediaToolbarButtonChromeRefreshIcon,
+               kToolbarMediaButtonElementId, kToolbarMediaBubbleElementId),
+           /*is_section_end=*/false),
+       ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo(
+               kToolbarDownloadButtonElementId,
+               IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
+               &kDownloadToolbarButtonChromeRefreshIcon,
+               kToolbarDownloadButtonElementId,
+               kToolbarDownloadBubbleElementId),
+           /*is_section_end=*/true),
+       ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo(kToolbarNewTabButtonElementId,
+                                            IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB,
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-                                         &kNewTabToolbarButtonIcon,
+                                            &kNewTabToolbarButtonIcon,
 #else
-                                         nullptr,
+                                            nullptr,
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-                                         kToolbarNewTabButtonElementId},
-        /*is_section_end=*/true},
-       {ToolbarController::ElementIdInfo{
-            kToolbarAvatarButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
-            is_incognito ? (&kIncognitoRefreshMenuIcon)
-                         : (&kUserAccountAvatarRefreshIcon),
-            kToolbarAvatarButtonElementId},
-        /*is_section_end=*/false, kToolbarAvatarBubbleElementId}});
+                                            kToolbarNewTabButtonElementId),
+           /*is_section_end=*/true),
+       ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo(
+               kToolbarAvatarButtonElementId,
+               IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
+               is_incognito ? (&kIncognitoRefreshMenuIcon)
+                            : (&kUserAccountAvatarRefreshIcon),
+               kToolbarAvatarButtonElementId, kToolbarAvatarBubbleElementId),
+           /*is_section_end=*/false)});
   return elements;
 }
 

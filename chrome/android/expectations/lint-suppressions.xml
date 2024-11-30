@@ -333,6 +333,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.collaboration_cancel` appears to be unused"/>
     <ignore regexp="The resource `R.string.collaboration_something_went_wrong_header` appears to be unused"/>
     <ignore regexp="The resource `R.string.collaboration_something_went_wrong_body` appears to be unused"/>
+    <ignore regexp="The resource `R.string.data_sharing_recent_activity_bottom_sheet_title` appears to be unused"/>
 
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>

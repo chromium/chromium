@@ -989,8 +989,8 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
           AtomicHTMLToken end_option(HTMLToken::kEndTag, HTMLTag::kOption);
           ProcessEndTag(&end_option);
         }
-        tree_.ReconstructTheActiveFormattingElements();
       }
+      tree_.ReconstructTheActiveFormattingElements();
       tree_.InsertHTMLElement(token);
       break;
     case HTMLTag::kRb:

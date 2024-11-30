@@ -42,7 +42,7 @@ LoginManagerTest::LoginManagerTest() {
   set_exit_when_last_browser_closes(false);
 }
 
-LoginManagerTest::~LoginManagerTest() {}
+LoginManagerTest::~LoginManagerTest() = default;
 
 void LoginManagerTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kLoginManager);

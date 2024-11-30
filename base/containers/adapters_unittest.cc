@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -49,19 +51,53 @@ class UnsizedVector {
 
 [[maybe_unused]] void StaticAsserts() {
   {
-    // A named local variable is more readable than std::declval<T>().
-    [[maybe_unused]] std::vector<int> v;
+    // Named local variables are more readable than std::declval<T>().
+    std::vector<int> v;
     static_assert(std::ranges::range<decltype(base::Reversed(v))>);
     static_assert(std::ranges::sized_range<decltype(base::Reversed(v))>);
+    // `base::Reversed()` takes a const ref to the vector, which is, by
+    // definition, a borrowed range.
+    static_assert(std::ranges::borrowed_range<decltype(base::Reversed(v))>);
+
+    auto make_vector = [] { return std::vector<int>(); };
+    static_assert(std::ranges::range<decltype(base::Reversed(make_vector()))>);
+    static_assert(
+        std::ranges::sized_range<decltype(base::Reversed(make_vector()))>);
+    static_assert(
+        !std::ranges::borrowed_range<decltype(base::Reversed(make_vector()))>);
+  }
+
+  {
+    base::span<int> s;
+    static_assert(std::ranges::range<decltype(base::Reversed(s))>);
+    static_assert(std::ranges::sized_range<decltype(base::Reversed(s))>);
+    static_assert(std::ranges::borrowed_range<decltype(base::Reversed(s))>);
+
+    auto rvalue_span = [] { return base::span<int>(); };
+    static_assert(std::ranges::range<decltype(base::Reversed(rvalue_span()))>);
+    static_assert(
+        std::ranges::sized_range<decltype(base::Reversed(rvalue_span()))>);
+    static_assert(
+        std::ranges::borrowed_range<decltype(base::Reversed(rvalue_span()))>);
   }
 
   {
     // A named local variable is more readable than std::declval<T>().
-    [[maybe_unused]] UnsizedVector v;
+    UnsizedVector v;
     static_assert(std::ranges::range<decltype(v)>);
     static_assert(!std::ranges::sized_range<decltype(v)>);
+
     static_assert(std::ranges::range<decltype(base::Reversed(v))>);
     static_assert(!std::ranges::sized_range<decltype(base::Reversed(v))>);
+    // `base::Reversed()` takes a const ref to the vector, which is, by
+    // definition, a borrowed range.
+    static_assert(std::ranges::borrowed_range<decltype(base::Reversed(v))>);
+
+    auto make_vector = [] { return UnsizedVector(); };
+    static_assert(std::ranges::range<decltype(base::Reversed(make_vector()))>);
+    static_assert(
+        !std::ranges::sized_range<decltype(base::Reversed(make_vector()))>);
+    static_assert(!std::ranges::borrowed_range<decltype(make_vector())>);
   }
 }
 
@@ -108,6 +144,24 @@ TEST(AdaptersTest, ReversedConst) {
   for (int i : base::Reversed(cv)) {
     EXPECT_EQ(++j, i);
   }
+}
+
+TEST(AdaptersTest, RangeAsRvalues) {
+  std::vector<std::unique_ptr<int>> v;
+  v.push_back(std::make_unique<int>(1));
+  v.push_back(std::make_unique<int>(2));
+  v.push_back(std::make_unique<int>(3));
+
+  auto v2 = base::ToVector(base::RangeAsRvalues(std::move(v)));
+  EXPECT_EQ(1, *v2[0]);
+  EXPECT_EQ(2, *v2[1]);
+  EXPECT_EQ(3, *v2[2]);
+
+  // The old vector should be consumed. The standard guarantees that a
+  // moved-from std::unique_ptr will be null.
+  EXPECT_EQ(nullptr, v[0]);  // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(nullptr, v[1]);  // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(nullptr, v[2]);  // NOLINT(bugprone-use-after-move)
 }
 
 }  // namespace

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -152,6 +153,7 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
 }  // namespace
 
 namespace saved_tab_group_prefs = tab_groups::saved_tab_groups::prefs;
+namespace shared_tab_group_metrics = tab_groups::saved_tab_groups::metrics;
 
 // static
 views::Widget* TabGroupEditorBubbleView::Show(
@@ -372,7 +374,7 @@ void TabGroupEditorBubbleView::UpdateMenuContentsVisibility() {
         break;
       }
       case TAB_GROUP_HEADER_CXMENU_DELETE_GROUP: {
-        button->SetVisible(IsGroupSaved());
+        button->SetVisible(IsGroupSaved() || IsGroupShared());
         break;
       }
       case TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW: {
@@ -727,9 +729,20 @@ void TabGroupEditorBubbleView::UngroupPressed() {
 }
 
 void TabGroupEditorBubbleView::ShareOrManagePressed() {
+  bool is_group_shared = IsGroupShared();
+
   DataSharingBubbleController::GetOrCreateForBrowser(
       const_cast<Browser*>(browser_.get()))
       ->Show(group_);
+
+  if (!is_group_shared) {
+    shared_tab_group_metrics::RecordSharedTabGroupManageType(
+        shared_tab_group_metrics::SharedTabGroupManageTypeDesktop::kShareGroup);
+  } else {
+    shared_tab_group_metrics::RecordSharedTabGroupManageType(
+        shared_tab_group_metrics::SharedTabGroupManageTypeDesktop::
+            kManageGroup);
+  }
 }
 
 // static
@@ -751,8 +764,16 @@ void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
 void TabGroupEditorBubbleView::HideGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_CloseGroup"));
+
+  bool is_group_shared = IsGroupShared();
+
   DeleteGroupFromTabstrip();
   GetWidget()->Close();
+
+  if (is_group_shared) {
+    shared_tab_group_metrics::RecordSharedTabGroupRecallType(
+        shared_tab_group_metrics::SharedTabGroupRecallTypeDesktop::kClosed);
+  }
 }
 
 void TabGroupEditorBubbleView::DeleteGroupPressed() {
@@ -771,8 +792,15 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
   }
 
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    bool is_group_shared = IsGroupShared();
+
     tab_groups::SavedTabGroupUtils::DeleteSavedGroup(browser_,
                                                      saved_group->saved_guid());
+    if (is_group_shared) {
+      shared_tab_group_metrics::RecordSharedTabGroupManageType(
+          shared_tab_group_metrics::SharedTabGroupManageTypeDesktop::
+              kDeleteGroup);
+    }
   } else {
     DeleteGroupFromTabstrip();
     tab_group_service->RemoveGroup(saved_group->saved_guid());

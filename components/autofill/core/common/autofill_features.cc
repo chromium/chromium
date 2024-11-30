@@ -40,27 +40,6 @@ BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Autofill always sets the phone number as parsed by
-// i18n::phonenumber.
-// TODO(crbug.com/40220393): Cleanup when launched.
-BASE_FEATURE(kAutofillPreferParsedPhoneNumber,
-             "AutofillPreferParsedPhoneNumber",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, the country calling code for nationally formatted phone numbers
-// is inferred from the profile's country, if available.
-// TODO(crbug.com/40220393): Cleanup when launched.
-BASE_FEATURE(kAutofillInferCountryCallingCode,
-             "AutofillInferCountryCallingCode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, label inference considers strings entirely made up of  '(', ')'
-// and '-' as valid labels.
-// TODO(crbug.com/40220393): Cleanup when launched.
-BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-             "AutofillConsiderPhoneNumberSeparatorsValidLabels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, no prefix matching is applied to filter credit card number
 // suggestions.
 // TODO(crbug.com/338932642): Clean up.
@@ -192,13 +171,6 @@ BASE_FEATURE(kAutofillEnablePaymentsFieldSwapping,
              "AutofillEnablePaymentsFieldSwapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, trunk prefix-related phone number types are added to the
-// supported and matching types of |PhoneNumber|. Local heuristics for these
-// types are enabled as well.
-BASE_FEATURE(kAutofillEnableSupportForPhoneNumberTrunkTypes,
-             "AutofillEnableSupportForPhoneNumberTrunkTypes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, only non-ad frames are extracted.
 // Otherwise, non-ad frames as well as *visible* ad frames are extracted.
 // "Extracted" means that FormFieldData::child_frames is populated, which is
@@ -216,6 +188,19 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
 BASE_FEATURE(kAutofillAddressFieldSwapping,
              "AutofillAddressFieldSwapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, Autofill will try to reuse the result of previous form
+// extractions in subsequent functions that needs the form extracted, provided
+// we have guarantees that in the meantime the form couldn't have changed.
+BASE_FEATURE(kAutofillOptimizeFormExtraction,
+             "AutofillOptimizeFormExtraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Killswitch that guards replacing some form and field semantic comparison with
+// just [Form|Field]GlobalId comparisons.
+BASE_FEATURE(kAutofillUseFewerFormAndFieldComparison,
+             "AutofillUseFewerFormAndFieldComparison",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Resets the autofill state of a field when JavaScript modifies its value.
 // Also resets the AutofillState of the blink element to kAutofilled if the
@@ -286,7 +271,28 @@ BASE_FEATURE(kAutofillGivePrecedenceToEmailOverUsername,
 // TODO(crbug.com/347698797): Cleanup when launched.
 BASE_FEATURE(kAutofillImportFromAutocompleteUnrecognized,
              "AutofillImportFromAutocompleteUnrecognized",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, the autofill suggestion labels are more more descriptive and
+// relevant.
+// TODO(crbug.com/380273791): Cleanup when launched.
+BASE_FEATURE(kAutofillImprovedLabels,
+             "AutofillImprovedLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether main text should also be improved or not.
+// TODO(crbug.com/380273791): Clean up when launched.
+const base::FeatureParam<bool>
+    kAutofillImprovedLabelsParamWithoutMainTextChangesParam{
+        &kAutofillImprovedLabels,
+        "autofill_improved_labels_without_main_text_changes", false};
+
+// Controls whether labels should not be improved, but only the main text.
+// TODO(crbug.com/380273791): Clean up when launched.
+const base::FeatureParam<bool>
+    kAutofillImprovedLabelsParamOnlyWithMainTextChangesParam{
+        &kAutofillImprovedLabels,
+        "autofill_improved_labels_only_with_main_text_changes", false};
 
 // If enabled, we start forwarding submissions with source
 // DOM_MUTATION_AFTER_AUTOFILL, even for non-password forms.
@@ -505,19 +511,6 @@ const base::FeatureParam<bool>
         &kAutofillGranularFillingAvailable,
         "autofill_granular_filling_with_improved_labels", true};
 
-// This variation controls whether the "Fill everything" button is displayed at
-// the top or at the bottom. When at the top, it is displayed regardless of the
-// filling mode. When at the bottom, it is displayed in all modes but the full
-// form filling mode.
-// The feature variation exists to separate the granular filling feature into
-// multiple sub-features. Thus, metrics can be evaluated separately for each
-// sub-feature.
-// TODO(crbug.com/40274514): Clean up when launched.
-const base::FeatureParam<bool>
-    kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam{
-        &kAutofillGranularFillingAvailable,
-        "autofill_granular_filling_with_fill_everything_in_the_footer", true};
-
 // This variation controls whether the expand children suggestions control is
 // hidden for non-selected/non-expanded suggestions (and the control shows up
 // when any part of the suggestion row is selected/hovered).
@@ -698,6 +691,56 @@ BASE_FEATURE(kAutofillInferLabelFromDefaultSelectText,
              "AutofillInferLabelFromDefaultSelectText",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, a HaTS survey is shown after the successful first time creation
+// flow.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey,
+             "PlusAddressAcceptedFirstTimeCreateSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the declined the first plus
+// address creation flow.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressDeclinedFirstTimeCreateSurvey,
+             "PlusAddressDeclinedFirstTimeCreateSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user fills a plus address
+// after triggering autofill manually.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
+             "PlusAddressFilledPlusAddressViaManualFallbackSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user creates a 3rd+ plus
+// address.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
+             "PlusAddressUserCreatedMultiplePlusAddressesSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user creates a plus address
+// triggering the popup via the Chrome context menu on Desktop or via the
+// Keyboard Accessory on Android.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
+             "PlusAddressUserCreatedPlusAddressViaManualFallbackSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user chooses to fill an email
+// when a plus address suggestion is also offered in the Autofill popup.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
+             "PlusAddressUserDidChooseEmailOverPlusAddressSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user chooses to fill a plus
+// address when an email suggestion is also offered in the Autofill popup.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
+             "PlusAddressUserDidChoosePlusAddressOverEmailSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.
@@ -782,8 +825,9 @@ BASE_FEATURE(kAutofillLogToTerminal,
 // * The server prediction for the field with signature 8 in the form with
 //   signature 7 is overridden to be 9 (EMAIL_ADDRESS).
 //
-// See components/autofill/core/browser/server_prediction_overrides.h for more
-// examples and details on how to specify overrides.
+// See
+// components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h
+// for more examples and details on how to specify overrides.
 BASE_FEATURE(kAutofillOverridePredictions,
              "AutofillOverridePredictions",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
@@ -149,9 +150,10 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
       webpage_url =
           [NSURL URLWithString:base::SysUTF8ToNSString(kChromeUINewTabURL)];
       AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-          initWithExternalURL:GURL(kChromeUINewTabURL)
-                  completeURL:GURL(kChromeUINewTabURL)
-              applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
+           initWithExternalURL:GURL(kChromeUINewTabURL)
+                   completeURL:GURL(kChromeUINewTabURL)
+               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+          forceApplicationMode:NO];
       BOOL startup_params_set =
           spotlight::SetStartupParametersForSpotlightAction(item_id,
                                                             startup_params);
@@ -178,14 +180,27 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     base::UmaHistogramEnumeration("IOS.Spotlight.LaunchedIntentType",
                                   IntentType::kSearchInChrome);
 
-    AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-        initWithExternalURL:GURL(kChromeUINewTabURL)
-                completeURL:GURL(kChromeUINewTabURL)
-            applicationMode:ApplicationModeForTabOpening::NORMAL];
+    AppStartupParameters* startup_params;
 
     if (IsIncognitoModeForced(profile_->GetPrefs())) {
       // Set incognito mode to yes if only incognito mode is available.
-      startup_params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+      startup_params = [[AppStartupParameters alloc]
+           initWithExternalURL:GURL(kChromeUINewTabURL)
+                   completeURL:GURL(kChromeUINewTabURL)
+               applicationMode:ApplicationModeForTabOpening::INCOGNITO
+          forceApplicationMode:YES];
+    } else if (IsIncognitoModeDisabled(profile_->GetPrefs())) {
+      startup_params = [[AppStartupParameters alloc]
+           initWithExternalURL:GURL(kChromeUINewTabURL)
+                   completeURL:GURL(kChromeUINewTabURL)
+               applicationMode:ApplicationModeForTabOpening::NORMAL
+          forceApplicationMode:YES];
+    } else {
+      startup_params = [[AppStartupParameters alloc]
+           initWithExternalURL:GURL(kChromeUINewTabURL)
+                   completeURL:GURL(kChromeUINewTabURL)
+               applicationMode:ApplicationModeForTabOpening::NORMAL
+          forceApplicationMode:NO];
     }
 
     SearchInChromeIntent* intent =
@@ -314,9 +329,10 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
                                   AppLaunchSource::SIRI_SHORTCUT);
 
     AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-        initWithExternalURL:GURL()
-                completeURL:GURL()
-            applicationMode:ApplicationModeForTabOpening::NORMAL];
+         initWithExternalURL:GURL()
+                 completeURL:GURL()
+             applicationMode:ApplicationModeForTabOpening::NORMAL
+        forceApplicationMode:NO];
 
     startup_params.postOpeningAction = OPEN_LATEST_TAB;
     [connection_information_ setStartupParameters:startup_params];
@@ -406,9 +422,10 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
                                   AppLaunchSource::SIRI_SHORTCUT);
 
     AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-        initWithExternalURL:GURL(kChromeUINewTabURL)
-                completeURL:GURL(kChromeUINewTabURL)
-            applicationMode:ApplicationModeForTabOpening::INCOGNITO];
+         initWithExternalURL:GURL(kChromeUINewTabURL)
+                 completeURL:GURL(kChromeUINewTabURL)
+             applicationMode:ApplicationModeForTabOpening::INCOGNITO
+        forceApplicationMode:NO];
     [connection_information_ setStartupParameters:startup_params];
   } else if ([user_activity.activityType
                  isEqualToString:kSiriManagePaymentMethods]) {
@@ -515,77 +532,17 @@ void UserActivityBrowserAgent::RouteToCorrectTab() {
       connection_information_.startupParameters.isUnexpectedMode) {
     return;
   }
-
-  // TODO(crbug.com/41443029): Exacly the same copy of this code is present in
-  // +[URLOpener
-  // openURL:applicationActive:options:tabOpener:startupInformation:]
-
-  // The app is already active so the applicationDidBecomeActive: method
-  // will never be called. Open the requested URL after all modal UIs have
-  // been dismissed. `_startupParameters` must be retained until all deferred
-  // modal UIs are dismissed and tab opened (or Incognito interstitial shown)
-  // with requested URL.
-  ApplicationModeForTabOpening target_mode =
-      [[connection_information_ startupParameters] applicationMode];
-  GURL url;
-  GURL virtual_url;
-  GURL complete_url = connection_information_.startupParameters.completeURL;
-  if (complete_url.SchemeIsFile()) {
-    // External URL will be loaded by WebState, which expects `complete_url`.
-    // Omnibox however suppose to display `external_url`, which is used as
-    // virtual URL.
-    url = complete_url;
-    virtual_url = external_url;
+  if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
+    base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
+        base::BindOnce(&UserActivityBrowserAgent::HandleRouteToCorrectTab,
+                       weak_ptr_factory_.GetWeakPtr());
+    [connection_information_.startupParameters
+        requestApplicationModeWithBlock:base::CallbackToBlock(
+                                            std::move(completion))];
   } else {
-    url = external_url;
+    HandleRouteToCorrectTab(
+        [connection_information_.startupParameters applicationMode]);
   }
-  UrlLoadParams params;
-  if (connection_information_.startupParameters.openExistingTab) {
-    web::NavigationManager::WebLoadParams web_load_params =
-        web::NavigationManager::WebLoadParams(url);
-    params = UrlLoadParams::SwitchToTab(web_load_params);
-  } else {
-    params = UrlLoadParams::InNewTab(url, virtual_url);
-  }
-
-  if (connection_information_.startupParameters.imageSearchData) {
-    TemplateURLService* template_url_service =
-        ios::TemplateURLServiceFactory::GetForProfile(profile_);
-
-    NSData* image_data =
-        connection_information_.startupParameters.imageSearchData;
-    web::NavigationManager::WebLoadParams web_load_params =
-        ImageSearchParamGenerator::LoadParamsForImageData(image_data, GURL(),
-                                                          template_url_service);
-
-    params.web_params = web_load_params;
-  } else if (connection_information_.startupParameters.textQuery) {
-    NSString* query = connection_information_.startupParameters.textQuery;
-
-    GURL result = GenerateResultGURLFromSearchQuery(query);
-    params.web_params.url = result;
-  }
-
-  params.from_external = true;
-
-  if ([[connection_information_ startupParameters] applicationMode] !=
-          ApplicationModeForTabOpening::INCOGNITO &&
-      [tab_opener_ URLIsOpenedInRegularMode:params.web_params.url]) {
-    // Record metric.
-  }
-
-  base::OnceClosure closure =
-      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
-                     weak_ptr_factory_.GetWeakPtr());
-  [tab_opener_
-      dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
-                               withUrlLoadParams:params
-                                  dismissOmnibox:[[connection_information_
-                                                     startupParameters]
-                                                     postOpeningAction] !=
-                                                 FOCUS_OMNIBOX
-                                      completion:base::CallbackToBlock(
-                                                     std::move(closure))];
 }
 
 BOOL UserActivityBrowserAgent::ProceedWithUserActivity(
@@ -610,9 +567,10 @@ UserActivityBrowserAgent::StartupParametersForOpeningNewTab(
     TabOpeningPostOpeningAction action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-      initWithExternalURL:GURL(kChromeUINewTabURL)
-              completeURL:GURL(kChromeUINewTabURL)
-          applicationMode:ApplicationModeForTabOpening::NORMAL];
+       initWithExternalURL:GURL(kChromeUINewTabURL)
+               completeURL:GURL(kChromeUINewTabURL)
+           applicationMode:ApplicationModeForTabOpening::NORMAL
+      forceApplicationMode:NO];
 
   startup_params.postOpeningAction = action;
   return startup_params;
@@ -635,9 +593,10 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
           : GURL(kChromeUINewTabURL);
 
   AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-      initWithExternalURL:startup_url
-              completeURL:startup_url
-          applicationMode:ApplicationModeForTabOpening::NORMAL];
+       initWithExternalURL:startup_url
+               completeURL:startup_url
+           applicationMode:ApplicationModeForTabOpening::NORMAL
+      forceApplicationMode:NO];
 
   if ([shortcut_item.type isEqualToString:kShortcutNewSearch]) {
     base::RecordAction(
@@ -649,7 +608,8 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
   } else if ([shortcut_item.type isEqualToString:kShortcutNewIncognitoSearch]) {
     base::RecordAction(
         UserMetricsAction("ApplicationShortcut.NewIncognitoSearchPressed"));
-    startup_params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+    [startup_params setApplicationMode:ApplicationModeForTabOpening::INCOGNITO
+                  forceApplicationMode:NO];
     startup_params.postOpeningAction = FOCUS_OMNIBOX;
     connection_information_.startupParameters = startup_params;
     return YES;
@@ -705,7 +665,8 @@ void UserActivityBrowserAgent::OpenRequestedURLs(
   }
   AppStartupParameters* startup_params =
       [[AppStartupParameters alloc] initWithURLs:webpage_urls
-                                 applicationMode:application_mode];
+                                 applicationMode:application_mode
+                            forceApplicationMode:NO];
   [connection_information_ setStartupParameters:startup_params];
 
   if (application_is_active && IsProfileStateReady(browser_)) {
@@ -720,9 +681,12 @@ void UserActivityBrowserAgent::OpenRequestedURLs(
   [startup_information_ resetFirstUserActionRecorder];
 
   if (![connection_information_ startupParameters]) {
-    startup_params.applicationMode = ApplicationModeForTabOpening::UNDETERMINED;
+    [startup_params
+          setApplicationMode:ApplicationModeForTabOpening::UNDETERMINED
+        forceApplicationMode:NO];
     if (incognito) {
-      startup_params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+      [startup_params setApplicationMode:ApplicationModeForTabOpening::INCOGNITO
+                    forceApplicationMode:NO];
     }
     [connection_information_ setStartupParameters:startup_params];
   }
@@ -745,32 +709,18 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
   if (application_is_active && IsProfileStateReady(browser_)) {
     // The app is already active so the applicationDidBecomeActive: method will
     // never be called. Open the requested URL immediately.
-    ApplicationModeForTabOpening target_mode =
-        [[connection_information_ startupParameters] applicationMode];
-    UrlLoadParams params = UrlLoadParams::InNewTab(webpage_GURL);
-
-    if (connection_information_.startupParameters.textQuery) {
-      NSString* query = connection_information_.startupParameters.textQuery;
-
-      GURL result = GenerateResultGURLFromSearchQuery(query);
-      params.web_params.url = result;
+    if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
+      base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
+          base::BindOnce(&UserActivityBrowserAgent::HandleUrlOpening,
+                         weak_ptr_factory_.GetWeakPtr(), webpage_GURL);
+      [connection_information_.startupParameters
+          requestApplicationModeWithBlock:base::CallbackToBlock(
+                                              std::move(completion))];
+    } else {
+      HandleUrlOpening(
+          webpage_GURL,
+          [connection_information_.startupParameters applicationMode]);
     }
-
-    if ([[connection_information_ startupParameters] applicationMode] !=
-            ApplicationModeForTabOpening::INCOGNITO &&
-        [tab_opener_ URLIsOpenedInRegularMode:webpage_GURL]) {
-      // Record metric.
-    }
-
-    base::OnceClosure closure =
-        base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
-                       weak_ptr_factory_.GetWeakPtr());
-    [tab_opener_
-        dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
-                                 withUrlLoadParams:params
-                                    dismissOmnibox:YES
-                                        completion:base::CallbackToBlock(
-                                                       std::move(closure))];
     return YES;
   }
 
@@ -780,9 +730,10 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
 
   if (![connection_information_ startupParameters]) {
     AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-        initWithExternalURL:webpage_GURL
-                completeURL:webpage_GURL
-            applicationMode:ApplicationModeForTabOpening::NORMAL];
+         initWithExternalURL:webpage_GURL
+                 completeURL:webpage_GURL
+             applicationMode:ApplicationModeForTabOpening::NORMAL
+        forceApplicationMode:NO];
     startup_params.openExistingTab = open_existing_tab;
     [connection_information_ setStartupParameters:startup_params];
   }
@@ -791,29 +742,19 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
 
 void UserActivityBrowserAgent::OpenMultipleTabs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BOOL incognito_mode =
-      connection_information_.startupParameters.applicationMode ==
-      ApplicationModeForTabOpening::INCOGNITO;
-  BOOL dismiss_omnibox = [[connection_information_ startupParameters]
-                             postOpeningAction] != FOCUS_OMNIBOX;
-
-  // Using a weak reference to `this` to solve a memory leak issue.
-  // `tab_opener_` and `connection_information_` are the same object in
-  // some cases (SceneController). This retains the object while the block
-  // exists. Then this block is passed around and in some cases it ends up
-  // stored in BrowserViewController. This results in a memory leak that looks
-  // like this: SceneController -> BrowserViewWrangler -> BrowserCoordinator
-  // -> BrowserViewController -> SceneController
-  base::OnceClosure closure =
-      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
-                     weak_ptr_factory_.GetWeakPtr());
-  [tab_opener_
-      dismissModalsAndOpenMultipleTabsWithURLs:connection_information_
-                                                   .startupParameters.URLs
-                               inIncognitoMode:incognito_mode
-                                dismissOmnibox:dismiss_omnibox
-                                    completion:base::CallbackToBlock(
-                                                   std::move(closure))];
+  const std::vector<GURL>& URLs =
+      connection_information_.startupParameters.URLs;
+  if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
+    base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
+        base::BindOnce(&UserActivityBrowserAgent::HandleMultipleUrlsOpening,
+                       weak_ptr_factory_.GetWeakPtr(), URLs);
+    [connection_information_.startupParameters
+        requestApplicationModeWithBlock:base::CallbackToBlock(
+                                            std::move(completion))];
+  } else {
+    HandleMultipleUrlsOpening(
+        URLs, [connection_information_.startupParameters applicationMode]);
+  }
 }
 
 GURL UserActivityBrowserAgent::GenerateResultGURLFromSearchQuery(
@@ -848,4 +789,129 @@ void UserActivityBrowserAgent::OverloadContinueUserActivityURL(
 
 void UserActivityBrowserAgent::ClearStartupParameters() {
   connection_information_.startupParameters = nil;
+}
+
+void UserActivityBrowserAgent::HandleRouteToCorrectTab(
+    ApplicationModeForTabOpening target_mode) {
+  GURL external_url = connection_information_.startupParameters.externalURL;
+  // TODO(crbug.com/41443029): Exacly the same copy of this code is present in
+  // +[URLOpener
+  // openURL:applicationActive:options:tabOpener:startupInformation:]
+
+  // The app is already active so the applicationDidBecomeActive: method
+  // will never be called. Open the requested URL after all modal UIs have
+  // been dismissed. `_startupParameters` must be retained until all deferred
+  // modal UIs are dismissed and tab opened (or Incognito interstitial shown)
+  // with requested URL.
+  GURL url;
+  GURL virtual_url;
+  GURL complete_url = connection_information_.startupParameters.completeURL;
+  if (complete_url.SchemeIsFile()) {
+    // External URL will be loaded by WebState, which expects `complete_url`.
+    // Omnibox however suppose to display `external_url`, which is used as
+    // virtual URL.
+    url = complete_url;
+    virtual_url = external_url;
+  } else {
+    url = external_url;
+  }
+  UrlLoadParams params;
+  if (connection_information_.startupParameters.openExistingTab) {
+    web::NavigationManager::WebLoadParams web_load_params =
+        web::NavigationManager::WebLoadParams(url);
+    params = UrlLoadParams::SwitchToTab(web_load_params);
+  } else {
+    params = UrlLoadParams::InNewTab(url, virtual_url);
+  }
+
+  if (connection_information_.startupParameters.imageSearchData) {
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_);
+
+    NSData* image_data =
+        connection_information_.startupParameters.imageSearchData;
+    web::NavigationManager::WebLoadParams web_load_params =
+        ImageSearchParamGenerator::LoadParamsForImageData(image_data, GURL(),
+                                                          template_url_service);
+
+    params.web_params = web_load_params;
+  } else if (connection_information_.startupParameters.textQuery) {
+    NSString* query = connection_information_.startupParameters.textQuery;
+
+    GURL result = GenerateResultGURLFromSearchQuery(query);
+    params.web_params.url = result;
+  }
+
+  params.from_external = true;
+
+  if (target_mode != ApplicationModeForTabOpening::INCOGNITO &&
+      [tab_opener_ URLIsOpenedInRegularMode:params.web_params.url]) {
+    // Record metric.
+  }
+
+  base::OnceClosure closure =
+      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
+                     weak_ptr_factory_.GetWeakPtr());
+  [tab_opener_
+      dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
+                               withUrlLoadParams:params
+                                  dismissOmnibox:[[connection_information_
+                                                     startupParameters]
+                                                     postOpeningAction] !=
+                                                 FOCUS_OMNIBOX
+                                      completion:base::CallbackToBlock(
+                                                     std::move(closure))];
+}
+
+void UserActivityBrowserAgent::HandleUrlOpening(
+    const GURL& webpage_url,
+    ApplicationModeForTabOpening target_mode) {
+  UrlLoadParams params = UrlLoadParams::InNewTab(webpage_url);
+
+  if (connection_information_.startupParameters.textQuery) {
+    NSString* query = connection_information_.startupParameters.textQuery;
+
+    GURL result = GenerateResultGURLFromSearchQuery(query);
+    params.web_params.url = result;
+  }
+
+  if (target_mode != ApplicationModeForTabOpening::INCOGNITO &&
+      [tab_opener_ URLIsOpenedInRegularMode:webpage_url]) {
+    // Record metric.
+  }
+
+  base::OnceClosure closure =
+      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
+                     weak_ptr_factory_.GetWeakPtr());
+  [tab_opener_
+      dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
+                               withUrlLoadParams:params
+                                  dismissOmnibox:YES
+                                      completion:base::CallbackToBlock(
+                                                     std::move(closure))];
+}
+
+void UserActivityBrowserAgent::HandleMultipleUrlsOpening(
+    const std::vector<GURL>& URLs,
+    ApplicationModeForTabOpening target_mode) {
+  BOOL incognito_mode = target_mode == ApplicationModeForTabOpening::INCOGNITO;
+  BOOL dismiss_omnibox = [[connection_information_ startupParameters]
+                             postOpeningAction] != FOCUS_OMNIBOX;
+
+  // Using a weak reference to `this` to solve a memory leak issue.
+  // `tab_opener_` and `connection_information_` are the same object in
+  // some cases (SceneController). This retains the object while the block
+  // exists. Then this block is passed around and in some cases it ends up
+  // stored in BrowserViewController. This results in a memory leak that looks
+  // like this: SceneController -> BrowserViewWrangler -> BrowserCoordinator
+  // -> BrowserViewController -> SceneController
+  base::OnceClosure closure =
+      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
+                     weak_ptr_factory_.GetWeakPtr());
+  [tab_opener_
+      dismissModalsAndOpenMultipleTabsWithURLs:URLs
+                               inIncognitoMode:incognito_mode
+                                dismissOmnibox:dismiss_omnibox
+                                    completion:base::CallbackToBlock(
+                                                   std::move(closure))];
 }

@@ -135,9 +135,12 @@ DEFINE_TEXT_PROTO_FUZZER(
     // Let's wait for VideoEncoder to finish its job and give it a
     // opportunity to crash, otherwise we might quit too quickly and miss
     // something bad happening in a background thread.
-    auto promise = video_encoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
-    ScriptPromiseTester tester(script_state, promise);
-    tester.WaitUntilSettled();
+    ExceptionState exception_state(nullptr);
+    auto promise = video_encoder->flush(exception_state);
+    if (!exception_state.HadException()) {
+      ScriptPromiseTester tester(script_state, promise);
+      tester.WaitUntilSettled();
+    }
   }
 }
 

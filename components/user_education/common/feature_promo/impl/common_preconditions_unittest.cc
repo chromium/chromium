@@ -4,13 +4,17 @@
 
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/test/mock_anchor_element_provider.h"
+#include "components/user_education/test/test_user_education_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -18,11 +22,14 @@
 
 namespace user_education {
 
+namespace {
+BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_ENABLED_BY_DEFAULT);
+}
+
 TEST(CommonPreconditionsTest,
      FeatureEngagementTrackerInitializedPreconditionFailsNoTracker) {
   FeatureEngagementTrackerInitializedPrecondition precond(nullptr);
-  EXPECT_FALSE(precond.IsAllowed());
-  EXPECT_EQ(FeaturePromoResult::kError, precond.GetFailure());
+  EXPECT_EQ(FeaturePromoResult::kError, precond.CheckPrecondition());
 }
 
 TEST(CommonPreconditionsTest,
@@ -30,8 +37,8 @@ TEST(CommonPreconditionsTest,
   feature_engagement::test::MockTracker tracker;
   EXPECT_CALL(tracker, AddOnInitializedCallback);
   FeatureEngagementTrackerInitializedPrecondition precond(&tracker);
-  EXPECT_FALSE(precond.IsAllowed());
-  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig, precond.GetFailure());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
+            FeaturePromoResult::kBlockedByConfig);
 }
 
 TEST(CommonPreconditionsTest,
@@ -42,8 +49,7 @@ TEST(CommonPreconditionsTest,
         std::move(callback).Run(false);
       });
   FeatureEngagementTrackerInitializedPrecondition precond(&tracker);
-  EXPECT_FALSE(precond.IsAllowed());
-  EXPECT_EQ(FeaturePromoResult::kError, precond.GetFailure());
+  EXPECT_EQ(FeaturePromoResult::kError, FeaturePromoResult::kError);
 }
 
 TEST(
@@ -55,14 +61,10 @@ TEST(
         std::move(callback).Run(true);
       });
   FeatureEngagementTrackerInitializedPrecondition precond(&tracker);
-  EXPECT_TRUE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-namespace {
-BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_ENABLED_BY_DEFAULT);
-}
-
 TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   using EventList = feature_engagement::Tracker::EventList;
   using feature_engagement::Comparator;
@@ -79,7 +81,7 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   };
   EXPECT_CALL(tracker, ListEvents(testing::Ref(kTestFeature)))
       .WillOnce(testing::Return(kPassingEventList));
-  EXPECT_TRUE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 
   const EventList kFailingEventList1{
       {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), 7, 7), 1},
@@ -88,7 +90,7 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   };
   EXPECT_CALL(tracker, ListEvents(testing::Ref(kTestFeature)))
       .WillOnce(testing::Return(kFailingEventList1));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig, precond.CheckPrecondition());
 
   const EventList kFailingEventList2{
       {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), 7, 7), 0},
@@ -97,9 +99,9 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   };
   EXPECT_CALL(tracker, ListEvents(testing::Ref(kTestFeature)))
       .WillOnce(testing::Return(kFailingEventList2));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig, precond.CheckPrecondition());
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId);
@@ -112,15 +114,15 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(nullptr));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition());
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(&el));
-  EXPECT_TRUE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(nullptr));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition());
 }
 
 TEST(CommonPreconditionsTest,
@@ -135,7 +137,7 @@ TEST(CommonPreconditionsTest,
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(&el));
-  EXPECT_TRUE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 
   internal::PreconditionData::Collection coll;
   precond.ExtractCachedData(coll);
@@ -154,7 +156,7 @@ TEST(CommonPreconditionsTest,
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(nullptr));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition());
 
   internal::PreconditionData::Collection coll;
   precond.ExtractCachedData(coll);
@@ -162,6 +164,26 @@ TEST(CommonPreconditionsTest,
       coll, AnchorElementPrecondition::kAnchorElement);
   ASSERT_NE(nullptr, data);
   EXPECT_EQ(nullptr, data->get());
+}
+
+TEST(CommonPreconditionsTest, LifecyclePrecondition) {
+  test::TestUserEducationStorageService storage_service;
+
+  auto lifecycle_ptr = std::make_unique<FeaturePromoLifecycle>(
+      &storage_service, "", &kTestFeature,
+      FeaturePromoLifecycle::PromoType::kToast,
+      FeaturePromoLifecycle::PromoSubtype::kNormal, 0);
+
+  LifecyclePrecondition precond(std::move(lifecycle_ptr));
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
+
+  FeaturePromoData data;
+  data.is_dismissed = true;
+  data.show_count = 1;
+  storage_service.SavePromoData(kTestFeature, data);
+
+  EXPECT_EQ(FeaturePromoResult::kPermanentlyDismissed,
+            precond.CheckPrecondition());
 }
 
 }  // namespace user_education

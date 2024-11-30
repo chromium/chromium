@@ -125,6 +125,17 @@ the generic promo launch. -->
   <int value="2" label="Disabled"/>
 </enum>
 
+<!-- LINT.IfChange(IncognitoLockImpressionType) -->
+
+<enum name="IncognitoLockImpressionType">
+  <int value="0" label="Soft lock on a single tab"/>
+  <int value="1" label="Soft lock on the tab grid"/>
+  <int value="2" label="Reauth lock on a single tab"/>
+  <int value="3" label="Reauth lock on tab grid"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h:IncognitoLockImpression) -->
+
 <!-- LINT.IfChange(IncognitoLockOverlayInteractionType) -->
 
 <enum name="IncognitoLockOverlayInteractionType">
@@ -149,6 +160,16 @@ the generic promo launch. -->
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h:IncognitoLockSettingInteraction) -->
+
+<!-- LINT.IfChange(IncognitoLockSettingStartupState) -->
+
+<enum name="IncognitoLockSettingStartupState">
+  <int value="0" label="Do not hide"/>
+  <int value="1" label="Hide with reauthentication method"/>
+  <int value="2" label="Hide with soft lock"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h:IncognitoLockSettingStartupState) -->
 
 <enum name="IOSAnnotationType">
   <int value="0" label="Unknown"/>
@@ -922,6 +943,8 @@ the generic promo launch. -->
   <int value="4" label="Follow"/>
   <int value="5" label="All Set"/>
   <int value="6" label="Notifications"/>
+  <int value="7" label="Docking"/>
+  <int value="8" label="Address Bar"/>
 </enum>
 
 <enum name="IOSShareExtensionReceivedEntrySource">

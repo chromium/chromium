@@ -29,11 +29,13 @@ class TextRecord final : public GarbageCollected<TextRecord> {
              const gfx::RectF& element_timing_rect,
              const gfx::Rect& frame_visual_rect,
              const gfx::RectF& root_visual_rect,
-             uint32_t frame_index)
+             uint32_t frame_index,
+             bool is_needed_for_element_timing)
       : node_(&node),
         recorded_size(new_recorded_size),
         frame_index_(frame_index),
-        element_timing_rect_(element_timing_rect) {
+        element_timing_rect_(element_timing_rect),
+        is_needed_for_element_timing_(is_needed_for_element_timing) {
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
           frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
@@ -51,6 +53,7 @@ class TextRecord final : public GarbageCollected<TextRecord> {
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
   // The time of the first paint after fully loaded.
   base::TimeTicks paint_time = base::TimeTicks();
+  bool is_needed_for_element_timing_ = false;
 };
 
 class CORE_EXPORT LargestTextPaintManager final

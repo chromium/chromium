@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActioniOS" enum="NewTabPageActioniOS"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>justincohen@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.BackgroundService.Images.Headers.ErrorDetected"
-    enum="NTPImageType" expires_after="2025-03-23">
+    enum="NTPImageType" expires_after="2025-05-25">
   <owner>pauladedeji@google.com</owner>
   <owner>danpeng@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -138,210 +138,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time it took until a request from the New Tab Page for Backdrop Images
     was served.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.AppliedDiscount" units="count"
-    expires_after="2023-11-06">
-  <owner>meiliang@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when discount is encoded successfully into the navigation url. This
-    histogram always logs a 1 and this value has no meaning other than this
-    occurence happended. Only logged on the 1P NTP. Note that even if the user
-    has Google as their default search engine, Incognito and Guest mode NTPs are
-    not considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.CartCount" units="count"
-    expires_after="2024-09-01">
-  <owner>wychen@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when the cart module is created. The value is equal to the initial
-    number of carts within the module (could be zero).
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.CartImageCount" units="count"
-    expires_after="2024-03-17">
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when the cart module is created and is recorded once for every cart.
-    It records the number of product images in this cart (could be zero). This
-    is not logged when welcome surface is showing. Only logged on the 1P NTP.
-    Note that even if the user has Google as their default search engine,
-    Incognito and Guest mode NTPs are not considered 1P and don't log this
-    histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.ClickCart" units="index"
-    expires_after="2023-11-20">
-  <owner>wychen@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when a user clicks on a cart in the cart module. The value is equal
-    to the index of the cart.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.ClickCart.HasDiscount"
-    enum="BooleanHasDiscount" expires_after="2024-02-11">
-  <owner>meiliang@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when a user clicks on a cart in the cart module. It records whether
-    the clicked cart has a discount or not. Only logged on the 1P NTP. Note that
-    even if the user has Google as their default search engine, Incognito and
-    Guest mode NTPs are not considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.DataRequest" enum="CartDiscountDataType"
-    expires_after="2024-09-22">
-  <owner>meiliang@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the discount data associated with the cart module. Logged when the
-    chrome cart module makes a data request to a Chrome-external backend. Only
-    logged on the 1P NTP. Note that even if the user has Google as their default
-    search engine, Incognito and Guest mode NTPs are not considered 1P and don't
-    log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.DiscountAt" units="index"
-    expires_after="2024-02-04">
-  <owner>meiliang@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when the cart module is created and if there is at least one
-    abandoned cart. It records the index of the discounted cart within the cart
-    module. Only logged on the 1P NTP. Note that even if the user has Google as
-    their default search engine, Incognito and Guest mode NTPs are not
-    considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.DiscountConsentShow" units="count"
-    expires_after="2022-11-30">
-  <owner>meiliang@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged every time the consent for Rule-based Discount shows in the cart
-    module. We only show the consent when there are abandoned carts from partner
-    merchants. This histogram always logs a 1 and this value has no meaning
-    other than that an occurrence happended. Only logged on the 1P NTP. Note
-    that even if the user has Google as their default search engine, Incognito
-    and Guest mode NTPs are not considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.DiscountConsentStatusAtLoad"
-    enum="CartDiscountConsentStatus" expires_after="2024-02-05">
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when the cart module is created and if there is at least one
-    abandoned cart. &quot;Accept&quot; and &quot;Decline&quot; to record
-    interaction result for users who have acted on the consent;
-    &quot;IGNORED&quot; for users who have seen the consent before but never
-    acted on it, and the consent is showing now; &quot;No show&quot; for users
-    who have seen the consent before but never acted on it, and the consent is
-    not showing now; &quot;Never shown&quot; for users who have never seen the
-    consent. Only logged on the 1P NTP. Note that even if the user has Google as
-    their default search engine, Incognito and Guest mode NTPs are not
-    considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.DiscountConsentStatusAtLoad.{ConsentState}"
-    enum="CartDiscountConsentVariation" expires_after="2024-02-20">
-  <owner>meiliang@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when the cart module is created and if there is at least one
-    abandoned cart. It {ConsentState}. Only logged on the 1P NTP. Note that even
-    if the user has Google as their default search engine, Incognito and Guest
-    mode NTPs are not considered 1P and don't log this histogram.
-  </summary>
-  <token key="ConsentState">
-    <variant name="AcceptedIn"
-        summary="keeps track of which variation the user has accepted the
-                 consent in."/>
-    <variant name="DismissedIn"
-        summary="keeps track of which variation the user has rejected the
-                 consent in. Only the Inline and Dialog variation has an
-                 option to dismiss the consent."/>
-    <variant name="IgnoredIn"
-        summary="keeps track of which variation the user has ignored the
-                 consent in. Ignored means when the user has seen the consent
-                 but they did not accept/reject/dismiss it, or did not show
-                 any interests(click the continue button, but no following
-                 action)."/>
-    <variant name="InterestedButNoActionIn"
-        summary="keeps track of which variation the user has shown interest
-                 but no further action in (e.g. tapped &quot;Continue&quot;
-                 in the 2-step NTP consent.) Only the Inline and Dialog
-                 variation applies."/>
-    <variant name="NeverShownIn"
-        summary="keeps track of which variation the consent has never shown
-                 in. Never shown means the user has never seen the consent
-                 before"/>
-    <variant name="NoShowHasFinalized"
-        summary="keeps track if the user has accepted or rejected the consent
-                 before in another variation, hence no show when the cart is
-                 loaded. Finalized means user has accepted or rejected the
-                 consent in another variation."/>
-    <variant name="NoShowIn"
-        summary="keeps track of which variation the consent is not showing.
-                 No show means the user has seen the consent before but did
-                 not accept/reject the consent, and the consent is not
-                 showing now."/>
-    <variant name="RejectedIn"
-        summary="Keeps track of which variation the user has rejected the
-                 consent in."/>
-    <variant name="ShownIn"
-        summary="Keeps track of which variation is shown. This is recorded
-                 when consent is shown."/>
-  </token>
-</histogram>
-
-<histogram name="NewTabPage.Carts.DiscountCountAtLoad" units="count"
-    expires_after="2024-07-21">
-  <owner>meiliang@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when the cart module is created and if there is at least one
-    abandoned cart. It records the number of carts with discount (could be
-    zero). Only logged on the 1P NTP. Note that even if the user has Google as
-    their default search engine, Incognito and Guest mode NTPs are not
-    considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Carts.NonDiscountCountAtLoad" units="count"
-    expires_after="2024-01-14">
-  <owner>meiliang@chromium.org</owner>
-  <owner>yuezhanggg@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Logged when the cart module is created. It records the number of carts
-    without discount (could be zero). Only logged on the 1P NTP. Note that even
-    if the user has Google as their default search engine, Incognito and Guest
-    mode NTPs are not considered 1P and don't log this histogram.
   </summary>
 </histogram>
 
@@ -756,7 +552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoDownloadOutcome"
-    enum="NewTabPageLogoDownloadOutcome" expires_after="2025-01-14">
+    enum="NewTabPageLogoDownloadOutcome" expires_after="2025-05-25">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -791,7 +587,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoShown" enum="NewTabPageLogoShown"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -803,7 +599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoShownTime2" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -826,7 +622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Module.Click" enum="ModuleTypeOnStartAndNTP"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -861,7 +657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.DataRequest" enum="NtpModules"
-    expires_after="2025-03-09">
+    expires_after="2025-05-18">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1044,7 +840,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.LoadedModulesCount" units="count"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1512,7 +1308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TabResumption.ResultStatus"
-    enum="NtpTabResumeResultStatus" expires_after="2025-03-23">
+    enum="NtpTabResumeResultStatus" expires_after="2025-05-25">
   <owner>mfacey@google.com</owner>
   <owner>romanarora@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1557,7 +1353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TabResumption.URLVisitAggregateDataTypeDisplayed"
-    enum="NtpURLVisitAggregateTypes" expires_after="2025-03-23">
+    enum="NtpURLVisitAggregateTypes" expires_after="2025-05-25">
   <owner>mfacey@google.com</owner>
   <owner>romanarora@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1650,7 +1446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TimeSinceLastNTP" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

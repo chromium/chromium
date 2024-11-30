@@ -85,14 +85,6 @@ class PasswordStore : public PasswordStoreInterface {
       base::OnceClosure completion = base::DoNothing()) override;
   void RemoveLogin(const base::Location& location,
                    const PasswordForm& form) override;
-  void RemoveLoginsByURLAndTime(
-      const base::Location& location,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceClosure completion = base::NullCallback(),
-      base::OnceCallback<void(bool)> sync_completion =
-          base::NullCallback()) override;
   void RemoveLoginsCreatedBetween(
       const base::Location& location,
       base::Time delete_begin,

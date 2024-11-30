@@ -37,7 +37,7 @@ void ChangeDestination(const GURL& new_destination_url,
 
 }  // namespace
 
-ChromeSerializedNavigationDriver::~ChromeSerializedNavigationDriver() {}
+ChromeSerializedNavigationDriver::~ChromeSerializedNavigationDriver() = default;
 
 // static
 ChromeSerializedNavigationDriver*
@@ -76,4 +76,4 @@ void ChromeSerializedNavigationDriver::Sanitize(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-ChromeSerializedNavigationDriver::ChromeSerializedNavigationDriver() {}
+ChromeSerializedNavigationDriver::ChromeSerializedNavigationDriver() = default;

@@ -16,7 +16,7 @@ class ResourcesUtil {
   static int GetThemeResourceId(const std::string& resource_name);
 
  private:
-  ResourcesUtil() {}
+  ResourcesUtil() = default;
 };
 
 #endif  // CHROME_BROWSER_RESOURCES_UTIL_H_

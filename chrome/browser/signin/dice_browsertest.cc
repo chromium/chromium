@@ -415,7 +415,7 @@ class DiceBrowserTest : public InProcessBrowserTest,
   DiceBrowserTest& operator=(const DiceBrowserTest&) = delete;
 
  protected:
-  ~DiceBrowserTest() override {}
+  ~DiceBrowserTest() override = default;
 
   explicit DiceBrowserTest(const std::string& main_email = kMainGmailEmail)
       : main_email_(main_email),

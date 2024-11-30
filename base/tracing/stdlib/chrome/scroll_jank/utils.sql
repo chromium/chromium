@@ -21,11 +21,11 @@ INCLUDE PERFETTO MODULE chrome.event_latency;
 -- timestamp of the neighbour and computes whether the frame was janky or not.
 CREATE PERFETTO FUNCTION _is_janky_frame(cur_gesture_id LONG,
                                       neighbour_gesture_id LONG,
-                                      neighbour_ts LONG,
-                                      cur_gesture_begin_ts LONG,
-                                      cur_gesture_end_ts LONG,
-                                      cur_frame_exact FLOAT,
-                                      neighbour_frame_exact FLOAT)
+                                      neighbour_ts TIMESTAMP,
+                                      cur_gesture_begin_ts TIMESTAMP,
+                                      cur_gesture_end_ts TIMESTAMP,
+                                      cur_frame_exact DOUBLE,
+                                      neighbour_frame_exact DOUBLE)
 -- Returns true if the frame was janky, false otherwise
 RETURNS BOOL AS
 SELECT
@@ -48,11 +48,11 @@ SELECT
 -- Returns the jank budget in percentage (i.e. 0.75) of vsync interval
 -- percentage.
 CREATE PERFETTO FUNCTION _jank_budget(
-  cur_frame_exact FLOAT,
-  prev_frame_exact FLOAT,
-  next_frame_exact FLOAT
+  cur_frame_exact DOUBLE,
+  prev_frame_exact DOUBLE,
+  next_frame_exact DOUBLE
 )
-RETURNS FLOAT AS
+RETURNS DOUBLE AS
 -- We determine the difference between the frame count of the current frame
 -- and its consecutive frames by subtracting with the frame_exact values. We
 -- null check for cases when the neighbor frame count can be null for the
@@ -87,11 +87,11 @@ RETURNS TABLE(
   -- Name of the interface of the IPC call.
   interface_name STRING,
   -- Hash of the IPC call.
-  ipc_hash INT,
+  ipc_hash LONG,
   -- Message type (e.g. reply).
   message_type STRING,
   -- The slice id.
-  id INT
+  id LONG
 ) AS
 SELECT
   EXTRACT_ARG(s.arg_set_id, "chrome_mojo_event_info.mojo_interface_tag") AS interface_name,

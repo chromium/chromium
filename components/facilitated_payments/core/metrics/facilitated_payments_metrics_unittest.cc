@@ -18,7 +18,7 @@ namespace payments::facilitated {
 TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
   base::HistogramTester histogram_tester;
 
-  LogPixCodeCopied();
+  LogPixCodeCopied(ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.PixCodeCopied",
                                       /*sample=*/true,
@@ -144,19 +144,30 @@ TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResultAndLatency) {
   }
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionResult) {
+TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionAttempt) {
   base::HistogramTester histogram_tester;
 
-  LogInitiatePurchaseActionResult(/*result=*/true, base::Milliseconds(10));
+  LogInitiatePurchaseActionAttempt();
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Result",
+      "FacilitatedPayments.Pix.InitiatePurchaseAction.Attempt",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogInitiatePurchaseActionResultAndLatency) {
+  for (const std::string& result : {"Succeeded", "Failed", "Abandoned"}) {
+    base::HistogramTester histogram_tester;
+
+    LogInitiatePurchaseActionResultAndLatency(result, base::Milliseconds(10));
+
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.", result,
+                      ".Latency"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
 }
 
 TEST(FacilitatedPaymentsMetricsTest, LogFopSelectorShown) {
@@ -221,6 +232,17 @@ TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Abandoned) {
       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectorShownLatency) {
+  base::HistogramTester histogram_tester;
+
+  LogPixFopSelectorShownLatency(base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
 class FacilitatedPaymentsMetricsExitedReasonTest
     : public testing::TestWithParam<PayflowExitedReason> {};
 
@@ -248,7 +270,9 @@ INSTANTIATE_TEST_SUITE_P(
                     PayflowExitedReason::kClientTokenNotAvailable,
                     PayflowExitedReason::kInitiatePaymentFailed,
                     PayflowExitedReason::kActionTokenNotAvailable,
-                    PayflowExitedReason::kUserLoggedOut));
+                    PayflowExitedReason::kUserLoggedOut,
+                    PayflowExitedReason::kFopSelectorClosedNotByUser,
+                    PayflowExitedReason::kFopSelectorClosedByUser));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:
@@ -258,6 +282,57 @@ class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  protected:
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
 };
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
+  LogPixCodeCopied(ukm::UkmRecorder::GetNewSourceID());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PixCodeCopied::kEntryName,
+      {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShown) {
+  LogFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kEntryName,
+      {ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kShownName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Shown"), true);
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorResult) {
+  size_t index = 0;
+  for (bool accepted : {true, false}) {
+    LogFopSelectorResultUkm(accepted, ukm::UkmRecorder::GetNewSourceID());
+
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        ukm::builders::FacilitatedPayments_Pix_FopSelectorResult::kEntryName,
+        {ukm::builders::FacilitatedPayments_Pix_FopSelectorResult::
+             kResultName});
+    ASSERT_EQ(ukm_entries.size(), index + 1);
+    EXPECT_EQ(ukm_entries[index++].metrics.at("Result"), accepted);
+  }
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogInitiatePurchaseActionResult) {
+  size_t index = 0;
+  for (const std::string result : {"Succeeded", "Failed", "Abandoned"}) {
+    LogInitiatePurchaseActionResultUkm(result,
+                                       ukm::UkmRecorder::GetNewSourceID());
+
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult::
+            kEntryName,
+        {ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult::
+             kResultName});
+    ASSERT_EQ(ukm_entries.size(), index + 1);
+    EXPECT_EQ(ukm_entries[index++].metrics.at("Result"),
+              ConvertPurchaseActionResultToEnumValue(result));
+  }
+}
 
 TEST_F(FacilitatedPaymentsMetricsUkmTest, LogTransactionResult_UkmLogged) {
   LogTransactionResult(TransactionResult::kSuccess, TriggerSource::kDOMSearch,
@@ -270,7 +345,7 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogTransactionResult_UkmLogged) {
       ukm::builders::FacilitatedPayments_Pix_Transaction::kEntryName,
       {ukm::builders::FacilitatedPayments_Pix_Transaction::kResultName,
        ukm::builders::FacilitatedPayments_Pix_Transaction::kTriggerSourceName});
-  EXPECT_EQ(ukm_entries.size(), 1UL);
+  ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
             static_cast<uint8_t>(TransactionResult::kSuccess));
   EXPECT_EQ(ukm_entries[0].metrics.at("TriggerSource"),

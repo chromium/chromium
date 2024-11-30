@@ -505,11 +505,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           base::FeatureList::IsEnabled(network::features::kFledgePst));
 
   html_source->AddBoolean(
-      "safetyCheckUnusedSitePermissionsEnabled",
-      base::FeatureList::IsEnabled(
-          content_settings::features::kSafetyCheckUnusedSitePermissions));
-
-  html_source->AddBoolean(
       "safetyHubAbusiveNotificationRevocationEnabled",
       base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation));
@@ -522,9 +517,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "is3pcdCookieSettingsRedesignEnabled",
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
-  html_source->AddBoolean(
-      "isTrackingProtectionUxEnabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kTrackingProtection3pcdUx));
 
   html_source->AddBoolean(
       "isAlwaysBlock3pcsIncognitoEnabled",
@@ -564,9 +556,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               features::kAutomaticFullscreenContentSetting));
 
+#if BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "enableSmartCardReadersContentSetting",
       base::FeatureList::IsEnabled(blink::features::kSmartCard));
+#endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // System

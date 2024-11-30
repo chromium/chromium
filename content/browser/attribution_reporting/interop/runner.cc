@@ -65,13 +65,16 @@
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/attribution_reporting/interop/parser.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_content_browser_client.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/attribution.mojom.h"
@@ -166,7 +169,7 @@ class Adjuster : public ReportBodyAdjuster {
       *payload_str =
           base::Base64Encode(EncryptAggregatableReportPayloadWithHpke(
               decrypted_payload, hpke_key_->GetPublicKey().key,
-              base::as_bytes(base::make_span(authenticated_info_str))));
+              base::as_byte_span(authenticated_info_str)));
     }
 
     *shared_info = std::move(adjusted_shared_info);
@@ -459,15 +462,8 @@ RunAttributionInteropSimulation(
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      enabled_features,
-      /*disabled_features=*/{
-          // This UMA records a sample every 30s via a periodic task which
-          // interacts poorly with TaskEnvironment::FastForward using day long
-          // delays (we need to run the uma update every 30s for that
-          // interval)
-          network::features::kGetCookiesStringUma,
-      });
+  scoped_feature_list.InitWithFeatures(enabled_features,
+                                       /*disabled_features=*/{});
 
   attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
       scoped_max_event_level_epsilon(run.config.max_event_level_epsilon);
@@ -480,6 +476,13 @@ RunAttributionInteropSimulation(
   BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestBrowserContext browser_context;
+
+  GetNetworkService();
+  // Wait for the Network Service to initialize on the IO thread.
+  RunAllPendingInMessageLoop(content::BrowserThread::IO);
+  // Disable metrics updater to avoid test timeouts.
+  network::NetworkService::GetNetworkServiceForTesting()
+      ->ResetMetricsUpdaterForTesting();  // IN-TEST
 
   // Ensure that `time_origin` has a whole number of days to make
   // `AdjustEventLevelBody()` and `AdjustAggregatableReportSharedInfo()` time

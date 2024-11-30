@@ -15,6 +15,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_test_util.h"
+#include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/bookmarks/test/test_matchers.h"
 #include "components/sync/base/features.h"
@@ -114,18 +115,26 @@ class FolderBuilder {
 class LocalBookmarkToAccountMergerTest : public testing::Test {
  protected:
   LocalBookmarkToAccountMergerTest() {
+    model_->AddObserver(&observer_);
     model_->CreateAccountPermanentFolders();
-
-    // TODO(crbug.com/332532186): Disallow deletions by default by installing a
-    // mock observer.
   }
 
-  ~LocalBookmarkToAccountMergerTest() override = default;
+  ~LocalBookmarkToAccountMergerTest() override {
+    model_->RemoveObserver(&observer_);
+  }
 
   void AddLocalNodes(
-      const std::vector<FolderBuilder::FolderOrUrl>& children_of_bookmark_bar) {
+      const std::vector<FolderBuilder::FolderOrUrl>& children_of_bookmark_bar,
+      const std::vector<FolderBuilder::FolderOrUrl>& children_of_mobile_node =
+          {},
+      const std::vector<FolderBuilder::FolderOrUrl>& children_of_other_node =
+          {}) {
     FolderBuilder::AddChildrenTo(model_.get(), model_->bookmark_bar_node(),
                                  children_of_bookmark_bar);
+    FolderBuilder::AddChildrenTo(model_.get(), model_->mobile_node(),
+                                 children_of_mobile_node);
+    FolderBuilder::AddChildrenTo(model_.get(), model_->other_node(),
+                                 children_of_other_node);
   }
 
   void AddAccountNodes(
@@ -139,6 +148,7 @@ class LocalBookmarkToAccountMergerTest : public testing::Test {
       syncer::kSyncEnableBookmarksInTransportMode};
   const std::unique_ptr<bookmarks::BookmarkModel> model_ =
       bookmarks::TestBookmarkClient::CreateModel();
+  testing::NiceMock<bookmarks::MockBookmarkModelObserver> observer_;
 };
 
 TEST_F(LocalBookmarkToAccountMergerTest,
@@ -175,13 +185,16 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   // bookmark_bar
   AddAccountNodes({});
 
-  // -------- Exercise the merge logic --------
+  // -------- The expected merge outcome --------
+  // Same as the local model described above.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
-  // -------- The expected merge outcome --------
-  // Same as the local model described above.
   EXPECT_THAT(
       model_->account_bookmark_bar_node()->children(),
       ElementsAre(IsFolder(kFolder1Title,
@@ -190,6 +203,53 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                   IsFolder(kFolder2Title,
                            ElementsAre(IsUrlBookmark(kUrl3Title, kUrl3),
                                        IsUrlBookmark(kUrl4Title, kUrl4)))));
+}
+
+TEST_F(LocalBookmarkToAccountMergerTest,
+       ShouldUploadLocalNodesUnderAllPermanentNodes) {
+  const std::u16string kUrl1Title = u"url1";
+  const std::u16string kUrl2Title = u"url2";
+  const std::u16string kUrl3Title = u"url3";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+
+  // -------- Local bookmarks --------
+  // bookmark_bar
+  //  |- url1(http://www.url1.com)
+  // mobile_node
+  //  |- url2(http://www.url2.com)
+  // other_node
+  //  |- url3(http://www.url3.com)
+  AddLocalNodes(/*children_of_bookmark_bar=*/{UrlBuilder(kUrl1Title, kUrl1)},
+                /*children_of_mobile_node=*/{UrlBuilder(kUrl2Title, kUrl2)},
+                /*children_of_other_node=*/{UrlBuilder(kUrl3Title, kUrl3)});
+
+  // -------- Account bookmarks --------
+  // bookmark_bar
+  // mobile_node
+  // other_node
+  AddAccountNodes({});
+
+  // -------- The expected merge outcome --------
+  // Same as the local model described above.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
+  EXPECT_THAT(model_->mobile_node()->children(), IsEmpty());
+  EXPECT_THAT(model_->other_node()->children(), IsEmpty());
+  EXPECT_THAT(model_->account_bookmark_bar_node()->children(),
+              ElementsAre(IsUrlBookmark(kUrl1Title, kUrl1)));
+  EXPECT_THAT(model_->account_mobile_node()->children(),
+              ElementsAre(IsUrlBookmark(kUrl2Title, kUrl2)));
+  EXPECT_THAT(model_->account_other_node()->children(),
+              ElementsAre(IsUrlBookmark(kUrl3Title, kUrl3)));
 }
 
 TEST_F(LocalBookmarkToAccountMergerTest, ShouldIgnoreManagedNodes) {
@@ -223,15 +283,13 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldIgnoreManagedNodes) {
   FolderBuilder::AddChildrenTo(model.get(), model->account_bookmark_bar_node(),
                                {});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model.get()).MoveAndMerge();
-
-  EXPECT_THAT(model->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The expected merge outcome --------
   // bookmark_bar
   //  |- url1(http://www.url1.com)
   //
+  LocalBookmarkToAccountMerger(model.get()).MoveAndMerge();
+
+  ASSERT_THAT(model->bookmark_bar_node()->children(), IsEmpty());
   ASSERT_THAT(model->account_bookmark_bar_node()->children(),
               ElementsAre(IsUrlBookmark(kUrl1Title, kUrl1)));
 
@@ -256,13 +314,16 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldUploadLocalUuid) {
   // bookmark_bar
   AddAccountNodes({});
 
-  // -------- Exercise the merge logic --------
+  // -------- The expected merge outcome --------
+  // Same as the local model described above, including the UUID.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
-  // -------- The expected merge outcome --------
-  // Same as the local model described above, including the UUID.
   EXPECT_THAT(model_->account_bookmark_bar_node()->children(),
               ElementsAre(IsUrlBookmarkWithUuid(kUrl1Title, kUrl1, kUrl1Uuid)));
 }
@@ -296,17 +357,20 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBySemantics) {
                        .SetChildren({UrlBuilder(kUrl2Title, kUrl2),
                                      UrlBuilder(kUrl3Title, kUrl3)})});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The expected merge outcome --------
   // bookmark_bar
   //  |- folder 1
   //    |- url2(http://www.url2.com)
   //    |- url3(http://www.url3.com)
   //    |- url1(http://www.url1.com)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(
       model_->account_bookmark_bar_node()->children(),
       ElementsAre(IsFolder(kFolder1Title,
@@ -319,6 +383,7 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldNotDeduplicateIfDifferentUrls) {
   const std::u16string kFolder1Title = u"folder1";
   const std::u16string kFolder2Title = u"folder2";
   const std::u16string kFolder3Title = u"folder3";
+  const std::u16string kFolder4Title = u"folder4";
 
   const std::u16string kUrl1Title = u"url1";
   const std::u16string kUrl2Title = u"url2";
@@ -329,6 +394,7 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldNotDeduplicateIfDifferentUrls) {
   const GURL kUrl2("http://www.url2.com/");
   const GURL kUrl3("http://www.url3.com/");
   const GURL kUrl4("http://www.url4.com/");
+
   const GURL kAnotherUrl2("http://www.another-url2.com/");
 
   // -------- Local bookmarks --------
@@ -339,32 +405,29 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldNotDeduplicateIfDifferentUrls) {
   //  |- folder 2
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
+  //  |- folder 3
   AddLocalNodes({FolderBuilder(kFolder1Title)
                      .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
                                    UrlBuilder(kUrl2Title, kUrl2)}),
                  FolderBuilder(kFolder2Title)
                      .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
-                                   UrlBuilder(kUrl4Title, kUrl4)})});
+                                   UrlBuilder(kUrl4Title, kUrl4)}),
+                 FolderBuilder(kFolder3Title)});
 
   // -------- Account bookmarks --------
   // bookmark_bar
   //  |- folder 1
   //    |- url1(http://www.url1.com)
   //    |- url2(http://www.another-url2.com)
-  //  |- folder 3
+  //  |- folder 4
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
   AddAccountNodes({FolderBuilder(kFolder1Title)
                        .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
                                      UrlBuilder(kUrl2Title, kAnotherUrl2)}),
-                   FolderBuilder(kFolder3Title)
+                   FolderBuilder(kFolder4Title)
                        .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
                                      UrlBuilder(kUrl4Title, kUrl4)})});
-
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
 
   // -------- The expected merge outcome --------
   // bookmark_bar
@@ -372,24 +435,34 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldNotDeduplicateIfDifferentUrls) {
   //    |- url1(http://www.url1.com)
   //    |- url2(http://www.another-url2.com)
   //    |- url2(http://www.url2.com)
-  //  |- folder 3
+  //  |- folder 4
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
   //  |- folder 2
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
+  //  |- folder 3
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(
       model_->account_bookmark_bar_node()->children(),
       ElementsAre(IsFolder(kFolder1Title,
                            ElementsAre(IsUrlBookmark(kUrl1Title, kUrl1),
                                        IsUrlBookmark(kUrl2Title, kAnotherUrl2),
                                        IsUrlBookmark(kUrl2Title, kUrl2))),
-                  IsFolder(kFolder3Title,
+                  IsFolder(kFolder4Title,
                            ElementsAre(IsUrlBookmark(kUrl3Title, kUrl3),
                                        IsUrlBookmark(kUrl4Title, kUrl4))),
                   IsFolder(kFolder2Title,
                            ElementsAre(IsUrlBookmark(kUrl3Title, kUrl3),
-                                       IsUrlBookmark(kUrl4Title, kUrl4)))));
+                                       IsUrlBookmark(kUrl4Title, kUrl4))),
+                  IsFolder(kFolder3Title, IsEmpty())));
 }
 
 // This tests that truncated titles produced by legacy clients are properly
@@ -405,7 +478,12 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   // -------- Account bookmarks --------
   AddAccountNodes({FolderBuilder(kAccountTruncatedTitle)});
 
-  // -------- Exercise the merge logic --------
+  // -------- The expected merge outcome --------
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -428,7 +506,12 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   // -------- Account bookmarks --------
   AddAccountNodes({FolderBuilder(kAccountFullTitle)});
 
-  // -------- Exercise the merge logic --------
+  // -------- The expected merge outcome --------
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -456,16 +539,317 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBookmarkByUuid) {
   //  | - bookmark(kUuid/kAccountTitle)
   AddAccountNodes({UrlBuilder(kAccountTitle, kUrl).SetUuid(kUuid)});
 
-  // -------- Exercise the merge logic --------
+  // -------- The expected merge outcome --------
+  // bookmark_bar
+  //  |- bookmark(kUuid/kLocalTitle)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
-  // -------- The merged account nodes --------
-  // bookmark_bar
-  //  |- bookmark(kUuid/kLocalTitle)
   EXPECT_THAT(model_->account_bookmark_bar_node()->children(),
               ElementsAre(IsUrlBookmarkWithUuid(kLocalTitle, kUrl, kUuid)));
+}
+
+TEST_F(LocalBookmarkToAccountMergerTest,
+       ShouldDeduplicateBySemanticsAfterParentMatchedByUuid) {
+  const std::u16string kFolder1Title = u"folder1";
+  const std::u16string kFolder2Title = u"folder2";
+  const std::u16string kFolder3Title = u"folder3";
+
+  const std::u16string kUrl1Title = u"url1";
+  const std::u16string kUrl2Title = u"url2";
+  const std::u16string kUrl3Title = u"url3";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+
+  const base::Uuid kFolder2Uuid = base::Uuid::GenerateRandomV4();
+
+  // -------- Local bookmarks --------
+  // bookmark_bar
+  //  | - folder 1 (kFolder1Title)
+  //  | - folder 2 (kFolder2Uuid/kFolder2Title)
+  //    |- url1(http://www.url1.com)
+  //    |- url2(http://www.url2.com)
+  AddLocalNodes({FolderBuilder(kFolder1Title),
+                 FolderBuilder(kFolder2Title)
+                     .SetUuid(kFolder2Uuid)
+                     .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
+                                   UrlBuilder(kUrl2Title, kUrl2)})});
+
+  // -------- Account bookmarks --------
+  // bookmark_bar
+  //  | - folder 3 (kFolder3Title)
+  //    | - folder 2 (kFolder2Uuid/kFolder2Title)
+  //      |- url2(http://www.url1.com)
+  //      |- url3(http://www.url3.com)
+  AddAccountNodes(
+      {FolderBuilder(kFolder3Title)
+           .SetChildren({FolderBuilder(kFolder2Title)
+                             .SetUuid(kFolder2Uuid)
+                             .SetChildren({UrlBuilder(kUrl2Title, kUrl2),
+                                           UrlBuilder(kUrl3Title, kUrl3)})})});
+
+  // -------- The expected merge outcome --------
+  // bookmark_bar
+  //  | - folder 3 (kFolder3Title)
+  //    | - folder 2 (kFolder2Uuid/kTitle2)
+  //      |- url2(http://www.url2.com)
+  //      |- url3(http://www.url3.com)
+  //      |- url1(http://www.url1.com)
+  //  | - folder 1 (kTitle1)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
+  EXPECT_THAT(
+      model_->account_bookmark_bar_node()->children(),
+      ElementsAre(IsFolder(kFolder3Title,
+                           ElementsAre(IsFolder(
+                               kFolder2Title,
+                               ElementsAre(IsUrlBookmark(kUrl2Title, kUrl2),
+                                           IsUrlBookmark(kUrl3Title, kUrl3),
+                                           IsUrlBookmark(kUrl1Title, kUrl1))))),
+                  IsFolder(kFolder1Title, IsEmpty())));
+}
+
+TEST_F(LocalBookmarkToAccountMergerTest,
+       ShouldDeduplicateBySemanticsAfterNestedParentMatchedByUuid) {
+  const std::u16string kFolder1Title = u"folder1";
+  const std::u16string kFolder2Title = u"folder2";
+
+  const std::u16string kUrl1Title = u"url1";
+  const std::u16string kUrl2Title = u"url2";
+  const std::u16string kUrl3Title = u"url3";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+
+  const base::Uuid kFolder2Uuid = base::Uuid::GenerateRandomV4();
+
+  // -------- Local bookmarks --------
+  // bookmark_bar
+  //  | - folder 1 (kFolder1Title)
+  //    | - folder 2 (kFolder2Uuid/kFolder2Title)
+  //      |- url1(http://www.url1.com)
+  //      |- url2(http://www.url2.com)
+  AddLocalNodes(
+      {FolderBuilder(kFolder1Title)
+           .SetChildren({FolderBuilder(kFolder2Title)
+                             .SetUuid(kFolder2Uuid)
+                             .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
+                                           UrlBuilder(kUrl2Title, kUrl2)})})});
+
+  // -------- Account bookmarks --------
+  // bookmark_bar
+  //  | - folder 2 (kFolder2Uuid/kFolder2Title)
+  //    |- url2(http://www.url2.com)
+  //    |- url3(http://www.url3.com)
+  AddAccountNodes({FolderBuilder(kFolder2Title)
+                       .SetUuid(kFolder2Uuid)
+                       .SetChildren({UrlBuilder(kUrl2Title, kUrl2),
+                                     UrlBuilder(kUrl3Title, kUrl3)})});
+
+  // -------- The expected merge outcome --------
+  // bookmark_bar
+  //  | - folder 2 (kFolder2Uuid/kTitle2)
+  //    |- url2(http://www.url2.com)
+  //    |- url3(http://www.url3.com)
+  //    |- url1(http://www.url1.com)
+  //  | - folder 1 (kTitle1)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
+  EXPECT_THAT(
+      model_->account_bookmark_bar_node()->children(),
+      ElementsAre(IsFolder(kFolder2Title,
+                           ElementsAre(IsUrlBookmark(kUrl2Title, kUrl2),
+                                       IsUrlBookmark(kUrl3Title, kUrl3),
+                                       IsUrlBookmark(kUrl1Title, kUrl1))),
+                  IsFolder(kFolder1Title, IsEmpty())));
+}
+
+TEST_F(LocalBookmarkToAccountMergerTest,
+       ShouldDeduplicateBySemanticsAfterTwoConsecutiveAncestorsMatchedByUuid) {
+  const std::u16string kFolder1Title = u"folder1";
+  const std::u16string kFolder2Title = u"folder2";
+  const std::u16string kFolder3Title = u"folder3";
+
+  const std::u16string kUrl1Title = u"url1";
+  const std::u16string kUrl2Title = u"url2";
+  const std::u16string kUrl3Title = u"url3";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+
+  const base::Uuid kFolder2Uuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kFolder3Uuid = base::Uuid::GenerateRandomV4();
+
+  // -------- Local bookmarks --------
+  // bookmark_bar
+  //  | - folder 1 (kFolder1Title)
+  //    | - folder 2 (kFolder2Uuid/kFolder2Title)
+  //      | - folder 3 (kFolder3Uuid/kFolder3Title)
+  //        |- url1(http://www.url1.com)
+  //        |- url2(http://www.url2.com)
+  AddLocalNodes(
+      {FolderBuilder(kFolder1Title)
+           .SetChildren(
+               {FolderBuilder(kFolder2Title)
+                    .SetUuid(kFolder2Uuid)
+                    .SetChildren(
+                        {FolderBuilder(kFolder3Title)
+                             .SetUuid(kFolder3Uuid)
+                             .SetChildren(
+                                 {UrlBuilder(kUrl1Title, kUrl1),
+                                  UrlBuilder(kUrl2Title, kUrl2)})})})});
+
+  // -------- Account bookmarks --------
+  // bookmark_bar
+  //  | - folder 2 (kFolder2Uuid/kFolder2Title)
+  //    | - folder 3 (kFolder3Uuid/kFolder3Title)
+  //      |- url2(http://www.url2.com)
+  //      |- url3(http://www.url3.com)
+  AddAccountNodes(
+      {FolderBuilder(kFolder2Title)
+           .SetUuid(kFolder2Uuid)
+           .SetChildren({FolderBuilder(kFolder3Title)
+                             .SetUuid(kFolder3Uuid)
+                             .SetChildren({UrlBuilder(kUrl2Title, kUrl2),
+                                           UrlBuilder(kUrl3Title, kUrl3)})})});
+
+  // -------- The expected merge outcome --------
+  // bookmark_bar
+  //  | - folder 2 (kFolder2Uuid/kTitle2)
+  //    | - folder 3 (kFolder3Uuid/kTitle3)
+  //      |- url2(http://www.url2.com)
+  //      |- url3(http://www.url3.com)
+  //      |- url1(http://www.url1.com)
+  //  | - folder 1 (kTitle1)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
+  EXPECT_THAT(
+      model_->account_bookmark_bar_node()->children(),
+      ElementsAre(IsFolder(kFolder2Title,
+                           ElementsAre(IsFolder(
+                               kFolder3Title,
+                               ElementsAre(IsUrlBookmark(kUrl2Title, kUrl2),
+                                           IsUrlBookmark(kUrl3Title, kUrl3),
+                                           IsUrlBookmark(kUrl1Title, kUrl1))))),
+                  IsFolder(kFolder1Title, IsEmpty())));
+}
+
+TEST_F(
+    LocalBookmarkToAccountMergerTest,
+    ShouldDeduplicateBySemanticsAfterTwoNonConsecutiveAncestorsMatchedByUuid) {
+  const std::u16string kFolder1Title = u"folder1";
+  const std::u16string kFolder2Title = u"folder2";
+  const std::u16string kFolder3Title = u"folder3";
+  const std::u16string kFolder4Title = u"folder4";
+  const std::u16string kFolder5Title = u"folder5";
+
+  const std::u16string kUrl1Title = u"url1";
+  const std::u16string kUrl2Title = u"url2";
+  const std::u16string kUrl3Title = u"url3";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+
+  const base::Uuid kFolder2Uuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kFolder5Uuid = base::Uuid::GenerateRandomV4();
+
+  // -------- Local bookmarks --------
+  // bookmark_bar
+  //  | - folder 1 (kFolder1Title)
+  //    | - folder 2 (kFolder2Uuid/kFolder2Title)
+  //      | - folder 3 (kFolder3Title)
+  //        | - folder 4 (kFolder4Title)
+  //          | - folder 5 (kFolder5Uuid/kFolder5Title)
+  //            |- url1(http://www.url1.com)
+  //            |- url2(http://www.url2.com)
+  AddLocalNodes(
+      {FolderBuilder(kFolder1Title)
+           .SetChildren(
+               {FolderBuilder(kFolder2Title)
+                    .SetUuid(kFolder2Uuid)
+                    .SetChildren(
+                        {FolderBuilder(kFolder3Title)
+                             .SetChildren(
+                                 {FolderBuilder(kFolder4Title)
+                                      .SetChildren(
+                                          {FolderBuilder(kFolder5Title)
+                                               .SetUuid(kFolder5Uuid)
+                                               .SetChildren(
+                                                   {UrlBuilder(kUrl1Title,
+                                                               kUrl1),
+                                                    UrlBuilder(
+                                                        kUrl2Title,
+                                                        kUrl2)})})})})})});
+
+  // -------- Account bookmarks --------
+  // bookmark_bar
+  //  | - folder 2 (kFolder2Uuid/kFolder2Title)
+  //  | - folder 5 (kFolder5Uuid/kFolder5Title)
+  //    |- url2(http://www.url2.com)
+  //    |- url3(http://www.url3.com)
+  AddAccountNodes({FolderBuilder(kFolder2Title).SetUuid(kFolder2Uuid),
+                   FolderBuilder(kFolder5Title)
+                       .SetUuid(kFolder5Uuid)
+                       .SetChildren({UrlBuilder(kUrl2Title, kUrl2),
+                                     UrlBuilder(kUrl3Title, kUrl3)})});
+
+  // -------- The expected merge outcome --------
+  // bookmark_bar
+  //  | - folder 2 (kFolder2Uuid/kTitle2)
+  //    | - folder 3 (kTitle3)
+  //      | - folder 4 (kTitle4)
+  //  | - folder 5 (kFolder5Uuid/kFolder5Title)
+  //      |- url2(http://www.url2.com)
+  //      |- url3(http://www.url3.com)
+  //      |- url1(http://www.url1.com)
+  //  | - folder 1 (kTitle1)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
+  EXPECT_THAT(
+      model_->account_bookmark_bar_node()->children(),
+      ElementsAre(IsFolder(kFolder2Title,
+                           ElementsAre(IsFolder(
+                               kFolder3Title, ElementsAre(IsFolder(
+                                                  kFolder4Title, IsEmpty()))))),
+                  IsFolder(kFolder5Title,
+                           ElementsAre(IsUrlBookmark(kUrl2Title, kUrl2),
+                                       IsUrlBookmark(kUrl3Title, kUrl3),
+                                       IsUrlBookmark(kUrl1Title, kUrl1))),
+                  IsFolder(kFolder1Title, IsEmpty())));
 }
 
 TEST_F(LocalBookmarkToAccountMergerTest,
@@ -489,15 +873,18 @@ TEST_F(LocalBookmarkToAccountMergerTest,
       {FolderBuilder(kFolderTitle)
            .SetChildren({UrlBuilder(kAccountTitle, kUrl).SetUuid(kUuid)})});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The merged account nodes --------
   // bookmark_bar
   //  | - folder
   //    | - bookmark(kUuid/kLocalTitle)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(
       model_->account_bookmark_bar_node()->children(),
       ElementsAre(IsFolder(kFolderTitle, ElementsAre(IsUrlBookmarkWithUuid(
@@ -532,11 +919,6 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   AddAccountNodes({FolderBuilder(kFolder2Title)
                        .SetChildren({UrlBuilder(kUrl2Title, kUrl2)})});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The merged account nodes --------
   // bookmark_bar
   //  |- folder 2
@@ -544,6 +926,14 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //  |- folder 1
   //    |- folder 2
   //      |- url1(http://www.url1.com)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(
       model_->account_bookmark_bar_node()->children(),
       ElementsAre(IsFolder(kFolder2Title,
@@ -574,11 +964,6 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //  | - folder (kUuid2/kTitle1)
   AddAccountNodes({FolderBuilder(kTitle1).SetUuid(kUuid2)});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The merged account nodes --------
   // bookmark_bar
   //  | - folder 2 (kUuid2/kTitle2)
@@ -586,6 +971,14 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //
   // The node should have been merged with its UUID match, even if the other
   // candidate matches by semantics.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(model_->account_bookmark_bar_node()->children(),
               ElementsAre(IsFolderWithUuid(kTitle2, kUuid2, IsEmpty()),
                           IsFolderWithUuid(kTitle1, kUuid1, IsEmpty())));
@@ -616,11 +1009,6 @@ TEST_F(
   //  | - folder (kUuid2/kMatchingTitle)
   AddAccountNodes({FolderBuilder(kMatchingTitle).SetUuid(kUuid2)});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The merged account nodes --------
   // bookmark_bar
   //  | - folder (kUuid2/kLocalOnlyTitle)
@@ -629,6 +1017,14 @@ TEST_F(
   //
   // The node should have been merged with its UUID match, even if the other
   // candidate matches by semantics.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(
       model_->account_bookmark_bar_node()->children(),
       ElementsAre(IsFolderWithUuid(kLocalOnlyTitle, kUuid2,
@@ -660,11 +1056,6 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //  | - folder (kUuid2/kMatchingTitle)
   AddAccountNodes({FolderBuilder(kMatchingTitle).SetUuid(kUuid2)});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The merged account nodes --------
   // bookmark_bar
   //  | - folder (kUuid2/kLocalOnlyTitle)
@@ -673,6 +1064,14 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //
   // The node should have been merged with its UUID match, even if the other
   // candidate matches by semantics.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(
       model_->account_bookmark_bar_node()->children(),
       ElementsAre(IsFolderWithUuid(kLocalOnlyTitle, kUuid2,
@@ -697,17 +1096,20 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //  | - bookmark (kUuid/kUrl2)
   AddAccountNodes({UrlBuilder(kTitle, kUrl2).SetUuid(kUuid)});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The merged account nodes --------
   // bookmark_bar
   //  | - bookmark (kUuid/kUrl2)
   //  | - bookmark ([new UUID]/kUrl1)
   //
   // The conflicting node UUID should have been replaced.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(model_->account_bookmark_bar_node()->children(),
               ElementsAre(IsUrlBookmarkWithUuid(kTitle, kUrl2, kUuid),
                           IsUrlBookmarkWithUuid(kTitle, kUrl1, Ne(kUuid))));
@@ -729,17 +1131,20 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //  | - folder(kUuid)
   AddAccountNodes({FolderBuilder(kTitle).SetUuid(kUuid)});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The merged account nodes --------
   // bookmark_bar
   //  | - folder (kUuid)
   //  | - bookmark ([new UUID])
   //
   // The conflicting node UUID should have been replaced.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(model_->account_bookmark_bar_node()->children(),
               ElementsAre(IsFolderWithUuid(kTitle, kUuid, IsEmpty()),
                           IsUrlBookmarkWithUuid(kTitle, kUrl1, Ne(kUuid))));
@@ -767,11 +1172,6 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //  | - bookmark (kUuid/kUrl2)
   AddAccountNodes({UrlBuilder(kUrl2Title, kUrl2).SetUuid(kUuid)});
 
-  // -------- Exercise the merge logic --------
-  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
-
-  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
-
   // -------- The merged account nodes --------
   // bookmark_bar
   //  | - bookmark (kUuid/kUrl2)
@@ -779,6 +1179,14 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //    | - bookmark (kUrl1)
   //
   // The conflicting node UUID should have been replaced.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
   EXPECT_THAT(model_->account_bookmark_bar_node()->children(),
               ElementsAre(IsUrlBookmarkWithUuid(kUrl2Title, kUrl2, kUuid),
                           IsFolderWithUuid(

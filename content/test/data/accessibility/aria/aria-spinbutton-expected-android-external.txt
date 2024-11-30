@@ -1,0 +1,6 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++EditText text:"5" clickable focusable RangeInfo:[current=5.0, min=0.0, max=0.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="spinButton", roleDescription="spin button"]
+++EditText text:"5" clickable focusable RangeInfo:[current=5.0, min=1.0, max=10.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="spinButton", roleDescription="spin button"]
+++EditText clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 RangeInfo:[current=0.0, min=0.0, max=0.0] actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, SET_PROGRESS, IME_ENTER] bundle:[chromeRole="spinButton", clickableScore="300", roleDescription="spin button"]
+++EditText clickable editable focusable multiLine textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, SET_PROGRESS, IME_ENTER] bundle:[chromeRole="spinButton", clickableScore="300", roleDescription="spin button"]
+++EditText text:"0" clickable RangeInfo:[current=0.0, min=0.0, max=0.0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="spinButton", roleDescription="spin button"]

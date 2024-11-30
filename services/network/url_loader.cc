@@ -85,13 +85,14 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/empty_url_loader_client.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/sri_message_signatures.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -774,7 +775,7 @@ URLLoader::URLLoader(
       /*priority_incremental=*/request.priority_incremental,
       /*cookie_setting_overrides=*/
       CalculateCookieSettingOverrides(factory_params_->cookie_setting_overrides,
-                                      request),
+                                      request, /*emit_metrics=*/true),
       /*shared_dictionary_getter=*/
       shared_dictionary_manager
           ? std::make_optional(
@@ -1623,13 +1624,19 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   cookies_from_browser_.clear();
   request_cookies_.clear();
 
-  net::cookie_util::AddOrRemoveStorageAccessApiOverride(
-      redirect_info.new_url, storage_access_api_status_,
-      url_request_->initiator(), url_request_->cookie_setting_overrides());
-  if (!url::Origin::Create(url_request_->url())
-           .IsSameOriginWith(redirect_info.new_url)) {
+  const url::Origin origin = url::Origin::Create(url_request_->url());
+  const url::Origin pending_origin = url::Origin::Create(redirect_info.new_url);
+  if (!origin.IsSameOriginWith(pending_origin)) {
     url_request_->cookie_setting_overrides().Remove(
         net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
+
+    // TODO(https://crbug.com/379030052): the `CookieSettingOverride`s for
+    // Storage Access API and Storage Access Headers should be handled
+    // consistently during a same-site, cross-origin redirect.
+    if (net::SchemefulSite(origin) != net::SchemefulSite(pending_origin)) {
+      url_request_->cookie_setting_overrides().Remove(
+          net::CookieSettingOverride::kStorageAccessGrantEligible);
+    }
   }
 
   // Note: There are some ordering dependencies here.
@@ -1740,7 +1747,8 @@ std::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
 // static
 net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
     net::CookieSettingOverrides factory_overrides,
-    const ResourceRequest& request) {
+    const ResourceRequest& request,
+    bool emit_metrics) {
   net::CookieSettingOverrides overrides(factory_overrides);
   if (request.is_outermost_main_frame &&
       network::cors::IsCorsEnabledRequestMode(request.mode)) {
@@ -1748,7 +1756,8 @@ net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
 
-  AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides);
+  AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides,
+                                        emit_metrics);
 
   // The `kStorageAccessGrantEligible` override should not be present in
   // factory_overrides.
@@ -1937,9 +1946,8 @@ void URLLoader::ContinueOnResponseStarted() {
     options.struct_size = sizeof(MojoCreateDataPipeOptions);
     options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
     options.element_num_bytes = 1;
-    options.capacity_num_bytes =
-        network::features::GetDataPipeDefaultAllocationSize(
-            features::DataPipeAllocationSize::kLargerSizeIfPossible);
+    options.capacity_num_bytes = GetDataPipeDefaultAllocationSize(
+        DataPipeAllocationSize::kLargerSizeIfPossible);
     MojoResult result =
         mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
     if (result != MOJO_RESULT_OK) {
@@ -1977,6 +1985,20 @@ void URLLoader::ContinueOnResponseStarted() {
               url_request_->initiator(), *response_, request_mode_,
               request_destination_, cross_origin_embedder_policy,
               coep_reporter_, document_isolation_policy)) {
+    CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
+                            blocked_reason);
+    // Close the socket associated with the request, to prevent leaking
+    // information.
+    url_request_->AbortAndCloseConnection();
+    DeleteSelf();
+    return;
+  }
+
+  // Enforce SRI-compliant HTTP Message Signature headers.
+  //
+  // https://wicg.github.io/signature-based-sri/
+  if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
+          MaybeBlockResponseForSRIMessageSignature(*response_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // Close the socket associated with the request, to prevent leaking

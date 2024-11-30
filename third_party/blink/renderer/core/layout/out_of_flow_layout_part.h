@@ -331,6 +331,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   ContainingBlockInfo ApplyPositionAreaOffsets(
       const PositionAreaOffsets& offsets,
+      PhysicalOffset default_anchor_scroll_shift,
       const ContainingBlockInfo& container_info) const;
 
   NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node);

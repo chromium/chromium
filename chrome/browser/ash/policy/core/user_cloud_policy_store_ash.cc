@@ -259,8 +259,7 @@ void UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated(
     return;
   }
 
-  InstallPolicy(std::move(validator->policy()),
-                std::move(validator->policy_data()),
+  InstallPolicy(std::move(validator->policy_data()),
                 std::move(validator->payload()),
                 cached_policy_key_loader_->cached_policy_key());
   status_ = STATUS_OK;

@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">გახსნის Chrome-ის პარამეტრებს, Chrome ნაგულისხმევ ბრაუზერად რომ დაყენდეს.</translation>
 <translation id="1670609221633730681">მინიშნება Chrome-ისთვის: აირჩიეთ მისამართთა ზოლის პოზიცია</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">შეინახეთ პაროლები Chrome-ში</translation>
 <translation id="1790080846677398234">დაამატებს შეყვანილ URL-ებს თქვენს სანიშნეებს Chrome-ში.</translation>
 <translation id="1799920918471566157">მინიშნებები Chrome-ისთვის</translation>
 <translation id="1830634592642484976">ეს მისამართი ამჟამად შენახულია Chrome-ში. სხვადასხვა Google პროდუქტში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />).</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">ეს იმას ნიშნავს, რომ Chrome ყოველ ჯერზე მოითხოვს მობილურ საიტს.</translation>
 <translation id="3740397331642243698">მითითებულ URL-ებს Google Chrome-ის ინკოგნიტო რეჟიმში გახსნის.</translation>
 <translation id="3741995255368156336">გახსნის Chrome-ის საკითხავ სიას.</translation>
+<translation id="3808570423967020928">იქონიეთ უფრო სწრაფი წვდომა Chrome-ზე მთავარი ეკრანის სამაგრის მეშვეობით.</translation>
 <translation id="3827545470516145620">ამ მოწყობილობაზე სარგებლობთ უსაფრთხოების სტანდარტული საშუალებებით</translation>
 <translation id="384394811301901750">Google Chrome ამჟამად თქვენს კამერას ვერ გამოიყენებს</translation>
 <translation id="3863841106411295595">დაამატებს შეყვანილ URL-ებს თქვენს საკითხავ სიას Chrome-ში.</translation>
@@ -219,9 +221,11 @@
 
 გადადით <ph name="BEGIN_LINK" />Google სერვისებზე<ph name="END_LINK" />, რომ გაეცნოთ მეტ პარამეტრს, რომლებიც იყენებს მონაცემებს Chrome-ში ფუნქციების თქვენზე მოსარგებად.</translation>
 <translation id="6922332667202044570">Chrome-ში დათვალიერების მონაცემების წაშლა.</translation>
+<translation id="6924922227983877439">ნაგულისხმევად გახსენით ბმულები Chrome-ში</translation>
 <translation id="6975725306479268850">აირჩიეთ Chrome ავტომატური შევსებისთვის</translation>
 <translation id="7056826488869329999">გახსნის და გაუშვებს უსაფრთხოების შემოწმებას Chrome-ში.</translation>
 <translation id="7061455974939528301">ხანგრძლივად შეეხეთ Chrome-ის ხატულას და დაწკაპუნებით აირჩიეთ „მთავარი ეკრანის რედაქტირება“</translation>
+<translation id="7065813315247345131">Chrome-ის სამაგრში გადატანა</translation>
 <translation id="7124339256045485976">Chrome-ის მუდმივი განახლების უზრუნველყოფა</translation>
 <translation id="7161390184744336561">Google Chrome მოძველდა</translation>
 <translation id="7165736900384873061">Google Chrome-ის QR სკანერის გამოყენების დაწყება</translation>

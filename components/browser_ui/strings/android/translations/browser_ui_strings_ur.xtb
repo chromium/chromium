@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">کسی سائٹ کو اپنے آلے پر ڈیٹا محفوظ کرنے کی اجازت دیں</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1384959399684842514">ڈاؤن لوڈ موقوف ہوگیا</translation>
+<translation id="1396327438254055134">‏سائٹ کو V8 کو بہتر بنانے والا استعمال کرنے کی اجازت دیں۔</translation>
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
 <translation id="1448064542941920355">زوم آؤٹ کریں</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سائٹ}other{<ph name="SITE_COUNT" /> سائٹس}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">تصویر ڈیکوڈر</translation>
 <translation id="1785415724048343560">بہترین تجربے کے لیے تجویز کردہ</translation>
 <translation id="1799920918471566157">‏Chrome کی تجاویز</translation>
+<translation id="1816835383954230954">‏آن ہونے پر، Chrome تیزی سے چلتا ہے اور JavaScript استعمال کرنے والی خصوصیات کو ڈیزائن کے مطابق کام کرنا چاہیے۔ آف ہونے پر، یہ کارکردگی کو کم کرتا ہے لیکن V8 کو حملوں کے خلاف زیادہ مزاحم بناتا ہے۔</translation>
 <translation id="1818308510395330587">‏<ph name="APP_NAME" /> کو AR کا استعمال کرنے دینے کے لیے، <ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں بھی کیمرا آن کریں۔</translation>
 <translation id="1887786770086287077">‏مقام کی رسائی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">آن ہونے پر، سائٹس آپ کا کیمرا استعمال کرنے کیلئے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس آپ کا کیمرا استعمال نہیں کر سکتیں۔</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> کے تحت سائٹس</translation>
 <translation id="3523447078673133727">سائٹس کو اپنے ہاتھوں کو ٹریک کرنے کی اجازت نہ دیں</translation>
+<translation id="3532312529397438268">‏سائٹس V8 کو بہتر بنانے والا استعمال نہیں کر سکتیں</translation>
 <translation id="3536227077203206203">اس وقت اجازت ہے</translation>
 <translation id="3538390592868664640">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق یا کیمرے کی پوزیشن ٹریک کرنے سے مسدود کریں</translation>
 <translation id="3544058026430919413">ایک کمپنی سائٹس کے ایک گروپ کی وضاحت کر سکتی ہے جو گروپ میں آپ کی سرگرمی کا اشتراک کرنے کے لیے کوکیز کا استعمال کر سکتی ہے۔ یہ پوشیدگی میں آف ہے۔</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">زوم</translation>
 <translation id="4807122856660838973">محفوظ براؤزنگ آن کریں</translation>
 <translation id="4811450222531576619">اس کے ماخذ اور موضوع کے بارے میں جانیں</translation>
+<translation id="481168145262973879">‏سائٹس V8 کو بہتر بنانے والا استعمال کر سکتی ہیں</translation>
 <translation id="4816495437032298535">سائٹس کے لیے محفوظ کردہ زوم</translation>
 <translation id="4836046166855586901">پوچھیں کہ کب کوئی سائٹ یہ جاننا چاہتی ہے کہ فعال طور پر آپ اس آلہ کا استعمال کب کر رہے ہیں</translation>
 <translation id="483914009762354899">اس ڈومین کے تحت تمام سائٹس کو شامل کریں</translation>
@@ -337,10 +341,8 @@
 <translation id="6071501408666570960">ہو سکتا ہے کہ آپ اس سائٹ سے سائن آؤٹ ہو جائیں</translation>
 <translation id="6085954183010297841">فائل میں ترمیم کرنے کی اجازت ہٹائیں؟ <ph name="FILE" /></translation>
 <translation id="6120483543004435978">آن ہونے پر، سائٹس یہ جاننے کے لیے پوچھ سکتی ہیں کہ آپ اپنا آلہ فعال طور پر کب استعمال کر رہے ہیں۔ آف ہونے پر، سائٹس نہیں جان سکتی کہ آپ اپنا آلہ فعال طور پر کب استعمال کر رہے ہیں۔</translation>
-<translation id="6140839633433422817">کیا آپ واقعی اجازتوں کو ری سیٹ کرنا چاہتے ہیں، ساتھ ہی کوکیز اور سائٹ ڈیٹا کو بھی حذف کرنا چاہتے ہیں؟</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6171020522141473435">آن ہونے پر، سائٹس بلوٹوتھ آلات کا استعمال کرنے کے لیے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس بلوٹوتھ آلات کا استعمال نہیں کر سکتیں۔</translation>
-<translation id="6177111841848151710">موجودہ سرچ انجن کیلئے مسدود</translation>
 <translation id="6177128806592000436">اس سائٹ سے آپ کا کنکشن محفوظ نہیں ہے</translation>
 <translation id="6181444274883918285">سائٹ کا استثناء شامل کریں</translation>
 <translation id="6192792657125177640">استثناء</translation>
@@ -405,8 +407,8 @@
 <translation id="6980861169612950611">سائٹ ڈیٹا کو حذف کریں؟ <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="6992289844737586249">سائٹس کو آپ کا مائیکروفون استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
+<translation id="6999131147875565462">‏‫Chrome تیزی سے چلتا ہے اور JavaScript استعمال کرنے والی خصوصیات کو ڈیزائن کے مطابق کام کرنا چاہیے</translation>
 <translation id="7000754031042624318">‏Android ترتیبات میں آف کر دیا گیا</translation>
-<translation id="7016516562562142042">موجودہ سرچ انجن کیلئے اجازت یافتہ</translation>
 <translation id="702275896380648118">‏یہ سائٹ آپ کی پسندیدہ چیزوں کا تعین کرتی ہے اور پھر دیگر سائٹس کو اشتہارات تجویز کرتی ہے۔ آپ کو مزید متعلقہ اشتہارات دکھانے کیلئے، یہ سائٹ Chrome سے آپ کے اشتہار کے موضوعات بھی وصول کرتی ہے۔</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 منتخب ہے}other{# منتخب کردہ}}</translation>
@@ -425,7 +427,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> منتخب ہو گئے</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> اور <ph name="PERMISSION_2" /> کی اجازت دی گئی</translation>
 <translation id="7276071417425470385">آن ہونے پر، سائٹس ورچوئل رئیلٹی آلات استعمال کرنے کیلئے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس ورچوئل رئیلٹی آلات استعمال نہیں کر سکتیں۔</translation>
-<translation id="7302486331832100261">آپ عام طور پر اطلاعات کو مسدود کرتے ہیں۔ اجازت دینے کے لیے، تفصیلات پر تھپتھپائیں۔</translation>
 <translation id="7366415735885268578">ایک سائٹ شامل کریں</translation>
 <translation id="7368695150573390554">کوئی بھی آف لائن ڈیٹا حذف کر دیا جائے گا</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> کیلئے ترتیبات</translation>
@@ -542,7 +543,6 @@
 <translation id="8928445016601307354">‏سائٹس کو NFC آلات پر معلومات دیکھنے اور تبدیل کرنے سے مسدود کریں</translation>
 <translation id="8944485226638699751">محدود</translation>
 <translation id="8959122750345127698">نیویگیشن ناقابل رسائی ہے: <ph name="URL" /></translation>
-<translation id="8986362086234534611">بھول جائیں</translation>
 <translation id="8990043154272859344">آپ سبھی سائٹس سے سائن آؤٹ ہو جائیں گے</translation>
 <translation id="8993853206419610596">تمام درخواستوں کو پھیلائیں</translation>
 <translation id="9002538116239926534">آن ہونے پر، سائٹس آپ کے آلے پر ڈیٹا محفوظ کر سکتی ہیں۔ آف ہونے پر، سائٹس آپ کے آلے پر ڈیٹا محفوظ نہیں کر سکتی ہیں۔</translation>
@@ -555,8 +555,8 @@
 <translation id="913657688200966289">‏<ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں <ph name="APP_NAME" /> کے لیے اجازتیں آن کریں۔</translation>
 <translation id="9138217887606523162">موجودہ زوم %% <ph name="ZOOM_LEVEL" /> ہے</translation>
 <translation id="9162462602695099906">یہ صفحہ خطرناک ہے</translation>
-<translation id="930525582205581608">اس سائٹ کو بھول جائیں؟</translation>
 <translation id="947156494302904893">آپ کی ملاحظہ کردہ سائٹس اس بات کی تصدیق کر سکتی ہیں کہ آپ ایک حقیقی شخص ہیں نہ کہ ایک بوٹ</translation>
 <translation id="959682366969460160">منظم رہیں</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>
+<translation id="969975166333045662">‏سائٹ کو V8 کو بہتر بنانے والا استعمال کرنے سے روکیں۔</translation>
 </translationbundle>

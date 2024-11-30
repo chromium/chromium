@@ -19,7 +19,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
@@ -2140,7 +2139,7 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcs) {
 }
 
 // TODO(b/322831691): Deterministic failure.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
   DISABLED_ReplaceDisplayControllersCrtcsNonexistent
 #else

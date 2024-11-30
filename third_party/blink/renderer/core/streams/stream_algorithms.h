@@ -53,9 +53,9 @@ class StreamAlgorithm : public GarbageCollected<StreamAlgorithm> {
  public:
   virtual ~StreamAlgorithm() = default;
 
-  virtual v8::Local<v8::Promise> Run(ScriptState*,
-                                     int argc,
-                                     v8::Local<v8::Value> argv[]) = 0;
+  virtual ScriptPromise<IDLUndefined> Run(ScriptState*,
+                                          int argc,
+                                          v8::Local<v8::Value> argv[]) = 0;
 
   virtual void Trace(Visitor*) const {}
 };

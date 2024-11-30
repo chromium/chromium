@@ -1,7 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h",
-  "+ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h",
-  "+ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h",
-  "+ios/chrome/browser/account_picker/ui_bundled/account_picker_logger.h",
-  "+ios/chrome/browser/ui/authentication/signin/signin_completion_info.h",
-]

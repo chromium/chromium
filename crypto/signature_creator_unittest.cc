@@ -47,7 +47,7 @@ TEST(SignatureCreatorTest, BasicTest) {
   ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
                                   signature, public_key_info));
 
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
+  verifier.VerifyUpdate(base::as_byte_span(data));
   ASSERT_TRUE(verifier.VerifyFinal());
 }
 
@@ -79,7 +79,7 @@ TEST(SignatureCreatorTest, SignDigestTest) {
   ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
                                   signature, public_key_info));
 
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
+  verifier.VerifyUpdate(base::as_byte_span(data));
   ASSERT_TRUE(verifier.VerifyFinal());
 }
 
@@ -112,6 +112,6 @@ TEST(SignatureCreatorTest, SignSHA256DigestTest) {
   ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA256,
                                   signature, public_key_info));
 
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
+  verifier.VerifyUpdate(base::as_byte_span(data));
   ASSERT_TRUE(verifier.VerifyFinal());
 }

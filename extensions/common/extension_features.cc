@@ -25,10 +25,10 @@ BASE_FEATURE(kApiEnterpriseKioskInput,
 
 BASE_FEATURE(kApiRuntimeActionData,
              "ApiRuntimeActionData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApiPermissionsSiteAccessRequests,
-             "ApiPermissionsSiteAccessRequests",
+BASE_FEATURE(kApiPermissionsHostAccessRequests,
+             "ApiPermissionsHostAccessRequests",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiUserScriptsMultipleWorlds,
@@ -171,6 +171,10 @@ BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
              "DeclarativeNetRequestSafeDynamicRules",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExperimentalOmniboxLabs,
+             "ExperimentalOmniboxLabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching,
              "DeclarativeNetRequestResponseHeaderMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -195,8 +199,8 @@ BASE_FEATURE(kSilentDebuggerExtensionAPI,
              "SilentDebuggerExtensionAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseReadyToCommitForExtensionFrameSetup,
-             "UseReadyToCommitForExtensionFrameSetup",
+BASE_FEATURE(kRemoveCoreSiteInstance,
+             "RemoveCoreSiteInstance",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

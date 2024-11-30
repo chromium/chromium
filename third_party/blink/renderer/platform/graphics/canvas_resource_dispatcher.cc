@@ -175,12 +175,11 @@ void CanvasResourceDispatcher::DispatchFrameSync(
     scoped_refptr<CanvasResource>&& canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
-    bool needs_vertical_flip,
     bool is_opaque) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::DispatchFrameSync");
   viz::CompositorFrame frame;
   if (!PrepareFrame(std::move(canvas_resource), commit_start_time, damage_rect,
-                    needs_vertical_flip, is_opaque, &frame)) {
+                    is_opaque, &frame)) {
     return;
   }
 
@@ -196,12 +195,11 @@ void CanvasResourceDispatcher::DispatchFrame(
     scoped_refptr<CanvasResource>&& canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
-    bool needs_vertical_flip,
     bool is_opaque) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::DispatchFrame");
   viz::CompositorFrame frame;
   if (!PrepareFrame(std::move(canvas_resource), commit_start_time, damage_rect,
-                    needs_vertical_flip, is_opaque, &frame)) {
+                    is_opaque, &frame)) {
     return;
   }
 
@@ -215,7 +213,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
     scoped_refptr<CanvasResource>&& canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
-    bool needs_vertical_flip,
     bool is_opaque,
     viz::CompositorFrame* frame) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::PrepareFrame");
@@ -278,6 +275,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   canvas_resource->PrepareTransferableResource(
       &resource, &frame_resource->release_callback,
       /*needs_verified_synctoken=*/true);
+
   const viz::ResourceId resource_id = next_resource_id;
   resource.id = resource_id;
 
@@ -299,16 +297,10 @@ bool CanvasResourceDispatcher::PrepareFrame(
   constexpr bool kPremultipliedAlpha = true;
   constexpr gfx::PointF uv_top_left(0.f, 0.f);
   constexpr gfx::PointF uv_bottom_right(1.f, 1.f);
-  // Accelerated resources have the origin of coordinates in the upper left
-  // corner while canvases have it in the lower left corner. The DrawQuad is
-  // marked as vertically flipped unless someone else has done the flip for us.
-  const bool yflipped =
-      SharedGpuContext::IsGpuCompositingEnabled() && needs_vertical_flip;
   quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id,
                canvas_resource_size, kPremultipliedAlpha, uv_top_left,
-               uv_bottom_right, SkColors::kTransparent, yflipped,
-               nearest_neighbor, /*secure_output=*/false,
-               gfx::ProtectedVideoType::kClear);
+               uv_bottom_right, SkColors::kTransparent, nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
   frame->render_pass_list.push_back(std::move(pass));
 
   if (change_size_for_next_commit_ ||

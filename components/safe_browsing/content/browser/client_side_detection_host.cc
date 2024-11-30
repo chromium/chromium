@@ -27,7 +27,7 @@
 #include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/common/visual_utils.h"
@@ -37,6 +37,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -69,12 +70,6 @@ namespace safe_browsing {
 
 namespace {
 
-// Command-line flag that can be used to write extracted CSD features to disk.
-// This is also enables a few other behaviors that are useful for debugging.
-const char kCsdDebugFeatureDirectoryFlag[] = "csd-debug-feature-directory";
-const char kSkipCSDAllowlistOnPreclassification[] =
-    "safe-browsing-skip-csd-allowlist";
-
 // Probability value used to sample pings on CSD allowlist match. For other safe
 // browsing countermeasures, we sample at 1 in 100 rate, but in this, we hit the
 // allowlist 1000 times more than the rate at which we send a ping due to local
@@ -98,17 +93,17 @@ void WriteFeaturesToDisk(const ClientPhishingRequest& features,
 
 bool HasDebugFeatureDirectory() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kCsdDebugFeatureDirectoryFlag);
+      switches::kCsdDebugFeatureDirectoryFlag);
 }
 
 bool ShouldSkipCSDAllowlist() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kSkipCSDAllowlistOnPreclassification);
+      switches::kSkipCSDAllowlistOnPreclassification);
 }
 
 base::FilePath GetDebugFeatureDirectory() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-      kCsdDebugFeatureDirectoryFlag);
+      switches::kCsdDebugFeatureDirectoryFlag);
 }
 
 std::string GetRequestTypeName(

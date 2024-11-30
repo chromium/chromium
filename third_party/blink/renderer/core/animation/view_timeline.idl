@@ -6,7 +6,6 @@
 // version.
 // https://drafts.csswg.org/scroll-animations-1/rewrite#viewtimeline-interface
 [
-    RuntimeEnabled=ScrollTimeline,
     Exposed=Window
 ] interface ViewTimeline : ScrollTimeline {
     [CallWith=Document, RaisesException, MeasureAs=ViewTimelineConstructor] constructor(optional ViewTimelineOptions options = {});

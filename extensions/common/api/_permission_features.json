@@ -524,6 +524,11 @@
       "5C825E850034490380BCB756D43ABB2CF537AA91"  // b/359290130
     ]
   }],
+  "omnibox.directInput" : {
+    "channel": "dev",
+    "feature_flag": "ExperimentalOmniboxLabs",
+    "extension_types": [ "extension"]
+  },
   "power": [{
     "channel": "stable",
     "extension_types": [ "extension", "legacy_packaged_app", "platform_app" ]

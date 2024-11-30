@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] moveBefore should not reset selection with preceding text
+  assert_equals: expected Text node "This text does not move" but got Text node "Text"
+[FAIL] moveBefore resets selection that enters a subtree, when the whole selection is moved
+  assert_equals: expected Text node "Grandparent paragraph" but got Text node "Parent paragraph"
+[FAIL] moveBefore anchor node moved up to expand selection and absorb nodes
+  assert_equals: expected Text node "Child paragraph one" but got Text node "Parent paragraph"
+[FAIL] moveBefore focus node moved up to shrink selection and exclude nodes; focus node gets reset
+  assert_equals: expected Text node "Parent paragraph" but got Text node "Paragraph two"
+[FAIL] moveBefore selection is not preserved, especially when underlying range gets inverted
+  assert_equals: expected Text node "Three" but got Text node "Four"
+Harness: the test ran to completion.
+

@@ -6,12 +6,15 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -71,6 +74,14 @@ TEST_F(MouseKeysTrayTest, OverriddenFunctionsDoNothing) {
   const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(), 0, 0);
   GetTray()->ClickedOutsideBubble(event);
+}
+
+// Tests that the accessible name is set correctly in the accessibility cache.
+TEST_F(MouseKeysTrayTest, AccessibleName) {
+  ui::AXNodeData tray_data;
+  GetTray()->GetViewAccessibility().GetAccessibleNodeData(&tray_data);
+  EXPECT_EQ(tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME));
 }
 
 using MouseKeysTrayTestFeatureDisabled = AshTestBase;

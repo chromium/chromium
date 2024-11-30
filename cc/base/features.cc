@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_features.h"
 
 namespace features {
 
@@ -31,11 +30,6 @@ BASE_FEATURE(kAnimatedImageResume,
              "AnimatedImageResume",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The feature is deprecated. The code removal is tracked in crbug.com/359747082
-bool IsImpulseScrollAnimationEnabled() {
-  return false;
-}
-
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
 BASE_FEATURE(kSynchronizedScrolling,
@@ -48,11 +42,6 @@ BASE_FEATURE(kSynchronizedScrolling,
 
 BASE_FEATURE(kMainRepaintScrollPrefersNewContent,
              "MainRepaintScrollPrefersNewContent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-
-BASE_FEATURE(kRenderSurfaceCommonAncestorClip,
-             "RenderSurfaceCommonAncestorClip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeferImplInvalidation,
@@ -72,14 +61,6 @@ BASE_FEATURE(kUseDMSAAForTiles,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-#if BUILDFLAG(IS_ANDROID)
-// This flag controls the DMSAA for tile raster on Android GL backend whereas
-// above flag UseDMSAAForTiles controls the launch on Vulkan backend.
-BASE_FEATURE(kUseDMSAAForTilesAndroidGL,
-             "UseDMSAAForTilesAndroidGL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kUIEnableSharedImageCacheForGpu,
              "UIEnableSharedImageCacheForGpu",
@@ -178,6 +159,9 @@ constexpr const char kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[] =
     "UseScrollPredictorForEmptyQueue";
 constexpr const char kScrollEventDispatchModeUseScrollPredictorForDeadline[] =
     "UseScrollPredictorForDeadline";
+constexpr const char
+    kScrollEventDispatchModeDispatchScrollEventsUntilDeadline[] =
+        "DispatchScrollEventsUntilDeadline";
 const base::FeatureParam<std::string> kScrollEventDispatchMode(
     &kWaitForLateScrollEvents,
     "mode",
@@ -214,6 +198,10 @@ bool MultiImplOnlyScrollAnimationsSupported() {
 
 BASE_FEATURE(kPreventDuplicateImageDecodes,
              "PreventDuplicateImageDecodes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kInitImageDecodeLastUseTime,
+             "InitImageDecodeLastUseTime",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -106,6 +106,18 @@ TEST(Base64UrlTest, EncodeOmitPaddingPolicy) {
   EXPECT_EQ("", output);
 }
 
+TEST(Base64UrlTest, EncodeInPlaceOmitPaddingPolicy) {
+  std::string input = "hello?world";
+  Base64UrlEncode(input, Base64UrlEncodePolicy::OMIT_PADDING, &input);
+  EXPECT_EQ("aGVsbG8_d29ybGQ", input);
+}
+
+TEST(Base64UrlTest, EncodeInPlaceIncludePaddingPolicy) {
+  std::string input = "hello?world";
+  Base64UrlEncode(input, Base64UrlEncodePolicy::INCLUDE_PADDING, &input);
+  EXPECT_EQ("aGVsbG8_d29ybGQ=", input);
+}
+
 TEST(Base64UrlTest, DecodeRequirePaddingPolicy) {
   std::string output;
   ASSERT_TRUE(Base64UrlDecode("aGVsbG8_d29ybGQ=",

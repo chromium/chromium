@@ -11,11 +11,12 @@
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
 namespace {
 
@@ -71,11 +72,14 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     _userPrefService = userPrefService;
     _accessPoint = accessPoint;
     _addedGaiaIDs = [[NSMutableSet alloc] init];
-    _identityManagerObserverBridge.reset(
-        new signin::IdentityManagerObserverBridge(self.identityManager, self));
+    _identityManagerObserverBridge =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            self.identityManager, self);
 
     _initializedWithDefaultAccount =
-        self.accountManagerService->HasIdentities();
+        signin::GetDefaultIdentityOnDevice(self.identityManager,
+                                           self.accountManagerService) != nil;
+
     if (_initializedWithDefaultAccount) {
       RecordConsistencyPromoUserAction(
           signin_metrics::AccountConsistencyPromoAction::SHOWN, _accessPoint);
@@ -106,8 +110,8 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     case SigninCoordinatorResultSuccess: {
       DCHECK(self.signingIdentity);
       id<SystemIdentity> signingIdentity = self.signingIdentity;
-      id<SystemIdentity> defaultIdentity =
-          self.accountManagerService->GetDefaultIdentity();
+      id<SystemIdentity> defaultIdentity = signin::GetDefaultIdentityOnDevice(
+          _identityManager, _accountManagerService);
       DCHECK(defaultIdentity);
       if (!_initializedWithDefaultAccount) {
         // Added identity, from having no existing account.
@@ -149,6 +153,8 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
           _accessPoint);
       break;
     }
+    case SigninCoordinatorUINotAvailable:
+      NOTREACHED();
   }
   _cookieTimeoutClosure.Cancel();
   self.accountManagerService = nullptr;

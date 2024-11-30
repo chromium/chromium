@@ -76,6 +76,9 @@ public class PassthroughTabUngrouper implements TabUngrouper {
         @Nullable List<Tab> tabs = tabsFetcher.apply(filter);
         if (tabs == null || tabs.isEmpty()) return;
 
+        if (listener != null) {
+            listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+        }
         doUngroupTabs(filter, tabs, trailing);
         if (listener != null) {
             listener.onConfirmationDialogResult(

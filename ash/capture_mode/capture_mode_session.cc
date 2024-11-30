@@ -26,6 +26,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_region_overlay_controller.h"
 #include "ash/capture_mode/capture_window_observer.h"
+#include "ash/capture_mode/disclaimer_view.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
@@ -61,6 +62,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -1349,6 +1351,13 @@ void CaptureModeSession::OnPerformCaptureForSearchEnded(
     return;
   }
   ShowAllWidgets();
+
+  if (active_behavior_->ShouldShowGlowWhileProcessingCaptureType(
+          capture_type)) {
+    CHECK(capture_region_overlay_controller_);
+    capture_region_overlay_controller_->StartGlowAnimation(
+        /*animation_delegate=*/this);
+  }
 }
 
 base::WeakPtr<BaseCaptureModeSession>
@@ -1431,14 +1440,20 @@ void CaptureModeSession::OnTextDetected() {
                 weak_ptr_factory_.GetWeakPtr()),
             u"Smart actions", &kCaptureModeSmartActionsIcon,
             ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0},
-            ActionButtonViewID::kCopyTextButton)) {
+            ActionButtonViewID::kSmartActionsButton)) {
       action_button->CollapseToIconButton();
     }
   }
 }
 
-void CaptureModeSession::AddScannerActionButtons(
+void CaptureModeSession::OnScannerActionsFetched(
     std::vector<ScannerActionViewModel> scanner_actions) {
+  // TODO(crbug.com/374381937): We should also account for other types of
+  // processing, e.g. OCR. The glow should be paused whenever all processing
+  // has finished.
+  CHECK(capture_region_overlay_controller_);
+  capture_region_overlay_controller_->PauseGlowAnimation();
+
   // This is inefficient, as we repeatedly sort, insert and recalculate the
   // bounds for buttons one-by-one.
   // TODO: b/369470078 - Fix this inefficiency by adding multiple action buttons
@@ -1478,8 +1493,46 @@ void CaptureModeSession::SetActionButtonsEnabled(bool enabled) {
   // is no need to call either method here.
 }
 
+void CaptureModeSession::MaybeShowDisclaimer(
+    base::RepeatingClosure accept_callback) {
+  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
+          capture_mode::kSunfishConsentDisclaimerAccepted)) {
+    if (accept_callback) {
+      std::move(accept_callback).Run();
+    }
+    return;
+  }
+  disclaimer_ = DisclaimerView::CreateWidget(
+      capture_mode_util::GetPreferredRootWindow(),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(accept_callback)),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
+                          weak_ptr_factory_.GetWeakPtr()));
+  disclaimer_->Show();
+}
+
+void CaptureModeSession::OnDisclaimerDeclined() {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kConsentDisclaimerRejected);
+
+  disclaimer_.reset();
+}
+
+void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kConsentDisclaimerAccepted);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      capture_mode::kSunfishConsentDisclaimerAccepted, true);
+
+  disclaimer_.reset();
+  if (callback) {
+    std::move(callback).Run();
+  }
+}
+
 void CaptureModeSession::OnSmartActionsButtonPressed() {
-  controller_->MaybeShowDisclaimer(base::BindRepeating(
+  MaybeShowDisclaimer(base::BindRepeating(
       &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
       weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1794,6 +1847,12 @@ void CaptureModeSession::OnDisplayMetricsChanged(
     controller_->camera_controller()->MaybeUpdatePreviewWidget();
   }
 
+  // TODO: crbug.com/377519801 - Investigate if we can move this to
+  // `SearchResultsPanel` so it will still update after the session ends.
+  // The search results panel may be offscreen after the display metrics change,
+  // so we can reset it back to a default position.
+  controller_->MaybeUpdateSearchResultsPanelBounds();
+
   if (capture_label_widget_) {
     UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   }
@@ -1849,6 +1908,13 @@ void CaptureModeSession::OnColorProviderChanged() {
   }
 }
 
+void CaptureModeSession::AnimationProgressed(const gfx::Animation* animation) {
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    RefreshGlowRegion();
+  }
+}
+
 void CaptureModeSession::A11yAlertCaptureType() {
   capture_mode_util::TriggerAccessibilityAlert(
       CaptureModeController::Get()->type() == CaptureModeType::kImage
@@ -1877,6 +1943,10 @@ std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
   if (feedback_button_widget_) {
     result.push_back(feedback_button_widget_.get());
   }
+  if (disclaimer_) {
+    result.push_back(disclaimer_.get());
+  }
+
   return result;
 }
 
@@ -1932,6 +2002,12 @@ bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
   // never fully dismissed.
   if (widget == capture_toast_controller_.capture_toast_widget())
     return !!capture_toast_controller_.current_toast_type();
+
+  // If `widget` is the `feedback_button_widget_` and it should be hidden, then
+  // return false.
+  if (ShouldHideFeedbackWidget(widget)) {
+    return false;
+  }
 
   // If widget is the capture label widget, we will show it only if it doesn't
   // intersect with the settings widget.
@@ -2060,6 +2136,15 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
     return;
   }
 
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    // Draw a glow effect around the capture region if needed. Note that this
+    // needs to be drawn before the transparent region and region border are
+    // drawn, since the glow should not cover those parts of the UI.
+    capture_region_overlay_controller_->PaintCurrentGlowState(*canvas, region,
+                                                              color_provider);
+  }
+
   region.Inset(-capture_mode::kCaptureRegionBorderStrokePx);
   canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
 
@@ -2161,7 +2246,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   }
 
   // If disclaimer dialog is visible, block all actions.
-  if (controller_->disclaimer_widget()) {
+  if (disclaimer_) {
     // TODO(b/367882127): See if we can never create a cursor_setter_ instead of
     // having to reset it.
     if (cursor_setter_) {
@@ -2643,6 +2728,11 @@ void CaptureModeSession::UpdateCaptureRegion(
   const gfx::Rect old_capture_region = controller_->user_capture_region();
   if (old_capture_region == new_capture_region)
     return;
+
+  // TODO(crbug.com/374381937): The glow animation should also be removed in
+  // other situations where Scanner processing becomes invalid, e.g. alongside
+  // `InvalidateImageSearchTokens()`.
+  MaybeRemoveGlowAnimation();
 
   // Calculate the region that has been damaged and repaint the layer. Add some
   // extra padding to make sure the border and affordance circles are also
@@ -3138,7 +3228,6 @@ void CaptureModeSession::SetRecordingTypeMenuShown(bool shown,
   }
 
   if (!recording_type_menu_widget_) {
-    DCHECK(features::IsGifRecordingEnabled());
     DCHECK(capture_label_widget_);
     DCHECK(capture_label_widget_->IsVisible());
 
@@ -3367,6 +3456,19 @@ void CaptureModeSession::ShowFeedbackPage() {
   // preventing the user from interacting with the dialog, so we need to stop
   // the session. `this` is destroyed here.
   controller_->Stop();
+}
+
+void CaptureModeSession::MaybeRemoveGlowAnimation() {
+  if (capture_region_overlay_controller_) {
+    capture_region_overlay_controller_->RemoveGlowAnimation();
+    // Schedule repaint to remove glow.
+    RefreshGlowRegion();
+  }
+}
+
+void CaptureModeSession::RefreshGlowRegion() {
+  CaptureRegionOverlayController::SchedulePaintForGlow(
+      layer(), controller_->user_capture_region());
 }
 
 void CaptureModeSession::InitInternal() {

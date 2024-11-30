@@ -26,8 +26,8 @@
 
 namespace send_tab_to_self {
 
-ReceivingUiHandlerRegistry::ReceivingUiHandlerRegistry() {}
-ReceivingUiHandlerRegistry::~ReceivingUiHandlerRegistry() {}
+ReceivingUiHandlerRegistry::ReceivingUiHandlerRegistry() = default;
+ReceivingUiHandlerRegistry::~ReceivingUiHandlerRegistry() = default;
 
 // static
 ReceivingUiHandlerRegistry* ReceivingUiHandlerRegistry::GetInstance() {

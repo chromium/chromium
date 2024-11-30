@@ -262,7 +262,11 @@ class BottomControlsMediator
     }
 
     private void setYOffset(int yOffset) {
-        mModel.set(BottomControlsProperties.Y_OFFSET, yOffset);
+        // TODO(peilinwang) refactor and move this check to the BottomControlsStacker, since all
+        // BottomControlLayers will be checking this.
+        if (!mBottomControlsStacker.isMoveableByViz()) {
+            mModel.set(BottomControlsProperties.Y_OFFSET, yOffset);
+        }
 
         // This call also updates the view's position if the animation has just finished.
         updateAndroidViewVisibility();

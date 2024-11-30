@@ -41,7 +41,6 @@
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -125,6 +124,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -280,7 +280,6 @@
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
-#include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #endif
@@ -510,13 +509,13 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 131},
        {IDC_CONTENT_CONTEXT_COPYVIDEOFRAME, 132},
        {IDC_CONTENT_CONTEXT_SAVEPLUGINAS, 133},
-       {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS, 134},
+       // Removed: {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS, 134},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 135},
        // Removed: {IDC_CONTENT_CONTEXT_ORCA, 136},
        // Removed: {IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION, 137},
        {IDC_CONTENT_PASTE_FROM_CLIPBOARD, 138},
        {IDC_CONTEXT_COMPOSE, 139},
-       {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS, 140},
+       // Removed: {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS, 140},
        {IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS, 141},
        {IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME, 142},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME, 143},
@@ -645,6 +644,38 @@ bool IsCommandForOpenLink(int id) {
          id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD ||
          (id >= IDC_OPEN_LINK_IN_PROFILE_FIRST &&
           id <= IDC_OPEN_LINK_IN_PROFILE_LAST);
+}
+
+// Returns true if the command makes a network request.
+bool IsCommandForNetworkRequest(int id) {
+  // Common open link commands.
+  if (IsCommandForOpenLink(id)) {
+    return true;
+  }
+
+  // Open link commands that appear in certain scenarios.
+  if (id == IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP ||
+      id == IDC_CONTENT_CONTEXT_OPENLINKINPROFILE ||
+      id == IDC_CONTENT_CONTEXT_GOTOURL ||
+      id == IDC_CONTENT_CONTEXT_OPENLINKWITH) {
+    return true;
+  }
+
+  // Link preview feature.
+  if (id == IDC_CONTENT_CONTEXT_OPENLINKPREVIEW) {
+    return true;
+  }
+
+  // Download commands.
+  if (id == IDC_CONTENT_CONTEXT_SAVELINKAS ||
+      id == IDC_CONTENT_CONTEXT_SAVEIMAGEAS ||
+      id == IDC_CONTENT_CONTEXT_SAVEAVAS ||
+      id == IDC_CONTENT_CONTEXT_SAVEPLUGINAS ||
+      id == IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS) {
+    return true;
+  }
+
+  return false;
 }
 
 // Returns the preference of the profile represented by the |context|.
@@ -885,11 +916,7 @@ RenderViewContextMenu::RenderViewContextMenu(
           ProtocolHandlerRegistryFactory::GetForBrowserContext(GetProfile())),
       accessibility_labels_submenu_model_(this),
       embedder_web_contents_(GetWebContentsToUse(&render_frame_host)),
-      autofill_context_menu_manager_(
-          autofill::PersonalDataManagerFactory::GetForBrowserContext(
-              GetProfile()),
-          this,
-          &menu_model_) {
+      autofill_context_menu_manager_(this, &menu_model_) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -2148,7 +2175,8 @@ void RenderViewContextMenu::AppendVideoItems() {
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
     const int search_for_video_frame_idc = GetSearchForVideoFrameIdc();
 
-    if (GetBrowser() && GetBrowser()
+    if (GetBrowser() &&
+        GetBrowser()
             ->GetFeatures()
             .lens_overlay_entry_point_controller()
             ->IsEnabled() &&
@@ -2751,11 +2779,7 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
   const TemplateURL* provider = GetImageSearchProvider();
   if (provider) {
     const int region_search_idc = GetRegionSearchIdc();
-    int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
-    if (lens::features::IsLensFullscreenSearchEnabled()) {
-      // Default text for fullscreen search when enabled.
-      resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
-    }
+    const int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
     menu_model_.AddItem(region_search_idc,
                         l10n_util::GetStringFUTF16(
                             resource_id, GetImageSearchProviderName(provider)));
@@ -2790,6 +2814,11 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   // NOTE: If new commands are being added, please disable them by default and
   // notify the ChromeOS team by filing a bug under this component --
   // b/?q=componentid:1389107.
+  //
+  // NOTE: If new commands that make network requests are being added, add them
+  // to `IsCommandForNetworkRequest()` so that they are subject to the fenced
+  // frame untrusted network status check. See comments on
+  // `content::RenderFrameHost::IsUntrustedNetworkDisabled()`.
   Browser* const browser = GetBrowser();
   if (browser && platform_util::IsBrowserLockedFullscreen(browser)) {
     bool should_disable_command_for_locked_fullscreen = true;
@@ -2812,6 +2841,12 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     if (RenderViewContextMenuBase::IsCommandIdKnown(id, &enabled)) {
       return enabled;
     }
+  }
+
+  // If the command makes network requests and the frame does not have untrusted
+  // network access, the command is disabled.
+  if (IsCommandForNetworkRequest(id) && !IsAllowedByUntrustedNetworkStatus()) {
+    return false;
   }
 
   CoreTabHelper* core_tab_helper =
@@ -2849,7 +2884,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
   if (id >= IDC_OPEN_LINK_IN_PROFILE_FIRST &&
       id <= IDC_OPEN_LINK_IN_PROFILE_LAST) {
-    return params_.link_url.is_valid() && IsAllowedByUntrustedNetworkStatus();
+    return params_.link_url.is_valid();
   }
 
   // On ChromeOS a dedicated OTR profile is used for captive portal signin to
@@ -2898,8 +2933,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
     case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
       return navigation_allowed && params_.link_url.is_valid() &&
-             IsOpenLinkAllowedByDlp(params_.link_url) &&
-             IsAllowedByUntrustedNetworkStatus();
+             IsOpenLinkAllowedByDlp(params_.link_url);
 
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
       return params_.unfiltered_link_url.is_valid();
@@ -3004,8 +3038,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD:
       return navigation_allowed &&
-             IsOpenLinkOTREnabled(GetProfile(), params_.link_url) &&
-             IsAllowedByUntrustedNetworkStatus();
+             IsOpenLinkOTREnabled(GetProfile(), params_.link_url);
 
     case IDC_PRINT:
       return IsPrintPreviewEnabled();
@@ -3017,8 +3050,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_GOTOURL:
       return navigation_allowed &&
-             IsOpenLinkAllowedByDlp(selection_navigation_url_) &&
-             IsAllowedByUntrustedNetworkStatus();
+             IsOpenLinkAllowedByDlp(selection_navigation_url_);
 
     case IDC_SPELLPANEL_TOGGLE:
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:
@@ -3047,13 +3079,11 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 #endif
 
     case IDC_SPELLCHECK_MENU:
+    case IDC_CONTENT_CONTEXT_OPENLINKWITH:
     case IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_SETTINGS:
     case IDC_CONTENT_CONTEXT_GENERATEPASSWORD:
     case IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS:
       return true;
-
-    case IDC_CONTENT_CONTEXT_OPENLINKWITH:
-      return IsAllowedByUntrustedNetworkStatus();
 
     case IDC_ROUTE_MEDIA:
       return IsRouteMediaEnabled();
@@ -3691,8 +3721,8 @@ bool RenderViewContextMenu::IsAllowedByUntrustedNetworkStatus() const {
     return true;
   }
 
-  // Download requests are not allowed in a frame tree that has untrusted
-  // network access disabled.
+  // Network requests are not allowed in a frame tree that has untrusted network
+  // access disabled.
   return !GetRenderFrameHost()->IsUntrustedNetworkDisabled();
 }
 
@@ -3765,10 +3795,6 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
     return false;
   }
 
-  if (!IsAllowedByUntrustedNetworkStatus()) {
-    return false;
-  }
-
   Profile* const profile = Profile::FromBrowserContext(browser_context_);
   CHECK(profile);
   if (profile->IsChild()) {
@@ -3796,20 +3822,12 @@ bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
     return false;
   }
 
-  if (!IsAllowedByUntrustedNetworkStatus()) {
-    return false;
-  }
-
   return params_.has_image_contents;
 }
 
 bool RenderViewContextMenu::IsSaveAsEnabled() const {
   const GURL& url = params_.src_url;
   if (!IsSaveAsItemAllowedByPolicy(url)) {
-    return false;
-  }
-
-  if (!IsAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 
@@ -3960,11 +3978,6 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 }
 
 bool RenderViewContextMenu::IsVideoFrameItemEnabled(int id) const {
-  if (id == IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS &&
-      !IsAllowedByUntrustedNetworkStatus()) {
-    return false;
-  }
-
   return (params_.media_flags & ContextMenuData::kMediaEncrypted) == 0 &&
          (params_.media_flags & ContextMenuData::kMediaHasReadableVideoFrame) !=
              0;
@@ -4382,10 +4395,7 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags,
   } else {
     // When the Lens image search feature is entered via the context menu
     // with a Keyboard action, use the Lens region search flow through
-    // core_tab_helper (with results forced into a new tab) instead of the
-    // Lens Overlay flow.
-    bool force_open_in_new_tab =
-        lens_overlay_for_image_search_enabled && entered_through_keyboard;
+    // core_tab_helper instead of the Lens Overlay flow.
     lens::RecordAmbientSearchQuery(
         lens_overlay_for_image_search_enabled
             ? lens::AmbientSearchEntryPoint::
@@ -4399,7 +4409,7 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags,
                   CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM
             : lens::EntryPoint::
                   CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
-        is_image_translate, force_open_in_new_tab);
+        is_image_translate);
   }
 }
 
@@ -4457,19 +4467,11 @@ void RenderViewContextMenu::ExecRegionSearch(
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (lens::features::IsLensRegionSearchStaticPageEnabled()) {
-    lens::OpenLensStaticPage(browser);
-    return;
-  }
-
   // If Lens fullscreen search is enabled, we want to send every region search
   // as a fullscreen capture.
   // TODO(crbug/353984457): Clean this branching when the new server
   // results flow is ready.
-  bool use_fullscreen_capture = entered_through_keyboard ||
-                                lens::features::IsLensFullscreenSearchEnabled();
-  bool force_open_in_new_tab =
-      lens_overlay_for_region_search_enabled && entered_through_keyboard;
+  const bool use_fullscreen_capture = entered_through_keyboard;
 
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
@@ -4484,7 +4486,7 @@ void RenderViewContextMenu::ExecRegionSearch(
                 CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS
           : lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_REGION_WITH_WEB;
   lens_region_search_controller_->Start(
-      embedder_web_contents_, use_fullscreen_capture, force_open_in_new_tab,
+      embedder_web_contents_, use_fullscreen_capture,
       is_google_default_search_provider, entry_point);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
@@ -4731,40 +4733,30 @@ void RenderViewContextMenu::SearchForVideoFrame(
           .lens_overlay_entry_point_controller()
           ->IsEnabled() &&
       lens::features::UseLensOverlayForVideoFrameSearch() && is_lens_query;
-  bool entered_through_keyboard =
-      IsLensOptionEnteredThroughKeyboard(event_flags);
-  bool force_open_in_new_tab = false;
   // TODO(crbug/353984457): Clean this branching when the new server
   // results flow is ready.
   if (lens_overlay_for_video_search_enabled) {
-    if (entered_through_keyboard) {
-      // Using the keyboard to invoke this entry point should use the
-      // Lens region search flow through core_tab_helper (with results forced
-      // into a new tab) instead of the Lens Overlay flow.
-      force_open_in_new_tab = true;
-    } else {
-      RenderFrameHost* render_frame_host = GetRenderFrameHost();
-      if (!render_frame_host) {
-        return;
-      }
-
-      auto tab_bounds = source_web_contents_->GetViewBounds();
-      auto view_bounds = render_frame_host->GetView()->GetViewBounds();
-      float device_scale_factor =
-          render_frame_host->GetView()->GetDeviceScaleFactor();
-
-      RecordAmbientSearchQuery(
-          lens::AmbientSearchEntryPoint::
-              CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_LENS_OVERLAY);
-
-      // OpenLensOverlayWithPreselectedRegion() only takes a `ChromeRenderFrame`
-      // to keep it alive while the mojo calls run, which is not needed here.
-      OpenLensOverlayWithPreselectedRegion(
-          /*chrome_render_frame=*/mojo::AssociatedRemote<
-              chrome::mojom::ChromeRenderFrame>(),
-          tab_bounds, view_bounds, device_scale_factor, bitmap, region_bounds);
+    RenderFrameHost* render_frame_host = GetRenderFrameHost();
+    if (!render_frame_host) {
       return;
     }
+
+    auto tab_bounds = source_web_contents_->GetViewBounds();
+    auto view_bounds = render_frame_host->GetView()->GetViewBounds();
+    float device_scale_factor =
+        render_frame_host->GetView()->GetDeviceScaleFactor();
+
+    RecordAmbientSearchQuery(
+        lens::AmbientSearchEntryPoint::
+            CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_LENS_OVERLAY);
+
+    // OpenLensOverlayWithPreselectedRegion() only takes a `ChromeRenderFrame`
+    // to keep it alive while the mojo calls run, which is not needed here.
+    OpenLensOverlayWithPreselectedRegion(
+        /*chrome_render_frame=*/mojo::AssociatedRemote<
+            chrome::mojom::ChromeRenderFrame>(),
+        tab_bounds, view_bounds, device_scale_factor, bitmap, region_bounds);
+    return;
   }
 
   // If not using Lens overlay for video frame search, fallback to use
@@ -4786,8 +4778,7 @@ void RenderViewContextMenu::SearchForVideoFrame(
             : lens::AmbientSearchEntryPoint::
                   CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_GOOGLE_LENS);
     core_tab_helper->SearchWithLens(
-        image, lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM,
-        force_open_in_new_tab);
+        image, lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM);
   } else {
     RecordAmbientSearchQuery(lens::AmbientSearchEntryPoint::
                                  CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_WEB);
@@ -4867,18 +4858,14 @@ void RenderViewContextMenu::MaybePrepareForLensQuery() {
     return;
   }
 
-  // Lens Side Panel preparation
-  if (lens::features::IsLensSidePanelEnabled()) {
-    if (lens::features::GetShouldIssuePreconnectForLens()) {
-      IssuePreconnectionToUrl(lens::features::GetPreconnectKeyForLens(),
-                              lens::features::GetHomepageURLForLens());
-    }
-    if (lens::features::GetShouldIssueProcessPrewarmingForLens() &&
-        !base::SysInfo::IsLowEndDevice()) {
-      content::SpareRenderProcessHostManager::Get().WarmupSpare(
-          browser_context_);
-    }
-    return;
+  // Lens preparation
+  if (lens::features::GetShouldIssuePreconnectForLens()) {
+    IssuePreconnectionToUrl(lens::features::GetPreconnectKeyForLens(),
+                            lens::features::GetHomepageURLForLens());
+  }
+  if (lens::features::GetShouldIssueProcessPrewarmingForLens() &&
+      !base::SysInfo::IsLowEndDevice()) {
+    content::SpareRenderProcessHostManager::Get().WarmupSpare(browser_context_);
   }
 }
 

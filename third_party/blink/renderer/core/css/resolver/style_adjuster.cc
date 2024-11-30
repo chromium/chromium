@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -670,12 +669,25 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 // g-issues.chromium.org/issues/349835587
 // https://github.com/WICG/canvas-place-element
 static bool IsCanvasPlacedElement(const Element* element) {
-  if (RuntimeEnabledFeatures::CanvasPlaceElementEnabled() && element) {
-    // Only want to do the different layout if placeElement has been called.
+  if (RuntimeEnabledFeatures::CanvasPlaceElementEnabled() && element &&
+      element->IsInCanvasSubtree()) {
+    // Placed elements are always immediate children of the canvas.
     if (const auto* canvas =
             DynamicTo<HTMLCanvasElement>(element->parentElement())) {
       return canvas->HasPlacedElements();
     }
+  }
+
+  return false;
+}
+
+static bool IsCanvasWithPlacedElements(const Element* element) {
+  if (!RuntimeEnabledFeatures::CanvasPlaceElementEnabled() || !element) {
+    return false;
+  }
+
+  if (const auto* canvas = DynamicTo<HTMLCanvasElement>(element)) {
+    return canvas->HasPlacedElements();
   }
 
   return false;
@@ -728,6 +740,10 @@ void StyleAdjuster::AdjustStyleForDisplay(
       builder.SetIsInInlinifyingDisplay();
       builder.SetDisplay(EquivalentInlineDisplay(builder.Display()));
     }
+  }
+
+  if (builder.StyleType() == kPseudoIdScrollMarkerGroup) {
+    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
   }
 
   if (builder.Display() == EDisplay::kBlock) {
@@ -1115,7 +1131,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.Overlay() == EOverlay::kAuto ||
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
-      IsCanvasPlacedElement(element)) {
+      IsCanvasPlacedElement(element) || IsCanvasWithPlacedElements(element)) {
     builder.SetForcesStackingContext(true);
   }
 
@@ -1231,9 +1247,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetElementIsViewTransitionParticipant();
   }
 
-  if (RuntimeEnabledFeatures::
-          CSSContentVisibilityImpliesContainIntrinsicSizeAutoEnabled() &&
-      builder.ContentVisibility() == EContentVisibility::kAuto) {
+  if (builder.ContentVisibility() == EContentVisibility::kAuto) {
     builder.SetContainIntrinsicSizeAuto();
   }
 }

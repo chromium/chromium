@@ -49,7 +49,6 @@ class MockStreamFactory : public audio::FakeStreamFactory {
        const media::AudioParameters& params,
        uint32_t shared_memory_count,
        bool enable_agc,
-       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
        media::mojom::AudioProcessingConfigPtr processing_config,
        CreateInputStreamCallback callback),
       (override));
@@ -184,12 +183,11 @@ class AssistantAudioInputControllerTest : public testing::TestWithParam<bool> {
 
   bool HasCreateInputStreamCalled(MockStreamFactory* mock_stream_factory) {
     EXPECT_CALL(*mock_stream_factory,
-                CreateInputStream(_, _, _, _, _, _, _, _, _, _, _))
+                CreateInputStream(_, _, _, _, _, _, _, _, _, _))
         .WillOnce(testing::Invoke(
             [](testing::Unused, testing::Unused, testing::Unused,
                testing::Unused, testing::Unused, testing::Unused,
                testing::Unused, testing::Unused, testing::Unused,
-               testing::Unused,
                media::mojom::AudioStreamFactory::CreateInputStreamCallback
                    callback) {
               // Invoke the callback as it becomes error if the callback never
@@ -528,7 +526,7 @@ TEST_P(AssistantAudioInputControllerTest, DSPTrigger) {
 
   // Until the conversation ends, no new input stream should be created.
   EXPECT_CALL(mock_stream_factory,
-              CreateInputStream(_, _, _, _, _, _, _, _, _, _, _))
+              CreateInputStream(_, _, _, _, _, _, _, _, _, _))
       .Times(0);
 
   // Simulate DSP hotword activation. When DSP detects a hotword, it starts

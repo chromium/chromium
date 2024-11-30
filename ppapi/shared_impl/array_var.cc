@@ -6,8 +6,8 @@
 
 #include <limits>
 
-#include "base/check.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
 #include "ppapi/shared_impl/var_tracker.h"
 
@@ -60,8 +60,7 @@ PP_Bool ArrayVar::Set(uint32_t index, const PP_Var& value) {
 
 uint32_t ArrayVar::GetLength() const {
   if (elements_.size() > std::numeric_limits<uint32_t>::max()) {
-    CHECK(false);
-    return 0;
+    NOTREACHED();
   }
 
   return static_cast<uint32_t>(elements_.size());

@@ -55,7 +55,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -188,7 +188,7 @@ class LocalCardMigrationBrowserTest
         features::kAutofillEnableNewCardArtAndNetworkImages);
   }
 
-  ~LocalCardMigrationBrowserTest() override {}
+  ~LocalCardMigrationBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();

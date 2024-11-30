@@ -38,6 +38,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/android/component_loader_policy.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_utils.h"
@@ -289,7 +290,8 @@ void AwComponentUpdateService::UpdateMetadataFiles(
         cps_component_base_path.AppendASCII(highest_sequence_number_dir);
 
     base::Value::Dict metadata_file_contents;
-    metadata_file_contents.Set(component_id, GetCohortId(component_id));
+    metadata_file_contents.Set(component_updater::kMetadataFileCohortIdKey,
+                               GetCohortId(component_id));
     std::string metadata_file_contents_json;
     JSONStringValueSerializer serializer(&metadata_file_contents_json);
     if (!serializer.Serialize(metadata_file_contents)) {

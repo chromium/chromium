@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -28,7 +29,7 @@ void ShowMv2DeprecationReEnableDialog(
       ui::DialogModel::Builder()
           .SetTitle(l10n_util::GetStringFUTF16(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_REENABLE_DIALOG_TITLE,
-              base::UTF8ToUTF16(extension_name)))
+              util::GetFixupExtensionNameForUIDisplay(extension_name)))
           .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_DESCRIPTION)))
           .AddOkButton(

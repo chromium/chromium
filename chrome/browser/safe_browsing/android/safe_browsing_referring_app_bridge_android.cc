@@ -16,8 +16,7 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ScopedJavaLocalRef;
-using ReferringAppSource = safe_browsing::LoginReputationClientRequest::
-    ReferringAppInfo::ReferringAppSource;
+using ReferringAppSource = safe_browsing::ReferringAppInfo::ReferringAppSource;
 
 namespace {
 ReferringAppSource IntToReferringAppSource(int source) {
@@ -27,14 +26,14 @@ ReferringAppSource IntToReferringAppSource(int source) {
 
 namespace safe_browsing {
 
-ReferringAppInfo GetReferringAppInfo(content::WebContents* web_contents) {
+internal::ReferringAppInfo GetReferringAppInfo(
+    content::WebContents* web_contents) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
 
   if (!window_android) {
-    return ReferringAppInfo{LoginReputationClientRequest::ReferringAppInfo::
-                                REFERRING_APP_SOURCE_UNSPECIFIED,
-                            "", GURL()};
+    return internal::ReferringAppInfo{
+        ReferringAppInfo::REFERRING_APP_SOURCE_UNSPECIFIED, "", GURL()};
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -50,7 +49,7 @@ ReferringAppInfo GetReferringAppInfo(content::WebContents* web_contents) {
       ConvertJavaStringToUTF8(Java_ReferringAppInfo_getTargetUrl(env, j_info)));
   base::UmaHistogramTimes("SafeBrowsing.GetReferringAppInfo.Duration",
                           base::TimeTicks::Now() - start_time);
-  return ReferringAppInfo{source, name, url};
+  return internal::ReferringAppInfo{source, name, url};
 }
 
 }  // namespace safe_browsing

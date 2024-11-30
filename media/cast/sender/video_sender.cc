@@ -365,11 +365,9 @@ void VideoSender::OnEncodedVideoFrame(
     // utilization is atypical compared to the other frames in the stream, and
     // this can misguide the producer of the input video frames.
     VideoCaptureFeedback feedback;
-    feedback.resource_utilization =
-        encoded_frame->dependency ==
-                openscreen::cast::EncodedFrame::Dependency::kKeyFrame
-            ? std::min(1.0, attenuated_utilization)
-            : attenuated_utilization;
+    feedback.resource_utilization = encoded_frame->is_key_frame
+                                        ? std::min(1.0, attenuated_utilization)
+                                        : attenuated_utilization;
     if (feedback_cb_)
       feedback_cb_.Run(feedback);
   }

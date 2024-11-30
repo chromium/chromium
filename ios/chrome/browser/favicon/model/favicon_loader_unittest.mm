@@ -67,9 +67,8 @@ class FakeLargeIconService : public favicon::LargeIconServiceImpl {
       favicon_base::LargeIconResult result(bitmapResult);
       std::move(callback).Run(result);
     } else {
-      favicon_base::FallbackIconStyle* fallback =
-          new favicon_base::FallbackIconStyle();
-      favicon_base::LargeIconResult result(fallback);
+      auto fallback = std::make_unique<favicon_base::FallbackIconStyle>();
+      favicon_base::LargeIconResult result(std::move(fallback));
       fallback = NULL;
       std::move(callback).Run(result);
     }

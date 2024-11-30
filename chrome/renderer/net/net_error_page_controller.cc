@@ -15,8 +15,8 @@
 gin::WrapperInfo NetErrorPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
-NetErrorPageController::Delegate::Delegate() {}
-NetErrorPageController::Delegate::~Delegate() {}
+NetErrorPageController::Delegate::Delegate() = default;
+NetErrorPageController::Delegate::~Delegate() = default;
 
 // static
 void NetErrorPageController::Install(content::RenderFrame* render_frame,
@@ -88,20 +88,6 @@ bool NetErrorPageController::ButtonClick(NetErrorHelperCore::Button button) {
   return true;
 }
 
-void NetErrorPageController::LaunchOfflineItem(gin::Arguments* args) {
-  if (!delegate_)
-    return;
-  std::string id;
-  std::string name_space;
-  if (args->GetNext(&id) && args->GetNext(&name_space))
-    delegate_->LaunchOfflineItem(id, name_space);
-}
-
-void NetErrorPageController::LaunchDownloadsPage() {
-  if (delegate_)
-    delegate_->LaunchDownloadsPage();
-}
-
 void NetErrorPageController::SavePageForLater() {
   if (delegate_)
     delegate_->SavePageForLater();
@@ -112,16 +98,11 @@ void NetErrorPageController::CancelSavePage() {
     delegate_->CancelSavePage();
 }
 
-void NetErrorPageController::ListVisibilityChanged(bool is_visible) {
-  if (delegate_)
-    delegate_->ListVisibilityChanged(is_visible);
-}
-
 NetErrorPageController::NetErrorPageController(base::WeakPtr<Delegate> delegate)
     : delegate_(delegate) {
 }
 
-NetErrorPageController::~NetErrorPageController() {}
+NetErrorPageController::~NetErrorPageController() = default;
 
 gin::ObjectTemplateBuilder NetErrorPageController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
@@ -142,12 +123,6 @@ gin::ObjectTemplateBuilder NetErrorPageController::GetObjectTemplateBuilder(
                  &NetErrorPageController::UpdateEasterEggHighScore)
       .SetMethod("resetEasterEggHighScore",
                  &NetErrorPageController::ResetEasterEggHighScore)
-      .SetMethod("launchOfflineItem",
-                 &NetErrorPageController::LaunchOfflineItem)
-      .SetMethod("launchDownloadsPage",
-                 &NetErrorPageController::LaunchDownloadsPage)
       .SetMethod("savePageForLater", &NetErrorPageController::SavePageForLater)
-      .SetMethod("cancelSavePage", &NetErrorPageController::CancelSavePage)
-      .SetMethod("listVisibilityChanged",
-                 &NetErrorPageController::ListVisibilityChanged);
+      .SetMethod("cancelSavePage", &NetErrorPageController::CancelSavePage);
 }

@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.GeolocationImpl.ClientId"
-    enum="GeolocationClientId" expires_after="2025-03-23">
+    enum="GeolocationClientId" expires_after="2025-05-25">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Geolocation.IOS.ChangedAuthorizationState"
     enum="GeolocationIOSAuthorizationStatus" expires_after="2025-05-27">
-  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Geolocation.IOS.InitialAuthorizationState"
     enum="GeolocationIOSAuthorizationStatus" expires_after="2025-05-27">
-  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>iOS location permission state, recorded at startup.</summary>
@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Result"
-    enum="NetworkLocationRequestResult" expires_after="2025-03-09">
+    enum="NetworkLocationRequestResult" expires_after="2025-05-18">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -310,7 +310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.PublicIpAddressGeolocator.ClientId"
-    enum="GeolocationClientId" expires_after="2025-03-23">
+    enum="GeolocationClientId" expires_after="2025-05-25">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>

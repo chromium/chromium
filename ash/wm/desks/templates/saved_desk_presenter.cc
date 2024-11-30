@@ -450,7 +450,7 @@ void SavedDeskPresenter::MaybeSaveActiveDeskAsSavedDesk(
       base::BindOnce(&SavedDeskPresenter::SaveOrUpdateSavedDesk,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*is_update=*/false, root_window_to_show),
-      template_type, root_window_to_show);
+      template_type, root_window_to_show, /*coral_app_id_allowlist=*/{});
 }
 
 void SavedDeskPresenter::SaveOrUpdateSavedDesk(

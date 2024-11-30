@@ -57,21 +57,13 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         mMainController = mainController;
         mRowView = rowView;
         mFullUrl = mainController.getURL().getSpec();
-        mTitle =
-                mRowView.getContext()
-                        .getString(
-                                delegate.shouldShowTrackingProtectionBrandedUi()
-                                        ? R.string.page_info_tracking_protection_title
-                                        : R.string.page_info_cookies_title);
+        mTitle = mRowView.getContext().getString(R.string.page_info_cookies_title);
         mBridge = delegate.createCookieControlsBridge(this);
 
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = delegate.isSiteSettingsAvailable();
         rowParams.title = mTitle;
-        rowParams.iconResId =
-                delegate.shouldShowTrackingProtectionBrandedUi()
-                        ? R.drawable.ic_eye_crossed
-                        : R.drawable.permission_cookie;
+        rowParams.iconResId = R.drawable.permission_cookie;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);

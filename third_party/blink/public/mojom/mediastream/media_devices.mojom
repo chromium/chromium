@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "media/capture/mojom/video_capture_types.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/media/capture_handle_config.mojom";
 
@@ -164,6 +165,9 @@ interface MediaDevicesDispatcherHost {
   [EnableIfNot=is_android|is_ios]
   ProduceSubCaptureTargetId(media.mojom.SubCaptureTargetType type)
       => (string id);
+
+  // Sets preferred audio output sink id for the top frame and its subframes.
+  SetPreferredSinkId(string sink_id) => (media.mojom.OutputDeviceStatus status);
 
   // SelectAudioOutput prompts the user to select an audio
   // output device, returning information about the chosen device.

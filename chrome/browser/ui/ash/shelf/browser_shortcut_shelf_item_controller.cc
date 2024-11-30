@@ -97,7 +97,6 @@ BrowserShortcutShelfItemController::~BrowserShortcutShelfItemController() {
 // triggered when Ash is the Chrome browser and when the browser icon on the
 // shelf is clicked, or when the Alt+N accelerator is triggered for the
 // browser. For SWA and PWA please refer to AppShortcutShelfItemController.
-// For Lacros please refer to BrowserAppShelfItemController.
 void BrowserShortcutShelfItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,
     int64_t display_id,

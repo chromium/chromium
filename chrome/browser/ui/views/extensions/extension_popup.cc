@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
+#include "components/web_modal/web_modal_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -330,6 +331,12 @@ void ExtensionPopup::CloseUnlessBlockedByInspectionOrJSDialog() {
       javascript_dialogs::AppModalDialogQueue::GetInstance();
   CHECK(app_modal_queue);
   if (app_modal_queue->HasActiveDialog()) {
+    return;
+  }
+
+  // Don't close if a web modal dialog (e.g. webauthn security key dialog) is
+  // showing.
+  if (web_modal::WebContentsHasActiveWebModal(host_->host_contents())) {
     return;
   }
 

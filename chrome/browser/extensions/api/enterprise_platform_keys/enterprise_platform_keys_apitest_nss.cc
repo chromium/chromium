@@ -138,7 +138,7 @@ const unsigned char privateKeyPkcs8System[] = {
     0xd8, 0x71, 0x69, 0x5e, 0x8d, 0xb4, 0x48, 0x1c, 0xa4, 0x01, 0xce, 0xc1,
     0xb5, 0x6f, 0xe9, 0x1b, 0x32, 0x91, 0x34, 0x38};
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 base::FilePath GetExtensionDirName(ContextType context_type) {
   base::FilePath path =

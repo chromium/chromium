@@ -133,7 +133,7 @@ LanguageDetectionModel::LanguageDetectionModel()
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
 std::vector<Prediction> LanguageDetectionModel::Predict(
-    const std::u16string& contents,
+    std::u16string_view contents,
     bool truncate) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
@@ -178,6 +178,65 @@ std::vector<Prediction> LanguageDetectionModel::Predict(
     predictions.emplace_back(category.class_name, category.score);
   }
   return predictions;
+}
+
+std::vector<Prediction> LanguageDetectionModel::PredictWithScan(
+    std::u16string_view contents) const {
+  std::map<std::string, double> score_by_language;
+  size_t pos = 0;
+  size_t count = 0;
+  while (pos < contents.length()) {
+    std::u16string_view substring = contents.substr(pos, kScanWindowSize);
+    pos += kScanWindowSize;
+    count++;
+    auto predictions = Predict(substring);
+    for (const auto& prediction : predictions) {
+      score_by_language[prediction.language] += prediction.score;
+    }
+  }
+  std::vector<Prediction> predictions;
+  predictions.reserve(score_by_language.size());
+  for (const auto& it : score_by_language) {
+    predictions.emplace_back(it.first, it.second / count);
+  }
+  return predictions;
+}
+
+Prediction LanguageDetectionModel::DetectTopLanguage(
+    std::u16string_view sampled_str) const {
+  TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
+
+  std::vector<Prediction> predictions = Predict(sampled_str);
+  Prediction top_prediction = TopPrediction(predictions);
+  base::UmaHistogramSparse(
+      "LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage",
+      base::HashMetricName(top_prediction.language));
+  return top_prediction;
+}
+
+Prediction LanguageDetectionModel::PredictTopLanguageWithSamples(
+    std::u16string_view contents) const {
+  std::vector<Prediction> model_predictions;
+  // First evaluate the model on the entire contents based on the model's
+  // implementation, for v1 it is the first 128 tokens that are unicode
+  // "letters". We do not need to have the model's length in sync with
+  // the sampling logic for v1 as 128 tokens is unlikely to be changed.
+  model_predictions.emplace_back(DetectTopLanguage(contents));
+
+  if (contents.length() > kNumTextSamples * kTextSampleLength) {
+    // Strings with UTF-8 have different widths so substr should be performed on
+    // the UTF16 strings to ensure alignment and then convert down to UTF-8
+    // strings for model evaluation.
+    std::u16string_view sampled_str = contents.substr(
+        contents.length() - kTextSampleLength, kTextSampleLength);
+    // Evaluate on the last |kTextSampleLength| characters.
+    model_predictions.emplace_back(DetectTopLanguage(sampled_str));
+
+    // Sample and evaluate on the middle |kTextSampleLength| characters.
+    sampled_str = contents.substr(contents.length() / 2, kTextSampleLength);
+    model_predictions.emplace_back(DetectTopLanguage(sampled_str));
+  }
+  return *std::max_element(model_predictions.begin(), model_predictions.end());
 }
 
 void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
@@ -229,11 +288,17 @@ void LanguageDetectionModel::AddOnModelLoadedCallback(
 
 void LanguageDetectionModel::NotifyModelLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto&& callback_ : model_loaded_callbacks_) {
-    std::move(callback_).Run(*this);
+  std::vector<ModelLoadedCallback> model_loaded_callbacks;
+
+  // Since the callbacks could result in modification of
+  // `model_loaded_callbacks_`, it's not safe to iterate over the member.
+  // TODO(https://crbug.com/381461495): Post a task for each callback.
+  model_loaded_callbacks.swap(model_loaded_callbacks_);
+
+  for (auto&& callback : model_loaded_callbacks) {
+    std::move(callback).Run(*this);
   }
   loaded_ = true;
-  model_loaded_callbacks_.clear();
 }
 
 }  // namespace language_detection

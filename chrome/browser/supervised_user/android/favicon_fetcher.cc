@@ -26,7 +26,7 @@ FaviconFetcher::FaviconFetcher(
     raw_ptr<favicon::LargeIconService> large_icon_service)
     : large_icon_service_(large_icon_service) {}
 
-FaviconFetcher::~FaviconFetcher() {}
+FaviconFetcher::~FaviconFetcher() = default;
 
 void FaviconFetcher::Destroy() {
   delete this;

@@ -552,10 +552,7 @@ using HostedAppTest = HostedOrWebAppTest;
 // Tests that hosted apps are not web apps.
 IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
   SetupApp("app");
-  EXPECT_FALSE(registrar().IsInstallState(
-      app_id_, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id_));
   const Extension* app =
       ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(app_id_);
   EXPECT_TRUE(app->is_hosted_app());
@@ -619,17 +616,12 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering, EffectiveUrlOnTrigger) {
   // Start prerendering on the app's context. This should fail as the app's
   // context has the effective URL.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetAppWebContents()->StartPrerendering(
-          prerendering_url, content::PreloadingTriggerType::kEmbedder,
+      content::test::PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
+          *GetAppWebContents(), prerendering_url,
+          content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
-          /*no_vary_search_expected=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/false,
-          /*should_prepare_paint_tree=*/false,
-          content::PreloadingHoldbackStatus::kUnspecified,
-          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_FALSE(prerender_handle);
 
   histogram_tester().ExpectUniqueSample(
@@ -1491,10 +1483,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, MAYBE_FromOutsideHostedApp) {
 IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
                        AppRegistrarExcludesPackaged) {
   SetupApp("https_app");
-  EXPECT_FALSE(registrar().IsInstallState(
-      app_id_, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id_));
 }
 
 // Check that we can successfully complete a navigation to an app URL with a

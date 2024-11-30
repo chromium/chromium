@@ -608,6 +608,10 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
       if (features::IsSystemCursorSizeSupported()) {
         native_cursor_manager_->InitCursorSizeObserver(cursor_manager_);
       }
+#if BUILDFLAG(IS_WIN)
+      native_cursor_manager_->InitSystemCursorVisibilityObserver(
+          cursor_manager_);
+#endif
     }
     aura::client::SetCursorClient(host_->window(), cursor_manager_);
   }

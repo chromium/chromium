@@ -57,7 +57,7 @@ ui::mojom::BrowserColorVariant GetColorVariant(
 
 class BrowserFrameBoundsChecker : public ChromeViewsDelegate {
  public:
-  BrowserFrameBoundsChecker() {}
+  BrowserFrameBoundsChecker() = default;
 
   void OnBeforeWidgetInit(
       views::Widget::InitParams* params,

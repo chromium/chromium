@@ -12,6 +12,8 @@
 #include "media/gpu/v4l2/v4l2_status.h"
 #elif BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_status.h"
+#else
+#include "base/notreached.h"
 #endif
 
 // This file contains a variety of conservative compile-time assertions that
@@ -1044,8 +1046,11 @@ std::optional<media::internal::StatusData> StructTraits<
     // TODO(b/217970098): allow building the VaapiStatusTraits and
     // V4L2StatusTraits without USE_VAAPI/USE_V4L2_CODEC so these guards could
     // be removed.
-    CHECK(false);
+    NOTREACHED();
 #endif
+
+    // Only include this for non-NOTREACHED() cases to avoid dead-code warnings.
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
     // Let's translate anything other than a VA-API or V4L2 "ok" cause (i.e.,
     // all of them per the CHECK()s above) to
     // DecoderStatusTraits::Codes::kFailed.
@@ -1053,6 +1058,7 @@ std::optional<media::internal::StatusData> StructTraits<
         media::DecoderStatusTraits::Codes::kFailed);
     output_cause.group = std::string(media::DecoderStatusTraits::Group());
     return output_cause;
+#endif
   }
   return std::nullopt;
 }

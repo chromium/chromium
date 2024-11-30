@@ -202,7 +202,7 @@ class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
             std::move(receiver));
   }
 
-  void SetTestingCallback(input::PeakGpuMemoryTracker* tracker,
+  void SetTestingCallback(viz::PeakGpuMemoryTracker* tracker,
                           base::OnceClosure callback) {
     static_cast<PeakGpuMemoryTrackerImpl*>(tracker)
         ->post_gpu_service_callback_for_testing_ = std::move(callback);
@@ -272,9 +272,9 @@ class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(PeakGpuMemoryTrackerImplTest, PeakGpuMemoryCallback) {
   base::HistogramTester histogram;
   base::RunLoop run_loop;
-  std::unique_ptr<input::PeakGpuMemoryTracker> tracker =
+  std::unique_ptr<viz::PeakGpuMemoryTracker> tracker =
       PeakGpuMemoryTrackerFactory::Create(
-          input::PeakGpuMemoryTracker::Usage::PAGE_LOAD);
+          viz::PeakGpuMemoryTracker::Usage::PAGE_LOAD);
   SetTestingCallback(tracker.get(), run_loop.QuitClosure());
   FlushRemoteForTesting();
   // No report in response to creation.

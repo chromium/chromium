@@ -8,6 +8,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
@@ -41,6 +42,17 @@ bool UpdateField(std::string* field,
 template <typename T>
 bool UpdateField(T* field, T new_value, T default_value) {
   if (*field == new_value || new_value == default_value) {
+    return false;
+  }
+
+  *field = new_value;
+  return true;
+}
+
+// Updates |field| with |new_value| if non-empty. Returns whether |field| was
+// changed.
+bool UpdateField(GaiaId* field, const GaiaId& new_value) {
+  if (*field == new_value || new_value.empty()) {
     return false;
   }
 
@@ -118,7 +130,7 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
   }
 
   bool modified = false;
-  modified |= UpdateField(&gaia, other.gaia, nullptr);
+  modified |= UpdateField(&gaia, other.gaia);
   modified |= UpdateField(&email, other.email, nullptr);
   modified |= UpdateField(&full_name, other.full_name, nullptr);
   modified |= UpdateField(&given_name, other.given_name, nullptr);
@@ -191,16 +203,25 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
     JNIEnv* env,
     const AccountInfo& account_info) {
   CHECK(!account_info.IsEmpty());
-  gfx::Image avatar_image = account_info.account_image;
+  // Empty domain means that the management status is unknown, which is
+  // represented by `null` hostedDomain on the Java side.
+  base::android::ScopedJavaLocalRef<jstring> hosted_domain =
+      account_info.hosted_domain.empty()
+          ? nullptr
+          : base::android::ConvertUTF8ToJavaString(env,
+                                                   account_info.hosted_domain);
+  base::android::ScopedJavaLocalRef<jobject> account_image =
+      account_info.account_image.IsEmpty()
+          ? nullptr
+          : gfx::ConvertToJavaBitmap(
+                *account_info.account_image.AsImageSkia().bitmap());
   return signin::Java_AccountInfo_Constructor(
       env, ConvertToJavaCoreAccountId(env, account_info.account_id),
       base::android::ConvertUTF8ToJavaString(env, account_info.email),
       base::android::ConvertUTF8ToJavaString(env, account_info.gaia),
       base::android::ConvertUTF8ToJavaString(env, account_info.full_name),
       base::android::ConvertUTF8ToJavaString(env, account_info.given_name),
-      avatar_image.IsEmpty()
-          ? nullptr
-          : gfx::ConvertToJavaBitmap(*avatar_image.AsImageSkia().bitmap()),
+      hosted_domain, account_image,
       account_info.capabilities.ConvertToJavaAccountCapabilities(env));
 }
 

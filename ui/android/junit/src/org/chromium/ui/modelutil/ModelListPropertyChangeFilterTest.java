@@ -9,11 +9,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+
+import java.util.Set;
 
 /** Unit tests for {@link ModelListPropertyChangeFilter}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,7 +37,7 @@ public class ModelListPropertyChangeFilterTest {
 
         ModelListPropertyChangeFilter propertyObserverFilter =
                 new ModelListPropertyChangeFilter(
-                        this::onPropertyChange, modelList, CollectionUtil.newHashSet(PROPERTY_FOO));
+                        this::onPropertyChange, modelList, Set.of(PROPERTY_FOO));
         Assert.assertEquals(1, mCallbackCounter);
 
         propertyModel.set(PROPERTY_BAR, true);
@@ -59,7 +60,7 @@ public class ModelListPropertyChangeFilterTest {
         ModelList modelList = new ModelList();
         ModelListPropertyChangeFilter propertyObserverFilter =
                 new ModelListPropertyChangeFilter(
-                        this::onPropertyChange, modelList, CollectionUtil.newHashSet(PROPERTY_FOO));
+                        this::onPropertyChange, modelList, Set.of(PROPERTY_FOO));
         Assert.assertEquals(1, mCallbackCounter);
 
         PropertyModel propertyModel = new PropertyModel(PROPERTY_FOO, PROPERTY_BAR);
@@ -86,7 +87,7 @@ public class ModelListPropertyChangeFilterTest {
 
         ModelListPropertyChangeFilter propertyObserverFilter =
                 new ModelListPropertyChangeFilter(
-                        this::onPropertyChange, modelList, CollectionUtil.newHashSet(PROPERTY_FOO));
+                        this::onPropertyChange, modelList, Set.of(PROPERTY_FOO));
         Assert.assertEquals(1, mCallbackCounter);
 
         modelList.removeAt(0);

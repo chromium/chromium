@@ -176,7 +176,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // updated `FormData` objects where `element` exists as a `FormFieldData`.
   void UpdatePasswordStateForTextChange(
       const blink::WebInputElement& element,
-      base::optional_ref<FormData> extracted_form = std::nullopt);
+      OptionalForm extracted_form = std::nullopt);
 
   // Instructs `autofill_agent_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
@@ -246,10 +246,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // user has submitted the form, `input` will be null. `extracted_form`, if not
   // null, is the updated `FormData` objects where `input` exists as a
   // `FormFieldData`.
-  void InformBrowserAboutUserInput(
-      const blink::WebFormElement& form,
-      const blink::WebInputElement& input,
-      base::optional_ref<FormData> extracted_form = std::nullopt);
+  void InformBrowserAboutUserInput(const blink::WebFormElement& form,
+                                   const blink::WebInputElement& input,
+                                   OptionalForm extracted_form = std::nullopt);
 
   // Determine whether the current frame is allowed to access the password
   // manager. For example, frames with about:blank documents or documents with
@@ -477,11 +476,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Checks that a given input field is valid before filling the given `input`
   // with the given `credential` and marking the field as auto-filled.
-  // Uses `suggestion_source` to update the `FieldPropertiesMask` of filled
-  // field.
+  // Uses `flags` to set appropriate `FieldPropertiesMask` for a filled field.
   void DoFillField(blink::WebInputElement input,
                    const std::u16string& credential,
-                   AutofillSuggestionTriggerSource suggestion_source);
+                   FieldPropertiesFlags flags);
 
   // Given `username_element` and `password_element`, previews `username` and
   // `password` respectively into them.

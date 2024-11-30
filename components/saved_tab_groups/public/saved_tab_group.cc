@@ -214,7 +214,7 @@ SavedTabGroup& SavedTabGroup::SetPinned(bool pinned) {
 }
 
 SavedTabGroup& SavedTabGroup::SetCollaborationId(
-    std::optional<std::string> collaboration_id) {
+    std::optional<CollaborationId> collaboration_id) {
   collaboration_id_ = std::move(collaboration_id);
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
@@ -387,7 +387,7 @@ bool SavedTabGroup::IsSyncEquivalent(const SavedTabGroup& other) const {
 }
 
 SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
-    std::string collaboration_id) const {
+    CollaborationId collaboration_id) const {
   SavedTabGroup shared_group(title(), color(), /*urls=*/{});
   shared_group.SetCollaborationId(std::move(collaboration_id));
   shared_group.SetOriginatingSavedTabGroupGuid(saved_guid());

@@ -22,6 +22,10 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 class AccountSelectionModalView : public views::DialogDelegateView,
                                   public AccountSelectionViewBase {
   METADATA_HEADER(AccountSelectionModalView, views::DialogDelegateView)
@@ -40,8 +44,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       delete;
 
   // AccountSelectionViewBase:
-  void InitDialogWidget() override;
-
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
@@ -73,15 +75,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list) override;
 
-  void ShowLoadingDialog() override;
-
-  void CloseDialog() override;
-
-  void UpdateDialogPosition() override;
-
   std::string GetDialogTitle() const override;
-  void DidShowWidget() override;
-  void DidHideWidget() override;
 
   // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
@@ -160,6 +154,11 @@ class AccountSelectionModalView : public views::DialogDelegateView,
                                const content::IdentityProviderData& idp_data,
                                const ui::Event& event);
 
+  // Notifies the observer of the use other account button being clicked.
+  void OnUseOtherAccountButtonClicked(const GURL& idp_config_url,
+                                      const GURL& idp_login_url,
+                                      const ui::Event& event);
+
   // Updates the button to have a spinner appear in the middle of it.
   void ReplaceButtonWithSpinner(
       views::MdTextButton* button,
@@ -186,6 +185,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   // View containing the account chooser.
   raw_ptr<views::View> account_chooser_ = nullptr;
+
+  // View containing the view to focus on in the verifying sheet.
+  raw_ptr<views::View> verifying_focus_view_ = nullptr;
 
   // View containing the title.
   raw_ptr<views::Label> title_label_ = nullptr;
@@ -220,10 +222,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   // Whether the title has been announced for accessibility.
   bool has_announced_title_{false};
-
-  // Disable events when widget is showing.
-  std::optional<content::WebContents::ScopedIgnoreInputEvents>
-      scoped_ignore_input_events_;
 
   // The announcement that should be made upon view focus, if screen reader is
   // turned on.

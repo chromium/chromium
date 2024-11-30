@@ -64,6 +64,7 @@ source_set("browser") {
     "//content/test/fuzzer:ad_auction_service_mojolpm_fuzzer",
     "//content/test/fuzzer:browser_accessibility_fuzzer",
     "//content/test/fuzzer:clipboard_host_mojolpm_fuzzer",
+    "//content/test/fuzzer:cookie_readiness_list_parser_fuzzer",
     "//content/test/fuzzer:first_party_set_parser_fuzzer_support",
     "//content/test/fuzzer:indexed_db_fuzzer_support",
     "//content/test/fuzzer:media_stream_dispatcher_host_mojolpm_fuzzer",
@@ -254,6 +255,7 @@ source_set("browser") {
     "//services/viz/privileged/mojom",
     "//services/viz/public/cpp/gpu",
     "//services/viz/public/mojom",
+    "//services/webnn:buildflags",
     "//services/webnn:webnn_service",
     "//services/webnn:webnn_switches",
     "//services/webnn/public/mojom",
@@ -791,6 +793,12 @@ source_set("browser") {
     "content_index/content_index_service_impl.h",
     "cookie_deprecation_label/cookie_deprecation_label_manager_impl.cc",
     "cookie_deprecation_label/cookie_deprecation_label_manager_impl.h",
+    "cookie_insight_list/cookie_insight_list.cc",
+    "cookie_insight_list/cookie_insight_list.h",
+    "cookie_insight_list/cookie_insight_list_handler.cc",
+    "cookie_insight_list/cookie_insight_list_handler.h",
+    "cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser.cc",
+    "cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser.h",
     "cookie_store/cookie_change_subscription.cc",
     "cookie_store/cookie_change_subscription.h",
     "cookie_store/cookie_store_host.cc",
@@ -1044,10 +1052,14 @@ source_set("browser") {
     "file_system_access/file_system_access_lock_manager.h",
     "file_system_access/file_system_access_manager_impl.cc",
     "file_system_access/file_system_access_manager_impl.h",
+    "file_system_access/file_system_access_observation_group.cc",
+    "file_system_access/file_system_access_observation_group.h",
     "file_system_access/file_system_access_observer_host.cc",
     "file_system_access/file_system_access_observer_host.h",
     "file_system_access/file_system_access_observer_observation.cc",
     "file_system_access/file_system_access_observer_observation.h",
+    "file_system_access/file_system_access_observer_quota_manager.cc",
+    "file_system_access/file_system_access_observer_quota_manager.h",
     "file_system_access/file_system_access_safe_move_helper.cc",
     "file_system_access/file_system_access_safe_move_helper.h",
     "file_system_access/file_system_access_transfer_token_impl.cc",
@@ -2114,6 +2126,8 @@ source_set("browser") {
     "shared_storage/shared_storage_features.h",
     "shared_storage/shared_storage_header_observer.cc",
     "shared_storage/shared_storage_header_observer.h",
+    "shared_storage/shared_storage_lock_manager.cc",
+    "shared_storage/shared_storage_lock_manager.h",
     "shared_storage/shared_storage_render_thread_worklet_driver.cc",
     "shared_storage/shared_storage_render_thread_worklet_driver.h",
     "shared_storage/shared_storage_runtime_manager.cc",
@@ -2207,6 +2221,8 @@ source_set("browser") {
     "tracing/tracing_scenario.h",
     "tracing/tracing_service_controller.cc",
     "tracing/tracing_service_controller.h",
+    "tracing/triggers_data_source.cc",
+    "tracing/triggers_data_source.h",
     "ukm_internals_ui.cc",
     "ukm_internals_ui.h",
     "url_info.cc",
@@ -2482,7 +2498,6 @@ source_set("browser") {
     public_deps += [ "//components/services/font/public/mojom" ]
 
     deps += [
-      "//components/crash/content/browser/error_reporting",
       "//components/services/font:lib",
       "//content/common:sandbox_support_linux",
       "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings",
@@ -3245,6 +3260,8 @@ source_set("browser") {
       "renderer_host/delegated_frame_host_client_android.h",
       "renderer_host/input/fling_scheduler_android.cc",
       "renderer_host/input/fling_scheduler_android.h",
+      "renderer_host/input/input_transfer_handler_android.cc",
+      "renderer_host/input/input_transfer_handler_android.h",
       "renderer_host/input/synthetic_gesture_target_android.cc",
       "renderer_host/input/synthetic_gesture_target_android.h",
       "renderer_host/input/touch_selection_controller_client_manager_android.cc",
@@ -3399,7 +3416,10 @@ source_set("browser") {
         "speech/soda_speech_recognition_engine_impl.h",
       ]
 
-      deps += [ "//media/mojo/mojom:web_speech_recognition" ]
+      deps += [
+        "//components/crash/content/browser/error_reporting",
+        "//media/mojo/mojom:web_speech_recognition",
+      ]
     }
 
     deps += [
@@ -3427,7 +3447,10 @@ source_set("browser") {
       "tracing/trace_report/trace_report_internals_ui.h",
     ]
 
-    deps += [ "//content/browser/devtools:devtools_resources_extern" ]
+    deps += [
+      "//content/browser/devtools:devtools_resources",
+      "//content/browser/devtools:devtools_resources_extern",
+    ]
   }
 
   if (is_win) {

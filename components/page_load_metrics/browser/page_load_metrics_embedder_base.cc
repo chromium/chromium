@@ -69,4 +69,8 @@ std::unique_ptr<base::OneShotTimer> PageLoadMetricsEmbedderBase::CreateTimer() {
   return std::make_unique<base::OneShotTimer>();
 }
 
+bool PageLoadMetricsEmbedderBase::ShouldObserveScheme(std::string_view scheme) {
+  return false;
+}
+
 }  // namespace page_load_metrics

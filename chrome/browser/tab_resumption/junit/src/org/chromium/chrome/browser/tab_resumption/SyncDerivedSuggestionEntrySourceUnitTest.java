@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -42,6 +41,7 @@ import org.chromium.components.sync.UserSelectableType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for SyncDerivedSuggestionEntrySource. */
@@ -284,8 +284,7 @@ public class SyncDerivedSuggestionEntrySourceUnitTest extends TestSupport {
     private void createEntrySource(boolean isSignedIn, boolean isSynced, boolean servesLocalTabs) {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
         if (isSynced) {
-            when(mSyncService.getSelectedTypes())
-                    .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+            when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.TABS));
         } else {
             when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         }
@@ -319,8 +318,7 @@ public class SyncDerivedSuggestionEntrySourceUnitTest extends TestSupport {
 
     private void toggleIsSyncedThenNotify(boolean isSynced) {
         if (isSynced) {
-            when(mSyncService.getSelectedTypes())
-                    .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+            when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.TABS));
         } else {
             when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         }

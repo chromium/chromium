@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -44,7 +45,7 @@ class CHROME_DBUS_EXPORT ObjectProxy
   // Client code should use Bus::GetObjectProxy() or
   // Bus::GetObjectProxyWithOptions() instead of this constructor.
   ObjectProxy(Bus* bus,
-              const std::string& service_name,
+              std::string_view service_name,
               const ObjectPath& object_path,
               int options);
 

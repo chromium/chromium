@@ -30,13 +30,6 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
     // Button press notification from error page.
     virtual void ButtonPressed(NetErrorHelperCore::Button button) = 0;
 
-    // Called to open suggested offline content when it is pressed.
-    virtual void LaunchOfflineItem(const std::string& id,
-                                   const std::string& name_space) = 0;
-
-    // Called to show all available offline content.
-    virtual void LaunchDownloadsPage() = 0;
-
     // Schedules a request to save the page later. This is different from the
     // download button in that the page is only saved temporarily. This is used
     // only for the auto-fetch-on-net-error-page feature.
@@ -47,10 +40,6 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
     // error page. This is used only for the auto-fetch-on-net-error-page
     // feature.
     virtual void CancelSavePage() = 0;
-
-    // Called to signal the user tapped the button to change the visibility of
-    // the offline content list.
-    virtual void ListVisibilityChanged(bool is_visible) = 0;
 
     // Save a new high score for the easer egg game in the user's synced
     // preferences.
@@ -104,11 +93,8 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
   // Used internally by other button click methods.
   bool ButtonClick(NetErrorHelperCore::Button button);
 
-  void LaunchOfflineItem(gin::Arguments* args);
-  void LaunchDownloadsPage();
   void SavePageForLater();
   void CancelSavePage();
-  void ListVisibilityChanged(bool is_visible);
 
   // gin::WrappableBase
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(

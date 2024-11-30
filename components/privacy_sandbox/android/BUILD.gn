@@ -6,9 +6,9 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/privacy_sandbox/CustomTabs.java",
     "java/src/org/chromium/components/privacy_sandbox/FingerprintingProtectionSettingsFragment.java",
     "java/src/org/chromium/components/privacy_sandbox/IpProtectionSettingsFragment.java",
+    "java/src/org/chromium/components/privacy_sandbox/PrivacySandboxBaseFragment.java",
     "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionDelegate.java",
     "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettings.java",
     "java/src/org/chromium/components/privacy_sandbox/WebsiteExceptionRowPreference.java",
@@ -45,6 +45,7 @@ android_library("javatests") {
     "javatests/src/org/chromium/components/privacy_sandbox/FingerprintingProtectionSettingsFragmentTest.java",
     "javatests/src/org/chromium/components/privacy_sandbox/IpProtectionSettingsFragmentTest.java",
     "javatests/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettingsTest.java",
+    "javatests/src/org/chromium/components/privacy_sandbox/WebsiteExceptionRowPreferenceTest.java",
   ]
   deps = [
     ":java",
@@ -52,6 +53,9 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//components/browser_ui/settings/android:test_support_java",
     "//components/browser_ui/site_settings/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/core/common:content_settings_enums_java",
+    "//components/content_settings/core/common:content_settings_types_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
@@ -64,6 +68,7 @@ android_library("javatests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
 

@@ -58,6 +58,9 @@ class GraphTestHarnessWithMockDiscarder : public GraphTestHarness {
   void TearDown() override;
 
  protected:
+  // Deletes and recreates page/process/frame nodes.
+  void RecreateNodes();
+
   PageNodeImpl* page_node() { return page_node_.get(); }
   ProcessNodeImpl* process_node() { return process_node_.get(); }
   FrameNodeImpl* frame_node() { return main_frame_node_.get(); }

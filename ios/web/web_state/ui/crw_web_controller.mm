@@ -16,9 +16,11 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "ios/web/common/annotations_utils.h"
+#import "ios/web/common/crw_edit_menu_builder.h"
 #import "ios/web/common/crw_input_view_provider.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
@@ -91,6 +93,7 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
 #endif
 
 @interface CRWWebController () <CRWWKNavigationHandlerDelegate,
+                                CRWEditMenuBuilder,
                                 CRWInputViewProvider,
                                 CRWSSLStatusUpdaterDataSource,
                                 CRWSSLStatusUpdaterDelegate,
@@ -1413,7 +1416,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 
   return web::BuildWKWebView(CGRectZero, config,
                              self.webStateImpl->GetBrowserState(),
-                             userAgentType, self);
+                             userAgentType, self, self);
 }
 
 // Wraps the web view in a CRWWebViewContentView and adds it to the container
@@ -1699,7 +1702,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
       if (!_documentURL.host().empty() &&
           (base::Contains(newURL.username(), _documentURL.host()) ||
            base::Contains(newURL.password(), _documentURL.host()))) {
-        CHECK(false);
+        NOTREACHED();
       }
     }
   }
@@ -1850,6 +1853,12 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 - (CRWWKNavigationHandler*)webRequestControllerNavigationHandler:
     (CRWWebRequestController*)requestController {
   return self.navigationHandler;
+}
+
+#pragma mark -  CRWEditMenuBuilder
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  web::GetWebClient()->BuildEditMenu(self.webStateImpl, builder);
 }
 
 #pragma mark -  CRWInputViewProvider

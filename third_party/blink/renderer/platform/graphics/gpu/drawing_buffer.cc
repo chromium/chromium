@@ -323,7 +323,7 @@ gpu::gles2::GLES2Interface* DrawingBuffer::ContextGL() {
 }
 
 WebGraphicsContext3DProvider* DrawingBuffer::ContextProvider() {
-  return context_provider_->ContextProvider();
+  return &(context_provider_->ContextProvider());
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
@@ -361,8 +361,7 @@ void DrawingBuffer::SetFilterQuality(
   if (filter_quality_ != filter_quality) {
     filter_quality_ = filter_quality;
     if (layer_) {
-      layer_->SetNearestNeighbor(filter_quality ==
-                                 cc::PaintFlags::FilterQuality::kNone);
+      layer_->SetFilterQuality(filter_quality);
     }
   }
 }
@@ -427,7 +426,6 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap() {
       std::move(shared_image_mapping.mapping), size_, format);
 
   RegisteredBitmap registered = {std::move(bitmap),
-                                 cc::SharedBitmapIdRegistration(),
                                  std::move(shared_image_mapping.shared_image),
                                  shared_image_interface->GenVerifiedSyncToken(),
                                  sii_provider->GetWeakPtr()};
@@ -436,14 +434,11 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap() {
 }
 
 bool DrawingBuffer::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   ScopedStateRestorer scoped_state_restorer(this);
-  bool force_gpu_result = false;
   return PrepareTransferableResourceInternal(
-      bitmap_registrar, /*client_si=*/nullptr, out_resource,
-      out_release_callback, force_gpu_result);
+      /*client_si=*/nullptr, out_resource, out_release_callback);
 }
 
 DrawingBuffer::CheckForDestructionResult
@@ -481,17 +476,15 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
 }
 
 bool DrawingBuffer::PrepareTransferableResourceInternal(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     scoped_refptr<gpu::ClientSharedImage>* client_si,
     viz::TransferableResource* out_resource,
-    viz::ReleaseCallback* out_release_callback,
-    bool force_gpu_result) {
+    viz::ReleaseCallback* out_release_callback) {
   if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) !=
       kContentsResolvedIfNeeded) {
     return false;
   }
 
-  if (!IsUsingGpuCompositing() && !force_gpu_result) {
+  if (!IsUsingGpuCompositing()) {
     return FinishPrepareTransferableResourceSoftware(out_resource,
                                                      out_release_callback);
   }
@@ -501,7 +494,7 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
 }
 
 scoped_refptr<StaticBitmapImage>
-DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
+DrawingBuffer::GetUnacceleratedStaticBitmapImage() {
   ScopedStateRestorer scoped_state_restorer(this);
 
   if (CheckForDestructionAndChangeAndResolveIfNeeded(kDontDiscard) ==
@@ -515,13 +508,11 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
   ReadFramebufferIntoBitmapPixels(static_cast<uint8_t*>(bitmap.getPixels()));
   auto sk_image = SkImages::RasterFromBitmap(bitmap);
 
-  bool origin_top_left =
-      flip_y ? opengl_flip_y_extension_ : !opengl_flip_y_extension_;
-
+  // GL Framebuffer is bottom-left origin by default and the
+  // mesa_framebuffer_flip_y extension doesn't affect glReadPixels, so
+  // `ReadFramebufferIntoBitmapPixels` always returns bottom left images.
   return sk_image ? UnacceleratedStaticBitmapImage::Create(
-                        sk_image, origin_top_left
-                                      ? ImageOrientationEnum::kOriginTopLeft
-                                      : ImageOrientationEnum::kOriginBottomLeft)
+                        sk_image, ImageOrientationEnum::kOriginBottomLeft)
                   : nullptr;
 }
 
@@ -567,6 +558,9 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
   }
   out_resource->color_space = back_color_buffer_->color_space;
   out_resource->hdr_metadata = hdr_metadata_;
+
+  // ReadFramebufferIntoBitmapPixels always produced bottom-Left origin.
+  out_resource->origin = kBottomLeft_GrSurfaceOrigin;
 
   // This holds a ref on the DrawingBuffer that will keep it alive until the
   // mailbox is released (and while the release callback is running). It also
@@ -672,6 +666,9 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
         viz::TransferableResource::ResourceSource::kDrawingBuffer);
     out_resource->color_space = color_buffer_for_mailbox->color_space;
     out_resource->hdr_metadata = hdr_metadata_;
+    out_resource->origin =
+        color_buffer_for_mailbox->shared_image->surface_origin();
+
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running).
     auto func = base::BindOnce(&DrawingBuffer::NotifyMailboxReleasedGpu,
@@ -754,10 +751,11 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   scoped_refptr<gpu::ClientSharedImage> client_si;
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
-  constexpr bool force_gpu_result = true;
-  if (!PrepareTransferableResourceInternal(
-          nullptr, &client_si, &transferable_resource, &release_callback,
-          force_gpu_result)) {
+
+  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) !=
+          kContentsResolvedIfNeeded ||
+      !FinishPrepareTransferableResourceGpu(&transferable_resource, &client_si,
+                                            &release_callback)) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
@@ -837,6 +835,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   resource.format = color_buffer->format;
   resource.is_overlay_candidate = color_buffer->is_overlay_candidate;
   resource.color_space = color_buffer->color_space;
+  resource.origin = color_buffer->shared_image->surface_origin();
   resource.hdr_metadata = hdr_metadata_;
   resource.resource_source =
       viz::TransferableResource::ResourceSource::kDrawingBuffer;
@@ -859,20 +858,18 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   ScopedStateRestorer scoped_state_restorer(this);
   TRACE_EVENT0("blink", "DrawingBuffer::ExportCanvasResource");
 
-  // Using PrepareTransferableResourceInternal, with force_gpu_result as we
-  // will use this ExportCanvasResource only for gpu_composited content.
+  CHECK(IsUsingGpuCompositing());
   viz::TransferableResource out_resource;
   viz::ReleaseCallback out_release_callback;
-  const bool force_gpu_result = true;
   scoped_refptr<gpu::ClientSharedImage> client_si;
-  if (!PrepareTransferableResourceInternal(nullptr, &client_si, &out_resource,
-                                           &out_release_callback,
-                                           force_gpu_result)) {
+  if (!PrepareTransferableResourceInternal(&client_si, &out_resource,
+                                           &out_release_callback)) {
     return nullptr;
   }
+
   // If PrepareTransferableResourceInternal() succeeded, the ClientSI must be
   // valid:
-  // * We forced a GPU resource to be created, meaning that
+  // * This function only called when IsGpuCompositingEnabled() meaning that
   //   FinishPrepareTransferableResourceGpu() will have been invoked
   // * FinishPrepareTransferableResourceGpu() always populates `client_si` if it
   //   returns true
@@ -992,6 +989,12 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
       supports_implicit_resolve &&
       gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
           gpu::kGpuFeatureStatusEnabled;
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
+  // crbug.com/376174085: On Mac using implicit resolve causes flickering due to
+  // losses of precision when render passes are interleaved. So disabling it.
+  supports_implicit_resolve = false;
+#endif
 
   if (webgl_preferences.anti_aliasing_mode == kAntialiasingModeUnspecified) {
     if (use_multisampling) {
@@ -1267,11 +1270,7 @@ cc::Layer* DrawingBuffer::CcLayer() {
       layer_->SetPremultipliedAlpha(requested_alpha_type_ !=
                                     kUnpremul_SkAlphaType);
     }
-    layer_->SetNearestNeighbor(filter_quality_ ==
-                               cc::PaintFlags::FilterQuality::kNone);
-
-    if (opengl_flip_y_extension_ && IsUsingGpuCompositing())
-      layer_->SetFlipped(false);
+    layer_->SetFilterQuality(filter_quality_);
   }
 
   return layer_.get();

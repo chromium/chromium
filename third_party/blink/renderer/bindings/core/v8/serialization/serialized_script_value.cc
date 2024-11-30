@@ -174,39 +174,30 @@ inline static bool IsByteSwappedWiredData(base::span<const uint8_t> data) {
   // v1-16 (byte-swapped) - [v,    0xFF, ...], v = version (1 <= v <= 16)
   // v17+                 - [0xFF, v,    ...], v = first byte of version varint
 
-  if (data[0] == kVersionTag) {
-    // The only case where byte-swapped data can have 0xFF in byte zero is
-    // version 0. This can only happen if byte one is a tag (supported in
-    // version 0) that takes in extra data, and the first byte of extra data is
-    // 0xFF. These tags cannot be used as version numbers in the Blink-side SSV
-    // envelope.
-    //
-    // Why we care about version 0:
-    //
-    // IndexedDB stores values using the SSV format. Currently, IndexedDB does
-    // not do any sort of migration, so a value written with a SSV version will
-    // be stored with that version until it is removed via an update or delete.
-    //
-    // IndexedDB was shipped in Chrome 11, which was released on April 27, 2011.
-    // SSV version 1 was added in WebKit r91698, which was shipped in Chrome 14,
-    // which was released on September 16, 2011.
-    static_assert(
-        !IsV0VersionTag(SerializedScriptValue::kWireFormatVersion),
-        "Using a burned version will prevent us from reading SSV version 0");
-    // TODO(pwnall): Add UMA metric here.
-    return IsV0VersionTag(data[1]);
+  if (data[0] != kVersionTag) {
+    // Pre-version 17, thus byte-swapped.
+    return true;
   }
 
-  if (data[1] == kVersionTag) {
-    // The last SSV format that used byte-swapping was version 16. The version
-    // number is stored (before byte-swapping) after a serialization tag, which
-    // is 0xFF.
-    return data[0] != kVersionTag;
-  }
-
-  // If kVersionTag isn't in any of the first two bytes, this is SSV version 0,
-  // which was byte-swapped.
-  return true;
+  // The only case where byte-swapped data can have 0xFF in byte zero is version
+  // 0. This can only happen if byte one is a tag (supported in version 0) that
+  // takes in extra data, and the first byte of extra data is 0xFF. These tags
+  // cannot be used as version numbers in the Blink-side SSV envelope.
+  //
+  // Why we care about version 0:
+  //
+  // IndexedDB stores values using the SSV format. Currently, IndexedDB does not
+  // do any sort of migration, so a value written with a SSV version will be
+  // stored with that version until it is removed via an update or delete.
+  //
+  // IndexedDB was shipped in Chrome 11, which was released on April 27, 2011.
+  // SSV version 1 was added in WebKit r91698, which was shipped in Chrome 14,
+  // which was released on September 16, 2011.
+  static_assert(
+      !IsV0VersionTag(SerializedScriptValue::kWireFormatVersion),
+      "Using a burned version will prevent us from reading SSV version 0");
+  // TODO(pwnall): Add UMA metric here.
+  return IsV0VersionTag(data[1]);
 }
 
 static void SwapWiredDataIfNeeded(base::span<uint8_t> buffer) {
@@ -218,9 +209,9 @@ static void SwapWiredDataIfNeeded(base::span<uint8_t> buffer) {
     return;
   }
 
-  static_assert(sizeof(UChar) == 2u);
-  for (size_t i = 0u; i < buffer.size(); i += 2u) {
-    std::swap(buffer[i], buffer[i + 1u]);
+  static_assert(sizeof(UChar) == 2);
+  for (size_t i = 0; i < buffer.size(); i += 2) {
+    std::swap(buffer[i], buffer[i + 1]);
   }
 }
 

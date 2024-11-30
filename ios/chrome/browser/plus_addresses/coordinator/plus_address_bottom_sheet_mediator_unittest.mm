@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/types/expected.h"
@@ -100,6 +101,7 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
 
 // Ensure the consumer is notified when plus addresses are confirmed.
 TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
+  base::UserActionTester user_action_tester;
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
                                 plus_addresses::test::kFakePlusAddress)]);
@@ -180,4 +182,30 @@ TEST_F(PlusAddressBottomSheetMediatorTest, DidTapRefresh) {
   OCMExpect([consumer_ didConfirmPlusAddress]);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Ensure the consumer is notified when affiliated suggestion is accepted during
+// creation.
+TEST_F(PlusAddressBottomSheetMediatorTest,
+       DidAcceptAffiliatedPlusAddressSuggestion) {
+  base::UserActionTester user_action_tester;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  OCMExpect([consumer_ dismissBottomSheet]);
+  [mediator() didAcceptAffiliatedPlusAddressSuggestion];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.AffiliationErrorFilledExisting"),
+            1);
+}
+
+// Ensure the consumer is notified when the user tries again to confirm.
+TEST_F(PlusAddressBottomSheetMediatorTest, DidSelectTryAgainToConfirm) {
+  base::UserActionTester user_action_tester;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  OCMExpect([consumer_ didSelectTryAgainToConfirm]);
+  [mediator() didSelectTryAgainToConfirm];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.CreateErrorTryAgainClicked"),
+            1);
 }

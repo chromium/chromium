@@ -209,24 +209,27 @@ std::string YandexSearchPathFromDeviceFormFactor() {
   NOTREACHED();
 }
 
-// Returns true if `enterprise_engine` is strictly better than `other_engine`,
-// where `enterprise_engine` is a search engine created by the
-// `SiteSearchSettings` policy, and `other_engine` is a search engine not
-// created by Enterprise policy.
-bool IsEnterpriseSideSearchEngineBetterThanEngine(
-    const TemplateURL* enterprise_engine,
+// Returns true if `policy_engine` is strictly better than `other_engine`,
+// where `policy_engine` is a search engine created by the
+// `SiteSearchSettings` or `EnterpriseSearchAggregatorSettings` policy, and
+// `other_engine` is a search engine not created by policy.
+bool IsPolicySearchEngineBetterThanNonPolicyEngine(
+    const TemplateURL* policy_engine,
     const TemplateURL* other_engine) {
   // Keyword conflicts between search engines set by policy are handled when the
-  // policies are processed. At this point, `enterprise_engine` is created by
-  // the `SiteSearchSettings` policy, `other_engine` should have been created by
-  // something else, but not via policy.
-  CHECK_EQ(enterprise_engine->created_by_policy(),
-           TemplateURLData::CreatedByPolicy::kSiteSearch);
+  // policies are processed. At this point, `policy_engine` is created by
+  // the `SiteSearchSettings` or `EnterpriseSearchAggregatorSettings` policy,
+  // `other_engine` should have been created by something else, but not via
+  // policy.
+  CHECK(policy_engine->created_by_policy() ==
+            TemplateURLData::CreatedByPolicy::kSiteSearch ||
+        policy_engine->created_by_policy() ==
+            TemplateURLData::CreatedByPolicy::kSearchAggregator);
   CHECK_EQ(other_engine->created_by_policy(),
            TemplateURLData::CreatedByPolicy::kNoPolicy);
 
-  const std::u16string& keyword = enterprise_engine->keyword();
-  // Prefer `enterprise_engine` if the `keyword` starts with the "@" symbol.
+  const std::u16string& keyword = policy_engine->keyword();
+  // Prefer `policy_engine` if the `keyword` starts with the "@" symbol.
   // Otherwise, prefer `other_engine` if it has been manually edited by the
   // user.
   return (!keyword.empty() && keyword[0] == u'@') ||
@@ -1636,26 +1639,30 @@ bool TemplateURL::IsBetterThanConflictingEngine(
     const TemplateURL* other) const {
   DCHECK(other);
 
-  auto is_ssp = [](const TemplateURL* turl) {
+  auto by_policy = [](const TemplateURL* turl) {
     return turl->created_by_policy() ==
-           TemplateURLData::CreatedByPolicy::kSiteSearch;
+               TemplateURLData::CreatedByPolicy::kSiteSearch ||
+           turl->created_by_policy() ==
+               TemplateURLData::CreatedByPolicy::kSearchAggregator;
   };
+
   auto no_policy = [](const TemplateURL* turl) {
     return turl->created_by_policy() ==
            TemplateURLData::CreatedByPolicy::kNoPolicy;
   };
 
-  // Site search engines set by enterprise policy have different priority over
-  // existing search engines because we don't want to break current workflows
-  // for power users.
-  if (is_ssp(this) && no_policy(other)) {
-    return IsEnterpriseSideSearchEngineBetterThanEngine(this, other);
-  } else if (no_policy(this) && is_ssp(other)) {
-    return !IsEnterpriseSideSearchEngineBetterThanEngine(other, this);
-  } else if (is_ssp(this) && is_ssp(other)) {
-    // If both engines are created by the SiteSearchSettings policy, prefer the
-    // one that is featured. Otherwise, fallback to the comparison based on
-    // the signals below.
+  // Site search and Enterprise Search Aggregator engines set by enterprise
+  // policy have different priority over existing search engines because we
+  // don't want to break current workflows for power users.
+  if (by_policy(this) && no_policy(other)) {
+    return IsPolicySearchEngineBetterThanNonPolicyEngine(this, other);
+  } else if (no_policy(this) && by_policy(other)) {
+    return !IsPolicySearchEngineBetterThanNonPolicyEngine(other, this);
+  } else if (by_policy(this) && by_policy(other)) {
+    // If both engines are created by the `SiteSearchSettings` or
+    // `EnterpriseSearchAggregatorSettings` policy, prefer the one that is
+    // featured. Otherwise, fallback to the comparison based on the signals
+    // below.
     if (this->featured_by_policy() && !other->featured_by_policy()) {
       return true;
     } else if (!this->featured_by_policy() && other->featured_by_policy()) {

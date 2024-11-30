@@ -56,9 +56,6 @@ class FakeWebAppUiManager : public WebAppUiManager {
   bool CanAddAppToQuickLaunchBar() const override;
   void AddAppToQuickLaunchBar(const webapps::AppId& app_id) override;
   bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const override;
-  bool IsInAppWindow(content::WebContents* web_contents) const override;
-  const webapps::AppId* GetAppIdForWindow(
-      const content::WebContents* web_contents) const override;
   bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                  bool shortcut_created) const override;
   Browser* ReparentAppTabToWindow(content::WebContents* contents,

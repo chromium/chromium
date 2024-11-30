@@ -163,7 +163,7 @@ class PageStateSerializationTest : public testing::Test {
     http_body->http_content_type = u"text/foo";
 
     std::string test_body("foo");
-    http_body->request_body->AppendBytes(test_body.data(), test_body.size());
+    http_body->request_body->AppendCopyOfBytes(base::as_byte_span(test_body));
 
     base::FilePath path(FILE_PATH_LITERAL("file.txt"));
     http_body->request_body->AppendFileRange(
@@ -249,8 +249,8 @@ class PageStateSerializationTest : public testing::Test {
       frame_state->http_body.request_body->set_identifier(789);
 
       std::string test_body("first data block");
-      frame_state->http_body.request_body->AppendBytes(test_body.data(),
-                                                       test_body.size());
+      frame_state->http_body.request_body->AppendCopyOfBytes(
+          base::as_byte_span(test_body));
 
       frame_state->http_body.request_body->AppendFileRange(
           base::FilePath(FILE_PATH_LITERAL("file.txt")), 0,
@@ -258,8 +258,8 @@ class PageStateSerializationTest : public testing::Test {
           base::Time::FromSecondsSinceUnixEpoch(0.0));
 
       std::string test_body2("data the second");
-      frame_state->http_body.request_body->AppendBytes(test_body2.data(),
-                                                       test_body2.size());
+      frame_state->http_body.request_body->AppendCopyOfBytes(
+          base::as_byte_span(test_body2));
 
       ExplodedFrameState child_state;
       PopulateFrameStateForBackwardsCompatTest(&child_state, true, version);
@@ -764,7 +764,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_HttpBody) {
   http_body.http_content_type = u"text/foo";
 
   std::string test_body("foo");
-  http_body.request_body->AppendBytes(test_body.data(), test_body.size());
+  http_body.request_body->AppendCopyOfBytes(base::as_byte_span(test_body));
 
   base::FilePath path(FILE_PATH_LITERAL("file.txt"));
   http_body.request_body->AppendFileRange(

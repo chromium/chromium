@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_TREES_LAYER_TREE_IMPL_H_
 #define CC_TREES_LAYER_TREE_IMPL_H_
 
@@ -753,6 +748,8 @@ class CC_EXPORT LayerTreeImpl {
 
   void UpdateViewportContainerSizes();
 
+  gfx::Insets MaxSafeAreaInsets() const;
+
   LayerTreeLifecycle& lifecycle() { return lifecycle_; }
 
   std::string LayerListAsJson() const;
@@ -960,8 +957,8 @@ class CC_EXPORT LayerTreeImpl {
 
   UIResourceRequestQueue ui_resource_request_queue_;
 
-  EventListenerProperties event_listener_properties_
-      [static_cast<size_t>(EventListenerClass::kLast) + 1];
+  std::array<EventListenerProperties, kEventListenerClassCount>
+      event_listener_properties_;
 
   BrowserControlsParams browser_controls_params_;
 

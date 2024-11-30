@@ -311,8 +311,8 @@ These mac specializations are required due to launching from platform shortcut a
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_or_shortcut_windowed(StandaloneNestedA) | navigate_browser(NotInstalled) | check_install_icon_shown |
 | WMLC | install_or_shortcut_windowed(StandaloneNestedA) | navigate_browser(NotInstalled) | check_launch_icon_not_shown |
-| WMLC | install_or_shortcut_windowed | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown |
-| WMLC | install_or_shortcut_windowed | navigate_browser(StandaloneNestedA) | check_launch_icon_shown |
+| WMLC | install_windowed | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown |
+| C | create_shortcut(Standalone, Windowed) | navigate_browser(StandaloneNestedA) | check_install_icon_shown |
 | WMLC | install_or_shortcut_by_user_windowed | navigate_browser(MinimalUi) | check_install_icon_shown |
 | WMLC | install_or_shortcut_by_user_windowed | navigate_browser(MinimalUi) | check_launch_icon_not_shown |
 | WMLC | install_or_shortcut_by_user_windowed | navigate_pwa(Standalone, MinimalUi) | check_app_title(Standalone, StandaloneOriginal) |

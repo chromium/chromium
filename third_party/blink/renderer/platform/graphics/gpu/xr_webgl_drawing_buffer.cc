@@ -57,12 +57,12 @@ XRWebGLDrawingBuffer::ColorBuffer::ColorBuffer(
     base::WeakPtr<XRWebGLDrawingBuffer> drawing_buffer,
     const gfx::Size& size,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
-    GLuint texture_id)
+    std::unique_ptr<gpu::SharedImageTexture> texture)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
       drawing_buffer(std::move(drawing_buffer)),
       size(size),
-      texture_id(texture_id),
-      shared_image(std::move(shared_image)) {}
+      shared_image(std::move(shared_image)),
+      texture_(std::move(texture)) {}
 
 XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
   if (base::PlatformThread::CurrentRef() != owning_thread_ref ||
@@ -78,10 +78,25 @@ XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
   gpu::gles2::GLES2Interface* gl = drawing_buffer->ContextGL();
   if (receive_sync_token.HasData())
     gl->WaitSyncTokenCHROMIUM(receive_sync_token.GetConstData());
-  gl->DeleteTextures(1, &texture_id);
+  texture_.reset();
   gpu::SyncToken sync_token;
   gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   shared_image->UpdateDestructionSyncToken(sync_token);
+}
+
+void XRWebGLDrawingBuffer::ColorBuffer::BeginAccess() {
+  scoped_access_ = texture_->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
+}
+
+void XRWebGLDrawingBuffer::ColorBuffer::EndAccess() {
+  gpu::SharedImageTexture::ScopedAccess::EndAccess(std::move(scoped_access_));
+}
+
+void XRWebGLDrawingBuffer::ColorBuffer::CleanUp() {
+  if (scoped_access_) {
+    gpu::SharedImageTexture::ScopedAccess::EndAccess(std::move(scoped_access_));
+  }
+  texture_.reset();
 }
 
 scoped_refptr<XRWebGLDrawingBuffer> XRWebGLDrawingBuffer::Create(
@@ -159,13 +174,17 @@ XRWebGLDrawingBuffer::XRWebGLDrawingBuffer(DrawingBuffer* drawing_buffer,
 
 void XRWebGLDrawingBuffer::BeginDestruction() {
   if (back_color_buffer_) {
-    gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
-    gl->EndSharedImageAccessDirectCHROMIUM(back_color_buffer_->texture_id);
+    back_color_buffer_->EndAccess();
     back_color_buffer_ = nullptr;
   }
 
   front_color_buffer_ = nullptr;
   recycled_color_buffer_queue_.clear();
+
+  for (auto color_buffer : exported_color_buffers_) {
+    color_buffer->CleanUp();
+  }
+  exported_color_buffers_.clear();
 }
 
 // TODO(bajones): The GL resources allocated in this function are leaking. Add
@@ -265,16 +284,13 @@ void XRWebGLDrawingBuffer::UseSharedBuffer(
   DVLOG(3) << __func__
            << ": mailbox=" << buffer_shared_image->mailbox().ToDebugString()
            << ", SyncToken=" << buffer_sync_token.ToDebugString();
-  gl->WaitSyncTokenCHROMIUM(buffer_sync_token.GetConstData());
 
   // Create a texture backed by the shared buffer image.
-  DCHECK(!shared_buffer_texture_id_);
-  shared_buffer_texture_id_ = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-      buffer_shared_image->mailbox().name);
-
-  gl->BeginSharedImageAccessDirectCHROMIUM(
-      shared_buffer_texture_id_,
-      GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  DCHECK(!shared_buffer_texture_);
+  shared_buffer_texture_ = buffer_shared_image->CreateGLTexture(gl);
+  shared_buffer_scoped_access_ =
+      shared_buffer_texture_->BeginAccess(buffer_sync_token,
+                                          /*readonly=*/false);
 
   if (WantExplicitResolve()) {
     // Bind the shared texture to the destination framebuffer of
@@ -291,11 +307,12 @@ void XRWebGLDrawingBuffer::UseSharedBuffer(
   if (anti_aliasing_mode_ == kMSAAImplicitResolve) {
     gl->FramebufferTexture2DMultisampleEXT(
         GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-        shared_buffer_texture_id_, 0, sample_count_);
+        shared_buffer_scoped_access_->texture_id(), 0, sample_count_);
   } else {
     // Explicit resolve, screen space antialiasing, or no antialiasing.
     gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                             GL_TEXTURE_2D, shared_buffer_texture_id_, 0);
+                             GL_TEXTURE_2D,
+                             shared_buffer_scoped_access_->texture_id(), 0);
   }
 
   if (!framebuffer_complete_checked_for_sharedbuffer_) {
@@ -341,10 +358,10 @@ void XRWebGLDrawingBuffer::DoneWithSharedBuffer() {
 
   // Done with the texture created by CreateAndTexStorage2DSharedImageCHROMIUM
   // finish accessing and delete it.
-  DCHECK(shared_buffer_texture_id_);
-  gl->EndSharedImageAccessDirectCHROMIUM(shared_buffer_texture_id_);
-  gl->DeleteTextures(1, &shared_buffer_texture_id_);
-  shared_buffer_texture_id_ = 0;
+  DCHECK(shared_buffer_texture_);
+  gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      std::move(shared_buffer_scoped_access_));
+  shared_buffer_texture_.reset();
 
   DrawingBuffer::Client* client = drawing_buffer_->client();
   if (!client)
@@ -460,23 +477,22 @@ void XRWebGLDrawingBuffer::Resize(const gfx::Size& new_size) {
   }
 
   if (back_color_buffer_) {
-    gl->EndSharedImageAccessDirectCHROMIUM(back_color_buffer_->texture_id);
+    back_color_buffer_->EndAccess();
   }
 
   back_color_buffer_ = CreateColorBuffer();
   front_color_buffer_ = nullptr;
 
-  gl->BeginSharedImageAccessDirectCHROMIUM(
-      back_color_buffer_->texture_id,
-      GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  back_color_buffer_->BeginAccess();
 
   if (anti_aliasing_mode_ == kMSAAImplicitResolve) {
     gl->FramebufferTexture2DMultisampleEXT(
         GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-        back_color_buffer_->texture_id, 0, sample_count_);
+        back_color_buffer_->texture_id(), 0, sample_count_);
   } else {
     gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                             GL_TEXTURE_2D, back_color_buffer_->texture_id, 0);
+                             GL_TEXTURE_2D, back_color_buffer_->texture_id(),
+                             0);
   }
 
   if (!framebuffer_complete_checked_for_resize_) {
@@ -510,17 +526,16 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   CHECK(client_shared_image);
 
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-  GLuint texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-      client_shared_image->mailbox().name);
+  std::unique_ptr<gpu::SharedImageTexture> texture =
+      client_shared_image->CreateGLTexture(gl);
 
   DrawingBuffer::Client* client = drawing_buffer_->client();
   client->DrawingBufferClientRestoreTexture2DBinding();
 
   return base::MakeRefCounted<ColorBuffer>(weak_factory_.GetWeakPtr(), size_,
                                            std::move(client_shared_image),
-                                           texture_id);
+                                           std::move(texture));
 }
 
 scoped_refptr<XRWebGLDrawingBuffer::ColorBuffer>
@@ -588,24 +603,23 @@ void XRWebGLDrawingBuffer::SwapColorBuffers() {
   BindAndResolveDestinationFramebuffer();
 
   if (back_color_buffer_) {
-    gl->EndSharedImageAccessDirectCHROMIUM(back_color_buffer_->texture_id);
+    back_color_buffer_->EndAccess();
   }
 
   // Swap buffers
   front_color_buffer_ = back_color_buffer_;
   back_color_buffer_ = CreateOrRecycleColorBuffer();
 
-  gl->BeginSharedImageAccessDirectCHROMIUM(
-      back_color_buffer_->texture_id,
-      GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  back_color_buffer_->BeginAccess();
 
   if (anti_aliasing_mode_ == kMSAAImplicitResolve) {
     gl->FramebufferTexture2DMultisampleEXT(
         GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-        back_color_buffer_->texture_id, 0, sample_count_);
+        back_color_buffer_->texture_id(), 0, sample_count_);
   } else {
     gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                             GL_TEXTURE_2D, back_color_buffer_->texture_id, 0);
+                             GL_TEXTURE_2D, back_color_buffer_->texture_id(),
+                             0);
   }
 
   if (!framebuffer_complete_checked_for_swap_) {
@@ -660,13 +674,16 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
   // until the mailbox is released (and while the callback is running).
   viz::ReleaseCallback release_callback =
       base::BindOnce(&XRWebGLDrawingBuffer::NotifyMailboxReleased, buffer);
+  exported_color_buffers_.insert(buffer);
   const SkImageInfo sk_image_info =
       SkImageInfo::MakeN32Premul(size_.width(), size_.height());
 
+  const bool is_origin_top_left =
+      buffer->shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       buffer->shared_image, buffer->produce_sync_token,
       /* shared_image_texture_id = */ 0, sk_image_info, GL_TEXTURE_2D,
-      /* is_origin_top_left = */ false,
+      /* is_origin_top_left = */ is_origin_top_left,
       drawing_buffer_->ContextProviderWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),

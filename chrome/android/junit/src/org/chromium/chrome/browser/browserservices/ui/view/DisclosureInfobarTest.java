@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE;
@@ -27,8 +26,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
-import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.FilledLazy;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -40,7 +37,6 @@ public class DisclosureInfobarTest {
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock public SnackbarManager mSnackbarManager;
     @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
-    @Mock public BaseCustomTabActivity mActivity;
 
     private TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private DisclosureInfobar mInfobar;
@@ -50,13 +46,12 @@ public class DisclosureInfobarTest {
         MockitoAnnotations.initMocks(this);
 
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
-        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
         mInfobar =
                 new DisclosureInfobar(
                         RuntimeEnvironment.application.getResources(),
-                        new FilledLazy<>(mSnackbarManager),
+                        mSnackbarManager,
                         mModel,
-                        mActivity);
+                        mLifecycleDispatcher);
     }
 
     @Test

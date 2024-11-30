@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/editing/finder/chunk_graph_utils.h"
 
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -112,7 +112,7 @@ class ChunkGraphBuilder {
         continue;
       }
       const ComputedStyle* style =
-          node->GetComputedStyleForElementOrLayoutObject();
+          GetComputedStyleForElementOrLayoutObject(*node);
       if (!style) {
         const Node* next = FlatTreeTraversal::NextSkippingChildren(*node);
         if (end_node && (end_node == node ||
@@ -192,7 +192,7 @@ class ChunkGraphBuilder {
              node != &block_ancestor) {
         node = FlatTreeTraversal::ParentElement(*node);
         display = EDisplay::kNone;
-        if ((style = node->GetComputedStyleForElementOrLayoutObject())) {
+        if ((style = GetComputedStyleForElementOrLayoutObject(*node))) {
           display = style->Display();
         }
         if (display == EDisplay::kRubyText) {

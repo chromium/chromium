@@ -156,7 +156,7 @@ ModuleWatcher::~ModuleWatcher() {
   g_module_watcher_instance = nullptr;
 }
 
-ModuleWatcher::ModuleWatcher() {}
+ModuleWatcher::ModuleWatcher() = default;
 
 // Initializes the ModuleWatcher instance.
 void ModuleWatcher::Initialize(OnModuleEventCallback callback) {

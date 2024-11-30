@@ -106,7 +106,7 @@ void MediaRecorderEncoderWrapper::EnterErrorState(
   pending_encode_tasks_ = {};
   params_in_encode_ = {};
   CHECK(on_error_cb_);
-  std::move(on_error_cb_).Run();
+  std::move(on_error_cb_).Run(status);
 }
 
 void MediaRecorderEncoderWrapper::Reconfigure(const gfx::Size& frame_size,

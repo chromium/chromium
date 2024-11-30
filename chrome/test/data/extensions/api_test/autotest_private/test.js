@@ -1771,28 +1771,6 @@ var systemWebAppsTests = [
   },
 ]
 
-    var lacrosEnabledTests = [
-      function checkLacrosInfoFields() {
-        chrome.autotestPrivate.getLacrosInfo(
-            chrome.test.callbackPass(function(lacrosInfo) {
-              chrome.test.assertEq(typeof lacrosInfo, 'object');
-              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('state'));
-              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('isKeepAlive'));
-              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('lacrosPath'));
-              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('mode'));
-            }));
-      },
-      function checkLacrosInfoFieldValue() {
-        chrome.autotestPrivate.getLacrosInfo(
-            chrome.test.callbackPass(function(lacrosInfo) {
-              chrome.test.assertEq('Unavailable', lacrosInfo['state']);
-              chrome.test.assertTrue(lacrosInfo['isKeepAlive']);
-              chrome.test.assertEq('', lacrosInfo['lacrosPath']);
-              chrome.test.assertEq('Only', lacrosInfo['mode']);
-            }));
-      },
-    ]
-
     var test_suites = {
       'default': defaultTests,
       'arcEnabled': arcEnabledTests,
@@ -1808,7 +1786,6 @@ var systemWebAppsTests = [
       'isFeatureEnabled': isFeatureEnabledTests,
       'holdingSpace': holdingSpaceTests,
       'systemWebApps': systemWebAppsTests,
-      'lacrosEnabled': lacrosEnabledTests,
       'launcherSearchBoxState': launcherSearchBoxStateTests,
       'isFieldTrialActive': isFieldTrialActiveTests,
       'clearAllowedPref': clearAllowedPrefTests,

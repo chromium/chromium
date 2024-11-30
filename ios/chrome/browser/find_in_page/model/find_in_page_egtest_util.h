@@ -149,6 +149,8 @@ id<GREYMatcher> PasteButton();
 - (void)helperTestFindInPagePDF;
 // Tests that FIP exit fullscreen when done.
 - (void)helperTestFindInPageExitFullscreen;
+// Tests that FIP works properly with bottom Omnibox.
+- (void)helperTestFindInPageWithBottomOmnibox;
 @end
 
 #endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_FIND_IN_PAGE_EGTEST_UTIL_H_

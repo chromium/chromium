@@ -89,6 +89,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   base::FilePath GetAndroidFilesPath() const override;
   base::FilePath GetLinuxFilesPath() const override;
   base::FilePath GetOneDriveMountPointPath() const override;
+  base::FilePath GetOneDriveVirtualPath() const override;
   PolicyCapturePath GetPolicyCapturePath() const override;
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
@@ -121,6 +122,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
                             const gfx::Rect& region,
                             const std::string& text,
                             ash::OnSearchUrlFetchedCallback callback) override;
+  void DeleteRemoteFile(const base::FilePath& path,
+                        base::OnceCallback<void(bool)> callback) override;
 
   void set_optical_character_recognizer_for_testing(
       scoped_refptr<screen_ai::OpticalCharacterRecognizer>

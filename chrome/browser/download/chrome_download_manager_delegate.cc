@@ -1018,8 +1018,7 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
       download_message_bridge_->ShowUnsupportedDownloadMessage(web_contents);
       base::UmaHistogramEnumeration(
           "Download.Blocked.ContentType.Automotive",
-          download::DownloadContentFromMimeType(mime_type, false),
-          download::DownloadContent::MAX);
+          download::DownloadContentFromMimeType(mime_type, false));
       return true;
     }
   }
@@ -2158,7 +2157,8 @@ bool ChromeDownloadManagerDelegate::IsDownloadRestrictedByPolicy() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-ChromeDownloadManagerDelegate::SafeBrowsingState::~SafeBrowsingState() {}
+ChromeDownloadManagerDelegate::SafeBrowsingState::~SafeBrowsingState() =
+    default;
 
 const char ChromeDownloadManagerDelegate::SafeBrowsingState::
     kSafeBrowsingUserDataKey[] = "Safe Browsing ID";

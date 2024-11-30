@@ -210,7 +210,7 @@ class FakeCableAuthenticator {
     if (!hmac.VerifyTruncated(
             fido_parsing_utils::ConvertToStringView(client_hello),
             fido_parsing_utils::ConvertToStringView(
-                handshake_message.subspan(42)))) {
+                handshake_message.subspan<42>()))) {
       return false;
     }
 
@@ -320,7 +320,7 @@ TEST_F(FidoCableHandshakeHandlerTest, HandShakeSuccess) {
             FROM_HERE, base::BindOnce(std::move(*cb), true));
 
         const auto client_ble_handshake_message =
-            base::make_span(data).subspan(3);
+            base::span(data).template subspan<3>();
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
@@ -352,7 +352,7 @@ TEST_F(FidoCableHandshakeHandlerTest, HandShakeWithIncorrectSessionPreKey) {
             FROM_HERE, base::BindOnce(std::move(*cb), true));
 
         const auto client_ble_handshake_message =
-            base::make_span(data).subspan(3);
+            base::span(data).template subspan<3>();
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
@@ -379,7 +379,7 @@ TEST_F(FidoCableHandshakeHandlerTest, HandshakeFailWithIncorrectNonce) {
             FROM_HERE, base::BindOnce(std::move(*cb), true));
 
         const auto client_ble_handshake_message =
-            base::make_span(data).subspan(3);
+            base::span(data).template subspan<3>();
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(

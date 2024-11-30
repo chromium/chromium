@@ -29,7 +29,7 @@ class MockLocaleTemplateUrlLoader : public LocaleTemplateUrlLoader {
                               Profile* profile)
       : LocaleTemplateUrlLoader(locale, service, profile) {}
 
-  ~MockLocaleTemplateUrlLoader() override {}
+  ~MockLocaleTemplateUrlLoader() override = default;
 
  protected:
   std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines()
@@ -51,7 +51,7 @@ class MockLocaleTemplateUrlLoader : public LocaleTemplateUrlLoader {
 
 class LocaleTemplateUrlLoaderTest : public testing::Test {
  public:
-  LocaleTemplateUrlLoaderTest() {}
+  LocaleTemplateUrlLoaderTest() = default;
 
   LocaleTemplateUrlLoaderTest(const LocaleTemplateUrlLoaderTest&) = delete;
   LocaleTemplateUrlLoaderTest& operator=(const LocaleTemplateUrlLoaderTest&) =

@@ -6,6 +6,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "navigator_auction.cc": [
+        "+third_party/boringssl/src/include",
+    ],
+    "validate_blink_interest_group.cc": [
+        "+third_party/boringssl/src/include",
+    ],
     "validate_blink_interest_group_test.cc": [
         "+base",
         "+url/gurl.h",

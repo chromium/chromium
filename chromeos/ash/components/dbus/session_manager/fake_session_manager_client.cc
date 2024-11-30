@@ -436,24 +436,6 @@ void FakeSessionManagerClient::ClearForcedReEnrollmentVpd(
   PostReply(FROM_HERE, std::move(callback), true);
 }
 
-void FakeSessionManagerClient::UnblockDevModeForEnrollment(
-    chromeos::VoidDBusMethodCallback callback) {
-  unblock_dev_mode_enrollment_call_count_++;
-  PostReply(FROM_HERE, std::move(callback), true);
-}
-
-void FakeSessionManagerClient::UnblockDevModeForInitialStateDetermination(
-    chromeos::VoidDBusMethodCallback callback) {
-  unblock_dev_mode_init_state_call_count_++;
-  PostReply(FROM_HERE, std::move(callback), true);
-}
-
-void FakeSessionManagerClient::UnblockDevModeForCarrierLock(
-    chromeos::VoidDBusMethodCallback callback) {
-  unblock_dev_mode_carrier_lock_call_count_++;
-  PostReply(FROM_HERE, std::move(callback), true);
-}
-
 void FakeSessionManagerClient::StartTPMFirmwareUpdate(
     const std::string& update_mode) {
   last_tpm_firmware_update_mode_ = update_mode;

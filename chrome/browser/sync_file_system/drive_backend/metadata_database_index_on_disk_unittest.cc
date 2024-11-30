@@ -37,7 +37,7 @@ const int64_t kPlaceholderTrackerID = 4;
 
 class MetadataDatabaseIndexOnDiskTest : public testing::Test {
  public:
-  ~MetadataDatabaseIndexOnDiskTest() override {}
+  ~MetadataDatabaseIndexOnDiskTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());

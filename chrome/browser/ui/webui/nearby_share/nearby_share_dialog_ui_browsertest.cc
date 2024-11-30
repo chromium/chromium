@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -43,12 +42,6 @@ class TestSharesheetController : public sharesheet::SharesheetController {
 };
 
 class NearbyShareDialogUITest : public InProcessBrowserTest {
- public:
-  NearbyShareDialogUITest() {
-    scoped_feature_list_.InitWithFeatures({features::kNearbySharing}, {});
-  }
-  ~NearbyShareDialogUITest() override = default;
-
  protected:
   content::WebContents* GetWebContentsForNearbyShareHost() const {
     GURL kUrl(content::GetWebUIURL(chrome::kChromeUINearbyShareHost));
@@ -62,7 +55,6 @@ class NearbyShareDialogUITest : public InProcessBrowserTest {
     return web_contents;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestSharesheetController sharesheet_controller_;
 };
 

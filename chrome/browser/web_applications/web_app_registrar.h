@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -188,22 +187,10 @@ class WebAppRegistrar {
       const GURL& scope,
       std::initializer_list<proto::InstallState> allowed_states) const;
 
-  // Returns whether the app with |app_id| is currently listed in the registry.
-  // ie. we have data for web app manifest and icons, and this |app_id| can be
-  // used in other registrar methods.
-  // TODO(crbug.com/340952100): Remove & replace callers with `IsInstallState`.
-  bool IsInstalled(const webapps::AppId& app_id) const;
-
   // Returns whether the app is currently being uninstalled. This will be true
   // after uninstall has begun but before the OS integration hooks for uninstall
   // have completed. It will return false after uninstallation has completed.
   bool IsUninstalling(const webapps::AppId& app_id) const;
-
-  // Returns true if the app was actively installed, meaning the app has
-  // involved some form of user or administrator action to either install it or
-  // configure it to behave like an app.
-  // TODO(crbug.com/340952100): Remove & replace callers with `IsInstallState`.
-  bool IsActivelyInstalled(const webapps::AppId& app_id) const;
 
   // Returns the permissions policy declared as declared in the manifest for
   // the app with |app_id|. This permissions policy is not yet parsed by the
@@ -329,9 +316,6 @@ class WebAppRegistrar {
   std::vector<DisplayMode> GetAppDisplayModeOverride(
       const webapps::AppId& app_id) const;
 
-  // Returns the "url_handlers" field from the app manifest.
-  apps::UrlHandlers GetAppUrlHandlers(const webapps::AppId& app_id) const;
-
   // Returns the `scope_extensions` field from the app manifest, ignoring
   // validation.
   base::flat_set<ScopeExtensionInfo> GetScopeExtensions(
@@ -409,40 +393,6 @@ class WebAppRegistrar {
   // returns 0 if not in scope.
   int GetUrlInAppScopeScore(const std::string& url_spec,
                             const webapps::AppId& app_id) const;
-
-  // Returns the app id of an app in the registry with the longest scope that is
-  // a prefix of |url|, if any.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindBestAppWithUrlInScope`.
-  std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
-
-  // Returns true if there exists at least one app installed under |scope|.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `DoesScopeContainAnyApp` with install states.
-  bool DoesScopeContainAnyApp(const GURL& scope) const;
-
-  // Finds all apps that are installed under `outer_scope`.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindAllAppsNestedInUrl`.
-  std::vector<webapps::AppId> FindAppsInScope(const GURL& outer_scope) const;
-
-  // Returns the app id of an installed app in the registry with the longest
-  // scope that is a prefix of |url|, if any. If |window_only| is specified,
-  // only apps that open in app windows will be considered. If
-  // |exclude_diy_apps| is true, then DIY apps will not be taken into account
-  // while looking for installed apps whose url is in scope.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindBestAppWithUrlInScope`.
-  std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
-      const GURL& url,
-      bool window_only = false,
-      bool exclude_diy_apps = false) const;
-
-  // Returns true if there is an app that is not locally installed that has
-  // a scope which is a prefix of |url|.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindBestAppWithUrlInScope`.
-  bool IsNonLocallyInstalledAppWithUrlInScope(const GURL& url) const;
 
   // Returns whether the app is a shortcut app (as opposed to a PWA).
   // TODO(crbug.com/341316725): Remove shortcut apps.

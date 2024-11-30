@@ -29,6 +29,7 @@ public interface ModuleDelegate {
         ModuleType.TAB_RESUMPTION,
         ModuleType.SAFETY_HUB,
         ModuleType.EDUCATIONAL_TIP,
+        ModuleType.AUXILIARY_SEARCH,
         ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -38,7 +39,8 @@ public interface ModuleDelegate {
         int TAB_RESUMPTION = 2;
         int SAFETY_HUB = 3;
         int EDUCATIONAL_TIP = 4;
-        int NUM_ENTRIES = 5;
+        int AUXILIARY_SEARCH = 5;
+        int NUM_ENTRIES = 6;
     }
 
     /**

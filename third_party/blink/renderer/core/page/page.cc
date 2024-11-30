@@ -966,6 +966,7 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
 }
 
 void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
+  bool sai_changed = max_safe_area_insets_ != max_safe_area;
   max_safe_area_insets_ = max_safe_area;
 
   // When the SAI is changed when DynamicSafeAreaInsetsEnabled, the SAI for the
@@ -975,6 +976,10 @@ void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
     UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(), true);
   } else {
     SetSafeAreaEnvVariables(setter, max_safe_area);
+  }
+  // Update Chrome client CC for MaxSafeAreaInsets change.
+  if (setter->IsMainFrame() && sai_changed) {
+    GetChromeClient().DidUpdateMaxSafeAreaInsets(max_safe_area);
   }
 }
 

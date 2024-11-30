@@ -80,7 +80,7 @@ void VpxBitReader::VpxDecoderReadBytes() {
   while ((shift >= 0) && (!data_.empty())) {
     bit_count_ += 8;
     value_ |= static_cast<unsigned int>(*data_.data()) << shift;
-    data_ = data_.subspan(1);
+    data_ = data_.subspan<1>();
     shift -= 8;
   }
 }
@@ -180,13 +180,13 @@ int ParseVpxHeaderQuantizer(base::span<const uint8_t> data) {
 
   // Parse the size of the first partition.
   const unsigned int partition_size = (header_3bytes >> 5);
-  data = data.subspan(3);
+  data = data.subspan<3>();
 
   if (is_key) {
     if (data.size() <= 7) {
       return -1;
     }
-    data = data.subspan(7);
+    data = data.subspan<7>();
   }
   if (data.size() < partition_size) {
     return -1;

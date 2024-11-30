@@ -215,7 +215,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ExtensionsAreSorted) {
 
 // Verifies the site access toggle and site permissions button properties for an
 // extension that doesn't request site access.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, NoSiteAccessRequested) {
+TEST_F(ExtensionsMenuMainPageViewUnitTest, NoHostAccessRequested) {
   auto extension = InstallExtension("Extension");
 
   const GURL url("http://www.example.com");
@@ -254,7 +254,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NoSiteAccessRequested) {
 // Verifies the site access toggle and site permissions button properties for an
 // enterprise extension that doesn't request host permissions.
 TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       NoSiteAccessRequested_EnterpriseExtension) {
+       NoHostAccessRequested_EnterpriseExtension) {
   auto extension =
       InstallEnterpriseExtension("Extension", /*host_permissions*/ {});
 
@@ -909,7 +909,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
   // Withhold extension A's host permissions and add a site access
   // request.
   WithholdHostPermissions(extension_A.get());
-  AddSiteAccessRequest(*extension_A,
+  AddHostAccessRequest(*extension_A,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
   ShowMenu();
@@ -1434,7 +1434,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsSection) {
 
   // Requests section is visible and has extension A when extension A added a
   // site access request.
-  AddSiteAccessRequest(*extension_A, web_contents);
+  AddHostAccessRequest(*extension_A, web_contents);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_TRUE(requests_section->GetVisible());
@@ -1443,7 +1443,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsSection) {
 
   // Requests section is visible and has extension A and B when both extensions
   // added site access requests.
-  AddSiteAccessRequest(*extension_B, web_contents);
+  AddHostAccessRequest(*extension_B, web_contents);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_TRUE(requests_section->GetVisible());
@@ -1452,7 +1452,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsSection) {
 
   // Message section is visible and has extension B when extension A removed its
   // site access request.
-  RemoveSiteAccessRequest(*extension_A, web_contents);
+  RemoveHostAccessRequest(*extension_A, web_contents);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_TRUE(requests_section->GetVisible());
@@ -1461,7 +1461,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsSection) {
 
   // Requests section is hidden when extension B removed its site access request
   // and no other extension has an active site access request.
-  RemoveSiteAccessRequest(*extension_B, web_contents);
+  RemoveHostAccessRequest(*extension_B, web_contents);
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_FALSE(requests_section->GetVisible());
 }
@@ -1498,7 +1498,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // filter that doesn't match the current web contents.
   URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
                     "http://www.other.com/");
-  AddSiteAccessRequest(*extension, web_contents, filter);
+  AddHostAccessRequest(*extension, web_contents, filter);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_FALSE(requests_section->GetVisible());
@@ -1507,7 +1507,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // site access request with filter that matches the current web contents.
   filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
                       "http://www.example.com/");
-  AddSiteAccessRequest(*extension, web_contents, filter);
+  AddHostAccessRequest(*extension, web_contents, filter);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_TRUE(requests_section->GetVisible());
@@ -1519,7 +1519,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // was removed).
   filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
                       "http://www.example.com/other");
-  AddSiteAccessRequest(*extension, web_contents, filter);
+  AddHostAccessRequest(*extension, web_contents, filter);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_FALSE(requests_section->GetVisible());
@@ -1550,7 +1550,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // extension with a filter that doesn't match the current web contents.
   URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
                     "*://*/path");
-  AddSiteAccessRequest(
+  AddHostAccessRequest(
       *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
@@ -1598,8 +1598,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
   // Add site access requests for both extensions and verify they are both
   // visible on the requests section.
-  AddSiteAccessRequest(*extension_A, web_contents);
-  AddSiteAccessRequest(*extension_B, web_contents);
+  AddHostAccessRequest(*extension_A, web_contents);
+  AddHostAccessRequest(*extension_B, web_contents);
   EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestsSection(),
               testing::ElementsAre(extension_A->id(), extension_B->id()));
@@ -1625,7 +1625,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Navigate to a site and add a site access request for the extension.
   const GURL url("http://www.example.com");
   web_contents_tester()->NavigateAndCommit(url);
-  AddSiteAccessRequest(*extension,
+  AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
   ShowMenu();
@@ -1690,7 +1690,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Navigate to a site and add a site access request for the extension.
   const GURL url("http://www.example.com");
   web_contents_tester()->NavigateAndCommit(url);
-  AddSiteAccessRequest(*extension,
+  AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
   ShowMenu();
@@ -1752,7 +1752,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   // Navigate to a site and add a site access request for the extension.
   const GURL url("http://www.example.com");
   web_contents_tester()->NavigateAndCommit(url);
-  AddSiteAccessRequest(*extension,
+  AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
   // By default, user can customize the site access of each extension and site

@@ -12,6 +12,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/common/feature_promo/impl/precondition_list_provider.h"
 #include "components/user_education/common/user_education_storage_service.h"
 
@@ -30,6 +31,26 @@ struct QueuedFeaturePromo {
   FeaturePromoPreconditionList required_preconditions;
   FeaturePromoPreconditionList wait_for_preconditions;
   base::Time queue_time;
+};
+
+// Represents information about a promo that is ready to show.
+struct EligibleFeaturePromo {
+  explicit EligibleFeaturePromo(FeaturePromoParams promo_params_);
+  EligibleFeaturePromo(EligibleFeaturePromo&&) noexcept;
+  EligibleFeaturePromo& operator=(EligibleFeaturePromo&&) noexcept;
+  ~EligibleFeaturePromo();
+
+  // The params for the promo that will be shown.
+  FeaturePromoParams promo_params;
+
+  // The cached data from the preconditions that were satisfied in order for the
+  // promo to show. This preserves the data from the queue when the promo is
+  // removed.
+  //
+  // These are guaranteed to be current as of the promo being popped from the
+  // queue, since all preconditions will have to be evaluated before a promo can
+  // be returned by any of the `UpdateAnd...()` methods.
+  PreconditionData::Collection cached_data;
 };
 
 // Represents a queue of promos to be shown at a particular priority.
@@ -100,7 +121,7 @@ class FeaturePromoQueue {
   //
   // Implicitly calls `RemoveIneligiblePromos()` as part of the initial cleanup
   // process.
-  std::optional<FeaturePromoParams> UpdateAndGetNextEligiblePromo();
+  std::optional<EligibleFeaturePromo> UpdateAndGetNextEligiblePromo();
 
   // Removes timed-out and prohibited promos without trying to retrieve the next
   // eligible promo. "Show promo result" callbacks are called for any removed
@@ -139,7 +160,7 @@ class FeaturePromoQueue {
   // Finds, pops, and returns the first promo whose wait-for preconditions are
   // met. Should be called after the two "Remove..." methods above to ensure
   // only valid promos are returned.
-  std::optional<FeaturePromoParams> GetNextEligiblePromo();
+  std::optional<EligibleFeaturePromo> GetNextEligiblePromo();
 
   // Returns an iterator to the queued promo for `feature`, or
   // `queued_promos_.end()` if not found.

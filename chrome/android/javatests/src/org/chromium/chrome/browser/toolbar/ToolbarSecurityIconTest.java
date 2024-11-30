@@ -328,7 +328,7 @@ public final class ToolbarSecurityIconTest {
                         PdfPageType.NONE));
 
         assertEquals(
-                R.drawable.omnibox_https_valid_refresh,
+                R.drawable.omnibox_https_valid_page_info,
                 mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT,
                         IS_SMALL_DEVICE,
@@ -336,7 +336,7 @@ public final class ToolbarSecurityIconTest {
                         !IS_PAINT_PREVIEW,
                         PdfPageType.NONE));
         assertEquals(
-                R.drawable.omnibox_https_valid_refresh,
+                R.drawable.omnibox_https_valid_page_info,
                 mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT,
                         !IS_SMALL_DEVICE,
@@ -345,7 +345,7 @@ public final class ToolbarSecurityIconTest {
                         PdfPageType.NONE));
 
         assertEquals(
-                R.drawable.omnibox_https_valid_refresh,
+                R.drawable.omnibox_https_valid_page_info,
                 mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.SECURE,
                         IS_SMALL_DEVICE,
@@ -353,7 +353,7 @@ public final class ToolbarSecurityIconTest {
                         !IS_PAINT_PREVIEW,
                         PdfPageType.NONE));
         assertEquals(
-                R.drawable.omnibox_https_valid_refresh,
+                R.drawable.omnibox_https_valid_page_info,
                 mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.SECURE,
                         !IS_SMALL_DEVICE,

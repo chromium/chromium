@@ -439,6 +439,9 @@ template("webview_alternate_library") {
     # Webview's native side naturally will have more JNI present than the Java
     # side. We can just remove any uncalled Java->Native methods.
     remove_uncalled_jni = true
+
+    # To be compatible with primary ABI library.
+    never_omit_switch_num = true
   }
 }
 
@@ -473,9 +476,9 @@ java_group("android_webview_no_weblayer_java") {
     "//android_webview/support_library:support_lib_glue_java",
   ]
 
-  # If the T SDK isn't public yet, include the downstream code to support T.
-  if (!public_android_sdk && android_sdk_release == "t") {
-    deps += [ "//clank/android_webview/next:t_sdk_java" ]
+  # If the B SDK isn't public yet, include the downstream code to support B.
+  if (!public_android_sdk && android_sdk_release == "b") {
+    deps += [ "//clank/android_webview/next:b_sdk_java" ]
   }
 }
 
@@ -531,6 +534,7 @@ generate_jni("browser_jni_headers") {
     "java/src/org/chromium/android_webview/AwTracingController.java",
     "java/src/org/chromium/android_webview/AwWebContentsDelegate.java",
     "java/src/org/chromium/android_webview/AwWebResourceInterceptResponse.java",
+    "java/src/org/chromium/android_webview/AwWindowCoverageTracker.java",
     "java/src/org/chromium/android_webview/JsReplyProxy.java",
     "java/src/org/chromium/android_webview/PopupTouchHandleDrawable.java",
     "java/src/org/chromium/android_webview/StartupJavascriptInfo.java",
@@ -587,6 +591,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/AwDisplayCutoutController.java",
     "java/src/org/chromium/android_webview/AwDisplayModeController.java",
     "java/src/org/chromium/android_webview/AwFeatureMap.java",
+    "java/src/org/chromium/android_webview/AwFrameMetricsListener.java",
     "java/src/org/chromium/android_webview/AwGeolocationPermissions.java",
     "java/src/org/chromium/android_webview/AwHistogramRecorder.java",
     "java/src/org/chromium/android_webview/AwHttpAuthHandler.java",
@@ -622,6 +627,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/AwWebContentsMetricsRecorder.java",
     "java/src/org/chromium/android_webview/AwWebContentsObserver.java",
     "java/src/org/chromium/android_webview/AwWebResourceInterceptResponse.java",
+    "java/src/org/chromium/android_webview/AwWindowCoverageTracker.java",
     "java/src/org/chromium/android_webview/AwZoomControls.java",
     "java/src/org/chromium/android_webview/BrowserSafeModeActionList.java",
     "java/src/org/chromium/android_webview/CleanupReference.java",

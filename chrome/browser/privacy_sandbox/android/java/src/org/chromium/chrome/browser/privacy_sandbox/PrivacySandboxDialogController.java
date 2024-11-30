@@ -9,6 +9,7 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -111,7 +112,8 @@ public class PrivacySandboxDialogController {
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_EEA:
-                showNoticeEEA(context, privacySandboxBridge, surfaceType);
+                showNoticeEEA(
+                        context, privacySandboxBridge, surfaceType, profile, activityWindowAndroid);
                 return true;
             case PromptType.M1_NOTICE_ROW:
                 dialog =
@@ -138,10 +140,25 @@ public class PrivacySandboxDialogController {
     public static void showNoticeEEA(
             Context context,
             PrivacySandboxBridge privacySandboxBridge,
-            @SurfaceType int surfaceType) {
+            @SurfaceType int surfaceType,
+            Profile profile,
+            ActivityWindowAndroid activityWindowAndroid) {
         if (!sDisableEEANoticeForTesting) {
             Dialog dialog;
-            dialog = new PrivacySandboxDialogNoticeEEA(context, privacySandboxBridge, surfaceType);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
+                dialog =
+                        new PrivacySandboxDialogNoticeEeaV2(
+                                context,
+                                privacySandboxBridge,
+                                surfaceType,
+                                profile,
+                                activityWindowAndroid);
+            } else {
+                dialog =
+                        new PrivacySandboxDialogNoticeEEA(
+                                context, privacySandboxBridge, surfaceType);
+            }
             dialog.show();
             sDialog = new WeakReference<>(dialog);
         }

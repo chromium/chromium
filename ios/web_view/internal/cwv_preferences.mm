@@ -12,6 +12,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 
 @implementation CWVPreferences {
   PrefService* _prefService;
@@ -54,6 +55,14 @@
 
 - (BOOL)isCreditCardAutofillEnabled {
   return autofill::prefs::IsAutofillPaymentMethodsEnabled(_prefService);
+}
+
+- (void)setAutofillAddressSyncEnabled:(BOOL)enabled {
+  ios_web_view::SetAutofillAddressSyncEnabled(_prefService, enabled);
+}
+
+- (BOOL)isAutofillAddressSyncEnabled {
+  return ios_web_view::IsAutofillAddressSyncEnabled(_prefService);
 }
 
 - (void)setPasswordAutofillEnabled:(BOOL)enabled {

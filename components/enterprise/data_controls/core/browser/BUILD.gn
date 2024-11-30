@@ -105,7 +105,3 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
-
-proto_library("dlp_policy_event_proto") {
-  sources = [ "dlp_policy_event.proto" ]
-}

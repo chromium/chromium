@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.CUSTOM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.HOME;
@@ -19,7 +20,6 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.B
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SEARCH;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
 
@@ -187,7 +187,7 @@ public class GoogleBottomBarCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             initDefaultSearchEngine_variantLayoutsEnabled_defaultSearchEngineCheckEnabled_doesNotCheckDefaultSearchEngine() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(false);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(false);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
@@ -207,7 +207,7 @@ public class GoogleBottomBarCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             initDefaultSearchEngine_variantLayoutsEnabled_defaultSearchEngineCheckEnabledAndNotEqualToGoogle_writesFalse() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, true);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
@@ -225,7 +225,7 @@ public class GoogleBottomBarCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             initDefaultSearchEngine_variantLayoutsEnabled_defaultSearchEngineCheckEnabledAndEqualsToGoogle_writesTrue() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
@@ -310,7 +310,7 @@ public class GoogleBottomBarCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             getSupportedCustomButtonParamIds_variantLayoutsEnabledButNotSupported_singleDecker_returnsSetWithAllSupportedCustomParams() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         GoogleBottomBarIntentParams intentParams =
@@ -346,7 +346,7 @@ public class GoogleBottomBarCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             getSupportedCustomButtonParamIds_variantLayoutsEnabledButNotSupported_singleDeckerWithButtonsOnRight_returnsSetWithAllSupportedCustomParams() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         GoogleBottomBarIntentParams intentParams =

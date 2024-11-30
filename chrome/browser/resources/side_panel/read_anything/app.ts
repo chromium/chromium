@@ -25,7 +25,7 @@ import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeou
 import type {LanguageToastElement} from './language_toast.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isGoogle, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 
@@ -287,17 +287,6 @@ export class AppElement extends AppElementBase {
 
   speechSynthesisLanguage: string;
 
-  // If we weren't able to restore language preferences successfully and we
-  // should attempt to restore settings if voices refresh.
-  // Sometimes, the speech synthesis engine hasn't refreshed available
-  // voices by the time we restore settings, which means we end up
-  // ignoring previous settings if we get an onvoiceschanged callback
-  // a few seconds later. By keeping track of whether or not preferences
-  // were successfully restored, we can re-attempt to restore voice and
-  // language preferences from settings in onVoicesChanged.
-  shouldAttemptLanguageSettingsRestore: boolean = true;
-
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -391,8 +380,20 @@ export class AppElement extends AppElementBase {
         return;
       }
 
-      chrome.readingMode.onSelectionChange(
-          anchorNodeId, anchorOffset, focusNodeId, focusOffset);
+      // Only send this selection to the main panel if it is different than the
+      // current main panel selection.
+      const mainPanelAnchor =
+          this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.startNodeId);
+      const mainPanelFocus =
+          this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.endNodeId);
+      if (!mainPanelAnchor || !mainPanelAnchor.contains(selection.anchorNode) ||
+          !mainPanelFocus || !mainPanelFocus.contains(selection.focusNode) ||
+          selection.anchorOffset !== chrome.readingMode.startOffset ||
+          selection.focusOffset !== chrome.readingMode.endOffset) {
+        chrome.readingMode.onSelectionChange(
+            anchorNodeId, anchorOffset, focusNodeId, focusOffset);
+      }
+
       // If there's been a selection, clear the current
       // Read Aloud highlight.
       const elements =
@@ -615,7 +616,7 @@ export class AppElement extends AppElementBase {
   }
 
   showEmpty() {
-    if (chrome.readingMode.isGoogleDocs) {
+    if (!chrome.readingMode.isGoogleDocs) {
       this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
     } else {
       this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');
@@ -884,8 +885,8 @@ export class AppElement extends AppElementBase {
       // it.
       const availableVoicesForLang = this.getVoices_().filter(
           v => getVoicePackConvertedLangIfExists(v.lang) === lang);
-      if (availableVoicesForLang.length === 0 ||
-          availableVoicesForLang.some(v => isEspeak(v))) {
+      if (!availableVoicesForLang.some(voice => isGoogle(voice))) {
+        chrome.readingMode.onLanguagePrefChange(lang, false);
         this.enabledLangs = this.enabledLangs.filter(
             enabledLang =>
                 getVoicePackConvertedLangIfExists(enabledLang) !== lang);
@@ -992,8 +993,7 @@ export class AppElement extends AppElementBase {
     // refreshVoicePackStatuses();
     this.getVoices_(/*refresh =*/ true);
 
-    if (this.shouldAttemptLanguageSettingsRestore && previousSize === 0 &&
-        this.availableVoices_.length > 0) {
+    if (!previousSize && this.availableVoices_.length) {
       // If we go from having no available voices to having voices available,
       // restore voice settings from preferences.
       this.restoreEnabledLanguagesFromPref();
@@ -2151,6 +2151,7 @@ export class AppElement extends AppElementBase {
       const langCodeForVoicePackManager =
           convertLangOrLocaleForVoicePackManager(toggledLanguage);
       if (langCodeForVoicePackManager) {
+        this.notificationManager_.onCancelDownload(langCodeForVoicePackManager);
         this.languagesForVoiceDownloads.delete(langCodeForVoicePackManager);
         // Uninstall the Natural voice when a language is deselected.
         chrome.readingMode.sendUninstallVoiceRequest(
@@ -2256,13 +2257,6 @@ export class AppElement extends AppElementBase {
     // refresh the list of voices and available langs
     this.getVoices_();
 
-    // If there are no available languages or voices yet, we might not be
-    // able to restore voice settings yet, so signal that we should attempt
-    // to restore settings the next time onVoicesChanged is called with
-    // available voices.
-    this.shouldAttemptLanguageSettingsRestore =
-        !(this.availableLangs_ && this.availableLangs_.length > 0);
-
     const storedLanguagesPref: string[] =
         chrome.readingMode.getLanguagesEnabledInPref();
     const browserOrPageBaseLang = chrome.readingMode.baseLanguageForSpeech;
@@ -2272,11 +2266,38 @@ export class AppElement extends AppElementBase {
         browserOrPageBaseLang, storedLanguagesPref, this.availableLangs_,
         this.defaultVoice()?.lang);
 
+    // Only update the unavailable languages in prefs if there are any available
+    // languages. Otherwise, we should wait until the available languages are
+    // updated to do this.
+    if (this.availableLangs_ && this.availableLangs_.length) {
+      this.alignPreferencesWithEnabledLangs_(storedLanguagesPref);
+    }
+
     for (const lang of this.enabledLangs) {
       this.installVoicePackIfPossible(
           lang, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ false);
     }
+  }
+
+  private alignPreferencesWithEnabledLangs_(languagesInPref: string[]) {
+    // If a stored language doesn't have a match in the enabled languages
+    // list, disable the original preference. If a particular locale becomes
+    // unavailable between reading mode sessions, we may enable a different
+    // locale instead, and the now unavailable locale can never be removed
+    // by the user, so remove it here and save the newly enabled locale. For
+    // example if the user previously enabled 'pt-pt' and now it is unavailable,
+    // createInitialListOfEnabledLanguages above will enable 'pt-br' instead if
+    // it is available. Thus we should remove 'pt-pt' from preferences here and
+    // add 'pt-br' below.
+    languagesInPref.forEach(storedLanguage => {
+      if (!this.enabledLangs.includes(storedLanguage)) {
+        chrome.readingMode.onLanguagePrefChange(storedLanguage, false);
+      }
+    });
+    this.enabledLangs.forEach(
+        enabledLanguage =>
+            chrome.readingMode.onLanguagePrefChange(enabledLanguage, true));
   }
 
   private currentVoiceIsUserChosen_(): boolean {
@@ -2389,10 +2410,6 @@ export class AppElement extends AppElementBase {
   }
 
   private autoSwitchVoice_(lang: string) {
-    if (!chrome.readingMode.isAutoVoiceSwitchingEnabled) {
-      return;
-    }
-
     // Only enable this language if it has available voices and is the current
     // language. Otherwise switch to a default voice if nothing is selected.
     const availableLang =

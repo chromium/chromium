@@ -31,3 +31,8 @@ fun:*views*ViewAccessibilityUtils*IsFocusedChildWidget*
 # https://crbug.com/363225486
 [alignment]
 fun:*base*Pickle*
+
+# https://crbug.com/380898782
+[object-size]
+fun:*quiche*test*GetTestParams*
+fun:*quic*test*GetTestParams*

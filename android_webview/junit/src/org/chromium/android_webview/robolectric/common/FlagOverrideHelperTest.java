@@ -282,4 +282,50 @@ public class FlagOverrideHelperTest {
         assertEnabledFeatures(arrayToSet("feature-1"));
         assertDisabledFeatures(arrayToSet("feature-2"));
     }
+
+    @Test
+    @SmallTest
+    public void testMultipleOverrides() {
+        Map<String, Boolean> map1 = new HashMap<>();
+        map1.put("flag-1", true);
+        map1.put("flag-2", false);
+        map1.put("feature-1", true);
+        map1.put("feature-2", false);
+        FlagOverrideHelper helper1 = new FlagOverrideHelper(sMockFlagList);
+        helper1.applyFlagOverrides(map1);
+
+        Assert.assertTrue(
+                "The 'flag-1' commandline flag should be applied",
+                CommandLine.getInstance().hasSwitch("flag-1"));
+        Assert.assertFalse(
+                "The 'flag-2' commandline flag should not be applied",
+                CommandLine.getInstance().hasSwitch("flag-2"));
+        Assert.assertFalse(
+                "The 'flag-3' commandline flag should be off by default",
+                CommandLine.getInstance().hasSwitch("flag-3"));
+        assertEnabledFeatures(arrayToSet("feature-1"));
+        assertDisabledFeatures(arrayToSet("feature-2"));
+
+        Map<String, Boolean> map2 = new HashMap<>();
+        // Try a variety of ways to override.
+        map2.put("flag-1", !map1.get("flag-1")); // invert the switch value
+        map2.put("flag-2", map1.get("flag-2")); // keep the same switch value
+        // Don't do anything with feature-1
+        map2.put("feature-2", !map1.get("feature-2")); // invert the feature value
+        map2.put("flag-3", true); // add a new flag
+        FlagOverrideHelper helper2 = new FlagOverrideHelper(sMockFlagList);
+        helper2.applyFlagOverrides(map2);
+
+        Assert.assertFalse(
+                "The 'flag-1' commandline flag should be removed by the second FlagOverrideHelper",
+                CommandLine.getInstance().hasSwitch("flag-1"));
+        Assert.assertFalse(
+                "The 'flag-2' commandline flag should not be applied by the second"
+                        + " FlagOverrideHelper",
+                CommandLine.getInstance().hasSwitch("flag-2"));
+        Assert.assertTrue(
+                "The 'flag-3' commandline flag should be added by the second FlagOverrideHelper",
+                CommandLine.getInstance().hasSwitch("flag-3"));
+        assertEnabledFeatures(arrayToSet("feature-1", "feature-2"));
+    }
 }

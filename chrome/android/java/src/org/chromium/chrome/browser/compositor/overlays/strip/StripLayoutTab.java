@@ -728,8 +728,10 @@ public class StripLayoutTab extends StripLayoutView {
 
     /**
      * This is used to help calculate the tab's position and is not used for rendering.
+     *
      * @return The vertical offset of the tab.
      */
+    @Override
     public float getOffsetY() {
         return mTabOffsetY;
     }

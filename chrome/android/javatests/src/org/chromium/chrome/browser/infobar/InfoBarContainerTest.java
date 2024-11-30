@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -277,8 +278,16 @@ public class InfoBarContainerTest {
                     infoBar.onCloseButtonClicked();
                     sActivityTestRule
                             .getActivity()
-                            .getTabModelSelector()
-                            .closeTab(sActivityTestRule.getActivity().getActivityTab());
+                            .getCurrentTabModel()
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(
+                                                    sActivityTestRule
+                                                            .getActivity()
+                                                            .getActivityTab())
+                                            .allowUndo(false)
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
 
         infobarListener.dismissedCallback.waitForCallback(0, 1);

@@ -119,23 +119,45 @@ int OrderUnavailableValue(bool v1, bool v2) {
   return v1 ? 1 : -1;
 }
 
-bool ShouldKeepTaskForTabs(Task::Type type) {
-  return type == Task::Type::RENDERER;
+bool ShouldKeepTaskForTabs(Task::Type type, Task::SubType subtype) {
+  return type == Task::RENDERER && subtype != Task::SubType::kSpareRenderer &&
+         subtype != Task::SubType::kSpareRenderer;
 }
 
 bool ShouldKeepTaskForExtensions(Task::Type type) {
-  return type == Task::Type::EXTENSION;
+  switch (type) {
+    case Task::EXTENSION:
+    case Task::GUEST:
+    case Task::PLUGIN:
+      return true;
+    default:
+      return false;
+  }
 }
 
-bool ShouldKeepTaskForSystem(Task::Type type) {
+bool ShouldKeepTaskForSystem(Task::Type type, Task::SubType subtype) {
+  // These major types are categorized as "System" processes, because they
+  // have some special interaction with Chromium internals.
   switch (type) {
-    case Task::Type::BROWSER:
-    case Task::Type::GPU:
-    case Task::Type::ARC:
-    case Task::Type::CROSTINI:
-    case Task::Type::PLUGIN_VM:
-    case Task::Type::ZYGOTE:
-    case Task::Type::UTILITY:
+    case Task::BROWSER:
+    case Task::GPU:
+    case Task::ARC:
+    case Task::CROSTINI:
+    case Task::PLUGIN_VM:
+    case Task::ZYGOTE:
+    case Task::UTILITY:
+    case Task::PLUGIN:
+    case Task::SANDBOX_HELPER:
+      return true;
+    default:
+      break;
+  }
+
+  // The subtypes are normal renderers, however killing these is not beneficial
+  // to the user, so they are categorized under System.
+  switch (subtype) {
+    case Task::SubType::kSpareRenderer:
+    case Task::SubType::kUnknownRenderer:
       return true;
     default:
       return false;
@@ -1008,13 +1030,15 @@ bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
   }
 
   const Task::Type type = observed_task_manager()->GetType(task_id);
+  const Task::SubType subtype = observed_task_manager()->GetSubType(task_id);
+
   switch (display_category_) {
     case DisplayCategory::kTabs:
-      return ShouldKeepTaskForTabs(type);
+      return ShouldKeepTaskForTabs(type, subtype);
     case DisplayCategory::kExtensions:
       return ShouldKeepTaskForExtensions(type);
     case DisplayCategory::kSystem:
-      return ShouldKeepTaskForSystem(type);
+      return ShouldKeepTaskForSystem(type, subtype);
     default:
       NOTREACHED();
   }

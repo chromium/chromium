@@ -30,6 +30,19 @@ TEST_F(CWVTranslationLanguageTest, Initialization) {
   EXPECT_NSEQ(native_name, language.nativeName);
 }
 
+// Tests CWVTranslationLanguage auto language initialization.
+TEST_F(CWVTranslationLanguageTest, AutoLanguageInitialization) {
+  NSString* localized_name = @"Localized auto";
+  NSString* native_name = @"Native auto";
+  CWVTranslationLanguage* language =
+      [CWVTranslationLanguage autoLanguageWithLocalizedName:localized_name
+                                                 nativeName:native_name];
+
+  EXPECT_NSEQ(@"auto", language.languageCode);
+  EXPECT_NSEQ(localized_name, language.localizedName);
+  EXPECT_NSEQ(native_name, language.nativeName);
+}
+
 TEST_F(CWVTranslationLanguageTest, Equality) {
   // Two languages with the same langauge code but different localized/native
   // names.

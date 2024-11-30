@@ -148,6 +148,11 @@ void TabModelJniBridge::SetActiveIndex(int index) {
   Java_TabModelJniBridge_setIndex(env, java_object_.get(env), index);
 }
 
+void TabModelJniBridge::ForceCloseAllTabs() {
+  JNIEnv* env = AttachCurrentThread();
+  Java_TabModelJniBridge_forceCloseAllTabs(env, java_object_.get(env));
+}
+
 void TabModelJniBridge::CloseTabAt(int index) {
   JNIEnv* env = AttachCurrentThread();
   Java_TabModelJniBridge_closeTabAt(env, java_object_.get(env), index);

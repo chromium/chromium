@@ -44,7 +44,7 @@ class TestCertificateSelector : public CertificateSelector {
 
 class CertificateSelectorDialogTest : public DialogBrowserTest {
  public:
-  CertificateSelectorDialogTest() {}
+  CertificateSelectorDialogTest() = default;
 
   CertificateSelectorDialogTest(const CertificateSelectorDialogTest&) = delete;
   CertificateSelectorDialogTest& operator=(

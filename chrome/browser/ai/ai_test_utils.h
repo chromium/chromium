@@ -91,6 +91,11 @@ class AITestUtils {
          blink::mojom::AILanguageModelInfoPtr info),
         (override));
 
+    MOCK_METHOD(void,
+                OnError,
+                (blink::mojom::AIManagerCreateLanguageModelError error),
+                (override));
+
    private:
     mojo::Receiver<blink::mojom::AIManagerCreateLanguageModelClient> receiver_{
         this};

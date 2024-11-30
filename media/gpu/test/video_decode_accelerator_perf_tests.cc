@@ -413,7 +413,7 @@ TEST_F(VideoDecoderTest, MeasureCappedPerformance) {
 // created decoder. We should instead keep track of multiple evaluators, and
 // then decide how to aggregate/report those metrics.
 // Play multiple videos simultaneously from start to finish.
-TEST_F(VideoDecoderTest, MeasureUncappedPerformance_TenConcurrentDecoders) {
+TEST_F(VideoDecoderTest, MeasureUncappedPerformanceTenConcurrentDecoders) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // Set RLIMIT_NOFILE soft limit to its hard limit value.
   if (sandbox::ResourceLimits::AdjustCurrent(

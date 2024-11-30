@@ -1,19 +1,20 @@
 include_rules = [
-  "+ios/chrome/browser/ui/browser_container",
+  "+ios/chrome/browser/browser_container/ui_bundled",
   "+ios/chrome/browser/bookmarks/ui_bundled",
   "+ios/chrome/browser/bubble/ui_bundled",
-  "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+  "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h",
   "+ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h",
-  "+ios/chrome/browser/ui/reading_list",
-  "+ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h",
+  "+ios/chrome/browser/reading_list/ui_bundled",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/features.h",
   "+ios/chrome/browser/ui/whats_new/whats_new_util.h",
-  "+ios/chrome/browser/ui/presenters",
+  "+ios/chrome/browser/presenters/ui_bundled",
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
-  "+ios/chrome/browser/ui/sharing",
-  "+ios/chrome/browser/ui/tab_switcher/tab_utils.h",
+  "+ios/chrome/browser/settings/ui_bundled",
+  "+ios/chrome/browser/sharing/ui_bundled",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h",
   "+ios/chrome/browser/policy/ui_bundled/user_policy_util.h",
-  "+ios/chrome/browser/ui/settings/clear_browsing_data/features.h",
+  "+ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h",
 ]
 
 specific_include_rules = {

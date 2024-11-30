@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_model.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "base/memory/raw_ptr.h"
@@ -39,7 +40,8 @@ class BirchItem;
 // The controller used to manage the birch bar in every `OverviewGrid`. It will
 // fetch data from `BirchModel` and distribute the data to birch bars.
 class ASH_EXPORT BirchBarController : public BirchModel::Observer,
-                                      public ui::SimpleMenuModel::Delegate {
+                                      public ui::SimpleMenuModel::Delegate,
+                                      public BirchCoralProvider::Observer {
  public:
   explicit BirchBarController(bool from_pine_service);
   BirchBarController(const BirchBarController&) = delete;
@@ -53,6 +55,8 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   std::vector<raw_ptr<BirchBarView>>& bar_views() { return bar_views_; }
+
+  bool is_informed_restore() const { return is_informed_restore_; }
 
   // Register a bar view.
   void RegisterBar(BirchBarView* bar_view);
@@ -87,16 +91,8 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // Toggles temperature units for weather chip between F and C.
   void ToggleTemperatureUnits();
 
-  // Called when the coral group with `group_id` is being removed.
-  void OnCoralGroupRemoved(const base::Token& group_id);
-
-  // Called when the content of a group with given `group_id` gets updated.
-  void OnCoralGroupUpdated(const base::Token& group_id);
-
-  // Called when an entity with given `identifier` is removed from the group
-  // with given id.
-  void OnCoralEntityRemoved(const base::Token& group_id,
-                            std::string_view identifier);
+  // Launches feedback diaglog for Coral items.
+  void ProvideFeedbackForCoral();
 
   // Executes the commands from bar and chip context menus. `from_chip` will be
   // true if the command is from a chip context menu.
@@ -113,16 +109,18 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
-  // Launches feedback diaglog for Coral items.
-  void ProvideFeedbackForCoral();
+  // BirchCoralProvider::Observer:
+  void OnCoralGroupRemoved(const base::Token& group_id) override;
+  void OnCoralEntityRemoved(const base::Token& group_id,
+                            std::string_view identifier) override;
+  void OnCoralGroupTitleUpdated(const base::Token& group_id) override;
 
   BirchBarMenuModelAdapter* chip_menu_model_adapter_for_testing() {
     return chip_menu_model_adapter_.get();
   }
 
  private:
-  friend class BirchBarAnimationTest;
-  friend class BirchBarMenuTest;
+  friend class BirchBarTestBase;
 
   // Fetches data from birch model if there is no fetching in progress.
   void MaybeFetchDataFromModel();

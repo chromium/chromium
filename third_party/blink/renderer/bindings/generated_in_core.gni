@@ -1666,8 +1666,6 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_trusted_type_policy_factory.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ui_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ui_event.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_underlying_sink_base.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_underlying_sink_base.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_url.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_url.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_url_pattern.cc",
@@ -1782,6 +1780,8 @@ generated_typedef_sources_in_core = [
 ]
 
 generated_union_sources_in_core = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_undefined_unsignedlonglongenforcerange.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_undefined_unsignedlonglongenforcerange.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_animationeffect_animationeffectsequence.cc",

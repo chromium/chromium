@@ -124,9 +124,15 @@ class OSSettingsMochaTestMagnifierFollowsChromeVoxEnabled
 };
 
 class OSSettingsMochaTestFilterKeysEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsMochaTestFilterKeysEnabled() {
+    scoped_feature_list_.InitWithFeatures({::features::kAccessibilityBounceKeys,
+                                           ::features::kAccessibilitySlowKeys},
+                                          {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityFilterKeys};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
@@ -261,11 +267,7 @@ class OSSettingsDeviceTestAltAndSplitAndBacklightEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class OSSettingsNearbyShareTestSharingEnabled : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kNearbySharing};
-};
+using OSSettingsNearbyShareTestSharingEnabled = OSSettingsMochaTest;
 
 class OSSettingsOsA11yTestMainNodeAnnotationsEnabled
     : public OSSettingsMochaTest {
@@ -1388,10 +1390,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
   RunSettingsTest("os_people_page/personalization_options_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPage) {
-  RunSettingsTest("os_printing_page/os_printing_page_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrintServer) {
   RunSettingsTest("os_printing_page/cups_print_server_test.js");
 }
@@ -1499,10 +1497,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsResetTestSanitizeDisabled,
   RunSettingsTest("os_reset_page/reset_settings_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSearchPage) {
-  RunSettingsTest("os_search_page/os_search_page_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsSearchPageGoogleAssistantSubpage) {
   RunSettingsTest("os_search_page/google_assistant_subpage_test.js");
@@ -1524,8 +1518,8 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsMainManagedFootnote) {
   RunSettingsTest("os_settings_main/managed_footnote_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsMenuRevamp) {
-  RunSettingsTest("os_settings_menu/os_settings_menu_revamp_test.js");
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsMenu) {
+  RunSettingsTest("os_settings_menu/os_settings_menu_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsMenuItem) {

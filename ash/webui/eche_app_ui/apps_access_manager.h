@@ -28,8 +28,11 @@ using AccessStatus =
 class AppsAccessManager {
  public:
   // Note: Numerical values should not be changed, they are persisted to logs
-  // and should not be renumbered or re-used. See
-  // tools/metrics/histograms/enums.xml.
+  // and should not be renumbered or re-used. Keep in sync with the
+  // OnboardingUserActionMetric UMA enum defined in
+  // //tools/metrics/histograms/enums.xml.
+  //
+  // LINT.IfChange(OnboardingUserActionMetric)
   enum class OnboardingUserActionMetric {
     // Initial state.
     kUserActionUnknown = 0,
@@ -64,6 +67,7 @@ class AppsAccessManager {
 
     kMaxValue = kAckByExo
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:OnboardingUserActionMetric)
 
   class Observer : public base::CheckedObserver {
    public:

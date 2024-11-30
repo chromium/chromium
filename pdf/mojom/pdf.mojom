@@ -28,9 +28,11 @@ interface PdfListener {
 
   // Get PDF bytes. If the size of the PDF in bytes is larger than `size_limit`,
   // an empty vector will be returned instead. `bytes` is only guaranteed to be
-  // from the PDF engine if `status` is `kSuccess`.
+  // from the PDF engine if `status` is `kSuccess`. `page_count` is the number
+  // of pages in the PDF displayed in the renderer, not the number of pages
+  // returned in `bytes`.
   GetPdfBytes(uint32 size_limit)
-      => (GetPdfBytesStatus status, array<uint8> bytes);
+      => (GetPdfBytesStatus status, array<uint8> bytes, uint32 page_count);
 };
 
 // Browser-side interface used by PDF renderers.

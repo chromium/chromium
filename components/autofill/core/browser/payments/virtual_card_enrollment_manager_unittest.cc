@@ -72,7 +72,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
 
   void SetUpCard() {
     card_ = std::make_unique<CreditCard>(test::GetMaskedServerCard());
-    card_->set_card_art_url(autofill_client_->form_origin());
+    card_->set_card_art_url(GURL("http://www.example.com/image.png"));
     card_->set_instrument_id(112233445566);
     card_->set_guid("00000000-0000-0000-0000-000000000001");
     personal_data_manager().test_payments_data_manager().AddServerCreditCard(
@@ -156,7 +156,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
                 ->GetPaymentsNetworkInterface();
   }
   TestPersonalDataManager& personal_data_manager() {
-    return *autofill_client_->GetPersonalDataManager();
+    return autofill_client_->GetPersonalDataManager();
   }
   PrefService* user_prefs() { return autofill_client_->GetPrefs(); }
 

@@ -113,6 +113,94 @@ FrameConfig GetFrameConfig(size_t num_temporal_layers, size_t frame_num) {
       NOTREACHED();
   }
 }
+
+// Checks if all the bitrate values in the active layers range are not zero and
+// all the ones in non active layers range are zero.
+bool ValidateBitrates(const VideoBitrateAllocation& bitrate_allocation,
+                      size_t begin_active_spatial_layer,
+                      size_t end_active_spatial_layer,
+                      size_t num_temporal_layers) {
+  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
+    for (size_t tid = 0; tid < VideoBitrateAllocation::kMaxTemporalLayers;
+         ++tid) {
+      const bool is_active = bitrate_allocation.GetBitrateBps(sid, tid) > 0;
+      const bool expected_active = begin_active_spatial_layer <= sid &&
+                                   sid < end_active_spatial_layer &&
+                                   tid < num_temporal_layers;
+      if (is_active != expected_active) {
+        DVLOG(1) << "Invalid bitrate, sid=" << sid << ", tid=" << tid
+                 << " : bitrate_allocation=" << bitrate_allocation.ToString();
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+// Fills the spatial layers range and the number of temporal layers whose
+// bitrate is not zero.
+// |begin_active_spatial_layer| - the lowest active spatial layer index.
+// |end_active_spatial_layer| - the last active spatial layer index + 1.
+// |num_temporal_layers| - the number of temporal layers.
+//
+// The active spatial layer doesn't have to start with the bottom one, but the
+// active temporal layer must start with the bottom one. In other words, if
+// the spatial layer, spatial_index, is active, then
+// GetBitrateBps(spatial_index, 0) must not be zero.
+// Returns false VideoBitrateAllocation is invalid.
+bool ValidateAndGetActiveLayers(
+    const VideoBitrateAllocation& bitrate_allocation,
+    size_t& begin_active_spatial_layer,
+    size_t& end_active_spatial_layer,
+    size_t& num_temporal_layers) {
+  if (bitrate_allocation.GetSumBps() == 0) {
+    DVLOG(1) << "No active bitrate: bitrate_allocation="
+             << bitrate_allocation.ToString();
+    return false;
+  }
+
+  begin_active_spatial_layer = 0;
+  end_active_spatial_layer = 0;
+  num_temporal_layers = 0;
+
+  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
+    if (bitrate_allocation.GetBitrateBps(sid, 0) != 0) {
+      begin_active_spatial_layer = sid;
+      break;
+    }
+  }
+  for (int sid = VideoBitrateAllocation::kMaxSpatialLayers - 1;
+       sid >= base::checked_cast<int>(begin_active_spatial_layer); --sid) {
+    if (bitrate_allocation.GetBitrateBps(sid, 0) != 0) {
+      end_active_spatial_layer = sid + 1;
+      break;
+    }
+  }
+
+  if (end_active_spatial_layer == 0) {
+    DVLOG(1) << "Invalid bitrate: bitrate_allocation="
+             << bitrate_allocation.ToString();
+    return false;
+  }
+
+  // This assumes the number of temporal layers are the same in all the spatial
+  // layers. This will not be satisfied if we support a mix of hw/sw encoders.
+  // See the discussion:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/5040171/2/media/base/video_bitrate_allocation.cc#200
+  for (int tid = VideoBitrateAllocation::kMaxTemporalLayers - 1; tid >= 0;
+       --tid) {
+    if (bitrate_allocation.GetBitrateBps(begin_active_spatial_layer, tid) !=
+        0) {
+      num_temporal_layers = tid + 1;
+      break;
+    }
+  }
+
+  return ValidateBitrates(bitrate_allocation, begin_active_spatial_layer,
+                          end_active_spatial_layer, num_temporal_layers);
+}
+
 }  // namespace
 
 SVCLayers::Config::Config(
@@ -137,6 +225,62 @@ SVCLayers::PictureParam::~PictureParam() = default;
 SVCLayers::PictureParam::PictureParam(const PictureParam&) = default;
 
 SVCLayers::SVCLayers(const Config& config) : config_(config) {}
+
+std::pair<bool, std::optional<std::unique_ptr<SVCLayers>>>
+SVCLayers::RecreateSVCLayersIfNeeded(
+    VideoBitrateAllocation& bitrate_allocation) {
+  size_t begin_active_spatial_layer;
+  size_t end_active_spatial_layer;
+  size_t num_temporal_layers;
+  if (!ValidateAndGetActiveLayers(
+          bitrate_allocation, begin_active_spatial_layer,
+          end_active_spatial_layer, num_temporal_layers)) {
+    // Invalid active layer.
+    // See ValidateAndGetActiveLayers() comment for detail.
+    return std::make_pair(false, std::nullopt);
+  }
+
+  const auto& old_config = config();
+  if (end_active_spatial_layer > old_config.spatial_layer_resolutions.size() ||
+      end_active_spatial_layer - begin_active_spatial_layer >
+          old_config.spatial_layer_resolutions.size()) {
+    DVLOG(1) << "Requested spatial layer exceeds the initial spatial layer "
+             << "configuration: " << bitrate_allocation.ToString();
+    return std::make_pair(false, std::nullopt);
+  }
+
+  // Change VideoBitrateAllocation so that the active spatial layers to
+  // start with 0. This is necessary for the software rate controller.
+  if (begin_active_spatial_layer > 0) {
+    for (size_t sid = begin_active_spatial_layer;
+         sid < end_active_spatial_layer; sid++) {
+      for (size_t tid = 0; tid < num_temporal_layers; tid++) {
+        const uint32_t bitrate = bitrate_allocation.GetBitrateBps(sid, tid);
+        CHECK_NE(bitrate, 0u);
+        bitrate_allocation.SetBitrate(sid - begin_active_spatial_layer, tid,
+                                      bitrate);
+        bitrate_allocation.SetBitrate(sid, tid, 0u);
+      }
+    }
+  }
+
+  // Only updating the number of temporal layers don't have to force keyframe.
+  // But we produce keyframe in the case to not complex the code, assuming
+  // updating the number of temporal layers don't often happen.
+  // If this is not true, we should avoid producing keyframe in this case.
+  if (old_config.begin_active_layer != begin_active_spatial_layer ||
+      old_config.end_active_layer != end_active_spatial_layer ||
+      old_config.num_temporal_layers != num_temporal_layers) {
+    std::optional<std::unique_ptr<SVCLayers>> svc_layers =
+        std::make_unique<SVCLayers>(SVCLayers::Config(
+            old_config.spatial_layer_resolutions, begin_active_spatial_layer,
+            end_active_spatial_layer, num_temporal_layers,
+            old_config.inter_layer_pred));
+    return std::make_pair(true, std::move(svc_layers));
+  }
+
+  return std::make_pair(true, std::nullopt);
+}
 
 void SVCLayers::Reset() {
   CHECK_EQ(spatial_idx_, 0u);
@@ -171,10 +315,17 @@ bool SVCLayers::IsKeyFrame() const {
   return true;
 }
 
-void SVCLayers::GetPictureParamAndMetadata(PictureParam& picture_param,
-                                           Vp9Metadata& metadata) const {
+void SVCLayers::GetPictureParamAndMetadata(
+    PictureParam& picture_param,
+    absl::variant<Vp9Metadata*, SVCGenericMetadata*> metadata) const {
   picture_param.frame_size =
       config_.active_spatial_layer_resolutions[spatial_idx_];
+
+  // |SVCLayers| follows the WebRTC SVC spec. so we don't use
+  // |svc_metadata.reference_flags| and |svc_metadata.refresh_flags|.
+  if (auto* svc_metadata = absl::get_if<SVCGenericMetadata*>(&metadata)) {
+    (*svc_metadata)->follow_svc_spec = true;
+  }
 
   if (frame_num_ == 0) {
     FillMetadataForFirstFrame(metadata, picture_param.key_frame,
@@ -189,31 +340,11 @@ void SVCLayers::GetPictureParamAndMetadata(PictureParam& picture_param,
 }
 
 void SVCLayers::FillMetadataForFirstFrame(
-    Vp9Metadata& metadata,
+    absl::variant<Vp9Metadata*, SVCGenericMetadata*> metadata,
     bool& key_frame,
     uint8_t& refresh_frame_flags,
     std::vector<uint8_t>& reference_frame_indices) const {
   CHECK_EQ(frame_num_, 0u);
-
-  // Since this is the first frame, there is no reference frame in the same
-  // spatial layer.
-  metadata.inter_pic_predicted = false;
-  // The first frame is TL0 and references no frame.
-  metadata.temporal_up_switch = true;
-
-  metadata.end_of_picture =
-      spatial_idx_ == config_.active_spatial_layer_resolutions.size() - 1;
-
-  if (config_.inter_layer_pred == SVCInterLayerPredMode::kOnKeyPic) {
-    metadata.referenced_by_upper_spatial_layers = !metadata.end_of_picture;
-    metadata.reference_lower_spatial_layers = spatial_idx_ != 0;
-  } else {
-    metadata.referenced_by_upper_spatial_layers = false;
-    metadata.reference_lower_spatial_layers = false;
-  }
-
-  metadata.temporal_idx = 0;
-  metadata.spatial_idx = spatial_idx_;
 
   // Taking L3Tx as example, |refresh_indices| and |reference_frame_indices| are
   // as follows.
@@ -241,18 +372,46 @@ void SVCLayers::FillMetadataForFirstFrame(
     }
   }
 
-  if (key_frame) {
-    metadata.spatial_layer_resolutions =
-        config_.active_spatial_layer_resolutions;
-    metadata.begin_active_spatial_layer_index =
-        base::checked_cast<uint8_t>(config_.begin_active_layer);
-    metadata.end_active_spatial_layer_index =
-        base::checked_cast<uint8_t>(config_.end_active_layer);
+  if (auto* svc_metadata = absl::get_if<SVCGenericMetadata*>(&metadata)) {
+    (*svc_metadata)->temporal_idx = 0;
+    (*svc_metadata)->spatial_idx = spatial_idx_;
+  } else {
+    CHECK(absl::holds_alternative<Vp9Metadata*>(metadata));
+    auto& vp9_metadata = absl::get<Vp9Metadata*>(metadata);
+    // Since this is the first frame, there is no reference frame in the same
+    // spatial layer.
+    vp9_metadata->inter_pic_predicted = false;
+    // The first frame is TL0 and references no frame.
+    vp9_metadata->temporal_up_switch = true;
+
+    vp9_metadata->end_of_picture =
+        spatial_idx_ == config_.active_spatial_layer_resolutions.size() - 1;
+
+    if (config_.inter_layer_pred == SVCInterLayerPredMode::kOnKeyPic) {
+      vp9_metadata->referenced_by_upper_spatial_layers =
+          !vp9_metadata->end_of_picture;
+      vp9_metadata->reference_lower_spatial_layers = spatial_idx_ != 0;
+    } else {
+      vp9_metadata->referenced_by_upper_spatial_layers = false;
+      vp9_metadata->reference_lower_spatial_layers = false;
+    }
+
+    vp9_metadata->temporal_idx = 0;
+    vp9_metadata->spatial_idx = spatial_idx_;
+
+    if (key_frame) {
+      vp9_metadata->spatial_layer_resolutions =
+          config_.active_spatial_layer_resolutions;
+      vp9_metadata->begin_active_spatial_layer_index =
+          base::checked_cast<uint8_t>(config_.begin_active_layer);
+      vp9_metadata->end_active_spatial_layer_index =
+          base::checked_cast<uint8_t>(config_.end_active_layer);
+    }
   }
 }
 
 void SVCLayers::FillMetadataForNonFirstFrame(
-    Vp9Metadata& metadata,
+    absl::variant<Vp9Metadata*, SVCGenericMetadata*> metadata,
     uint8_t& refresh_frame_flags,
     std::vector<uint8_t>& reference_frame_indices) const {
   CHECK_NE(frame_num_, 0u);
@@ -266,23 +425,30 @@ void SVCLayers::FillMetadataForNonFirstFrame(
 
   reference_frame_indices = frame_config.GetRefFrameIndices(spatial_idx_);
 
-  metadata.inter_pic_predicted = !reference_frame_indices.empty();
-  metadata.temporal_up_switch = frame_config.temporal_up_switch();
+  if (auto* svc_metadata = absl::get_if<SVCGenericMetadata*>(&metadata)) {
+    (*svc_metadata)->temporal_idx = frame_config.layer_index();
+    (*svc_metadata)->spatial_idx = spatial_idx_;
+  } else {
+    CHECK(absl::holds_alternative<Vp9Metadata*>(metadata));
+    auto& vp9_metadata = absl::get<Vp9Metadata*>(metadata);
+    vp9_metadata->inter_pic_predicted = !reference_frame_indices.empty();
+    vp9_metadata->temporal_up_switch = frame_config.temporal_up_switch();
 
-  // No reference between spatial layers in kOnKeyPic (frame_num!=0) and kOff.
-  metadata.referenced_by_upper_spatial_layers = false;
-  metadata.reference_lower_spatial_layers = false;
+    // No reference between spatial layers in kOnKeyPic (frame_num!=0) and kOff.
+    vp9_metadata->referenced_by_upper_spatial_layers = false;
+    vp9_metadata->reference_lower_spatial_layers = false;
 
-  metadata.end_of_picture =
-      spatial_idx_ == config_.active_spatial_layer_resolutions.size() - 1;
+    vp9_metadata->end_of_picture =
+        spatial_idx_ == config_.active_spatial_layer_resolutions.size() - 1;
 
-  metadata.temporal_idx = frame_config.layer_index();
-  metadata.spatial_idx = spatial_idx_;
+    vp9_metadata->temporal_idx = frame_config.layer_index();
+    vp9_metadata->spatial_idx = spatial_idx_;
 
-  for (const uint8_t i : reference_frame_indices) {
-    const uint8_t p_diff =
-        base::checked_cast<uint8_t>(frame_num_ - frame_num_ref_frames_[i]);
-    metadata.p_diffs.push_back(p_diff);
+    for (const uint8_t i : reference_frame_indices) {
+      const uint8_t p_diff =
+          base::checked_cast<uint8_t>(frame_num_ - frame_num_ref_frames_[i]);
+      vp9_metadata->p_diffs.push_back(p_diff);
+    }
   }
 }
 }  // namespace media

@@ -269,10 +269,13 @@ public class TabSwitcherTabletTest {
         // Close all the regular tabs.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    regularModel.closeTabs(
-                            TabClosureParams.closeTab(regularModel.getTabAt(0))
-                                    .allowUndo(false)
-                                    .build());
+                    regularModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(regularModel.getTabAt(0))
+                                            .allowUndo(false)
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
         assertEquals("Expected to be 0 tabs in regular model", 0, regularModel.getCount());
         assertTrue("Expected to be in Incognito model", cta.getCurrentTabModel().isIncognito());
@@ -300,10 +303,12 @@ public class TabSwitcherTabletTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getCurrentTabModel()
+                            .getTabRemover()
                             .closeTabs(
                                     TabClosureParams.closeTab(cta.getActivityTab())
                                             .allowUndo(false)
-                                            .build());
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
 
         checkHubLayout(cta, /* isInitialized= */ false);
@@ -351,8 +356,12 @@ public class TabSwitcherTabletTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel model = cta.getTabModelSelector().getModel(false);
-                    model.closeTabs(
-                            TabClosureParams.closeTab(model.getTabAt(0)).allowUndo(false).build());
+                    model.getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(model.getTabAt(0))
+                                            .allowUndo(false)
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
 
         // Check empty view should never show up in incognito tab switcher.
@@ -367,8 +376,12 @@ public class TabSwitcherTabletTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel model = cta.getTabModelSelector().getModel(true);
-                    model.closeTabs(
-                            TabClosureParams.closeTab(model.getTabAt(0)).allowUndo(false).build());
+                    model.getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(model.getTabAt(0))
+                                            .allowUndo(false)
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
 
         // Incognito tab switcher should exit to go to normal tab switcher and we should see empty

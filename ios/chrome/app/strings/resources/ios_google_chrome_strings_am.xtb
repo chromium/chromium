@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">እንደ ነባሪ አሳሸ Chrome አድርጎ ለማቀናበር የChrome ቅንብርን ይከፍታል።</translation>
 <translation id="1670609221633730681">Chrome ጠቃሚ ምክር፦ የእርስዎን አድራሻ አሞሌ ቦታ ይምረጡ</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">የይለፍ ቃሎችዎን Chrome ውስጥ ያስቀምጡ</translation>
 <translation id="1790080846677398234">በChrome ውስጥ የገቡትን ዩአርኤሎች ወደ ዕልባቶችዎ ያክላል።</translation>
 <translation id="1799920918471566157">የChrome ጠቃሚ ምክሮች</translation>
 <translation id="1830634592642484976">ይህ አድራሻ በአሁኑ ጊዜ Chrome ላይ ተቀምጧል። በሁሉም የGoogle ምርቶች ላይ እሱን ለመጠቀም በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ ያስቀምጡት።</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">ይህ ማለት Chrome የተንቀሳቃሽ ስልክ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 <translation id="3740397331642243698">በGoogle Chrome ውስጥ የገቡትን ዩአርኤሎች ማንነትን በማያሳውቅ ሁነታ ላይ ይከፍታል።</translation>
 <translation id="3741995255368156336">የChrome የንባብ ዝርዝርን ይከፍታል።</translation>
+<translation id="3808570423967020928">ከመነሻ ማያ ገፅ መትከያዎ ላይ Chromeን ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="3827545470516145620">እርስዎ በዚህ መሣሪያ ላይ መደበኛ የደህንነት ጥበቃ እያገኙ ነው</translation>
 <translation id="384394811301901750">Google Chrome አሁን ካሜራዎን መጠቀም አይችልም</translation>
 <translation id="3863841106411295595">የገባውን ዩአርኤል በ Chrome ውስጥ ባለው የንባብ ዝርዝር ውስጥ ያክላል።</translation>
@@ -219,9 +221,11 @@
 
 የChrome ተሞክሮዎን ለማሻሻል ውሂብን ለሚጠቀሙ ተጨማሪ ቅንብሮች ወደ <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" /> ይሂዱ።</translation>
 <translation id="6922332667202044570">Chrome ውስጥ የአሰሳ ውሂብን ይሰርዙ።</translation>
+<translation id="6924922227983877439">አገናኞችን በነባሪ Chrome ውስጥ ይክፈቱ</translation>
 <translation id="6975725306479268850">ለራስ-ሙላ Chromeን ይምረጡ</translation>
 <translation id="7056826488869329999">በChrome ውስጥ የደህንነት ፍተሻን ይከፍታል እና ያሄዳል።</translation>
 <translation id="7061455974939528301">የChrome አዶን ተጭነው ይያዙ እና «መነሻ ማያ ገፅ አርትዕ» ላይ ጠቅ ያድርጉ</translation>
+<translation id="7065813315247345131">Chromeን ወደ መትከያ ያንቀሳቅሱ</translation>
 <translation id="7124339256045485976">Chromeን እንደተዘመነ ያቆዩት</translation>
 <translation id="7161390184744336561">Google Chrome ቀኑ አልፎበታል</translation>
 <translation id="7165736900384873061">የGoogle Chrome QR መቃኛን መጠቀም ይጀምሩ</translation>

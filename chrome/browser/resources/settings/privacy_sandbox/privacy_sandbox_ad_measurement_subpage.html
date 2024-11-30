@@ -2,6 +2,10 @@
   .settings-columned-section {
     padding-top: 4px;
   }
+
+  #disclaimer {
+    padding: 16px var(--cr-section-padding);
+  }
 </style>
 <settings-toggle-button
     id="adMeasurementToggle"
@@ -43,3 +47,8 @@
     </ul>
   </div>
 </div>
+<template is="dom-if" if="[[shouldShowV2_]]">
+  <div id="disclaimer" class="cr-secondary-text hr">
+    $i18nRaw{adMeasurementPageDisclaimer}
+  </div>
+</template>

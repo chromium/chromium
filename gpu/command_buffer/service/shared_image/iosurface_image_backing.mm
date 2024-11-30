@@ -694,7 +694,7 @@ bool IOSurfaceImageBacking::OverlayRepresentation::IsInUseByWindowServer()
   // IOSurfaceIsInUse() will always return true if the IOSurface is wrapped in
   // a CVPixelBuffer. Ignore the signal for such IOSurfaces (which are the
   // ones output by hardware video decode and video capture).
-  if (backing()->usage() & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX) {
+  if (backing()->usage().Has(SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)) {
     return false;
   }
 
@@ -998,7 +998,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
   // If this will be bound to different GL backends, then make RetainGLTexture
   // and ReleaseGLTexture actually create and destroy the texture.
   // https://crbug.com/1251724
-  if (usage & SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU) {
+  if (usage.Has(SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU)) {
     return;
   }
 
@@ -1195,7 +1195,7 @@ base::trace_event::MemoryAllocatorDump* IOSurfaceImageBacking::OnMemoryDump(
   // The client tracing id is to identify the GpuMemoryBuffer client that
   // created the allocation. For CVPixelBufferRefs, there is no corresponding
   // GpuMemoryBuffer, so use an invalid client id.
-  if (usage() & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX) {
+  if (usage().Has(SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)) {
     client_tracing_id =
         base::trace_event::MemoryDumpManager::kInvalidTracingProcessId;
   }
@@ -1535,7 +1535,7 @@ bool IOSurfaceImageBacking::BeginAccess(bool readonly) {
     return false;
   }
   // Track reads and writes if not being used for concurrent read/writes.
-  if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+  if (!(usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE))) {
     if (readonly && ongoing_write_access_) {
       DLOG(ERROR) << "Unable to begin read access because another "
                      "write access is in progress";
@@ -1560,13 +1560,13 @@ bool IOSurfaceImageBacking::BeginAccess(bool readonly) {
 void IOSurfaceImageBacking::EndAccess(bool readonly) {
   if (readonly) {
     CHECK_GT(num_ongoing_read_accesses_, 0u);
-    if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    if (!(usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE))) {
       CHECK(!ongoing_write_access_);
     }
     num_ongoing_read_accesses_--;
   } else {
     CHECK(ongoing_write_access_);
-    if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    if (!(usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE))) {
       CHECK_EQ(num_ongoing_read_accesses_, 0u);
     }
     ongoing_write_access_ = false;

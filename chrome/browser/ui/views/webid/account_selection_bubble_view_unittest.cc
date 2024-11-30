@@ -12,10 +12,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
+#include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -49,7 +51,46 @@ using IdentityRequestAccountPtr =
 using LoginState = content::IdentityRequestAccount::LoginState;
 
 namespace {
+
+constexpr char kAccountId1[] = "account_id1";
 constexpr char kAccountSuffix[] = "suffix";
+constexpr char kTopFrameEtldPlusOne[] = "rp-example.com";
+
+class FakeTabInterface : public tabs::MockTabInterface {
+ public:
+  virtual ~FakeTabInterface() = default;
+  explicit FakeTabInterface(content::WebContents* contents)
+      : contents_(contents) {}
+  content::WebContents* GetContents() const override { return contents_; }
+
+ private:
+  raw_ptr<content::WebContents> contents_;
+};
+
+class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
+ public:
+  FakeFedCmAccountSelectionView(AccountSelectionView::Delegate* delegate,
+                                tabs::TabInterface* tab,
+                                views::View* anchor_view)
+      : FedCmAccountSelectionView(delegate, tab), anchor_view_(anchor_view) {
+    url_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
+  }
+
+ private:
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
+      override {
+    return url_loader_factory_;
+  }
+
+  views::View* GetAnchorView() override { return anchor_view_; }
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  raw_ptr<views::View> anchor_view_;
+};
+
 }  // namespace
 
 class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
@@ -62,10 +103,28 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         kIdpForDisplay, idp_metadata, CreateTestClientMetadata(),
         blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
         /*has_login_status_mismatch=*/false);
+    accounts_ = {CreateAccount(idp_data_)};
   }
 
  protected:
-  void CreateAccountSelectionBubble(bool exclude_title) {
+  IdentityRequestAccountPtr CreateAccount(
+      IdentityProviderDataPtr idp,
+      LoginState idp_claimed_login_state = LoginState::kSignUp,
+      LoginState browser_trusted_login_state = LoginState::kSignUp,
+      std::string account_id = kAccountId1) {
+    IdentityRequestAccountPtr account = base::MakeRefCounted<Account>(
+        account_id, "", "", "", GURL(),
+        /*login_hints=*/std::vector<std::string>(),
+        /*domain_hints=*/std::vector<std::string>(),
+        /*labels=*/std::vector<std::string>(),
+        /*login_state=*/idp_claimed_login_state,
+        /*browser_trusted_login_state=*/browser_trusted_login_state);
+    account->identity_provider = std::move(idp);
+    return account;
+  }
+
+  void CreateAccountSelectionBubble() {
+    Reset();
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
                      views::Widget::InitParams::TYPE_WINDOW);
@@ -74,14 +133,22 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     anchor_widget_->Init(std::move(params));
     anchor_widget_->Show();
 
-    std::optional<std::u16string> title =
-        exclude_title ? std::nullopt
-                      : std::make_optional<std::u16string>(kIdpETLDPlusOne);
-    dialog_ = new AccountSelectionBubbleView(
-        kRpETLDPlusOne, title, blink::mojom::RpContext::kSignIn,
-        test_web_contents_.get(), anchor_widget_->GetContentsView(),
-        shared_url_loader_factory(),
-        /*observer=*/nullptr);
+    tab_interface_ =
+        std::make_unique<FakeTabInterface>(test_web_contents_.get());
+    delegate_ = std::make_unique<FakeDelegate>(test_web_contents_.get());
+    account_selection_view_ = std::make_unique<FakeFedCmAccountSelectionView>(
+        delegate_.get(), tab_interface_.get(),
+        anchor_widget_->GetContentsView());
+    std::vector<IdentityRequestAccountPtr> new_accounts;
+    std::vector<IdentityProviderDataPtr> idp_list = idp_list_;
+    if (idp_list.empty()) {
+      idp_list = {idp_data_};
+    }
+    account_selection_view_->Show(kTopFrameEtldPlusOne, idp_list, accounts_,
+                                  Account::SignInMode::kExplicit,
+                                  blink::mojom::RpMode::kPassive, new_accounts);
+    dialog_ = static_cast<AccountSelectionBubbleView*>(
+        account_selection_view_->account_selection_view());
   }
 
   void CreateAndShowSingleAccountPicker(
@@ -89,7 +156,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
         kAccountSuffix, idp_data_, login_state);
 
-    CreateAccountSelectionBubble(/*exclude_title=*/false);
+    CreateAccountSelectionBubble();
     account->identity_provider = idp_data_;
     dialog_->ShowSingleAccountConfirmDialog(*account,
                                             /*show_back_button=*/false);
@@ -102,7 +169,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     std::vector<IdentityRequestAccountPtr> account_list =
         CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
 
-    CreateAccountSelectionBubble(/*exclude_title=*/false);
+    CreateAccountSelectionBubble();
     dialog_->ShowMultiAccountPicker(account_list, {idp_data_},
                                     /*show_back_button=*/false,
                                     /*is_choose_an_account=*/false);
@@ -111,10 +178,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   void CreateAndShowMultiIdpAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list) {
-    CreateAccountSelectionBubble(/*exclude_title=*/true);
-    dialog_->ShowMultiAccountPicker(accounts, idp_list,
-                                    /*show_back_button=*/false,
-                                    /*is_choose_an_account=*/false);
+    accounts_ = accounts;
+    idp_list_ = idp_list;
+
+    CreateAccountSelectionBubble();
   }
 
   void PerformHeaderChecks(views::View* header,
@@ -280,8 +347,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   void TestFailureDialog(const std::u16string expected_title,
                          bool expect_idp_brand_icon_in_header) {
-    CreateAccountSelectionBubble(
-        /*exclude_title=*/false);
+    CreateAccountSelectionBubble();
     dialog_->ShowFailureDialog(kIdpETLDPlusOne, idp_data_->idp_metadata);
 
     const std::vector<raw_ptr<views::View, VectorExperimental>> children =
@@ -318,8 +384,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                        bool expect_idp_brand_icon_in_header,
                        const std::string& error_code,
                        const GURL& error_url) {
-    CreateAccountSelectionBubble(
-        /*exclude_title=*/false);
+    CreateAccountSelectionBubble();
     dialog_->ShowErrorDialog(
         kIdpETLDPlusOne, idp_data_->idp_metadata,
         content::IdentityCredentialTokenError(error_code, error_url));
@@ -387,7 +452,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     ASSERT_TRUE(GetHoverButtonIconView(idp_button));
     // Using GetPreferredSize() since BrandIconImageView uses a fetched image.
     EXPECT_EQ(GetHoverButtonIconView(idp_button)->GetPreferredSize(),
-              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
+              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
   }
 
   void CheckUseOtherAccount(
@@ -421,12 +486,11 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
               expected_subtitle);
     ASSERT_TRUE(GetHoverButtonIconView(choose_account_button));
     EXPECT_EQ(GetHoverButtonIconView(choose_account_button)->size(),
-              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
+              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
   }
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    feature_list_.InitAndEnableFeature(features::kFedCm);
     test_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     // The x, y coordinates shouldn't matter but the width and height are set to
@@ -434,34 +498,37 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     // the bubble is not hidden because the web contents is too small.
     test_web_contents_->Resize(
         gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/1000, /*height=*/1000));
-    test_shared_url_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_);
   }
 
   void TearDown() override {
+    Reset();
     anchor_widget_.reset();
-    feature_list_.Reset();
     ChromeViewsTestBase::TearDown();
   }
 
-  void ResetWebContents() { test_web_contents_.reset(); }
+  void Reset() {
+    dialog_ = nullptr;
+    account_selection_view_.reset();
+  }
+
+  void ResetWebContents() {
+    // We should reset FakeDelegate as well since it depends on WebContents.
+    // However in the production code the real delegate owns the
+    // AccountSelectionView, so that would result in destruction of the
+    // AccountSelectionView. In the real code WebContents destruction
+    // asynchronously destroys the real delegate, so it is possible to destroy
+    // the WebContents while still having the AccountSelectionView alive.
+    account_selection_view_->WillDetach(
+        tab_interface_.get(), tabs::TabInterface::DetachReason::kDelete);
+    tab_interface_.reset();
+    test_web_contents_.reset();
+  }
 
   AccountSelectionBubbleView* dialog() { return dialog_; }
 
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
-      const {
-    return test_shared_url_loader_factory_;
-  }
-
   content::WebContents* web_contents() { return test_web_contents_.get(); }
 
-  raw_ptr<AccountSelectionBubbleView, DanglingUntriaged> dialog_;
-
-  IdentityProviderDataPtr idp_data_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+ protected:
   TestingProfile profile_;
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
@@ -469,9 +536,14 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   std::unique_ptr<views::Widget> anchor_widget_;
 
-  scoped_refptr<network::SharedURLLoaderFactory>
-      test_shared_url_loader_factory_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::vector<IdentityRequestAccountPtr> accounts_;
+  IdentityProviderDataPtr idp_data_;
+  // If non-empty used instead of idp_data_.
+  std::vector<IdentityProviderDataPtr> idp_list_;
+  std::unique_ptr<FakeTabInterface> tab_interface_;
+  std::unique_ptr<FakeDelegate> delegate_;
+  std::unique_ptr<FakeFedCmAccountSelectionView> account_selection_view_;
+  raw_ptr<AccountSelectionBubbleView, DanglingUntriaged> dialog_;
 };
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
@@ -621,7 +693,7 @@ TEST_F(AccountSelectionBubbleViewTest, NewAccountWithoutRequestPermission) {
 
 TEST_F(AccountSelectionBubbleViewTest,
        ContinueButtonWithProperBackgroundColor) {
-  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
   dialog()->set_color(SK_ColorWHITE);
@@ -654,7 +726,7 @@ TEST_F(AccountSelectionBubbleViewTest,
 
 TEST_F(AccountSelectionBubbleViewTest,
        ContinueButtonWithImproperBackgroundColor) {
-  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
   dialog()->set_color(SK_ColorWHITE);
@@ -693,7 +765,7 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
   IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
       kAccountSuffix, idp_data_, LoginState::kSignIn);
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  CreateAccountSelectionBubble();
   dialog_->ShowVerifyingSheet(
       *account, l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 
@@ -712,7 +784,7 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
 TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
   IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
       kAccountSuffix, idp_data_, LoginState::kSignIn);
-  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  CreateAccountSelectionBubble();
   const auto title =
       l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN);
   dialog_->ShowVerifyingSheet(*account, title);
@@ -902,34 +974,33 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
        ShowSingleReturningAccountDialog) {
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   const std::vector<std::string> kAccountSuffixes2 = {"3"};
-  std::vector<IdentityProviderDataPtr> idp_list = {
-      base::MakeRefCounted<content::IdentityProviderData>(
-          kIdpForDisplay, content::IdentityProviderMetadata(),
-          CreateTestClientMetadata(kTermsOfServiceUrl),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-          /*has_login_status_mismatch=*/false),
-      base::MakeRefCounted<content::IdentityProviderData>(
-          kSecondIdpForDisplay, content::IdentityProviderMetadata(),
-          CreateTestClientMetadata("https://tos-2.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-          /*has_login_status_mismatch=*/false),
-      base::MakeRefCounted<content::IdentityProviderData>(
-          "idp3.com", content::IdentityProviderMetadata(),
-          CreateTestClientMetadata("https://tos-3.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-          /*has_login_status_mismatch=*/true),
-      base::MakeRefCounted<content::IdentityProviderData>(
-          "idp4.com", content::IdentityProviderMetadata(),
-          CreateTestClientMetadata("https://tos-4.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-          /*has_login_status_mismatch=*/true)};
-  std::vector<IdentityRequestAccountPtr> accounts_list = {
-      CreateTestIdentityRequestAccount(kAccountSuffixes2[0], idp_list[1],
+  idp_list_ = {base::MakeRefCounted<content::IdentityProviderData>(
+                   kIdpForDisplay, content::IdentityProviderMetadata(),
+                   CreateTestClientMetadata(kTermsOfServiceUrl),
+                   blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+                   /*has_login_status_mismatch=*/false),
+               base::MakeRefCounted<content::IdentityProviderData>(
+                   kSecondIdpForDisplay, content::IdentityProviderMetadata(),
+                   CreateTestClientMetadata("https://tos-2.com"),
+                   blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+                   /*has_login_status_mismatch=*/false),
+               base::MakeRefCounted<content::IdentityProviderData>(
+                   "idp3.com", content::IdentityProviderMetadata(),
+                   CreateTestClientMetadata("https://tos-3.com"),
+                   blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+                   /*has_login_status_mismatch=*/true),
+               base::MakeRefCounted<content::IdentityProviderData>(
+                   "idp4.com", content::IdentityProviderMetadata(),
+                   CreateTestClientMetadata("https://tos-4.com"),
+                   blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+                   /*has_login_status_mismatch=*/true)};
+  accounts_ = {
+      CreateTestIdentityRequestAccount(kAccountSuffixes2[0], idp_list_[1],
                                        LoginState::kSignIn),
-      CreateTestIdentityRequestAccount(kAccountSuffixes1[0], idp_list[0]),
-      CreateTestIdentityRequestAccount(kAccountSuffixes1[1], idp_list[0])};
-  CreateAccountSelectionBubble(/*exclude_title=*/true);
-  dialog_->ShowSingleReturningAccountDialog(accounts_list, idp_list);
+      CreateTestIdentityRequestAccount(kAccountSuffixes1[0], idp_list_[0]),
+      CreateTestIdentityRequestAccount(kAccountSuffixes1[1], idp_list_[0])};
+
+  CreateAccountSelectionBubble();
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
@@ -959,7 +1030,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
                        u"idp3.com, idp4.com, idp-example.com");
 
   // Simulate clicking on the choose an account button.
-  dialog_->ShowMultiAccountPicker(accounts_list, idp_list,
+  dialog_->ShowMultiAccountPicker(accounts_, idp_list_,
                                   /*show_back_button=*/true,
                                   /*is_choose_an_account=*/true);
 
@@ -1281,54 +1352,6 @@ TEST_F(AccountSelectionBubbleViewTest, ErrorWithDifferentErrorCodes) {
                   GURL(u"https://idp-example.com/more-details"));
 }
 
-// Tests that CanFitInWebContents returns true when the web contents is large
-// enough to fit the bubble and bubble bounds computed are contained within the
-// web contents' bounds.
-TEST_F(AccountSelectionBubbleViewTest, WebContentsLargeEnoughToFitDialog) {
-  TestSingleAccount(kTitleSignIn,
-                    /*expect_idp_brand_icon_in_header=*/true);
-  EXPECT_TRUE(dialog()->CanFitInWebContents());
-  EXPECT_TRUE(
-      web_contents()->GetViewBounds().Contains(dialog_->GetBubbleBounds()));
-}
-
-// Tests that CanFitInWebContents returns false when the web contents is too
-// small to fit the bubble. We do not test GetBubbleBounds here because the
-// bubble would be hidden so GetBubbleBounds is not relevant.
-TEST_F(AccountSelectionBubbleViewTest, WebContentsTooSmallToFitDialog) {
-  TestSingleAccount(kTitleSignIn,
-                    /*expect_idp_brand_icon_in_header=*/true);
-
-  // Web contents is too small, vertically.
-  web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/1000,
-                                   /*height=*/10));
-  EXPECT_FALSE(dialog()->CanFitInWebContents());
-
-  // Web contents is too small, horizontally.
-  web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/10,
-                                   /*height=*/1000));
-  EXPECT_FALSE(dialog()->CanFitInWebContents());
-
-  // Web contents is too small, both vertically and horizontally.
-  web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/10,
-                                   /*height=*/10));
-  EXPECT_FALSE(dialog()->CanFitInWebContents());
-}
-
-// Tests crash scenario from crbug.com/341240034.
-TEST_F(AccountSelectionBubbleViewTest, BoundsChangedAfterWebContentsDestroyed) {
-  TestSingleAccount(kTitleSignIn,
-                    /*expect_idp_brand_icon_in_header=*/true);
-
-  // Reset the web contents associated with the dialog.
-  ResetWebContents();
-  EXPECT_FALSE(web_contents());
-
-  // Dialog is somehow still alive and receives OnAnchorBoundsChanged calls.
-  // This should not crash.
-  dialog()->OnAnchorBoundsChanged();
-}
-
 // Tests that the brand icon view is hidden if the brand icon URL is invalid.
 TEST_F(AccountSelectionBubbleViewTest, InvalidBrandIconUrlHidesBrandIcon) {
   idp_data_->idp_metadata.brand_icon_url = GURL("invalid url");
@@ -1346,7 +1369,7 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccount) {
   account->is_filtered_out = true;
   idp_data_->idp_metadata.has_filtered_out_account = true;
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  CreateAccountSelectionBubble();
   // The backend will invoke ShowMultiAccountPicker with a single account since
   // there are filtered out accounts.
   dialog_->ShowMultiAccountPicker({account}, {idp_data_},
@@ -1385,7 +1408,7 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleDisabledAccounts) {
     account->is_filtered_out = true;
     accounts_list.push_back(std::move(account));
   }
-  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  CreateAccountSelectionBubble();
   dialog_->ShowMultiAccountPicker(accounts_list, {idp_data_},
                                   /*show_back_button=*/false,
                                   /*is_choose_an_account=*/false);
@@ -1427,7 +1450,7 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
   account2->is_filtered_out = true;
   accounts_list.push_back(std::move(account2));
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  CreateAccountSelectionBubble();
   dialog_->ShowMultiAccountPicker(accounts_list, {idp_data_},
                                   /*show_back_button=*/false,
                                   /*is_choose_an_account=*/false);

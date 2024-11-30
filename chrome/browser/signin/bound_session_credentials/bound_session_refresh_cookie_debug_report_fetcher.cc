@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
@@ -106,5 +107,9 @@ void BoundSessionRefreshCookieDebugReportFetcher::OnURLLoaderComplete(
       "browser",
       "BoundSessionRefreshCookieDebugReportFetcher::OnURLLoaderComplete",
       perfetto::Flow::FromPointer(this), "net_error", net_error);
+  base::UmaHistogramSparse(
+      "Signin.BoundSessionCredentials."
+      "SessionTerminationDebugReportFetcherHttpResult",
+      headers ? headers->response_code() : net_error);
   std::move(callback_).Run(Result::kSuccess);
 }

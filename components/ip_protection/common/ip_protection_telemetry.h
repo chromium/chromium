@@ -8,10 +8,13 @@
 #include <optional>
 
 #include "base/time/time.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/proxy_chain.h"
 
 namespace ip_protection {
+
+enum class TryGetAuthTokensResult;
+enum class TryGetAuthTokensAndroidResult;
+enum class ProxyLayer;
 
 // An enumeration of the eligibility finding for use with
 // `UmaHistogramEnumeration`. These values are persisted to logs. Entries should
@@ -136,6 +139,10 @@ class IpProtectionTelemetry {
   // `IpProtectionTokenManagerImpl`'s perspective, from just before calling
   // `IpProtectionConfigGetter::TryGetAuthTokens` until `OnGotAuthTokens`.
   virtual void TokenBatchGenerationComplete(base::TimeDelta duration) = 0;
+
+  // Record the `base::PersistentHash` of an error string that resulted from a
+  // TryGetAuthTokens call.
+  virtual void TryGetAuthTokensError(uint32_t hash) = 0;
 
   // Whether tokens already exist for a new geo, as measured when current geo
   // changes.

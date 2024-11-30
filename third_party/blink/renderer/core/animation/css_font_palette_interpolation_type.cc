@@ -72,7 +72,8 @@ InterpolationValue CSSFontPaletteInterpolationType::MaybeConvertValue(
   // TODO(40946458): Don't resolve anything here, rewrite to
   // interpolate unresolved palettes.
   return ConvertFontPalette(StyleBuilderConverterBase::ConvertFontPalette(
-      state ? state->CssToLengthConversionData() : CSSToLengthConversionData(),
+      state ? state->CssToLengthConversionData()
+            : CSSToLengthConversionData(/*element=*/nullptr),
       value));
 }
 

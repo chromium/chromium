@@ -669,7 +669,7 @@ TEST_F(PaymentsDataManagerTest, RecordUseOfCard) {
   WaitForOnPaymentsDataChanged();
 
   AdvanceClock(kSomeLaterTime - base::Time::Now());
-  payments_data_manager().RecordUseOfCard(&card);
+  payments_data_manager().RecordUseOfCard(card);
   WaitForOnPaymentsDataChanged();
 
   const CreditCard* pdm_card =

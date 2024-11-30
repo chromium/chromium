@@ -95,7 +95,7 @@ static constexpr int kLineHeightDip = 24;
 static constexpr int kLiveTranslateLabelLineHeightDip = 18;
 static constexpr int kLiveTranslateImageWidthDip = 16;
 static constexpr int kLanguageButtonImageLabelSpacing = 4;
-static constexpr auto kLanguageButtonInsets = gfx::Insets::VH(0, 4);
+static constexpr auto kLanguageButtonInsets = gfx::Insets::TLBR(2, 8, 2, 6);
 static constexpr int kNumLinesCollapsed = 2;
 static constexpr int kNumLinesExpanded = 8;
 static constexpr int kCornerRadiusDip = 4;
@@ -457,7 +457,6 @@ class LanguageTextButton : public views::MdTextButton {
   explicit LanguageTextButton(views::MdTextButton::PressedCallback callback)
       : views::MdTextButton(std::move(callback)) {
     SetCustomPadding(kLanguageButtonInsets);
-    SetCornerRadius(kLiveTranslateLabelLineHeightDip / 2);
     label()->SetMultiLine(false);
     SetImageLabelSpacing(kLanguageButtonImageLabelSpacing);
     SetBgColorIdOverride(ui::kColorLiveCaptionBubbleButtonBackground);
@@ -490,7 +489,6 @@ class LanguageDropdownButton : public views::MdTextButtonWithDownArrow {
       std::u16string label_text)
       : views::MdTextButtonWithDownArrow(std::move(callback), label_text) {
     SetCustomPadding(kLanguageButtonInsets);
-    SetCornerRadius(kLiveTranslateLabelLineHeightDip / 2);
     label()->SetMultiLine(false);
     SetImageLabelSpacing(kLanguageButtonImageLabelSpacing);
     SetBgColorIdOverride(ui::kColorLiveCaptionBubbleButtonBackground);
@@ -790,10 +788,12 @@ void CaptionBubble::Init() {
     std::string source_language_code =
         profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);
     language::ToTranslateLanguageSynonym(&source_language_code);
+    std::string target_language_code =
+        profile_prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
+    language::ToTranslateLanguageSynonym(&target_language_code);
     translate_ui_languages_manager_ =
         std::make_unique<translate::TranslateUILanguagesManager>(
-            language_codes, source_language_code,
-            profile_prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode));
+            language_codes, source_language_code, target_language_code);
 
     auto translation_text = std::make_unique<views::Label>();
     translation_text->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -1372,6 +1372,10 @@ void CaptionBubble::SetTextColor() {
       color_provider->GetColor(ui::kColorLiveCaptionBubbleForegroundDefault);
   SkColor header_color =
       color_provider->GetColor(ui::kColorLiveCaptionBubbleButtonIcon);
+  SkColor language_label_color =
+      color_provider->GetColor(ui::kColorRefPrimary80);
+  SkColor language_label_border_color =
+      color_provider->GetColor(ui::kColorRefSecondary50);
   SkColor icon_disabled_color =
       color_provider->GetColor(ui::kColorLiveCaptionBubbleButtonIconDisabled);
 
@@ -1384,6 +1388,11 @@ void CaptionBubble::SetTextColor() {
                                           &primary_color, color_provider);
     ParseNonTransparentRGBACSSColorString(caption_style_->text_color,
                                           &header_color, color_provider);
+    ParseNonTransparentRGBACSSColorString(
+        caption_style_->text_color, &language_label_color, color_provider);
+    ParseNonTransparentRGBACSSColorString(caption_style_->text_color,
+                                          &language_label_border_color,
+                                          color_provider);
   }
 
   label_->SetEnabledColor(primary_color);
@@ -1395,16 +1404,16 @@ void CaptionBubble::SetTextColor() {
 
   if (IsLiveTranslateEnabled() ||
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    source_language_button_->SetEnabledTextColors(header_color);
-    target_language_button_->SetEnabledTextColors(header_color);
+    source_language_button_->SetEnabledTextColors(language_label_color);
+    target_language_button_->SetEnabledTextColors(language_label_color);
 // On macOS whenever the caption bubble is not in main focus the button state
 // is set to disabled. These buttons are never disabled so it is okay to
 // override this state.
 #if BUILDFLAG(IS_MAC)
     source_language_button_->SetTextColor(views::Button::STATE_DISABLED,
-                                          header_color);
+                                          language_label_color);
     target_language_button_->SetTextColor(views::Button::STATE_DISABLED,
-                                          header_color);
+                                          language_label_color);
 #endif
 
     // TODO(crbug.com/40259212): The live caption bubble allows users to set
@@ -1413,8 +1422,10 @@ void CaptionBubble::SetTextColor() {
     // equivalent ui::ColorId may not exist. To avoid needing to define around
     // 40 new color ids to account for each combination, we use the deprecated
     // SKColor function.
-    source_language_button_->SetStrokeColorOverrideDeprecated(header_color);
-    target_language_button_->SetStrokeColorOverrideDeprecated(header_color);
+    source_language_button_->SetStrokeColorOverrideDeprecated(
+        language_label_border_color);
+    target_language_button_->SetStrokeColorOverrideDeprecated(
+        language_label_border_color);
     translation_header_text_->SetEnabledColor(header_color);
     translate_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         vector_icons::kTranslateIcon, header_color,
@@ -1603,8 +1614,10 @@ void CaptionBubble::UpdateContentSize() {
 
   if (IsLiveTranslateEnabled() ||
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+    source_language_button_->SetMinSize(gfx::Size());
     source_language_button_->SetPreferredSize(
         source_language_button_->CalculatePreferredSize({}));
+    target_language_button_->SetMinSize(gfx::Size());
     target_language_button_->SetPreferredSize(
         target_language_button_->CalculatePreferredSize({}));
   }

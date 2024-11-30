@@ -21,15 +21,15 @@ SignRequests::Request::~Request() = default;
 
 SignRequests::Request& SignRequests::Request::operator=(Request&&) = default;
 
-SignRequests::RequestsState::RequestsState() {}
+SignRequests::RequestsState::RequestsState() = default;
 
 SignRequests::RequestsState::RequestsState(RequestsState&& other) = default;
 
-SignRequests::RequestsState::~RequestsState() {}
+SignRequests::RequestsState::~RequestsState() = default;
 
-SignRequests::SignRequests() {}
+SignRequests::SignRequests() = default;
 
-SignRequests::~SignRequests() {}
+SignRequests::~SignRequests() = default;
 
 int SignRequests::AddRequest(
     const std::string& extension_id,

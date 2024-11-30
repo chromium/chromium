@@ -10,10 +10,12 @@
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -43,59 +45,51 @@ static bool DigestsEqual(const DigestValue& digest1,
   return digest1 == digest2;
 }
 
-void SubresourceIntegrity::ReportInfo::AddUseCount(UseCounterFeature feature) {
-  use_counts_.push_back(feature);
-}
+bool SubresourceIntegrity::CheckSubresourceIntegrity(
+    const IntegrityMetadataSet& metadata_set,
+    const SegmentedBuffer* buffer,
+    const KURL& resource_url,
+    const Resource& resource,
+    IntegrityReport& integrity_report) {
+  // FetchResponseType::kError never arrives because it is a loading error.
+  DCHECK_NE(resource.GetResponse().GetType(),
+            network::mojom::FetchResponseType::kError);
+  if (!resource.GetResponse().IsCorsSameOrigin()) {
+    integrity_report.AddConsoleErrorMessage(
+        "Subresource Integrity: The resource '" + resource_url.ElidedString() +
+        "' has an integrity attribute, but the resource "
+        "requires the request to be CORS enabled to check "
+        "the integrity, and it is not. The resource has been "
+        "blocked because the integrity cannot be enforced.");
+    integrity_report.AddUseCount(
+        WebFeature::kSRIElementIntegrityAttributeButIneligible);
+    return false;
+  }
 
-void SubresourceIntegrity::ReportInfo::AddConsoleErrorMessage(
-    const String& message) {
-  console_error_messages_.push_back(message);
-}
-
-void SubresourceIntegrity::ReportInfo::Clear() {
-  use_counts_.clear();
-  console_error_messages_.clear();
+  return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
+                                       integrity_report);
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
     const IntegrityMetadataSet& metadata_set,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
-    const Resource& resource,
-    ReportInfo& report_info) {
-  // FetchResponseType::kError never arrives because it is a loading error.
-  DCHECK_NE(resource.GetResponse().GetType(),
-            network::mojom::FetchResponseType::kError);
-  if (!resource.GetResponse().IsCorsSameOrigin()) {
-    report_info.AddConsoleErrorMessage(
+    FetchResponseType response_type,
+    IntegrityReport& integrity_report) {
+  // We're only going to check the integrity of non-errors, and
+  // non-opaque responses.
+  if (response_type != FetchResponseType::kBasic &&
+      response_type != FetchResponseType::kCors &&
+      response_type != FetchResponseType::kDefault) {
+    integrity_report.AddConsoleErrorMessage(
         "Subresource Integrity: The resource '" + resource_url.ElidedString() +
-        "' has an integrity attribute, but the resource "
-        "requires the request to be CORS enabled to check "
-        "the integrity, and it is not. The resource has been "
-        "blocked because the integrity cannot be enforced.");
-    report_info.AddUseCount(ReportInfo::UseCounterFeature::
-                                kSRIElementIntegrityAttributeButIneligible);
+        "' has an integrity attribute, but the response is not eligible for "
+        "integrity validation.");
     return false;
   }
 
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       report_info);
-}
-
-bool SubresourceIntegrity::CheckSubresourceIntegrity(
-    const String& integrity_metadata,
-    IntegrityFeatures features,
-    const SegmentedBuffer* buffer,
-    const KURL& resource_url,
-    ReportInfo& report_info) {
-  if (integrity_metadata.empty())
-    return true;
-
-  IntegrityMetadataSet metadata_set;
-  ParseIntegrityAttribute(integrity_metadata, features, metadata_set,
-                          &report_info);
-  return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       report_info);
+                                       integrity_report);
 }
 
 String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
@@ -107,7 +101,6 @@ String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
     case IntegrityAlgorithm::kSha512:
       return "SHA-512";
   }
-  NOTREACHED();
 }
 
 blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
@@ -120,14 +113,13 @@ blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
     case IntegrityAlgorithm::kSha512:
       return kHashAlgorithmSha512;
   }
-  NOTREACHED();
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     const IntegrityMetadataSet& metadata_set,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
-    ReportInfo& report_info) {
+    IntegrityReport& integrity_report) {
   if (!metadata_set.size())
     return true;
 
@@ -136,8 +128,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   for (const IntegrityMetadata& metadata : metadata_set) {
     if (metadata.Algorithm() == max_algorithm &&
         CheckSubresourceIntegrityDigest(metadata, buffer)) {
-      report_info.AddUseCount(ReportInfo::UseCounterFeature::
-                                  kSRIElementWithMatchingIntegrityAttribute);
+      integrity_report.AddUseCount(
+          WebFeature::kSRIElementWithMatchingIntegrityAttribute);
       return true;
     }
   }
@@ -152,19 +144,19 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     // need to be very careful not to expose this in exceptions or
     // JavaScript, otherwise it risks exposing information about the
     // resource cross-origin.
-    report_info.AddConsoleErrorMessage(
+    integrity_report.AddConsoleErrorMessage(
         "Failed to find a valid digest in the 'integrity' attribute for "
         "resource '" +
         resource_url.ElidedString() + "' with computed " +
         IntegrityAlgorithmToString(max_algorithm) + " integrity '" +
         Base64Encode(digest) + "'. The resource has been blocked.");
   } else {
-    report_info.AddConsoleErrorMessage(
+    integrity_report.AddConsoleErrorMessage(
         "There was an error computing an integrity value for resource '" +
         resource_url.ElidedString() + "'. The resource has been blocked.");
   }
-  report_info.AddUseCount(ReportInfo::UseCounterFeature::
-                              kSRIElementWithNonMatchingIntegrityAttribute);
+  integrity_report.AddUseCount(
+      WebFeature::kSRIElementWithNonMatchingIntegrityAttribute);
   return false;
 }
 
@@ -211,7 +203,6 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityDigest(
 SubresourceIntegrity::AlgorithmParseResult
 SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
                                               const UChar* end,
-                                              IntegrityFeatures features,
                                               IntegrityAlgorithm& algorithm) {
   static const AlgorithmPrefixPair kPrefixes[] = {
       {"sha256", IntegrityAlgorithm::kSha256},
@@ -221,36 +212,19 @@ SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
       {"sha512", IntegrityAlgorithm::kSha512},
       {"sha-512", IntegrityAlgorithm::kSha512}};
 
-  // The last algorithm prefix is the ed25519 signature algorithm, which should
-  // only be enabled if kSignatures is requested. We'll implement this by
-  // adjusting the last_prefix index into the array.
-  size_t last_prefix = std::size(kPrefixes);
-  if (features != IntegrityFeatures::kSignatures)
-    last_prefix--;
-
-  return ParseAlgorithmPrefix(begin, end, kPrefixes, last_prefix, algorithm);
-}
-
-SubresourceIntegrity::AlgorithmParseResult
-SubresourceIntegrity::ParseAlgorithmPrefix(
-    const UChar*& string_position,
-    const UChar* string_end,
-    const AlgorithmPrefixPair* prefix_table,
-    size_t prefix_table_size,
-    IntegrityAlgorithm& algorithm) {
-  for (size_t i = 0; i < prefix_table_size; i++) {
-    const UChar* pos = string_position;
-    if (SkipToken<UChar>(pos, string_end, prefix_table[i].first) &&
-        SkipExactly<UChar>(pos, string_end, '-')) {
-      string_position = pos;
-      algorithm = prefix_table[i].second;
+  for (size_t i = 0; i < std::size(kPrefixes); i++) {
+    const UChar* pos = begin;
+    if (SkipToken<UChar>(pos, end, kPrefixes[i].first) &&
+        SkipExactly<UChar>(pos, end, '-')) {
+      begin = pos;
+      algorithm = kPrefixes[i].second;
       return kAlgorithmValid;
     }
   }
 
-  const UChar* dash_position = string_position;
-  SkipUntil<UChar>(dash_position, string_end, '-');
-  return dash_position < string_end ? kAlgorithmUnknown : kAlgorithmUnparsable;
+  const UChar* dash_position = begin;
+  SkipUntil<UChar>(dash_position, end, '-');
+  return dash_position < end ? kAlgorithmUnknown : kAlgorithmUnparsable;
 }
 
 // Before:
@@ -283,16 +257,14 @@ bool SubresourceIntegrity::ParseDigest(const UChar*& position,
 
 void SubresourceIntegrity::ParseIntegrityAttribute(
     const WTF::String& attribute,
-    IntegrityFeatures features,
     IntegrityMetadataSet& metadata_set) {
-  return ParseIntegrityAttribute(attribute, features, metadata_set, nullptr);
+  return ParseIntegrityAttribute(attribute, metadata_set, nullptr);
 }
 
 void SubresourceIntegrity::ParseIntegrityAttribute(
     const WTF::String& attribute,
-    IntegrityFeatures features,
     IntegrityMetadataSet& metadata_set,
-    ReportInfo* report_info) {
+    IntegrityReport* integrity_report) {
   // We expect a "clean" metadata_set, since metadata_set should only be filled
   // once.
   DCHECK(metadata_set.empty());
@@ -319,35 +291,33 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     // still be loaded) because strong hash algorithms should be used
     // without fear of breaking older user agents that don't support
     // them.
-    AlgorithmParseResult parse_result = ParseAttributeAlgorithm(
-        position, current_integrity_end, features, algorithm);
+    AlgorithmParseResult parse_result =
+        ParseAttributeAlgorithm(position, current_integrity_end, algorithm);
     if (parse_result == kAlgorithmUnknown) {
       // Unknown hash algorithms are treated as if they're not present,
       // and thus are not marked as an error, they're just skipped.
       SkipUntil<UChar, IsASCIISpace>(position, end);
-      if (report_info) {
-        report_info->AddConsoleErrorMessage(
+      if (integrity_report) {
+        integrity_report->AddConsoleErrorMessage(
             "Error parsing 'integrity' attribute ('" + attribute +
             "'). The specified hash algorithm must be one of "
             "'sha256', 'sha384', or 'sha512'.");
-        report_info->AddUseCount(
-            ReportInfo::UseCounterFeature::
-                kSRIElementWithUnparsableIntegrityAttribute);
+        integrity_report->AddUseCount(
+            WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
       }
       continue;
     }
 
     if (parse_result == kAlgorithmUnparsable) {
       SkipUntil<UChar, IsASCIISpace>(position, end);
-      if (report_info) {
-        report_info->AddConsoleErrorMessage(
+      if (integrity_report) {
+        integrity_report->AddConsoleErrorMessage(
             "Error parsing 'integrity' attribute ('" + attribute +
             "'). The hash algorithm must be one of 'sha256', "
             "'sha384', or 'sha512', followed by a '-' "
             "character.");
-        report_info->AddUseCount(
-            ReportInfo::UseCounterFeature::
-                kSRIElementWithUnparsableIntegrityAttribute);
+        integrity_report->AddUseCount(
+            WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
       }
       continue;
     }
@@ -356,13 +326,12 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
 
     if (!ParseDigest(position, current_integrity_end, digest)) {
       SkipUntil<UChar, IsASCIISpace>(position, end);
-      if (report_info) {
-        report_info->AddConsoleErrorMessage(
+      if (integrity_report) {
+        integrity_report->AddConsoleErrorMessage(
             "Error parsing 'integrity' attribute ('" + attribute +
             "'). The digest must be a valid, base64-encoded value.");
-        report_info->AddUseCount(
-            ReportInfo::UseCounterFeature::
-                kSRIElementWithUnparsableIntegrityAttribute);
+        integrity_report->AddUseCount(
+            WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
       }
       continue;
     }
@@ -374,8 +343,8 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     if (SkipExactly<UChar>(position, end, '?')) {
       base::span<const UChar> input_span(position, end);
       SkipWhile<UChar, IsValueCharacter>(position, end);
-      if (input_span.data() != position && report_info) {
-        report_info->AddConsoleErrorMessage(
+      if (input_span.data() != position && integrity_report) {
+        integrity_report->AddConsoleErrorMessage(
             "Ignoring unrecogized 'integrity' attribute option '" +
             String(input_span.first(
                 static_cast<wtf_size_t>(position - input_span.data()))) +

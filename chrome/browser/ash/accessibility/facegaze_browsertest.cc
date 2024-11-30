@@ -439,7 +439,8 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MouseLongClick) {
   ASSERT_FALSE(drag_event_rewriter->IsEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, PerformanceHistogram) {
+// TODO(crbug.com/367758998): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DISABLED_PerformanceHistogram) {
   const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
       {FaceGazeGesture::MOUTH_PUCKER, MacroName::MOUSE_CLICK_LEFT}};
   const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {

@@ -14,7 +14,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/browser/web_contents.h"
 
-using protocol::Maybe;
 using protocol::String;
 
 namespace autofill {
@@ -41,7 +40,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
   protocol::Response Disable() override;
   protocol::Response Trigger(
       int field_id,
-      Maybe<String> frame_id,
+      std::optional<String> frame_id,
       std::unique_ptr<protocol::Autofill::CreditCard> card) override;
   // Sets a list of addresses inside `AutofillManager`, used to provide
   // developers addresses from different countries so that they can be used for

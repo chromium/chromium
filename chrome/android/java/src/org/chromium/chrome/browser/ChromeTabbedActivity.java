@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
+import org.chromium.chrome.browser.auxiliary_search.module.AuxiliarySearchModuleBuilder;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
@@ -99,7 +100,6 @@ import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
-import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
@@ -234,12 +234,14 @@ import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactory;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -280,8 +282,7 @@ import java.util.function.DoubleConsumer;
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
  * accessible via a chrome specific tab switching UI.
  */
-public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent>
-        implements MismatchedIndicesHandler {
+public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIndicesHandler {
     private static final String TAG = "ChromeTabbedActivity";
 
     protected static final String WINDOW_INDEX = "window_index";
@@ -471,9 +472,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         return;
                     }
 
-                    getTabModelSelector()
-                            .getModel(true)
-                            .closeTabs(TabClosureParams.closeAllTabs().build());
+                    terminateIncognitoSession();
                 }
 
                 @Override
@@ -838,7 +837,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     new ActionConfirmationManager(
                             mTabModelProfileSupplier.get(),
                             this,
-                            /* regularTabGroupModelFilter= */ null,
                             getModalDialogManagerSupplier().get());
 
             mLayoutManager =
@@ -1617,7 +1615,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             (profileProvider) -> {
                                 if (isActivityFinishingOrDestroyed()) return;
                                 mAuxiliarySearchController =
-                                        AuxiliarySearchControllerFactory
+                                        AuxiliarySearchControllerFactory.getInstance()
                                                 .createAuxiliarySearchController(
                                                         this,
                                                         profileProvider.getOriginalProfile(),
@@ -1904,9 +1902,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     }
                 } else {
                     TabModelUtils.setIndex(tabModel, tabIndex);
+                    LayoutManagerChrome layoutManager = getLayoutManager();
                     // If the tab-switcher is displayed, hide it to show the tab.
-                    if (getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-                        getLayoutManager().showLayout(LayoutType.BROWSING, /* animate= */ false);
+                    if (layoutManager != null
+                            && layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                        layoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false);
                     }
                 }
                 break;
@@ -2113,7 +2113,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // scheduler decide its priority.
             mJankTracker =
                     new JankTrackerImpl(
-                            this, JankTrackerExperiment.JANK_TRACKER_DELAYED_START_MS.getValue());
+                            this,
+                            ChromeFeatureList
+                                    .sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs
+                                    .getValue());
         } else {
             mJankTracker = new PlaceholderJankTracker();
         }
@@ -2178,6 +2181,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager,
                 mEdgeToEdgeControllerSupplier,
+                mSystemBarColorHelperSupplier,
                 getActivityType(),
                 this::isInOverviewMode,
                 /* appMenuDelegate= */ this,
@@ -2196,7 +2200,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getHubOverviewColorSupplier(),
                 getBaseChromeLayout(),
                 mManualFillingComponentSupplier,
-                getEdgeToEdgeStateProvider());
+                getEdgeToEdgeManager());
+    }
+
+    @Override
+    protected OneshotSupplier<SystemBarColorHelper> createSystemBarColorHelperSupplier() {
+        // Do not create the SystemBarColorHelper here when using the bottom chin. It will be
+        // created by TabbedRootUiCoordinator later in the activity lifecycle.
+        if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
+            return mSystemBarColorHelperSupplier;
+        }
+        return super.createSystemBarColorHelperSupplier();
     }
 
     @Override
@@ -2350,6 +2364,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             EducationalTipModuleBuilder educationalTipModuleBuilder =
                     new EducationalTipModuleBuilder(createEducationTipModuleActionDelegate());
             moduleRegistry.registerModule(ModuleType.EDUCATIONAL_TIP, educationalTipModuleBuilder);
+        }
+
+        if (ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled()) {
+            AuxiliarySearchModuleBuilder auxiliarySearchModuleBuilder =
+                    new AuxiliarySearchModuleBuilder(this);
+            moduleRegistry.registerModule(
+                    ModuleType.AUXILIARY_SEARCH, auxiliarySearchModuleBuilder);
         }
 
         mModuleRegistrySupplier.set(moduleRegistry);
@@ -2805,7 +2826,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void terminateIncognitoSession() {
-        getTabModelSelector().getModel(true).closeTabs(TabClosureParams.closeAllTabs().build());
+        getTabModelSelector()
+                .getModel(true)
+                .getTabRemover()
+                .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
     }
 
     @Override
@@ -2883,7 +2907,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
             RecordUserAction.record("MobileMenuRecentTabs");
         } else if (id == R.id.close_tab) {
-            getCurrentTabModel().closeTabs(TabClosureParams.closeTab(currentTab).build());
+            getCurrentTabModel()
+                    .getTabRemover()
+                    .closeTabs(
+                            TabClosureParams.closeTab(currentTab).build(), /* allowDialog= */ true);
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
             // Close both incognito and normal tabs.
@@ -2937,8 +2964,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             TabModel currentModel = mTabModelSelector.getCurrentModel();
             if (!currentModel.isIncognito()) currentModel.openMostRecentlyClosedEntry();
             RecordUserAction.record("MobileTabClosedUndoShortCut");
-        } else if (id == R.id.quick_delete_menu_id
-                && QuickDeleteController.isQuickDeleteEnabled()) {
+        } else if (id == R.id.quick_delete_menu_id) {
             assert !mTabModelSelector.getCurrentModel().isIncognito()
                     : "Quick delete is not supported in Incognito.";
 
@@ -3137,23 +3163,29 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             // This seems improbable; however, crbug/1463397 suggests otherwise. If
                             // this happens, remain on the current tab and close the tab in the
                             // other model.
-                            tabToCloseModel.closeTabs(
-                                    TabClosureParams.closeTab(tabToClose)
-                                            .uponExit(true)
-                                            .allowUndo(false)
-                                            .build());
+                            tabToCloseModel
+                                    .getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeTab(tabToClose)
+                                                    .uponExit(true)
+                                                    .allowUndo(false)
+                                                    .build(),
+                                            /* allowDialog= */ false);
                             return;
                         }
 
                         Tab nextTab =
                                 currentModel.getNextTabIfClosed(
                                         tabToClose.getId(), /* uponExit= */ true);
-                        tabToCloseModel.closeTabs(
-                                TabClosureParams.closeTab(tabToClose)
-                                        .recommendedNextTab(nextTab)
-                                        .uponExit(true)
-                                        .allowUndo(false)
-                                        .build());
+                        tabToCloseModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tabToClose)
+                                                .recommendedNextTab(nextTab)
+                                                .uponExit(true)
+                                                .allowUndo(false)
+                                                .build(),
+                                        /* allowDialog= */ false);
                     },
                     CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
         }
@@ -3679,7 +3711,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         < ActivityState.STOPPED_WITH_NATIVE;
         if (shouldSaveState
                 && onCreateTimeDeltaMs
-                        > MultiWindowUtils.BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS
+                        > ChromeFeatureList
+                                .sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs
                                 .getValue()) {
             // Save state only if #onStopWithNative() that invokes this, has not run yet.
             tabModelOrchestrator.getTabPersistentStore().saveState();

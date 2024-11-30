@@ -235,7 +235,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     CONTENT
   };
 
-  ~Writer() {}
+  ~Writer() = default;
 
   // Opens the file, returning true on success.
   bool OpenFile() {

@@ -6,11 +6,17 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "content/browser/webid/test/stub_digital_identity_provider.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
+#include "content/test/test_render_frame_host.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +27,11 @@ constexpr char kOpenid4vpProtocol[] = "openid4vp";
 constexpr char kPreviewProtocol[] = "preview";
 
 using InterstitialType = content::DigitalIdentityInterstitialType;
+using DigitalCredentialRequestPtr = blink::mojom::DigitalCredentialRequestPtr;
+using DigitalCredentialRequest = blink::mojom::DigitalCredentialRequest;
+using RequestDigitalIdentityStatus = blink::mojom::RequestDigitalIdentityStatus;
+
+using testing::_;
 
 // StubDigitalIdentityProvider which enables overriding
 // DigitalIdentityProvider::IsLowRiskOrigin().
@@ -425,6 +436,125 @@ TEST_F(DigitalIdentityRequestImplTest,
   ASSERT_TRUE(SetFieldNameValue(request, "given_name"));
   EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(kPreviewProtocol, std::move(request)));
+}
+
+class DigitalIdentityRequestImplWithCreationEnabledTest
+    : public RenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    digital_identity_request_impl_ = DigitalIdentityRequestImpl::CreateInstance(
+        *web_contents()->GetPrimaryMainFrame(),
+        request_remote_.BindNewPipeAndPassReceiver());
+
+    content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+        ->SimulateUserActivation();
+
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kUseFakeUIForDigitalIdentity);
+  }
+
+  void TearDown() override {
+    // Reset here to avoid dangling pointer upon the destruction of the rvh.
+    digital_identity_request_impl_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
+  DigitalIdentityRequestImpl* digital_identity_request_impl() {
+    return digital_identity_request_impl_.get();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kWebIdentityDigitalCredentialsCreation};
+  base::test::ScopedCommandLine command_line_;
+
+  mojo::Remote<blink::mojom::DigitalIdentityRequest> request_remote_;
+  base::WeakPtr<DigitalIdentityRequestImpl> digital_identity_request_impl_;
+};
+
+TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
+       ShouldReturnErrorWhenRequestIsNull) {
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> callback;
+  DigitalCredentialRequestPtr digital_credential_request;
+
+  EXPECT_CALL(callback,
+              Run(RequestDigitalIdentityStatus::kErrorNoProviders, _, _));
+  digital_identity_request_impl()->Create(std::move(digital_credential_request),
+                                          callback.Get());
+}
+
+TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
+       ShouldReturnErrorWhenAnotherRequestIsInFlight) {
+  DigitalCredentialRequestPtr digital_credential_request1 =
+      DigitalCredentialRequest::New();
+  digital_credential_request1->protocol = "protocol1";
+  digital_credential_request1->data = "{\"data\": \"request data 1\"}";
+  DigitalCredentialRequestPtr digital_credential_request2 =
+      DigitalCredentialRequest::New();
+  digital_credential_request2->protocol = "protocol2";
+  digital_credential_request2->data = "{\"data\": \"request data 2\"}";
+
+  digital_identity_request_impl()->Create(
+      std::move(digital_credential_request1), base::DoNothing());
+
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> callback;
+  EXPECT_CALL(callback,
+              Run(RequestDigitalIdentityStatus::kErrorTooManyRequests, _, _));
+  digital_identity_request_impl()->Create(
+      std::move(digital_credential_request2), callback.Get());
+}
+
+TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
+       ShouldSucceedWhenValidRequest) {
+  const std::string kProtocol = "protocol";
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> callback;
+  DigitalCredentialRequestPtr digital_credential_request =
+      DigitalCredentialRequest::New();
+  digital_credential_request->protocol = kProtocol;
+  digital_credential_request->data = "{\"data\": \"request data\"}";
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(RequestDigitalIdentityStatus::kSuccess,
+                            testing::Optional(kProtocol), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  digital_identity_request_impl()->Create(std::move(digital_credential_request),
+                                          callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
+       ShouldReturnErrorWhenInvlaidJsonInRequest) {
+  const std::string kProtocol = "protocol";
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> callback;
+  DigitalCredentialRequestPtr digital_credential_request =
+      DigitalCredentialRequest::New();
+  digital_credential_request->protocol = kProtocol;
+  digital_credential_request->data = "invalid json";
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback,
+              Run(RequestDigitalIdentityStatus::kErrorInvalidJson, _, _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  digital_identity_request_impl()->Create(std::move(digital_credential_request),
+                                          callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
+       ShouldReturnErrorWhenAbort) {
+  const std::string kProtocol = "protocol";
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> callback;
+  DigitalCredentialRequestPtr digital_credential_request =
+      DigitalCredentialRequest::New();
+  digital_credential_request->protocol = kProtocol;
+  digital_credential_request->data = "{\"data\": \"request data\"}";
+
+  EXPECT_CALL(callback,
+              Run(RequestDigitalIdentityStatus::kErrorCanceled, _, _));
+  digital_identity_request_impl()->Create(std::move(digital_credential_request),
+                                          callback.Get());
+  digital_identity_request_impl()->Abort();
 }
 
 }  // namespace content

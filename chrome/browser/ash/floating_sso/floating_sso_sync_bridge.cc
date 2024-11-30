@@ -82,8 +82,6 @@ std::optional<syncer::ModelError> FloatingSsoSyncBridge::MergeFullSyncData(
                     if (result == syncer::ConflictResolution::kUseLocal) {
                       return true;
                     } else {
-                      // TODO: b/354202235 - revisit this CHECK once we have a
-                      // non-default implementation of `ResolveConflict`.
                       CHECK_EQ(result, syncer::ConflictResolution::kUseRemote);
                       local_keys_to_upload.erase(it);
                       return false;
@@ -202,8 +200,9 @@ FloatingSsoSyncBridge::GetAllDataForDebugging() {
 syncer::ConflictResolution FloatingSsoSyncBridge::ResolveConflict(
     const std::string& storage_key,
     const syncer::EntityData& remote_data) const {
-  // TODO: b/353222478 - prefer local SAML cookies if they were acquired
-  // during the most recent ChromeOS sign-in.
+  if (keep_local_cookie_keys_.contains(storage_key)) {
+    return syncer::ConflictResolution::kUseLocal;
+  }
   return syncer::DataTypeSyncBridge::ResolveConflict(storage_key, remote_data);
 }
 
@@ -325,6 +324,11 @@ void FloatingSsoSyncBridge::AddObserver(Observer* observer) {
 
 void FloatingSsoSyncBridge::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void FloatingSsoSyncBridge::AddToLocallyPreferredCookies(
+    const std::string& storage_key) {
+  keep_local_cookie_keys_.insert(storage_key);
 }
 
 }  // namespace ash::floating_sso

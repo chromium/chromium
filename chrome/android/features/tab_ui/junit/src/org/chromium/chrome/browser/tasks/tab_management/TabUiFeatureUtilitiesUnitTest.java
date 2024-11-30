@@ -11,9 +11,11 @@ import android.os.Build;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.BaseSwitches;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
 public class TabUiFeatureUtilitiesUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private void setAccessibilityEnabledForTesting(Boolean value) {
         ThreadUtils.runOnUiThreadBlocking(
@@ -38,7 +41,6 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         setAccessibilityEnabledForTesting(false);
     }
 

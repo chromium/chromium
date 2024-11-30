@@ -182,11 +182,11 @@ const HTMLEntityTableEntry kStaticEntityTable[%s] = {\n""" % entity_count)
 
     output_file.write("};\n\n")
 
-    output_file.write("const int16_t kUppercaseOffset[] = {\n")
+    output_file.write("const uint16_t kUppercaseOffset[] = {\n")
     for letter in range(ord('A'), ord('Z') + 1):
         output_file.write("%d,\n" % index[chr(letter)])
     output_file.write("%d\n" % index['a'])
-    output_file.write("};\n\nconst int16_t kLowercaseOffset[] = {\n")
+    output_file.write("};\n\nconst uint16_t kLowercaseOffset[] = {\n")
     for letter in range(ord('a'), ord('z') + 1):
         output_file.write("%d,\n" % index[chr(letter)])
     output_file.write("%d\n" % entity_count)
@@ -203,14 +203,14 @@ LChar HTMLEntityTableEntry::LastCharacter() const {
 
 base::span<const HTMLEntityTableEntry> HTMLEntityTable::EntriesStartingWith(UChar c) {
   if (c >= 'A' && c <= 'Z') {
-    const int16_t first = kUppercaseOffset[c - 'A'];
-    const int16_t last = kUppercaseOffset[c - 'A' + 1];
-    return base::span(kStaticEntityTable).subspan(first, last - first);
+    const size_t first = kUppercaseOffset[c - 'A'];
+    const size_t last = kUppercaseOffset[c - 'A' + 1];
+    return AllEntries().subspan(first, last - first);
   }
   if (c >= 'a' && c <= 'z') {
-    const int16_t first = kLowercaseOffset[c - 'a'];
-    const int16_t last = kLowercaseOffset[c - 'a' + 1];
-    return base::span(kStaticEntityTable).subspan(first, last - first);
+    const size_t first = kLowercaseOffset[c - 'a'];
+    const size_t last = kLowercaseOffset[c - 'a' + 1];
+    return AllEntries().subspan(first, last - first);
   }
   return {};
 }

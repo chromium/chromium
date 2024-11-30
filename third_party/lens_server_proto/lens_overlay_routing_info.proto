@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Information about where to route the request.
+message LensOverlayRoutingInfo {
+  // Address to route the request to.
+  string server_address = 1;
+
+  // Cell to route the request to.
+  string cell_address = 3;
+
+  // Blade target to route the request to.
+  string blade_target = 2;
+}

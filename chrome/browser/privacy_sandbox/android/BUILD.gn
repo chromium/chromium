@@ -6,10 +6,7 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java" ]
 }
 
 android_library("java") {
@@ -26,15 +23,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogConsentEEA.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogController.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogNoticeEEA.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogNoticeEeaV2.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogNoticeROW.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogNoticeRestricted.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogUtils.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxHelpers.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxReferrer.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsBaseFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSnackbarController.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyBridge.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/Topic.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicSwitchPreference.java",
@@ -195,7 +191,10 @@ android_resources("java_resources") {
     "java/res/layout/privacy_sandbox_consent_eea.xml",
     "java/res/layout/privacy_sandbox_consent_eea_dropdown.xml",
     "java/res/layout/privacy_sandbox_notice_eea.xml",
+    "java/res/layout/privacy_sandbox_notice_eea_ad_measurement_dropdown.xml",
     "java/res/layout/privacy_sandbox_notice_eea_dropdown.xml",
+    "java/res/layout/privacy_sandbox_notice_eea_site_suggested_ads_dropdown.xml",
+    "java/res/layout/privacy_sandbox_notice_eea_v2.xml",
     "java/res/layout/privacy_sandbox_notice_restricted.xml",
     "java/res/layout/privacy_sandbox_notice_row.xml",
     "java/res/layout/privacy_sandbox_notice_row_dropdown.xml",

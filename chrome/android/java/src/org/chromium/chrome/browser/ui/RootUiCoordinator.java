@@ -180,7 +180,7 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -347,7 +347,7 @@ public class RootUiCoordinator
     private @Nullable BoardingPassController mBoardingPassController;
     private final @Nullable ObservableSupplier<Integer> mOverviewColorSupplier;
     private final @Nullable View mBaseChromeLayout;
-    private final @NonNull EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     private CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
     private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
 
@@ -396,8 +396,7 @@ public class RootUiCoordinator
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
-     * @param edgeToEdgeStateProvider Provides the edge-to-edge state and allows for requests to
-     *     draw edge-to-edge.
+     * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
     public RootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -440,7 +439,7 @@ public class RootUiCoordinator
             @Nullable Bundle savedInstanceState,
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable View baseChromeLayout,
-            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
+            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -566,7 +565,7 @@ public class RootUiCoordinator
                 new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());
         mOverviewColorSupplier = overviewColorSupplier;
         mBaseChromeLayout = baseChromeLayout;
-        mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
+        mEdgeToEdgeManager = edgeToEdgeManager;
         mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsManager);
     }
 
@@ -1980,7 +1979,7 @@ public class RootUiCoordinator
                             mActivity,
                             mWindowAndroid,
                             mActivityTabProvider,
-                            mEdgeToEdgeStateProvider,
+                            mEdgeToEdgeManager.getEdgeToEdgeStateProvider(),
                             mBrowserControlsManager,
                             mLayoutManagerSupplier,
                             mFullscreenManager);

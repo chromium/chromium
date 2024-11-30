@@ -2124,6 +2124,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8142699993796781067">Private network</translation>
 <translation id="8144760705599030999">Save your <ph name="NAME" /> to <ph name="EMAIL" /> for faster pairing to your other devices</translation>
 <translation id="8144914663975476336">Select recording format</translation>
+<translation id="8145272500474066209">Generative AI can make mistakes, including about people, so double-check it. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Show Bluetooth settings. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Press Ctrl + W to close.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autocomplete</translation>

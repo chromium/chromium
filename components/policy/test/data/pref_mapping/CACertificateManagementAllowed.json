@@ -1,6 +1,9 @@
 [
   {
     "os": [
+      "win",
+      "mac",
+      "linux",
       "chromeos_ash"
     ],
     "simple_policy_pref_mapping_test": {

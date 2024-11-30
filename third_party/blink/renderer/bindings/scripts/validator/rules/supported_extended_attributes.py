@@ -107,7 +107,6 @@ def _build_supported_extended_attributes():
               T.INTERFACE, T.NAMESPACE, T.OPERATION
           ],
           forms=F.IDENT),
-        E("IDLTypeImplementedAsV8Promise", applicable_to=[T.TYPE]),
         E("InjectionMitigated", applicable_to=T_EXPOSURE),
         E("IsCodeLike", applicable_to=[T.INTERFACE]),
         E("IsolatedContext", applicable_to=T_EXPOSURE),

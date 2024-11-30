@@ -37,9 +37,11 @@ import org.chromium.ui.base.TestActivity;
 public class EdgeToEdgeLayoutUnitTest {
     private static final int STATUS_BAR_SIZE = 100;
     private static final int NAV_BAR_SIZE = 150;
+    private static final int CAPTION_BAR_SIZE = 180;
 
     private static final int STATUS_BARS = WindowInsetsCompat.Type.statusBars();
     private static final int NAVIGATION_BARS = WindowInsetsCompat.Type.navigationBars();
+    private static final int CAPTION_BAR = WindowInsetsCompat.Type.captionBar();
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -208,6 +210,49 @@ public class EdgeToEdgeLayoutUnitTest {
         assertEquals(
                 "Nav bar divider is the top 1px height for the nav bar.",
                 new Rect(0, 450, 400, 451),
+                mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
+    }
+
+    // ┌────────┐
+    // ├────────┤
+    // │        │
+    // │        │
+    // └────────┘
+    // Case when window is in freeform on certain OEMs. captionBar is introduced in API 30.
+    @Test
+    @Config(qualifiers = "w400dp-h600dp", sdk = 30)
+    public void testCaptionBar() {
+        initialize(null);
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ 0, /* bottom= */ 0);
+
+        WindowInsetsCompat captionBarInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(CAPTION_BAR, Insets.of(0, CAPTION_BAR_SIZE, 0, 0))
+                        .build();
+        WindowInsetsCompat newInsets =
+                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                        mEdgeToEdgeLayout, captionBarInsets);
+        assertEquals(
+                "Window insets should be consumed",
+                Insets.NONE,
+                newInsets.getInsets(WindowInsetsCompat.Type.systemBars()));
+
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(/* left= */ 0, /* top= */ CAPTION_BAR_SIZE, /* right= */ 0, /* bottom= */ 0);
+
+        // Both status bar and navigation bar should be empty.
+        assertEquals(
+                "Status bar insets should be empty.",
+                new Rect(),
+                mEdgeToEdgeLayout.getStatusBarRectForTesting());
+        assertEquals(
+                "Nav bar insets should be empty.",
+                new Rect(),
+                mEdgeToEdgeLayout.getNavigationBarRectForTesting());
+        assertEquals(
+                "Nav bar divider rect should be empty.",
+                new Rect(),
                 mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
     }
 

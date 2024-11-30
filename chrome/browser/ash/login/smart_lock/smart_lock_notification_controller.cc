@@ -58,7 +58,7 @@ SmartLockNotificationController::SmartLockNotificationController(
     Profile* profile)
     : profile_(profile) {}
 
-SmartLockNotificationController::~SmartLockNotificationController() {}
+SmartLockNotificationController::~SmartLockNotificationController() = default;
 
 void SmartLockNotificationController::ShowChromebookAddedNotification() {
   message_center::RichNotificationData rich_notification_data;

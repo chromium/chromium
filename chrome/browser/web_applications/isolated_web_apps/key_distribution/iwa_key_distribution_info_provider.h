@@ -59,9 +59,9 @@ class IwaKeyDistributionInfoProvider {
 
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnComponentUpdateSuccess(
-        const base::Version& component_version) {}
-    virtual void OnComponentUpdateError(const base::Version& component_version,
+    virtual void OnComponentUpdateSuccess(const base::Version& version,
+                                          bool is_preloaded) {}
+    virtual void OnComponentUpdateError(const base::Version& version,
                                         ComponentUpdateError error) {}
   };
 
@@ -82,7 +82,8 @@ class IwaKeyDistributionInfoProvider {
   // upon success and if `component_version` is greater than the stored one, and
   // informs observers about the operation result.
   void LoadKeyDistributionData(const base::Version& component_version,
-                               const base::FilePath& file_path);
+                               const base::FilePath& file_path,
+                               bool is_preloaded);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -99,24 +100,29 @@ class IwaKeyDistributionInfoProvider {
 
  private:
   struct ComponentData {
-    ComponentData(base::Version version, KeyRotations key_rotations);
+    ComponentData(base::Version version,
+                  KeyRotations key_rotations,
+                  bool is_preloaded);
     ~ComponentData();
     ComponentData(const ComponentData&);
 
     base::Version version;
     KeyRotations key_rotations;
+
+    bool is_preloaded = false;
   };
 
   IwaKeyDistributionInfoProvider();
 
   void OnKeyDistributionDataLoaded(
       const base::Version& version,
+      bool is_preloaded,
       base::expected<KeyRotations, ComponentUpdateError>);
 
-  void DispatchComponentUpdateSuccess(
-      const base::Version& component_version) const;
+  void DispatchComponentUpdateSuccess(const base::Version& version,
+                                      bool is_preloaded) const;
 
-  void DispatchComponentUpdateError(const base::Version& component_version,
+  void DispatchComponentUpdateError(const base::Version& version,
                                     ComponentUpdateError error) const;
 
   // Component data protobuf parsing tasks are posted to a sequenced runner

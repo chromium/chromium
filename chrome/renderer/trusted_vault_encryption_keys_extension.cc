@@ -209,7 +209,8 @@ TrustedVaultEncryptionKeysExtension::TrustedVaultEncryptionKeysExtension(
     content::RenderFrame* frame)
     : content::RenderFrameObserver(frame) {}
 
-TrustedVaultEncryptionKeysExtension::~TrustedVaultEncryptionKeysExtension() {}
+TrustedVaultEncryptionKeysExtension::~TrustedVaultEncryptionKeysExtension() =
+    default;
 
 void TrustedVaultEncryptionKeysExtension::OnDestruct() {
   delete this;

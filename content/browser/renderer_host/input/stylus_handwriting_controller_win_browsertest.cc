@@ -7,8 +7,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/stylus_handwriting/win/features.h"
 #include "content/browser/renderer_host/input/mock_tfhandwriting.h"
+#include "content/browser/renderer_host/input/stylus_handwriting_win_test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -62,28 +64,13 @@ class StylusHandwritingControllerWinTestBase : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
-    SetUpMockTfHandwritingInstances();
-    SetUpMockTfImplMethods();
-    SetUpControllerInstance();
+    stylus_handwriting_win_test_helper_.SetUpMockTfImpl();
+    MockQueryInterfaceMethod();
+    MockSetHandwritingStateMethod();
+    stylus_handwriting_win_test_helper_.SetUpStylusHandwritingControllerWin();
   }
 
   virtual APIError GetAPIError() const { return APIError::kNone; }
-
-  virtual void SetUpMockTfHandwritingInstances() {
-    mock_tf_impl_ = Microsoft::WRL::Make<NiceMock<MockTfImpl>>();
-  }
-
-  virtual void SetUpMockTfImplMethods() {
-    MockQueryInterfaceMethod();
-    MockSetHandwritingStateMethod();
-  }
-
-  void SetUpControllerInstance() {
-    controller_resetter_ = StylusHandwritingControllerWin::InitializeForTesting(
-        static_cast<ITfThreadMgr*>(mock_tf_impl()));
-  }
-
-  MockTfImpl* mock_tf_impl() { return mock_tf_impl_.Get(); }
 
   StylusHandwritingControllerWin* controller() {
     auto* instance = StylusHandwritingControllerWin::GetInstance();
@@ -91,24 +78,25 @@ class StylusHandwritingControllerWinTestBase : public ContentBrowserTest {
     return instance;
   }
 
+ private:
   void MockQueryInterfaceMethod() {
-    ON_CALL(*mock_tf_impl(), QueryInterface(Eq(__uuidof(::ITfHandwriting)), _))
+    ON_CALL(*stylus_handwriting_win_test_helper_.mock_tf_impl(),
+            QueryInterface(Eq(__uuidof(::ITfHandwriting)), _))
         .WillByDefault(SetComPointeeAndReturnResult<1>(
-            static_cast<::ITfHandwriting*>(mock_tf_impl()),
+            stylus_handwriting_win_test_helper_.GetTfHandwriting(),
             GetAPIError() == APIError::kQueryITfHandwriting ? E_NOINTERFACE
                                                             : S_OK));
   }
 
   void MockSetHandwritingStateMethod() {
-    ON_CALL(*mock_tf_impl(), SetHandwritingState(_))
+    ON_CALL(*stylus_handwriting_win_test_helper_.mock_tf_impl(),
+            SetHandwritingState(_))
         .WillByDefault(Return(
             GetAPIError() == APIError::kSetHandwritingState ? E_FAIL : S_OK));
   }
 
- private:
-  Microsoft::WRL::ComPtr<MockTfImpl> mock_tf_impl_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::ScopedClosureRunner controller_resetter_;
+  StylusHandwritingWinTestHelper stylus_handwriting_win_test_helper_;
 };
 
 class StylusHandwritingControllerWinCreationTest

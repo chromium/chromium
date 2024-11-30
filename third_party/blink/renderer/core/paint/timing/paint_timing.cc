@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -286,9 +287,14 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
 }
 
 void PaintTiming::RegisterNotifyPresentationTime(PaintEvent event) {
+  // https://w3c.github.io/paint-timing/#mark-paint-timing
+  // 10.1 Wait until an implementation-defined time when the current frame has
+  //    been presented to the user.
+
   RegisterNotifyPresentationTime(
       CrossThreadBindOnce(&PaintTiming::ReportPresentationTime,
-                          MakeUnwrappingCrossThreadWeakHandle(this), event));
+                          MakeUnwrappingCrossThreadWeakHandle(this), event,
+                          last_rendering_update_end_time_));
 }
 
 void PaintTiming::
@@ -312,6 +318,7 @@ void PaintTiming::RegisterNotifyPresentationTime(ReportTimeCallback callback) {
 
 void PaintTiming::ReportPresentationTime(
     PaintEvent event,
+    base::TimeTicks rendering_update_end_time,
     const viz::FrameTimingDetails& presentation_details) {
   CHECK(IsMainThread());
   base::TimeTicks timestamp =
@@ -319,10 +326,12 @@ void PaintTiming::ReportPresentationTime(
 
   switch (event) {
     case PaintEvent::kFirstPaint:
-      SetFirstPaintPresentation(timestamp);
+      SetFirstPaintPresentation(
+          PaintTimingInfo{rendering_update_end_time, timestamp});
       return;
     case PaintEvent::kFirstContentfulPaint:
-      SetFirstContentfulPaintPresentation(timestamp);
+      SetFirstContentfulPaintPresentation(
+          PaintTimingInfo{rendering_update_end_time, timestamp});
       RecordFirstContentfulPaintTimingMetrics(presentation_details);
       return;
     case PaintEvent::kFirstImagePaint:
@@ -369,7 +378,8 @@ void PaintTiming::ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
       presentation_details.presentation_feedback.timestamp, index);
 }
 
-void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
+void PaintTiming::SetFirstPaintPresentation(
+    const PaintTimingInfo& paint_timing_info) {
   if (soft_navigation_fp_reported_) {
     return;
   }
@@ -377,15 +387,16 @@ void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
     // We're expecting a soft navigation paint, but soft navigation wasn't yet
     // detected. Avoid reporting it for now, and it'll be reported once soft
     // navigation is detected.
-    soft_navigation_pending_first_paint_presentation_ = stamp;
+    soft_navigation_pending_first_paint_timing_info_ = paint_timing_info;
     return;
   }
   PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
-  soft_navigation_pending_first_paint_presentation_ = base::TimeTicks();
+  soft_navigation_pending_first_paint_timing_info_ = std::nullopt;
   DCHECK(relevant_paint_details.first_paint_presentation_.is_null());
-  relevant_paint_details.first_paint_presentation_ = stamp;
+  relevant_paint_details.first_paint_presentation_ =
+      paint_timing_info.presentation_time;
   if (first_paint_presentation_for_ukm_.is_null()) {
-    first_paint_presentation_for_ukm_ = stamp;
+    first_paint_presentation_for_ukm_ = paint_timing_info.presentation_time;
   }
   probe::PaintTiming(
       GetSupplementable(), "firstPaint",
@@ -394,7 +405,7 @@ void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
   WindowPerformance* performance = GetPerformanceInstance(GetFrame());
   if (performance) {
     performance->AddFirstPaintTiming(
-        relevant_paint_details.first_paint_presentation_,
+        paint_timing_info,
         /*is_triggered_by_soft_navigation=*/first_paints_reset_);
   }
   NotifyPaintTimingChanged();
@@ -403,7 +414,8 @@ void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
   }
 }
 
-void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
+void PaintTiming::SetFirstContentfulPaintPresentation(
+    const PaintTimingInfo& paint_timing_info) {
   if (soft_navigation_fcp_reported_) {
     return;
   }
@@ -411,21 +423,23 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
     // We're expecting a soft navigation paint, but soft navigation wasn't yet
     // detected. Avoid reporting it for now, and it'll be reported once soft
     // navigation is detected.
-    soft_navigation_pending_first_contentful_paint_presentation_ = stamp;
+    soft_navigation_pending_first_contentful_paint_timing_info_ =
+        paint_timing_info;
     return;
   }
   PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
-  soft_navigation_pending_first_contentful_paint_presentation_ =
-      base::TimeTicks();
+  soft_navigation_pending_first_contentful_paint_timing_info_ = std::nullopt;
   DCHECK(relevant_paint_details.first_contentful_paint_presentation_.is_null());
-  TRACE_EVENT_INSTANT_WITH_TIMESTAMP0("benchmark,loading",
-                                      "GlobalFirstContentfulPaint",
-                                      TRACE_EVENT_SCOPE_GLOBAL, stamp);
-  relevant_paint_details.first_contentful_paint_presentation_ = stamp;
+  TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
+      "benchmark,loading", "GlobalFirstContentfulPaint",
+      TRACE_EVENT_SCOPE_GLOBAL, paint_timing_info.presentation_time);
+  relevant_paint_details.first_contentful_paint_presentation_ =
+      paint_timing_info.presentation_time;
   bool is_soft_navigation_fcp = false;
   if (first_contentful_paint_presentation_ignoring_soft_navigations_
           .is_null()) {
-    first_contentful_paint_presentation_ignoring_soft_navigations_ = stamp;
+    first_contentful_paint_presentation_ignoring_soft_navigations_ =
+        paint_timing_info.presentation_time;
   } else {
     is_soft_navigation_fcp = true;
   }
@@ -436,7 +450,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
   WindowPerformance* performance = GetPerformanceInstance(GetFrame());
   if (performance) {
     performance->AddFirstContentfulPaintTiming(
-        relevant_paint_details.first_contentful_paint_presentation_,
+        paint_timing_info,
         /*is_triggered_by_soft_navigation=*/first_paints_reset_);
   }
   // For soft navigations, we just want to report a performance entry, but not
@@ -463,7 +477,8 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
     PerformanceTimingForReporting* timing_for_reporting =
         performance->timingForReporting();
     base::TimeDelta fcp =
-        stamp - timing_for_reporting->NavigationStartAsMonotonicTime();
+        paint_timing_info.presentation_time -
+        timing_for_reporting->NavigationStartAsMonotonicTime();
     coordinator->OnFirstContentfulPaint(fcp);
   }
 }
@@ -545,13 +560,13 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
 
 void PaintTiming::SoftNavigationDetected() {
   soft_navigation_detected_ = true;
-  if (!soft_navigation_pending_first_paint_presentation_.is_null()) {
+  if (soft_navigation_pending_first_paint_timing_info_.has_value()) {
     SetFirstPaintPresentation(
-        soft_navigation_pending_first_paint_presentation_);
+        *soft_navigation_pending_first_paint_timing_info_);
   }
-  if (!soft_navigation_pending_first_contentful_paint_presentation_.is_null()) {
+  if (soft_navigation_pending_first_contentful_paint_timing_info_.has_value()) {
     SetFirstContentfulPaintPresentation(
-        soft_navigation_pending_first_contentful_paint_presentation_);
+        *soft_navigation_pending_first_contentful_paint_timing_info_);
   }
 }
 

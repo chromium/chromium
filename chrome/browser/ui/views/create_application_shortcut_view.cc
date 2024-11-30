@@ -117,7 +117,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
   InitControls();
 }
 
-CreateChromeApplicationShortcutView::~CreateChromeApplicationShortcutView() {}
+CreateChromeApplicationShortcutView::~CreateChromeApplicationShortcutView() =
+    default;
 
 void CreateChromeApplicationShortcutView::InitControls() {
   auto create_shortcuts_label = std::make_unique<views::Label>(

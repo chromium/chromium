@@ -19,6 +19,8 @@ source_set("account_picker_selection") {
   deps = [
     ":identity_item_configurator",
     "//base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/account_picker/ui_bundled:account_picker_layout",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
@@ -37,6 +39,7 @@ source_set("account_picker_selection") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

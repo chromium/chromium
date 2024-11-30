@@ -7,10 +7,10 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment_link.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
@@ -118,32 +118,6 @@ const LogicalAnchorQuery& LogicalAnchorQuery::Empty() {
   return *empty;
 }
 
-const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
-    const LayoutObject& query_object,
-    const AnchorKey& key) const {
-  if (const PhysicalAnchorReference* reference =
-          Base::GetAnchorReference(key)) {
-    for (const PhysicalAnchorReference* result = reference; result;
-         result = result->next) {
-      if (!result->is_out_of_flow ||
-          result->layout_object->IsBeforeInPreOrder(query_object)) {
-        return result;
-      }
-    }
-  }
-  return nullptr;
-}
-
-const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
-    const LayoutObject& query_object,
-    const AnchorKey& key) const {
-  if (const PhysicalAnchorReference* reference =
-          AnchorReference(query_object, key)) {
-    return reference->layout_object.Get();
-  }
-  return nullptr;
-}
-
 namespace {
 
 bool IsScopedByElement(const ScopedCSSName* lookup_name,
@@ -169,7 +143,7 @@ bool IsScopedByElement(const ScopedCSSName* lookup_name,
 
 // https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
 bool InSameAnchorScope(const AnchorKey& key,
-                       const LayoutObject& query_object,
+                       const LayoutBox& query_box,
                        const LayoutObject& anchor_object) {
   const ScopedCSSName* const* name = absl::get_if<const ScopedCSSName*>(&key);
   if (!name) {
@@ -187,21 +161,48 @@ bool InSameAnchorScope(const AnchorKey& key,
     }
     return nullptr;
   };
-  return anchor_scope_ancestor(query_object) ==
+  return anchor_scope_ancestor(query_box) ==
          anchor_scope_ancestor(anchor_object);
 }
 
 }  // namespace
 
+const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
+    const LayoutBox& query_box,
+    const AnchorKey& key) const {
+  if (const PhysicalAnchorReference* reference =
+          Base::GetAnchorReference(key)) {
+    for (const PhysicalAnchorReference* result = reference; result;
+         result = result->next) {
+      if ((!result->is_out_of_flow ||
+           result->layout_object->IsBeforeInPreOrder(query_box)) &&
+          InSameAnchorScope(key, query_box, *result->layout_object)) {
+        return result;
+      }
+    }
+  }
+  return nullptr;
+}
+
+const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
+    const LayoutBox& query_box,
+    const AnchorKey& key) const {
+  if (const PhysicalAnchorReference* reference =
+          AnchorReference(query_box, key)) {
+    return reference->layout_object.Get();
+  }
+  return nullptr;
+}
+
 const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
-    const LayoutObject& query_object,
+    const LayoutBox& query_box,
     const AnchorKey& key) const {
   if (const LogicalAnchorReference* reference = Base::GetAnchorReference(key)) {
     for (const LogicalAnchorReference* result = reference; result;
          result = result->next) {
       if ((!result->is_out_of_flow ||
-           result->layout_object->IsBeforeInPreOrder(query_object)) &&
-          InSameAnchorScope(key, query_object, *result->layout_object)) {
+           result->layout_object->IsBeforeInPreOrder(query_box)) &&
+          InSameAnchorScope(key, query_box, *result->layout_object)) {
         return result;
       }
     }
@@ -477,13 +478,13 @@ const LogicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
     return nullptr;
   }
   if (anchor_specifier.IsNamed()) {
-    return anchor_query->AnchorReference(*query_object_,
+    return anchor_query->AnchorReference(*query_box_,
                                          &anchor_specifier.GetName());
   }
   if (anchor_specifier.IsDefault() && position_anchor) {
-    return anchor_query->AnchorReference(*query_object_, position_anchor);
+    return anchor_query->AnchorReference(*query_box_, position_anchor);
   }
-  return anchor_query->AnchorReference(*query_object_, implicit_anchor_);
+  return anchor_query->AnchorReference(*query_box_, implicit_anchor_);
 }
 
 const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor(

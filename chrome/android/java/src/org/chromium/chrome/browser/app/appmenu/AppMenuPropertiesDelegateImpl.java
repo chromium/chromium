@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -578,14 +577,13 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         updateManagedByMenuItem(menu, currentTab);
 
-        // Only display quick delete divider line on the page menu and if quick delete is enabled.
-        menu.findItem(R.id.quick_delete_divider_line_id)
-                .setVisible(isQuickDeleteEnabled(isIncognito));
+        // Only display quick delete divider line on the regular mode page menu.
+        menu.findItem(R.id.quick_delete_divider_line_id).setVisible(!isIncognito);
     }
 
     /**
-     * @return The number of Chrome instances either running alive or dormant but the state
-     *         is present for restoration.
+     * @return The number of Chrome instances either running alive or dormant but the state is
+     *     present for restoration.
      */
     @VisibleForTesting
     int getInstanceCount() {
@@ -673,8 +671,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 item.setEnabled(hasIncognitoTabs);
             }
             if (item.getItemId() == R.id.quick_delete_menu_id) {
-                item.setVisible(isQuickDeleteEnabled(isIncognito));
-                item.setEnabled(isQuickDeleteEnabled(isIncognito));
+                item.setVisible(!isIncognito);
             }
             if (item.getItemId() == R.id.tinker_tank_menu_id) {
                 boolean enabled = TinkerTankDelegate.isEnabled();
@@ -697,14 +694,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 hasItemBetweenDividers = true;
             }
         }
-    }
-
-    /**
-     * @param isIncognito Whether the currentTab is incognito.
-     * @return Whether the quick delete menu item should be enabled.
-     */
-    private boolean isQuickDeleteEnabled(boolean isIncognito) {
-        return !isIncognito && QuickDeleteController.isQuickDeleteEnabled();
     }
 
     /**

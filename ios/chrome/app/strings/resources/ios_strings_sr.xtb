@@ -402,6 +402,7 @@
 <translation id="2721190673959776287">Пример детаљне помоћи у производу за контекстуално окно које треба да се приказује више пута дневно.</translation>
 <translation id="2747003861858887689">Претходно поље</translation>
 <translation id="2749231692441336879">Пратите канал <ph name="CHANNEL_NAME" /></translation>
+<translation id="2755485474385016903">Сви у групи виде унете промене</translation>
 <translation id="2755595981383829244">Сада ћете добијати обавештења о садржају</translation>
 <translation id="2761788987260570878">Сликајте претрагу</translation>
 <translation id="2762000892062317888">малопре</translation>
@@ -431,6 +432,7 @@
 <translation id="288902476966286676">Враћено пошиљаоцу</translation>
 <translation id="2893168226686371498">Подразумевани прегледач</translation>
 <translation id="2894757982205307093">Нова картица у групи</translation>
+<translation id="2902312830803030883">Још радњи</translation>
 <translation id="2905479111267140204">Број лозинки које користите више пута и које могу да угрозе безбедност је<ph name="NUMBER_OF_PASSWORDS" />.</translation>
 <translation id="291754862089661335">Поставите QR или бар-код у овај оквир</translation>
 <translation id="2918688092312652908">Означи као непрочитано</translation>
@@ -553,6 +555,7 @@
 <translation id="3549391962818677448">Покушана је испорука. Покушаћемо поново</translation>
 <translation id="3557336313807607643">Додај у контакте</translation>
 <translation id="355765753469272474">Опозови</translation>
+<translation id="3562379378751492229">Изаберите положај који вам највише одговара.</translation>
 <translation id="3565930036634619844">Картица. <ph name="TAB_INDEX" /> од <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Двапут додирните за још лозинки.</translation>
 <translation id="3572607909481582402">На Google налогу</translation>
@@ -829,6 +832,7 @@
 <translation id="484280513275854557">Одјављени сте; подаци прегледања су избрисани</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4860895144060829044">Позовите</translation>
+<translation id="4861953997778766866">Сви могу да уносе промене у дељене групе картица</translation>
 <translation id="4869146460927742717">Позиција траке за адресу</translation>
 <translation id="4870911314065352661">Желите да затворите све картице?</translation>
 <translation id="4872664437015695612">Отвори у Преузимањима</translation>
@@ -967,6 +971,7 @@
 <translation id="5506763544823940561">Сачувај слику у…</translation>
 <translation id="5511959326926949696">Заштита за прегледач коју треба да користите само у крајњем случају. Треба да је користите само ако сматрате да сте можда циљани веома софистицираним сајбер нападом.</translation>
 <translation id="5513681519188741830">пре <ph name="TIME" /> с</translation>
+<translation id="5524590039848017563">Скупљено дугме примарне траке с алаткама</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}few{{COUNT} слабе лозинке}other{{COUNT} слабих лозинки}}</translation>
 <translation id="5532545557415295622">Дијалог за временско ограничење за неактивност</translation>
 <translation id="5548760955356983418">Handoff вам омогућава да започнете прегледање веб-сајта на овом уређају, па да једноставно наставите на Mac-у. Веб-сајт који је тренутно отворен приказаће се на доку на Mac-у.
@@ -991,6 +996,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5611398002774823980">Сачувај на налогу</translation>
 <translation id="5613297089029360427">Сортирај према најновијем</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
+<translation id="5614805397884895755">Добијте бржи приступ са Почетног екрана.</translation>
 <translation id="5619871095170816857">Ова картица приказује последњу коришћену отворену картицу на свим синхронизованим уређајима у последња 24 сата.</translation>
 <translation id="5624120631404540903">Управљај лозинкама</translation>
 <translation id="5624637933505983014">Не укључуј синхронизацију</translation>
@@ -1495,6 +1501,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7812377703891978671">Можете да приступате целокупној историји прегледања ако изаберете дугме <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Преузимања</translation>
 <translation id="7815852444315004084">Сакриј за сада</translation>
+<translation id="7831876841288640403">Изаберите положај траке за адресу који вам највише одговара.</translation>
 <translation id="7839994177130598711">Чланови породице сада могу да користе ваше корисничко име и лозинку када користе Google менаџер лозинки за пријављивање на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Ставке које сте изабрали ће бити уклоњене.</translation>
 <translation id="7841180087127694526">Потражите текст који сте копирали</translation>

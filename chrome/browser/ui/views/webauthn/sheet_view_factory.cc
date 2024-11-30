@@ -410,6 +410,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       break;
     case Step::kNotStarted:
     case Step::kPasskeyAutofill:
+    case Step::kPasskeyUpgrade:
     case Step::kClosed:
     case Step::kRecoverSecurityDomain:
     case Step::kGPMReauthForPinReset:

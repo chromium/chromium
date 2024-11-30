@@ -772,8 +772,9 @@ class TestDialogController
     return weak_ptr_factory_.GetWeakPtr();
   }
 
- private:
   AccountsDialogAction accounts_dialog_action_{AccountsDialogAction::kNone};
+
+ private:
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action_{
       IdpSigninStatusMismatchDialogAction::kNone};
   ErrorDialogAction error_dialog_action_{ErrorDialogAction::kNone};
@@ -5944,6 +5945,8 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
       "Blink.FedCm.Timing.ContinueOn.TurnaroundTime", 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
+  // Authz popup should not be confused with use other account.
+  ExpectNoUKMPresence("UseOtherAccountResult");
 
   EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_success(),
               ElementsAre("https://idp.example/metrics"));
@@ -7641,6 +7644,22 @@ TEST_F(FederatedAuthRequestImplTest, UseOtherAccountAccountOrder) {
   EXPECT_EQ(all_accounts_for_display()[1]->id, kAccountIdNicolas);
   EXPECT_EQ(all_accounts_for_display()[2]->id, kAccountIdZach);
   EXPECT_EQ(new_accounts()[0]->id, kAccountIdPeter);
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  WaitForCurrentAuthRequest();
+  ukm_loop.Run();
+
+  // The first account is selected, and this is a new account.
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UseOtherAccountResult",
+      static_cast<int>(FedCmUseOtherAccountResult::kUserSignsInWithNewAccount),
+      1);
+  ExpectUkmValue(
+      "UseOtherAccountResult",
+      static_cast<int>(FedCmUseOtherAccountResult::kUserSignsInWithNewAccount));
+  CheckAllFedCmSessionIDs();
 }
 
 // Tests that when use a different account is used and multiple accounts are
@@ -7682,6 +7701,110 @@ TEST_F(FederatedAuthRequestImplTest, UseOtherAccountMultipleNewAccounts) {
   EXPECT_EQ(all_accounts_for_display()[2]->id, kSingleAccount[0]->id);
   EXPECT_EQ(new_accounts()[0]->id, kTwoAccounts[0]->id);
   EXPECT_EQ(new_accounts()[1]->id, kTwoAccounts[1]->id);
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  WaitForCurrentAuthRequest();
+  ukm_loop.Run();
+
+  // The first account is selected, and this is a new account.
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UseOtherAccountResult",
+      static_cast<int>(FedCmUseOtherAccountResult::kUserSignsInWithNewAccount),
+      1);
+  ExpectUkmValue(
+      "UseOtherAccountResult",
+      static_cast<int>(FedCmUseOtherAccountResult::kUserSignsInWithNewAccount));
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest, UseOtherAccountNoNewAccount) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(configuration);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<0>([&modal, this](const GURL& url) {
+        // No changes to the accounts being logged in. But set the login status
+        // to force the popup to close.
+        federated_auth_request_impl_->OnIdpSigninStatusReceived(
+            OriginFromString(kProviderUrlFull), true);
+        return modal.get();
+      }));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  ukm_loop.Run();
+
+  // The first account is selected, and this is an existing account since there
+  // is no new account.
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UseOtherAccountResult",
+      static_cast<int>(
+          FedCmUseOtherAccountResult::kUserSignsInWithExistingAccount),
+      1);
+  ExpectUkmValue(
+      "UseOtherAccountResult",
+      static_cast<int>(
+          FedCmUseOtherAccountResult::kUserSignsInWithExistingAccount));
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest, UseOtherAccountThenClose) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(configuration);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<0>(
+          [&modal, &weak_dialog_controller, this](const GURL& url) {
+            // Signs in to new accounts.
+            test_network_request_manager_->accounts_list_ = {
+                kSingleAccount[0], kTwoAccounts[0], kTwoAccounts[1]};
+            federated_auth_request_impl_->OnIdpSigninStatusReceived(
+                OriginFromString(kProviderUrlFull), true);
+            // The action is set to close, so the request will be rejected.
+            weak_dialog_controller->accounts_dialog_action_ =
+                AccountsDialogAction::kClose;
+            return modal.get();
+          }));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kShouldEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  ukm_loop.Run();
+
+  // The first account is selected, and this is an existing account since there
+  // is no new account.
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UseOtherAccountResult",
+      static_cast<int>(FedCmUseOtherAccountResult::kUserDoesNotSignIn), 1);
+  ExpectUkmValue(
+      "UseOtherAccountResult",
+      static_cast<int>(FedCmUseOtherAccountResult::kUserDoesNotSignIn));
+  CheckAllFedCmSessionIDs();
 }
 
 TEST_F(FederatedAuthRequestImplTest, MultipleIdpSigninDueToHint) {

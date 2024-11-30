@@ -87,6 +87,20 @@ class AccountProfileMapper {
   // assigned to other profiles. Using this should be rare!
   void IterateOverAllIdentitiesOnDevice(IdentityIteratorCallback callback);
 
+  // Marks the personal profile as managed, attaches the given `gaia_id`, and
+  // moves all personal accounts to a new empty personal profile. Deletes the
+  // managed profile to which `gaia_id` was attached. That profile must not be
+  // loaded.
+  // This is meant for two situations:
+  // 1. Signing in with a managed account during the FRE. In this case, there
+  //    can't be any pre-existing local data, so no need to move to a new empty
+  //    profile (and it's easier to continue the flow in the existing profile).
+  // 2. Signing in with a managed account, while not signed in yet in the
+  //    personal profile. In this case, the user *may* be offered to take
+  //    existing local data along into the managed profile, which is implemented
+  //    as converting the personal profile into a managed one.
+  void MakePersonalProfileManagedWithGaiaID(std::string_view gaia_id);
+
  private:
   class Assigner;
 
@@ -120,18 +134,20 @@ class AccountProfileMapper {
   // `kSeparateProfilesForManagedAccounts` is disabled, all observers are
   // notified, and `profile_name` is ignored.
   void NotifyIdentityUpdated(id<SystemIdentity> identity,
-                             std::string_view profile_name);
+                             const std::optional<std::string>& profile_name);
   // Invokes `OnIdentityRefreshTokenUpdated(...)` for all observers for
   // the profile with `profile_name`. If `kSeparateProfilesForManagedAccounts`
   // is disabled, all observers are notified, and `profile_name` is ignored.
-  void NotifyRefreshTokenUpdated(id<SystemIdentity> identity,
-                                 std::string_view profile_name);
+  void NotifyRefreshTokenUpdated(
+      id<SystemIdentity> identity,
+      const std::optional<std::string>& profile_name);
   // Invokes `OnIdentityAccessTokenRefreshFailed(...)` for all observers for
   // the profile with `profile_name`. If `kSeparateProfilesForManagedAccounts`
   // is disabled, all observers are notified, and `profile_name` is ignored.
-  void NotifyAccessTokenRefreshFailed(id<SystemIdentity> identity,
-                                      id<RefreshAccessTokenError> error,
-                                      std::string_view profile_name);
+  void NotifyAccessTokenRefreshFailed(
+      id<SystemIdentity> identity,
+      id<RefreshAccessTokenError> error,
+      const std::optional<std::string>& profile_name);
 
   // The AccountProfileMapper is sequence-affine.
   SEQUENCE_CHECKER(sequence_checker_);

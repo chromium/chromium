@@ -70,6 +70,12 @@ struct Repository {
 
   std::vector<std::unique_ptr<Family>> families;
 };
+
+#if defined(UNIT_TEST)
+// Checks if default repository for the platform is available in the filesystem.
+bool IsDefaultAccountRepositoryAvailable();
+#endif
+
 }  // namespace test_accounts
 
 // Returns first family member with requested role.

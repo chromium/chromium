@@ -22,9 +22,9 @@ SubtreeSet::Node::Node(bool contained_as_subtree_root,
       number_of_subtrees_below(number_of_subtrees_below) {
 }
 
-SubtreeSet::SubtreeSet() {}
+SubtreeSet::SubtreeSet() = default;
 SubtreeSet::SubtreeSet(const SubtreeSet& other) = default;
-SubtreeSet::~SubtreeSet() {}
+SubtreeSet::~SubtreeSet() = default;
 
 bool SubtreeSet::IsDisjointWith(const base::FilePath& subtree_root) const {
   base::FilePath::StringType normalized_subtree_root =

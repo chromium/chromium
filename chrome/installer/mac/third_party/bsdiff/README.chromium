@@ -2,7 +2,7 @@ Name: BSDiff
 URL: http://www.daemonology.net/bsdiff/
 Source URL: http://www.daemonology.net/bsdiff/bsdiff-4.3.tar.gz
 Version: 4.3
-License: BSD
+License: BSD-2-Clause
 License File: LICENSE
 Shipped: yes
 Security Critical: yes

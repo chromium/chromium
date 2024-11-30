@@ -481,7 +481,7 @@ class CredentialProviderWebDialogView : public views::WebDialogView {
   CredentialProviderWebDialogView& operator=(
       const CredentialProviderWebDialogView&) = delete;
 
-  ~CredentialProviderWebDialogView() override {}
+  ~CredentialProviderWebDialogView() override = default;
 
   // Indicates intent to interfere with window creations.
   bool IsWebContentsCreationOverridden(

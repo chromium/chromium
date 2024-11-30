@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/script_decoder.h"
 
 #include "base/notreached.h"
@@ -102,7 +97,7 @@ TEST_F(ScriptDecoderTest, WithClient) {
       std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions::CreateUTF8Decode()),
       default_task_runner);
-  decoder->DidReceiveData(Vector<char>(base::make_span(kFooUTF8WithBOM)),
+  decoder->DidReceiveData(Vector<char>(base::span(kFooUTF8WithBOM)),
                           /*send_to_client=*/true);
 
   base::RunLoop run_loop;
@@ -117,11 +112,10 @@ TEST_F(ScriptDecoderTest, WithClient) {
 
   ASSERT_EQ(client->raw_data().size(), 1u);
   EXPECT_THAT(client->raw_data().front(),
-              Vector<char>(base::make_span(kFooUTF8WithBOM)));
+              Vector<char>(base::span(kFooUTF8WithBOM)));
   EXPECT_EQ(client->decoded_data(), "foo");
-  EXPECT_THAT(
-      client->digest(),
-      testing::Pointee(Vector<uint8_t>(base::make_span(kExpectedDigest))));
+  EXPECT_THAT(client->digest(),
+              testing::Pointee(Vector<uint8_t>(base::span(kExpectedDigest))));
 }
 
 TEST_F(ScriptDecoderTest, PartiallySendDifferentThread) {
@@ -135,13 +129,8 @@ TEST_F(ScriptDecoderTest, PartiallySendDifferentThread) {
           TextResourceDecoderOptions::CreateUTF8Decode()),
       default_task_runner);
 
-  base::span<const char> data_span =
-      base::make_span(reinterpret_cast<const char*>(kFooUTF8WithBOM),
-                      sizeof(kFooUTF8WithBOM) / sizeof(unsigned char));
-
-  base::span<const char> first_chunk = base::make_span(data_span.begin(), 3u);
-  base::span<const char> second_chunk =
-      base::make_span(data_span.begin() + 3, data_span.end());
+  auto data_span = base::as_chars(base::span(kFooUTF8WithBOM));
+  const auto [first_chunk, second_chunk] = data_span.split_at<3>();
 
   // Directly send the first chunk to `client`.
   client->DidReceiveData(first_chunk);
@@ -181,9 +170,8 @@ TEST_F(ScriptDecoderTest, PartiallySendDifferentThread) {
   EXPECT_THAT(client->raw_data().front(), Vector<char>(first_chunk));
   EXPECT_THAT(client->raw_data().back(), Vector<char>(second_chunk));
   EXPECT_EQ(client->decoded_data(), "foo");
-  EXPECT_THAT(
-      client->digest(),
-      testing::Pointee(Vector<uint8_t>(base::make_span(kExpectedDigest))));
+  EXPECT_THAT(client->digest(),
+              testing::Pointee(Vector<uint8_t>(base::span(kExpectedDigest))));
 }
 
 TEST_F(ScriptDecoderTest, Simple) {
@@ -199,10 +187,9 @@ TEST_F(ScriptDecoderTest, Simple) {
           {base::TaskPriority::USER_BLOCKING});
   // Call DidReceiveData() on the worker task runner.
   worker_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ScriptDecoder::DidReceiveData,
-                     base::Unretained(decoder.get()),
-                     Vector<char>(base::make_span(kFooUTF8WithBOM))));
+      FROM_HERE, base::BindOnce(&ScriptDecoder::DidReceiveData,
+                                base::Unretained(decoder.get()),
+                                Vector<char>(base::span(kFooUTF8WithBOM))));
   // Call FinishDecode() on the worker task runner.
   base::RunLoop run_loop;
   worker_task_runner->PostTask(
@@ -216,11 +203,10 @@ TEST_F(ScriptDecoderTest, Simple) {
 
                 ASSERT_FALSE(result.raw_data.empty());
                 EXPECT_THAT(*result.raw_data.begin(),
-                            Vector<char>(base::make_span(kFooUTF8WithBOM)));
+                            Vector<char>(base::span(kFooUTF8WithBOM)));
                 EXPECT_EQ(result.decoded_data, "foo");
-                EXPECT_THAT(result.digest,
-                            testing::Pointee(Vector<uint8_t>(
-                                base::make_span(kExpectedDigest))));
+                EXPECT_THAT(result.digest, testing::Pointee(Vector<uint8_t>(
+                                               base::span(kExpectedDigest))));
                 run_loop->Quit();
               },
               default_task_runner, CrossThreadUnretained(&run_loop))));

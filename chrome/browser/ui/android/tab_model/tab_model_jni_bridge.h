@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_JNI_BRIDGE_H_
 
 #include <jni.h>
+
 #include <vector>
 
 #include "base/android/jni_weak_ref.h"
@@ -50,6 +51,7 @@ class TabModelJniBridge : public TabModel {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
 
   void SetActiveIndex(int index) override;
+  void ForceCloseAllTabs() override;
   void CloseTabAt(int index) override;
 
   void CreateTab(TabAndroid* parent,

@@ -396,18 +396,22 @@ void TabAndroid::UpdateDelegates(
 }
 
 namespace {
-void WillRemoveWebContentsFromTab(content::WebContents* contents) {
+void WillRemoveWebContentsFromTab(content::WebContents* contents,
+                                  bool clear_delegate) {
   DCHECK(contents);
 
-  if (contents->GetNativeView())
+  if (contents->GetNativeView()) {
     contents->GetNativeView()->GetLayer()->RemoveFromParent();
+  }
 
-  contents->SetDelegate(nullptr);
+  if (clear_delegate) {
+    contents->SetDelegate(nullptr);
+  }
 }
 }  // namespace
 
 void TabAndroid::DestroyWebContents(JNIEnv* env) {
-  WillRemoveWebContentsFromTab(web_contents());
+  WillRemoveWebContentsFromTab(web_contents(), /*clear_delegate=*/false);
 
   // Terminate the renderer process if this is the last tab.
   // If there's no unload listener, FastShutdownIfPossible kills the
@@ -428,7 +432,7 @@ void TabAndroid::DestroyWebContents(JNIEnv* env) {
 }
 
 void TabAndroid::ReleaseWebContents(JNIEnv* env) {
-  WillRemoveWebContentsFromTab(web_contents());
+  WillRemoveWebContentsFromTab(web_contents(), /*clear_delegate=*/true);
 
   // Ownership of |released_contents| is assumed by the code that initiated the
   // release.

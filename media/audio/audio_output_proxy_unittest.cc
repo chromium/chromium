@@ -609,20 +609,20 @@ TEST_F(AudioOutputResamplerTest, TwoStreams) {
 
 // Two streams: verify that second stream is allocated when the first
 // starts playing.
-TEST_F(AudioOutputProxyTest, OneStream_TwoPlays) {
+TEST_F(AudioOutputProxyTest, OneStreamTwoPlays) {
   OneStream_TwoPlays(dispatcher_impl_.get());
 }
 
-TEST_F(AudioOutputResamplerTest, OneStream_TwoPlays) {
+TEST_F(AudioOutputResamplerTest, OneStreamTwoPlays) {
   OneStream_TwoPlays(resampler_.get());
 }
 
 // Two streams, both are playing. Dispatcher should not open a third stream.
-TEST_F(AudioOutputProxyTest, TwoStreams_BothPlaying) {
+TEST_F(AudioOutputProxyTest, TwoStreamsBothPlaying) {
   TwoStreams_BothPlaying(dispatcher_impl_.get());
 }
 
-TEST_F(AudioOutputResamplerTest, TwoStreams_BothPlaying) {
+TEST_F(AudioOutputResamplerTest, TwoStreamsBothPlaying) {
   TwoStreams_BothPlaying(resampler_.get());
 }
 
@@ -639,35 +639,35 @@ TEST_F(AudioOutputResamplerTest, StartFailed) {
   StartFailed(resampler_.get());
 }
 
-TEST_F(AudioOutputProxyTest, DispatcherDestroyed_BeforeOpen) {
+TEST_F(AudioOutputProxyTest, DispatcherDestroyedBeforeOpen) {
   DispatcherDestroyed_BeforeOpen(std::move(dispatcher_impl_));
 }
 
-TEST_F(AudioOutputResamplerTest, DispatcherDestroyed_BeforeOpen) {
+TEST_F(AudioOutputResamplerTest, DispatcherDestroyedBeforeOpen) {
   DispatcherDestroyed_BeforeOpen(std::move(resampler_));
 }
 
-TEST_F(AudioOutputProxyTest, DispatcherDestroyed_BeforeStart) {
+TEST_F(AudioOutputProxyTest, DispatcherDestroyedBeforeStart) {
   DispatcherDestroyed_BeforeStart(std::move(dispatcher_impl_));
 }
 
-TEST_F(AudioOutputResamplerTest, DispatcherDestroyed_BeforeStart) {
+TEST_F(AudioOutputResamplerTest, DispatcherDestroyedBeforeStart) {
   DispatcherDestroyed_BeforeStart(std::move(resampler_));
 }
 
-TEST_F(AudioOutputProxyTest, DispatcherDestroyed_BeforeStop) {
+TEST_F(AudioOutputProxyTest, DispatcherDestroyedBeforeStop) {
   DispatcherDestroyed_BeforeStop(std::move(dispatcher_impl_));
 }
 
-TEST_F(AudioOutputResamplerTest, DispatcherDestroyed_BeforeStop) {
+TEST_F(AudioOutputResamplerTest, DispatcherDestroyedBeforeStop) {
   DispatcherDestroyed_BeforeStop(std::move(resampler_));
 }
 
-TEST_F(AudioOutputProxyTest, DispatcherDestroyed_AfterStop) {
+TEST_F(AudioOutputProxyTest, DispatcherDestroyedAfterStop) {
   DispatcherDestroyed_AfterStop(std::move(dispatcher_impl_));
 }
 
-TEST_F(AudioOutputResamplerTest, DispatcherDestroyed_AfterStop) {
+TEST_F(AudioOutputResamplerTest, DispatcherDestroyedAfterStop) {
   DispatcherDestroyed_AfterStop(std::move(resampler_));
 }
 

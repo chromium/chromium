@@ -38,6 +38,7 @@ Wichtige Hinweise:
 <translation id="1646463005043273333">Öffnet die Chrome-Einstellung, mit der Chrome als Standardbrowser festgelegt wird.</translation>
 <translation id="1670609221633730681">Chrome-Tipp: Position der Adressleiste auswählen</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Passwörter in Chrome speichern</translation>
 <translation id="1790080846677398234">Fügt die eingegebenen URLs zu deinen Lesezeichen in Chrome hinzu.</translation>
 <translation id="1799920918471566157">Chrome-Tipps</translation>
 <translation id="1830634592642484976">Diese Adresse ist derzeit in Chrome gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="USER_EMAIL" />).</translation>
@@ -82,7 +83,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="2788811701191021538">Dadurch wird die Seite mit den Einstellungen für Zahlungsmethoden in Chrome geöffnet.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chrome<ph name="END_LINK" /></translation>
 <translation id="292371311537977079">Chrome-Einstellungen</translation>
-<translation id="2923827943290349720">Sperren Sie die Inkognitotabs, wenn Sie Chrome schließen</translation>
+<translation id="2923827943290349720">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
 <translation id="2940565985148833945">Chrome-Tipp: Mit Lens suchen</translation>
 <translation id="2957447865124070833">Wähle <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> aus</translation>
 <translation id="2986402782150919988">Lesezeichen in Chrome hinzufügen</translation>
@@ -109,6 +110,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="3655656110921623717">Das bedeutet, dass Chrome immer die mobile Website anfordert.</translation>
 <translation id="3740397331642243698">Öffnet die eingegebenen URLs in Google Chrome im Inkognitomodus.</translation>
 <translation id="3741995255368156336">Öffnet die Chrome-Leseliste.</translation>
+<translation id="3808570423967020928">Über das Startbildschirm-Dock schneller auf Chrome zugreifen.</translation>
 <translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
 <translation id="3863841106411295595">Fügt die eingegebenen URLs deiner Leseliste in Chrome hinzu.</translation>
@@ -219,9 +221,11 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 
 Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Browserdaten in Chrome löschen.</translation>
+<translation id="6924922227983877439">Links standardmäßig in Chrome öffnen</translation>
 <translation id="6975725306479268850">Chrome für Autofill auswählen</translation>
 <translation id="7056826488869329999">Dadurch wird der Sicherheitscheck in Chrome geöffnet und ausgeführt.</translation>
 <translation id="7061455974939528301">Halte das Chrome-Symbol gedrückt und klicke auf „Startbildschirm bearbeiten“</translation>
+<translation id="7065813315247345131">Chrome zum Dock hinzufügen</translation>
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
 <translation id="7161390184744336561">Google Chrome ist veraltet</translation>
 <translation id="7165736900384873061">Google Chrome QR-Scanner nutzen</translation>

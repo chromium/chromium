@@ -28,6 +28,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/hash_util.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
@@ -1072,6 +1073,109 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   EXPECT_EQ(0u, payment_instruments.size());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Tests that PopulateWalletTypesFromSyncData populates PaymentInstruments for
+// linked BNPL issuers.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       PopulatePaymentInstrumentsFromSyncData_LinkedBnplIssuers) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  syncer::EntityChangeList entity_data;
+  int64_t instrument_id = 123545;
+  std::string issuer_id = "affirm";
+  std::string currency = "USD";
+  int price_lower_bound = 0;
+  int price_upper_bound = 35;
+  sync_pb::AutofillWalletSpecifics
+      payment_instrument_linked_bnpl_issuer_specifics =
+          CreateAutofillWalletSpecificsForLinkedBnplIssuer(
+              instrument_id, issuer_id, currency, price_lower_bound,
+              price_upper_bound);
+  std::string client_tag =
+      syncer::GetUnhashedClientTagFromAutofillWalletSpecifics(
+          payment_instrument_linked_bnpl_issuer_specifics);
+  entity_data.push_back(EntityChange::CreateAdd(
+      /*storage_key=*/client_tag,
+      SpecificsToEntity(payment_instrument_linked_bnpl_issuer_specifics,
+                        client_tag)));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  ASSERT_EQ(1u, payment_instruments.size());
+  sync_pb::PaymentInstrument payment_instrument = payment_instruments.at(0);
+  ASSERT_TRUE(
+      payment_instrument_linked_bnpl_issuer_specifics.has_payment_instrument());
+  EXPECT_EQ(payment_instrument.instrument_id(), instrument_id);
+  EXPECT_EQ(payment_instrument.supported_rails().at(0),
+            sync_pb::PaymentInstrument::SupportedRail::
+                PaymentInstrument_SupportedRail_CARD_NUMBER);
+  ASSERT_TRUE(
+      payment_instrument_linked_bnpl_issuer_specifics.payment_instrument()
+          .has_bnpl_issuer_details());
+  EXPECT_EQ(payment_instrument.bnpl_issuer_details().issuer_id(), issuer_id);
+  EXPECT_EQ(payment_instrument.bnpl_issuer_details()
+                .eligible_price_range()
+                .at(0)
+                .currency(),
+            currency);
+  EXPECT_EQ(payment_instrument.bnpl_issuer_details()
+                .eligible_price_range()
+                .at(0)
+                .min_price_in_micros(),
+            price_lower_bound);
+  EXPECT_EQ(payment_instrument.bnpl_issuer_details()
+                .eligible_price_range()
+                .at(0)
+                .max_price_in_micros(),
+            price_upper_bound);
+}
+
+// Tests that PopulateWalletTypesFromSyncData does not populate
+// PaymentInstruments for linked BNPL issuers when the sync flag is turned off.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       PopulatePaymentInstrumentsFromSyncData_LinkedBnplIssuers_FlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  syncer::EntityChangeList entity_data;
+  sync_pb::AutofillWalletSpecifics
+      payment_instrument_linked_bnpl_issuer_specifics =
+          CreateAutofillWalletSpecificsForLinkedBnplIssuer(123545, "affirm",
+                                                           "USD", 0, 35);
+  std::string client_tag =
+      syncer::GetUnhashedClientTagFromAutofillWalletSpecifics(
+          payment_instrument_linked_bnpl_issuer_specifics);
+  entity_data.push_back(EntityChange::CreateAdd(
+      client_tag,
+      SpecificsToEntity(payment_instrument_linked_bnpl_issuer_specifics,
+                        client_tag)));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  ASSERT_EQ(0u, payment_instruments.size());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 struct WalletCardTypeMapping {
   sync_pb::WalletMaskedCreditCard_WalletCardType wallet_card_type;

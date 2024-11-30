@@ -55,9 +55,9 @@
         <span class="vertical-separator"></span>
         <cr-icon-button id="annotate" iron-icon="pdf:annotate"
             @click="${this.onAnnotationClick_}"
-            aria-label="$i18n{tooltipAnnotate}"
+            aria-label="$i18n{ink2Draw}"
             ?disabled="${!this.annotationAvailable}"
-            title="$i18n{tooltipAnnotate}"></cr-icon-button>
+            title="$i18n{ink2Draw}"></cr-icon-button>
         <span class="vertical-separator"></span>
         <cr-icon-button id="undo" ?disabled="${!this.canUndoAnnotation_}"
             iron-icon="${this.iconsetName_()}:undo"

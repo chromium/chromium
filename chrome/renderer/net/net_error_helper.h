@@ -54,12 +54,8 @@ class NetErrorHelper
 
   // NetErrorPageController::Delegate implementation
   void ButtonPressed(NetErrorHelperCore::Button button) override;
-  void LaunchOfflineItem(const std::string& id,
-                         const std::string& name_space) override;
-  void LaunchDownloadsPage() override;
   void SavePageForLater() override;
   void CancelSavePage() override;
-  void ListVisibilityChanged(bool is_visible) override;
   void UpdateEasterEggHighScore(int high_score) override;
   void ResetEasterEggHighScore() override;
 
@@ -104,9 +100,6 @@ class NetErrorHelper
   void PortalSignin() override;
   void DownloadPageLater() override;
   void SetIsShowingDownloadButton(bool show) override;
-  void OfflineContentAvailable(
-      bool list_visible_by_prefs,
-      const std::string& offline_content_json) override;
   content::RenderFrame* GetRenderFrame() override;
 
 #if BUILDFLAG(IS_ANDROID)

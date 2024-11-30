@@ -30,6 +30,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -628,11 +629,11 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
       case SyscallerType::DirectSyscaller:
 #if defined(DIRECT_SYSCALLER_ENABLED)
         syscaller_ = std::make_unique<DirectSyscaller>();
+        break;
 #else
-        CHECK(false) << "Requested instantiation of DirectSyscaller on a "
+        NOTREACHED() << "Requested instantiation of DirectSyscaller on a "
                         "platform that doesn't support it";
 #endif
-        break;
       case SyscallerType::LibcSyscaller:
         syscaller_ = std::make_unique<LibcSyscaller>();
         break;

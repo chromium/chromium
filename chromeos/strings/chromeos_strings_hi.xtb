@@ -864,7 +864,7 @@
 <translation id="5168185087976003268">बैटरी की स्थिति</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="517075088756846356">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> का पावर केबल हटाएं और इसे फिर से लगाएं</translation>
-<translation id="5178021559562393163">नाम तैयार नहीं किए जा सके. छोटी ट्रांसक्रिप्ट का इस्तेमाल करें.</translation>
+<translation id="5178021559562393163">टाइटल नहीं दिए जा सके. छोटी ट्रांसक्रिप्ट का इस्तेमाल करें.</translation>
 <translation id="5180108905184566358">बेओबैब ट्री</translation>
 <translation id="5180712487038406644">एक्सप्रेसिव</translation>
 <translation id="5190187232518914472">अपनी पसंदीदा यादें ताज़ा करें. एल्बम जोड़ने या उनमें बदलाव करने के लिए, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> पर जाएं.</translation>
@@ -899,7 +899,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">पहचान</translation>
 <translation id="5317780077021120954">सेव करें</translation>
-<translation id="5318310531701770497">नाम तैयार नहीं किए जा सके. लंबी ट्रांसक्रिप्ट का इस्तेमाल करें.</translation>
+<translation id="5318310531701770497">टाइटल नहीं दिए जा सके. लंबी ट्रांसक्रिप्ट का इस्तेमाल करें.</translation>
 <translation id="5318334351163689047">टीसीपी अनुरोध पूरे नहीं हो पाए</translation>
 <translation id="53196409393069519">क्या आपको बोले जा रहे शब्दों को टेक्स्ट में बदलने की सुविधा चालू करनी है?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1044,6 +1044,7 @@
 <translation id="6058625436358447366">पूरा करने के लिए, पुराना और नया पासवर्ड डालें</translation>
 <translation id="6061772781719867950">वे एचटीटीपी अनुरोध जो नहीं किए जा सके</translation>
 <translation id="6073292342939316679">कीबोर्ड की रोशनी कम करें</translation>
+<translation id="6074752328838739425">खास जानकारी छिपाएं</translation>
 <translation id="6075872808778243331">(Android) एचटीटीपी के इंतज़ार का समय</translation>
 <translation id="6078323886959318429">शॉर्टकट जोड़ें</translation>
 <translation id="6091080061796993741">पीले</translation>
@@ -1234,6 +1235,7 @@
 <translation id="6866732840889595464">डेज़ी</translation>
 <translation id="6871256179359663621">हल्के बैंगनी</translation>
 <translation id="6889786074662672253">रीस्टार्ट करते समय, न तो इस बाहरी डिवाइस को डिसकनेक्ट करें और न ही अपने कंप्यूटर को शट डाउन करें. इस विंडो को छोटा किया जा सकता है. रीस्टार्ट होने में कुछ मिनट लग सकते हैं. हो सकता है कि इस दौरान आपका बाहरी डिवाइस काम न करे.</translation>
+<translation id="6899460405678814458">खास जानकारी दिखाएं</translation>
 <translation id="6900701049656042631">इस एल्बम में कोई फ़ोटो नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
 <translation id="6902359863093437070">एआई की मदद से कैमरा बैकग्राउंड बनाएं</translation>
 <translation id="6905163627763043954">इसे आज़माएं</translation>

@@ -463,7 +463,7 @@ AccessCodeCastIntegrationBrowserTest::CreateImpl() {
       new MockCastMediaSinkServiceImpl(OnSinksDiscoveredCallback(),
                                        mock_cast_socket_service_.get(),
                                        DiscoveryNetworkMonitor::GetInstance(),
-                                       mock_dual_media_sink_service_.get());
+                                       dial_media_sink_service_.get());
 
   ON_CALL(*cast_media_sink_service_impl, OpenChannel(_, _, _, _, _))
       .WillByDefault(testing::Invoke(

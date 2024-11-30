@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.USE_LARGE_FAVICON;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconUseLargeFavicon;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -78,8 +78,9 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         mTaskFinishedCount = 0;
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         mAuxiliarySearchController =
-                AuxiliarySearchControllerFactory.createAuxiliarySearchController(
-                        mContext, profile, /* tabModelSelector= */ null);
+                AuxiliarySearchControllerFactory.getInstance()
+                        .createAuxiliarySearchController(
+                                mContext, profile, /* tabModelSelector= */ null);
 
         long startTimeMs = TimeUtils.uptimeMillis();
         // Record the delay from soonest expected wakeup time.
@@ -92,7 +93,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
         Resources resources = mContext.getResources();
         int faviconSize =
-                USE_LARGE_FAVICON.getValue()
+                sAndroidAppIntegrationWithFaviconUseLargeFavicon.getValue()
                         ? resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size)
                         : resources.getDimensionPixelSize(
                                 R.dimen.auxiliary_search_favicon_size_small);

@@ -378,6 +378,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed for other reasons"/>
 </enum>
 
+<enum name="FedCmUseOtherAccountResult">
+  <int value="0" label="User signs in with a new account"/>
+  <int value="1" label="User signs in with existing account"/>
+  <int value="2" label="User does not sign in"/>
+</enum>
+
 <enum name="FedCmUserInfoStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Caller is not same origin with config URL"/>

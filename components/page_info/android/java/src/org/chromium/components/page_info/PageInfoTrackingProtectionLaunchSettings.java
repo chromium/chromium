@@ -319,8 +319,4 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         mTpTitle.setTitle(
                 getQuantityString(R.plurals.page_info_tracking_protection_title_off, days));
     }
-
-    private boolean willCreatePermanentException() {
-        return "0d".equals(PageInfoFeatures.getUserBypassExpiration());
-    }
 }

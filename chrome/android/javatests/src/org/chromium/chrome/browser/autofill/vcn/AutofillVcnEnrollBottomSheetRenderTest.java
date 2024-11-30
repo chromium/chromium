@@ -78,7 +78,7 @@ public class AutofillVcnEnrollBottomSheetRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -141,9 +141,6 @@ public class AutofillVcnEnrollBottomSheetRenderTest {
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.CARD_LABEL,
                                 "A Card Label That is Actually Quite Long ···· 1234")
-                        .with(
-                                AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION,
-                                "Virtual Card")
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
                                 new Description(

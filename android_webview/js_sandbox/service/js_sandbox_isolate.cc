@@ -526,8 +526,8 @@ void JsSandboxIsolate::ConvertPromiseToArrayBufferInThreadPool(
     std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
     void* inner_buffer) {
   if (base::ReadFromFD(fd.get(),
-                       base::make_span(static_cast<char*>(inner_buffer),
-                                       base::checked_cast<size_t>(length)))) {
+                       base::span(static_cast<char*>(inner_buffer),
+                                  base::checked_cast<size_t>(length)))) {
     control_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(

@@ -131,7 +131,8 @@ ResourceId CreateGpuResource(
     const gfx::Size& size,
     SharedImageFormat format,
     gfx::ColorSpace color_space,
-    base::span<const uint8_t> pixels) {
+    base::span<const uint8_t> pixels,
+    GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin) {
   DCHECK(context_provider);
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
@@ -145,6 +146,7 @@ ResourceId CreateGpuResource(
       client_shared_image, GL_TEXTURE_2D, sync_token, size, format,
       false /* is_overlay_candidate */);
   gl_resource.color_space = std::move(color_space);
+  gl_resource.origin = origin;
   auto release_callback =
       base::BindOnce(&DeleteSharedImage, std::move(client_shared_image));
   return resource_provider->ImportResource(gl_resource,
@@ -299,12 +301,16 @@ void CreateTestTwoColoredTextureDrawQuad(
     }
   }
 
+  const GrSurfaceOrigin origin = flipped_texture_quad
+                                     ? kBottomLeft_GrSurfaceOrigin
+                                     : kTopLeft_GrSurfaceOrigin;
+
   ResourceId resource;
   if (gpu_resource) {
     resource =
         CreateGpuResource(child_context_provider, child_resource_provider,
                           rect.size(), SinglePlaneFormat::kBGRA_8888,
-                          gfx::ColorSpace(), MakePixelSpan(pixels));
+                          gfx::ColorSpace(), MakePixelSpan(pixels), origin);
   } else {
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     base::WritableSharedMemoryMapping mapping;
@@ -315,6 +321,7 @@ void CreateTestTwoColoredTextureDrawQuad(
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
         shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
         TransferableResource::ResourceSource::kTileRasterTask);
+    transferable_resource.origin = origin;
     auto release_callback =
         base::BindOnce(&DeleteSharedImage, std::move(shared_image));
 
@@ -339,7 +346,7 @@ void CreateTestTwoColoredTextureDrawQuad(
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
                premultiplied_alpha, uv_top_left, uv_bottom_right,
-               background_color, flipped_texture_quad, nearest_neighbor,
+               background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
@@ -401,12 +408,11 @@ void CreateTestTextureDrawQuad(
   bool needs_blending = true;
   const gfx::PointF uv_top_left(0.0f, 0.0f);
   const gfx::PointF uv_bottom_right(1.0f, 1.0f);
-  const bool flipped = false;
   const bool nearest_neighbor = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
                premultiplied_alpha, uv_top_left, uv_bottom_right,
-               background_color, flipped, nearest_neighbor,
+               background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
@@ -436,8 +442,7 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
   // Get the appended quad and map resource ids for transfer.
   auto* quad = render_pass->quad_list.back();
   EXPECT_EQ(quad->material, TextureDrawQuad::kMaterial);
-  EXPECT_EQ(quad->resources.count, 1u);
-  ResourceId resource_y = quad->resources.ids[0];
+  ResourceId resource_y = quad->resource_id;
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap({resource_y}, resource_provider,
                                              child_resource_provider,
@@ -445,8 +450,7 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
 
   // Set correct resource ids and count.
   EXPECT_EQ(resource_map.size(), 1u);
-  quad->resources.ids[0] = resource_map[resource_y];
-  quad->resources.count = resource_map.size();
+  quad->resource_id = resource_map[resource_y];
 }
 
 void CreateTestY16TextureDrawQuad_TwoColor(
@@ -473,28 +477,30 @@ void CreateTestY16TextureDrawQuad_TwoColor(
           visible_rect.size(), memory.get(), rect.size().GetArea() * 2,
           base::TimeDelta());
   DCHECK_EQ(video_frame->rows(0) % 2, 0);
-  DCHECK_EQ(video_frame->stride(0) % 2, 0);
+  DCHECK_EQ(video_frame->stride(0) % 2, 0ul);
 
   for (int j = 0; j < video_frame->rows(0); ++j) {
     uint8_t* row = video_frame->writable_data(0) + j * video_frame->stride(0);
     if (j < foreground_rect.y() || j >= foreground_rect.bottom()) {
-      for (int i = 0; i < video_frame->stride(0) / 2; ++i) {
+      for (size_t i = 0; i < video_frame->stride(0) / 2; ++i) {
         *row++ = i & 0xFF;  // Fill R with anything. It is not rendered.
         *row++ = g_background;
       }
     } else {
-      for (int i = 0;
-           i < std::min(video_frame->stride(0) / 2, foreground_rect.x()); ++i) {
+      for (size_t i = 0; i < std::min<size_t>(video_frame->stride(0) / 2,
+                                              foreground_rect.x());
+           ++i) {
         *row++ = i & 0xFF;
         *row++ = g_background;
       }
-      for (int i = foreground_rect.x();
-           i < std::min(video_frame->stride(0) / 2, foreground_rect.right());
+      for (size_t i = foreground_rect.x();
+           i < std::min<size_t>(video_frame->stride(0) / 2,
+                                foreground_rect.right());
            ++i) {
         *row++ = i & 0xFF;
         *row++ = g_foreground;
       }
-      for (int i = foreground_rect.right(); i < video_frame->stride(0) / 2;
+      for (size_t i = foreground_rect.right(); i < video_frame->stride(0) / 2;
            ++i) {
         *row++ = i & 0xFF;
         *row++ = g_background;
@@ -585,20 +591,15 @@ void CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
 
   // Get the appended quad and map resource ids for transfer.
   auto* quad = render_pass->quad_list.back();
-  std::vector<ResourceId> resource_ids_to_transfer;
-  for (uint32_t i = 0; i < quad->resources.count; ++i) {
-    resource_ids_to_transfer.push_back(quad->resources.ids[i]);
-  }
 
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
-          resource_ids_to_transfer, resource_provider, child_resource_provider,
+          {quad->resource_id}, resource_provider, child_resource_provider,
           child_context_provider);
+
   // Set correct resource ids and count.
-  for (size_t i = 0; i < resource_map.size(); ++i) {
-    quad->resources.ids[i] = resource_map[resource_ids_to_transfer[i]];
-  }
-  quad->resources.count = resource_map.size();
+  EXPECT_EQ(resource_map.size(), 1u);
+  quad->resource_id = resource_map[quad->resource_id];
 }
 
 void CreateTestMultiplanarVideoDrawQuad_Striped(
@@ -1752,7 +1753,7 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallback) {
   quad->SetNew(texture_quad_state, gfx::Rect(this->device_viewport_size_),
                gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
                true, gfx::PointF(), gfx::PointF(), SkColors::kTransparent,
-               false, false, false, gfx::ProtectedVideoType::kClear);
+               false, false, gfx::ProtectedVideoType::kClear);
   quad->overlay_priority_hint = OverlayPriority::kRequired;
 
   // Add a background that's not the expected fallback color.
@@ -1798,7 +1799,7 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallbackRPDQBypassCase) {
     quad->SetNew(sqs, gfx::Rect(this->device_viewport_size_),
                  gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
                  true, gfx::PointF(), gfx::PointF(), SkColors::kTransparent,
-                 false, false, false, gfx::ProtectedVideoType::kClear);
+                 false, false, gfx::ProtectedVideoType::kClear);
     quad->overlay_priority_hint = OverlayPriority::kRequired;
 
     pass_list.push_back(std::move(pass));
@@ -1917,12 +1918,12 @@ class IntersectingMultiplanarVideoQuadPixelTest : public VizPixelTestWithParam {
     constexpr int kMaxResourceSize = 10000;
 
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-        this->child_context_provider_.get(), nullptr,
+        this->child_context_provider_.get(),
         this->child_resource_provider_.get(),
         /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kMaxResourceSize);
     video_resource_updater2_ = std::make_unique<media::VideoResourceUpdater>(
-        this->child_context_provider_.get(), nullptr,
+        this->child_context_provider_.get(),
         this->child_resource_provider_.get(),
         /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kMaxResourceSize);
@@ -2395,7 +2396,7 @@ class VideoRendererPixelTestBase : public VizPixelTest {
     constexpr bool kUseGpuMemoryBufferResources = false;
     constexpr int kMaxResourceSize = 10000;
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-        child_context_provider_.get(), nullptr, child_resource_provider_.get(),
+        child_context_provider_.get(), child_resource_provider_.get(),
         /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kMaxResourceSize);
   }
@@ -4772,7 +4773,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
   auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
                mapped_resource, false, gfx::PointF(0, 0), gfx::PointF(1, 1),
-               SkColors::kBlack, false, nearest_neighbor,
+               SkColors::kBlack, nearest_neighbor,
                /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
   AggregatedRenderPassList pass_list;
@@ -4825,7 +4826,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
   auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
                mapped_resource, /*premultiplied=*/true, gfx::PointF(0, 0),
-               gfx::PointF(1, 1), SkColors::kBlack, false, nearest_neighbor,
+               gfx::PointF(1, 1), SkColors::kBlack, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 
   AggregatedRenderPassList pass_list;
@@ -5198,11 +5199,10 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
           gfx::RectF(layer_rect), 1.f / rect.width(), 1.f / rect.height());
 
       auto* texture_quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-      texture_quad->SetNew(shared_state, layer_rect, layer_rect, needs_blending,
-                           mapped_resource, true, uv_rect.origin(),
-                           uv_rect.bottom_right(), SkColors::kWhite, false,
-                           false, /*secure_output_only=*/false,
-                           gfx::ProtectedVideoType::kClear);
+      texture_quad->SetNew(
+          shared_state, layer_rect, layer_rect, needs_blending, mapped_resource,
+          true, uv_rect.origin(), uv_rect.bottom_right(), SkColors::kWhite,
+          false, /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
     }
   }
 
@@ -5364,12 +5364,11 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
   bool needs_blending = true;
   const gfx::PointF uv_top_left(0.0f, 0.0f);
   const gfx::PointF uv_bottom_right(1.0f, 1.0f);
-  const bool flipped = false;
   const bool nearest_neighbor = false;
   auto* blue = root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   blue->SetNew(shared_state_rounded, blue_rect, blue_rect, needs_blending,
                mapped_resource, true, uv_top_left, uv_bottom_right,
-               SkColors::kBlack, flipped, nearest_neighbor,
+               SkColors::kBlack, nearest_neighbor,
                /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
   SharedQuadState* shared_state_normal = CreateTestSharedQuadState(
@@ -6096,13 +6095,12 @@ class ColorTransformPixelTest
       bool needs_blending = true;
       const gfx::PointF uv_top_left(0.0f, 0.0f);
       const gfx::PointF uv_bottom_right(1.0f, 1.0f);
-      const bool flipped = false;
       const bool nearest_neighbor = false;
       auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
       quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
                    this->premultiplied_alpha_, uv_top_left, uv_bottom_right,
-                   SkColors::kBlack, flipped, nearest_neighbor,
+                   SkColors::kBlack, nearest_neighbor,
                    /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 
       auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();

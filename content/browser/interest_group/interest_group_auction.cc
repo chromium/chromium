@@ -268,7 +268,7 @@ const blink::InterestGroup::Ad* FindMatchingAd(
         selected_buyer_and_seller_reporting_id.has_value()) {
       const std::string reporting_key = blink::HashedKAnonKeyForAdNameReporting(
           interest_group, *maybe_matching_ad,
-          *selected_buyer_and_seller_reporting_id);
+          selected_buyer_and_seller_reporting_id);
       if (!IsKAnon(kanon_keys, reporting_key)) {
         return nullptr;
       }
@@ -1954,6 +1954,18 @@ class InterestGroupAuction::BuyerHelper
       // Bid render url must match the interest group.
       return nullptr;
     }
+
+    // If k-anonymity is enforced, the reporting k-anon key on the server has
+    // to match what we calculate on the client.
+    if (bid_role == auction_worklet::mojom::BidRole::kEnforcedKAnon) {
+      if (!bid_state->kanon_keys.contains(
+              blink::HashedKAnonKeyForAdNameReporting(
+                  interest_group, *matching_ad,
+                  selected_buyer_and_seller_reporting_id))) {
+        return nullptr;
+      }
+    }
+
     // Reporting IDs used by the server (if any) must match the ad on device.
     if (selected_buyer_and_seller_reporting_id.has_value() &&
         !IsSelectedReportingIdValid(
@@ -3138,7 +3150,6 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
                        weak_ptr_factory_.GetWeakPtr(), component_auction));
     ++num_pending_loads_;
   }
-  bool try_starting_seller_worklet = false;
   if (config_->non_shared_params.interest_group_buyers) {
     for (const auto& buyer :
          *config_->non_shared_params.interest_group_buyers) {
@@ -3158,19 +3169,8 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
         // owner has groups in the database, so we'll likely need this process.
         auction_worklet_manager_->MaybeStartAnticipatoryProcess(
             buyer, AuctionWorkletManager::WorkletType::kBidder);
-        try_starting_seller_worklet = true;
       }
     }
-  }
-
-  // We want the top-level seller process to be started after the component
-  // seller processes to match the order that worklets are requested. Component
-  // seller processes are requested before the top-level seller processes to
-  // avoid deadlock, but anticipatory processes cannot cause deadlock because
-  // they can be cleared in order to respect process limits.
-  if (try_starting_seller_worklet) {
-    auction_worklet_manager_->MaybeStartAnticipatoryProcess(
-        config_->seller, AuctionWorkletManager::WorkletType::kSeller);
   }
 
   if (num_pending_loads_ == 0) {
@@ -3403,7 +3403,7 @@ bool InterestGroupAuction::HandleServerResponseImpl(
   const std::string& plaintext_response = maybe_response->GetPlaintextData();
   std::optional<base::span<const uint8_t>> compressed_response =
       ExtractCompressedBiddingAndAuctionResponse(
-          base::as_bytes(base::make_span(plaintext_response)));
+          base::as_byte_span(plaintext_response));
   if (!compressed_response) {
     saved_response_.emplace();
     base::UmaHistogramEnumeration(
@@ -4001,14 +4001,8 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
 
   std::optional<
       blink::AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig>
-      debug_mode_config;
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::
-              kPrivateAggregationAuctionReportBuyerDebugModeConfig)) {
-    debug_mode_config =
-        config_->non_shared_params.auction_report_buyer_debug_mode_config;
-  }
+      debug_mode_config =
+          config_->non_shared_params.auction_report_buyer_debug_mode_config;
 
   blink::mojom::DebugModeDetailsPtr debug_mode_details;
   if (debug_mode_config) {
@@ -4728,6 +4722,18 @@ InterestGroupAuction::GetDeprecatedRenderURLReplacements() {
 InterestGroupAuction::LeaderInfo::LeaderInfo() = default;
 InterestGroupAuction::LeaderInfo::~LeaderInfo() = default;
 
+InterestGroupAuction::ScoreAdClientData::ScoreAdClientData(
+    std::unique_ptr<Bid> bid,
+    scoped_refptr<TrustedSignalsCacheImpl::Handle> cache_handle)
+    : bid(std::move(bid)), cache_handle(std::move(cache_handle)) {}
+
+InterestGroupAuction::ScoreAdClientData::ScoreAdClientData(
+    ScoreAdClientData&&) = default;
+InterestGroupAuction::ScoreAdClientData::~ScoreAdClientData() = default;
+InterestGroupAuction::ScoreAdClientData&
+InterestGroupAuction::ScoreAdClientData::operator=(ScoreAdClientData&&) =
+    default;
+
 void InterestGroupAuction::OnInterestGroupRead(
     scoped_refptr<StorageInterestGroups> read_interest_groups) {
   ++num_owners_loaded_;
@@ -5442,45 +5448,77 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
   bid->seller_worklet_score_ad_start = base::TimeTicks::Now();
 
   ++bids_being_scored_;
-  Bid* bid_raw = bid.get();
 
   // We only pass the buyerAndSellerReportingId if there is a
   // selectedBuyerAndSellerReportingId.
   std::optional<std::string> maybe_buyer_and_seller_reporting_id;
-  if (bid_raw->selected_buyer_and_seller_reporting_id.has_value()) {
+  if (bid->selected_buyer_and_seller_reporting_id.has_value()) {
     maybe_buyer_and_seller_reporting_id =
-        bid_raw->bid_ad->buyer_and_seller_reporting_id;
+        bid->bid_ad->buyer_and_seller_reporting_id;
   }
 
-  mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient> score_ad_remote;
-  score_ad_receivers_.Add(
-      this, score_ad_remote.InitWithNewPipeAndPassReceiver(), std::move(bid));
+  mojo::PendingReceiver<auction_worklet::mojom::ScoreAdClient>
+      score_ad_receiver;
   DCHECK_EQ(0, config_->NumPromises());
   SubresourceUrlBuilder* url_builder = SubresourceUrlBuilderIfReady();
   DCHECK(url_builder);  // Should be ready by now.
   seller_worklet_handle_->AuthorizeSubresourceUrls(*url_builder);
+
+  std::vector<GURL> ad_component_urls = bid->GetAdComponentUrls();
+  auction_worklet::mojom::TrustedSignalsCacheKeyPtr cache_key;
+  scoped_refptr<TrustedSignalsCacheImpl::Handle> cache_handle;
+  // If KVv2 scoring signals are required, the TrustedSignalsCache is enabled,
+  // and trusted scoring signals are allowed for the worklet, start fethcing the
+  // scoring signals, so can pass the key to retrieve them from the cache to
+  // ScoreAd().
+  if (config_->trusted_scoring_signals_url &&
+      config_->non_shared_params.trusted_scoring_signals_coordinator &&
+      interest_group_manager_->trusted_signals_cache() &&
+      seller_worklet_handle_->TrustedScoringSignalsUrlAllowed()) {
+    int partition_id;
+    base::Value::Dict additional_params;
+    if (config_->seller_experiment_group_id) {
+      additional_params.Set(
+          "experimentGroupId",
+          base::NumberToString(*config_->seller_experiment_group_id));
+    }
+    cache_handle =
+        interest_group_manager_->trusted_signals_cache()
+            ->RequestTrustedScoringSignals(
+                main_frame_origin_, config_->seller,
+                *config_->trusted_scoring_signals_url,
+                *config_->non_shared_params.trusted_scoring_signals_coordinator,
+                bid->interest_group->owner,
+                bid->bid_state->bidder->joining_origin, bid->ad_descriptor.url,
+                ad_component_urls, std::move(additional_params), partition_id);
+    cache_key = auction_worklet::mojom::TrustedSignalsCacheKey::New(
+        cache_handle->compression_group_token(), partition_id);
+  }
+
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
-      bid_raw->ad_metadata, bid_raw->bid, bid_raw->bid_currency,
-      config_->non_shared_params,
-      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
-      GetDirectFromSellerSellerSignals(url_builder),
+      bid->ad_metadata, bid->bid, bid->bid_currency, config_->non_shared_params,
+      std::move(cache_key), GetDirectFromSellerSellerSignals(url_builder),
       GetDirectFromSellerSellerSignalsHeaderAdSlot(
           *direct_from_seller_signals_header_ad_slot_),
       GetDirectFromSellerAuctionSignals(url_builder),
       GetDirectFromSellerAuctionSignalsHeaderAdSlot(
           *direct_from_seller_signals_header_ad_slot_),
-      GetOtherSellerParam(*bid_raw),
+      GetOtherSellerParam(*bid),
       parent_ ? PerBuyerCurrency(config_->seller, *parent_->config_)
               : std::nullopt,
-      bid_raw->interest_group->owner, bid_raw->ad_descriptor.url,
-      bid_raw->selected_buyer_and_seller_reporting_id,
-      maybe_buyer_and_seller_reporting_id, bid_raw->GetAdComponentUrls(),
-      bid_raw->bid_duration.InMilliseconds(), bid_raw->ad_descriptor.size,
+      bid->interest_group->owner, bid->ad_descriptor.url,
+      bid->selected_buyer_and_seller_reporting_id,
+      maybe_buyer_and_seller_reporting_id, ad_component_urls,
+      bid->bid_duration.InMilliseconds(), bid->ad_descriptor.size,
       IsOriginInDebugReportCooldownOrLockout(
           config_->seller, debug_report_lockout_and_cooldowns_,
           base::Time::Now()),
-      SellerTimeout(), bid_trace_id, bid_raw->bid_state->bidder->joining_origin,
-      std::move(score_ad_remote));
+      SellerTimeout(), bid_trace_id, bid->bid_state->bidder->joining_origin,
+      score_ad_receiver.InitWithNewPipeAndPassRemote());
+
+  score_ad_receivers_.Add(
+      this, std::move(score_ad_receiver),
+      ScoreAdClientData(std::move(bid), std::move(cache_handle)));
 }
 
 bool InterestGroupAuction::ValidateScoreBidCompleteResult(
@@ -5599,7 +5637,8 @@ void InterestGroupAuction::OnScoreAdComplete(
     return;
   }
 
-  std::unique_ptr<Bid> bid = std::move(score_ad_receivers_.current_context());
+  std::unique_ptr<Bid> bid =
+      std::move(score_ad_receivers_.current_context().bid);
   score_ad_receivers_.Remove(score_ad_receivers_.current_receiver());
 
   auction_metrics_recorder_->RecordScoreAdFlowLatency(

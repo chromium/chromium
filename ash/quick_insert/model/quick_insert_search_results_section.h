@@ -21,7 +21,9 @@ enum class ASH_EXPORT QuickInsertSectionType {
   kLocalFiles,
   kDriveFiles,
   kContentEditor,
-  kMaxValue = kContentEditor,
+  kFeaturedGifs,
+  kSearchedGifs,
+  kMaxValue = kSearchedGifs,
 };
 
 // Search results are divided into different sections.

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
-
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -16,10 +14,12 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -74,6 +74,7 @@ struct ProfileMenuViewPixelTestParam {
   bool use_multiple_profiles = false;
   // param to be removed when `kOutlineSilhouetteIcon` is enabled by default.
   bool outline_silhouette_icon = false;
+  bool account_image_available = true;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -199,6 +200,26 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
          ProfileMenuDesignVersion::kExplicitSigninImproved,
      .use_multiple_profiles = true,
      .outline_silhouette_icon = true},
+    {.pixel_test_param = {.test_suffix = "WebSignedIn_Improved"},
+     .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved,
+     .outline_silhouette_icon = true},
+    {.pixel_test_param = {.test_suffix =
+                              "WebSignedIn_PlaceholderIcon_Improved"},
+     .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved,
+     .outline_silhouette_icon = true,
+     .account_image_available = false},
+    {.pixel_test_param = {.test_suffix =
+                              "WebSignedIn_PlaceholderIcon_DarkTheme_Improved",
+                          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved,
+     .outline_silhouette_icon = true,
+     .account_image_available = false},
     {.pixel_test_param = {.test_suffix = "SignedIn_MultipleProfiles_Improved"},
      .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
      .profile_menu_uno_redesign =
@@ -415,6 +436,18 @@ class ProfileMenuViewPixelTest
           profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
       SetColorTheme(theme_dark_profile, SK_ColorGREEN, /*dark_mode=*/true);
     }
+
+    if (!GetParam().account_image_available) {
+      // Remove account images. `SignInWithAccount()` adds an image by default.
+      signin::IdentityManager* identity_manager =
+          identity_test_env()->identity_manager();
+      for (const CoreAccountInfo& info :
+           identity_manager->GetAccountsWithRefreshTokens()) {
+        SimulateAccountImageFetch(identity_manager, info.account_id,
+                                  /*image_url_with_size=*/"NO_IMAGE",
+                                  gfx::Image());
+      }
+    }
   }
 
   // DialogBrowserTest:
@@ -430,8 +463,6 @@ class ProfileMenuViewPixelTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   void OpenProfileMenu() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
@@ -479,6 +510,8 @@ class ProfileMenuViewPixelTest
     return coordinator ? coordinator->GetProfileMenuViewBaseForTesting()
                        : nullptr;
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileMenuViewPixelTest, InvokeUi_default) {

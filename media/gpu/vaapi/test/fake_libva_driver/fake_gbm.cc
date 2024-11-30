@@ -23,6 +23,12 @@
 #define PAGE_SIZE 4096
 #define ALIGN(x, y) (((x + y - 1) / y) * y)
 
+#define DRM_NODE_RENDER 2
+
+int drmGetNodeTypeFromFd(int fd) {
+  return DRM_NODE_RENDER;
+}
+
 struct gbm_bo {
   struct gbm_import_fd_modifier_data meta;
 };

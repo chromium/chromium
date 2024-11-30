@@ -25,6 +25,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/hash/hash.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -51,17 +52,14 @@
 namespace component_updater {
 namespace {
 
-constexpr char kManifestFileName[] = "manifest.json";
-
 // Size of the "crx-components" crash key in bytes. Each entry is of the form
 // "COMPONENT_NAME-123.456.789," and the longest component name is 39 bytes so
 // the maximum size of an entry is 52 bytes. Currently there are 5 components
 // registered for WebView, 512 bytes should be able to hold about 10 entries.
 constexpr size_t kComponentsKeySize = 512;
 
-std::optional<base::Value::Dict> ReadManifest(
-    const std::string& manifest_content) {
-  JSONStringValueDeserializer deserializer(manifest_content);
+std::optional<base::Value::Dict> ReadJsonFile(const std::string& file_content) {
+  JSONStringValueDeserializer deserializer(file_content);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
   if (root && root->is_dict()) {
@@ -71,13 +69,23 @@ std::optional<base::Value::Dict> ReadManifest(
   return std::nullopt;
 }
 
-std::optional<base::Value::Dict> ReadManifestFromFd(int fd) {
+std::optional<base::Value::Dict> ReadJsonFileFromFd(int fd) {
   std::string content;
   base::ScopedFILE file_stream(
       base::FileToFILE(base::File(std::move(fd)), "r"));
   return base::ReadStreamToString(file_stream.get(), &content)
-             ? ReadManifest(content)
+             ? ReadJsonFile(content)
              : std::nullopt;
+}
+
+// Reads both manifest and metadata file from the given file descriptors
+std::pair<std::optional<base::Value::Dict>, std::optional<base::Value::Dict>>
+ReadComponentFilesFromFds(int manifest_fd, int metadata_fd) {
+  std::optional<base::Value::Dict> metadata;
+  if (metadata_fd != -1) {
+    metadata = ReadJsonFileFromFd(metadata_fd);
+  }
+  return std::make_pair(ReadJsonFileFromFd(manifest_fd), std::move(metadata));
 }
 
 void RecordComponentLoadStatusHistogram(const std::string& suffix,
@@ -89,27 +97,36 @@ void RecordComponentLoadStatusHistogram(const std::string& suffix,
       status);
 }
 
-std::string ComponentToString(const ComponentInfo& component) {
-  const auto id =
-      metrics::ComponentMetricsProvider::CrxIdToComponentId(component.id);
+std::string CreateCrashKey(std::string key, std::string value) {
+  const auto id = metrics::ComponentMetricsProvider::CrxIdToComponentId(key);
   if (id == metrics::SystemProfileProto_ComponentId_UNKNOWN) {
     return std::string();
   }
-  return base::StringPrintf("%s-%s",
-                            SystemProfileProto_ComponentId_Name(id).c_str(),
-                            component.version.GetString().c_str());
+  return base::StringPrintf(
+      "%s-%s", SystemProfileProto_ComponentId_Name(id).c_str(), value.c_str());
 }
 
 void UpdateCrashKeys() {
   std::vector<std::string> components_crash_key_values;
+  std::vector<std::string> cohort_hash_crash_key_values;
   for (const ComponentInfo& component :
        ComponentsInfoHolder::GetInstance()->GetComponents()) {
-    components_crash_key_values.push_back(ComponentToString(component));
+    components_crash_key_values.push_back(
+        CreateCrashKey(component.id, component.version.GetString()));
+    cohort_hash_crash_key_values.push_back(CreateCrashKey(
+        component.id,
+        base::NumberToString(metrics::ComponentMetricsProvider::HashCohortId(
+            component.cohort_id))));
   }
 
   static ::crash_reporter::CrashKeyString<kComponentsKeySize>
-      components_crash_key("crx-components");
+      components_crash_key(kComponentsCrashKeyName);
   components_crash_key.Set(base::JoinString(components_crash_key_values, ","));
+
+  static ::crash_reporter::CrashKeyString<kComponentsKeySize>
+      cohort_hash_crash_key(kCohortHashCrashKeyName);
+  cohort_hash_crash_key.Set(
+      base::JoinString(cohort_hash_crash_key_values, ","));
 }
 
 }  // namespace
@@ -149,10 +166,13 @@ void AndroidComponentLoaderPolicy::ComponentLoaded(
   // as it's parsed and passed separately.
   base::flat_map<std::string, base::ScopedFD> fd_map;
   int manifest_fd = -1;
+  int metadata_fd = -1;
   for (size_t i = 0; i < file_names.size(); ++i) {
     const std::string& file_name = file_names[i];
     if (file_name == kManifestFileName) {
       manifest_fd = fds[i];
+    } else if (file_name == kMetadataFileName) {
+      metadata_fd = fds[i];
     } else {
       fd_map[file_name] = base::ScopedFD(fds[i]);
     }
@@ -166,7 +186,7 @@ void AndroidComponentLoaderPolicy::ComponentLoaded(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(ReadManifestFromFd, manifest_fd),
+      base::BindOnce(ReadComponentFilesFromFds, manifest_fd, metadata_fd),
       base::BindOnce(&AndroidComponentLoaderPolicy::NotifyNewVersion,
                      base::Owned(this), base::OwnedRef(std::move(fd_map))));
 }
@@ -193,8 +213,12 @@ AndroidComponentLoaderPolicy::GetComponentId(JNIEnv* env) {
 
 void AndroidComponentLoaderPolicy::NotifyNewVersion(
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    std::optional<base::Value::Dict> manifest) {
+    std::pair<std::optional<base::Value::Dict>,
+              std::optional<base::Value::Dict>> component_files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::optional<base::Value::Dict> manifest = std::move(component_files.first);
+  std::optional<base::Value::Dict> metadata = std::move(component_files.second);
 
   if (!manifest) {
     ComponentLoadFailedInternal(ComponentLoadResult::kMalformedManifest);
@@ -214,7 +238,15 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
 
   RecordComponentLoadStatusHistogram(loader_policy_->GetMetricsSuffix(),
                                      ComponentLoadResult::kComponentLoaded);
-  ComponentsInfoHolder::GetInstance()->AddComponent(GetComponentId(), version);
+
+  std::string cohort_id = "";
+  if (metadata) {
+    const std::string* cohort_id_ptr =
+        metadata->FindString(kMetadataFileCohortIdKey);
+    cohort_id = cohort_id_ptr ? *cohort_id_ptr : "";
+  }
+  ComponentsInfoHolder::GetInstance()->AddComponent(GetComponentId(), version,
+                                                    cohort_id);
   loader_policy_->ComponentLoaded(version, fd_map, std::move(*manifest));
   UpdateCrashKeys();
 }

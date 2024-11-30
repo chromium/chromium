@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Clicked"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2025-03-23">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2025-05-25">
   <owner>bttk@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.SessionVariant"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2025-03-23">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2025-05-25">
   <owner>bttk@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -755,7 +755,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.MinimizeAppAndCloseTab"
-    enum="MinimizeAppAndCloseTabType" expires_after="2025-03-23">
+    enum="MinimizeAppAndCloseTabType" expires_after="2025-05-25">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
@@ -812,6 +812,45 @@ chromium-metrics-reviews@google.com.
     ChildProcessConnections that were dropped due to the BindingManager reaching
     the connection limit. This value accumulates while the app is running and is
     emitted upong the app being backgrounded at which time the counter is reset.
+  </summary>
+</histogram>
+
+<histogram name="Android.BrowserControls.OutstandingChangedOnFinish"
+    enum="BooleanChanged" expires_after="2025-02-23">
+  <owner>skym@chromium.org</owner>
+  <owner>pnoland@chromium.org</owner>
+  <summary>
+    Records if the outstanding navigations set changed when a navigation is
+    finished. This means the navigation id was not previously tracked, either
+    because it never started or it already finished once. When things are
+    working correctly, this should always be true. There are known tests and
+    likely some real scenarios that currently violate this.
+  </summary>
+</histogram>
+
+<histogram name="Android.BrowserControls.OutstandingChangedOnStart"
+    enum="BooleanChanged" expires_after="2025-02-23">
+  <owner>skym@chromium.org</owner>
+  <owner>pnoland@chromium.org</owner>
+  <summary>
+    Records if the outstanding navigations set changed when a navigation is
+    started. This means the navigation id was previously tracked and then the
+    same id was claimed to be started again. If things are working correctly,
+    this metric should always be true. No existing violations of this are
+    currently known.
+  </summary>
+</histogram>
+
+<histogram name="Android.BrowserControls.OutstandingNavigationsOnFinish"
+    units="navigations" expires_after="2025-02-23">
+  <owner>skym@chromium.org</owner>
+  <owner>pnoland@chromium.org</owner>
+  <summary>
+    Records the number of outstanding navigations that are blocking the browser
+    controls from being scrollable. Recorded when a navigation completes.
+    Typically the value should be 0 or maybe 1 for a very short amount of time.
+    Large numbers here indicate there's a bug that's keeping the controls
+    visible.
   </summary>
 </histogram>
 
@@ -895,6 +934,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result for ChromeStartupDelegate. Recorded on application
     startup.
+  </summary>
+</histogram>
+
+<histogram name="Android.Compositor.IsRequestingOpaqueSurface" enum="Boolean"
+    expires_after="2025-04-13">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records whether CopmositorSurfaceManager.requestSurface a surface with
+    PixelFormat.OPAQUE when the method is called. Used to idicate how often an
+    opaque SurfaceView is used.
   </summary>
 </histogram>
 
@@ -2078,6 +2128,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.Browser.EventsAfterTransfer"
+    enum="MotionEventAction" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    The metric is only recorded when touch sequence is successfully transferred
+    from Browser to Viz(when InputOnViz feature flag is enabled). The histogram
+    is emitted for discrete events seen between inital DOWN on which transfer
+    was requested, and the CANCEL received corresponding to DOWN from Android,
+    excluding both of these events.
+  </summary>
+</histogram>
+
+<histogram name="Android.InputOnViz.Browser.TouchMovesSeenAfterTransfer"
+    units="counts" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    The metric is only recorded when touch sequence is successfully transferred
+    from Browser to Viz(when InputOnViz feature flag is enabled). It records the
+    number of touch moves received on Browser before receiving a TOUCH_CANCEL,
+    which would be the last event Browser sees for that sequence after a
+    successful transfer.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputOnViz.InputReceiverCreationResult"
     enum="CreateAndroidInputReceiverResult" expires_after="2025-06-30">
   <owner>kartarsingh@google.com</owner>
@@ -2161,15 +2237,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.IsolatedSplits.ContextCreateTime"
-    units="ms" expires_after="2025-04-27">
+<histogram base="true" name="Android.IsolatedSplits.ContextCreateTime2"
+    units="ms" expires_after="2025-08-27">
 <!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
 
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
+  <owner>smaier@chromium.org</owner>
   <summary>
     Amount of time it takes to create a new Context for a split. This will only
-    be recorded if isolated splits are enabled.
+    be recorded if isolated splits are enabled. Different from ContextCreateTime
+    as only the first load of a split will be counted.
   </summary>
 </histogram>
 
@@ -2214,14 +2292,25 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Measures how long the MaybeCopyContentAreaAsBitmap function takes. This is
     emitted only when a navigation entry screenshot is captured.
   </summary>
 </histogram>
 
+<histogram name="Android.MaybeCopyContentAreaAsBitmapSync.Time" units="ms"
+    expires_after="2025-05-01">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Measures how long the MaybeCopyContentAreaAsBitmapSync function takes. This
+    is emitted only when a navigation entry screenshot is captured.
+  </summary>
+</histogram>
+
 <histogram name="Android.MediaPickerShown" enum="MediaPickerShown"
-    expires_after="2025-02-10">
+    expires_after="2025-05-18">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -2247,7 +2336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.DismissedWithoutFullyVisible"
-    enum="MessageIdentifier" expires_after="2025-02-10">
+    enum="MessageIdentifier" expires_after="2025-05-25">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2688,6 +2777,18 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ActivityIndexMismatchAssignmentState"
       variants="ActivityIndexMismatchAssignmentState"/>
+</histogram>
+
+<histogram name="Android.MultiWindowMode.Configuration" enum="WindowingMode"
+    expires_after="2025-05-22">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the configuration of the window that the app is running in. The
+    histogram will be emitted when a window is created, and when the windowing
+    mode changes. Recorded for tablet form factors only when desktop windowing
+    is supported.
+  </summary>
 </histogram>
 
 <histogram name="Android.MultiWindowMode.DraggedTabOpenedNewWindow"
@@ -3721,6 +3822,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.DocumentLoadTime.FirstPaired" units="ms"
+    expires_after="2025-05-11">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the pdf document load time. Recorded when the pdf load is complete.
+    Records the first successful load for each explicit pdf load. Only record
+    when there is a paired Android.Pdf.DocumentLoad.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.DocumentLoadTime.Paired" units="ms"
     expires_after="2025-05-11">
   <owner>shuyng@google.com</owner>
@@ -4069,7 +4181,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.PredictiveGestureNavigation.{Transition}"
+<histogram name="Android.PredictiveGestureNavigation{Transition}"
     enum="PredictiveNavTransitionPhase" expires_after="M135">
   <owner>lazzzis@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -4078,9 +4190,10 @@ chromium-metrics-reviews@google.com.
     gesture and when the predictive back gesture is on.
   </summary>
   <token key="Transition">
-    <variant name="WithoutTransition"
+    <variant name="" summary="no matter if a transition is activated"/>
+    <variant name=".WithoutTransition"
         summary="without transition is activated"/>
-    <variant name="WithTransition" summary="with transition is activated"/>
+    <variant name=".WithTransition" summary="with transition is activated"/>
   </token>
 </histogram>
 
@@ -4188,7 +4301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreResult" enum="AndroidRestoreResult"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -4762,7 +4875,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabNavigationInterceptResult.ForMdoc"
-    enum="NavigationInterceptResult" expires_after="2025-03-09">
+    enum="NavigationInterceptResult" expires_after="2025-05-18">
   <owner>pkotwicz@chromium.org</owner>
   <owner>rbyers@chromium.org</owner>
   <summary>
@@ -6423,6 +6536,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.NonAppUid" enum="AndroidUidType"
+    expires_after="2025-12-31">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the type of UID that WebView is running as if it's not a standard
+    application UID. This is recorded once during WebView startup on SDK30+
+    devices.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.NonEmbeddedMetrics.HistogramRecordAge"
     units="minutes" expires_after="2025-03-30">
   <owner>avvall@chromium.org</owner>
@@ -7343,7 +7467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.VizCompositorRunnerPostTaskBlockTime"
-    units="microseconds" expires_after="2025-03-23">
+    units="microseconds" expires_after="2025-05-25">
   <owner>cduvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

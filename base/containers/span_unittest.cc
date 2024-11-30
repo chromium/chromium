@@ -37,17 +37,7 @@ using ::testing::Pointwise;
 
 namespace base {
 
-namespace {
-
-// Tests for span(It, StrictNumeric<size_t>) deduction guide. These tests use a
-// helper function to wrap the static_asserts, as most STL containers don't work
-// well in a constexpr context. std::array<T, N> does, but span has specific
-// overloads for std::array<T, n>, so that ends up being less helpful than it
-// would initially appear.
-//
-// Another alternative would be to use std::declval, but that would be fairly
-// verbose.
-[[maybe_unused]] void TestDeductionGuides() {
+TEST(SpanTest, DeductionGuides) {
   // Tests for span(It, EndOrSize) deduction guide.
   {
     const std::vector<int> v;
@@ -154,8 +144,6 @@ namespace {
                      span<float, 9>>);
 }
 
-}  // namespace
-
 TEST(SpanTest, DefaultConstructor) {
   span<int> dynamic_span;
   EXPECT_EQ(nullptr, dynamic_span.data());
@@ -163,7 +151,7 @@ TEST(SpanTest, DefaultConstructor) {
 
   constexpr span<int, 0> static_span;
   static_assert(nullptr == static_span.data());
-  static_assert(0u == static_span.size());
+  static_assert(0 == static_span.size());
 }
 
 TEST(SpanTest, ConstructFromDataAndSize) {
@@ -342,8 +330,8 @@ TEST(SpanTest, DisallowedConstructionsFromStdArray) {
 
   static_assert(
       !std::is_constructible_v<span<int>, const std::array<const int, 3>&>,
-      "Error: span<int> with dynamic extent should not be constructible const "
-      "from l-value reference to std::array<const int>");
+      "Error: span<int> with dynamic extent should not be constructible from "
+      "const l-value reference to std::array<const int>");
 
   static_assert(
       !std::is_constructible_v<span<int, 2>, std::array<int, 3>&>,
@@ -1649,7 +1637,7 @@ TEST(SpanTest, ReverseIterator) {
 TEST(SpanTest, AsBytes) {
   {
     constexpr int kArray[] = {2, 3, 5, 7, 11, 13};
-    auto bytes_span = as_bytes(make_span(kArray));
+    auto bytes_span = as_bytes(span(kArray));
     static_assert(std::is_same_v<decltype(bytes_span),
                                  span<const uint8_t, sizeof(kArray)>>);
     EXPECT_EQ(reinterpret_cast<const uint8_t*>(kArray), bytes_span.data());
@@ -1703,7 +1691,7 @@ TEST(SpanTest, AsWritableBytes) {
 TEST(SpanTest, AsChars) {
   {
     constexpr int kArray[] = {2, 3, 5, 7, 11, 13};
-    auto chars_span = as_chars(make_span(kArray));
+    auto chars_span = as_chars(span(kArray));
     static_assert(
         std::is_same_v<decltype(chars_span), span<const char, sizeof(kArray)>>);
     EXPECT_EQ(reinterpret_cast<const char*>(kArray), chars_span.data());
@@ -2017,7 +2005,6 @@ TEST(SpanTest, EnsureConstexprGoodness) {
 
 TEST(SpanTest, OutOfBoundsDeath) {
   constexpr span<int, 0> kEmptySpan;
-  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan[0], "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.first(1u), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.last(1u), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.subspan(1u), "");
@@ -2200,11 +2187,11 @@ TEST(SpanTest, Indexing) {
 TEST(SpanTest, CopyFrom) {
   int arr[] = {1, 2, 3};
   span<int, 0> empty_static_span;
-  span<int, 3> static_span = make_span(arr);
+  span<int, 3> static_span = span(arr);
 
   std::vector<int> vec = {4, 5, 6};
   span<int> empty_dynamic_span;
-  span<int> dynamic_span = make_span(vec);
+  span<int> dynamic_span = span(vec);
 
   // Handle empty cases gracefully.
   // Dynamic size to static size requires an explicit conversion.
@@ -2334,11 +2321,11 @@ TEST(SpanTest, CopyFrom) {
 TEST(SpanTest, CopyFromNonoverlapping) {
   int arr[] = {1, 2, 3};
   span<int, 0> empty_static_span;
-  span<int, 3> static_span = make_span(arr);
+  span<int, 3> static_span = span(arr);
 
   std::vector<int> vec = {4, 5, 6};
   span<int> empty_dynamic_span;
-  span<int> dynamic_span = make_span(vec);
+  span<int> dynamic_span = span(vec);
 
   // Handle empty cases gracefully.
   UNSAFE_BUFFERS({
@@ -2379,10 +2366,10 @@ TEST(SpanTest, CopyFromNonoverlapping) {
 
 TEST(SpanTest, CopyFromConversion) {
   int arr[] = {1, 2, 3};
-  span<int, 3> static_span = make_span(arr);
+  span<int, 3> static_span = span(arr);
 
   std::vector<int> vec = {4, 5, 6};
-  span<int> dynamic_span = make_span(vec);
+  span<int> dynamic_span = span(vec);
 
   std::vector convert_from = {7, 8, 9};
   static_span.copy_from(convert_from);
@@ -2470,11 +2457,11 @@ TEST(SpanTest, CopyPrefixFrom) {
 TEST(SpanTest, SplitAt) {
   int arr[] = {1, 2, 3};
   span<int, 0> empty_static_span;
-  span<int, 3> static_span = make_span(arr);
+  span<int, 3> static_span = span(arr);
 
   std::vector<int> vec = {4, 5, 6};
   span<int> empty_dynamic_span;
-  span<int> dynamic_span = make_span(vec);
+  span<int> dynamic_span = span(vec);
 
   {
     auto [left, right] = empty_static_span.split_at(0u);

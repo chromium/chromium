@@ -7,10 +7,11 @@
 #include <memory>
 #include <string>
 #include <utility>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -352,13 +353,13 @@ TEST_F(ResponseBodyLoaderTest, Suspend) {
 TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
-  const size_t kMax = network::features::kMaxNumConsumedBytesInTask;
+  const size_t kMax = network::kMaxNumConsumedBytesInTask;
 
-  consumer->Add(Command(Command::kData, std::string(kMax - 1, 'a').data()));
-  consumer->Add(Command(Command::kData, std::string(2, 'b').data()));
+  consumer->Add(Command(Command::kData, std::string(kMax - 1, 'a')));
+  consumer->Add(Command(Command::kData, std::string(2, 'b')));
   consumer->Add(Command(Command::kWait));
-  consumer->Add(Command(Command::kData, std::string(kMax, 'c').data()));
-  consumer->Add(Command(Command::kData, std::string(kMax + 3, 'd').data()));
+  consumer->Add(Command(Command::kData, std::string(kMax, 'c')));
+  consumer->Add(Command(Command::kData, std::string(kMax + 3, 'd')));
   consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
@@ -667,7 +668,7 @@ TEST_P(ResponseBodyLoaderLoadingTasksUnfreezableTest,
   // Suspend, then add a long response body to |consumer|.
   body_loader->Suspend(LoaderFreezeMode::kBufferIncoming);
   std::string body(70000, '*');
-  consumer->Add(Command(Command::kDataAndDone, body.c_str()));
+  consumer->Add(Command(Command::kDataAndDone, body));
 
   // ResponseBodyLoader will buffer data when deferred, and won't notify the
   // client until it's resumed.

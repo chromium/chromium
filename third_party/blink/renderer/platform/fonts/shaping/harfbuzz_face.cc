@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/color_table_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face_from_typeface.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_data.h"
@@ -66,63 +67,6 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
-
-namespace {
-
-SkFontTableTag kCpalTag = SkSetFourByteTag('C', 'P', 'A', 'L');
-SkFontTableTag kColrTag = SkSetFourByteTag('C', 'O', 'L', 'R');
-SkFontTableTag kSbixTag = SkSetFourByteTag('s', 'b', 'i', 'x');
-SkFontTableTag kCbdtTag = SkSetFourByteTag('C', 'B', 'D', 'T');
-SkFontTableTag kCblcTag = SkSetFourByteTag('C', 'B', 'L', 'C');
-
-bool TypefaceHasAnySupportedColorTable(const SkTypeface* typeface) {
-  if (!typeface) {
-    return false;
-  }
-  const int num_tags = typeface->countTables();
-  if (!num_tags) {
-    return false;
-  }
-  std::unique_ptr<SkFontTableTag[]> tags(new SkFontTableTag[num_tags]);
-  const int returned_tags = typeface->getTableTags(tags.get());
-  if (!returned_tags) {
-    return false;
-  }
-  bool has_cpal = false;
-  bool has_colr = false;
-  bool has_cbdt = false;
-  bool has_cblc = false;
-  for (int i = 0; i < returned_tags; i++) {
-    SkFontTableTag tag = tags[i];
-    if (tag == kSbixTag) {
-      return true;
-    }
-    if (tag == kCpalTag) {
-      if (has_colr) {
-        return true;
-      }
-      has_cpal = true;
-    } else if (tag == kColrTag) {
-      if (has_cpal) {
-        return true;
-      }
-      has_colr = true;
-    } else if (tag == kCbdtTag) {
-      if (has_cblc) {
-        return true;
-      }
-      has_cbdt = true;
-    } else if (tag == kCblcTag) {
-      if (has_cbdt) {
-        return true;
-      }
-      has_cblc = true;
-    }
-  }
-  return false;
-}
-
-}  // namespace
 
 HarfBuzzFace::HarfBuzzFace(const FontPlatformData* platform_data,
                            uint64_t unique_id)
@@ -267,7 +211,8 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
       // TODO(https://bugs.skia.org/374078818): Ideally we also want to check
       // weather the base codepoint is present in the found color table,
       // requested API from Skia.
-      bool has_color_table = TypefaceHasAnySupportedColorTable(typeface);
+      bool has_color_table =
+          ColorTableLookup::TypefaceHasAnySupportedColorTable(typeface);
       if ((has_color_table && text_presentation_requested) ||
           (!has_color_table && emoji_presentation_requested)) {
         *glyph = kUnmatchedVSGlyphId;

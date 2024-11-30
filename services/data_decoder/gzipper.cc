@@ -14,7 +14,7 @@ namespace data_decoder {
 namespace {
 
 mojo_base::BigBuffer StringToBuffer(const std::string& string) {
-  return base::as_bytes(base::make_span(string));
+  return base::as_byte_span(string);
 }
 
 }  // namespace

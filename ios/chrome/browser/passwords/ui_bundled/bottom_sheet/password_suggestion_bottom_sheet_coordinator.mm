@@ -271,7 +271,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   // Dismiss the bottom sheet, then the presentation will be fully torn down
   // upon calling -viewDidDisappear.
   [self.viewController.presentingViewController
-      dismissViewControllerAnimated:YES
+      dismissViewControllerAnimated:NO
                          completion:nil];
 }
 

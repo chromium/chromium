@@ -329,17 +329,12 @@ void VideoCaptureServiceImpl::LazyInitializeGpuDependenciesContext() {
   if (!gpu_dependencies_context_)
     gpu_dependencies_context_ = std::make_unique<GpuDependenciesContext>();
 
+    // Gpu channel is enabled on all platforms except Lacros.
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  {
-#else
-  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     if (!viz_gpu_context_provider_) {
       viz_gpu_context_provider_ =
           std::make_unique<VizGpuContextProvider>(std::move(viz_gpu_));
     }
-  }
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 }
 

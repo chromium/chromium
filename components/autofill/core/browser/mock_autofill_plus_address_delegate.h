@@ -54,8 +54,8 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                PasswordFormClassification::Type,
                SuggestionType),
               (override));
-  MOCK_METHOD(void, DidFillPlusAddress, (bool, bool), (override));
-  MOCK_METHOD(void, DidChooseEmailOverPlusAddress, (), (override));
+  MOCK_METHOD(void, DidFillPlusAddress, (), (override));
+  MOCK_METHOD(size_t, GetPlusAddressesCount, (), (override));
   MOCK_METHOD(void,
               OnClickedRefreshInlineSuggestion,
               (const url::Origin&,
@@ -75,7 +75,6 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               (const url::Origin&,
                base::span<const Suggestion>,
                size_t,
-               bool,
                UpdateSuggestionsCallback,
                HideSuggestionsCallback,
                PlusAddressCallback,
@@ -83,6 +82,10 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                ShowErrorDialogCallback,
                base::OnceClosure),
               (override));
+  MOCK_METHOD((std::map<std::string, std::string>),
+              GetPlusAddressHatsData,
+              (),
+              (const, override));
 };
 
 }  // namespace autofill

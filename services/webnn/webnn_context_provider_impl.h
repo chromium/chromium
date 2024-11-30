@@ -56,7 +56,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   static void CreateForTesting(
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-      WebNNStatus status = WebNNStatus::kWebNNEnabled);
+      WebNNStatus status = WebNNStatus::kWebNNEnabled,
+      LoseAllContextsCallback lose_all_contexts_callback = base::BindOnce([]() {
+      }));
 
   // Called when a WebNNContextImpl has a connection error. After this call, it
   // is no longer safe to access |impl|.

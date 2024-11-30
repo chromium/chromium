@@ -7,14 +7,15 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/filling/form_filler_test_api.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/form_filler_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_fill_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,12 +27,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
  public:
   explicit BrowserAutofillManagerTestApi(BrowserAutofillManager* manager)
       : AutofillManagerTestApi(manager), manager_(*manager) {}
-
-  // Blocks until all pending votes have been emitted. This fails if either a
-  // timeout is hit or if the BrowserAutofillManager::vote_upload_task_runner_
-  // has not been initialized yet.
-  [[nodiscard]] testing::AssertionResult FlushPendingVotes(
-      base::TimeDelta timeout = base::Seconds(10));
 
   void SetExternalDelegate(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
@@ -59,10 +54,8 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   void OnCreditCardFetched(const FormData& form,
                            const FieldGlobalId& field_id,
                            AutofillTriggerSource trigger_source,
-                           CreditCardFetchResult result,
-                           const CreditCard* credit_card = nullptr) {
-    manager_->OnCreditCardFetched(form, field_id, trigger_source, result,
-                                  credit_card);
+                           const CreditCard& credit_card) {
+    manager_->OnCreditCardFetched(form, field_id, trigger_source, credit_card);
   }
 
   void OnFormProcessed(const FormData& form,
@@ -97,10 +90,16 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     AutofillField* autofill_field;
     CHECK(manager_->GetCachedFormAndField(form.global_id(), field.global_id(),
                                           &form_structure, &autofill_field));
-    return manager_->GetProfileSuggestions(form, form_structure, field,
-                                           autofill_field, trigger_source,
-                                           std::move(plus_address_override));
+    return manager_->GetProfileSuggestions(
+        form, CHECK_DEREF(form_structure), field, CHECK_DEREF(autofill_field),
+        trigger_source, std::move(plus_address_override));
   }
+
+  void set_votes_uploader(std::unique_ptr<VotesUploader> votes_uploader) {
+    manager_->votes_uploader_ = std::move(votes_uploader);
+  }
+
+  VotesUploader& votes_uploader() { return *manager_->votes_uploader_; }
 
  private:
   raw_ref<BrowserAutofillManager> manager_;

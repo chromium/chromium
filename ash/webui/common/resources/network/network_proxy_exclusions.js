@@ -12,36 +12,49 @@ import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './network_shared.css.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_proxy_exclusions.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-proxy-exclusions',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NetworkProxyExclusionsElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class NetworkProxyExclusionsElement extends NetworkProxyExclusionsElementBase {
+  static get is() {
+    return 'network-proxy-exclusions';
+  }
+  static get template() {
+    return getTemplate();
+  }
 
-  properties: {
-    /** Whether or not the proxy values can be edited. */
-    editable: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * The list of exclusions.
-     * @type {!Array<string>}
-     */
-    exclusions: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /** Whether or not the proxy values can be edited. */
+      editable: {
+        type: Boolean,
+        value: false,
       },
-      notify: true,
-    },
-  },
+
+      /**
+       * The list of exclusions.
+       * @type {!Array<string>}
+       */
+      exclusions: {
+        type: Array,
+        value() {
+          return [];
+        },
+        notify: true,
+      },
+    };
+  }
 
   /**
    * Event triggered when an item is removed.
@@ -51,6 +64,10 @@ Polymer({
   onRemoveTap_(event) {
     const index = event.model.index;
     this.splice('exclusions', index, 1);
-    this.fire('proxy-exclusions-change');
-  },
-});
+    this.dispatchEvent(new CustomEvent(
+        'proxy-exclusions-change', {bubbles: true, composed: true}));
+  }
+}
+
+customElements.define(
+    NetworkProxyExclusionsElement.is, NetworkProxyExclusionsElement);

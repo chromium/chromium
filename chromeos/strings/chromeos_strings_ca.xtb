@@ -574,7 +574,7 @@
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="382043424867370667">Fons de pantalla Posta de sol</translation>
 <translation id="3824259034819781947">Adjunta fitxers</translation>
-<translation id="383586991013681190">Selecciona l'idioma de transcripció i baixa a Configuració</translation>
+<translation id="383586991013681190">Selecciona l'idioma de transcripció i baixa'l a Configuració</translation>
 <translation id="3836587210832263413">Activa només les extensions de confiança</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
 <translation id="3845880861638660475">Prem <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> per tancar el quadre de diàleg.</translation>
@@ -1044,6 +1044,7 @@
 <translation id="6058625436358447366">Per acabar, introdueix la contrasenya antiga i la nova</translation>
 <translation id="6061772781719867950">Algunes sol·licituds HTTPS han fallat</translation>
 <translation id="6073292342939316679">disminueix la brillantor del teclat</translation>
+<translation id="6074752328838739425">Amaga el resum</translation>
 <translation id="6075872808778243331">(Android) Latència d'HTTP</translation>
 <translation id="6078323886959318429">Afegeix una drecera</translation>
 <translation id="6091080061796993741">groc</translation>
@@ -1233,6 +1234,7 @@
 <translation id="6866732840889595464">margarida</translation>
 <translation id="6871256179359663621">porpra clar</translation>
 <translation id="6889786074662672253">Mentre es reinicia, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquest procés pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
+<translation id="6899460405678814458">Mostra el resum</translation>
 <translation id="6900701049656042631">Aquest àlbum no té cap foto. Per afegir-ne, ves a <ph name="LINK" />.</translation>
 <translation id="6902359863093437070">Crea un fons amb IA</translation>
 <translation id="6905163627763043954">Prova-ho</translation>

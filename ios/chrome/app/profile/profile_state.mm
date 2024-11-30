@@ -75,6 +75,16 @@
 
   // Container for observers.
   UIBlockerManagerObservers* _uiBlockerManagerObservers;
+
+  // Boolean set to true when the observers are notified that the -initStage
+  // value is updated, allowing them to call -queueTransitionToNextInitStage
+  // without causing re-entrancy issues.
+  bool _isIncrementingInitStage;
+
+  // Boolean set to true if -queueTransitionToNextInitStage is invoked while
+  // the -initStage value is updated. If true, the value will be incremented
+  // after the current value is set.
+  bool _needsIncrementInitStage;
 }
 
 #pragma mark - NSObject
@@ -204,6 +214,13 @@
         didTransitionToInitStage:_initStage
                    fromInitStage:prevStage];
   }
+
+  // Notify the observer of all connected Scenes.
+  if ([observer respondsToSelector:@selector(profileState:sceneConnected:)]) {
+    for (SceneState* sceneState in _connectedSceneStates) {
+      [observer profileState:self sceneConnected:sceneState];
+    }
+  }
 }
 
 - (void)removeObserver:(id<ProfileStateObserver>)observer {
@@ -218,13 +235,23 @@
 }
 
 - (void)queueTransitionToNextInitStage {
-  // TODO(crbug.com/353683675): once ProfileInitStage and AppInitStage
-  // have been decoupled, then this method should only update the current
-  // object. Until then forward the call to AppState if the object is the
-  // "main" profile. This allow converting incrementally the AppAgents to
-  // ProfileStateAgents.
-  if (_appState.mainProfile == self) {
-    [_appState queueTransitionToNextInitStage];
+  if (_isIncrementingInitStage) {
+    CHECK(!_needsIncrementInitStage);
+    _needsIncrementInitStage = true;
+    return;
+  }
+
+  CHECK(!_needsIncrementInitStage);
+  _isIncrementingInitStage = true;
+
+  const ProfileInitStage nextStage =
+      static_cast<ProfileInitStage>(base::to_underlying(_initStage) + 1);
+  [self setInitStage:nextStage];
+
+  _isIncrementingInitStage = false;
+  if (_needsIncrementInitStage) {
+    _needsIncrementInitStage = false;
+    [self queueTransitionToNextInitStage];
   }
 }
 
@@ -267,14 +294,14 @@
   CHECK(_uiBlockerTarget == nil || target == _uiBlockerTarget)
       << "Another scene is already showing a blocking UI!";
   _blockingUICounter++;
-  _uiBlockerTarget = target;
+  [self setUiBlockerTarget:target];
 }
 
 - (void)decrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target {
   CHECK_GT(_blockingUICounter, 0u);
   CHECK_EQ(_uiBlockerTarget, target);
   if (--_blockingUICounter == 0) {
-    _uiBlockerTarget = nil;
+    [self setUiBlockerTarget:nil];
     [_uiBlockerManagerObservers currentUIBlockerRemoved];
   }
 }

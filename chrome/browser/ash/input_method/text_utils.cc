@@ -98,7 +98,7 @@ bool IsSentenceEnd(const std::u16string& text, uint32_t pos) {
 
 }  // namespace
 
-Sentence::Sentence() {}
+Sentence::Sentence() = default;
 
 Sentence::Sentence(const gfx::Range& original_range, const std::u16string& text)
     : original_range(original_range), text(text) {}

@@ -218,7 +218,7 @@ TEST_F(TransportClientSocketTest, Read) {
   EXPECT_EQ(0, callback.WaitForResult());
 }
 
-TEST_F(TransportClientSocketTest, Read_SmallChunks) {
+TEST_F(TransportClientSocketTest, ReadSmallChunks) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
@@ -245,7 +245,7 @@ TEST_F(TransportClientSocketTest, Read_SmallChunks) {
   EXPECT_EQ(0, callback.WaitForResult());
 }
 
-TEST_F(TransportClientSocketTest, Read_Interrupted) {
+TEST_F(TransportClientSocketTest, ReadInterrupted) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
@@ -261,7 +261,7 @@ TEST_F(TransportClientSocketTest, Read_Interrupted) {
   EXPECT_NE(0, rv);
 }
 
-TEST_F(TransportClientSocketTest, FullDuplex_ReadFirst) {
+TEST_F(TransportClientSocketTest, FullDuplexReadFirst) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
@@ -299,7 +299,7 @@ TEST_F(TransportClientSocketTest, FullDuplex_ReadFirst) {
   EXPECT_GE(rv, 0);
 }
 
-TEST_F(TransportClientSocketTest, FullDuplex_WriteFirst) {
+TEST_F(TransportClientSocketTest, FullDuplexWriteFirst) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 

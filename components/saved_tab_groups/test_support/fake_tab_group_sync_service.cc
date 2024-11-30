@@ -47,6 +47,7 @@ FakeTabGroupSyncService::~FakeTabGroupSyncService() = default;
 void FakeTabGroupSyncService::SetTabGroupSyncDelegate(
     std::unique_ptr<TabGroupSyncDelegate> delegate) {}
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void FakeTabGroupSyncService::SaveGroup(SavedTabGroup group) {
   const base::Uuid sync_id = group.saved_guid();
   const LocalTabGroupID local_id = group.local_group_id().value();
@@ -57,6 +58,7 @@ void FakeTabGroupSyncService::SaveGroup(SavedTabGroup group) {
 void FakeTabGroupSyncService::UnsaveGroup(const LocalTabGroupID& local_id) {
   RemoveGroup(local_id);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void FakeTabGroupSyncService::AddGroup(SavedTabGroup group) {
   groups_.push_back(group);
@@ -233,7 +235,8 @@ void FakeTabGroupSyncService::MakeTabGroupShared(
   std::optional<int> index = GetIndexOf(local_group_id);
   CHECK(index.has_value());
   SavedTabGroup& group = groups_[index.value()];
-  group.SetCollaborationId(std::string(collaboration_id));
+  group.SetCollaborationId(CollaborationId(std::string(collaboration_id)));
+  NotifyObserversOfTabGroupShared(group);
 }
 
 std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() const {
@@ -432,6 +435,14 @@ void FakeTabGroupSyncService::NotifyObserversOfTabGroupUpdated(
     SavedTabGroup& group) {
   for (auto& observer : observers_) {
     observer.OnTabGroupUpdated(group, TriggerSource::LOCAL);
+  }
+}
+
+void FakeTabGroupSyncService::NotifyObserversOfTabGroupShared(
+    SavedTabGroup& group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupMigrated(group, group.saved_guid(),
+                                tab_groups::TriggerSource::LOCAL);
   }
 }
 

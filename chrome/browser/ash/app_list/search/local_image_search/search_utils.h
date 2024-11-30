@@ -32,6 +32,35 @@ std::vector<FileSearchResult> FindIntersection(
 // Checks for the `word` in the current list of stop words.
 bool IsStopWord(const std::string& word);
 
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class IcaStatus {
+  kStartWithOcr = 0,
+  kStartWithoutOcr = 1,
+  kOcrSucceed = 2,
+  kIcaSucceed = 3,
+  kOcrInserted = 4,
+  kIcaInserted = 5,
+  kIcaFailed = 6,
+  kIcaDisabled = 7,
+  kAnnotateStart = 8,
+  kDataInitFailed = 9,
+  kMappedRegionInvalid = 10,
+  kRequestSent = 11,
+  kTimeout = 12,
+  kOcrInsertStart = 13,
+  kIcaInsertStart = 14,
+  kOcrDocumentInsertFailed = 15,
+  kIcaDocumentInsertFailed = 16,
+  kOcrAnnotationInsertFailed = 17,
+  kIcaAnnotationInsertFailed = 18,
+  kOcrUpdateFailed = 19,
+  kIcaUpdateFailed = 20,
+  kMaxValue = kIcaUpdateFailed,
+};
+
+void LogIcaUma(IcaStatus status);
+
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGE_SEARCH_SEARCH_UTILS_H_

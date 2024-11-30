@@ -5,11 +5,8 @@
 package org.chromium.chrome.browser.feedback;
 
 import android.text.TextUtils;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
-
-import org.chromium.base.CollectionUtil;
 
 import java.util.Map;
 
@@ -26,6 +23,6 @@ class UrlFeedbackSource implements FeedbackSource {
     @Override
     public Map<String, String> getFeedback() {
         if (TextUtils.isEmpty(mUrl)) return null;
-        return CollectionUtil.newHashMap(Pair.create(URL_KEY, mUrl));
+        return Map.of(URL_KEY, mUrl);
     }
 }

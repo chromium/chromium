@@ -88,7 +88,7 @@ class DriveBackendSyncTest : public testing::Test,
   DriveBackendSyncTest(const DriveBackendSyncTest&) = delete;
   DriveBackendSyncTest& operator=(const DriveBackendSyncTest&) = delete;
 
-  ~DriveBackendSyncTest() override {}
+  ~DriveBackendSyncTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(base_dir_.CreateUniqueTempDir());

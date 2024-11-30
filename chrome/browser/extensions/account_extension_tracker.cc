@@ -4,8 +4,10 @@
 
 #include "chrome/browser/extensions/account_extension_tracker.h"
 
-#include "base/types/cxx23_to_underlying.h"
+#include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -128,18 +130,46 @@ void AccountExtensionTracker::SetAccountExtensionTypeOnExtensionInstalled(
 
 void AccountExtensionTracker::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  // TODO(crbug.com/366474682): If extension syncing is enabled in transport
-  // mode, only set the pref if the user chooses to keep extensions when signing
-  // out.
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
-      signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
-    const ExtensionSet extensions =
-        extension_registry->GenerateInstalledExtensionsSet();
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
 
-    for (const auto& extension : extensions) {
-      SetAccountExtensionType(extension->id(), AccountExtensionType::kLocal);
+  auto signin_event_type =
+      event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
+  switch (signin_event_type) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      // When the user has finished the signin flow initiated from an extension
+      // promo, promote all syncable extensions installed within the delay to
+      // account extensions.
+      for (const auto& extension_from_promo :
+           extensions_installed_with_signin_promo_) {
+        const Extension* extension =
+            extension_registry->GetInstalledExtension(extension_from_promo);
+        if (!extension) {
+          continue;
+        }
+
+        DCHECK(sync_util::ShouldSync(profile_, extension));
+        SetAccountExtensionType(
+            extension_from_promo,
+            AccountExtensionType::kAccountInstalledSignedIn);
+      }
+
+      extensions_installed_with_signin_promo_.clear();
+      break;
     }
+    case signin::PrimaryAccountChangeEvent::Type::kCleared: {
+      // TODO(crbug.com/366474682): If extension syncing is enabled in transport
+      // mode, only set the pref if the user chooses to keep extensions when
+      // signing out.
+      const ExtensionSet extensions =
+          extension_registry->GenerateInstalledExtensionsSet();
+
+      for (const auto& extension : extensions) {
+        SetAccountExtensionType(extension->id(), AccountExtensionType::kLocal);
+      }
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
   }
 }
 
@@ -177,11 +207,32 @@ AccountExtensionTracker::GetAccountExtensionType(
   return static_cast<AccountExtensionType>(type_int);
 }
 
+void AccountExtensionTracker::OnSignInInitiatedFromExtensionPromo(
+    const ExtensionId& extension_id) {
+  extensions_installed_with_signin_promo_.push_back(extension_id);
+
+  // Schedule a task to remove the `extension_id` from
+  // `extensions_installed_with_signin_promo_` after
+  // `kMaxSigninFromExtensionBubbleDelay`.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AccountExtensionTracker::RemoveExpiredExtension,
+                     weak_factory_.GetWeakPtr(), extension_id),
+      kMaxSigninFromExtensionBubbleDelay);
+}
+
 void AccountExtensionTracker::SetAccountExtensionType(
     const ExtensionId& extension_id,
     AccountExtensionTracker::AccountExtensionType type) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   prefs->SetIntegerPref(extension_id, kAccountExtensionTypePref, type);
+}
+
+void AccountExtensionTracker::RemoveExpiredExtension(
+    const ExtensionId& extension_id) {
+  std::erase_if(
+      extensions_installed_with_signin_promo_,
+      [&extension_id](const ExtensionId& id) { return extension_id == id; });
 }
 
 }  // namespace extensions

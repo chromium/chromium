@@ -20,10 +20,13 @@ class WebAuthnCredManDelegate {
  public:
   using RequestPasswords = base::StrongAlias<class RequestPasswordsTag, bool>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum State {
-    kNotReady,
-    kNoPasskeys,
-    kHasPasskeys,
+    kNotReady = 0,
+    kNoPasskeys = 1,
+    kHasPasskeys = 2,
+    kMaxValue = kHasPasskeys
   };
 
   enum CredManEnabledMode {

@@ -41,6 +41,8 @@ struct gbm_import_fd_modifier_data {
   uint64_t modifier;
 };
 
+extern "C" GBM_EXPORT int drmGetNodeTypeFromFd(int fd);
+
 extern "C" GBM_EXPORT struct gbm_device* gbm_create_device(int fd);
 extern "C" GBM_EXPORT void gbm_device_destroy(struct gbm_device* gbm);
 extern "C" GBM_EXPORT struct gbm_bo* gbm_bo_create(struct gbm_device* gbm,

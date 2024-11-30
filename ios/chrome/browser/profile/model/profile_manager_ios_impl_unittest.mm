@@ -6,17 +6,17 @@
 
 #import "base/containers/contains.h"
 #import "base/scoped_observation.h"
-#import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/test_file_util.h"
 #import "base/threading/thread_restrictions.h"
+#import "base/uuid.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -33,9 +33,6 @@ namespace {
 // Profile names.
 const char kProfileName1[] = "Profile1";
 const char kProfileName2[] = "Profile2";
-const char kTestProfile1[] = "TestProfile1";
-const char kTestProfile2[] = "TestProfile2";
-const char kLegacyProfile[] = "LegacyProfile";
 
 // A scoped ProfileManagerObserverIOS which records which events have been
 // received.
@@ -53,6 +50,14 @@ class ScopedTestProfileManagerObserverIOS final
 
   bool on_profile_loaded_called() const { return on_profile_loaded_called_; }
 
+  bool on_profile_unloaded_called() const {
+    return on_profile_unloaded_called_;
+  }
+
+  bool on_profile_marked_for_permanent_deletation_called() const {
+    return on_profile_marked_for_permanent_deletation_called_;
+  }
+
   // ProfileManagerObserverIOS implementation:
   void OnProfileManagerDestroyed(ProfileManagerIOS* manager) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
@@ -69,12 +74,26 @@ class ScopedTestProfileManagerObserverIOS final
     on_profile_loaded_called_ = true;
   }
 
+  void OnProfileUnloaded(ProfileManagerIOS* manager,
+                         ProfileIOS* profile) final {
+    DCHECK(scoped_observation_.IsObservingSource(manager));
+    on_profile_unloaded_called_ = true;
+  }
+
+  void OnProfileMarkedForPermanentDeletion(ProfileManagerIOS* manager,
+                                           ProfileIOS* profile) final {
+    DCHECK(scoped_observation_.IsObservingSource(manager));
+    on_profile_marked_for_permanent_deletation_called_ = true;
+  }
+
  private:
   base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
       scoped_observation_{this};
 
   bool on_profile_created_called_ = false;
   bool on_profile_loaded_called_ = false;
+  bool on_profile_unloaded_called_ = false;
+  bool on_profile_marked_for_permanent_deletation_called_ = false;
 };
 
 // Returns a callback that fail the current test if invoked.
@@ -90,47 +109,11 @@ base::OnceCallback<void(T)> CaptureParam(T* output) {
   return base::BindOnce([](T* output, T value) { *output = value; }, output);
 }
 
-// State in which a feature should be.
-enum class FeatureState {
-  kDefault,
-  kEnabled,
-  kDisabled,
-};
-
-// Wrapper around a ScopedFeatureList that initialize it while putting the
-// feature as either in its default state, as force-enabled or force-disabled.
-// This allow to ensure the ScopedFeatureList is fully initialized before the
-// threads are created (as the initialization is not thread-safe and some of
-// the code running on background threads check the FeatureList).
-template <FeatureState state>
-class ScopedFeatureListWithState {
- public:
-  ScopedFeatureListWithState(const base::Feature& feature) {
-    switch (state) {
-      case FeatureState::kDefault:
-        scoped_feature_list_.Init();
-        break;
-
-      case FeatureState::kEnabled:
-        scoped_feature_list_.InitAndEnableFeature(feature);
-        break;
-
-      case FeatureState::kDisabled:
-        scoped_feature_list_.InitAndDisableFeature(feature);
-        break;
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 }  // namespace
 
-template <FeatureState state>
-class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
+class ProfileManagerIOSImplTest : public PlatformTest {
  public:
-  ConfigurableProfileManagerIOSImplTest()
+  ProfileManagerIOSImplTest()
       : profile_manager_(GetApplicationContext()->GetLocalState(),
                          base::CreateUniqueTempDirectoryScopedToTest()) {
     TestingApplicationContext* application_context =
@@ -173,7 +156,7 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
     std::ignore = chrome_io_->system_url_request_context_getter();
   }
 
-  ~ConfigurableProfileManagerIOSImplTest() override {
+  ~ProfileManagerIOSImplTest() override {
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
 
@@ -181,10 +164,10 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
     optimization_guide::IOSChromePredictionModelStore::GetInstance()
         ->ResetForTesting();
 
-    // The profiles must be destroyed before the AccountProfileMapper gets
+    // The profiles must be unloaded before the AccountProfileMapper gets
     // unregistered from the ApplicationContext, because keyed services may
     // depend on the AccountProfileMapper.
-    profile_manager_.DestroyAllProfiles();
+    profile_manager_.UnloadAllProfiles();
 
     application_context->GetBrowserPolicyConnector()->Shutdown();
     application_context->GetIOSChromeIOThread()->NetworkTearDown();
@@ -195,11 +178,9 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
 
   ProfileManagerIOSImpl& profile_manager() { return profile_manager_; }
 
-  ProfileAttributesStorageIOS& profile_attributes_storage() {
+  ProfileAttributesStorageIOS& attributes_storage() {
     return *profile_manager_.GetProfileAttributesStorage();
   }
-
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   // Returns the name of the loaded Profiles.
   std::set<std::string> GetLoadedProfileNames() {
@@ -216,8 +197,6 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
   }
 
  private:
-  base::HistogramTester histogram_tester_;
-  ScopedFeatureListWithState<state> scoped_feature_list_{kHideLegacyProfiles};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<IOSChromeIOThread> chrome_io_;
   web::WebTaskEnvironment web_task_environment_{
@@ -230,145 +209,17 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
-// By default tests use the default state of the kHideLegacyProfiles feature.
-using ProfileManagerIOSImplTest =
-    ConfigurableProfileManagerIOSImplTest<FeatureState::kDefault>;
-
-// Tests that GetLoadedProfiles() returns an empty list before the Profiles are
-// loaded, and then a list containing at least one Profile, and the last used
-// Profile is loaded.
-TEST_F(ProfileManagerIOSImplTest, LoadProfiles) {
-  // There should be no Profile loaded yet.
-  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
-
-  // Register an observer and check that it is correctly notified that
-  // a Profile is created and then fully loaded.
-  ScopedTestProfileManagerObserverIOS observer(profile_manager());
-  ASSERT_FALSE(observer.on_profile_created_called());
-  ASSERT_FALSE(observer.on_profile_loaded_called());
-
-  // Load the Profiles, this will implicitly add "Default" as a Profile if there
-  // is no saved Profiles. Thus it should load exactly one Profile.
-  profile_manager().LoadProfiles();
-
-  // Check that the observer has been notified of the creation and load.
-  ASSERT_TRUE(observer.on_profile_created_called());
-  ASSERT_TRUE(observer.on_profile_loaded_called());
-
-  // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialProfile`.
-  EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialProfile}));
-}
-
-// Tests that LoadProfiles() always loads the "last used Profile" when
-// `kLastUsedProfile` and `kLastActiveProfiles` are out of sync.
-//
-// See https://crbug.com/345478758 for crashes related to this.
-//
-// Specifically, this test case check that even if both properties are set but
-// `kLastUsedProfile` is not `kIOSChromeInitialProfile` and not in
-// `kLastActiveProfiles`, then the last used Profile is still loaded.
-TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_1) {
-  ASSERT_NE(kProfileName1, kIOSChromeInitialProfile);
-  ASSERT_NE(kProfileName2, kIOSChromeInitialProfile);
-
-  // There should be no Profile loaded yet.
-  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
-
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetString(prefs::kLastUsedProfile, kProfileName1);
-  local_state->SetList(prefs::kLastActiveProfiles,
-                       base::Value::List().Append(kProfileName2));
-
-  profile_manager().LoadProfiles();
-
-  // Exactly two Profile must be loaded, named `kProfileName1` and
-  // `kProfileName2`.
-  EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kProfileName1, kProfileName2}));
-}
-
-// Tests that LoadProfiles() always loads the "last used Profile" when
-// `kLastUsedProfile` and `kLastActiveProfiles` are out of sync.
-//
-// See https://crbug.com/345478758 for crashes related to this.
-//
-// Specifically, this test case check that if `kLastActiveProfiles` is not set
-// and `kLastUsedProfile` is not `kIOSChromeInitialProfile`, then the last
-// used Profile is still loaded.
-TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_2) {
-  ASSERT_NE(kProfileName1, kIOSChromeInitialProfile);
-  ASSERT_NE(kProfileName2, kIOSChromeInitialProfile);
-
-  // There should be no Profile loaded yet.
-  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
-
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetString(prefs::kLastUsedProfile, kProfileName1);
-  local_state->SetList(prefs::kLastActiveProfiles, base::Value::List());
-
-  profile_manager().LoadProfiles();
-
-  // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kProfileName1`.
-  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{kProfileName1}));
-}
-
-// Tests that LoadProfiles() always loads the "last used Profile" when
-// `kLastUsedProfile` and `kLastActiveProfiles` are out of sync.
-//
-// See https://crbug.com/345478758 for crashes related to this.
-//
-// Specifically, this test case check that if `kLastActiveProfiles` is set but
-// does not contains the value `kIOSChromeInitialProfile` and
-// `kLastUsedProfile` is unset, then the last used Profile is still loaded.
-TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_3) {
-  ASSERT_NE(kProfileName1, kIOSChromeInitialProfile);
-  ASSERT_NE(kProfileName2, kIOSChromeInitialProfile);
-
-  // There should be no Profile loaded yet.
-  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
-
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetString(prefs::kLastUsedProfile, std::string());
-  local_state->SetList(prefs::kLastActiveProfiles,
-                       base::Value::List().Append(kProfileName2));
-
-  profile_manager().LoadProfiles();
-
-  // Exactly one Profile must be loaded, named `kProfileName2`.
-  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{kProfileName2}));
-}
-
-// Tests that LoadProfiles() ignores profile named "TestProfile[0-9]+" which
-// were test profiles created for an experiment and should no longer be used.
-TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IgnoreTestProfiles) {
-  ASSERT_NE(kTestProfile1, kIOSChromeInitialProfile);
-  ASSERT_NE(kTestProfile2, kIOSChromeInitialProfile);
-
-  // There should be no Profile loaded yet.
-  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
-
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetString(prefs::kLastUsedProfile, std::string());
-  local_state->SetList(prefs::kLastActiveProfiles, base::Value::List()
-                                                       .Append(kProfileName1)
-                                                       .Append(kTestProfile1)
-                                                       .Append(kTestProfile2));
-
-  profile_manager().LoadProfiles();
-
-  // Exactly one Profile must be loaded, named `kProfileName1`.
-  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{kProfileName1}));
-}
-
 // Tests that LoadProfileAsync(...) correctly loads a known Profile, and that
 // the load is not blocking the main thread.
 TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
   // Pretends that a Profile named `kProfileName1` exists. Required as
   // LoadProfileAsync(...) won't create new Profiles.
-  profile_attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().UpdateAttributesForProfileWithName(
+      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+        attrs.ClearIsNewProfile();
+        return attrs;
+      }));
 
   base::RunLoop run_loop;
   ProfileIOS* created_profile = nullptr;
@@ -407,7 +258,12 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
 TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
   // Pretends that a Profile named `kProfileName1` exists. Required as
   // LoadProfileAsync(...) won't create new Profiles.
-  profile_attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().UpdateAttributesForProfileWithName(
+      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+        attrs.ClearIsNewProfile();
+        return attrs;
+      }));
 
   // Load the Profile a first time.
   {
@@ -479,7 +335,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
 TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Missing) {
   // Ensures that no Profile named `kProfileName1` exists. This will cause
   // LoadProfileAsync(...) to fail since it does not create new Profiles.
-  ASSERT_FALSE(profile_attributes_storage().HasProfileWithName(kProfileName1));
+  ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName1));
 
   base::RunLoop run_loop;
   ProfileIOS* created_profile = nullptr;
@@ -510,7 +366,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Missing) {
 TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync) {
   // Ensures that no Profile named `kProfileName1` exists. This will cause
   // CreateProfileAsync(...) to create a new Profile.
-  ASSERT_FALSE(profile_attributes_storage().HasProfileWithName(kProfileName1));
+  ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName1));
 
   base::RunLoop run_loop;
   ProfileIOS* created_profile = nullptr;
@@ -549,7 +405,7 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync) {
 TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync_Reload) {
   // Ensures that no Profile named `kProfileName1` exists. This will cause
   // CreateProfileAsync(...) to create a new Profile.
-  ASSERT_FALSE(profile_attributes_storage().HasProfileWithName(kProfileName1));
+  ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName1));
 
   // Load the Profile a first time.
   {
@@ -622,7 +478,12 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync_Reload) {
 TEST_F(ProfileManagerIOSImplTest, LoadProfile) {
   // Pretends that a Profile named `kProfileName1` exists. Required as
   // LoadProfile(...) won't create new Profiles.
-  profile_attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().UpdateAttributesForProfileWithName(
+      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+        attrs.ClearIsNewProfile();
+        return attrs;
+      }));
 
   // Load the Profile synchronously.
   ProfileIOS* profile = profile_manager().LoadProfile(kProfileName1);
@@ -639,7 +500,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfile) {
 TEST_F(ProfileManagerIOSImplTest, LoadProfile_Missing) {
   // Ensures that no Profile named `kProfileName1` exists. This will cause
   // LoadProfile(...) to fail since it does not create new Profiles.
-  ASSERT_FALSE(profile_attributes_storage().HasProfileWithName(kProfileName1));
+  ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName1));
 
   // Load the Profile synchronously.
   ProfileIOS* profile = profile_manager().LoadProfile(kProfileName1);
@@ -653,7 +514,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfile_Missing) {
 TEST_F(ProfileManagerIOSImplTest, CreateProfile) {
   // Ensures that no Profile named `kProfileName1` exists. This will cause
   // CreateProfileAsync(...) to create a new Profile.
-  ASSERT_FALSE(profile_attributes_storage().HasProfileWithName(kProfileName1));
+  ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName1));
 
   // Create the Profile synchronously.
   ProfileIOS* profile = profile_manager().CreateProfile(kProfileName1);
@@ -666,181 +527,127 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfile) {
   EXPECT_EQ(profile, profile_manager().CreateProfile(kProfileName1));
 }
 
-using ProfileManagerIOSImplTest_HideLegacyProfile =
-    ConfigurableProfileManagerIOSImplTest<FeatureState::kEnabled>;
+// Check that if there are not profile marked as the personal profile, then
+// the first profile created is marked as the personal profile.
+TEST_F(ProfileManagerIOSImplTest, FirstProfileCreatedMarkedAsPersonalProfile) {
+  ASSERT_TRUE(GetLoadedProfileNames().empty());
+  ASSERT_TRUE(attributes_storage().GetPersonalProfileName().empty());
 
-// Tests that legacy profiles are hidden when kHideLegacyProfiles is enabled.
-TEST_F(ProfileManagerIOSImplTest_HideLegacyProfile, Hide) {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  ASSERT_FALSE(local_state->GetBoolean(prefs::kLegacyProfileHidden));
+  // Create a profile. It should be marked as the personal profile.
+  EXPECT_TRUE(profile_manager().CreateProfile(kProfileName1));
 
-  // Create a legacy profile.
-  profile_attributes_storage().AddProfile(kLegacyProfile);
-  ASSERT_TRUE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
-  local_state->ClearPref(prefs::kLastActiveProfiles);
-
-  // Check that the profile is correctly marked as legacy when the profiles
-  // are loaded.
-  profile_manager().LoadProfiles();
-
-  EXPECT_THAT(histogram_tester().GetAllSamples("Profile.LegacyProfilesCount"),
-              testing::ElementsAre(base::Bucket(1, 1)));
-
-  // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialProfile`.
-  EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialProfile}));
-
-  // The legacy profile should no longer be visible in the
-  // ProfileAttributesStorageIOS.
-  EXPECT_FALSE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
-
-  base::RunLoop run_loop;
-  ProfileIOS* loaded_profile = nullptr;
-
-  // Trying to create a profile named kLegacyProfile should fail and call the
-  // initialized_callback with nullptr.
-  const bool success = profile_manager().CreateProfileAsync(
-      kLegacyProfile,
-      CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
-      FailCallback<ProfileIOS*>());
-  EXPECT_FALSE(success);
-
-  run_loop.Run();
-  EXPECT_EQ(loaded_profile, nullptr);
+  // The profile should've been marked as the personal profile.
+  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), kProfileName1);
 }
 
-// Tests that legacy profiles are hidden when kHideLegacyProfiles is enabled,
-// but that this only happens once.
-TEST_F(ProfileManagerIOSImplTest_HideLegacyProfile, Hide_AlreadyDone) {
-  // Create profile that is not referenced (i.e. not loaded) thus could be
-  // considered legacy, but pretend that the categorisation of legacy profiles
-  // has already been run.
-  profile_attributes_storage().AddProfile(kLegacyProfile);
-  ASSERT_TRUE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
+// Check that if there is a profile marked as the personal profile, creating
+// a new profile does not overwrite the personal profile.
+TEST_F(ProfileManagerIOSImplTest, CreatingProfileDontOverwritePersonalProfile) {
+  ASSERT_TRUE(GetLoadedProfileNames().empty());
+  ASSERT_TRUE(attributes_storage().GetPersonalProfileName().empty());
 
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->ClearPref(prefs::kLastActiveProfiles);
-  local_state->SetBoolean(prefs::kLegacyProfileHidden, true);
+  // Mark kProfileName1 as the personal profile.
+  attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().SetPersonalProfileName(kProfileName1);
+  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), kProfileName1);
 
-  // Check that the profile is not marked as legacy but it is not loaded.
-  profile_manager().LoadProfiles();
+  // Create another profile, this should not change the personal profile.
+  EXPECT_TRUE(profile_manager().CreateProfile(kProfileName2));
 
-  EXPECT_THAT(histogram_tester().GetAllSamples("Profile.LegacyProfilesCount"),
-              testing::ElementsAre(base::Bucket(0, 1)));
-
-  // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialProfile`.
-  EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialProfile}));
-
-  // The profile must still be visible in the ProfileAttributesStorageIOS.
-  EXPECT_TRUE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
-
-  base::RunLoop run_loop;
-  ProfileIOS* created_profile = nullptr;
-  ProfileIOS* loaded_profile = nullptr;
-
-  // Trying to load the profile should succeed.
-  const bool success = profile_manager().CreateProfileAsync(
-      kLegacyProfile,
-      CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
-      CaptureParam(&created_profile));
-
-  EXPECT_NE(created_profile, nullptr);
-  EXPECT_TRUE(success);
-
-  run_loop.Run();
-
-  EXPECT_NE(loaded_profile, nullptr);
+  // The personal profile should not have been changed.
+  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), kProfileName1);
 }
 
-using ProfileManagerIOSImplTest_KeepLegacyProfile =
-    ConfigurableProfileManagerIOSImplTest<FeatureState::kDisabled>;
+// Tests that unloading a profile invoke OnProfileUnloaded(...) on the
+// observers.
+TEST_F(ProfileManagerIOSImplTest, UnloadProfile) {
+  // Create a few profiles synchronously.
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
 
-// Tests that legacy profile are not touched if kHideLegacyProfiles feature
-// is disabled.
-TEST_F(ProfileManagerIOSImplTest_KeepLegacyProfile, Keep) {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  ASSERT_FALSE(local_state->GetBoolean(prefs::kLegacyProfileHidden));
+  ScopedTestProfileManagerObserverIOS observer(profile_manager());
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
 
-  // Create profile that is not referenced (i.e. not loaded) thus could be
-  // considered legacy.
-  profile_attributes_storage().AddProfile(kLegacyProfile);
-  ASSERT_TRUE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
-  local_state->ClearPref(prefs::kLastActiveProfiles);
+  // Check that the profiles are accessible.
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
 
-  // Check that the profile is not marked as legacy but it is not loaded.
-  profile_manager().LoadProfiles();
+  // Unload a profile, it should not longer be accessible and the
+  // observer must have been notified of that.
+  profile_manager().UnloadProfile(kProfileName1);
 
-  EXPECT_THAT(histogram_tester().GetAllSamples("Profile.LegacyProfilesCount"),
-              testing::ElementsAre(base::Bucket(0, 1)));
-
-  // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialProfile`.
-  EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialProfile}));
-
-  // The profile must still be visible in the ProfileAttributesStorageIOS.
-  EXPECT_TRUE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
-
-  base::RunLoop run_loop;
-  ProfileIOS* created_profile = nullptr;
-  ProfileIOS* loaded_profile = nullptr;
-
-  // Trying to load the profile should succeed.
-  const bool success = profile_manager().CreateProfileAsync(
-      kLegacyProfile,
-      CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
-      CaptureParam(&created_profile));
-
-  EXPECT_NE(created_profile, nullptr);
-  EXPECT_TRUE(success);
-
-  run_loop.Run();
-
-  EXPECT_NE(loaded_profile, nullptr);
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_TRUE(observer.on_profile_unloaded_called());
 }
 
-// Tests that legacy profile are restored when the feature is disabled and
-// some profile were hidden due to the feature being enabled previously.
-TEST_F(ProfileManagerIOSImplTest_KeepLegacyProfile, Restore) {
-  // Pretend a legacy profile was hidden.
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  local_state->SetBoolean(prefs::kLegacyProfileHidden, true);
-  local_state->SetDict(
-      prefs::kLegacyProfileMap,
-      base::Value::Dict().Set(kLegacyProfile, base::Value::Dict()));
-  EXPECT_FALSE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
+// Tests that unloading all profiles invoke OnProfileUnloaded(...) on the
+// observers.
+TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles) {
+  // Create a few profiles synchronously.
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
 
-  // Check that the profile is not loaded but is restored.
-  profile_manager().LoadProfiles();
+  ScopedTestProfileManagerObserverIOS observer(profile_manager());
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
 
-  // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialProfile`.
-  EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialProfile}));
+  // Check that the profiles are accessible.
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
 
-  EXPECT_THAT(histogram_tester().GetAllSamples("Profile.LegacyProfilesCount"),
-              testing::ElementsAre(base::Bucket(0, 1)));
+  // Unload all profiles, they should not longer be accessible and the
+  // observer must have been notified of that.
+  profile_manager().UnloadAllProfiles();
 
-  // The profile must now be visible in the ProfileAttributesStorageIOS.
-  EXPECT_TRUE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_TRUE(observer.on_profile_unloaded_called());
+}
 
+// Tests that OnProfileUnloaded(...) is not called if a profile in unloaded
+// while still loading.
+TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles_LoadPending) {
+  // Load a profile asynchronously.
   base::RunLoop run_loop;
-  ProfileIOS* created_profile = nullptr;
   ProfileIOS* loaded_profile = nullptr;
-
-  // Trying to load the profile should succeed.
+  ProfileIOS* created_profile = nullptr;
   const bool success = profile_manager().CreateProfileAsync(
-      kLegacyProfile,
-      CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
+      kProfileName1, CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
       CaptureParam(&created_profile));
 
-  EXPECT_NE(created_profile, nullptr);
+  EXPECT_TRUE(created_profile);
   EXPECT_TRUE(success);
 
+  ScopedTestProfileManagerObserverIOS observer(profile_manager());
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
+
+  // Unload all profiles. The profile whose load is pending should no longer
+  // be loading, and the load should be considered as failed.
+  profile_manager().UnloadAllProfiles();
+
+  // The callback should be called from UnloadAllProfiles(), so the RunLoop
+  // should be considered as having quit called, and thus Run() should return
+  // immediately.
   run_loop.Run();
 
-  EXPECT_NE(loaded_profile, nullptr);
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
+  EXPECT_FALSE(loaded_profile);
+}
+
+// Tests that ReserveNewProfileName(...) returns a new profile name that is
+// randomly generated, and register it with ProfileAttributesStorageIOS. The
+// name must also be a valid UUID.
+TEST_F(ProfileManagerIOSImplTest, ReserveNewProfileName) {
+  ASSERT_EQ(attributes_storage().GetNumberOfProfiles(), 0u);
+
+  const std::string name = profile_manager().ReserveNewProfileName();
+  EXPECT_FALSE(name.empty());
+
+  const base::Uuid uuid = base::Uuid::ParseLowercase(name);
+  EXPECT_TRUE(uuid.is_valid());
+
+  ASSERT_TRUE(attributes_storage().HasProfileWithName(name));
+  ProfileAttributesIOS attrs =
+      attributes_storage().GetAttributesForProfileWithName(name);
+  EXPECT_TRUE(attrs.IsNewProfile());
 }

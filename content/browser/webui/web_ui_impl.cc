@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -64,8 +65,8 @@ std::u16string GetJavascriptCallImpl(std::string_view function_name,
 blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
     URLDataManagerBackend* data_backend) {
   auto loader_config = blink::mojom::LocalResourceLoaderConfig::New();
-  std::vector<blink::mojom::LocalResourceSourcePtr>& loader_source_list =
-      loader_config->sources;
+  base::flat_map<url::Origin, blink::mojom::LocalResourceSourcePtr>&
+      loader_sources = loader_config->sources;
   for (auto const& [source_name, data_source] : data_backend->data_sources()) {
     // For a data source to be useful in the renderer process, it must have a
     // map from path to resource ID. Only WebUIDataSourceImpls have a map from
@@ -76,13 +77,13 @@ blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
     }
     auto* webui_data_source =
         static_cast<WebUIDataSourceImpl*>(data_source.get());
+    url::Origin origin = webui_data_source->GetOrigin();
     // We only support data sources that serve URLs of the form: chrome://*
-    if (webui_data_source->GetScheme() != kChromeUIScheme) {
+    if (origin.scheme() != kChromeUIScheme) {
       continue;
     }
     auto loader_source = blink::mojom::LocalResourceSource::New();
     webui_data_source->EnsureLoadTimeDataDefaultsAdded();
-    loader_source->name = source_name;
     loader_source->headers =
         URLDataManagerBackend::GetHeaders(webui_data_source, GURL("/"), "")
             ->raw_headers();
@@ -94,7 +95,7 @@ blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
     loader_source->replacement_strings.insert(
         webui_data_source->source()->GetReplacements()->begin(),
         webui_data_source->source()->GetReplacements()->end());
-    loader_source_list.push_back(std::move(loader_source));
+    loader_sources[origin] = std::move(loader_source);
   }
   return loader_config;
 }

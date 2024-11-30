@@ -1529,7 +1529,7 @@
 <translation id="6121838516699723042">Επιβεβαίωση λήψης <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Ο Βοηθός Google δεν είναι διαθέσιμος σε περιόδους σύνδεσης επισκέπτη.</translation>
 <translation id="6127395413317891856">Είστε εκτός σύνδεσης. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</translation>
-<translation id="6129953537138746214">Κενό</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455">Άνοιγμα παραθύρου διαλόγου κατάργησης για το <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Σε τι θέλετε να συγκεντρωθείτε;</translation>
 <translation id="6141988275892716286">Επιβεβαίωση λήψης</translation>
@@ -2124,6 +2124,7 @@
 <translation id="8142699993796781067">Ιδιωτικό δίκτυο</translation>
 <translation id="8144760705599030999">Αποθηκεύστε τη συσκευή <ph name="NAME" /> στον λογαριασμό <ph name="EMAIL" /> για γρηγορότερη σύζευξη με άλλες συσκευές.</translation>
 <translation id="8144914663975476336">Επιλογή μορφής εγγραφής</translation>
+<translation id="8145272500474066209">Το generative AI μπορεί να κάνει λάθη, ακόμα και σε πληροφορίες που αφορούν άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Εμφάνιση ρυθμίσεων Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Πατήστε Ctrl + W για κλείσιμο.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, αυτόματη συμπλήρωση</translation>

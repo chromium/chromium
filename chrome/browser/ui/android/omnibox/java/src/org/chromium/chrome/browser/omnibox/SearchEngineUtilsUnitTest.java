@@ -476,36 +476,4 @@ public class SearchEngineUtilsUnitTest {
 
         verify(mLocaleManagerDelegate, times(1)).needToCheckForSearchEnginePromo();
     }
-
-    private static Bitmap createSolidImage(int width, int height, int color) {
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        for (int x = 0; x < bitmap.getWidth(); x++) {
-            for (int y = 0; y < bitmap.getHeight(); y++) {
-                bitmap.setPixel(x, y, color);
-            }
-        }
-        return bitmap;
-    }
-
-    private static Bitmap createSolidImageWithDifferentInnerColor(
-            int width, int height, int outerColor, int innerColor) {
-        Bitmap bitmap = createSolidImage(width, height, outerColor);
-        for (int x = 1; x < bitmap.getWidth() - 1; x++) {
-            for (int y = 1; y < bitmap.getHeight() - 1; y++) {
-                bitmap.setPixel(x, y, innerColor);
-            }
-        }
-        return bitmap;
-    }
-
-    private static Bitmap createSolidImageWithSlighlyLargerEdgeCoverage(
-            int width, int height, int largerColor, int smallerColor) {
-        Bitmap bitmap = createSolidImage(width, height, largerColor);
-        for (int x = 0; x < bitmap.getWidth(); x++) {
-            for (int y = bitmap.getHeight() + 1; y < bitmap.getHeight(); y++) {
-                bitmap.setPixel(x, y, smallerColor);
-            }
-        }
-        return bitmap;
-    }
 }

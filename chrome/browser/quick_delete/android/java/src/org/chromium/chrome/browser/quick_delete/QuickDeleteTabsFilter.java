@@ -7,11 +7,15 @@ package org.chromium.chrome.browser.quick_delete;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,11 +94,15 @@ class QuickDeleteTabsFilter {
     /** Closes list of tabs currently filtered for deletion. */
     void closeTabsFilteredForQuickDelete() {
         assert mTabs != null;
-        mTabGroupModelFilter.closeTabs(
-                TabClosureParams.closeTabs(mTabs)
-                        .allowUndo(false)
-                        .saveToTabRestoreService(false)
-                        .build());
+        mTabGroupModelFilter
+                .getTabModel()
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTabs(mTabs)
+                                .allowUndo(false)
+                                .saveToTabRestoreService(false)
+                                .build(),
+                        /* allowDialog= */ false);
     }
 
     /** Return list of tabs currently filtered for deletion. */
@@ -104,11 +112,41 @@ class QuickDeleteTabsFilter {
     }
 
     /**
+     * Returns a list of tabs filtered for deletion excluding tabs in tab groups that will receive a
+     * placeholder tab.
+     */
+    List<Tab> getListOfTabsFilteredToBeClosedExcludingPlaceholderTabGroups() {
+        List<Tab> tabs = getListOfTabsFilteredToBeClosed();
+        TabModel tabModel = mTabGroupModelFilter.getTabModel();
+        GroupsPendingDestroy destroyedGroups =
+                DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(tabModel, tabs);
+        if (destroyedGroups.collaborationGroupsDestroyed.isEmpty()) {
+            return tabs;
+        }
+        // Use a list here since the number of elements is likely to be small and outperform a set
+        // most of the time.
+        List<Token> placeholderTabGroupIds = new ArrayList<Token>();
+        List<Tab> placeholderExcludedTabList = new ArrayList<Tab>();
+        for (LocalTabGroupId localId : destroyedGroups.collaborationGroupsDestroyed) {
+            placeholderTabGroupIds.add(localId.tabGroupId);
+        }
+        for (Tab tab : tabs) {
+            if (tab.getTabGroupId() == null
+                    || !placeholderTabGroupIds.contains(tab.getTabGroupId())) {
+                placeholderExcludedTabList.add(tab);
+            }
+        }
+        return placeholderExcludedTabList;
+    }
+
+    /**
      * Prepares a list of tabs which were either created or had a navigation committed within the
      * time period.
      */
     // TODO(crbug.com/40255099): Re-use CBD implementation of tab filtering & closure instead of
-    // doing it here.
+    // doing it here. Warning: this might break the quick delete animation if placeholder tabs are
+    // created to preserve shared tab groups. See
+    // getListOfTabsFilteredToBeClosedExcludingPlaceholderTabGroups.
     void prepareListOfTabsToBeClosed(@TimePeriod int timePeriod) {
         if (TimePeriod.ALL_TIME == timePeriod) {
             mTabs = getListOfAllTabsToBeClosed();

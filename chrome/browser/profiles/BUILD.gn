@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -260,6 +261,7 @@ source_set("profiles_extra_parts_impl") {
     "//components/autofill/content/browser",
     "//components/breadcrumbs/core:status",
     "//components/captive_portal/core:buildflags",
+    "//components/commerce/core:cart_db_content_proto",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:persisted_state_db_content_proto",
@@ -310,7 +312,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:login",
       "//chrome/browser/user_annotations",
-      "//components/commerce/core:cart_db_content_proto",
     ]
   }
 
@@ -365,8 +366,11 @@ source_set("profiles_extra_parts_impl") {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
-  if (is_win || is_mac || is_linux) {
-    deps += [ "//chrome/browser/glic" ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:enabling",
+    ]
   }
 }
 

@@ -242,6 +242,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Seed Load Timed Out"/>
   <int value="8" label="Seed Load Interrupted"/>
   <int value="9" label="Seed Load Other Failure"/>
+  <int value="10" label="Seed Exceeds Uncompressed Size Limit"/>
 </enum>
 
 <enum name="VariationsSeedStoreResult">

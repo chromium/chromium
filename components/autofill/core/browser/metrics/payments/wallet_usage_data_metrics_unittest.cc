@@ -33,8 +33,7 @@ TEST_F(WalletUsageDataMetricsTest, LogStoredVirtualCardUsageMetrics) {
       std::make_unique<VirtualCardUsageData>(virtual_card_usage_data2));
 
   base::HistogramTester histogram_tester;
-  autofill_metrics::LogStoredVirtualCardUsageCount(
-      virtual_card_usage_data.size());
+  LogStoredVirtualCardUsageCount(virtual_card_usage_data.size());
 
   // Validate the count metrics.
   histogram_tester.ExpectBucketCount(

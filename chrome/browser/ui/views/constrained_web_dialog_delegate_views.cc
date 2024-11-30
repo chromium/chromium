@@ -382,7 +382,7 @@ ConstrainedDialogWebView::ConstrainedDialogWebView(
       &ConstrainedDialogWebView::UpdateAccessibleNameForRootView,
       weak_ptr_factory_.GetWeakPtr()));
 }
-ConstrainedDialogWebView::~ConstrainedDialogWebView() {}
+ConstrainedDialogWebView::~ConstrainedDialogWebView() = default;
 
 const ui::WebDialogDelegate* ConstrainedDialogWebView::GetWebDialogDelegate()
     const {

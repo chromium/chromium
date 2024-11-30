@@ -663,7 +663,10 @@ void WebAppBrowserController::Uninstall(
 }
 
 bool WebAppBrowserController::IsInstalled() const {
-  return registrar().IsInstalled(app_id());
+  return registrar().IsInstallState(
+      app_id(), {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
 }
 
 void WebAppBrowserController::SetIconLoadCallbackForTesting(

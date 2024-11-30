@@ -19,7 +19,7 @@ class MockTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
     virtual void OnClosed() = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   MockTabModalConfirmDialogDelegate(content::WebContents* web_contents,

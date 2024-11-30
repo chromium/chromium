@@ -6,14 +6,12 @@ package org.chromium.chrome.browser.ntp.search;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -25,7 +23,6 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -162,13 +159,5 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
 
     void setTextViewTranslationX(float translationX) {
         mModel.set(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X, translationX);
-    }
-
-    private Drawable getRoundedDrawable(Bitmap bitmap) {
-        if (bitmap == null) return null;
-        RoundedBitmapDrawable roundedBitmapDrawable =
-                ViewUtils.createRoundedBitmapDrawable(mContext.getResources(), bitmap, 0);
-        roundedBitmapDrawable.setCircular(true);
-        return roundedBitmapDrawable;
     }
 }

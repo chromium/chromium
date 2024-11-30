@@ -33,6 +33,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/clean_exit_beacon.h"
@@ -102,7 +103,8 @@ std::unique_ptr<VariationsSeedStore> CreateSeedStore(PrefService* local_state) {
       /*signature_verification_enabled=*/true,
       std::make_unique<VariationsSafeSeedStoreLocalState>(
           local_state,
-          /*seed_file_dir=*/base::FilePath()),
+          /*seed_file_dir=*/base::FilePath(), version_info::Channel::UNKNOWN,
+          /*entropy_providers=*/nullptr),
       version_info::Channel::UNKNOWN,
       /*seed_file_dir=*/base::FilePath());
 }
@@ -366,7 +368,9 @@ class TestVariationsSeedStore : public VariationsSeedStore {
                             /*signature_verification_enabled=*/true,
                             std::make_unique<VariationsSafeSeedStoreLocalState>(
                                 local_state,
-                                /*seed_file_dir=*/base::FilePath()),
+                                /*seed_file_dir=*/base::FilePath(),
+                                version_info::Channel::UNKNOWN,
+                                /*entropy_providers=*/nullptr),
                             version_info::Channel::UNKNOWN,
                             /*seed_file_dir=*/base::FilePath()) {}
 
@@ -994,7 +998,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
       /*signature_verification_enabled=*/false,
       std::make_unique<VariationsSafeSeedStoreLocalState>(
           local_state(),
-          /*seed_file_dir=*/base::FilePath()),
+          /*seed_file_dir=*/base::FilePath(), version_info::Channel::UNKNOWN,
+          /*entropy_providers=*/nullptr),
       version_info::Channel::UNKNOWN, /*seed_file_dir=*/base::FilePath());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider(),

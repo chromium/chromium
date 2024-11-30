@@ -61,6 +61,8 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   // compression).
   static constexpr base::TimeDelta kBeforeCompressionDelay = base::Minutes(5);
 
+  void InitiateHibernationIfNecessary();
+
   void SaveForHibernation(sk_sp<SkImage>&& image,
                           std::unique_ptr<MemoryManagedPaintRecorder> recorder);
   // Returns the uncompressed image for this hibernation image. Does not
@@ -143,6 +145,10 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
       sk_sp<SkData> encoded);
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner() const;
   static size_t ImageMemorySize(const SkImage& image);
+  static void HibernateOrLogFailure(
+      base::WeakPtr<CanvasHibernationHandler> handler,
+      base::TimeTicks /*idleDeadline*/);
+  void Hibernate();
 
   // Incremented each time the canvas is hibernated.
   uint64_t epoch_ = 0;
@@ -162,6 +168,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   int height_;
   int bytes_per_pixel_;
 
+  bool hibernation_scheduled_ = false;
   const base::raw_ref<CanvasResourceHost> resource_host_;
   base::WeakPtrFactory<CanvasHibernationHandler> weak_ptr_factory_{this};
 };

@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
@@ -361,11 +360,9 @@ void AccountConsistencyService::AccountConsistencyHandler::WebStateDestroyed() {
 AccountConsistencyService::AccountConsistencyService(
     CookieManagerCallback cookie_manager_cb,
     AccountReconcilor* account_reconcilor,
-    scoped_refptr<content_settings::CookieSettings> cookie_settings,
     signin::IdentityManager* identity_manager)
     : cookie_manager_cb_(std::move(cookie_manager_cb)),
       account_reconcilor_(account_reconcilor),
-      cookie_settings_(cookie_settings),
       identity_manager_(identity_manager),
       active_cookie_manager_requests_for_testing_(0) {
   DCHECK(!cookie_manager_cb_.is_null());
@@ -508,8 +505,10 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
       url,
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia,
-      signin::AccountConsistencyMethod::kMirror, cookie_settings_.get(),
-      signin::PROFILE_MODE_DEFAULT);
+      signin::AccountConsistencyMethod::kMirror,
+      // We pass in `nullptr` for CookieSettings as iOS users cannot set any
+      // prefs or content settings related to cookies.
+      /*cookie_settings=*/nullptr, signin::PROFILE_MODE_DEFAULT);
   if (cookie_value.empty()) {
     return;
   }

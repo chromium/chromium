@@ -348,7 +348,7 @@ void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
 void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
   auto record_job_finished = [this, &reason](const char* mv2_histogram,
                                              const char* mv3_histogram) {
-    if (manifest_version_ == 2) {
+    if (mv2_histogram && manifest_version_ == 2) {
       base::UmaHistogramEnumeration(mv2_histogram, reason, FAILURE_REASON_MAX);
     } else if (manifest_version_ == 3) {
       base::UmaHistogramEnumeration(mv3_histogram, reason, FAILURE_REASON_MAX);
@@ -362,7 +362,7 @@ void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
   // milestones.
   if (extension_id_ == extension_misc::kDocsOfflineExtensionId) {
     record_job_finished(
-        "Extensions.ContentVerification.VerifyJobResultMV2.GoogleDocsOffline",
+        nullptr,  // No MV2 Google Docs Offline version.
         "Extensions.ContentVerification.VerifyJobResultMV3.GoogleDocsOffline");
   }
 

@@ -457,16 +457,6 @@ spaces. This should be deprecated in favor of FirstShowOrReshow.
                Autofill Server"/>
 </variants>
 
-<variants name="AutofillFillingMethod">
-  <variant name=".Any" summary="User chose any of the filling methods."/>
-  <variant name=".FieldByFieldFilling"
-      summary="User chose to fill a specific field"/>
-  <variant name=".FullForm" summary="User chose to fill the full form"/>
-  <variant name=".GroupFilling"
-      summary="User chose one of the group filling options"/>
-  <variant name=".None" summary="No filling method."/>
-</variants>
-
 <variants name="AutofillFormType">
   <variant name=".Address" summary="Address form"/>
   <variant name=".CreditCard" summary="Credit card form"/>
@@ -681,6 +671,20 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autocomplete.Unaccepted.DaysSinceLastUse" units="days"
+    expires_after="2025-08-13">
+  <owner>brunobraga@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when users ignore Autocomplete entries in the dropdown, this
+    histogram captures the number of days that have passed since an autocomplete
+    entry was last submitted on a website and the user has seen it again (but
+    not selected). I.e., the distribution of time between uses of an
+    &quot;active&quot; autocomplete entry and it being displayed and not
+    accepted.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
     units="ms" expires_after="2025-04-27">
@@ -734,7 +738,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.AddedNewAddress"
-    enum="AutofillManuallyAddedAddressSurface" expires_after="2025-03-19">
+    enum="AutofillManuallyAddedAddressSurface" expires_after="2025-05-18">
   <owner>brunobraga@google.com</owner>
   <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -870,7 +874,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.AndroidAutofillAvailabilityStatus"
-    enum="AndroidAutofillAvailabilityStatus" expires_after="2024-12-14">
+    enum="AndroidAutofillAvailabilityStatus" expires_after="2025-05-18">
   <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1443,6 +1447,18 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ConditionalPasskeysFlow.PasskeysState"
+    enum="WebAuthnCredManDelegateState" expires_after="2025-04-18">
+  <owner>friedrichh@chromium.org</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Clank only. Logs the state of passkeys in a conditional passkey flow. It
+    could be that the passkeys were not ready, there were no saved passkeys or
+    there were passkeys. Emitted when the CredMan UI was closed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CreditCard.DisabledReason.PageLoad"
     enum="AutofillPreferenceSetter" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
@@ -1920,6 +1936,18 @@ AutofillSaveCreditCardPromptDestination.
     possible types. This metric is recorded for every possible type.
   </summary>
   <token key="FieldState">
+    <variant name="AutocompleteOffHadPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns a
+                 known type and the autocomplete value is off."/>
+    <variant name="AutocompleteOffNoPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns an
+                 unknown type and the autocomplete value is off."/>
+    <variant name="GarbageHadPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns a
+                 known type and the autocomplete value is unrecognized."/>
+    <variant name="GarbageNoPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns an
+                 unknown type and the autocomplete value is unrecognized."/>
     <variant name="HadPrediction"
         summary="Metrics are recorded if AutofillField::Type() returns a
                  known type."/>
@@ -2357,17 +2385,6 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ExtendedMenu.EditAddress"
-    enum="BooleanAutofillEditAddress" expires_after="2025-03-30">
-  <owner>tchudakov@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    This metric measures how many users Clicked on the Edit Address option in
-    the extended Autofill menu and the next action. The metric is logged when
-    the user closes the edit address profile dialog.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ExtractForm{OwnershipType}.FieldCount" units="fields"
     expires_after="2025-04-06">
   <owner>jkeitel@google.com</owner>
@@ -2450,22 +2467,6 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.FieldByFieldFilling.FieldTypeUsed.{FillingProduct}{ClassificationMatchesFillingProduct}"
-    enum="AutofillFieldByFieldFillingTypes" expires_after="2025-05-11">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Specifies the field type used to fill a specific field and whether the
-    product chosen (Address, payments, passwords etc) matches the field
-    classification. Recorded when a field-by-field filling suggestion is
-    accepted by the user from an Autofill popup.
-  </summary>
-  <token key="FillingProduct" variants="Autofill.FillingProduct.Condensed"/>
-  <token key="ClassificationMatchesFillingProduct"
-      variants="ClassificationMatchesFillingProduct"/>
-</histogram>
-
 <histogram name="Autofill.FieldCount" units="form fields"
     expires_after="2025-04-13">
   <owner>battre@chromium.org</owner>
@@ -2488,25 +2489,6 @@ AutofillSaveCreditCardPromptDestination.
     <variant name="StandaloneCvc"/>
     <variant name="Unknown"/>
   </token>
-</histogram>
-
-<histogram
-    name="Autofill.FieldFillingStats{AutofillFillingMethod}{AutofillFormType}{FillingStatus}"
-    units="fields" expires_after="2025-05-04">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    For a filling method (full form, group filling or field-by-field-filling)
-    and {AutofillFormType} logs an histogram of the number of fields with the
-    {FillingStatus} at submission time. The non-aggregated FillingStatuses are
-    mutually exclusive and each field can only contribute to one of
-    corresponding histograms. However, the combined histograms that are prefixed
-    with Total are not mutually exclusive and a single field can contribute to
-    multiple of those.
-  </summary>
-  <token key="AutofillFillingMethod" variants="AutofillFillingMethod"/>
-  <token key="AutofillFormType" variants="AutofillFormType"/>
-  <token key="FillingStatus" variants="AutofillFieldFillingStats"/>
 </histogram>
 
 <histogram name="Autofill.FieldFillingStats{AutofillFormType}{FillingStatus}"
@@ -2711,48 +2693,6 @@ AutofillSaveCreditCardPromptDestination.
     Records for each field filled with passwords data, whether it is classified
     as target filling password or not. Emitted at the time of the filling.
   </summary>
-</histogram>
-
-<histogram name="Autofill.FilledFieldType.{FormType}"
-    enum="FieldClassificationType" expires_after="2025-04-13">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records for each field autofilled with {FormType} data, whether it is
-    classified with autocomplete attribute recognized, unrecognized, or whether
-    it is simply unclassified. Emitted at destruction time of
-    BrowserAutofillManager if at least one autofill operation was performed.
-  </summary>
-  <token key="FormType" variants="AutofillFormType.Fillable"/>
-</histogram>
-
-<histogram
-    name="Autofill.FillingMethodUsed.{FillingProduct}{ClassificationMatchesFillingProduct}"
-    enum="AutofillFillingMethodMetric" expires_after="2025-05-11">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Recorded when an Autofill suggestion is accepted by the user. The filling
-    method defines whether the user chose to fill the whole form, a specific
-    field or a group of fields (address fields, phone fields, name fields or
-    email fields).
-  </summary>
-  <token key="FillingProduct" variants="Autofill.FillingProduct.Condensed"/>
-  <token key="ClassificationMatchesFillingProduct"
-      variants="ClassificationMatchesFillingProduct"/>
-</histogram>
-
-<histogram name="Autofill.FillingOperationCount.{FormType}" units="unit"
-    expires_after="2025-04-13">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records how many time the user uses Autofill to fill forms and fields with
-    {FormType} data before submitting. Does not account for refill operations.
-    Recorded on the destruction of BrowserAutofillManager if at least one
-    autofill operation was performed.
-  </summary>
-  <token key="FormType" variants="AutofillFormType.Fillable"/>
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.WithBenefits.{CardIssuerId}"
@@ -3016,22 +2956,6 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.Funnel.ClassifiedFieldAutocompleteUnrecognized.FillAfterSuggestion.Address"
-    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-05-11">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Like Autofill.Funnel.FillAfterSuggestion.Address, but conditioned on
-    autocomplete=unrecognized fields. The metric is only recorded if the user
-    saw a suggestion on an autocomplete=unrecognized field. On desktop, that
-    means using the manual fallback option through the context menu. On mobile,
-    keyboard accessory suggestions appear independently of the autocomplete
-    attribute. Emitted on navigation (when the AutofillManager is destroyed), at
-    most once per page.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Funnel.FillAfterSuggestion.{FormType}"
     enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-04-13">
   <owner>battre@chromium.org</owner>
@@ -3076,27 +3000,26 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.Funnel.NotClassifiedAsTargetFilling.FillAfterSuggestion{AutofillFormType}"
-    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-03-23">
+    name="Autofill.Funnel.NotClassifiedAsTargetFilling.FillAfterSuggestion.Password"
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-05-25">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Counts whether users accepted any autofill suggestion that was shown to them
+    Counts whether users accepted any password suggestion that was shown to them
     for a given form. This metric is conditioned to those suggestions that were
     triggered via the context menu on a field that does not match the target
     filling product.
 
-    This metric is only recorded if a suggestion for the {AutofillFormType} was
-    shown, accepted, and the suggestion was filled successfully. This is
-    recorded once per navigation. It is reported as &quot;User chose to
-    fill&quot; once. It does not matter if the user clears the filled values nor
-    if the user accepts a different suggestion later.
+    This metric is only recorded if a password suggestion was shown, accepted,
+    and the suggestion was filled successfully. This is recorded once per
+    navigation. It is reported as &quot;User chose to fill&quot; once. It does
+    not matter if the user clears the filled values nor if the user accepts a
+    different suggestion later.
 
     If the accepted suggestion is not filled (e.g., if it required
     authentication and the user cancelled or failed that step), then this metric
     is not recorded.
   </summary>
-  <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
 <histogram name="Autofill.Funnel.ParsedAsType.{FormType}"
@@ -3687,6 +3610,22 @@ AutofillSaveCreditCardPromptDestination.
   </token>
 </histogram>
 
+<histogram name="Autofill.LocalHeuristics.MatchedAttribute"
+    enum="AutofillMatchAttribute" expires_after="2025-05-31">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Whenever local heuristics are computed, logs the MatchAttribute that was
+    used to determine the heuristic type for each field. &quot;None&quot; means
+    that no parser found a classification for the field, resulting in an
+    UNKNOWN_TYPE. &quot;Ambiguous&quot; means that multiple MatchAttributes
+    matched for different regexes. Since local heuristics attempt to match
+    regexes against the label first, this metric is skewed towards label
+    matches. A match in the label doesn't imply that the name wouldn't have
+    matched, but a match in name means that the label did't match.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.LogEvent.{LogEventTypes}" units="units"
     expires_after="2025-04-13">
   <owner>battre@chromium.org</owner>
@@ -3733,20 +3672,9 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ManualFallback.AddNewAddressPromptShown"
-    enum="AutofillAddNewAddressPromptOutcome" expires_after="2025-03-18">
-  <owner>brunobraga@google.com</owner>
-  <owner>vykochko@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs the outcome of the 'Add new address' popup prompt interaction (new
-    address added or prompt canceled/ignored).
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.ClassifiedAsTargetFilling.Password"
-    enum="BooleanSelectManualFallback" expires_after="2025-01-20">
+    enum="BooleanSelectManualFallback" expires_after="2025-05-25">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3759,58 +3687,18 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling.Total"
-    enum="BooleanSelectManualFallback" expires_after="2025-03-23">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the total acceptance of manual fallback suggestions on fields that
-    are either unclassified or classified differently as the filling product.
-    This tracks the number of times a user accepted/didn't accept the manual
-    fallback option in the context menu. Emitted on navigation (when the
-    AutofillManager/PasswordAutofillManager is destroyed/reset), at most once
-    per page.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling{AutofillFormType}"
-    enum="BooleanSelectManualFallback" expires_after="2025-03-23">
+    name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling.Password"
+    enum="BooleanSelectManualFallback" expires_after="2025-05-25">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records per form type the acceptance of manual fallback suggestions on
-    fields that are either unclassified or classified differently as the filling
-    product. This tracks the number of times a user accepted/didn't accept the
-    manual fallback option in the context menu. Emitted on navigation (when the
-    AutofillManager/PasswordAutofillManager is destroyed/reset), at most once
-    per page.
+    fields that are either unclassified or classified differently than the
+    filling product password. This tracks the number of times a user
+    accepted/didn't accept the manual fallback option in the context menu.
+    Emitted on navigation (when the PasswordAutofillManager is destroyed/reset),
+    at most once per page.
   </summary>
-  <token key="AutofillFormType" variants="AutofillFormType"/>
-</histogram>
-
-<histogram
-    name="Autofill.ManualFallback.ExplicitlyTriggered.{AutocompleteState}.Address"
-    enum="BooleanSelectManualFallback" expires_after="2025-05-04">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the acceptance of manual fallback suggestions, by tracking the
-    number of times a user accepted/didn't accept the manual fallback option in
-    the context menu. Emitted on navigation (when the AutofillManager is
-    destroyed), at most once per page.
-
-    The &quot;Total&quot; variant of this metric is recorded only on classified
-    address fields. It represents the sum of classified address fields with
-    autocomplete unrecognized and with autocomplete recognized.
-  </summary>
-  <token key="AutocompleteState">
-    <variant name="ClassifiedFieldAutocompleteRecognized"
-        summary="A classified field with recognized autocomplete attribute"/>
-    <variant name="ClassifiedFieldAutocompleteUnrecognized"
-        summary="A classified field with unrecognized autocomplete attribute"/>
-    <variant name="Total" summary="Sum of recognized and unrecognized"/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.Message.{MessageType}.{Event}" enum="BooleanShown"
@@ -4351,6 +4239,19 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.PaymentMethodsSettingsPage.ScanCardResult"
+    enum="AutofillScanCreditCardResult" expires_after="2025-06-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Logs how (or if) the credit card scanner is used by the user in the payment
+    methods settings page. Recorded when a user hits the save button to save a
+    new credit card through the Chrome payment methods settings page and there
+    is a credit card scanner shown to the user on the payments methods settings
+    page.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.PaymentsDataManager.LocalCardAdded" enum="Boolean"
     expires_after="2025-02-01">
   <owner>npnavarro@google.com</owner>
@@ -4564,9 +4465,9 @@ AutofillSaveCreditCardPromptDestination.
   <owner>theocristea@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Autofill.ProfileDeleted is emitted in the following scenarios: ExtendedMenu,
-    Settings, Popup and KeyboardAccessory. There is also an &quot;Any&quot;
-    bucket, which sums all of the above.
+    Autofill.ProfileDeleted is emitted in the following scenarios: Settings,
+    Popup and KeyboardAccessory. There is also an &quot;Any&quot; bucket, which
+    sums all of the above.
 
     {DeletionType}
   </summary>
@@ -4575,10 +4476,6 @@ AutofillSaveCreditCardPromptDestination.
         summary="This metric records how many users tried to delete an
                  address and whether they canceled or confirmed the deletion
                  (regardless of how the address was deleted)."/>
-    <variant name="ExtendedMenu"
-        summary="This metric records how many users clicked on the
-                 &quot;Delete Address&quot; button in the autofill extended
-                 menu, and whether they canceled or confirmed the deletion."/>
     <variant name="KeyboardAccessory"
         summary="This metric records how many users long-pressed on an
                  address suggestion button in the keyboard accessory, and
@@ -5402,7 +5299,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.Settings.AutofillOptionsReferrerAndroid"
-    enum="AutofillOptionsReferrer" expires_after="2025-03-23">
+    enum="AutofillOptionsReferrer" expires_after="2025-05-25">
   <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

@@ -40,7 +40,7 @@ struct VerifySuggesterTestCase {
 
 class SuggesterContextBasedTest : public testing::Test {
  protected:
-  SuggesterContextBasedTest() {}
+  SuggesterContextBasedTest() = default;
 };
 
 TEST_F(SuggesterContextBasedTest, NoDiacriticsInPassword) {

@@ -356,7 +356,15 @@ TEST_F(CursorManagerTest, TestCursorClientObserver) {
   EXPECT_FALSE(observer_a.is_cursor_visible());
 }
 
-// This test validates that the cursor visiblity state is restored when a
+TEST_F(CursorManagerTest, SystemCursorVisibilityTest) {
+  // If the system cursor is invisible, ShowCursor() should not make the cursor
+  // visible.
+  cursor_manager_.UpdateSystemCursorVisibilityForTest(false);
+  cursor_manager_.ShowCursor();
+  EXPECT_FALSE(cursor_manager_.IsCursorVisible());
+}
+
+// This test validates that the cursor visibility state is restored when a
 // CursorManager instance is destroyed and recreated.
 TEST(CursorManagerCreateDestroyTest, VisibilityTest) {
   // This block ensures that the cursor is hidden when the CursorManager

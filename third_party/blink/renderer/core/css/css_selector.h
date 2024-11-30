@@ -234,7 +234,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoAutofillSelected,
     kPseudoBackdrop,
     kPseudoBefore,
-    kPseudoCheck,
+    kPseudoCheckMark,
     kPseudoChecked,
     kPseudoCornerPresent,
     kPseudoCurrent,
@@ -374,6 +374,10 @@ class CORE_EXPORT CSSSelector {
     kPseudoVideoPersistent,
     kPseudoVideoPersistentAncestor,
 
+    // Active ::scroll-marker styling.
+    // https://drafts.csswg.org/css-overflow-5/#active-scroll-marker
+    kPseudoTargetCurrent,
+
     // The following selectors are used to target pseudo elements created for
     // ViewTransition.
     // See https://drafts.csswg.org/css-view-transitions-1/#pseudo
@@ -386,9 +390,8 @@ class CORE_EXPORT CSSSelector {
     // Scroll markers pseudos for Carousel
     kPseudoScrollMarker,
     kPseudoScrollMarkerGroup,
-    // Scroll button pseudos for Carousel
-    kPseudoScrollNextButton,
-    kPseudoScrollPrevButton,
+    // Scroll button pseudo for Carousel
+    kPseudoScrollButton,
   };
 
   enum class AttributeMatchType : int {
@@ -588,10 +591,6 @@ class CORE_EXPORT CSSSelector {
   static bool IsElementBackedPseudoElement(CSSSelector::PseudoType pseudo);
   bool IsAllowedAfterPart() const;
 
-  // Returns true if the immediately preceding simple selector is ::part.
-  // TODO(https://crbug.com/40280846): Remove this when removing the
-  // CSSCascadeCorrectScope flag.
-  bool FollowsPart() const;
   // Returns true if the immediately preceding simple selector is ::slotted.
   bool FollowsSlotted() const;
 

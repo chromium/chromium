@@ -25,6 +25,7 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/permissions/permission_util.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -79,7 +80,9 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/menus/simple_menu_model.h"
@@ -783,10 +786,20 @@ void WebViewGuest::Reload() {
   GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
+void WebViewGuest::GuestOverrideRendererPreferences(
+    blink::RendererPreferences& preferences) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  preferences.user_agent_override = ua_override_;
+}
+
 void WebViewGuest::SetUserAgentOverride(const std::string& ua_string_override) {
   bool is_overriding_ua_string = !ua_string_override.empty();
   if (is_overriding_ua_string) {
     base::RecordAction(UserMetricsAction("WebView.Guest.OverrideUA"));
+
+    if (!net::HttpUtil::IsValidHeaderValue(ua_string_override)) {
+      return;
+    }
   }
 
   std::optional<blink::UserAgentOverride> default_user_agent_override =
@@ -812,20 +825,69 @@ void WebViewGuest::SetUserAgentOverride(const std::string& ua_string_override) {
   //   `ua_string_override` string within must also be non-empty.
 
   if (default_user_agent_override.has_value()) {
-    CHECK(!default_user_agent_override.value().ua_string_override.empty());
+    CHECK(!default_user_agent_override->ua_string_override.empty());
     if (is_overriding_ua_string) {
-      default_user_agent_override.value().ua_string_override =
-          ua_string_override;
+      default_user_agent_override->ua_string_override = ua_string_override;
     }
   }
 
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    NOTIMPLEMENTED();
+    ua_override_ = default_user_agent_override.value_or(
+        blink::UserAgentOverride::UserAgentOnly(ua_string_override));
+
+    // Force an update to sync renderer preferences.
+    web_contents()->SyncRendererPrefs();
+    UserAgentOverrideSet(ua_override_);
   } else {
     web_contents()->SetUserAgentOverride(
         default_user_agent_override.value_or(
             blink::UserAgentOverride::UserAgentOnly(ua_string_override)),
         false);
+  }
+}
+
+void WebViewGuest::SetClientHintsEnabled(bool enable) {
+  if (web_view_guest_delegate_) {
+    web_view_guest_delegate_->SetClientHintsEnabled(enable);
+  }
+  UpdateUserAgentMetadata();
+}
+
+void WebViewGuest::UpdateUserAgentMetadata() {
+  std::optional<blink::UserAgentOverride> default_user_agent_override =
+      web_view_guest_delegate_
+          ? web_view_guest_delegate_->GetDefaultUserAgentOverride()
+          : std::nullopt;
+
+  std::string retained_ua_string_override;
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    retained_ua_string_override = ua_override_.ua_string_override;
+  } else {
+    retained_ua_string_override =
+        web_contents()->GetUserAgentOverride().ua_string_override;
+  }
+
+  is_overriding_user_agent_ = !retained_ua_string_override.empty() ||
+                              default_user_agent_override.has_value();
+
+  if (default_user_agent_override.has_value() &&
+      !retained_ua_string_override.empty()) {
+    default_user_agent_override->ua_string_override =
+        retained_ua_string_override;
+  }
+
+  blink::UserAgentOverride new_user_agent_override =
+      default_user_agent_override.value_or(
+          blink::UserAgentOverride::UserAgentOnly(retained_ua_string_override));
+
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    ua_override_ = new_user_agent_override;
+
+    // Force an update to sync renderer preferences.
+    web_contents()->SyncRendererPrefs();
+    UserAgentOverrideSet(ua_override_);
+  } else {
+    web_contents()->SetUserAgentOverride(new_user_agent_override, false);
   }
 }
 
@@ -888,7 +950,12 @@ WebViewGuest::WebViewGuest(content::RenderFrameHost* owner_rfh)
           ExtensionsAPIClient::Get()->CreateWebViewGuestDelegate(this))),
       is_spatial_navigation_enabled_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kEnableSpatialNavigation)) {}
+              switches::kEnableSpatialNavigation)) {
+  if (IsOwnedByControlledFrameEmbedder()) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        owner_rfh, blink::mojom::WebFeature::kControlledFrameElement);
+  }
+}
 
 WebViewGuest::~WebViewGuest() {
   if (!attached() && GetOpener())
@@ -955,25 +1022,16 @@ void WebViewGuest::DidFinishNavigation(
   find_helper_.CancelAllFindSessions();
 }
 
-void WebViewGuest::LoadProgressChanged(double progress) {
-  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    // TODO(crbug.com/40202416): Implement an MPArch equivalent of this.
-    return;
-  }
-
+void WebViewGuest::GuestViewDidChangeLoadProgress(double progress) {
   base::Value::Dict args;
-  args.Set(guest_view::kUrl, web_contents()->GetLastCommittedURL().spec());
+  args.Set(guest_view::kUrl,
+           GetController().GetLastCommittedEntry()->GetVirtualURL().spec());
   args.Set(webview::kProgress, progress);
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadProgress, std::move(args)));
 }
 
-void WebViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    // TODO(crbug.com/40202416): Implement an MPArch equivalent of this.
-    return;
-  }
-
+void WebViewGuest::GuestViewDocumentOnLoadCompleted() {
   base::Value::Dict args;
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventContentLoad, std::move(args)));
@@ -1023,10 +1081,8 @@ void WebViewGuest::DidRedirectNavigation(
       webview::kEventLoadRedirect, std::move(args)));
 }
 
-void WebViewGuest::PrimaryMainFrameRenderProcessGone(
+void WebViewGuest::GuestViewMainFrameProcessGone(
     base::TerminationStatus status) {
-  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-
   // Cancel all find sessions in progress.
   find_helper_.CancelAllFindSessions();
 
@@ -1336,6 +1392,11 @@ std::optional<content::PermissionResult> WebViewGuest::OverridePermissionResult(
     // Returns nullopt for unhandled cases.
   }
   return std::nullopt;
+}
+
+content::JavaScriptDialogManager*
+WebViewGuest::GuestGetJavascriptDialogManager() {
+  return &javascript_dialog_helper_;
 }
 
 content::JavaScriptDialogManager* WebViewGuest::GetJavaScriptDialogManager(

@@ -7,9 +7,9 @@
 
 var logging = requireNative('logging');
 var MessagingNatives = requireNative('messaging_natives');
+var tagLogMessage = require('guestViewConstants').tagLogMessage;
 var WebViewConstants = require('webViewConstants').WebViewConstants;
 var WebViewInternal = getInternalApi('webViewInternal');
-var tagLogMessage = require('webViewConstants').tagLogMessage;
 
 var PERMISSION_TYPES = ['media',
                         'geolocation',

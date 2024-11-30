@@ -60,6 +60,9 @@ class HttpStreamPool::Job {
   // `delegate` must outlive `this`.
   Job(Delegate* delegate,
       AttemptManager* attempt_manager,
+      RespectLimits respect_limits,
+      bool enable_ip_based_pooling,
+      bool enable_alternative_services,
       NextProto expected_protocol,
       bool is_http1_allowed,
       ProxyInfo proxy_info);
@@ -71,9 +74,6 @@ class HttpStreamPool::Job {
   // Starts this job.
   void Start(RequestPriority priority,
              const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-             RespectLimits respect_limits,
-             bool enable_ip_based_pooling,
-             bool enable_alternative_services,
              quic::ParsedQuicVersion quic_version,
              const NetLogWithSource& net_log);
 
@@ -103,6 +103,14 @@ class HttpStreamPool::Job {
   // requested a client certificate.
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info);
 
+  RespectLimits respect_limits() const { return respect_limits_; }
+
+  bool enable_ip_based_pooling() const { return enable_ip_based_pooling_; }
+
+  bool enable_alternative_services() const {
+    return enable_alternative_services_;
+  }
+
   const ProxyInfo& proxy_info() const { return proxy_info_; }
 
   const NextProtoSet& allowed_alpns() const { return allowed_alpns_; }
@@ -112,16 +120,11 @@ class HttpStreamPool::Job {
   }
 
  private:
-  void CallOnStreamReady(std::unique_ptr<HttpStream> stream,
-                         NextProto negotiated_protocol);
-  void CallOnStreamFailed(int status,
-                          const NetErrorDetails& net_error_details,
-                          ResolveErrorInfo resolve_error_info);
-  void CallOnCertificateError(int status, const SSLInfo& ssl_info);
-  void CallOnNeedsClientAuth(SSLCertRequestInfo* cert_info);
-
   const raw_ptr<Delegate> delegate_;
   raw_ptr<AttemptManager> attempt_manager_;
+  const RespectLimits respect_limits_;
+  const bool enable_ip_based_pooling_;
+  const bool enable_alternative_services_;
   const NextProtoSet allowed_alpns_;
   const bool is_h2_or_h3_required_;
   const ProxyInfo proxy_info_;

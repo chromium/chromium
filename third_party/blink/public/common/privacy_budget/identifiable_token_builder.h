@@ -76,7 +76,7 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   // AddAtomic().
   IdentifiableTokenBuilder& AddAtomic(ByteSpan buffer);
   IdentifiableTokenBuilder& AddAtomic(std::string_view string) {
-    return AddAtomic(base::as_bytes(base::make_span(string)));
+    return AddAtomic(base::as_byte_span(string));
   }
 
   // Feeds the underlying value of the |token| itself to the digest. Use this

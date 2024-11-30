@@ -47,16 +47,17 @@ content::WebContents* GetActiveWebContents(Browser* browser) {
 
 class EnableLinkCapturingInfobarBrowserTest
     : public WebAppNavigationBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   EnableLinkCapturingInfobarBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            /*override_captures_by_default=*/GetParam()),
-        {});
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
   }
 
-  bool LinkCapturingEnabledByDefault() { return GetParam(); }
+  bool LinkCapturingEnabledByDefault() {
+    return GetParam() == apps::test::LinkCapturingFeatureVersion::kV2DefaultOn;
+  }
 
   // Returns [app_id, in_scope_url]
   std::tuple<webapps::AppId, GURL> InstallTestApp() {
@@ -89,9 +90,12 @@ class EnableLinkCapturingInfobarBrowserTest
     return {outer_app_id, inner_app_id, inner_in_scope_url};
   }
 
+  // Calling `NavigateViaLinkClick()` with `LinkTarget::BLANK` ensures that a
+  // new top level browsing context is always created, to allow navigation
+  // capturing to happen.
   void NavigateViaLinkClick(Browser* browser,
                             const GURL& url,
-                            LinkTarget link_target = LinkTarget::SELF) {
+                            LinkTarget link_target = LinkTarget::BLANK) {
     ClickLinkAndWait(GetActiveWebContents(browser), url, link_target,
                      std::string());
   }
@@ -460,12 +464,17 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   EXPECT_FALSE(GetLinkCapturingInfoBar(app_browser));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         EnableLinkCapturingInfobarBrowserTest,
-                         testing::Values(true, false),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "DefaultOn" : "DefaultOff";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnableLinkCapturingInfobarBrowserTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);
 
 }  // namespace
 }  // namespace web_app

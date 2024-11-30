@@ -78,19 +78,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // components of TransportAvailabilityInfo is set,
   // AuthenticatorRequestClientDelegate should be notified.
   struct COMPONENT_EXPORT(DEVICE_FIDO) TransportAvailabilityInfo {
-    enum class ConditionalUITreatment {
-      kDefault = 0,
-      // kDontShowEmptyConditionalUI requests that, if there are no matching
-      // credentials for conditional UI, that the option to use a passkey from
-      // another device not be offered. This is for measurement and
-      // experimentation.
-      kDontShowEmptyConditionalUI,
-      // kNeverOfferPasskeyFromAnotherDevice requests that the option to use a
-      // passkey from another device is never offered in conditional UI. This is
-      // for measurement and experimentation.
-      kNeverOfferPasskeyFromAnotherDevice,
-    };
-
     TransportAvailabilityInfo();
     TransportAvailabilityInfo(const TransportAvailabilityInfo& other);
     TransportAvailabilityInfo& operator=(
@@ -208,11 +195,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // makeCredential requests. See also `request_is_internal_only`, which isn't
     // specific to makeCredential requests.
     std::optional<AuthenticatorAttachment> make_credential_attachment;
-
-    // conditional_ui_treatment_ controls how conditional UI will be handled for
-    // this request.
-    ConditionalUITreatment conditional_ui_treatment =
-        ConditionalUITreatment::kDefault;
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {

@@ -5,18 +5,11 @@
 /**
  * @fileoverview This file is the entry point for custom elements and other
  * modules that should be lazily loaded in the ChromeOS Settings frontend app.
- * This should include:
- *  - Top-level pages that exist in the "Advanced" section.
- *  - All subpages
+ * This should include all subpages and exclude all top-level pages.
  */
 
 import '/strings.m.js';
-/** Top-level Advanced pages & About page */
-import './crostini_page/crostini_page.js';
-import './os_about_page/os_about_page.js';
-import './os_files_page/os_files_page.js';
-import './os_languages_page/os_languages_section.js';
-import './os_printing_page/os_printing_page.js';
+
 /** Subpages */
 import './date_time_page/timezone_subpage.js';
 import './device_page/customize_mouse_buttons_subpage.js';
@@ -165,7 +158,6 @@ export {SettingsCrostiniDiskResizeDialogElement} from './crostini_page/crostini_
 export {SettingsCrostiniExportImportElement} from './crostini_page/crostini_export_import.js';
 export {ExtraContainersElement} from './crostini_page/crostini_extra_containers.js';
 export {ExtraContainersCreateDialog} from './crostini_page/crostini_extra_containers_create_dialog.js';
-export {SettingsCrostiniPageElement} from './crostini_page/crostini_page.js';
 export {CrostiniPortForwardingElement} from './crostini_page/crostini_port_forwarding.js';
 export {CrostiniSettingsCardElement} from './crostini_page/crostini_settings_card.js';
 export {CrostiniSharedUsbDevicesElement} from './crostini_page/crostini_shared_usb_devices.js';
@@ -339,7 +331,6 @@ export {SettingsCupsPrintersEntryElement} from './os_printing_page/cups_printers
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';
 export {SettingsCupsSavedPrintersElement} from './os_printing_page/cups_saved_printers.js';
 export {SettingsCupsAddPrinterDialogElement} from './os_printing_page/cups_settings_add_printer_dialog.js';
-export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page.js';
 export {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './os_printing_page/printer_status.js';
 export {PrintingSettingsCardElement} from './os_printing_page/printing_settings_card.js';
 export {SettingsManageUsersSubpageElement} from './os_privacy_page/manage_users_subpage.js';

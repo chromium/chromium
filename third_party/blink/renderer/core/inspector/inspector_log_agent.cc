@@ -148,8 +148,7 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
           remote_object;
       Node* node = DOMNodeIds::NodeForId(node_id);
       if (node) {
-        remote_object =
-            ResolveNode(v8_session_, node, "console", protocol::Maybe<int>());
+        remote_object = ResolveNode(v8_session_, node, "console", std::nullopt);
       }
       if (!remote_object) {
         remote_object =

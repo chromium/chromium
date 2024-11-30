@@ -161,16 +161,6 @@
       chrome_status_feature: 5140610730426368,
     },
     {
-      name: "CSSInsetAreaProperty",
-      message: "The `inset-area` property is deprecated. Please use the `position-area` property instead.",
-      translation_note: "Warning displayed to developers when their website uses `inset-area` in CSS. They can simply switch their CSS to `position-area` and it will function in the same way.",
-      web_features: [
-        "kCSSInsetAreaProperty",
-      ],
-      milestone: 129,
-      chrome_status_feature: 5142143019253760,
-    },
-    {
       name: "CSSSelectorInternalMediaControlsOverlayCastButton",
       message: "The `disableRemotePlayback` attribute should be used in order to disable the default Cast integration instead of using `-internal-media-controls-overlay-cast-button` selector.",
       translation_note: "Warning displayed to developers when they hide the Cast button on a video element using the deprecated CSS selector instead of using the disableRemotePlayback attribute on the element.",
@@ -252,15 +242,6 @@
         "kGeolocationInsecureOriginDeprecatedNotRemoved",
         "kGeolocationInsecureOriginIframeDeprecatedNotRemoved",
       ],
-    },
-    {
-      name: "GetInnerHTML",
-      message: "The getInnerHTML() function is deprecated, and will be removed from this browser very soon. Please use getHTML() instead.",
-      translation_note: "Warning displayed to developers when non-standard getInnerHTML function is called. This function is deprecated and will be removed.",
-      web_features: [
-        "kElementGetInnerHTML",
-      ],
-      chrome_status_feature: 5081733588582400,
     },
     {
       name: "GetUserMediaInsecureOrigin",
@@ -613,15 +594,6 @@
       chrome_status_feature: 5579556305502208,
     },
     {
-      name: "V8GPUAdapter_RequestAdapterInfo_Method",
-      message: "The GPUAdapter `requestAdapterInfo()` method is deprecated, instead use the GPUAdapter `info` attribute.",
-      translation_note: "This warning occurs when the website attempts to invoke the deprecated GPUAdapter `requestAdapterInfo()` method.",
-      web_features: [
-        "kV8GPUAdapter_RequestAdapterInfo_Method",
-      ],
-      chrome_status_feature: 5140787340509184,
-    },
-    {
       name: "V8SharedArrayBufferConstructedInExtensionWithoutIsolation",
       message: "Extensions should opt into cross-origin isolation to continue using `SharedArrayBuffer`. See https://developer.chrome.com/docs/extensions/mv3/cross-origin-isolation/.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. The placeholder is always the noun 'SharedArrayBuffer' which refers to a JavaScript construct. 'Extensions' refers to Chrome extensions. The warning is shown when Chrome Extensions attempt to use 'SharedArrayBuffer's under insecure circumstances.",
@@ -629,6 +601,16 @@
         "kV8SharedArrayBufferConstructedInExtensionWithoutIsolation",
       ],
       milestone: 96,
+    },
+    {
+      name: "WebGPULimitMaxInterStageShaderComponents",
+      message: "The WebGPU limit `maxInterStageShaderComponents` is deprecated, instead use the WebGPU limit `maxInterStageShaderVariables`.",
+      translation_note: "This warning occurs when the website attempts to use the deprecated WebGPU limit `maxInterStageShaderComponents`.",
+      web_features: [
+        "kMaxInterStageShaderComponentsRequiredLimit",
+        "kV8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter",
+      ],
+      chrome_status_feature: 4853767735083008,
     },
     {
       name: "WebSQL",

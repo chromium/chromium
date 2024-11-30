@@ -41,10 +41,6 @@ build_webui("build") {
     "util.ts",
   ]
 
-  if (is_chromeos) {
-    non_web_component_files += [ "os_about.ts" ]
-  }
-
   if (is_ios) {
     non_web_component_files += [
       "ios/mojo_api.js",

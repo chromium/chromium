@@ -63,7 +63,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
             loop.Quit();
           })));
   loop.Run();
-  EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
+  EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+      id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(AreAppsLocallyInstalledBySync(),
             provider->registrar_unsafe().IsInstallState(
                 id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
@@ -124,7 +127,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   loop.Run();
   // Check first install.
   {
-    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+        id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+             proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
     EXPECT_EQ(AreAppsLocallyInstalledBySync(),
               provider->registrar_unsafe().IsInstallState(
                   id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
@@ -136,7 +142,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   }
   // Check second install.
   {
-    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(other_id));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+        other_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
     EXPECT_EQ(AreAppsLocallyInstalledBySync(),
               provider->registrar_unsafe().IsInstallState(
                   other_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
@@ -201,7 +210,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, AbortInstall) {
   content::WebContentsDestroyedWatcher web_contents_destroyed_observer(
       web_contents);
   web_contents_destroyed_observer.Wait();
-  EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(id));
+  EXPECT_FALSE(provider->registrar_unsafe().IsInstallState(
+      id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 }  // namespace

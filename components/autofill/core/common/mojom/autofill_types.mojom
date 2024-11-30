@@ -573,80 +573,76 @@ enum FieldActionType {
 // histograms/enums.xml. Do not reorder or remove items.
 enum AutofillSuggestionTriggerSource {
   // Used as a default value and cannot be used to trigger suggestions.
-  kUnspecified,
+  kUnspecified = 0,
   // Suggestions triggered by either:
   // - Clicking or tapping a text input (TAB key doesn't count).
   // - Focusing a text input using a screen reader.
   // Suggestion of this type can trigger FastCheckout or TouchToFill.
-  kFormControlElementClicked,
+  kFormControlElementClicked = 1,
   // Suggestions triggered by focusing a textarea without click or tab
   // interaction. Currently, this is only triggered on Desktop platforms and
   // only generates Compose suggestions.
-  kTextareaFocusedWithoutClick,
+  kTextareaFocusedWithoutClick = 2,
   // Suggestions triggered as above except that the target is a
   // contenteditable element rather than a form control element.
-  kContentEditableClicked,
+  kContentEditableClicked = 3,
   // Suggestions triggered by modifying the content of a text input.
-  kTextFieldDidChange,
+  kTextFieldDidChange = 4,
   // Suggestions triggered by pressing the down key on a text input. This auto
   // selects the first suggestion.
-  kTextFieldDidReceiveKeyDown,
+  kTextFieldDidReceiveKeyDown = 5,
   // Suggestions triggered by the clicking onto the "triangle" on an
   // <input list=...> to show <datalist> suggestions. While this also counts
   // as a kFormControlElementClicked event, it is triggered slightly later.
   // As of crrev.com/c/107353005, prefix matching for such suggestions is
   // skipped, to make them behave more like a <select>.
   // TODO(crbug.com/40100455): It's unclear if this is still necessary.
-  kOpenTextDataListChooser,
+  kOpenTextDataListChooser = 6,
   // Credit card suggestions offer users with Sync transport eligiblity an
   // option to display cards from their account. This causes the suggestions to
   // update. The updated suggested are considered to have this trigger source.
-  kShowCardsFromAccount,
+  kShowCardsFromAccount = 7,
   // The suggestion triggering logic through Blink events (e.g.
   // `kFormControlElementClicked`) is shared with the password manager. However,
   // the trigger source is not propagated to the password manager specific
   // code (password_autofill_agent.cc and onwards to the browser process).
   // On the browser process side, all password suggestions are treated as
   // `kPasswordManager`. On the renderer side, `kPasswordManager` is unused.
-  kPasswordManager,
+  kPasswordManager = 8,
   // Since iOS has no renderer, it has separate suggestion triggering logic.
   // This code currently doesn't distinguish between different suggestion
   // trigger sources. They are all treated as `kiOS`. See crbug.com/1448447.
-  kiOS,
-  // Suggestions triggered by selecting the Autofill address manual fallback
-  // entry from the Chrome context menu. This trigger source is also used to
-  // reopen the Autofill popup after the user closed a dialog opened from the
-  // popup.
-  kManualFallbackAddress,
+  kiOS = 9,
+  // kManualFallbackAddress = 10 is deprecated
   // Suggestions triggered by selecting the Autofill payment methods manual
   // fallback entry from the Chrome context menu.
-  kManualFallbackPayments,
+  kManualFallbackPayments = 11,
   // Suggestions triggered by selecting the Autofill password manager manual
   // fallback entry from the Chrome context menu.
-  kManualFallbackPasswords,
+  kManualFallbackPasswords = 12,
   // Suggestions triggered by selecting the Plus Address manual fallback entry
   // from the Chrome context menu.
-  kManualFallbackPlusAddresses,
+  kManualFallbackPlusAddresses = 13,
   // Suggestions are triggered after the user the user closed a dialog. For
   // example, this can be profile edit or delete dialog. This trigger source
   // is used only if the suggestions were triggered manually via the Chrome
   // context menu.
-  kShowPromptAfterDialogClosedNonManualFallback,
+  kShowPromptAfterDialogClosedNonManualFallback = 14,
   // The compose saved state notification is triggered when the compose dialog
   // loses focus and is closed.
-  kComposeDialogLostFocus,
+  kComposeDialogLostFocus = 15,
   // The compose proactive nudge is triggered after a delay by the compose
   // manager.
-  kComposeDelayedProactiveNudge,
+  kComposeDelayedProactiveNudge = 16,
   // Password manager renderer received password suggestions from the browser
   // after the field was focused (likely due to autofocus on the page load).
-  kPasswordManagerProcessedFocusedField,
+  kPasswordManagerProcessedFocusedField = 17,
   // Prediction improvements was invoked.
-  kPredictionImprovements,
+  kPredictionImprovements = 18,
   // An update to the suggestions is triggered, e.g. because a user decided
   // to refresh a plus address suggestion or because a network request for a
   // plus address suggestion terminated and its result needs to be shown.
   // This value is not allowed to be sent from the renderer to the browser since
   // it disables some of the click-jacking protections in the browser.
-  kPlusAddressUpdatedInBrowserProcess
+  kPlusAddressUpdatedInBrowserProcess = 19
 };

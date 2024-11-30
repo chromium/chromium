@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PLUS_ADDRESS_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PLUS_ADDRESS_DELEGATE_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -137,17 +138,12 @@ class AutofillPlusAddressDelegate {
       PasswordFormClassification::Type form_type,
       SuggestionType suggestion_type) = 0;
 
-  // Called when a plus address was filled into a web input field. HaTS survey
-  // is shown to the user if the plus address was filled using the manual
-  // fallback. Otherwise, if `did_show_email_suggestion` is `true`, a HaTS
-  // survey is launched to ask the user why did they choose a plus address over
-  // an email suggestion.
-  virtual void DidFillPlusAddress(bool did_show_email_suggestion,
-                                  bool is_manual_fallback) = 0;
+  // Called when a plus address was filled into a web input field.
+  virtual void DidFillPlusAddress() = 0;
 
-  // Called when the user accepts an email suggestion given that a plus address
-  // suggestion was shown as well.
-  virtual void DidChooseEmailOverPlusAddress() = 0;
+  // Returns the number of the plus addresses created by the user for the
+  // current profile.
+  virtual size_t GetPlusAddressesCount() = 0;
 
   using UpdateSuggestionsCallback =
       base::OnceCallback<void(std::vector<Suggestion>,
@@ -186,13 +182,16 @@ class AutofillPlusAddressDelegate {
       const url::Origin& primary_main_frame_origin,
       base::span<const Suggestion> current_suggestions,
       size_t current_suggestion_index,
-      bool is_manual_fallback,
       UpdateSuggestionsCallback update_suggestions_callback,
       HideSuggestionsCallback hide_suggestions_callback,
       PlusAddressCallback fill_field_callback,
       ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
       ShowErrorDialogCallback show_error_dialog,
       base::OnceClosure reshow_suggestions) = 0;
+
+  // Returns survey specific data for plus address HaTS surveys. Subsequent
+  // calls can return different data.
+  virtual std::map<std::string, std::string> GetPlusAddressHatsData() const = 0;
 };
 
 }  // namespace autofill

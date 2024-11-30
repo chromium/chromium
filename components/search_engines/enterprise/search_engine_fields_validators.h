@@ -45,6 +45,10 @@ bool ReplacementStringIsMissingFromUrl(const std::string& policy_name,
                                        const std::string& url,
                                        PolicyErrorMap* errors);
 
+bool ShortcutEqualsSearchAggregatorProviderKeyword(const std::string& shortcut,
+                                                   const PolicyMap& policies,
+                                                   PolicyErrorMap* errors);
+
 }  // namespace search_engine_fields_validators
 }  // namespace policy
 

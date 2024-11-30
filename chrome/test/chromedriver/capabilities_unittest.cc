@@ -803,6 +803,19 @@ TEST(ParseCapabilities, FedcmAccountsNotBool) {
   EXPECT_FALSE(capabilities.Parse(caps).IsOk());
 }
 
+TEST(ParseCapabilities, MigrateChromeExtensionWindowType) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  base::Value::List window_types;
+  window_types.Append("background_page");
+  caps.SetByDottedPath("goog:chromeOptions.windowTypes",
+                       base::Value(std::move(window_types)));
+  EXPECT_EQ(kOk, capabilities.Parse(caps).code());
+  EXPECT_TRUE(capabilities.enable_extension_targets);
+  EXPECT_TRUE(capabilities.window_types.find(WebViewInfo::kBackgroundPage) ==
+              capabilities.window_types.end());
+}
+
 namespace {
 
 base::Value::Dict CreateCapabilitiesDict(const std::string& mobile_emulation) {

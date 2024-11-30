@@ -14,8 +14,8 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import type {ResponseChunk, ResponseSummary} from './on_device_model.mojom-webui.js';
-import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
+import type {InputPiece, ResponseChunk, ResponseSummary} from './on_device_model.mojom-webui.js';
+import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter, Token} from './on_device_model.mojom-webui.js';
 import {getTemplate} from './tools.html.js';
 
 interface Response {
@@ -54,6 +54,27 @@ function getPerformanceClassText(performanceClass: PerformanceClass): string {
     default:
       return 'Error';
   }
+}
+
+function textToInputPieces(text: string): InputPiece[] {
+  const input: InputPiece[] = [];
+  for (const piece of text.split('\n')) {
+    if (piece === '$SYSTEM') {
+      input.push({token: Token.kSystem});
+    } else if (piece === '$MODEL') {
+      input.push({token: Token.kModel});
+    } else if (piece === '$USER') {
+      input.push({token: Token.kUser});
+    } else if (piece === '$END') {
+      input.push({token: Token.kEnd});
+    } else if (
+        input.length === 0 || input[input.length - 1].text === undefined) {
+      input.push({text: piece});
+    } else {
+      input[input.length - 1].text += '\n' + piece;
+    }
+  }
+  return input;
 }
 
 class OnDeviceInternalsToolsElement extends PolymerElement {
@@ -200,15 +221,13 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
     this.session_.addContext(
         {
-          text: this.contextText_,
           ignoreContext: false,
-          maxTokens: null,
-          tokenOffset: null,
-          maxOutputTokens: null,
-          unusedSafetyInterval: null,
+          maxTokens: 0,
+          tokenOffset: 0,
+          maxOutputTokens: 0,
           topK: null,
           temperature: null,
-          input: null,
+          input: {pieces: textToInputPieces(this.contextText_)},
         },
         null);
     this.contextLength_ += this.contextText_.split(/(\s+)/).length;
@@ -252,15 +271,13 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
     this.session_.execute(
         {
-          text: this.text_,
           ignoreContext: false,
-          maxTokens: null,
-          tokenOffset: null,
-          maxOutputTokens: null,
-          unusedSafetyInterval: null,
+          maxTokens: 0,
+          tokenOffset: 0,
+          maxOutputTokens: 0,
           topK: this.topK_,
           temperature: this.temperature_,
-          input: null,
+          input: {pieces: textToInputPieces(this.text_)},
         },
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =

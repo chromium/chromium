@@ -142,7 +142,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
     request.error_handler = mock_error_handler_.Get();
     request.cache_guid = "TestCacheGuid";
     request.authenticated_account_id =
-        CoreAccountId::FromGaiaId("SomeAccountId");
+        CoreAccountId::FromGaiaId(GaiaId("SomeAccountId"));
     return request;
   }
 

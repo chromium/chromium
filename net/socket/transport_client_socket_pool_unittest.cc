@@ -94,7 +94,7 @@ class SOCKS5MockData {
     reads_[1] = MockRead(mode, kSOCKS5OkResponse, kSOCKS5OkResponseLength);
 
     data_ = std::make_unique<StaticSocketDataProvider>(
-        base::make_span(reads_.get(), 2u), base::make_span(writes_.get(), 2u));
+        base::span(reads_.get(), 2u), base::span(writes_.get(), 2u));
   }
 
   SocketDataProvider* data_provider() { return data_.get(); }
@@ -680,7 +680,7 @@ TEST_F(TransportClientSocketPoolTest, PendingRequests) {
   EXPECT_EQ(ClientSocketPoolTest::kIndexOutOfBounds, GetOrderOfRequest(17));
 }
 
-TEST_F(TransportClientSocketPoolTest, PendingRequests_NoKeepAlive) {
+TEST_F(TransportClientSocketPoolTest, PendingRequestsNoKeepAlive) {
   // First request finishes asynchronously.
   EXPECT_THAT(StartRequest("a", kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT((*requests())[0]->WaitForResult(), IsOk());

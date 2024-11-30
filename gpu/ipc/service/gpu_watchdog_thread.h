@@ -260,8 +260,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   base::TimeDelta remaining_watched_thread_ticks_;
 
   // The Windows thread hanndle of the watched GPU main thread.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
+  // RAW_PTR_EXCLUSION: This field holds windows handles
   RAW_PTR_EXCLUSION void* watched_thread_handle_ = nullptr;
 
   // After GPU hang detected, how many times has the GPU thread been allowed to

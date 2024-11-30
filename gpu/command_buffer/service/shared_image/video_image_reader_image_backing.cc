@@ -722,6 +722,13 @@ VideoImageReaderImageBacking::ProduceSkiaGraphite(
     scoped_refptr<SharedContextState> context_state) {
   base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 
+  // For (old) overlays, we don't have a texture owner, but overlay promotion
+  // might not happen for some reasons. In that case, it will try to draw
+  // which should result in no image.
+  if (!stream_texture_sii_->HasTextureOwner()) {
+    return nullptr;
+  }
+
   return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
       manager, this, tracker, context_state, GetDrDcLock());
 }

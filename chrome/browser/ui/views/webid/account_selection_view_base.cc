@@ -284,7 +284,7 @@ AccountHoverButtonSecondaryView::AccountHoverButtonSecondaryView() {
   std::unique_ptr<views::ImageView> arrow_image_view =
       std::make_unique<views::ImageView>();
   arrow_image_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kArrowIconSize));
+      vector_icons::kSubmenuArrowIcon, ui::kColorIcon, fedcm::kArrowIconSize));
   arrow_image_view_ = AddChildView(std::move(arrow_image_view));
 }
 
@@ -306,7 +306,7 @@ void AccountHoverButtonSecondaryView::SetDisabledOpacity() {
 
   arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kSubmenuArrowIcon, ui::kColorLabelForegroundDisabled,
-      kArrowIconSize));
+      fedcm::kArrowIconSize));
 }
 
 BrandIconImageView::BrandIconImageView(
@@ -327,7 +327,7 @@ void BrandIconImageView::FetchImage(
     const GURL& icon_url,
     image_fetcher::ImageFetcher& image_fetcher) {
   image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
-                                           kImageFetcherUmaClient);
+                                           fedcm::kImageFetcherUmaClient);
   image_fetcher.FetchImage(
       icon_url,
       base::BindOnce(&BrandIconImageView::OnImageFetched,
@@ -455,6 +455,15 @@ void AccountHoverButton::OnThemeChanged() {
 }
 
 void AccountHoverButton::OnPressed(const ui::Event& event) {
+  // We do not disable the button which has been clicked because otherwise,
+  // focus wouldn't be able to remain on the selected account row and causes the
+  // focus to move to the cancel button. Since the button is not disabled, it is
+  // possible for the button to be clicked again and we would ignore these
+  // future clicks.
+  if (has_been_clicked_) {
+    return;
+  }
+
   // Log the metric before invoking the callback since the callback may
   // destroy this object.
   base::UmaHistogramCustomCounts("Blink.FedCm.AccountChosenPosition.Desktop",
@@ -509,15 +518,14 @@ AccountSelectionViewBase::AccountSelectionViewBase(
     FedCmAccountSelectionView* owner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::u16string rp_for_display)
-    : web_contents_(web_contents->GetWeakPtr()),
+    : web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
       owner_(owner),
       rp_for_display_(rp_for_display) {
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
       std::make_unique<ImageDecoderImpl>(), std::move(url_loader_factory));
 }
 
-AccountSelectionViewBase::AccountSelectionViewBase() = default;
-AccountSelectionViewBase::~AccountSelectionViewBase() {}
+AccountSelectionViewBase::~AccountSelectionViewBase() = default;
 
 void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
   label->SetMultiLine(true);
@@ -537,7 +545,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     bool is_modal_dialog,
     int additional_vertical_padding,
     std::optional<std::u16string> last_used_string) {
-  int avatar_size = is_modal_dialog ? kModalAvatarSize : kDesiredAvatarSize;
+  int avatar_size =
+      is_modal_dialog ? fedcm::kModalAvatarSize : fedcm::kDesiredAvatarSize;
   views::style::TextStyle account_name_style =
       is_modal_dialog ? views::style::STYLE_BODY_3_MEDIUM
                       : views::style::STYLE_PRIMARY;
@@ -561,9 +570,9 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
                                           avatar_size);
       // Introduce a border so that the IDP image is a bit past the account
       // image.
-      account_image_view->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/kIdpBadgeOffset,
-                            /*right=*/kIdpBadgeOffset)));
+      account_image_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+          /*top=*/0, /*left=*/0, /*bottom=*/fedcm::kIdpBadgeOffset,
+          /*right=*/fedcm::kIdpBadgeOffset)));
       // Put `account_image_view` into a FillLayout `background_container`.
       std::unique_ptr<views::View> background_container =
           std::make_unique<views::View>();
@@ -585,7 +594,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
           std::make_unique<BrandIconImageView>(
               base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                              weak_ptr_factory_.GetWeakPtr()),
-              kLargeAvatarBadgeSize, /*should_circle_crop=*/true,
+              fedcm::kLargeAvatarBadgeSize, /*should_circle_crop=*/true,
               background_color);
       brand_icon_image_view_ptr = brand_icon_image_view.get();
       ConfigureBrandImageView(brand_icon_image_view_ptr,
@@ -633,8 +642,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         *clickable_position);
     row->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         /*vertical=*/additional_vertical_padding,
-        /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing
-                                       : kLeftRightPadding)));
+        /*horizontal=*/is_modal_dialog ? fedcm::kModalHorizontalSpacing
+                                       : fedcm::kLeftRightPadding)));
     row->SetTitleTextStyle(account_name_style, ui::kColorDialogBackground,
                            /*color_id=*/std::nullopt);
     row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL, account_email_style);
@@ -653,9 +662,9 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(
-          /*vertical=*/kVerticalSpacing + additional_vertical_padding,
-          /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing : 0),
-      kLeftRightPadding));
+          /*vertical=*/fedcm::kVerticalSpacing + additional_vertical_padding,
+          /*horizontal=*/is_modal_dialog ? fedcm::kModalHorizontalSpacing : 0),
+      fedcm::kLeftRightPadding));
   row->AddChildView(std::move(account_image_view));
   views::View* const text_column =
       row->AddChildView(std::make_unique<views::View>());
@@ -826,31 +835,8 @@ AccountSelectionViewBase::GetErrorDialogText(
   return {summary, description};
 }
 
-base::WeakPtr<views::Widget> AccountSelectionViewBase::GetDialogWidget() {
-  return dialog_widget_;
-}
-
 // static
 net::NetworkTrafficAnnotationTag
 AccountSelectionViewBase::GetTrafficAnnotation() {
   return kTrafficAnnotation;
 }
-
-bool AccountSelectionViewBase::CanFitInWebContents() {
-  CHECK(web_contents_ && dialog_widget_);
-
-  gfx::Size web_contents_size = web_contents_->GetSize();
-  gfx::Size preferred_bubble_size =
-      dialog_widget_->GetContentsView()->GetPreferredSize();
-
-  // TODO(crbug.com/340368623): Figure out what to do when button flow modal
-  // cannot fit in web contents. The offsets kRightMargin and kTopMargin pertain
-  // to the bubble widget.
-  return preferred_bubble_size.width() <
-             (web_contents_size.width() - kRightMargin) &&
-         preferred_bubble_size.height() <
-             (web_contents_size.height() - kTopMargin);
-}
-
-void AccountSelectionViewBase::DidShowWidget() {}
-void AccountSelectionViewBase::DidHideWidget() {}

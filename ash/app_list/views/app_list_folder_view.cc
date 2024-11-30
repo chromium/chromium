@@ -820,7 +820,7 @@ void AppListFolderView::ConfigureForFolderItemView(
 void AppListFolderView::ScheduleShowHideAnimation(bool show,
                                                   bool hide_for_reparent) {
   show_hide_metrics_tracker_ =
-      GetWidget()->GetCompositor()->RequestNewThroughputTracker();
+      GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker();
   show_hide_metrics_tracker_->Start(
       metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(

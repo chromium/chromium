@@ -75,6 +75,11 @@ class CaptureModeBehavior {
   // behavior.
   virtual bool CanPaintRegionOverlay() const;
 
+  // Returns true if the behavior should show a glow animation while processing
+  // for the specified `capture_type`.
+  virtual bool ShouldShowGlowWhileProcessingCaptureType(
+      PerformCaptureType capture_type) const;
+
   virtual bool ShouldImageCaptureTypeBeAllowed() const;
   virtual bool ShouldVideoCaptureTypeBeAllowed() const;
   virtual bool ShouldFulscreenCaptureSourceBeAllowed() const;

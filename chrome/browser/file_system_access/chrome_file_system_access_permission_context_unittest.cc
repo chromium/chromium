@@ -53,6 +53,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "base/android/path_utils.h"
 #else
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
@@ -950,15 +951,18 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_ContentUri) {
-  // This test runs under org.chromium.native_test.
   // Content-URI with an authority which matches the package name should fail.
   EXPECT_TRUE(IsOpenAbort(
       base::FilePath(
-          "content://org.chromium.native_test.fileprovider/cache/dir"),
+          base::StrCat({"content://",
+                        base::android::BuildInfo::GetInstance()->package_name(),
+                        ".fileprovider/cache/dir"})),
       HandleType::kDirectory));
   EXPECT_TRUE(IsOpenAbort(
       base::FilePath(
-          "content://org.chromium.native_test.fileprovider/cache/file"),
+          base::StrCat({"content://",
+                        base::android::BuildInfo::GetInstance()->package_name(),
+                        ".fileprovider/cache/file"})),
       HandleType::kFile));
 
   EXPECT_TRUE(IsOpenAllowed(base::FilePath("content://authority/dir"),

@@ -28,6 +28,10 @@ class StubDigitalIdentityProvider : public DigitalIdentityProvider {
                const url::Origin& origin,
                base::Value request,
                DigitalIdentityCallback) override;
+  void Create(WebContents*,
+              const url::Origin& origin,
+              base::ValueView request,
+              DigitalIdentityCallback) override;
 };
 
 }  // namespace content

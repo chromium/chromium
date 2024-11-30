@@ -494,10 +494,6 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   codec_context_->get_buffer2 = GetVideoBufferImpl;
   codec_context_->flags |= AV_CODEC_FLAG_COPY_OPAQUE;
 
-  // Note: FFmpeg will try to free this string, so we must duplicate it.
-  codec_context_->codec_whitelist =
-      av_strdup(FFmpegGlue::GetAllowedVideoDecoders());
-
   if (decode_nalus_) {
     codec_context_->flags2 |= AV_CODEC_FLAG2_CHUNKS;
   }

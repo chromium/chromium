@@ -37,7 +37,7 @@ class AppMenuTestApiViews : public test::AppMenuTestApi {
 
 AppMenuTestApiViews::AppMenuTestApiViews(Browser* browser)
     : browser_(browser) {}
-AppMenuTestApiViews::~AppMenuTestApiViews() {}
+AppMenuTestApiViews::~AppMenuTestApiViews() = default;
 
 bool AppMenuTestApiViews::IsMenuShowing() {
   return GetAppMenuButton()->IsMenuShowing();

@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/external_loader.h",
-  "+chrome/browser/lacros/embedded_a11y_manager_lacros.h",
   "+chrome/browser/net",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser_window.h",

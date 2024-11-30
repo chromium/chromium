@@ -465,13 +465,47 @@ TEST_F(FeatureListTest, AssociateReportingFieldTrial) {
   }
 }
 
+TEST_F(FeatureListTest, RegisterExtraFeatureOverrides_ReplaceUseDefault) {
+  auto feature_list = std::make_unique<FeatureList>();
+
+  FieldTrial* trial1 = FieldTrialList::CreateFieldTrial("Trial1", "Group");
+  feature_list->RegisterFieldTrialOverride(
+      kFeatureOnByDefaultName, FeatureList::OVERRIDE_USE_DEFAULT, trial1);
+
+  FieldTrial* trial2 = FieldTrialList::CreateFieldTrial("Trial2", "Group");
+  feature_list->RegisterFieldTrialOverride(
+      kFeatureOffByDefaultName, FeatureList::OVERRIDE_USE_DEFAULT, trial2);
+
+  std::vector<FeatureList::FeatureOverrideInfo> overrides;
+  overrides.emplace_back(std::cref(kFeatureOnByDefault),
+                         FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  overrides.emplace_back(std::cref(kFeatureOffByDefault),
+                         FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
+  feature_list->RegisterExtraFeatureOverrides(
+      std::move(overrides), /*replace_use_default_overrides=*/true);
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // OVERRIDE_USE_DEFAULT entries should be overridden by AwFeatureOverrides.
+  // Before querying the feature, the trials shouldn't be active, but should
+  // be activated after querying.
+
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive("Trial1"));
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOnByDefault));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive("Trial1"));
+
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive("Trial2"));
+  EXPECT_TRUE(FeatureList::IsEnabled(kFeatureOffByDefault));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive("Trial2"));
+}
+
 TEST_F(FeatureListTest, RegisterExtraFeatureOverrides) {
   auto feature_list = std::make_unique<FeatureList>();
   std::vector<FeatureList::FeatureOverrideInfo> overrides;
-  overrides.push_back({std::cref(kFeatureOnByDefault),
-                       FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE});
-  overrides.push_back({std::cref(kFeatureOffByDefault),
-                       FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE});
+  overrides.emplace_back(std::cref(kFeatureOnByDefault),
+                         FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  overrides.emplace_back(std::cref(kFeatureOffByDefault),
+                         FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
   feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -485,10 +519,10 @@ TEST_F(FeatureListTest, InitFromCommandLineThenRegisterExtraOverrides) {
   feature_list->InitFromCommandLine(kFeatureOnByDefaultName,
                                     kFeatureOffByDefaultName);
   std::vector<FeatureList::FeatureOverrideInfo> overrides;
-  overrides.push_back({std::cref(kFeatureOnByDefault),
-                       FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE});
-  overrides.push_back({std::cref(kFeatureOffByDefault),
-                       FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE});
+  overrides.emplace_back(std::cref(kFeatureOnByDefault),
+                         FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  overrides.emplace_back(std::cref(kFeatureOffByDefault),
+                         FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
   feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -513,10 +547,10 @@ TEST_F(FeatureListTest, GetFeatureOverrides) {
   static BASE_FEATURE(feature_b, "B", FEATURE_ENABLED_BY_DEFAULT);
   static BASE_FEATURE(feature_c, "C", FEATURE_DISABLED_BY_DEFAULT);
   std::vector<FeatureList::FeatureOverrideInfo> overrides;
-  overrides.push_back({std::cref(feature_b),
-                       FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE});
-  overrides.push_back({std::cref(feature_c),
-                       FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE});
+  overrides.emplace_back(std::cref(feature_b),
+                         FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  overrides.emplace_back(std::cref(feature_c),
+                         FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
   feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
 
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("Trial", "Group");

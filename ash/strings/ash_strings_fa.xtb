@@ -1529,7 +1529,7 @@
 <translation id="6121838516699723042">تأیید بارگیری <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
 <translation id="6127395413317891856">آفلاین هستید. اتصالتان را بررسی کنید و دوباره امتحان کنید.</translation>
-<translation id="6129953537138746214">فاصله</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455">باز کردن کادر گفتگوی برداشتن <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">می‌خواهید روی چه چیزی تمرکز کنید؟</translation>
 <translation id="6141988275892716286">تأیید بارگیری</translation>
@@ -1827,7 +1827,7 @@
 <translation id="7144942256906679589">وضعیت باتری</translation>
 <translation id="7145639536026937076">شارژ باتری <ph name="PERCENTAGE" />٪ است و باتری درحال شارژ است. «بهینه‌سازی باتری» روشن است.</translation>
 <translation id="7147587499155271409">سابقه مروری وجود ندارد</translation>
-<translation id="7147657298465433425">‏برای دسترسی به کلیدهای F، کلید fn + کلیدهای ردیف بالا را فشار دهید</translation>
+<translation id="7147657298465433425">‏برای دسترسی به کلیدهای F، کلید fn را با کلیدهای ردیف بالا فشار دهید</translation>
 <translation id="7149149900052329230">‏فایل‌های محلی و فایل‌های Google Drive را در برنامه Files مدیریت کنید.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />،
@@ -2124,6 +2124,7 @@
 <translation id="8142699993796781067">شبکه‌های خصوصی</translation>
 <translation id="8144760705599030999">برای مرتبط‌سازی سریع‌تر با دستگاه‌های دیگر، <ph name="NAME" /> را در <ph name="EMAIL" /> ذخیره کنید</translation>
 <translation id="8144914663975476336">انتخاب قالب ضبط</translation>
+<translation id="8145272500474066209">هوش مصنوعی زایا ممکن است اشتباه کند (ازجمله درباره افراد)، بنابراین پاسخ‌ها را دوباره‌سنجی کنید. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">نمایش تنظیمات بلوتوث. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">‏برای بستن برگه، Ctrl + W را فشار دهید.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />، تکمیل خودکار</translation>
@@ -2310,7 +2311,7 @@
 <translation id="8847100217801213944">نمایش دما به فارنهایت</translation>
 <translation id="8849001918648564819">پنهان</translation>
 <translation id="8855885154700222542">کلید تمام‌صفحه</translation>
-<translation id="8858369206579825206">تنظیمات حریم خصوصی</translation>
+<translation id="8858369206579825206">کنترل‌های حریم خصوصی</translation>
 <translation id="8860366331836346216">افزودن سیم‌کارت داخلی</translation>
 <translation id="8870509716567206129">برنامه از تقسیم صفحه پشتیبانی نمی‌کند.</translation>
 <translation id="8873203135446552888">تأیید کنید که می‌خواهید صفحه لمسی داخلی را غیرفعال کنید</translation>

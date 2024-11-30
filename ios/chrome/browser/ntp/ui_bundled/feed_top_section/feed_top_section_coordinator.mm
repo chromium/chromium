@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -36,7 +37,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -101,15 +101,16 @@ using base::UserMetricsAction;
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(profile);
     self.signinPromoMediator = [[SigninPromoViewMediator alloc]
-        initWithAccountManagerService:accountManagerService
-                          authService:AuthenticationServiceFactory::
-                                          GetForProfile(profile)
-                          prefService:profile->GetPrefs()
-                          syncService:syncService
-                          accessPoint:signin_metrics::AccessPoint::
-                                          ACCESS_POINT_NTP_FEED_TOP_PROMO
-                      signinPresenter:self
-             accountSettingsPresenter:nil];
+         initWithIdentityManager:identityManager
+           accountManagerService:accountManagerService
+                     authService:AuthenticationServiceFactory::GetForProfile(
+                                     profile)
+                     prefService:profile->GetPrefs()
+                     syncService:syncService
+                     accessPoint:signin_metrics::AccessPoint::
+                                     ACCESS_POINT_NTP_FEED_TOP_PROMO
+                 signinPresenter:self
+        accountSettingsPresenter:nil];
 
     self.signinPromoMediator.signinPromoAction =
         SigninPromoAction::kSigninWithNoDefaultIdentity;

@@ -421,10 +421,8 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
       // process, it should be terminated, otherwise it is a bug in the
       // navigation logic and the browser process should be terminated to avoid
       // exposing users to security issues.
-      if (is_renderer_initiated_check)
-        return false;
-
-      CHECK(false);
+      CHECK(is_renderer_initiated_check);
+      return false;
     }
   }
 

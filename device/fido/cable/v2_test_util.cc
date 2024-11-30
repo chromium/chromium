@@ -156,7 +156,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       contact_callback_->Run(tunnel_id, pairing_id, client_nonce,
                              request_type_hint);
     } else {
-      CHECK(false) << "unexpected path: " << path;
+      NOTREACHED() << "unexpected path: " << path;
     }
   }
 
@@ -219,7 +219,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     void StartReceiving() override {}
     void StartClosingHandshake(uint16_t code,
                                const std::string& reason) override {
-      CHECK(false);
+      NOTREACHED();
     }
 
     void set_peer(std::unique_ptr<Connection> peer) {
@@ -329,7 +329,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       } else if (result == MOJO_RESULT_SHOULD_WAIT) {
         in_watcher_.Arm();
       } else {
-        CHECK(false) << static_cast<int>(result);
+        NOTREACHED() << static_cast<int>(result);
       }
     }
 
@@ -362,7 +362,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       } else if (result == MOJO_RESULT_FAILED_PRECONDITION) {
         // The reader has closed. Drop the message.
       } else {
-        CHECK(false) << static_cast<int>(result);
+        NOTREACHED() << static_cast<int>(result);
       }
     }
 
@@ -437,9 +437,9 @@ class TestPlatform : public authenticator::Platform {
     request.allow_list = std::move(params->allow_credentials);
     request.user_verification = params->user_verification;
 
-    CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
-    memcpy(request.client_data_hash.data(), params->challenge.data(),
-           params->challenge.size());
+    CHECK_EQ(request.client_data_hash.size(), params->challenge->size());
+    memcpy(request.client_data_hash.data(), params->challenge->data(),
+           params->challenge->size());
     if (params->extensions) {
       for (const auto& prf_input_from_request :
            params->extensions->prf_inputs) {
@@ -529,7 +529,7 @@ class TestPlatform : public authenticator::Platform {
       return;
     }
 
-    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan(1));
+    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan<1>());
     const cbor::Value::MapValue& in_map = v->GetMap();
 
     cbor::Value::MapValue out_map;
@@ -582,7 +582,7 @@ class TestPlatform : public authenticator::Platform {
     response->extensions =
         blink::mojom::AuthenticationExtensionsClientOutputs::New();
 
-    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan(1));
+    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan<1>());
     const cbor::Value::MapValue& in_map = v->GetMap();
 
     auto cred_id_it = in_map.find(cbor::Value(1));
@@ -793,15 +793,13 @@ class LateLinkingDevice : public authenticator::Transaction {
             break;
 
           case MessageType::kUpdate:
-            CHECK(false);
-            break;
+            NOTREACHED();
         }
         break;
       }
 
       case State::kShutdownReceived:
-        CHECK(false);
-        break;
+        NOTREACHED();
     }
   }
 

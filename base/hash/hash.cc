@@ -148,7 +148,7 @@ uint32_t PersistentHash(span<const uint8_t> data) {
 }
 
 uint32_t PersistentHash(std::string_view str) {
-  return PersistentHash(as_bytes(make_span(str)));
+  return PersistentHash(as_byte_span(str));
 }
 
 size_t HashInts32(uint32_t value1, uint32_t value2) {

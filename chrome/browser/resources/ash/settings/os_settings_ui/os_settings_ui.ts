@@ -19,9 +19,9 @@ import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../os_settings_menu/os_settings_menu.js';
 import '../os_settings_main/os_settings_main.js';
-import '../toolbar/toolbar.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
+import './toolbar.js';
 
 import type {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/ash/common/cr_elements/cr_container_shadow_mixin.js';
@@ -35,7 +35,6 @@ import {Debouncer, microTask, PolymerElement, timeOut} from 'chrome://resources/
 
 import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {UserActionSettingPrefChangeEvent} from '../common/types.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange, recordSettingChangeForUnmappedPref} from '../metrics_recorder.js';
@@ -44,11 +43,11 @@ import type {OsPageAvailability} from '../os_page_availability.js';
 import {createPageAvailability} from '../os_page_availability.js';
 import type {Route} from '../router.js';
 import {Router} from '../router.js';
-import type {SettingsToolbarElement} from '../toolbar/toolbar.js';
 
 import type {OsSettingsHatsBrowserProxy} from './os_settings_hats_browser_proxy.js';
 import {OsSettingsHatsBrowserProxyImpl} from './os_settings_hats_browser_proxy.js';
 import {getTemplate} from './os_settings_ui.html.js';
+import type {SettingsToolbarElement} from './toolbar.js';
 
 declare global {
   interface Window {
@@ -104,20 +103,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
        */
       prefs: Object,
 
-      advancedOpenedInMain_: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: 'onAdvancedOpenedInMainChanged_',
-      },
-
-      advancedOpenedInMenu_: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: 'onAdvancedOpenedInMenuChanged_',
-      },
-
       toolbarSpinnerActive_: {
         type: Boolean,
         value: false,
@@ -164,8 +149,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
   prefs: Object;
   isNarrow: boolean;
-  private advancedOpenedInMain_: boolean;
-  private advancedOpenedInMenu_: boolean;
   private toolbarSpinnerActive_: boolean;
   private pageAvailability_: OsPageAvailability;
   private showToolbar_: boolean;
@@ -175,8 +158,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private scrollEndDebouncer_: Debouncer|null;
   private osSettingsHatsBrowserProxy_: OsSettingsHatsBrowserProxy;
   private boundTriggerSettingsHats_: () => void;
-  private readonly isRevampWayfindingEnabled_: boolean =
-      isRevampWayfindingEnabled();
 
   constructor() {
     super();
@@ -309,10 +290,8 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     // window, a click's propagation can be stopped by child elements.
     window.addEventListener('click', recordClick, /*capture=*/ true);
 
-    if (this.isRevampWayfindingEnabled_) {
-      // Add class which activates styles for the wayfinding update
-      document.body.classList.add('revamp-wayfinding-enabled');
-    }
+    // TODO(crbug.com/370836442) Remove this when all revamp styles are default.
+    document.body.classList.add('revamp-wayfinding-enabled');
   }
 
   override disconnectedCallback(): void {
@@ -330,21 +309,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
       // Search triggers route changes and currentRouteChanged() is called
       // in attached() state which is extraneous for this metric.
       recordNavigation();
-    }
-
-    // TODO(b/302374851) Under the revamp, the shadow behavior is consistent
-    // across all types of pages and subpages. When the revamp is cleaned up,
-    // remove this obsolete logic.
-    if (!this.isRevampWayfindingEnabled_) {
-      if (newRoute.isSubpage()) {
-        // Sub-pages always show the top-container shadow.
-        this.enableShadowBehavior(false);
-        this.showDropShadows();
-      } else {
-        // All other pages including the root page should show shadow depending
-        // on scroll position.
-        this.enableShadowBehavior(true);
-      }
     }
   }
 
@@ -498,20 +462,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     listenOnce(this.$.container, ['blur', 'pointerdown'], () => {
       this.$.container.removeAttribute('tabindex');
     });
-  }
-
-  private onAdvancedOpenedInMainChanged_(): void {
-    // Only sync value when opening, not closing.
-    if (this.advancedOpenedInMain_) {
-      this.advancedOpenedInMenu_ = true;
-    }
-  }
-
-  private onAdvancedOpenedInMenuChanged_(): void {
-    // Only sync value when opening, not closing.
-    if (this.advancedOpenedInMenu_) {
-      this.advancedOpenedInMain_ = true;
-    }
   }
 
   private onNarrowChanged_(): void {

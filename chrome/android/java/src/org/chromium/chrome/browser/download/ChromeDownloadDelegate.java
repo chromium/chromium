@@ -130,22 +130,6 @@ public class ChromeDownloadDelegate implements UserData {
         return dir;
     }
 
-    private static boolean checkFileExists(File dirPath, final String fileName) {
-        assert !ThreadUtils.runningOnUiThread();
-        final File file = new File(dirPath, fileName);
-        return file != null && file.exists();
-    }
-
-    private static void deleteFileForOverwrite(DownloadInfo info) {
-        assert !ThreadUtils.runningOnUiThread();
-        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        if (!dir.isDirectory()) return;
-        final File file = new File(dir, info.getFileName());
-        if (!file.delete()) {
-            Log.e(TAG, "Failed to delete a file: " + info.getFileName());
-        }
-    }
-
     /**
      * Check the external storage and notify user on error.
      *

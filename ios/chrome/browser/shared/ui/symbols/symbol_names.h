@@ -265,6 +265,7 @@ extern NSString* const kPlayButton;
 extern NSString* const kFolderSymbol;
 extern NSString* const kCartSymbol;
 extern NSString* const kArrowUTurnForwardSymbol;
+extern NSString* const kArrowUTurnForwardCircleFillSymbol;
 extern NSString* const kIPhoneAndArrowForwardSymbol;
 extern NSString* const kPersonPlusSymbol;
 

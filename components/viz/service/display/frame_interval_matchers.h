@@ -58,7 +58,7 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
     FixedIntervalSettings(const FixedIntervalSettings&);
     ~FixedIntervalSettings();
 
-    base::TimeDelta default_interval;  // Must be in `supported_intervals`.
+    base::TimeDelta default_interval;  // Used for FrameIntervalClass::kDefault.
     base::flat_set<base::TimeDelta> supported_intervals;  // Cannot be empty.
   };
 
@@ -69,7 +69,8 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
     ContinuousRangeSettings(const ContinuousRangeSettings&);
     ~ContinuousRangeSettings();
 
-    base::TimeDelta min_interval;  // Used as default value.
+    base::TimeDelta default_interval;  // Used for FrameIntervalClass::kDefault.
+    base::TimeDelta min_interval;
     base::TimeDelta max_interval;
   };
 

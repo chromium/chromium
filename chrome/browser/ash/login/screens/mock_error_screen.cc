@@ -12,7 +12,7 @@ using ::testing::_;
 MockErrorScreen::MockErrorScreen(base::WeakPtr<ErrorScreenView> view)
     : ErrorScreen(std::move(view)) {}
 
-MockErrorScreen::~MockErrorScreen() {}
+MockErrorScreen::~MockErrorScreen() = default;
 
 void MockErrorScreen::FixCaptivePortal() {
   ErrorScreen::FixCaptivePortal();

@@ -43,7 +43,7 @@ BASE_FEATURE(kAppPreloadService,
 // as long as the PWA is on the start menu.  b/40285965.
 BASE_FEATURE(kAppSpecificNotifications,
              "AppSpecificNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
@@ -327,10 +327,22 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsGlicEnabled() {
-  return IsTabstripComboButtonEnabled() &&
-         base::FeatureList::IsEnabled(features::kGlic);
-}
+BASE_FEATURE(kGlicURLConfig,
+             "GlicURLConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kGlicGuestURL{&kGlicURLConfig,
+                                                    "glic-guest-url", ""};
+
+BASE_FEATURE(kGlicCSPConfig,
+             "GlicCSPConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(crbug.com/378951332): Configure an approved CSP.
+const base::FeatureParam<std::string> kGlicWebUICSPOverride{
+    &kGlicCSPConfig, "glic-webui-csp-override",
+    "child-src 'self'"
+    " https://*.google.com/"
+    " https://*.googleplex.com/;"};
 
 BASE_FEATURE(kTabstripComboButton,
              "TabstripComboButton",
@@ -338,6 +350,14 @@ BASE_FEATURE(kTabstripComboButton,
 
 bool IsTabstripComboButtonEnabled() {
   return base::FeatureList::IsEnabled(features::kTabstripComboButton);
+}
+
+const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
+    &kTabstripComboButton, "has_background", true};
+
+bool HasTabstripComboButtonWithBackground() {
+  return IsTabstripComboButtonEnabled() &&
+         features::kTabstripComboButtonHasBackground.Get();
 }
 
 // Force Privacy Guide to be available even if it would be unavailable
@@ -569,10 +589,6 @@ BASE_FEATURE(kHappinessTrackingGeneralCamera,
 BASE_FEATURE(kHappinessTrackingGeneralCameraPrioritized,
              "HappinessTrackingGeneralCameraPrioritized",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables the Happiness Tracking System for Privacy Hub post launch survey.
-BASE_FEATURE(kHappinessTrackingPrivacyHubPostLaunch,
-             "HappinessTrackingPrivacyHubPostLaunch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the Happiness Tracking System for OS Settings Search survey.
 BASE_FEATURE(kHappinessTrackingOsSettingsSearch,
              "HappinessTrackingOsSettingsSearch",
@@ -711,6 +727,10 @@ BASE_FEATURE(kIncompatibleApplicationsWarning,
              "IncompatibleApplicationsWarning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+BASE_FEATURE(kInternalOnlyUisPref,
+             "InternalOnlyUisPref",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables automatic updates of Isolated Web Apps.
@@ -889,9 +909,6 @@ BASE_FEATURE(kNotificationDurationLongForRequireInteraction,
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kOfflineContentOnNetError,
-             "OfflineContentOnNetError",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOfflineAutoFetch,
              "OfflineAutoFetch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -998,14 +1015,7 @@ BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
 #endif
 
 // Enables Safety Hub feature.
-BASE_FEATURE(kSafetyHub,
-             "SafetyHub",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_ANDROID)
-);
+BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables Safety Hub card in magic stack.
@@ -1017,6 +1027,17 @@ BASE_FEATURE(kSafetyHubMagicStack,
 BASE_FEATURE(kSafetyHubFollowup,
              "SafetyHubFollowup",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Safety Hub organic HaTS survey on Android.
+BASE_FEATURE(kSafetyHubAndroidOrganicSurvey,
+             "SafetyHubAndroidOrganicSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<std::string> kSafetyHubAndroidOrganicTriggerId(
+    &kSafetyHubAndroidOrganicSurvey,
+    "trigger_id",
+    /*default_value=*/
+    "");
 
 // Enables Safety Hub HaTS survey on Android.
 BASE_FEATURE(kSafetyHubAndroidSurvey,
@@ -1587,5 +1608,11 @@ BASE_FEATURE(kPeriodicLogUploadMigration,
              "PeriodicLogUploadMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// A feature to disable shortcut creation from the Chrome UI, and instead use
+// that to create DIY apps.
+BASE_FEATURE(kDisableShortcutsEnableDiy,
+             "DisableShortcutsEnableDiy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

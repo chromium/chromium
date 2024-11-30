@@ -47,7 +47,8 @@ class IOSEnterpriseInterstitialTest : public PlatformTest {
   }
 
   void AddCustomMessageToResource(
-      security_interstitials::UnsafeResource& unsafe_resource) {
+      security_interstitials::UnsafeResource& unsafe_resource,
+      safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
     safe_browsing::MatchedUrlNavigationRule::CustomMessage cm;
     auto* custom_segments = cm.add_message_segments();
     custom_segments->set_text(kTestMessage);
@@ -55,6 +56,7 @@ class IOSEnterpriseInterstitialTest : public PlatformTest {
 
     safe_browsing::RTLookupResponse response;
     auto* threat_info = response.add_threat_info();
+    threat_info->set_verdict_type(verdict_type);
     *threat_info->mutable_matched_url_navigation_rule()
          ->mutable_custom_message() = cm;
 
@@ -107,14 +109,16 @@ TEST_F(IOSEnterpriseInterstitialTest, CustomMessageDisplayed) {
                     kTestUrl, "\">", kTestMessage, "</a>\""});
 
   auto block_resource = CreateBlockUnsafeResource();
-  AddCustomMessageToResource(block_resource);
+  AddCustomMessageToResource(
+      block_resource, safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
   EXPECT_NE(IOSEnterpriseInterstitial::CreateBlockingPage(block_resource)
                 ->GetHtmlContents()
                 .find(expected_primary_paragraph),
             std::string::npos);
 
   auto warn_resource = CreateWarnUnsafeResource();
-  AddCustomMessageToResource(warn_resource);
+  AddCustomMessageToResource(warn_resource,
+                             safe_browsing::RTLookupResponse::ThreatInfo::WARN);
   EXPECT_NE(IOSEnterpriseInterstitial::CreateWarningPage(warn_resource)
                 ->GetHtmlContents()
                 .find(expected_primary_paragraph),

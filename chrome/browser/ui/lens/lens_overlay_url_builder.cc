@@ -122,6 +122,16 @@ GURL AppendUrlParamsFromMap(
   return url_with_params;
 }
 
+std::string CompressAndEncode(const std::string& serialized_proto) {
+  std::string compressed_proto;
+  compression::GzipCompress(serialized_proto, &compressed_proto);
+  std::string stickiness_signal_value;
+  base::Base64UrlEncode(compressed_proto,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &stickiness_signal_value);
+  return stickiness_signal_value;
+}
+
 }  // namespace
 
 void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
@@ -143,14 +153,21 @@ void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
 
   std::string serialized_proto;
   stickiness_signals.SerializeToString(&serialized_proto);
-  std::string compressed_proto;
-  compression::GzipCompress(serialized_proto, &compressed_proto);
-  std::string stickiness_signal_value;
-  base::Base64UrlEncode(compressed_proto,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &stickiness_signal_value);
+  params[kSrpStickinessSignalKey] = CompressAndEncode(serialized_proto);
+}
 
-  params[kSrpStickinessSignalKey] = stickiness_signal_value;
+void AppendStickinessSignalForFormula(
+    std::map<std::string, std::string>& params,
+    const std::string& formula) {
+  lens::StickinessSignals stickiness_signals;
+  stickiness_signals.set_id_namespace(lens::StickinessSignals::EDUCATION_INPUT);
+  stickiness_signals.mutable_education_input_extension()
+      ->mutable_math_solver_query()
+      ->set_math_input_equation(formula);
+
+  std::string serialized_proto;
+  stickiness_signals.SerializeToString(&serialized_proto);
+  params[kSrpStickinessSignalKey] = CompressAndEncode(serialized_proto);
 }
 
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
@@ -401,7 +418,8 @@ bool IsLensTextSelectionType(
     lens::LensOverlaySelectionType lens_selection_type) {
   return lens_selection_type == lens::SELECT_TEXT_HIGHLIGHT ||
          lens_selection_type == lens::SELECT_TRANSLATED_TEXT ||
-         lens_selection_type == lens::TRANSLATE_CHIP;
+         lens_selection_type == lens::TRANSLATE_CHIP ||
+         lens_selection_type == lens::SYMBOLIC_MATH_OBJECT;
 }
 
 }  // namespace lens

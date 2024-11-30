@@ -46,9 +46,8 @@
 #include "build/chromeos_buildflags.h"
 #include "components/cookie_config/cookie_store_util.h"
 #include "components/domain_reliability/monitor.h"
-#include "components/ip_protection/common/ip_protection_config_getter_mojo_impl.h"
-#include "components/ip_protection/common/ip_protection_control_mojo.h"
-#include "components/ip_protection/common/ip_protection_core_impl.h"
+#include "components/ip_protection/common/ip_protection_core_host_remote.h"
+#include "components/ip_protection/common/ip_protection_core_impl_mojo.h"
 #include "components/ip_protection/common/ip_protection_proxy_delegate.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -856,10 +855,6 @@ NetworkContext::NetworkContext(
   for (const auto& key : cors_exempt_header_list) {
     cors_exempt_header_list_.insert(key);
   }
-
-  acam_preflight_spec_conformant_ = base::FeatureList::IsEnabled(
-      network::features::
-          kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 
   if (prefetch_enabled_) {
     InitializePrefetchURLLoaderFactory();
@@ -2592,8 +2587,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // case for any given NetworkContext: either PrefetchProxy, handling its
   // custom proxy configs, or IpProtection, using the proxy allowlist.
   auto* mdl_manager = network_service_->masked_domain_list_manager();
-  std::unique_ptr<ip_protection::IpProtectionControlMojo>
-      ip_protection_control_mojo;
   bool requires_ipp_proxy_delegate =
       mdl_manager->IsEnabled() &&
       (params_->ip_protection_core_host ||
@@ -2601,15 +2594,15 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (requires_ipp_proxy_delegate) {
     CHECK(!params_->initial_custom_proxy_config);
     CHECK(!params_->custom_proxy_config_client_receiver);
+    scoped_refptr<ip_protection::IpProtectionCoreHostRemote> core_host_remote =
+        params_->ip_protection_core_host
+            ? base::MakeRefCounted<ip_protection::IpProtectionCoreHostRemote>(
+                  std::move(params_->ip_protection_core_host))
+            : nullptr;
     auto ip_protection_core_impl =
-        std::make_unique<ip_protection::IpProtectionCoreImpl>(
-            std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
-                std::move(params_->ip_protection_core_host)),
+        std::make_unique<ip_protection::IpProtectionCoreImplMojo>(
+            std::move(params_->ip_protection_control), core_host_remote,
             mdl_manager, params_->enable_ip_protection);
-    ip_protection_control_mojo =
-        std::make_unique<ip_protection::IpProtectionControlMojo>(
-            std::move(params_->ip_protection_control),
-            ip_protection_core_impl.get());
     builder.set_proxy_delegate(
         std::make_unique<ip_protection::IpProtectionProxyDelegate>(
             ip_protection_core_impl.get()));
@@ -2941,8 +2934,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (on_url_request_context_builder_configured) {
     std::move(on_url_request_context_builder_configured).Run(&builder);
   }
-  auto result = URLRequestContextOwner(std::move(pref_service), builder.Build(),
-                                       std::move(ip_protection_control_mojo));
+  auto result =
+      URLRequestContextOwner(std::move(pref_service), builder.Build());
 
   // Subscribe the CertVerifier to configuration changes that are exposed via
   // the mojom::SSLConfig, but which are not part of the
@@ -3186,11 +3179,7 @@ void NetworkContext::InitializeCorsParams() {
     cors_exempt_header_list_.insert(key);
   }
 
-  acam_preflight_spec_conformant_ =
-      base::FeatureList::IsEnabled(
-          network::features::
-              kAccessControlAllowMethodsInCORSPreflightSpecConformant) &&
-      params_->acam_preflight_spec_conformant;
+  acam_preflight_spec_conformant_ = params_->acam_preflight_spec_conformant;
 }
 
 void NetworkContext::FinishConstructingTrustTokenStore(

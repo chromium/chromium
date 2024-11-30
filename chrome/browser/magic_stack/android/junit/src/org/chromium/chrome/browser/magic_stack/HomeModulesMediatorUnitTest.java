@@ -561,7 +561,7 @@ public class HomeModulesMediatorUnitTest {
     @Test
     @SmallTest
     public void testGetFilteredEnabledModuleSet_AllModules() {
-        HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.setForTesting(true);
+        ChromeFeatureList.sMagicStackAndroidShowAllModules.setForTesting(true);
         for (@ModuleType int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
             mHomeModulesConfigManager.registerModuleEligibilityChecker(i, mModuleConfigChecker);
         }
@@ -573,7 +573,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SINGLE_TAB,
                         ModuleType.TAB_RESUMPTION,
                         ModuleType.SAFETY_HUB,
-                        ModuleType.EDUCATIONAL_TIP);
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.AUXILIARY_SEARCH);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
 
         // Verifies that the single tab module isn't shown if it isn't the home surface even with
@@ -584,7 +585,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.PRICE_CHANGE,
                         ModuleType.TAB_RESUMPTION,
                         ModuleType.SAFETY_HUB,
-                        ModuleType.EDUCATIONAL_TIP);
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.AUXILIARY_SEARCH);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
@@ -592,7 +594,7 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
     public void testGetFilteredEnabledModuleSet_CombineTabs_TabResumptionEnabled() {
-        HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidCombineTabs.setForTesting(true);
         for (@ModuleType int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
             mHomeModulesConfigManager.registerModuleEligibilityChecker(i, mModuleConfigChecker);
         }
@@ -605,7 +607,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.PRICE_CHANGE,
                         ModuleType.TAB_RESUMPTION,
                         ModuleType.SAFETY_HUB,
-                        ModuleType.EDUCATIONAL_TIP);
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.AUXILIARY_SEARCH);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
@@ -615,7 +618,7 @@ public class HomeModulesMediatorUnitTest {
         ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
     })
     public void testGetFilteredEnabledModuleSet_CombineTabs_TabResumptionDisabled() {
-        HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidCombineTabs.setForTesting(true);
         mHomeModulesConfigManager.registerModuleEligibilityChecker(
                 ModuleType.PRICE_CHANGE, mModuleConfigChecker);
         mHomeModulesConfigManager.registerModuleEligibilityChecker(
@@ -731,7 +734,7 @@ public class HomeModulesMediatorUnitTest {
         scoreLoggedTime = SystemClock.elapsedRealtime() - 10;
         mHomeModulesConfigManager.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
         mHomeModulesConfigManager.setFreshnessCountForTesting(moduleType, expectedScore);
-        int[] scores = new int[] {-1, expectedScore, -1, -1};
+        int[] scores = new int[] {-1, expectedScore, -1, -1, -1};
         inputContext = mMediator.createInputContext();
         verifyInputContext(inputContext, scores);
 

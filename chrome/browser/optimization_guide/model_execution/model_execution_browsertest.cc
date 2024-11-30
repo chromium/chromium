@@ -619,12 +619,12 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       CanCreateOnDeviceSessionNoModelAvailable) {
+                       CanCreateOnDeviceSessionModelNotEligible) {
   OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
   EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
                                         &on_device_model_eligibility_reason));
   EXPECT_EQ(on_device_model_eligibility_reason,
-            OnDeviceModelEligibilityReason::kModelNotAvailable);
+            OnDeviceModelEligibilityReason::kModelNotEligible);
 }
 
 IN_PROC_BROWSER_TEST_F(

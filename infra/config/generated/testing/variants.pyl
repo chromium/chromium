@@ -10,6 +10,24 @@
       'amd_radeon_rx_5500_xt',
     ],
   },
+  'CHANNEL_BETA': {
+    'identifier': 'Beta Channel',
+    'args': [
+      '--channel=beta',
+    ],
+  },
+  'CHANNEL_DEV': {
+    'identifier': 'Dev Channel',
+    'args': [
+      '--channel=dev',
+    ],
+  },
+  'CHANNEL_STABLE': {
+    'identifier': 'Stable Channel',
+    'args': [
+      '--channel=stable',
+    ],
+  },
   'CROS_GPU_BRYA_RELEASE_LKGM': {
     'identifier': 'GPU_BRYA_RELEASE_LKGM',
     'skylab': {

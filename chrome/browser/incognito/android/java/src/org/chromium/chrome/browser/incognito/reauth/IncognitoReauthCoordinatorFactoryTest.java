@@ -254,25 +254,14 @@ public class IncognitoReauthCoordinatorFactoryTest {
     @Test
     @SmallTest
     public void testCreateIncognitoReauthCoordinator_ForFullScreen_ReturnsFullScreenCoordinator() {
-        if (mIsTabbedActivity) {
-            IncognitoReauthCoordinator coordinator =
-                    mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                            mIncognitoReauthCallbackMock,
-                            /* showFullScreen= */ true,
-                            mOnBackPressedCallbackMock);
-            assertTrue(
-                    "Wrong coordinator instance created!",
-                    coordinator instanceof FullScreenIncognitoReauthCoordinator);
-        } else {
-            IncognitoReauthCoordinator coordinator =
-                    mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                            mIncognitoReauthCallbackMock,
-                            /* showFullScreen= */ true,
-                            mOnBackPressedCallbackMock);
-            assertTrue(
-                    "Wrong coordinator instance created!",
-                    coordinator instanceof FullScreenIncognitoReauthCoordinator);
-        }
+        IncognitoReauthCoordinator coordinator =
+                mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
+                        mIncognitoReauthCallbackMock,
+                        /* showFullScreen= */ true,
+                        mOnBackPressedCallbackMock);
+        assertTrue(
+                "Wrong coordinator instance created!",
+                coordinator instanceof FullScreenIncognitoReauthCoordinator);
     }
 
     @Test

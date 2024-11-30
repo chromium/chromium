@@ -72,9 +72,6 @@ InputElement* GetInputBindingByBindingOption(Action* action,
     case BindingOption::kOriginal:
       input_binding = action->original_input();
       break;
-    case BindingOption::kPending:
-      input_binding = action->pending_input();
-      break;
     default:
       NOTREACHED();
   }
@@ -82,7 +79,7 @@ InputElement* GetInputBindingByBindingOption(Action* action,
 }
 
 std::string GetCurrentSystemVersion() {
-  return kSystemVersionAlphaV2;
+  return kSystemVersionAlphaV2Plus;
 }
 
 void ResetFocusTo(views::View* view) {

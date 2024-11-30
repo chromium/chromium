@@ -1663,7 +1663,6 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
     web_contents_->SetDelegate(this);
   }
   ~TestWCDelegateForDialogsAndFullscreen() override {
-    web_contents_->SetJavaScriptDialogManagerForTesting(nullptr);
     web_contents_->SetDelegate(old_delegate_);
   }
 

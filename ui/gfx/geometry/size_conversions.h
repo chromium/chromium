@@ -5,19 +5,20 @@
 #ifndef UI_GFX_GEOMETRY_SIZE_CONVERSIONS_H_
 #define UI_GFX_GEOMETRY_SIZE_CONVERSIONS_H_
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace gfx {
 
 // Returns a Size with each component from the input SizeF floored.
-GEOMETRY_EXPORT Size ToFlooredSize(const SizeF& size);
+COMPONENT_EXPORT(GEOMETRY) Size ToFlooredSize(const SizeF& size);
 
 // Returns a Size with each component from the input SizeF ceiled.
-GEOMETRY_EXPORT Size ToCeiledSize(const SizeF& size);
+COMPONENT_EXPORT(GEOMETRY) Size ToCeiledSize(const SizeF& size);
 
 // Returns a Size with each component from the input SizeF rounded.
-GEOMETRY_EXPORT Size ToRoundedSize(const SizeF& size);
+COMPONENT_EXPORT(GEOMETRY) Size ToRoundedSize(const SizeF& size);
 
 }  // namespace gfx
 

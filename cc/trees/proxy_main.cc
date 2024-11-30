@@ -509,8 +509,9 @@ void ProxyMain::DidPresentCompositorFrame(
       std::move(sucessful_presentation_callbacks), frame_timing_details);
 }
 
-void ProxyMain::NotifyThroughputTrackerResults(CustomTrackerResults results) {
-  layer_tree_host_->NotifyThroughputTrackerResults(std::move(results));
+void ProxyMain::NotifyCompositorMetricsTrackerResults(
+    CustomTrackerResults results) {
+  layer_tree_host_->NotifyCompositorMetricsTrackerResults(std::move(results));
 }
 
 void ProxyMain::DidObserveFirstScrollDelay(

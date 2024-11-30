@@ -100,7 +100,7 @@ PartnerBookmarksReader::PartnerBookmarksReader(
       large_icon_service_(nullptr),
       wip_next_available_id_(0) {}
 
-PartnerBookmarksReader::~PartnerBookmarksReader() {}
+PartnerBookmarksReader::~PartnerBookmarksReader() = default;
 
 void PartnerBookmarksReader::PartnerBookmarksCreationComplete(
     JNIEnv*,

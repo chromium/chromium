@@ -74,7 +74,7 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
       std::optional<vm_tools::concierge::CreateDiskImageResponse> result);
   void InstallPflash();
   void OnInstallPflash(
-      std::optional<vm_tools::concierge::InstallPflashResponse> result);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> result);
   void ClearVek();
   void OnClearVek(const attestation::DeleteKeysReply& result);
   void StartVm();

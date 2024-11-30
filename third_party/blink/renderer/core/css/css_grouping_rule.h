@@ -35,6 +35,22 @@ class CSSRuleList;
 
 StyleRule* FindClosestParentStyleRuleOrNull(CSSRule* parent);
 
+struct NestingContext {
+  STACK_ALLOCATED();
+
+ public:
+  // Whether we are nested inside a regular style rule (kNesting),
+  // or an @scope rule (kScope).
+  CSSNestingType nesting_type;
+  // What the '&' selector references.
+  StyleRule* parent_rule_for_nesting;
+};
+
+// Finds the parent rule for nesting (i.e. what the '&' selector should
+// refer to), starting at `parent_rule` (inclusive), and traversing up the
+// ancestor chain.
+NestingContext CalculateNestingContext(const CSSRule* parent_rule);
+
 // Utility function also used by CSSStyleRule, which can have child rules
 // just like CSSGroupingRule can (we share insertRule() / deleteRule()
 // implementation). Returns nullptr if an exception was raised.

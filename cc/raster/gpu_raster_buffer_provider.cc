@@ -26,7 +26,6 @@
 #include "cc/paint/paint_recorder.h"
 #include "cc/raster/raster_source.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -167,13 +166,9 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
         worker_context_provider->ContextCapabilities().using_vulkan_context;
 
     // On Android, DMSAA on vulkan backend launch is controlled by
-    // kUseDMSAAForTiles whereas GL backend launch is controlled by
-    // kUseDMSAAForTilesAndroidGL.
-    is_using_dmsaa_ =
-        (base::FeatureList::IsEnabled(features::kUseDMSAAForTiles) &&
-         is_using_vulkan) ||
-        (base::FeatureList::IsEnabled(features::kUseDMSAAForTilesAndroidGL) &&
-         !is_using_vulkan);
+    // kUseDMSAAForTiles.
+    is_using_dmsaa_ = !is_using_vulkan ||
+                      base::FeatureList::IsEnabled(features::kUseDMSAAForTiles);
   }
 #endif
 }
@@ -379,8 +374,6 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
                                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     if (backing_->overlay_candidate) {
       flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      if (features::IsDelegatedCompositingEnabled())
-        flags |= gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING;
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }

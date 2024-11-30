@@ -407,7 +407,7 @@ class CORE_EXPORT HTMLElement : public Element {
       HidePopoverFocusBehavior focus_behavior,
       HidePopoverTransitionBehavior transition_behavior);
 
-  static AttributeTriggers* TriggersForAttributeName(
+  static const AttributeTriggers* TriggersForAttributeName(
       const QualifiedName& attr_name);
 
   void OnDirAttrChanged(const AttributeModificationParams&);

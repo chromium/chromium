@@ -24,10 +24,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
 #include "media/capture/video/gpu_memory_buffer_utils.h"
+#include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "media/capture/video_capture_types.h"
 #include "media/parsers/jpeg_parser.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -35,6 +37,11 @@
 namespace media {
 
 namespace {
+
+// Allow MappableSI to be used for FileVideoCaptureDevice.
+BASE_FEATURE(kUseMappableSIForFileVideoCaptureDevice,
+             "UseMappableSIForFileVideoCaptureDevice",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 int gcd(int a, int b) {
   int c;
@@ -47,6 +54,51 @@ int gcd(int a, int b) {
   }
 
   return (b);
+}
+
+VideoCaptureDevice::Client::ReserveResult AllocateNV12SharedImage(
+    VideoCaptureDevice::Client* capture_client,
+    const gfx::Size& buffer_size,
+    scoped_refptr<gpu::ClientSharedImage>* out_shared_image,
+    VideoCaptureDevice::Client::Buffer* out_capture_buffer) {
+  CHECK(out_shared_image);
+  CHECK(out_capture_buffer);
+
+  // When GpuMemoryBuffer is used, the frame data is opaque to the CPU for most
+  // of the time.  Currently the only supported underlying format is NV12.
+  constexpr VideoPixelFormat kOpaqueVideoFormat = PIXEL_FORMAT_NV12;
+  const int arbitrary_frame_feedback_id = 0;
+  const auto reserve_result = capture_client->ReserveOutputBuffer(
+      buffer_size, kOpaqueVideoFormat, arbitrary_frame_feedback_id,
+      out_capture_buffer, /*require_new_buffer_id=*/nullptr,
+      /*retire_old_buffer_id=*/nullptr);
+  if (reserve_result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
+    return reserve_result;
+  }
+
+  auto sii =
+      VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
+  if (!sii) {
+    LOG(ERROR) << "Failed to get SharedImageInterface.";
+    return VideoCaptureDevice::Client::ReserveResult::kAllocationFailed;
+  }
+
+  // Setting some default usage in order to get a mappable shared image for
+  // windows. Note that the usage should be part of supported usages in
+  // D3DImageBackingFactory.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  *out_shared_image = sii->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, buffer_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "AllocatedNV12SharedImage"},
+      gpu::kNullSurfaceHandle,
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+      out_capture_buffer->handle_provider->GetGpuMemoryBufferHandle());
+  if (!*out_shared_image) {
+    LOG(ERROR) << "Failed to create a mappable shared image.";
+    return VideoCaptureDevice::Client::ReserveResult::kAllocationFailed;
+  }
+
+  return reserve_result;
 }
 
 }  // namespace
@@ -605,8 +657,12 @@ void FileVideoCaptureDevice::OnAllocateAndStart(
 
   client_ = std::move(client);
 
+  // Note that VideoCaptureBufferType::kGpuMemoryBuffer is used currently to
+  // either created a gmb or MappableSI.
+  // VideoCaptureBufferType::kGpuMemoryBuffer will be renamed once all clients
+  // are converted to use MappableSI.
   if (params.buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer)
-    video_capture_use_gmb_ = true;
+    video_capture_use_mappable_buffer_ = true;
 
   DCHECK(!file_parser_);
   file_parser_ = GetVideoFileParser(file_path_, &capture_format_);
@@ -666,12 +722,22 @@ void FileVideoCaptureDevice::OnCaptureTask() {
   if (first_ref_time_.is_null())
     first_ref_time_ = current_time;
 
-  if (video_capture_use_gmb_) {
+  if (video_capture_use_mappable_buffer_) {
     const gfx::Size& buffer_size = capture_format_.frame_size;
     std::unique_ptr<gfx::GpuMemoryBuffer> gmb;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     VideoCaptureDevice::Client::Buffer capture_buffer;
-    auto reserve_result = AllocateNV12GpuMemoryBuffer(
-        client_.get(), buffer_size, gmb_support_.get(), &gmb, &capture_buffer);
+    VideoCaptureDevice::Client::ReserveResult reserve_result;
+    const bool is_mappable_si_enabled =
+        base::FeatureList::IsEnabled(kUseMappableSIForFileVideoCaptureDevice);
+    if (is_mappable_si_enabled) {
+      reserve_result = AllocateNV12SharedImage(client_.get(), buffer_size,
+                                               &shared_image, &capture_buffer);
+    } else {
+      reserve_result = AllocateNV12GpuMemoryBuffer(client_.get(), buffer_size,
+                                                   gmb_support_.get(), &gmb,
+                                                   &capture_buffer);
+    }
     if (reserve_result !=
         VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
       client_->OnFrameDropped(
@@ -679,7 +745,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
       DVLOG(2) << __func__ << " frame was dropped.";
       return;
     }
-    ScopedNV12GpuMemoryBufferMapping scoped_mapping(std::move(gmb));
+
     const uint8_t* src_y_plane = ptz_frame.data();
     const uint8_t* src_u_plane =
         ptz_frame.data() +
@@ -688,11 +754,24 @@ void FileVideoCaptureDevice::OnCaptureTask() {
         ptz_frame.data() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, buffer_size).GetArea() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, buffer_size).GetArea();
-    libyuv::I420ToNV12(
-        src_y_plane, buffer_size.width(), src_u_plane, buffer_size.width() / 2,
-        src_v_plane, buffer_size.width() / 2, scoped_mapping.y_plane(),
-        scoped_mapping.y_stride(), scoped_mapping.uv_plane(),
-        scoped_mapping.uv_stride(), buffer_size.width(), buffer_size.height());
+    if (is_mappable_si_enabled) {
+      auto scoped_mapping = shared_image->Map();
+      libyuv::I420ToNV12(
+          src_y_plane, buffer_size.width(), src_u_plane,
+          buffer_size.width() / 2, src_v_plane, buffer_size.width() / 2,
+          scoped_mapping->GetMemoryForPlane(0).data(),
+          scoped_mapping->Stride(0),
+          scoped_mapping->GetMemoryForPlane(1).data(),
+          scoped_mapping->Stride(1), buffer_size.width(), buffer_size.height());
+    } else {
+      ScopedNV12GpuMemoryBufferMapping scoped_mapping(std::move(gmb));
+      libyuv::I420ToNV12(src_y_plane, buffer_size.width(), src_u_plane,
+                         buffer_size.width() / 2, src_v_plane,
+                         buffer_size.width() / 2, scoped_mapping.y_plane(),
+                         scoped_mapping.y_stride(), scoped_mapping.uv_plane(),
+                         scoped_mapping.uv_stride(), buffer_size.width(),
+                         buffer_size.height());
+    }
     // When GpuMemoryBuffer is used, the frame data is opaque to the CPU for
     // most of the time.  Currently the only supported underlying format is
     // NV12.

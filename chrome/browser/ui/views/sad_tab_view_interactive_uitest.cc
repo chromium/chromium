@@ -45,7 +45,7 @@ class SadTabViewTestApi {
 
 class SadTabViewInteractiveUITest : public InProcessBrowserTest {
  public:
-  SadTabViewInteractiveUITest() {}
+  SadTabViewInteractiveUITest() = default;
 
   SadTabViewInteractiveUITest(const SadTabViewInteractiveUITest&) = delete;
   SadTabViewInteractiveUITest& operator=(const SadTabViewInteractiveUITest&) =

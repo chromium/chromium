@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
@@ -155,9 +156,9 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
             actual_documents.at(1)->mime_type);
   EXPECT_EQ("Foo bar foo bar", actual_documents.at(1)->justification_text);
   EXPECT_EQ("https://google.com/bar", actual_documents.at(1)->item_url.spec());
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   // The third item is malformed. So, even though we can display the first two
   // items, we report a content error.
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
@@ -269,9 +270,9 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
             response4.at(0)->mime_type);
   EXPECT_EQ("Foo foo", response4.at(0)->justification_text);
   EXPECT_EQ("234", response4.at(0)->id);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kSuccess));
@@ -338,9 +339,9 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
 
   EXPECT_FALSE(response.empty());
   EXPECT_EQ("234", response[0]->id);
-  EXPECT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  EXPECT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 
   // Subsequent fetch should use cache.
   response.clear();
@@ -351,9 +352,9 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_FALSE(response.empty());
   EXPECT_EQ("234", response[0]->id);
-  EXPECT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  EXPECT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 
   // Should re-request if cache expires.
   quit_closure = task_environment_.QuitClosure();
@@ -371,9 +372,9 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
   task_environment_.RunUntilQuit();
 
   EXPECT_EQ("234", response[0]->id);
-  EXPECT_EQ(2,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  EXPECT_EQ(2, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 
   // Should re-request if token changes.
   quit_closure = task_environment_.QuitClosure();
@@ -389,9 +390,9 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
   task_environment_.RunUntilQuit();
   EXPECT_EQ("234", response[0]->id);
-  EXPECT_EQ(3,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  EXPECT_EQ(3, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 }
 
 TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
@@ -528,9 +529,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
       GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
 
   EXPECT_FALSE(token_is_valid);
-  ASSERT_EQ(0,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(0, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
 }
 
 TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
@@ -565,9 +566,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
   task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(empty_response);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kNetworkError));
@@ -598,9 +599,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
   task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(empty_response);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kJsonParseError));
@@ -634,9 +635,9 @@ TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
   task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(actual_documents.empty());
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
-                                             base::PersistentHash("drive")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash(ntp_modules::kDriveModuleId)));
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Drive.ItemSuggestRequestResult",
                    ItemSuggestRequestResult::kContentError));

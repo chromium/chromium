@@ -38,6 +38,7 @@ Tasub teada
 <translation id="1646463005043273333">Avab Chrome'i seaded, et Chrome vaikebrauseriks määrata.</translation>
 <translation id="1670609221633730681">Chrome'i nõuanne: valige oma aadressiriba asukoht</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Salvestage oma paroolid Chrome'i</translation>
 <translation id="1790080846677398234">Lisab sisestatud URL-id Chrome'is teie järjehoidjatesse.</translation>
 <translation id="1799920918471566157">Chrome’i nõuanded</translation>
 <translation id="1830634592642484976">See aadress on praegu salvestatud Chrome'i. Kui soovite seda Google'i teenustes kasutada, salvestage see oma Google'i kontole <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="3655656110921623717">See tähendab, et Chrome taotleb iga kord mobiilisaiti.</translation>
 <translation id="3740397331642243698">Avab sisestatud URL-id Google Chrome'is inkognito režiimis.</translation>
 <translation id="3741995255368156336">Avab Chrome'i lugemisloendi.</translation>
+<translation id="3808570423967020928">Saate Chrome'i avakuva doki kaudu kiiremini avada.</translation>
 <translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
 <translation id="384394811301901750">Chrome ei saa praegu kaamerat kasutada</translation>
 <translation id="3863841106411295595">Lisab sisestatud URL-id Chrome'is teie lugemisloendisse.</translation>
@@ -219,9 +221,11 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 
 Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'i kasutuskogemust, avage <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Chrome'is sirvimisandmete kustutamine.</translation>
+<translation id="6924922227983877439">Avage lingid vaikimisi Chrome'is</translation>
 <translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>
 <translation id="7056826488869329999">Avab ja käitab Chrome'is ohutuskontrolli.</translation>
 <translation id="7061455974939528301">Hoidke Chrome'i ikooni all ja puudutage valikut „Edit home screen”</translation>
+<translation id="7065813315247345131">Chrome teisaldamine dokki</translation>
 <translation id="7124339256045485976">Hoidke Chrome ajakohasena</translation>
 <translation id="7161390184744336561">Google Chrome on aegunud</translation>
 <translation id="7165736900384873061">Google Chrome'i QR-skanneri kasutamise alustamine</translation>

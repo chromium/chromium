@@ -523,6 +523,55 @@ TEST_F(AutofillAgentShadowDomTest, DeepNestedForms) {
   WaitForFormsSeen();
 }
 
+class AutofillAgentTestExtractLabeledTextNodeValue
+    : public AutofillAgentTestWithFeatures {
+ public:
+  using Callback =
+      base::MockCallback<base::OnceCallback<void(const std::string&)>>;
+};
+
+// This test checks an empty string is bound to the input callback when
+// the final checkout amount is not found.
+TEST_F(AutofillAgentTestExtractLabeledTextNodeValue,
+       CallbackIsCalledIfCheckoutAmountIsNotFound) {
+  LoadHTML(R"(
+    <body>
+      <div>
+        <span>I'm not a total amount keyword</span>
+        <div>I'm not a total amount</div>
+      </div>
+    </body>)");
+  Callback callback;
+  EXPECT_CALL(callback, Run(Eq("")));
+  autofill_agent().ExtractLabeledTextNodeValue(u"^.448.60$", u"^Total$", 4,
+                                               callback.Get());
+}
+
+// This test checks the correct string representing the final checkout
+// amount is bound to the input callback when it is found.
+TEST_F(AutofillAgentTestExtractLabeledTextNodeValue,
+       CallbackIsCalledIfCheckoutAmountIsFound) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>Total</div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>$56.70</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  Callback callback;
+  EXPECT_CALL(callback, Run(Eq("$56.70")));
+  autofill_agent().ExtractLabeledTextNodeValue(u"^.56.70$", u"^Total$", 6,
+                                               callback.Get());
+}
+
 class AutofillAgentTestExtractForms : public AutofillAgentTestWithFeatures {
  public:
   using Callback = base::MockCallback<
@@ -1135,7 +1184,7 @@ class AutofillAgentTestNavigationReset : public AutofillAgentTest {
 TEST_F(AutofillAgentTestNavigationReset, NavigationResetsIsDomContentLoaded) {
   std::vector<bool> is_dom_content_loaded;
   EXPECT_CALL(autofill_agent(), DidDispatchDOMContentLoadedEvent)
-      .WillRepeatedly([&]() {
+      .WillRepeatedly([&] {
         is_dom_content_loaded.push_back(
             test_api(autofill_agent()).is_dom_content_loaded());
         autofill_agent().OverriddenDidDispatchDOMContentLoadedEvent();

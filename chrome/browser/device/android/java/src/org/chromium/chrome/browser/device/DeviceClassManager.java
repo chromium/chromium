@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.device;
 
-import android.content.Context;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * This class is used to turn on and off certain features for different types of
@@ -89,10 +87,6 @@ public class DeviceClassManager {
      */
     public static boolean enableToolbarSwipe() {
         return getInstance().mEnableToolbarSwipe;
-    }
-
-    private static boolean isPhone(Context context) {
-        return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /** Reset the instance for testing. */

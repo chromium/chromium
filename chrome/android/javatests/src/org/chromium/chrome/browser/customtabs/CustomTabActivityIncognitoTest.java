@@ -431,8 +431,7 @@ public class CustomTabActivityIncognitoTest {
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
 
         final OnFinishedForTest onFinished = new OnFinishedForTest(pi);
-        activity.getComponent()
-                .resolveToolbarCoordinator()
+        activity.getCustomTabToolbarCoordinator()
                 .setCustomButtonPendingIntentOnFinishedForTesting(onFinished);
 
         View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
@@ -467,8 +466,7 @@ public class CustomTabActivityIncognitoTest {
 
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         final OnFinishedForTest onFinished = new OnFinishedForTest(pi);
-        activity.getComponent()
-                .resolveToolbarCoordinator()
+        activity.getCustomTabToolbarCoordinator()
                 .setCustomButtonPendingIntentOnFinishedForTesting(onFinished);
 
         View bottomBarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.bottom_bar);

@@ -36,10 +36,12 @@ class ProfileAttributesStorageIOS {
 
   ~ProfileAttributesStorageIOS();
 
-  // Register profile with `name`.
+  // Register profile with `name`. No profile with that name must be registered
+  // yet.
   void AddProfile(std::string_view name);
 
-  // Remove informations about profile with `name`.
+  // Remove information about profile with `name`. A profile with that name
+  // must be registered (and won't be anymore once this method returns).
   void RemoveProfile(std::string_view name);
 
   // Returns the count of known profiles.
@@ -56,6 +58,12 @@ class ProfileAttributesStorageIOS {
   // Retrieves the information for profile with `name`.
   ProfileAttributesIOS GetAttributesForProfileWithName(
       std::string_view name) const;
+
+  // Modifies the attributes for the profile at `index` (which must exist).
+  // The callback is invoked synchronously and can modify the attributes
+  // and the data will be saved to the preferences if changed.
+  void UpdateAttributesForProfileAtIndex(size_t index,
+                                         ProfileAttributesCallback callback);
 
   // Modifies the attributes for the profile with `name` (which must exist).
   // The callback is invoked synchronously and can modify the attributes
@@ -74,22 +82,19 @@ class ProfileAttributesStorageIOS {
   const std::string& GetProfileNameForSceneID(std::string_view scene_id);
 
   // Returns the name of the profile that's designated as the personal profile,
-  // i.e. the one containing all consumer (non-managed) accounts.
+  // i.e. the one containing all consumer (non-managed) accounts. The name may
+  // be empty (should only happen very briefly during startup), but otherwise
+  // it's guaranteed that an entry with this name exists.
   const std::string& GetPersonalProfileName() const;
 
-  // Designates the profile with `profile_name` as the personal profile.
+  // Designates the profile with `profile_name` as the personal profile. A
+  // profile entry with this name must already exist.
   void SetPersonalProfileName(std::string_view profile_name);
 
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  // Modifies the attributes for the profile at `index` (which must exist).
-  // The callback is invoked synchronously and can modify the attributes
-  // and the data will be saved to the preferences if changed.
-  void UpdateAttributesForProfileAtIndex(size_t index,
-                                         ProfileAttributesCallback callback);
-
   // Returns the index of the profile with `name` or std::string::npos if
   // not found.
   size_t GetIndexOfProfileWithName(std::string_view name) const;

@@ -2087,4 +2087,14 @@ void PermissionUmaUtil::RecordElementAnchoredPermissionPromptAction(
                      screen_counter));
 }
 
+// static
+void PermissionUmaUtil::RecordPermissionIndicatorElapsedTimeSinceLastUsage(
+    RequestTypeForUma request_type,
+    base::TimeDelta time_delta) {
+  base::UmaHistogramLongTimes100(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage." +
+          GetPermissionRequestString(request_type),
+      time_delta);
+}
+
 }  // namespace permissions

@@ -1,0 +1,115 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "search_engine_choice_consumer.h",
+    "search_engine_choice_coordinator.h",
+    "search_engine_choice_coordinator.mm",
+    "search_engine_choice_mediator.h",
+    "search_engine_choice_mediator.mm",
+    "search_engine_choice_mutator.h",
+    "search_engine_choice_view_controller.h",
+    "search_engine_choice_view_controller.mm",
+    "snippet_search_engine_button.h",
+    "snippet_search_engine_button.mm",
+    "snippet_search_engine_element.h",
+    "snippet_search_engine_element.mm",
+  ]
+  deps = [
+    ":constants",
+    ":ui_util",
+    "//base",
+    "//components/search_engines",
+    "//components/strings",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/search_engine_choice/model",
+    "//ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_learn_more",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/list_model:list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/common/ui/promo_style:utils",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "search_engine_choice_constants.h",
+    "search_engine_choice_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("ui_util") {
+  sources = [
+    "search_engine_choice_ui_util.h",
+    "search_engine_choice_ui_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/search_engines",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("earl_grey_ui_test_util") {
+  testonly = true
+  sources = [
+    "search_engine_choice_earl_grey_ui_test_util.h",
+    "search_engine_choice_earl_grey_ui_test_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/search_engines",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/search_engine_choice/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled/cells:public",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "search_engine_choice_egtest.mm" ]
+  deps = [
+    ":constants",
+    ":earl_grey_ui_test_util",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/search_engines",
+    "//components/signin/public/base:signin_switches",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}

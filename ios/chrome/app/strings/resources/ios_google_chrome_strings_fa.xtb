@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">‏«تنظیمات Chrome» را برای تنظیم کردن Chrome به‌عنوان مرورگر پیش‌فرض باز می‌کند.</translation>
 <translation id="1670609221633730681">‏نکته Chrome: موقعیت نوار نشانی را انتخاب کنید</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">‏گذرواژه‌هایتان را در Chrome ذخیره کنید</translation>
 <translation id="1790080846677398234">‏نشانی‌های وب واردشده را به نشانک‌های شما در Chrome اضافه می‌کند.</translation>
 <translation id="1799920918471566157">‏نکته‌های Chrome</translation>
 <translation id="1830634592642484976">‏این نشانی درحال‌حاضر در Chrome ذخیره شده است. برای استفاده از این نشانی در محصولات Google، آن را در «حساب Google» خود (<ph name="USER_EMAIL" />) ذخیره کنید.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">‏به این معنی که Chrome هربار سایت ویژه تلفن همراه را درخواست خواهد کرد.</translation>
 <translation id="3740397331642243698">‏نشانی‌های واردشده را در Google Chrome در حالت «ناشناس» باز می‌کند.</translation>
 <translation id="3741995255368156336">‏فهرست خواندن Chrome را باز می‌کند.</translation>
+<translation id="3808570423967020928">‏از «سکوی برنامه‌های صفحه اصلی» سریع‌تر به Chrome دسترسی داشته باشید</translation>
 <translation id="3827545470516145620">محافظت امنیتی استاندارد را در این دستگاه دریافت می‌کنید</translation>
 <translation id="384394811301901750">‏Google Chrome اکنون نمی‌تواند از دوربین استفاده کند</translation>
 <translation id="3863841106411295595">‏نشانی‌های وب واردشده را به فهرست خواندن شما در Chrome اضافه می‌کند.</translation>
@@ -219,9 +221,11 @@
 
 برای تنظیمات بیشتری که از داده‌ها برای بهبود تجربه شما در Chrome استفاده می‌کنند، به <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> بروید.</translation>
 <translation id="6922332667202044570">‏حذف کردن داده‌های مرور در Chrome.</translation>
+<translation id="6924922227983877439">‏پیوندها را به‌طور پیش‌فرض در Chrome باز کنید</translation>
 <translation id="6975725306479268850">‏انتخاب Chrome برای «تکمیل خودکار»</translation>
 <translation id="7056826488869329999">‏«کنترل ایمنی» را در Chrome باز و اجرا می‌کند.</translation>
 <translation id="7061455974939528301">‏نماد Chrome را فشار دهید و نگه دارید و روی «ویرایش کردن صفحه اصلی» کلیک کنید</translation>
+<translation id="7065813315247345131">‏انتقال Chrome به سکوی برنامه‌ها</translation>
 <translation id="7124339256045485976">‏به‌روز نگه داشتن Chrome</translation>
 <translation id="7161390184744336561">‏نسخه Google Chrome قدیمی است</translation>
 <translation id="7165736900384873061">‏استفاده از اسکنر QR در Google Chrome را شروع کنید</translation>
@@ -266,7 +270,7 @@
 <translation id="7948283758957877064">‏ویژگی‌های جدید Chrome</translation>
 <translation id="8000174216052461231">‏نکته Chrome: بهره‌مند شدن از قدرتمندترین امنیت Chrome</translation>
 <translation id="8006014511203279255">‏برای باز کردن پیوندهای موجود در پیام‌ها یا برنامه‌های دیگر، از Chrome استفاده کنید.</translation>
-<translation id="8014670471808569312">‏‫Chrome پیشنهاد می‌دهد گذرواژه‌تان را ذخیره کند.</translation>
+<translation id="8014670471808569312">‏‫Chrome پیشنهاد خواهد داد که گذرواژه‌تان را ذخیره کند.</translation>
 <translation id="8018153653741938705">‏با Google Chrome ایمن بمانید</translation>
 <translation id="8022947259858476807">‏می‌توانید از Chrome به‌عنوان مرورگر پیش‌فرض برای باز کردن پیوندها، جستجو درمیان ابزاره‌ها، و تکمیل خودکار گذرواژه‌ها در سایر برنامه‌ها استفاده کنید</translation>
 <translation id="804638182476029347">‏اجازه دادن به اعلان‌های Chrome برای دریافت هشدارهای کاهش قیمت</translation>

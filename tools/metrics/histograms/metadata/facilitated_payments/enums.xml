@@ -33,6 +33,12 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h:FopSelectorAction) -->
 
+<enum name="FacilitatedPayments.InitiatePurchaseActionResult">
+  <int value="0" label="Failed"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Abandoned"/>
+</enum>
+
 <enum name="FacilitatedPayments.PayFlowExitedReason">
   <int value="0" label="Code validator failed"/>
   <int value="1" label="Invalid code"/>
@@ -48,6 +54,10 @@ reviewer.
   <int value="8" label="InitiatePayment request failed"/>
   <int value="9" label="Action token not available"/>
   <int value="10" label="User logged out after selecting payment method"/>
+  <int value="11"
+      label="The FOP selector either wasn't shown, or was dismissed not as a
+             result of a user action"/>
+  <int value="12" label="The FOP selector was closed by the user"/>
 </enum>
 
 <enum name="FacilitatedPayments.PaymentNotOfferedReason">

@@ -498,6 +498,7 @@ class TabListEditorCoordinator {
                         /* emptyHeadingStringResId= */ Resources.ID_NULL,
                         /* emptySubheadingStringResId= */ Resources.ID_NULL,
                         /* onTabGroupCreation= */ null,
+                        /* backgroundColorSupplier= */ null,
                         /* allowDragAndDrop= */ false);
 
         // Note: The TabListEditorCoordinator is always created after native is initialized.

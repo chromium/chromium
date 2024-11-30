@@ -95,7 +95,9 @@ sandbox.appendChild(
     createDOM('div', {'id': 'host', 'foo': 'bar'},
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host([foo=bar]:host) { border: 1px solid green; }')),
+                document.createTextNode(':host { border: 1px solid green; }')),
+            createDOM('style', {},
+                document.createTextNode(':host([foo=bar]:host) { border-color: red; }')),
             createDOM('div', {}))));
 
 borderColorShouldBe('host', 'rgb(0, 128, 0)');
@@ -107,7 +109,9 @@ sandbox.appendChild(
     createDOM('span', {'id': 'host', 'class': 'foo'},
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host(span.foo#host:host) { border: 1px solid green; }')),
+                document.createTextNode(':host { border: 1px solid green; }')),
+            createDOM('style', {},
+                document.createTextNode(':host(span.foo#host:host) { border-color: red; }')),
             createDOM('div', {}))));
 
 borderColorShouldBe('host', 'rgb(0, 128, 0)');

@@ -46,6 +46,7 @@ bool IsNSRange(id value);
 // object. The renderer converts webkit's accessibility tree into a
 // WebAccessibility tree and passes it to the browser process over IPC.
 // This class converts it into a format Cocoa can query.
+COMPONENT_EXPORT(AX_PLATFORM)
 @interface BrowserAccessibilityCocoa : AXPlatformNodeCocoa
 
 // This creates a cocoa browser accessibility object around

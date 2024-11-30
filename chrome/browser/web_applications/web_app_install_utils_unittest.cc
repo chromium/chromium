@@ -40,7 +40,6 @@
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -155,14 +154,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   }
 
   {
-    auto url_handler = blink::mojom::ManifestUrlHandler::New();
-    url_handler->origin =
-        url::Origin::Create(GURL("https://url_handlers_origin.com/"));
-    url_handler->has_origin_wildcard = false;
-    manifest.url_handlers.push_back(std::move(url_handler));
-  }
-
-  {
     auto scope_extension = blink::mojom::ManifestScopeExtension::New();
     scope_extension->origin =
         url::Origin::Create(GURL("https://scope_extensions_origin.com/"));
@@ -269,13 +260,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   auto protocol_handler = web_app_info.protocol_handlers[0];
   EXPECT_EQ(protocol_handler.protocol, "mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
-
-  // Check URL handlers were updated.
-  EXPECT_EQ(1u, web_app_info.url_handlers.size());
-  auto url_handler = web_app_info.url_handlers[0];
-  EXPECT_EQ(url_handler.origin,
-            url::Origin::Create(GURL("https://url_handlers_origin.com/")));
-  EXPECT_FALSE(url_handler.has_origin_wildcard);
 
   // Check scope extensions were updated.
   EXPECT_EQ(1u, web_app_info.scope_extensions.size());
@@ -480,14 +464,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   }
 
   {
-    auto url_handler = blink::mojom::ManifestUrlHandler::New();
-    url_handler->origin =
-        url::Origin::Create(GURL("https://url_handlers_origin.com/"));
-    url_handler->has_origin_wildcard = true;
-    manifest.url_handlers.push_back(std::move(url_handler));
-  }
-
-  {
     auto scope_extension = blink::mojom::ManifestScopeExtension::New();
     scope_extension->origin =
         url::Origin::Create(GURL("https://scope_extensions_origin.com/"));
@@ -608,13 +584,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   auto protocol_handler = web_app_info.protocol_handlers[0];
   EXPECT_EQ(protocol_handler.protocol, "mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
-
-  // Check URL handlers were updated.
-  EXPECT_EQ(1u, web_app_info.url_handlers.size());
-  auto url_handler = web_app_info.url_handlers[0];
-  EXPECT_EQ(url_handler.origin,
-            url::Origin::Create(GURL("https://url_handlers_origin.com/")));
-  EXPECT_TRUE(url_handler.has_origin_wildcard);
 
   // Check scope extensions were updated.
   EXPECT_EQ(1u, web_app_info.scope_extensions.size());

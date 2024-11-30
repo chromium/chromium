@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_mediator.h"
 
+#import "base/functional/bind.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
@@ -32,6 +34,9 @@
   // Retains the on-device session in memory.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       _on_device_session;
+
+  // The Tab Organization feature's request wrapper.
+  TabOrganizationRequestWrapper* _tabOrganizationRequestWrapper;
 #endif
 }
 
@@ -85,33 +90,20 @@
 - (void)executeGroupTabsWithStrategy:
     (optimization_guide::proto::
          TabOrganizationRequest_TabOrganizationModelStrategy)strategy {
-  // Sets up tab grouping request.
-  optimization_guide::proto::TabOrganizationRequest request;
-  request.set_active_tab_id(
-      _webStateList->GetActiveWebState()->GetUniqueIdentifier().identifier());
-  request.set_allow_reorganizing_existing_groups(true);
-  request.set_model_strategy(strategy);
-
-  // Adds information from each open tab to the request.
-  // TODO(crbug.com/370768381): Add page context for each tab.
-  for (int index = 0; index < _webStateList->count(); ++index) {
-    web::WebState* webState = _webStateList->GetWebStateAt(index);
-    ::optimization_guide::proto::Tab* tab = request.add_tabs();
-    tab->set_tab_id(webState->GetUniqueIdentifier().identifier());
-    tab->set_title(base::UTF16ToUTF8(webState->GetTitle()));
-    tab->set_url(webState->GetVisibleURL().spec());
-  }
-
-  // Execute the request.
   __weak __typeof(self) weakSelf = self;
-  _service->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kTabOrganization, request,
-      /*execution_timeout*/ std::nullopt,
-      base::BindOnce(
-          ^(optimization_guide::OptimizationGuideModelExecutionResult result,
-            std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
-            [weakSelf onGroupTabsResponse:std::move(result)];
-          }));
+
+  // Create the TabOrganization request wrapper, and start populating its
+  // fields. When completed, `completionCallback` will be executed.
+  _tabOrganizationRequestWrapper = [[TabOrganizationRequestWrapper alloc]
+                 initWithWebStateList:_webStateList
+      allowReorganizingExistingGroups:true
+                     groupingStrategy:strategy
+                   completionCallback:base::BindOnce(^(
+                                          optimization_guide::proto::
+                                              TabOrganizationRequest* request) {
+                     [weakSelf onTabOrganizationRequestCreated:request];
+                   })];
+  [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
 }
 
 #pragma mark - Private
@@ -162,6 +154,23 @@
   }
 
   [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)];
+}
+
+// Handles the populated tab organization request by passing it to the model
+// execution service.
+- (void)onTabOrganizationRequestCreated:
+    (optimization_guide::proto::TabOrganizationRequest*)request {
+  // Execute the request.
+  __weak __typeof(self) weakSelf = self;
+  _service->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kTabOrganization, *request,
+      /*execution_timeout*/ std::nullopt,
+      base::BindOnce(
+          ^(optimization_guide::OptimizationGuideModelExecutionResult result,
+            std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
+            [weakSelf onGroupTabsResponse:std::move(result)];
+          }));
+  _tabOrganizationRequestWrapper = nil;
 }
 
 // Handles the response for a tab organization query.

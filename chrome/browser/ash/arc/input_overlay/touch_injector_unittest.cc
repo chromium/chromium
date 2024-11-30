@@ -250,9 +250,8 @@ class TouchInjectorTest : public views::ViewsTestBase {
     return injector_->ConvertToProto();
   }
 
-  void PrepareToBindPosition(Action* action,
-                             std::unique_ptr<Position> position) {
-    action->PrepareToBindPositionForTesting(std::move(position));
+  void BindPosition(Action* action, std::unique_ptr<Position> position) {
+    action->BindPositionForTesting(std::move(position));
   }
 
   bool GetHasPendingTouchEvents() {
@@ -1164,17 +1163,15 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   auto* expected_input = new_input.get();
   injector_->OnInputBindingChange(&*injector_->actions()[1],
                                   std::move(new_input));
-  injector_->OnApplyPendingBinding();
   // Change position binding on actions[0].
   auto new_pos = std::make_unique<Position>(PositionType::kDefault);
   new_pos->Normalize(gfx::Point(20, 20), gfx::RectF(100, 100));
   auto expected_pos = *new_pos;
-  PrepareToBindPosition(injector_->actions()[0].get(), std::move(new_pos));
-  injector_->OnApplyPendingBinding();
+  BindPosition(injector_->actions()[0].get(), std::move(new_pos));
   auto proto = ConvertToProto();
   // Check if the system version is serialized correctly.
   EXPECT_TRUE(proto->has_system_version());
-  EXPECT_EQ(kSystemVersionAlphaV2, proto->system_version());
+  EXPECT_EQ(kSystemVersionAlphaV2Plus, proto->system_version());
   // Check whether the actions[1] with new input binding is converted to proto
   // correctly.
   auto action_proto = proto->actions()[1];

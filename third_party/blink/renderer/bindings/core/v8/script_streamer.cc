@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -89,8 +90,10 @@ v8::ScriptType ScriptTypeForStreamingTask(ScriptResource* script_resource) {
       // of <link rel=modulepreload>. Try streaming parsing as module instead in
       // these cases (https://crbug.com/1178198).
       if (script_resource->IsUnusedPreload()) {
-        if (script_resource->Url().GetPath().ToString().EndsWithIgnoringCase(
-                ".mjs")) {
+        if (script_resource->Url()
+                .GetPath()
+                .ToString()
+                .DeprecatedEndsWithIgnoringCase(".mjs")) {
           return v8::ScriptType::kModule;
         }
       }
@@ -928,8 +931,7 @@ void ResourceScriptStreamer::SendClientLoadFinishedCallback() {
 
   switch (loading_state_) {
     case LoadingState::kLoading:
-      CHECK(false);
-      break;
+      NOTREACHED();
     case LoadingState::kCancelled:
       response_body_loader_client_->DidCancelLoadingBody();
       break;
@@ -954,8 +956,7 @@ void ResourceScriptStreamer::AdvanceLoadingState(LoadingState new_state) {
     case LoadingState::kLoaded:
     case LoadingState::kFailed:
     case LoadingState::kCancelled:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 
   loading_state_ = new_state;
@@ -1096,40 +1097,6 @@ std::ostream& operator<<(std::ostream& o, const BackgroundProcessorState& s) {
 }
 #endif  // DCHECK_IS_ON()
 
-std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
-MaybeCreateConsumeCodeCacheTask(std::optional<mojo_base::BigBuffer>& big_buffer,
-                                const String& encoding,
-                                v8::Isolate* isolate,
-                                bool& has_code_cache,
-                                v8::ScriptType script_type) {
-  CHECK(!has_code_cache);
-  if (script_type == v8::ScriptType::kModule) {
-    // Currently ModuleScript doesn't support off-thread cache consumption.
-    return nullptr;
-  }
-  if (!big_buffer) {
-    return nullptr;
-  }
-  scoped_refptr<CachedMetadata> metadata =
-      CachedMetadata::CreateFromSerializedData(*big_buffer);
-  if (!metadata) {
-    return nullptr;
-  }
-  std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask> task;
-  if (V8CodeCache::HasCodeCache(*metadata, encoding)) {
-    has_code_cache = true;
-    if (features::kBackgroundCodeCacheDecoderStart.Get()) {
-      task.reset(v8::ScriptCompiler::StartConsumingCodeCacheOnBackground(
-          isolate, V8CodeCache::CreateCachedData(metadata)));
-    }
-  }
-  absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> drained_data =
-      std::move(*metadata).DrainSerializedData();
-  CHECK(absl::holds_alternative<mojo_base::BigBuffer>(drained_data));
-  big_buffer = std::move(absl::get<mojo_base::BigBuffer>(drained_data));
-  return task;
-}
-
 std::unique_ptr<v8_compile_hints::CompileHintsForStreaming>
 BuildCompileHintsForStreaming(
     v8_compile_hints::CompileHintsForStreaming::Builder& builder,
@@ -1232,6 +1199,9 @@ class BackgroundResourceScriptStreamer::BackgroundProcessor final
   bool TryStartStreamingTask(MojoResult result,
                              const mojo::HandleSignalsState& state);
 
+  std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+  MaybeCreateConsumeCodeCacheTask(bool& has_code_cache);
+
   void OnFinishStreaming(
       std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source,
       ScriptDecoderPtr script_decoder,
@@ -1283,6 +1253,12 @@ class BackgroundResourceScriptStreamer::BackgroundProcessor final
 
   BackgroundProcessorState state_ =
       BackgroundProcessorState::kWaitingForResponse;
+
+  // If the streamer started consuming the code cache data before checking
+  // whether that data is correct for the current script, then this array
+  // contains the script hash from the code cache data.
+  std::unique_ptr<ParkableStringImpl::SecureDigest>
+      sha256_digest_from_code_cache_;
 
   SEQUENCE_CHECKER(background_sequence_checker_);
   base::WeakPtrFactory<BackgroundProcessor> weak_factory_{this};
@@ -1451,9 +1427,8 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
   background_task_runner_ = background_task_runner;
 
   bool has_code_cache = false;
-  if (auto consume_code_cache_task = MaybeCreateConsumeCodeCacheTask(
-          cached_metadata_, encoding_.GetName(), isolate_, has_code_cache,
-          script_type())) {
+  if (auto consume_code_cache_task =
+          MaybeCreateConsumeCodeCacheTask(has_code_cache)) {
     const uint64_t trace_id =
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this));
     TRACE_EVENT_WITH_FLOW1(
@@ -1740,6 +1715,56 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::OnFinishStreaming(
                                                 std::move(cached_metadata_));
 }
 
+std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+BackgroundResourceScriptStreamer::BackgroundProcessor::
+    MaybeCreateConsumeCodeCacheTask(bool& has_code_cache) {
+  CHECK(!has_code_cache);
+  if (script_type() == v8::ScriptType::kModule) {
+    // Currently ModuleScript doesn't support off-thread cache consumption.
+    return nullptr;
+  }
+  if (!cached_metadata_) {
+    return nullptr;
+  }
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::CreateFromSerializedData(*cached_metadata_);
+  if (!metadata) {
+    // Check whether the cached metadata contains a content hash.
+    if (cached_metadata_->size() < sizeof(CachedMetadataHeaderWithHash)) {
+      return nullptr;
+    }
+    const CachedMetadataHeaderWithHash* header =
+        reinterpret_cast<const CachedMetadataHeaderWithHash*>(
+            cached_metadata_->data());
+    if (header->marker !=
+        CachedMetadataHandler::kSingleEntryWithHashAndPadding) {
+      return nullptr;
+    }
+    metadata = CachedMetadata::CreateFromSerializedData(
+        *cached_metadata_, sizeof(CachedMetadataHeaderWithHash));
+    if (!metadata) {
+      return nullptr;
+    }
+    sha256_digest_from_code_cache_ =
+        std::make_unique<ParkableStringImpl::SecureDigest>();
+    sha256_digest_from_code_cache_->AppendSpan(base::span(header->hash));
+  }
+  std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask> task;
+  if (V8CodeCache::HasCodeCache(*metadata, encoding_.GetName())) {
+    has_code_cache = true;
+    if (features::kBackgroundCodeCacheDecoderStart.Get()) {
+      task.reset(v8::ScriptCompiler::StartConsumingCodeCacheOnBackground(
+          isolate_, V8CodeCache::CreateCachedData(metadata)));
+    }
+  }
+  // Keep the buffer alive while V8 reads from it.
+  absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> drained_data =
+      std::move(*metadata).DrainSerializedData();
+  CHECK(absl::holds_alternative<mojo_base::BigBuffer>(drained_data));
+  cached_metadata_ = std::move(absl::get<mojo_base::BigBuffer>(drained_data));
+  return task;
+}
+
 // static
 void BackgroundResourceScriptStreamer::BackgroundProcessor::
     RunConsumingCodeCacheTask(
@@ -1811,6 +1836,13 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::
   CHECK(consume_code_cache_task_);
   CHECK(decoder_result_);
   SetState(BackgroundProcessorState::kFinished);
+  if (sha256_digest_from_code_cache_) {
+    if (*sha256_digest_from_code_cache_ != *decoder_result_->digest) {
+      // The deserialized code cache data is incorrect; abandon it.
+      consume_code_cache_task_ = nullptr;
+    }
+    sha256_digest_from_code_cache_ = nullptr;
+  }
   client_->PostTaskToMainThread(CrossThreadBindOnce(
       &BackgroundResourceScriptStreamer::OnResult,
       MakeUnwrappingCrossThreadWeakHandle(std::move(streamer_handle_)),

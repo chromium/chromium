@@ -178,8 +178,8 @@ class GeolocationLocationProviderManagerTest : public testing::Test {
   // and avoiding invalid configurations.
   bool SetExperimentMode(mojom::LocationProviderManagerMode mode) {
     auto options =
-        base::make_span(features::kLocationProviderManagerParam.options,
-                        features::kLocationProviderManagerParam.option_count);
+        base::span(features::kLocationProviderManagerParam.options,
+                   features::kLocationProviderManagerParam.option_count);
     auto it = std::ranges::find(
         options, mode,
         &base::FeatureParam<

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.desktop_windowing;
 
+import android.app.Activity;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
@@ -55,6 +57,26 @@ public class AppHeaderUtils {
 
         // Be sure to also update enums.xml when updating these values.
         int NUM_ENTRIES = 3;
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        WindowingMode.UNKNOWN,
+        WindowingMode.FULLSCREEN,
+        WindowingMode.PICTURE_IN_PICTURE,
+        WindowingMode.DESKTOP_WINDOW,
+        WindowingMode.MULTI_WINDOW,
+    })
+    public @interface WindowingMode {
+        int UNKNOWN = 0;
+        int FULLSCREEN = 1;
+        int PICTURE_IN_PICTURE = 2;
+        int DESKTOP_WINDOW = 3;
+        int MULTI_WINDOW = 4;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 5;
     }
 
     private static Boolean sIsAppInDesktopWindowForTesting;
@@ -125,6 +147,34 @@ public class AppHeaderUtils {
         }
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName, state, DesktopWindowModeState.NUM_ENTRIES);
+    }
+
+    /**
+     * Returns the {@link WindowingMode} in which the app is running.
+     *
+     * @param activity The {@link Activity} that is running in the window.
+     * @param isInDesktopWindow Whether the app is running in a desktop window.
+     * @param currentMode The current {@link WindowingMode}.
+     */
+    public static int getWindowingMode(
+            Activity activity, boolean isInDesktopWindow, int currentMode) {
+        @WindowingMode int newMode;
+        if (isInDesktopWindow) {
+            newMode = WindowingMode.DESKTOP_WINDOW;
+        } else if (activity.isInPictureInPictureMode()) {
+            newMode = WindowingMode.PICTURE_IN_PICTURE;
+        } else {
+            newMode =
+                    activity.isInMultiWindowMode()
+                            ? WindowingMode.MULTI_WINDOW
+                            : WindowingMode.FULLSCREEN;
+        }
+        if (newMode != currentMode) {
+            // Record histogram only when the windowing mode changes.
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.MultiWindowMode.Configuration", newMode, WindowingMode.NUM_ENTRIES);
+        }
+        return newMode;
     }
 
     /**

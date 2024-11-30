@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/core/session_id.h"
@@ -60,6 +61,14 @@ void SessionServiceTabGroupSyncObserver::OnTabGroupRemoved(
   }
 
   UpdateTabGroupSessionMetadata(local_id, std::nullopt);
+}
+
+void SessionServiceTabGroupSyncObserver::OnTabGroupMigrated(
+    const tab_groups::SavedTabGroup& new_group,
+    const base::Uuid& old_sync_id,
+    tab_groups::TriggerSource source) {
+  UpdateTabGroupSessionMetadata(new_group.local_group_id(),
+                                new_group.saved_guid().AsLowercaseString());
 }
 
 void SessionServiceTabGroupSyncObserver::OnTabGroupLocalIdChanged(

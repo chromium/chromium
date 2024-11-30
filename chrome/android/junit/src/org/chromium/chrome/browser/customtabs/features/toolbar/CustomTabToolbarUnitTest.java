@@ -591,7 +591,7 @@ public class CustomTabToolbarUnitTest {
     })
     public void testSecurityIconHidden() {
         when(mLocationBarModel.getSecurityIconResource(anyBoolean()))
-                .thenReturn(R.drawable.omnibox_https_valid_refresh);
+                .thenReturn(R.drawable.omnibox_https_valid_page_info);
         when(mLocationBarModel.getSecurityLevel()).thenReturn(ConnectionSecurityLevel.SECURE);
 
         mLocationBar.onSecurityStateChanged();

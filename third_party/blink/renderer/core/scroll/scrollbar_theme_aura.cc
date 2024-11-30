@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_aura.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/input/scrollbar.h"
@@ -534,35 +535,57 @@ bool ScrollbarThemeAura::UsesNinePatchTrackAndButtonsResource() const {
 
 gfx::Size ScrollbarThemeAura::NinePatchTrackAndButtonsCanvasSize(
     const Scrollbar& scrollbar) const {
+  return NinePatchTrackAndButtonsCanvasSize(scrollbar, /*scale=*/1.f);
+}
+
+gfx::Size ScrollbarThemeAura::NinePatchTrackAndButtonsCanvasSize(
+    const Scrollbar& scrollbar,
+    float scale) const {
   CHECK(UsesNinePatchTrackAndButtonsResource());
-  const gfx::Size button_size = ButtonSize(scrollbar);
+  const gfx::SizeF button_size =
+      ScaleSize(gfx::SizeF(ButtonSize(scrollbar)), scale);
   if (button_size.IsEmpty()) {
     return gfx::Size(1, 1);
   }
-  const gfx::Size scrollbar_size = scrollbar.Size();
+  const gfx::Size scrollbar_size = ScaleToCeiledSize(scrollbar.Size(), scale);
   if (scrollbar.Orientation() == kVerticalScrollbar) {
     return gfx::Size(
         button_size.width(),
-        std::min(scrollbar_size.height(), button_size.height() * 2 + 1));
+        std::min(scrollbar_size.height(),
+                 base::ClampCeil(button_size.height() * 2 + scale)));
   } else {
-    return gfx::Size(
-        std::min(scrollbar_size.width(), button_size.width() * 2 + 1),
-        button_size.height());
+    return gfx::Size(std::min(scrollbar_size.width(),
+                              base::ClampCeil(button_size.width() * 2 + scale)),
+                     button_size.height());
   }
 }
 
 gfx::Rect ScrollbarThemeAura::NinePatchTrackAndButtonsAperture(
     const Scrollbar& scrollbar) const {
+  return NinePatchTrackAndButtonsAperture(scrollbar, /*scale=*/1.f);
+}
+
+gfx::Rect ScrollbarThemeAura::NinePatchTrackAndButtonsAperture(
+    const Scrollbar& scrollbar,
+    float scale) const {
   CHECK(UsesNinePatchTrackAndButtonsResource());
-  const gfx::Size scrollbar_size = scrollbar.Size();
-  const gfx::Size canvas_size = NinePatchTrackAndButtonsCanvasSize(scrollbar);
-  if (canvas_size == scrollbar_size) {
+  const gfx::Size canvas_size =
+      NinePatchTrackAndButtonsCanvasSize(scrollbar, scale);
+  if (canvas_size == ScaleToCeiledSize(scrollbar.Size(), scale)) {
     return gfx::Rect(canvas_size);
   }
+
+  // If the canvas' length is even, then shift the aperture one pixel back from
+  // the middle and make it two pixels wide to maintain symmetry in the
+  // arrows when scaling.
   if (scrollbar.Orientation() == kVerticalScrollbar) {
-    return gfx::Rect(0, canvas_size.height() / 2, canvas_size.width(), 1);
+    const int offset = 1 - canvas_size.height() % 2;
+    return gfx::Rect(0, canvas_size.height() / 2 - offset, canvas_size.width(),
+                     1 + offset);
   } else {
-    return gfx::Rect(canvas_size.width() / 2, 0, 1, canvas_size.height());
+    const int offset = 1 - canvas_size.width() % 2;
+    return gfx::Rect(canvas_size.width() / 2 - offset, 0, 1 + offset,
+                     canvas_size.height());
   }
 }
 

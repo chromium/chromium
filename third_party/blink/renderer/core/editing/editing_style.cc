@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/editing/commands/apply_style_command.h"
@@ -400,10 +399,12 @@ const CSSValue* HTMLFontSizeEquivalent::AttributeValueAsCSSValue(
   const AtomicString& value = element->getAttribute(attr_name_);
   if (value.IsNull())
     return nullptr;
-  CSSValueID size;
-  if (!HTMLFontElement::CssValueFromFontSizeNumber(value, size))
+  std::optional<CSSValueID> size =
+      HTMLFontElement::CssValueFromFontSizeNumber(value);
+  if (!size) {
     return nullptr;
-  return CSSIdentifierValue::Create(size);
+  }
+  return CSSIdentifierValue::Create(*size);
 }
 
 EditingStyle::EditingStyle(Element* element,
@@ -524,7 +525,7 @@ static bool IsRedundantTextAlign(MutableCSSPropertyValueSet* style,
   if (text_align == base_text_align)
     return true;
   const ComputedStyle* node_style =
-      node->GetComputedStyleForElementOrLayoutObject();
+      GetComputedStyleForElementOrLayoutObject(*node);
   if (!node_style) {
     return true;
   }
@@ -605,7 +606,7 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
   }
 
   const ComputedStyle* computed_style =
-      node ? node->GetComputedStyleForElementOrLayoutObject() : nullptr;
+      node ? GetComputedStyleForElementOrLayoutObject(*node) : nullptr;
   if (computed_style) {
     // Fix for crbug.com/768261: due to text-autosizing, reading the current
     // computed font size and re-writing it to an element may actually cause the

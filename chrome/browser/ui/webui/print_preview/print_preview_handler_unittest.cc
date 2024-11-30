@@ -23,6 +23,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,10 +56,18 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
+#include "printing/backend/test_print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/oop_features.h"
+#include "chrome/browser/printing/print_backend_service_test_impl.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#endif
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -410,6 +419,14 @@ class PrintPreviewHandlerTest : public testing::Test {
   }
 
   void SetUp() override {
+    test_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
+    PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    if (IsOopPrintingEnabled()) {
+      print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
+          test_remote_, test_print_backend_, /*sandboxed=*/true);
+    }
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 #endif
@@ -467,6 +484,8 @@ class PrintPreviewHandlerTest : public testing::Test {
     CHECK(dialog_controller);
     dialog_controller->DisassociateWebContentsesForTesting(
         preview_web_contents_.get());
+
+    PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -725,6 +744,11 @@ class PrintPreviewHandlerTest : public testing::Test {
   std::unique_ptr<crosapi::CrosapiManager> manager_;
 #endif
   TestingProfile profile_;
+  scoped_refptr<TestPrintBackend> test_print_backend_;
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  mojo::Remote<mojom::PrintBackendService> test_remote_;
+  std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
+#endif
   std::unique_ptr<content::TestWebUI> web_ui_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> preview_web_contents_;

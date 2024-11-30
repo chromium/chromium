@@ -76,7 +76,7 @@ class SavedTabGroup {
     return saved_tabs_;
   }
   std::optional<size_t> position() const { return position_; }
-  const std::optional<std::string>& collaboration_id() const {
+  const std::optional<CollaborationId>& collaboration_id() const {
     return collaboration_id_;
   }
   std::optional<base::Uuid> originating_saved_tab_group_guid() const {
@@ -121,7 +121,7 @@ class SavedTabGroup {
   SavedTabGroup& SetPosition(size_t position);
   SavedTabGroup& SetPinned(bool pinned);
   SavedTabGroup& SetCollaborationId(
-      std::optional<std::string> collaboration_id);
+      std::optional<CollaborationId> collaboration_id);
   SavedTabGroup& SetOriginatingSavedTabGroupGuid(
       std::optional<base::Uuid> originating_saved_tab_group_guid);
 
@@ -178,7 +178,7 @@ class SavedTabGroup {
   // Creates a copy of this group and converts it to a shared tab group. The new
   // group and new tabs will have new UUIDs. Local tab and group IDs are not
   // copied.
-  SavedTabGroup CloneAsSharedTabGroup(std::string collaboration_id) const;
+  SavedTabGroup CloneAsSharedTabGroup(CollaborationId collaboration_id) const;
 
   // Whether the TabGroup is pending sanitization.
   bool IsPendingSanitization() const;
@@ -251,7 +251,7 @@ class SavedTabGroup {
   base::Time last_user_interaction_time_;
 
   // Collaboration ID in case if the group is shared.
-  std::optional<std::string> collaboration_id_;
+  std::optional<CollaborationId> collaboration_id_;
 
   // The saved guid of the group that this group was created from. Used for
   // shared tab groups only.

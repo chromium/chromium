@@ -8,16 +8,6 @@ config("jni_include_dir") {
   include_dirs = [ jni_headers_dir ]
 }
 
-config("jni_zero_defines") {
-  defines = []
-  if (is_robolectric) {
-    defines += [ "JNI_ZERO_IS_ROBOLECTRIC" ]
-  }
-  if (enable_jni_multiplexing) {
-    defines += [ "JNI_ZERO_MULTIPLEXING_ENABLED" ]
-  }
-}
-
 generate_jni("generate_jni") {
   sources = [
     "java/src/org/jni_zero/JniInit.java",
@@ -66,12 +56,19 @@ component("jni_zero") {
     "type_conversions.h",
   ]
   configs += [ ":jni_include_dir" ]
-  public_configs = [ ":jni_zero_defines" ]
+
+  defines = []
+  if (enable_jni_multiplexing) {
+    defines += [ "JNI_ZERO_MULTIPLEXING_ENABLED" ]
+  }
+  if (is_robolectric) {
+    defines += [ "JNI_ZERO_IS_ROBOLECTRIC" ]
+  }
 
   if (is_android) {
     libs = [ "log" ]
   } else if (is_robolectric) {
-    public_configs += [ "//third_party/jdk:jdk" ]
+    public_configs = [ "//third_party/jdk:jdk" ]
   }
 
   deps = [
@@ -94,7 +91,7 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/CalledByNativeUnchecked.java",
       "java/src/org/jni_zero/JNINamespace.java",
       "java/src/org/jni_zero/JniInit.java",
-      "java/src/org/jni_zero/JniTestOverrides.java",
+      "java/src/org/jni_zero/JniTestInstancesSnapshot.java",
       "java/src/org/jni_zero/JniType.java",
       "java/src/org/jni_zero/JniUtil.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",
@@ -109,8 +106,8 @@ if (enable_java_templates && is_android) {
     sources = [
       "java/src/org/jni_zero/CheckDiscard.java",
       "java/src/org/jni_zero/JniStaticTestMocker.java",
+      "java/src/org/jni_zero/JniTestInstanceHolder.java",
       "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
-      "java/src/org/jni_zero/internal/JniOverrideHolder.java",
     ]
   }
 

@@ -78,7 +78,7 @@ class CORE_EXPORT GapData {
   bool IsRepeaterData() const { return value_repeater_ != nullptr; }
 
  private:
-  T value_;
+  T value_ = T();
   Member<ValueRepeater<T>> value_repeater_;
 };
 
@@ -86,5 +86,6 @@ class CORE_EXPORT GapData {
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::GapData<blink::StyleColor>)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::GapData<int>)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_H_

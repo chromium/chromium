@@ -91,8 +91,8 @@ void operator<<(std::ostream& output, const ShapeResultRunData& x) {
 
 // Create a string of the specified length, filled with |ch|.
 String CreateStringOf(UChar ch, unsigned length) {
-  UChar* data;
-  String string(StringImpl::CreateUninitialized(length, data));
+  base::span<UChar> data;
+  String string = String::CreateUninitialized(length, data);
   string.Fill(ch);
   return string;
 }

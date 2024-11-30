@@ -1603,8 +1603,11 @@ void PaymentsDataManager::RemoveLocalDataModifiedBetween(base::Time begin,
   }
 }
 
-void PaymentsDataManager::RecordUseOfCard(const CreditCard* card) {
-  CreditCard* credit_card = GetCreditCardByGUID(card->guid());
+void PaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
+  CreditCard* credit_card = GetCreditCardByGUID(card.guid());
+  // This early return is necessary because this is called at filling time,
+  // where a credit card might be filled even though it is not in the CC
+  // storage. An example would be filling a scanned credit card.
   if (!credit_card) {
     return;
   }
@@ -2099,9 +2102,9 @@ void PaymentsDataManager::OnPaymentInstrumentsRefreshed(
     updated_urls.emplace_back(display_icon_url);
   }
   if (!updated_urls.empty()) {
-    FetchImagesForURLs(
-        updated_urls,
-        base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSquare));
+    FetchImagesForURLs(updated_urls,
+                       {AutofillImageFetcherBase::ImageSize::kSmall,
+                        AutofillImageFetcherBase::ImageSize::kLarge});
   }
 }
 

@@ -35,6 +35,8 @@ class ArcKeyMintBridge : public KeyedService,
   // browser |context| is not allowed to use ARC.
   static ArcKeyMintBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcKeyMintBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcKeyMintBridge(content::BrowserContext* context,
                    ArcBridgeService* bridge_service);
@@ -57,10 +59,16 @@ class ArcKeyMintBridge : public KeyedService,
       std::vector<keymint::mojom::ChromeOsKeyPtr> keys,
       UpdatePlaceholderKeysCallback callback,
       bool bootstrapResult);
+  // Allows to set the ARCVM serial number in KeyMint.
+  // This can only be set once per user on startup.
+  void SetSerialNumberInKeyMint(const std::string& serial_number);
   // KeyMintHost mojo interface.
   void GetServer(GetServerCallback callback) override;
 
   static void EnsureFactoryBuilt();
+  void SetCertStoreBridgeForTesting(
+      std::unique_ptr<keymint::CertStoreBridgeKeyMint> cert_store_bridge);
+  void SendSerialNumberToKeyMintForTesting();
 
  private:
   using BootstrapMojoConnectionCallback = base::OnceCallback<void(bool)>;
@@ -70,6 +78,7 @@ class ArcKeyMintBridge : public KeyedService,
                                  bool bootstrapResult);
   void GetServerAfterBootstrap(GetServerCallback callback,
                                bool bootstrapResult);
+  void SendSerialNumberToKeyMint();
 
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
@@ -80,6 +89,7 @@ class ArcKeyMintBridge : public KeyedService,
   // Points to the host implementation in Chrome, used to interact with the
   // arc-keymintd daemon.
   std::unique_ptr<keymint::CertStoreBridgeKeyMint> cert_store_bridge_;
+  std::optional<std::string> arcvm_serial_number_;
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcKeyMintBridge> weak_factory_;

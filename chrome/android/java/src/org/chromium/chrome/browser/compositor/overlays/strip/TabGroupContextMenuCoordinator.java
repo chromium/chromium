@@ -32,10 +32,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
@@ -48,6 +48,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -105,7 +106,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             TabGroupModelFilter tabGroupModelFilter,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
-            TabCreator tabCreator,
             WindowAndroid windowAndroid,
             TabGroupSyncService tabGroupSyncService,
             DataSharingTabManager dataSharingTabManager,
@@ -118,7 +118,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabGroupModelFilter,
                         actionConfirmationManager,
                         modalDialogManager,
-                        tabCreator,
                         dataSharingTabManager,
                         onGroupSharedCallback),
                 tabModelSupplier,
@@ -139,7 +138,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      * @param tabModel The tab model.
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
      * @param actionConfirmationManager Used to show a confirmation dialog.
-     * @param tabCreator Used to creeate new tab in group.
      * @param windowAndroid The {@link WindowAndroid} current window.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
      *     UI and DataSharing services.
@@ -151,7 +149,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             TabGroupModelFilter tabGroupModelFilter,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
-            TabCreator tabCreator,
             WindowAndroid windowAndroid,
             DataSharingTabManager dataSharingTabManager,
             Callback<Boolean> onGroupSharedCallback) {
@@ -168,7 +165,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 tabGroupModelFilter,
                 actionConfirmationManager,
                 modalDialogManager,
-                tabCreator,
                 windowAndroid,
                 tabGroupSyncService,
                 dataSharingTabManager,
@@ -182,7 +178,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             TabGroupModelFilter tabGroupModelFilter,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
-            TabCreator tabCreator,
             DataSharingTabManager dataSharingTabManager,
             Callback<Boolean> onGroupSharedCallback) {
         return (menuId, tabId, collaborationId) -> {
@@ -204,8 +199,11 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         /* didCloseCallback= */ null);
                 recordUserAction("DeleteGroup");
             } else if (menuId == org.chromium.chrome.R.id.open_new_tab_in_group) {
-                TabUiUtils.openNtpInGroup(
-                        tabGroupModelFilter, tabCreator, tabId, TabLaunchType.FROM_TAB_GROUP_UI);
+                TabGroupUtils.openUrlInGroup(
+                        tabGroupModelFilter,
+                        UrlConstants.NTP_URL,
+                        tabId,
+                        TabLaunchType.FROM_TAB_GROUP_UI);
                 recordUserAction("NewTabInGroup");
             } else if (menuId == org.chromium.chrome.R.id.share_group) {
                 // Get user assigned group title or the default title "N tabs" if no title is
@@ -215,8 +213,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                                 activity, tabGroupModelFilter, tabId);
 
                 // Create the group share flow and display the share bottom sheet.
-                // TODO(crbug.com/362314403): Use Transitive/SharedGroupObserver to observe share
-                // state update and implement user avatars on group title with shareImageTiles.
                 TabUiUtils.startShareTabGroupFlow(
                         activity,
                         tabGroupModelFilter,
@@ -229,7 +225,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 dataSharingTabManager.showManageSharing(activity, collaborationId);
                 recordUserAction("ManageSharing");
             } else if (menuId == R.id.recent_activity) {
-                dataSharingTabManager.showRecentActivity(collaborationId);
+                dataSharingTabManager.showRecentActivity(activity, collaborationId);
                 recordUserAction("RecentActivity");
             } else if (menuId == R.id.delete_shared_group) {
                 TabUiUtils.deleteSharedTabGroup(

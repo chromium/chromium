@@ -241,6 +241,7 @@ if (!is_cronet_build || is_ios) {
 
     deps = [
       ":library_support",
+      ":url_constants",
       "//base",
       "//base:base_static",
       "//base:i18n",
@@ -258,6 +259,7 @@ if (!is_cronet_build || is_ios) {
       "//extensions/buildflags",
       "//mojo/public/cpp/base:protobuf_support",
       "//third_party/icu",
+      "//ui/base",
       "//url",
     ]
 

@@ -60,6 +60,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -245,8 +246,8 @@ void NavigateToURLWithPost(Browser* browser, const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_FORM_SUBMIT);
 
   std::string post_data("test=body");
-  params.post_data = network::ResourceRequestBody::CreateFromBytes(
-      post_data.data(), post_data.size());
+  params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::as_byte_span(post_data));
 
   NavigateToURL(&params);
 }
@@ -870,7 +871,7 @@ HistoryEnumerator::HistoryEnumerator(Profile* profile) {
   run_loop.Run();
 }
 
-HistoryEnumerator::~HistoryEnumerator() {}
+HistoryEnumerator::~HistoryEnumerator() = default;
 
 // Wait for HistoryService to load.
 class WaitHistoryLoadedObserver : public history::HistoryServiceObserver {
@@ -1073,6 +1074,43 @@ void ViewBoundsWaiter::OnViewBoundsChanged(views::View* observed_view) {
   if (!observed_view_->bounds().IsEmpty()) {
     run_loop_.Quit();
   }
+}
+
+namespace {
+
+class WebModalShowWaiter
+    : public web_modal::WebContentsModalDialogManager::Observer {
+ public:
+  explicit WebModalShowWaiter(content::WebContents* web_contents) {
+    web_modal::WebContentsModalDialogManager::CreateForWebContents(
+        web_contents);
+    manager_ =
+        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+    observation_.Observe(manager_);
+  }
+
+  void Wait() {
+    if (manager_->IsDialogActive()) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+ private:
+  // WebContentsModalDialogManager::Observer:
+  void OnWillShow() override { run_loop_.Quit(); }
+
+  base::RunLoop run_loop_;
+  raw_ptr<web_modal::WebContentsModalDialogManager> manager_;
+  base::ScopedObservation<web_modal::WebContentsModalDialogManager,
+                          web_modal::WebContentsModalDialogManager::Observer>
+      observation_{this};
+};
+
+}  // namespace
+
+void WaitForWebModalDialog(content::WebContents* web_contents) {
+  WebModalShowWaiter(web_contents).Wait();
 }
 
 }  // namespace ui_test_utils

@@ -94,9 +94,8 @@ bool TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
   return false;
 }
 
-void TestPaymentsDataManager::RecordUseOfCard(const CreditCard* card) {
-  CreditCard* credit_card = GetCreditCardByGUID(card->guid());
-  if (credit_card) {
+void TestPaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
+  if (CreditCard* credit_card = GetCreditCardByGUID(card.guid())) {
     credit_card->RecordAndLogUse();
   }
 }

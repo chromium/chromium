@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/scheme_logger.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -218,7 +218,13 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
     case SB_THREAT_TYPE_UNUSED:
     case SB_THREAT_TYPE_SAFE:
       return std::numeric_limits<ThreatSeverity>::max();
-    default:
+    case SB_THREAT_TYPE_EXTENSION:
+    case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+    case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SB_THREAT_TYPE_AD_SAMPLE:
+    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SB_THREAT_TYPE_APK_DOWNLOAD:
       NOTREACHED();
   }
 }

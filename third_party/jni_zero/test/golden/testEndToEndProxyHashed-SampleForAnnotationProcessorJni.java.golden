@@ -7,18 +7,17 @@ import android.content.Context;
 import android.view.View;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
-import org.jni_zero.JniStaticTestMocker;
+import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForAnnotationProcessor;
-import org.jni_zero.internal.JniOverrideHolder;
 import org.stubs.MyClass;
 
 @CheckDiscard("crbug.com/993421")
 class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Natives {
-  private static JniOverrideHolder sOverride;
+  private static JniTestInstanceHolder sOverride;
 
   public static SampleForAnnotationProcessor.Natives get() {
-    JniOverrideHolder holder = sOverride;
+    JniTestInstanceHolder holder = sOverride;
     if (holder != null && holder.value != null) {
       return (SampleForAnnotationProcessor.Natives) holder.value;
     }
@@ -28,13 +27,10 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
 
   public static void setInstanceForTesting(SampleForAnnotationProcessor.Natives impl) {
     if (sOverride == null) {
-      sOverride = JniOverrideHolder.create();
+      sOverride = JniTestInstanceHolder.create();
     }
     sOverride.value = impl;
   }
-
-  // TODO(crbug.com/329069277): Delete.
-  public static final JniStaticTestMocker TEST_HOOKS = x -> setInstanceForTesting((SampleForAnnotationProcessor.Natives) x);
 
 
   @Override
@@ -126,8 +122,7 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
 
   @Override
   public String revString(String stringToReverse) {
-    return (String) GEN_JNI.org_jni_1zero_SampleForAnnotationProcessor_revString(
-        stringToReverse);
+    return (String) GEN_JNI.org_jni_1zero_SampleForAnnotationProcessor_revString(stringToReverse);
   }
 
   @Override
@@ -138,8 +133,7 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
 
   @Override
   public String[] sendToNative(String[] strs) {
-    return (String[]) GEN_JNI.org_jni_1zero_SampleForAnnotationProcessor_sendToNative(
-        strs);
+    return (String[]) GEN_JNI.org_jni_1zero_SampleForAnnotationProcessor_sendToNative(strs);
   }
 
   @Override

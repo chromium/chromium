@@ -9,6 +9,7 @@
 
 #include <iterator>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -68,7 +69,7 @@ void Init() {
 
   {% set tagnames = tags|map(attribute='name')|list() %}
   {% set attrnames = attrs|map(attribute='name')|list() %}
-  static const NameEntry kNames[] = {
+  static constexpr NameEntry kNames[] = {
   {% for name, tag_list in (tags + attrs)|groupby('name')|sort(attribute=0, case_sensitive=True) %}
     { "{{name}}", {{name.original|length}}, {{ (name in tagnames)|int }}, {{ (name in attrnames)|int }} },
   {% endfor %}
@@ -79,7 +80,7 @@ void Init() {
   {% endif %}
   size_t attr_i = 0;
   for (size_t i = 0; i < std::size(kNames); ++i) {
-    StringImpl* impl = StringImpl::CreateStatic(kNames[i].name, kNames[i].length);
+    StringImpl* impl = StringImpl::CreateStatic(base::span(kNames[i].name, kNames[i].length));
     {% if tags %}
     if (kNames[i].is_tag) {
       void* address = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage) + tag_i;

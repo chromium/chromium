@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
@@ -52,7 +53,7 @@ namespace mp2t {
 
 struct EsParserAdts::AdtsFrame {
   // Pointer to the ES data.
-  const uint8_t* data;
+  raw_ptr<const uint8_t> data;
 
   // Frame size;
   int size;
@@ -98,7 +99,7 @@ bool EsParserAdts::LookForAdtsFrame(AdtsFrame* adts_frame) {
     }
 
     es_queue_->Pop(offset);
-    es_queue_->Peek(&adts_frame->data, &es_size);
+    es_queue_->Peek(&adts_frame->data.AsEphemeralRawAddr(), &es_size);
     adts_frame->queue_offset = es_queue_->head();
     adts_frame->size = frame_size;
     adts_frame->header_size = header_size;

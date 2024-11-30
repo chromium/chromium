@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
@@ -102,6 +103,12 @@ class TestAutofillDriverTemplate : public T {
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override {}
+  void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string& amount)> response_callback)
+      override {}
 
   // The return value contains the FieldGlobalIds of all elements (field_id,
   // type) of `field_type_map` for which
@@ -188,19 +195,31 @@ class TestAutofillDriverTemplate : public T {
 // Consider using TestAutofillDriverInjector in browser tests.
 class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
  public:
-  explicit TestAutofillDriver(AutofillClient* client);
+  explicit TestAutofillDriver(TestAutofillClient* client);
   ~TestAutofillDriver() override;
 
   // AutofillDriver
-  AutofillClient& GetAutofillClient() override;
+  TestAutofillClient& GetAutofillClient() override;
   AutofillManager& GetAutofillManager() override;
+  ukm::SourceId GetPageUkmSourceId() const override;
+  ukm::SourceId GetPageUkmSourceId();
 
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
     autofill_manager_ = std::move(autofill_manager);
   }
 
+  // Initializes UKM source from `url()`. This needs to be called in unittests
+  // after calling Purge for ukm recorder to re-initialize sources.
+  void InitializeUKMSources();
+
+  // The faked URL of the driver's frame.
+  const GURL& url() { return url_; }
+  void set_url(GURL url) { url_ = std::move(url); }
+
  private:
-  raw_ref<AutofillClient> autofill_client_;
+  raw_ref<TestAutofillClient> autofill_client_;
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
+  GURL url_{"https://example.test"};
   std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
 };
 

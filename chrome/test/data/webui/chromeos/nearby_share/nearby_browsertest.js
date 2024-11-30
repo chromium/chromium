@@ -21,11 +21,6 @@ const NearbyBrowserTest = class extends PolymerTest {
   get webuiHost() {
     return 'nearby';
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kNearbySharing']};
-  }
 };
 
 [['ConfirmationPage', 'nearby_confirmation_page_test.js'],

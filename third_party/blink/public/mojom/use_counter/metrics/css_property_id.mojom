@@ -837,7 +837,7 @@ enum CSSSampleId {
     kMaskComposite = 778,
     kMaskPosition = 779,
     kMaskMode = 780,
-    kInsetArea = 781,
+    // kInsetArea = 781,
     kViewTransitionClass = 782,
     kPositionTryOrder = 783,
     // kPositionTryOptions = 784,

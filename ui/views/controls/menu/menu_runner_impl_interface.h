@@ -6,9 +6,11 @@
 #define UI_VIEWS_CONTROLS_MENU_MENU_RUNNER_IMPL_INTERFACE_H_
 
 #include <stdint.h>
+
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace gfx {
@@ -45,6 +47,7 @@ class MenuRunnerImplInterface {
       MenuButtonController* button_controller,
       const gfx::Rect& bounds,
       MenuAnchorPosition anchor,
+      ui::mojom::MenuSourceType source_type,
       int32_t run_types,
       gfx::NativeView native_view_for_gestures,
       std::optional<gfx::RoundedCornersF> corners = std::nullopt,

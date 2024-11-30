@@ -36,7 +36,7 @@ InterpolationValue CSSCustomTransformInterpolationType::MaybeConvertValue(
   }
 
   return InterpolationValue(InterpolableTransformList::ConvertCSSValue(
-      value, CSSToLengthConversionData(),
+      value, CSSToLengthConversionData(/*element=*/nullptr),
       TransformOperations::BoxSizeDependentMatrixBlending::kDisallow));
 }
 

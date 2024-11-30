@@ -79,7 +79,6 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
     private static class OverScrollByCallbackHelper extends CallbackHelper {
         int mDeltaX;
         int mDeltaY;
-        int mScrollRangeY;
 
         public int getDeltaX() {
             assert getCallCount() > 0;
@@ -91,15 +90,9 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
             return mDeltaY;
         }
 
-        public int getScrollRangeY() {
-            assert getCallCount() > 0;
-            return mScrollRangeY;
-        }
-
-        public void notifyCalled(int deltaX, int deltaY, int scrollRangeY) {
+        public void notifyCalled(int deltaX, int deltaY) {
             mDeltaX = deltaX;
             mDeltaY = deltaY;
-            mScrollRangeY = scrollRangeY;
             notifyCalled();
         }
     }
@@ -143,7 +136,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                 int maxOverScrollX,
                 int maxOverScrollY,
                 boolean isTouchEvent) {
-            mOverScrollByCallbackHelper.notifyCalled(deltaX, deltaY, scrollRangeY);
+            mOverScrollByCallbackHelper.notifyCalled(deltaX, deltaY);
             return super.overScrollBy(
                     deltaX,
                     deltaY,
@@ -330,20 +323,6 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                     double scrollY = Double.parseDouble(y);
 
                     return Math.abs(xCss - scrollX) < EPSILON && Math.abs(yCss - scrollY) < EPSILON;
-                });
-    }
-
-    private void assertScrolledToBottomInJs(
-            final AwContents awContents, final TestAwContentsClient contentsClient) {
-        final String isBottomScript =
-                "window.scrollY == "
-                        + "(window.document.documentElement.scrollHeight - window.innerHeight)";
-        AwActivityTestRule.pollInstrumentationThread(
-                () -> {
-                    String r =
-                            mActivityTestRule.executeJavaScriptAndWaitForResult(
-                                    awContents, contentsClient, isBottomScript);
-                    return r.equals("true");
                 });
     }
 

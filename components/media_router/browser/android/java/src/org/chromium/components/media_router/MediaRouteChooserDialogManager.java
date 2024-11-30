@@ -78,9 +78,6 @@ public class MediaRouteChooserDialogManager extends BaseMediaRouteDialogManager 
         }
 
         private class DelayedSelectionDialog extends MediaRouteChooserDialog {
-            public DelayedSelectionDialog(Context context) {
-                super(context);
-            }
 
             public DelayedSelectionDialog(Context context, int theme) {
                 super(context, theme);

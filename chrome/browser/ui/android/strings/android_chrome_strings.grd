@@ -1610,14 +1610,6 @@ Your Google account may have other forms of browsing history like searches and a
         Privacy guide explanation closed
       </message>
 
-      <!-- Tracking protection -->
-      <message name="IDS_TRACKING_PROTECTION_TITLE" desc="Tracking Protection preference item title.">
-        Tracking Protection
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_SUMMARY" desc="Tracking Protection preference item summary.">
-        Manage third-party cookies and tracking protections
-      </message>
-
       <!-- IP protection -->
       <message name="IDS_IP_PROTECTION_TITLE" desc="IP Protection preference item title." translateable="false">
         Hide your IP address
@@ -2558,6 +2550,9 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SYNC_PAYMENTS_INTEGRATION" desc="Title for preference which enables import of Google Pay data for Autofill. 'Google Pay' should not be translated as it is the product name.">
         Payment methods, offers, and addresses using Google Pay
+      </message>
+      <message name="IDS_ACCOUNT_SETTINGS_TITLE" desc="Title for the account settings page. [CHAR_LIMIT=32]">
+        Account
       </message>
       <message name="IDS_ACCOUNT_SECTION_HEADER" desc="Header of a section with toggles to control which types of data users can use and save in their Google Account (as opposed to saving them only on the device). Try to avoid long strings because this is a header in large font size.">
         In your Google Account
@@ -3657,9 +3652,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_HEADER" desc="Header of the section with info about the data that users share with Google if they turn on the metric sharing option.">
         Things to consider
-      </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY" desc="Text with info about the data that users share with Google if they turn on the metric sharing option.">
-        Info is sent to Google about your Chrome usage, but it isn\u2019t tied to you\n\nIf Chrome crashes, details about the crash may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs you visit
       </message>
       <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY_WITH_HISTORY_SYNC" desc="Text with info about the data that users share with Google if they turn on the metric sharing option. This version is used when the metrics sharing option is linked to history syncing, as opposed to the whole sync feature in IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY.">
         Info is sent to Google about your Chrome usage, but it isn\u2019t tied to you\n\nIf Chrome crashes, details about the crash may include some personal info\n\nIf you sync your history to your Google Account, metrics may also include info about URLs you visit
@@ -4978,7 +4970,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Search: <ph name="SEARCH_QUERY">%s<ex>Weather in San Francisco</ex></ph>
       </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_MOST_VISITED_TILE_NAVIGATE" desc="Announces that interacting with a Tile takes the user to specific website.">
-        Navigate: <ph name="WEBSITE_TITLE">%1$s<ex>Crater Lake National Park (U.S. National Park Service)</ex></ph>: <ph name="WEBSITE_URL">%2$s<ex>https://www.nps.gov/crla</ex></ph>
+        <ph name="WEBSITE_TITLE">%1$s<ex>Crater Lake National Park (U.S. National Park Service)</ex></ph>: <ph name="WEBSITE_URL">%2$s<ex>https://www.nps.gov/crla</ex></ph>
       </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_MOST_VISITED_LIST" desc="Category name of the most visited sites. Announced as: 'amazon.com, 1 of 10 in list Most Visited Sites, 10 items.'">
         Most visited sites
@@ -5109,12 +5101,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_UNDO_BAR_MULTIPLE_DOWNLOADS_DELETE_MESSAGE" desc="Message shown when you can undo deleting several downloads.">
         <ph name="NUMBER_OF_DOWNLOADS">%1$s<ex>3</ex></ph> downloads deleted
-      </message>
-      <message name="IDS_UNDO_BAR_DELETE_RESTORE_ACCESSIBILITY_MESSAGE" desc="Message spoken out loud for accessibility when a user decides to undo a download deletion.">
-        Restored <ph name="ITEM_TITLE">%1$s<ex>YouTube</ex></ph>
-      </message>
-      <message name="IDS_UNDO_BAR_MULTIPLE_DOWNLOADS_DELETE_RESTORE_ACCESSIBILITY_MESSAGE" desc="Message spoken out loud for accessibility when a user decides to undo multiple download deletions at once.">
-        <ph name="NUMBER_OF_DOWNLOADS">%1$s<ex>3</ex></ph> downloads restored
       </message>
 
       <!-- MultiWindow -->
@@ -6221,18 +6207,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up.">
         To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">%2$s<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK1">&lt;link_privacy_policy&gt;</ph>privacy policy<ph name="END_LINK1">&lt;/link_privacy_policy&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link_terms_of_service&gt;</ph>terms of service<ph name="END_LINK2">&lt;/link_terms_of_service&gt;</ph>.
       </message>
+      <message name="IDS_FILTERED_ACCOUNT_MESSAGE" desc="Message shown to the user when the account they are trying to sign in with has been filtered out by one of the filters passed by the RP.">
+      You can’t sign in using this account
+    </message>
 
-      <!-- TODO(crbug.com/369562441): Update the following string once it is finalized -->
-      <message name="IDS_CUSTOM_TABS_SIGNED_OUT_MESSAGE_TITLE" translateable="false">
-        Running in Chrome
-      </message>
-      <!-- TODO(crbug.com/369562441): Update the following string once it is finalized -->
-      <message name="IDS_CUSTOM_TABS_SIGNED_OUT_MESSAGE_SUBTITLE" translateable="false">
-        Sign in to get your passwords and more on all your devices
-      </message>
-      <!-- TODO(crbug.com/369562441): Update the following string once it is finalized -->
-      <message name="IDS_CUSTOM_TABS_SIGNED_OUT_MESSAGE_BUTTON" translateable="false">
+      <message name="IDS_CUSTOM_TABS_SIGNED_OUT_MESSAGE_BUTTON" desc="This string is found on a primary action button that the user can press if they want to sign-in to Chrome.">
         Sign in
+      </message>
+      <message name="IDS_CUSTOM_TABS_SIGNED_OUT_MESSAGE_SUBTITLE" desc="This string is the body of a message promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to passwords, etc.). We want users to understand why signing in is beneficial, and click 'Sign in' to sign in to their Google Account. The tone should be informative and lightweight.">
+              Sign in to get your passwords and more on all your devices
+            </message>
+      <message name="IDS_CUSTOM_TABS_SIGNED_OUT_MESSAGE_TITLE" desc="This string is the title of a message promotion about signing in to Chrome with the user's Google Account.">
+        Sign in to Chrome
       </message>
 
       <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials.">
@@ -6693,12 +6679,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <!-- Data Sharing Owner Delete Group -->
 
       <!-- Data Sharing Preview Dialog -->
-      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_TITLE" desc="The title for the dialog that shows a preview of a tab group.">
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_TITLE_SINGLE" desc="The title for the dialog that shows a preview of a tab group with a single member.">
+        Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph>
+      </message>
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_TITLE_MULTIPLE" desc="The title for the dialog that shows a preview of a tab group with multiple members.">
 
         {NUM_OTHER_MEMBERS, plural,
-          =0 {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph>}
-          =1 {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and # other}
-          other {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and # others}
+          =1 {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and <ph name="NUMBER_OF_OTHER_MEMBERS">%2$d<ex>1</ex></ph> other}
+          other {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and <ph name="NUMBER_OF_OTHER_MEMBERS">%2$d<ex>1</ex></ph> others}
         }
       </message>
       <message name="IDS_COLLABORATION_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
@@ -6761,7 +6749,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 
       <!-- Data Sharing Owner Manage Flow -->
       <message name ="IDS_COLLABORATION_MANAGE_GROUP_DESCRIPTION" desc="The description of how link sharing works for manage screen.">
-        Anyone with the link can edit all tabs. Learn about shared tab groups
+        Anyone with the link can edit all tabs.
       </message>
       <message name ="IDS_COLLABORATION_MANAGE_SHARE_WISELY" desc="The description of how link sharing works.">
         Always share wisely. Links expire in 48 hours.
@@ -6789,6 +6777,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <!-- Data Sharing Preview Dialog -->
       <message name="IDS_COLLABORATION_PREVIEW_DIALOG_BODY" desc="The body for the dialog that shows a preview of a tab group.">
         <ph name="OWNER_FULL_NAME">%1$s<ex>Ali Connors</ex></ph> (<ph name="OWNER_EMAIL">%2$s<ex>ali.connors@gmail.com</ex></ph>) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hr.
+      </message>
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_TABS" desc="Preview dialog tabs count string.">
+        {TABS_COUNT, plural,
+          =1 {1 tab}
+          other {<ph name="NUMBER_OF_TABS">%1$d<ex>4</ex></ph> tabs}
+        }
       </message>
       <message name="IDS_COLLABORATION_PREVIEW_DIALOG_DETAILS_TABS_IN_GROUP" desc="The title for the tabs in group section in the preview details for a group.">
         Tabs in group
@@ -6911,6 +6905,19 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_TAB_CHANGED_LABEL" desc="The label on a chip denoting a tab was recently changed.">
         Changed
+      </message>
+
+      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_BOTTOM_SHEET_TITLE" desc="The title of the bottom sheet that shows the list of recent activity in a collaboration.">
+        Recent Activity
+      </message>
+      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the recent activity bottom sheet.">
+        Recent activity bottom sheet
+      </message>
+      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_BOTTOM_SHEET_ACCESSIBILITY_OPENED_FULL" desc="Accessibility string that describes that the recent activity bottom sheet has fully opened.">
+        Recent activity bottom sheet opened at full height
+      </message>
+      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_BOTTOM_SHEET_ACCESSIBILITY_CLOSED" desc="Accessibility string that describes that the recent activity bottom sheet has closed.">
+        Recent activity bottom sheet closed
       </message>
 
       <!-- Interstitial shown prior to making digital identity request to wallet -->

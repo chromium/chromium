@@ -150,8 +150,9 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
   const Instruction* const start = static_cast<Instruction*>(std::min(a, b));
   const Instruction* const end = static_cast<Instruction*>(std::max(a, b));
 
-  for (const Instruction& instruction : make_span(start, end))
+  for (const Instruction& instruction : span(start, end)) {
     body->push_back(instruction);
+  }
 }
 
 #if defined(OFFICIAL_BUILD)
@@ -207,7 +208,7 @@ std::vector<Instruction> MaybeSkipCoverageHook(
   // code will falsely exit early, having not found the real expected crash
   // sequence, so this may not adequately ensure that the immediate crash
   // sequence is present. We do check when not under coverage, at least.
-  return DropUntilMatch(instructions, base::make_span(kRequiredBody));
+  return DropUntilMatch(instructions, span(kRequiredBody));
 #else
   return instructions;
 #endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)

@@ -97,8 +97,6 @@ using crdtp::json::ConvertCBORToJSON;
 
 namespace blink {
 
-using protocol::Maybe;
-
 namespace {
 
 bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
@@ -653,7 +651,7 @@ protocol::Response InspectorOverlayAgent::setShowWebVitals(bool show) {
 }
 
 protocol::Response InspectorOverlayAgent::setShowWindowControlsOverlay(
-    protocol::Maybe<protocol::Overlay::WindowControlsOverlayConfig>
+    std::unique_ptr<protocol::Overlay::WindowControlsOverlayConfig>
         wco_config) {
   // Hide WCO when called without a configuration.
   if (!wco_config) {
@@ -675,7 +673,7 @@ protocol::Response InspectorOverlayAgent::setShowWindowControlsOverlay(
 }
 
 protocol::Response InspectorOverlayAgent::setPausedInDebuggerMessage(
-    Maybe<String> message) {
+    std::optional<String> message) {
   paused_in_debugger_message_.Set(message.value_or(String()));
   PickTheRightTool();
   return protocol::Response::Success();
@@ -686,8 +684,8 @@ protocol::Response InspectorOverlayAgent::highlightRect(
     int y,
     int width,
     int height,
-    Maybe<protocol::DOM::RGBA> color,
-    Maybe<protocol::DOM::RGBA> outline_color) {
+    std::unique_ptr<protocol::DOM::RGBA> color,
+    std::unique_ptr<protocol::DOM::RGBA> outline_color) {
   std::unique_ptr<gfx::QuadF> quad =
       std::make_unique<gfx::QuadF>(gfx::RectF(x, y, width, height));
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
@@ -697,8 +695,8 @@ protocol::Response InspectorOverlayAgent::highlightRect(
 
 protocol::Response InspectorOverlayAgent::highlightQuad(
     std::unique_ptr<protocol::Array<double>> quad_array,
-    Maybe<protocol::DOM::RGBA> color,
-    Maybe<protocol::DOM::RGBA> outline_color) {
+    std::unique_ptr<protocol::DOM::RGBA> color,
+    std::unique_ptr<protocol::DOM::RGBA> outline_color) {
   std::unique_ptr<gfx::QuadF> quad = std::make_unique<gfx::QuadF>();
   if (!ParseQuad(std::move(quad_array), quad.get())) {
     return protocol::Response::ServerError("Invalid Quad format");
@@ -709,7 +707,7 @@ protocol::Response InspectorOverlayAgent::highlightQuad(
 }
 
 protocol::Response InspectorOverlayAgent::setShowHinge(
-    protocol::Maybe<protocol::Overlay::HingeConfig> tool_config) {
+    std::unique_ptr<protocol::Overlay::HingeConfig> tool_config) {
   // Hide the hinge when called without a configuration.
   if (!tool_config) {
     hinge_ = nullptr;
@@ -756,10 +754,10 @@ protocol::Response InspectorOverlayAgent::setShowHinge(
 protocol::Response InspectorOverlayAgent::highlightNode(
     std::unique_ptr<protocol::Overlay::HighlightConfig>
         highlight_inspector_object,
-    Maybe<int> node_id,
-    Maybe<int> backend_node_id,
-    Maybe<String> object_id,
-    Maybe<String> selector_list) {
+    std::optional<int> node_id,
+    std::optional<int> backend_node_id,
+    std::optional<String> object_id,
+    std::optional<String> selector_list) {
   Node* node = nullptr;
   protocol::Response response =
       dom_agent_->AssertNode(node_id, backend_node_id, object_id, node);
@@ -950,9 +948,9 @@ protocol::Response InspectorOverlayAgent::setShowIsolatedElements(
 protocol::Response InspectorOverlayAgent::highlightSourceOrder(
     std::unique_ptr<protocol::Overlay::SourceOrderConfig>
         source_order_inspector_object,
-    Maybe<int> node_id,
-    Maybe<int> backend_node_id,
-    Maybe<String> object_id) {
+    std::optional<int> node_id,
+    std::optional<int> backend_node_id,
+    std::optional<String> object_id) {
   Node* node = nullptr;
   protocol::Response response =
       dom_agent_->AssertNode(node_id, backend_node_id, object_id, node);
@@ -971,8 +969,8 @@ protocol::Response InspectorOverlayAgent::highlightSourceOrder(
 
 protocol::Response InspectorOverlayAgent::highlightFrame(
     const String& frame_id,
-    Maybe<protocol::DOM::RGBA> color,
-    Maybe<protocol::DOM::RGBA> outline_color) {
+    std::unique_ptr<protocol::DOM::RGBA> color,
+    std::unique_ptr<protocol::DOM::RGBA> outline_color) {
   LocalFrame* frame =
       IdentifiersFactory::FrameById(inspected_frames_, frame_id);
   // FIXME: Inspector doesn't currently work cross process.
@@ -1005,10 +1003,10 @@ protocol::Response InspectorOverlayAgent::hideHighlight() {
 
 protocol::Response InspectorOverlayAgent::getHighlightObjectForTest(
     int node_id,
-    Maybe<bool> include_distance,
-    Maybe<bool> include_style,
-    Maybe<String> colorFormat,
-    Maybe<bool> show_accessibility_info,
+    std::optional<bool> include_distance,
+    std::optional<bool> include_style,
+    std::optional<String> colorFormat,
+    std::optional<bool> show_accessibility_info,
     std::unique_ptr<protocol::DictionaryValue>* result) {
   Node* node = nullptr;
   protocol::Response response = dom_agent_->AssertNode(node_id, node);
@@ -1577,7 +1575,8 @@ void InspectorOverlayAgent::Inspect(Node* inspected_node) {
 
 protocol::Response InspectorOverlayAgent::setInspectMode(
     const String& mode,
-    Maybe<protocol::Overlay::HighlightConfig> highlight_inspector_object) {
+    std::unique_ptr<protocol::Overlay::HighlightConfig>
+        highlight_inspector_object) {
   if (mode != protocol::Overlay::InspectModeEnum::None &&
       mode != protocol::Overlay::InspectModeEnum::SearchForNode &&
       mode != protocol::Overlay::InspectModeEnum::SearchForUAShadowDOM &&
@@ -1711,7 +1710,8 @@ InspectorOverlayAgent::SourceOrderConfigFromInspectorObject(
 }
 
 protocol::Response InspectorOverlayAgent::HighlightConfigFromInspectorObject(
-    Maybe<protocol::Overlay::HighlightConfig> highlight_inspector_object,
+    std::unique_ptr<protocol::Overlay::HighlightConfig>
+        highlight_inspector_object,
     std::unique_ptr<InspectorHighlightConfig>* out_config) {
   if (!highlight_inspector_object) {
     return protocol::Response::ServerError(

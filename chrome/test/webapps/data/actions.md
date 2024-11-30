@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 177) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 178) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -58,6 +58,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | install_tabbed_no_shortcut | Site | install_policy_app($1, NoShortcut, Browser, WebApp) | 129 | Parameterized | All installation methods that result in a tabbed webapp without shortcut. |  |
 | install_windowed_no_shortcut | Site | install_policy_app($1, NoShortcut, Windowed, WebApp) | 131 | Parameterized | All installation methods that result in a windowed webapp without shortcut. |  |
 | install_by_user_windowed | InstallableSite | install_omnibox_icon($1) & install_menu_option($1) | 137 | Parameterized | All user installation methods that result in a windowed webapp without shortcut. |  |
+| install_windowed | Site | install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, Windowed, WebApp) & install_menu_option($1) | 178 | Parameterized | All installation methods that result in a windowed webapp. |  |
 | # Install & Create Shortcut Parameterized |
 | install_or_shortcut | Site | create_shortcut($1, WindowOptions::All) & install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, WindowOptions::All, WebApp) & install_menu_option($1) | 52 | Parameterized |  |  |
 | install_or_shortcut_by_user | Site | create_shortcut($1, WindowOptions::All) & install_omnibox_icon($1) & install_menu_option($1) | 53 | Parameterized |  |  |

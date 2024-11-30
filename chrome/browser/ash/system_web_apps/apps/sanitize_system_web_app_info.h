@@ -23,6 +23,7 @@ class SanitizeSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
   bool ShouldAllowResize() const override;
   bool ShouldShowInLauncher() const override;
+  bool ShouldAllowScriptsToCloseWindows() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
 };
 

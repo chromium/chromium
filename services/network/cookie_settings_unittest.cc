@@ -45,7 +45,9 @@ using testing::Not;
 using testing::UnorderedElementsAre;
 
 constexpr char kAllowedRequestsHistogram[] =
-    "API.StorageAccess.AllowedRequests2";
+    "API.StorageAccess.AllowedRequests4";
+constexpr char kAllowedByStorageAccessTypeHistogram[] =
+    "API.EffectiveStorageAccess.AllowedByStorageAccessType";
 
 constexpr char kDomainURL[] = "http://example.com";
 constexpr char kURL[] = "http://foo.com";
@@ -62,6 +64,7 @@ constexpr char kRwsMemberURL[] = "https://rws-member.test";
 constexpr char kUnrelatedURL[] = "http://unrelated.com";
 constexpr char kChromeScheme[] = "chrome";
 constexpr char kChromeSchemedURL[] = "chrome://new-tab-page/";
+constexpr char kUmaCookieName[] = "umaCookieName";
 
 std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
     const std::string& name,
@@ -1062,6 +1065,127 @@ TEST_F(CookieSettingsTest, CookieAccessSemanticsForDomainWithWildcard) {
     EXPECT_EQ(test.status,
               settings.GetCookieAccessSemanticsForDomain(test.cookie_domain));
   }
+}
+
+struct AllowedByStorageAccessTypeTestData {
+  content_settings::CookieSettingsBase::AllowedByStorageAccessType
+      expected_type;
+  net::CookieSettingOverrides overrides;
+  std::vector<ContentSettingsType> settings_types;
+  bool expected_api_result = true;
+};
+class AllowedByStorageAccessTypeTest
+    : public CookieSettingsTestBase,
+      public testing::WithParamInterface<AllowedByStorageAccessTypeTestData> {
+ public:
+  AllowedByStorageAccessTypeTest() {
+    for (const auto& val : GetParam().settings_types) {
+      settings_.set_content_settings(
+          val, {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
+    }
+  }
+
+  content_settings::CookieSettingsBase::AllowedByStorageAccessType
+  ExpectedType() const {
+    return GetParam().expected_type;
+  }
+
+  bool ExpectedApiResult() const { return GetParam().expected_api_result; }
+
+  net::CookieSettingOverrides Overrides() const { return GetParam().overrides; }
+
+  std::vector<ContentSettingsType> SettingTypes() const {
+    return GetParam().settings_types;
+  }
+
+  CookieSettings settings_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    AllowedByStorageAccessTypeTest,
+    testing::ValuesIn({
+        /*No overrides or settings*/
+        AllowedByStorageAccessTypeTestData{
+            content_settings::CookieSettingsBase::AllowedByStorageAccessType::
+                kNone,
+            {},
+            {},
+            /*expected_api_result=*/false,
+        },
+        /*Override but not settings*/
+        AllowedByStorageAccessTypeTestData{
+            content_settings::CookieSettingsBase::AllowedByStorageAccessType::
+                kNone,
+            {net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible},
+            {},
+            /*expected_api_result=*/false,
+        },
+        /*Settings but not override*/
+        AllowedByStorageAccessTypeTestData{
+            content_settings::CookieSettingsBase::AllowedByStorageAccessType::
+                kNone,
+            {},
+            {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS},
+            /*expected_api_result=*/false,
+        },
+        AllowedByStorageAccessTypeTestData{
+            content_settings::CookieSettingsBase::AllowedByStorageAccessType::
+                kTopLevelOnly,
+            {net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible},
+            {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS},
+        },
+        AllowedByStorageAccessTypeTestData{
+            content_settings::CookieSettingsBase::AllowedByStorageAccessType::
+                kStorageAccessOnly,
+            {net::CookieSettingOverride::kStorageAccessGrantEligible},
+            {ContentSettingsType::STORAGE_ACCESS},
+        },
+        AllowedByStorageAccessTypeTestData{
+            content_settings::CookieSettingsBase::AllowedByStorageAccessType::
+                kTopLevelAndStorageAccess,
+            {net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible,
+             net::CookieSettingOverride::kStorageAccessGrantEligible},
+            {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+             ContentSettingsType::STORAGE_ACCESS},
+        },
+    }));
+
+TEST_P(AllowedByStorageAccessTypeTest, IsCookieAccessible) {
+  base::HistogramTester histogram_tester;
+  net::CookieInclusionStatus status;
+  settings_.set_block_third_party_cookies(true);
+
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      MakeCanonicalCookie(kUmaCookieName, kURL);
+
+  ASSERT_EQ(settings_.IsCookieAccessible(
+                *cookie, GURL(kURL), net::SiteForCookies(),
+                url::Origin::Create(GURL(kOtherURL)),
+                net::FirstPartySetMetadata(), Overrides(), &status),
+            ExpectedApiResult());
+
+  histogram_tester.ExpectUniqueSample(kAllowedByStorageAccessTypeHistogram,
+                                      ExpectedType(), 1);
+}
+
+TEST_P(AllowedByStorageAccessTypeTest, AnnotateAndMoveUserBlockedCookies) {
+  base::HistogramTester histogram_tester;
+  settings_.set_block_third_party_cookies(true);
+
+  net::CookieAccessResultList maybe_included_cookies = {
+      {*MakeCanonicalCookie(kUmaCookieName, kURL), {}}};
+  net::CookieAccessResultList excluded_cookies = {};
+
+  ASSERT_EQ(
+      settings_.AnnotateAndMoveUserBlockedCookies(
+          GURL(kURL), net::SiteForCookies(),
+          url::Origin::Create(GURL(kOtherURL)), net::FirstPartySetMetadata(),
+          Overrides(), maybe_included_cookies, excluded_cookies),
+      ExpectedApiResult());
+
+  histogram_tester.ExpectUniqueSample(kAllowedByStorageAccessTypeHistogram,
+                                      ExpectedType(), 1);
 }
 
 TEST_P(CookieSettingsTestP, IsPrivacyModeEnabled) {

@@ -620,8 +620,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void TransferFrameSetLayoutData(std::unique_ptr<FrameSetLayoutData> data) {
     frame_set_layout_data_ = std::move(data);
   }
-  void SetReadingFlowElements(HeapVector<Member<Element>>&& elements) {
-    reading_flow_elements_ = std::move(elements);
+  void SetReadingFlowNodes(HeapVector<Member<blink::Node>>&& nodes) {
+    reading_flow_nodes_ = std::move(nodes);
   }
 
   const GridLayoutData& GetGridLayoutData() const {
@@ -771,7 +771,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   std::unique_ptr<DevtoolsFlexInfo> flex_layout_data_;
   std::unique_ptr<FrameSetLayoutData> frame_set_layout_data_;
 
-  HeapVector<Member<Element>> reading_flow_elements_;
+  HeapVector<Member<blink::Node>> reading_flow_nodes_;
 
   LogicalBoxSides sides_to_include_;
 

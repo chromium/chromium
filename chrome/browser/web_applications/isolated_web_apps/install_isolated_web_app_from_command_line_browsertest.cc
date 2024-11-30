@@ -93,9 +93,8 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
   WebAppTestInstallObserver observer(browser()->profile());
   webapps::AppId id = observer.BeginListeningAndWait();
 
-  EXPECT_THAT(GetWebAppRegistrar().IsInstallState(
-                  id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}),
-              IsTrue());
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            GetWebAppRegistrar().GetInstallState(id));
   EXPECT_THAT(
       GetWebAppRegistrar().GetAppById(id),
       test::IwaIs(
@@ -155,9 +154,8 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
   ASSERT_EQ(
       id,
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(*bundle_id_).app_id());
-  ASSERT_THAT(GetWebAppRegistrar().IsInstallState(
-                  id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}),
-              IsTrue());
+  ASSERT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            GetWebAppRegistrar().GetInstallState(id));
 
   // Check that the bundle was copied, not moved.
   base::ScopedAllowBlockingForTesting allow_blocking;

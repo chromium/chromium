@@ -16,7 +16,7 @@ BrowsingHistoryPolicyHandler::BrowsingHistoryPolicyHandler()
     : TypeCheckingPolicyHandler(key::kAllowDeletingBrowserHistory,
                                 base::Value::Type::BOOLEAN) {}
 
-BrowsingHistoryPolicyHandler::~BrowsingHistoryPolicyHandler() {}
+BrowsingHistoryPolicyHandler::~BrowsingHistoryPolicyHandler() = default;
 
 void BrowsingHistoryPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,

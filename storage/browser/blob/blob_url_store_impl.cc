@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -69,12 +70,15 @@ BlobURLStoreImpl::BlobURLStoreImpl(
     const url::Origin& renderer_origin,
     int render_process_host_id,
     base::WeakPtr<BlobUrlRegistry> registry,
-    BlobURLValidityCheckBehavior validity_check_behavior)
+    BlobURLValidityCheckBehavior validity_check_behavior,
+    base::RepeatingClosure partitioned_fetch_failure_closure)
     : storage_key_(storage_key),
       renderer_origin_(renderer_origin),
       render_process_host_id_(render_process_host_id),
       registry_(std::move(registry)),
-      validity_check_behavior_(validity_check_behavior) {}
+      validity_check_behavior_(validity_check_behavior),
+      partitioned_fetch_failure_closure_(
+          std::move(partitioned_fetch_failure_closure)) {}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
   if (registry_) {
@@ -123,13 +127,16 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kBlockCrossPartitionBlobUrlFetching) &&
-      !registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
+  if (!registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
                               storage_key_)) {
-    BlobURLLoaderFactory::Create(mojo::NullRemote(), url, std::move(receiver));
-    std::move(callback).Run(std::nullopt, std::nullopt);
-    return;
+    partitioned_fetch_failure_closure_.Run();
+    if (base::FeatureList::IsEnabled(
+            features::kBlockCrossPartitionBlobUrlFetching)) {
+      BlobURLLoaderFactory::Create(mojo::NullRemote(), url,
+                                   std::move(receiver));
+      std::move(callback).Run(std::nullopt, std::nullopt);
+      return;
+    }
   }
 
   BlobURLLoaderFactory::Create(registry_->GetBlobFromUrl(url), url,

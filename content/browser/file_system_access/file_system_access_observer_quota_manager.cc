@@ -1,0 +1,62 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
+
+#include "base/metrics/histogram_functions.h"
+#include "content/browser/file_system_access/file_system_access_change_source.h"
+#include "content/browser/file_system_access/file_system_access_watcher_manager.h"
+
+namespace content {
+
+FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
+    const blink::StorageKey& storage_key,
+    FileSystemAccessWatcherManager* watcher_manager)
+    : base::RefCountedDeleteOnSequence<FileSystemAccessObserverQuotaManager>(
+          base::SequencedTaskRunner::GetCurrentDefault()),
+      storage_key_(storage_key),
+      watcher_manager_(watcher_manager) {}
+
+// TODO(crbug.com/338457523): Inform the watcher manager to remove this
+// from the quota manager map entry for this storage key.
+FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
+  base::UmaHistogramCounts100000("Storage.FileSystemAccess.ObserverUsage",
+                                 high_water_mark_usage_);
+  base::UmaHistogramBoolean(
+      "Storage.FileSystemAccess.ObserverUsageQuotaExceeded",
+      reached_quota_limit_);
+
+  // TODO(crbug.com/338457523): Make this unconditional once `watcher_manager_`
+  // is raw_ref.
+  if (watcher_manager_) {
+    watcher_manager_->RemoveQuotaManager(storage_key_);
+  }
+}
+
+FileSystemAccessObserverQuotaManager::UsageChangeResult
+FileSystemAccessObserverQuotaManager::OnUsageChange(size_t old_usage,
+                                                    size_t new_usage) {
+  // The caller should have reported this `old_usage` in its last call, so that
+  // `total_usage_` is equal to the sum of `old_usage` plus possibly other
+  // observation group usages.
+  CHECK_GE(total_usage_, old_usage);
+
+  size_t updated_total_usage = total_usage_ + new_usage - old_usage;
+  size_t quota_limit = quota_limit_for_testing_ > 0
+                           ? quota_limit_for_testing_
+                           : FileSystemAccessChangeSource::quota_limit();
+  if (updated_total_usage > quota_limit) {
+    total_usage_ -= old_usage;
+    reached_quota_limit_ = true;
+    return UsageChangeResult::kQuotaUnavailable;
+  }
+
+  if (updated_total_usage > high_water_mark_usage_) {
+    high_water_mark_usage_ = updated_total_usage;
+  }
+  total_usage_ = updated_total_usage;
+  return UsageChangeResult::kOk;
+}
+
+}  // namespace content

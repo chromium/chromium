@@ -184,7 +184,7 @@ bool PlatformCrashpadInitialization(
     url = std::string();
 #endif
 
-    CrashReporterClient::ProductInfo product_info;
+    ProductInfo product_info;
     crash_reporter_client->GetProductInfo(&product_info);
 
     std::map<std::string, std::string> annotations;

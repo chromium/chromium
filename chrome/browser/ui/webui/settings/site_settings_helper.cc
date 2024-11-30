@@ -247,6 +247,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL, nullptr},
     // TODO(crbug.com/368266658): Implement the UI for Direct Sockets PNA.
     {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, nullptr},
+    {ContentSettingsType::LEGACY_COOKIE_SCOPE, nullptr},
 };
 
 static_assert(
@@ -571,6 +572,9 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
 #endif
       ContentSettingsType::SENSORS,
       ContentSettingsType::SERIAL_GUARD,
+#if BUILDFLAG(IS_CHROMEOS)
+      ContentSettingsType::SMART_CARD_GUARD,
+#endif
       ContentSettingsType::SOUND,
       ContentSettingsType::STORAGE_ACCESS,
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,

@@ -19,6 +19,7 @@ import {getTemplate} from './cr_input.html.js';
  * Input types supported by cr-input.
  */
 const SUPPORTED_INPUT_TYPES: Set<string> = new Set([
+  'email',
   'number',
   'password',
   'search',

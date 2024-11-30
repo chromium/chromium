@@ -567,7 +567,8 @@ Av1Decoder::~Av1Decoder() {
 Av1Decoder::ParsingResult Av1Decoder::ReadNextFrame(
     libgav1::RefCountedBufferPtr& current_frame) {
   if (!obu_parser_ || !obu_parser_->HasData()) {
-    if (!ivf_parser_->ParseNextFrame(&ivf_frame_header_, &ivf_frame_data_)) {
+    if (!ivf_parser_->ParseNextFrame(&ivf_frame_header_,
+                                     &ivf_frame_data_.AsEphemeralRawAddr())) {
       return ParsingResult::kEOStream;
     }
 
@@ -881,7 +882,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   const size_t tile_columns = current_frame_header.tile_info.tile_columns;
   const bool slice_parameters_success = FillAV1SliceParameters(
       obu_parser_->tile_buffers(), tile_columns,
-      base::make_span(ivf_frame_data_, ivf_frame_header_.frame_size),
+      base::make_span(ivf_frame_data_.get(), ivf_frame_header_.frame_size),
       slice_params);
   LOG_ASSERT(slice_parameters_success)
       << "Failed to fill slice parameters for current frame.";
@@ -898,7 +899,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   // Set up the slice data buffer.
   res = vaCreateBuffer(va_device_->display(), va_context_->id(),
                        VASliceDataBufferType, ivf_frame_header_.frame_size, 1u,
-                       const_cast<uint8_t*>(ivf_frame_data_), &buffer_id);
+                       const_cast<uint8_t*>(ivf_frame_data_.get()), &buffer_id);
   VA_LOG_ASSERT(res, "vaCreateBuffer");
   buffers.push_back(buffer_id);
 

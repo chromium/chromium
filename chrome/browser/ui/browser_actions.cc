@@ -179,7 +179,14 @@ void BrowserActions::InitializeBrowserActions() {
                               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
                               vector_icons::kShoppingBagIcon,
                               kActionSidePanelShowShoppingInsights, browser,
+                              false),
+              SidePanelAction(SidePanelEntryId::kMerchantTrust,
+                              IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
+                              IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
+                              vector_icons::kStorefrontIcon,
+                              kActionSidePanelShowMerchantTrust, browser,
                               false))
+
           .Build());
 
   if (side_panel::history_clusters::
@@ -212,7 +219,7 @@ void BrowserActions::InitializeBrowserActions() {
 
           // Toggle the Lens overlay. There's no need to show or hide the side
           // panel as the overlay controller will handle that.
-          if (controller->IsOverlayShowing()) {
+          if (controller->IsOverlayActive()) {
             controller->CloseUIAsync(
                 lens::LensOverlayDismissalSource::kToolbar);
           } else {
@@ -480,22 +487,22 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
 
     if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
-    root_action_item_->AddChild(
-        StatefulChromeMenuAction(
-            base::BindRepeating(
-                [](Browser* browser, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  // TODO(crbug.com/356468503): Figure out how to capture action
-                  // invocation location.
-                  browser->browser_window_features()
-                      ->cast_browser_controller()
-                      ->ToggleDialog();
-                },
-                base::Unretained(browser)),
-            kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
-            IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
-            .SetEnabled(chrome::CanRouteMedia(browser))
-            .Build());
+      root_action_item_->AddChild(
+          StatefulChromeMenuAction(
+              base::BindRepeating(
+                  [](Browser* browser, actions::ActionItem* item,
+                     actions::ActionInvocationContext context) {
+                    // TODO(crbug.com/356468503): Figure out how to capture
+                    // action invocation location.
+                    browser->browser_window_features()
+                        ->cast_browser_controller()
+                        ->ToggleDialog();
+                  },
+                  base::Unretained(browser)),
+              kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+              IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
+              .SetEnabled(chrome::CanRouteMedia(browser))
+              .Build());
     }
 
     AddListeners();

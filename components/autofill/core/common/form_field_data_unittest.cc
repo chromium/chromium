@@ -241,7 +241,7 @@ TEST(FormFieldDataTest, SerializeAndDeserialize) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 TEST(FormFieldDataTest, DeserializeVersion1) {
@@ -256,7 +256,7 @@ TEST(FormFieldDataTest, DeserializeVersion1) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 TEST(FormFieldDataTest, DeserializeVersion2) {
@@ -272,7 +272,7 @@ TEST(FormFieldDataTest, DeserializeVersion2) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 TEST(FormFieldDataTest, DeserializeVersion3) {
@@ -289,7 +289,7 @@ TEST(FormFieldDataTest, DeserializeVersion3) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 TEST(FormFieldDataTest, DeserializeVersion4) {
@@ -306,7 +306,7 @@ TEST(FormFieldDataTest, DeserializeVersion4) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 TEST(FormFieldDataTest, DeserializeVersion5) {
@@ -324,7 +324,7 @@ TEST(FormFieldDataTest, DeserializeVersion5) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 TEST(FormFieldDataTest, DeserializeVersion6) {
@@ -343,7 +343,7 @@ TEST(FormFieldDataTest, DeserializeVersion6) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 TEST(FormFieldDataTest, DeserializeVersion7) {
@@ -363,7 +363,7 @@ TEST(FormFieldDataTest, DeserializeVersion7) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 TEST(FormFieldDataTest, DeserializeVersion8) {
@@ -384,7 +384,7 @@ TEST(FormFieldDataTest, DeserializeVersion8) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 TEST(FormFieldDataTest, DeserializeVersion9) {
@@ -405,7 +405,7 @@ TEST(FormFieldDataTest, DeserializeVersion9) {
   FormFieldData actual;
   EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFieldAs(data));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
 }
 
 // Verify that if the data isn't valid, the FormFieldData isn't populated
@@ -420,7 +420,7 @@ TEST(FormFieldDataTest, DeserializeBadData) {
   FormFieldData actual;
   EXPECT_FALSE(DeserializeFormFieldData(&iter, &actual));
   FormFieldData empty;
-  EXPECT_TRUE(actual.SameFieldAs(empty));
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, empty));
 }
 
 TEST(FormFieldDataTest, IsTextInputElement) {

@@ -19,6 +19,9 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
@@ -64,6 +67,15 @@ std::string FormatModalWithNoticeDurationMetrics(
       /*offsets=*/nullptr);
 }
 
+class MockAutofillClient : public autofill::TestContentAutofillClient {
+ public:
+  using autofill::TestContentAutofillClient::TestContentAutofillClient;
+  MOCK_METHOD(void,
+              TriggerPlusAddressUserPerceptionSurvey,
+              (plus_addresses::hats::SurveyType),
+              (override));
+};
+
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
 class PlusAddressCreationControllerDesktopEnabledTest
@@ -89,10 +101,17 @@ class PlusAddressCreationControllerDesktopEnabledTest
         base::BindRepeating(&PlusAddressCreationControllerDesktopEnabledTest::
                                 PlusAddressSettingServiceTestFactory,
                             base::Unretained(this)));
+
+    PlusAddressCreationControllerDesktop::CreateForWebContents(web_contents());
   }
 
   void TearDown() override {
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  PlusAddressCreationControllerDesktop& controller() {
+    return *PlusAddressCreationControllerDesktop::FromWebContents(
+        web_contents());
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -106,6 +125,10 @@ class PlusAddressCreationControllerDesktopEnabledTest
     return *static_cast<FakePlusAddressSettingService*>(
         PlusAddressSettingServiceFactory::GetForBrowserContext(
             browser_context()));
+  }
+
+  MockAutofillClient& autofill_client() {
+    return *autofill_client_injector_[web_contents()];
   }
 
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
@@ -123,31 +146,28 @@ class PlusAddressCreationControllerDesktopEnabledTest
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
   base::test::ScopedFeatureList features_;
   base::HistogramTester histogram_tester_;
+  autofill::TestAutofillClientInjector<MockAutofillClient>
+      autofill_client_injector_;
 };
 
 // Tests the scenario when the user successfully creates the first plus address.
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
        ConfirmedFirstTimePlusAddressCreation) {
   setting_service().set_has_accepted_notice(false);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
 
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
-  controller->OnConfirmed();
+  EXPECT_CALL(autofill_client(),
+              TriggerPlusAddressUserPerceptionSurvey(
+                  plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate));
+  controller().OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
       histogram_tester().GetAllSamples(
@@ -163,8 +183,6 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time::Now());
-  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
-              Optional(hats::SurveyType::kAcceptedFirstTimeCreate));
 }
 
 // Tests the scenario when the user declines the first plus address creation
@@ -172,26 +190,23 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
        FirstTimePlusAddressCreationDeclined) {
   setting_service().set_has_accepted_notice(false);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
 
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
+  // HaTS survey should be shown if the user declined the first time plus
+  // address creation flow.
+  EXPECT_CALL(autofill_client(),
+              TriggerPlusAddressUserPerceptionSurvey(
+                  plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate));
 
-  controller->OnCanceled();
+  controller().OnCanceled();
 
   EXPECT_FALSE(future.IsReady());
 
@@ -209,10 +224,6 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time());
-  // HaTS survey should be shown if the user declined the first time plus
-  // address creation flow.
-  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
-              Optional(hats::SurveyType::kDeclinedFirstTimeCreate));
 }
 
 // Tests the scenario when the user confirms the first plus address creation
@@ -220,19 +231,11 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
        FirstTimePlusAddressCreationFailed) {
   setting_service().set_has_accepted_notice(false);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
 
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
@@ -240,14 +243,18 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   plus_address_service().set_should_fail_to_confirm(true);
 
   task_environment()->FastForwardBy(kDuration);
+  // Feature perception surveys shown after the first plus address creation
+  // flow should not be triggered if the plus address wasn't confirmed.
+  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey)
+      .Times(0);
 
-  controller->OnConfirmed();
+  controller().OnConfirmed();
 
   EXPECT_FALSE(future.IsReady());
 
   // When `ConfirmPlusAddress` fails, `OnCanceled` may be called after
   // `OnConfirmed`.
-  controller->OnCanceled();
+  controller().OnCanceled();
 
   EXPECT_THAT(
       histogram_tester().GetAllSamples(
@@ -264,30 +271,22 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time());
-  // Feature perception surveys shown after the first plus address creation
-  // flow should not be triggered if the plus address wasn't confirmed.
-  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
 
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
-  controller->OnConfirmed();
+  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey)
+      .Times(0);
+  controller().OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
       histogram_tester().GetAllSamples(kPlusAddressModalEventHistogram),
@@ -303,22 +302,14 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time());
-  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnConfirmedError) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
 
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
@@ -327,12 +318,12 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnConfirmedError) {
 
   task_environment()->FastForwardBy(kDuration);
 
-  controller->OnConfirmed();
+  controller().OnConfirmed();
 
   EXPECT_FALSE(future.IsReady());
   // When `ConfirmPlusAddress` fails, `OnCanceled` may be called after
   // `OnConfirmed`.
-  controller->OnCanceled();
+  controller().OnCanceled();
   // Ensure that plus address can be canceled after erroneous confirm event and
   // metric is recorded.
   EXPECT_THAT(
@@ -351,18 +342,11 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnConfirmedError) {
 // attempt fails. Verifies that the correct metrics are logged in this case.
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
        ConfirmAfterCreateError) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
 
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://timofeywashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
@@ -371,13 +355,13 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
   task_environment()->FastForwardBy(kDuration);
 
-  controller->OnConfirmed();
+  controller().OnConfirmed();
   EXPECT_FALSE(future.IsReady());
 
   plus_address_service().set_should_fail_to_confirm(false);
   task_environment()->FastForwardBy(kDuration);
 
-  controller->OnConfirmed();
+  controller().OnConfirmed();
   EXPECT_TRUE(future.IsReady());
 
   // Ensure that plus address can be confirmed after a confirm error is shown.
@@ -393,26 +377,19 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnReservedError) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
   plus_address_service().set_should_fail_to_reserve(true);
 
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
 
-  controller->OnCanceled();
+  controller().OnCanceled();
   // Ensure that plus address can be canceled after erroneous reserve event and
   // metric is recorded.
   EXPECT_THAT(
@@ -431,32 +408,25 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnReservedError) {
 // in this case.
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
        ConfirmAfterReserveError) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
   plus_address_service().set_should_fail_to_reserve(true);
 
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://timofeywashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
 
-  controller->set_suppress_ui_for_testing(false);
-  controller->OnRefreshClicked();
+  controller().set_suppress_ui_for_testing(false);
+  controller().OnRefreshClicked();
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
 
-  controller->OnConfirmed();
+  controller().OnConfirmed();
   ASSERT_TRUE(future.IsReady());
   // Ensure that plus address can be confirmed after an error is shown and then
   // the plus address is successfully reserved.
@@ -473,14 +443,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
        ReserveGivesConfirmedAddress_DoesntConfirmAgain) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> autofill_future;
   base::test::TestFuture<const PlusProfileOrError&> confirm_future;
@@ -489,14 +452,14 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   plus_address_service().set_is_confirmed(true);
   plus_address_service().set_confirm_callback(confirm_future.GetCallback());
 
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://kirubelwashere.example")),
       /*is_manual_fallback=*/false, autofill_future.GetCallback());
   ASSERT_FALSE(autofill_future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
   // Confirmation should fill the field, but not call ConfirmPlusAddress.
-  controller->OnConfirmed();
+  controller().OnConfirmed();
   EXPECT_TRUE(autofill_future.IsReady());
   EXPECT_FALSE(confirm_future.IsReady());
 
@@ -514,42 +477,28 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
        StoredPlusProfileClearedOnDialogDestroyed) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+  controller().set_suppress_ui_for_testing(true);
 
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
-
-  EXPECT_FALSE(controller->get_plus_profile_for_testing().has_value());
+  EXPECT_FALSE(controller().get_plus_profile_for_testing().has_value());
   // Offering creation calls Reserve() and sets the profile.
-  controller->OfferCreation(url::Origin::Create(GURL("https://foo.example")),
-                            /*is_manual_fallback=*/false, base::DoNothing());
-  EXPECT_TRUE(controller->get_plus_profile_for_testing().has_value());
+  controller().OfferCreation(url::Origin::Create(GURL("https://foo.example")),
+                             /*is_manual_fallback=*/false, base::DoNothing());
+  EXPECT_TRUE(controller().get_plus_profile_for_testing().has_value());
   // Destroying the dialog clears the profile.
-  controller->OnDialogDestroyed();
-  EXPECT_FALSE(controller->get_plus_profile_for_testing().has_value());
+  controller().OnDialogDestroyed();
+  EXPECT_FALSE(controller().get_plus_profile_for_testing().has_value());
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, ModalCanceled) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
 
   task_environment()->FastForwardBy(kDuration);
-  controller->OnCanceled();
+  controller().OnCanceled();
   EXPECT_FALSE(future.IsReady());
 
   EXPECT_THAT(
@@ -576,21 +525,21 @@ class PlusAddressCreationControllerDesktopDisabledTest
         base::BindRepeating(
             [](content::BrowserContext* profile)
                 -> std::unique_ptr<KeyedService> { return nullptr; }));
+
+    PlusAddressCreationControllerDesktop::CreateForWebContents(web_contents());
+  }
+
+  PlusAddressCreationControllerDesktop& controller() {
+    return *PlusAddressCreationControllerDesktop::FromWebContents(
+        web_contents());
   }
 };
 
 TEST_F(PlusAddressCreationControllerDesktopDisabledTest, NullService) {
-  std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
-  PlusAddressCreationControllerDesktop::CreateForWebContents(
-      web_contents.get());
-  PlusAddressCreationControllerDesktop* controller =
-      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
-  controller->set_suppress_ui_for_testing(true);
+  controller().set_suppress_ui_for_testing(true);
 
   base::test::TestFuture<const std::string&> future;
-  controller->OfferCreation(
+  controller().OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   EXPECT_FALSE(future.IsReady());

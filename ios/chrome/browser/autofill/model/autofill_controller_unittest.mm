@@ -396,7 +396,7 @@ void AutofillControllerTest::SetUp() {
       profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
   autofill_client_->GetPersonalDataManager()
-      ->address_data_manager()
+      .address_data_manager()
       .get_alternative_state_name_map_updater_for_testing()
       ->set_local_state_for_testing(local_state());
 

@@ -33,7 +33,6 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
  private:
   // HoldingSpaceItemView:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  std::u16string GetTooltipText(const gfx::Point& point) const override;
   void OnHoldingSpaceItemUpdated(
       const HoldingSpaceItem* item,
       const HoldingSpaceItemUpdatedFields& updated_fields) override;
@@ -41,10 +40,15 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
 
   void UpdateImage();
 
+  void UpdateTooltipText();
+
   // Owned by view hierarchy.
   raw_ptr<RoundedImageView> image_ = nullptr;
 
   base::CallbackListSubscription image_skia_changed_subscription_;
+
+  // Subscription to be notified of `item_` deletion.
+  base::RepeatingClosureList::Subscription item_deletion_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

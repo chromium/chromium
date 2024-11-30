@@ -327,7 +327,7 @@ TEST_F(RoundedDisplayGutterTest, BoundsOfGuttersWithThreeCorners) {
   }
 }
 
-TEST_F(RoundedDisplayGutterTest, CorrectTextures_GutterHasSingleCorner) {
+TEST_F(RoundedDisplayGutterTest, CorrectTexturesGutterHasSingleCorner) {
   {
     RoundedCorner upper_right_corner(RoundedCornerPosition::kUpperRight,
                                      kCornerRadiusInPixels_16,
@@ -498,7 +498,7 @@ TEST_F(RoundedDisplayGutterTest,
             0);
 }
 
-TEST_F(RoundedDisplayGutterTest, GutterHasFourCorners_AllCornersPainted) {
+TEST_F(RoundedDisplayGutterTest, GutterHasFourCornersAllCornersPainted) {
   RoundedCorner upper_left_corner(RoundedCornerPosition::kUpperLeft,
                                   kCornerRadiusInPixels_16, gfx::Point(0, 0));
   RoundedCorner upper_right_corner(RoundedCornerPosition::kUpperRight,
@@ -532,7 +532,7 @@ TEST_F(RoundedDisplayGutterTest, GutterHasFourCorners_AllCornersPainted) {
                                        gutter.get()));
 }
 
-TEST_F(RoundedDisplayGutterTest, GutterHasTwoAdjacentCorners_OneCornerPainted) {
+TEST_F(RoundedDisplayGutterTest, GutterHasTwoAdjacentCornersOneCornerPainted) {
   RoundedCorner upper_left_corner(RoundedCornerPosition::kUpperLeft, 0,
                                   gfx::Point(0, 0));
   RoundedCorner lower_right_corner(RoundedCornerPosition::kLowerRight,

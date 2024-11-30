@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_DESKTOP_H_
 
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
+#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "content/public/browser/web_contents.h"
@@ -73,7 +73,6 @@ class PlusAddressCreationControllerDesktop
 
   std::unique_ptr<PlusAddressCreationDialogDelegate> dialog_delegate_;
   url::Origin relevant_origin_;
-  bool is_manual_fallback_ = false;
   PlusAddressCallback callback_;
   bool suppress_ui_for_testing_ = false;
   // This is set by OnPlusAddressReserved and cleared when the dialog is closed.

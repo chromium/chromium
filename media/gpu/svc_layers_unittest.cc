@@ -23,6 +23,7 @@
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/libgav1/src/src/utils/types.h"
 
 namespace media {
 
@@ -45,7 +46,7 @@ std::vector<gfx::Size> GetDefaultSVCResolutions(size_t num_spatial_layers) {
   return spatial_layer_resolutions;
 }
 
-SVCLayers::Config GetDefaultSVCLayers2Config(
+SVCLayers::Config GetDefaultSVCLayersToConfig(
     size_t num_spatial_layers,
     size_t num_temporal_layers,
     SVCInterLayerPredMode inter_layer_pred) {
@@ -80,10 +81,10 @@ struct Vp9MetadataAndFrameNum {
   Vp9Metadata metadata;
 };
 
-void VerifyReferenceFrame(const Vp9Metadata& metadata,
-                          size_t frame_num,
-                          const Vp9MetadataAndFrameNum& ref_frame,
-                          SVCInterLayerPredMode inter_layer_pred) {
+void VerifyVp9ReferenceFrame(const Vp9Metadata& metadata,
+                             size_t frame_num,
+                             const Vp9MetadataAndFrameNum& ref_frame,
+                             SVCInterLayerPredMode inter_layer_pred) {
   ASSERT_TRUE(ref_frame.is_valid());
   const Vp9Metadata& ref_metadata = ref_frame.metadata;
   const uint8_t ref_spatial_index = ref_metadata.spatial_idx;
@@ -106,7 +107,7 @@ void VerifyReferenceFrame(const Vp9Metadata& metadata,
   EXPECT_EQ(metadata.temporal_up_switch, ref_metadata.temporal_idx == 0);
 }
 
-void VerifykSVCFrame(
+void VerifyVp9kSVCFrame(
     const SVCLayers::PictureParam& picture_param,
     const Vp9Metadata& metadata,
     const std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames>& ref_frames,
@@ -167,12 +168,12 @@ void VerifykSVCFrame(
   EXPECT_TRUE(metadata.spatial_layer_resolutions.empty());
 
   // Check that the current frame doesn't reference upper layer frames.
-  VerifyReferenceFrame(metadata, frame_num,
-                       ref_frames[picture_param.reference_frame_indices[0]],
-                       SVCInterLayerPredMode::kOnKeyPic);
+  VerifyVp9ReferenceFrame(metadata, frame_num,
+                          ref_frames[picture_param.reference_frame_indices[0]],
+                          SVCInterLayerPredMode::kOnKeyPic);
 }
 
-void VerifySmodeFrame(
+void VerifyVp9SmodeFrame(
     const SVCLayers::PictureParam& picture_param,
     const Vp9Metadata& metadata,
     const std::array<Vp9MetadataAndFrameNum, kVp9NumRefFrames>& ref_frames,
@@ -220,9 +221,77 @@ void VerifySmodeFrame(
   EXPECT_TRUE(metadata.spatial_layer_resolutions.empty());
 
   // Check that the current frame doesn't reference upper layer frames.
-  VerifyReferenceFrame(metadata, frame_num,
-                       ref_frames[picture_param.reference_frame_indices[0]],
-                       SVCInterLayerPredMode::kOff);
+  VerifyVp9ReferenceFrame(metadata, frame_num,
+                          ref_frames[picture_param.reference_frame_indices[0]],
+                          SVCInterLayerPredMode::kOff);
+}
+
+struct SVCGenericMetadataAndFrameNum {
+  constexpr static size_t kInvalidFrameNum = std::numeric_limits<size_t>::max();
+
+  SVCGenericMetadataAndFrameNum() : frame_num(kInvalidFrameNum) {}
+  SVCGenericMetadataAndFrameNum(size_t frame_num,
+                                const SVCGenericMetadata& metadata)
+      : frame_num(frame_num), metadata(metadata) {}
+
+  bool is_valid() const { return frame_num != kInvalidFrameNum; }
+
+  size_t frame_num = 0;
+  SVCGenericMetadata metadata;
+};
+
+// Supports kSVC and Smode SVC frame verification.
+void VerifyAv1SVCFrame(
+    const SVCLayers::PictureParam& picture_param,
+    const SVCGenericMetadata& metadata,
+    const std::array<SVCGenericMetadataAndFrameNum,
+                     libgav1::kNumReferenceFrameTypes>& ref_frames,
+    size_t frame_num,
+    SVCInterLayerPredMode inter_layer_pred) {
+  const uint8_t temporal_index = metadata.temporal_idx;
+  const uint8_t spatial_index = metadata.spatial_idx;
+  bool s_mode = inter_layer_pred == SVCInterLayerPredMode::kOff;
+
+  if (s_mode) {
+    EXPECT_EQ(picture_param.key_frame, frame_num == 0);
+  } else {
+    EXPECT_EQ(picture_param.key_frame, frame_num == 0 && spatial_index == 0);
+  }
+
+  if (picture_param.key_frame) {
+    EXPECT_EQ(temporal_index, 0);
+
+    EXPECT_EQ(picture_param.frame_size, GetDefaultSVCResolution(spatial_index));
+    EXPECT_TRUE(picture_param.reference_frame_indices.empty());
+    if (s_mode && spatial_index != 0) {
+      EXPECT_EQ(picture_param.refresh_frame_flags,
+                (0x1 << (spatial_index * 2)));
+    } else {
+      EXPECT_EQ(picture_param.refresh_frame_flags, 0xff);
+    }
+    return;
+  }
+
+  EXPECT_EQ(picture_param.frame_size, GetDefaultSVCResolution(spatial_index));
+  EXPECT_EQ(picture_param.refresh_frame_flags & ~(0b111111u), 0u);
+  ASSERT_EQ(picture_param.reference_frame_indices.size(), 1u);
+
+  // Verify Av1 reference frame.
+  const SVCGenericMetadataAndFrameNum& ref_frame =
+      ref_frames[picture_param.reference_frame_indices[0]];
+  ASSERT_TRUE(ref_frame.is_valid());
+  const SVCGenericMetadata& ref_metadata = ref_frame.metadata;
+  const uint8_t ref_spatial_index = ref_metadata.spatial_idx;
+  // In key picture, upper spatial layers must refer the lower spatial layer.
+  // Or referenced frames must be in the same spatial layer.
+  if (!s_mode && frame_num == 0) {
+    EXPECT_EQ(ref_spatial_index, metadata.spatial_idx - 1);
+  } else {
+    EXPECT_EQ(ref_spatial_index, metadata.spatial_idx);
+  }
+
+  const size_t ref_temporal_index = ref_metadata.temporal_idx;
+  EXPECT_LE(ref_temporal_index, metadata.temporal_idx);
 }
 
 }  // namespace
@@ -231,13 +300,13 @@ class SVCLayersTest
     : public ::testing::TestWithParam<
           ::testing::tuple<size_t, size_t, SVCInterLayerPredMode>> {};
 
-TEST_P(SVCLayersTest, VerifyMetadata) {
+TEST_P(SVCLayersTest, VerifyVp9Metadata) {
   const size_t num_spatial_layers = ::testing::get<0>(GetParam());
   const size_t num_temporal_layers = ::testing::get<1>(GetParam());
   const SVCInterLayerPredMode inter_layer_pred_mode =
       ::testing::get<2>(GetParam());
 
-  const SVCLayers::Config config = GetDefaultSVCLayers2Config(
+  const SVCLayers::Config config = GetDefaultSVCLayersToConfig(
       num_spatial_layers, num_temporal_layers, inter_layer_pred_mode);
   SVCLayers svc_layers(config);
 
@@ -263,7 +332,7 @@ TEST_P(SVCLayersTest, VerifyMetadata) {
       EXPECT_EQ(svc_layers.IsKeyFrame(), key_frame);
       SVCLayers::PictureParam picture_param;
       Vp9Metadata metadata;
-      svc_layers.GetPictureParamAndMetadata(picture_param, metadata);
+      svc_layers.GetPictureParamAndMetadata(picture_param, &metadata);
 
       EXPECT_EQ(svc_layers.spatial_idx(), metadata.spatial_idx);
       EXPECT_EQ(svc_layers.spatial_idx(), sid);
@@ -272,13 +341,13 @@ TEST_P(SVCLayersTest, VerifyMetadata) {
                 metadata.temporal_idx);
 
       if (inter_layer_pred_mode == SVCInterLayerPredMode::kOnKeyPic) {
-        VerifykSVCFrame(picture_param, metadata, ref_frames, frame_num,
-                        config.active_spatial_layer_resolutions.size(),
-                        config.begin_active_layer, config.end_active_layer);
+        VerifyVp9kSVCFrame(picture_param, metadata, ref_frames, frame_num,
+                           config.active_spatial_layer_resolutions.size(),
+                           config.begin_active_layer, config.end_active_layer);
       } else {
-        VerifySmodeFrame(picture_param, metadata, ref_frames, frame_num,
-                         config.active_spatial_layer_resolutions.size(),
-                         config.begin_active_layer, config.end_active_layer);
+        VerifyVp9SmodeFrame(picture_param, metadata, ref_frames, frame_num,
+                            config.active_spatial_layer_resolutions.size(),
+                            config.begin_active_layer, config.end_active_layer);
       }
 
       for (size_t j = 0; j < kVp9NumRefFrames; ++j) {
@@ -292,13 +361,13 @@ TEST_P(SVCLayersTest, VerifyMetadata) {
   }
 }
 
-TEST_P(SVCLayersTest, VerifyMetadataMultipleTimes) {
+TEST_P(SVCLayersTest, VerifyVp9MetadataMultipleTimes) {
   const size_t num_spatial_layers = ::testing::get<0>(GetParam());
   const size_t num_temporal_layers = ::testing::get<1>(GetParam());
   const SVCInterLayerPredMode inter_layer_pred_mode =
       ::testing::get<2>(GetParam());
 
-  const SVCLayers::Config config = GetDefaultSVCLayers2Config(
+  const SVCLayers::Config config = GetDefaultSVCLayersToConfig(
       num_spatial_layers, num_temporal_layers, inter_layer_pred_mode);
   SVCLayers svc_layers(config);
 
@@ -330,7 +399,7 @@ TEST_P(SVCLayersTest, VerifyMetadataMultipleTimes) {
         EXPECT_EQ(svc_layers.IsKeyFrame(), key_frame);
         SVCLayers::PictureParam picture_param;
         Vp9Metadata metadata;
-        svc_layers.GetPictureParamAndMetadata(picture_param, metadata);
+        svc_layers.GetPictureParamAndMetadata(picture_param, &metadata);
 
         EXPECT_EQ(svc_layers.spatial_idx(), metadata.spatial_idx);
         EXPECT_EQ(svc_layers.spatial_idx(), sid);
@@ -339,13 +408,15 @@ TEST_P(SVCLayersTest, VerifyMetadataMultipleTimes) {
                   metadata.temporal_idx);
 
         if (inter_layer_pred_mode == SVCInterLayerPredMode::kOnKeyPic) {
-          VerifykSVCFrame(picture_param, metadata, ref_frames, frame_num,
-                          config.active_spatial_layer_resolutions.size(),
-                          config.begin_active_layer, config.end_active_layer);
+          VerifyVp9kSVCFrame(picture_param, metadata, ref_frames, frame_num,
+                             config.active_spatial_layer_resolutions.size(),
+                             config.begin_active_layer,
+                             config.end_active_layer);
         } else {
-          VerifySmodeFrame(picture_param, metadata, ref_frames, frame_num,
-                           config.active_spatial_layer_resolutions.size(),
-                           config.begin_active_layer, config.end_active_layer);
+          VerifyVp9SmodeFrame(picture_param, metadata, ref_frames, frame_num,
+                              config.active_spatial_layer_resolutions.size(),
+                              config.begin_active_layer,
+                              config.end_active_layer);
         }
 
         if (j == call_get_times - 1) {
@@ -358,6 +429,60 @@ TEST_P(SVCLayersTest, VerifyMetadataMultipleTimes) {
           svc_layers.PostEncode(picture_param.refresh_frame_flags);
         }
       }
+    }
+  }
+}
+
+TEST_P(SVCLayersTest, VerifyAv1SVCGenericMetadata) {
+  const size_t num_spatial_layers = ::testing::get<0>(GetParam());
+  const size_t num_temporal_layers = ::testing::get<1>(GetParam());
+  const SVCInterLayerPredMode inter_layer_pred_mode =
+      ::testing::get<2>(GetParam());
+
+  const SVCLayers::Config config = GetDefaultSVCLayersToConfig(
+      num_spatial_layers, num_temporal_layers, inter_layer_pred_mode);
+  SVCLayers svc_layers(config);
+
+  constexpr size_t kNumFramesToEncode = 100;
+  std::array<SVCGenericMetadataAndFrameNum, libgav1::kNumReferenceFrameTypes>
+      ref_frames;
+  constexpr size_t kKeyFrameInterval = 17;
+  for (size_t i = 0; i < kNumFramesToEncode; ++i) {
+    bool key_svc_frame = i % kKeyFrameInterval == 0;
+    if (key_svc_frame) {
+      svc_layers.Reset();
+    }
+    for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
+      bool key_frame = false;
+      size_t frame_num = svc_layers.frame_num();
+      if (frame_num == 0) {
+        if (inter_layer_pred_mode == SVCInterLayerPredMode::kOnKeyPic) {
+          key_frame = sid == 0;
+        } else {
+          key_frame = true;
+        }
+      }
+
+      EXPECT_EQ(svc_layers.IsKeyFrame(), key_frame);
+      SVCLayers::PictureParam picture_param;
+      SVCGenericMetadata metadata;
+      svc_layers.GetPictureParamAndMetadata(picture_param, &metadata);
+
+      EXPECT_EQ(svc_layers.spatial_idx(), metadata.spatial_idx);
+      EXPECT_EQ(svc_layers.spatial_idx(), sid);
+      EXPECT_EQ(GetTemporalIndex(num_temporal_layers, frame_num),
+                metadata.temporal_idx);
+
+      VerifyAv1SVCFrame(picture_param, metadata, ref_frames, frame_num,
+                        inter_layer_pred_mode);
+
+      for (size_t j = 0; j < libgav1::kNumReferenceFrameTypes; ++j) {
+        if (picture_param.refresh_frame_flags & (1 << j)) {
+          ref_frames[j] = SVCGenericMetadataAndFrameNum{frame_num, metadata};
+        }
+      }
+
+      svc_layers.PostEncode(picture_param.refresh_frame_flags);
     }
   }
 }

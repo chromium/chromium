@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Ouvre le paramètre de Chrome pour définir Chrome comme navigateur par défaut.</translation>
 <translation id="1670609221633730681">Astuce Chrome : Choisissez la position de votre barre d'adresse</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Enregistrer vos mots de passe dans Chrome</translation>
 <translation id="1790080846677398234">Ajoute les URL entrées à vos favoris dans Chrome.</translation>
 <translation id="1799920918471566157">Astuces de Chrome</translation>
 <translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="3655656110921623717">Cela signifie que Chrome demandera toujours la version mobile du site.</translation>
 <translation id="3740397331642243698">Ouvre les URL entrées dans Google Chrome en mode de navigation privée.</translation>
 <translation id="3741995255368156336">Ouvre la liste de lecture Chrome.</translation>
+<translation id="3808570423967020928">Accédez plus rapidement à Chrome à partir du Dock de l'écran d'accueil.</translation>
 <translation id="3827545470516145620">Vous bénéficiez d'une protection de sécurité standard sur cet appareil</translation>
 <translation id="384394811301901750">Google Chrome ne peut pas utiliser votre appareil photo pour le moment</translation>
 <translation id="3863841106411295595">Ajoute les URL entrées à votre Liste de lecture dans Chrome.</translation>
@@ -219,9 +221,11 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 
 Afin d'accéder à plus de paramètres utilisant des données pour améliorer votre expérience Chrome, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Supprimez les données de navigation dans Chrome.</translation>
+<translation id="6924922227983877439">Ouvrir les liens dans Chrome par défaut</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour le remplissage automatique</translation>
 <translation id="7056826488869329999">Ouvre et exécute la Vérification de sécurité dans Chromium.</translation>
 <translation id="7061455974939528301">Maintenir l'icône de Chrome enfoncée et cliquer sur « Modifier l'écran d'accueil »</translation>
+<translation id="7065813315247345131">Déplacer Chrome vers le Dock</translation>
 <translation id="7124339256045485976">Pour garder Chrome à jour</translation>
 <translation id="7161390184744336561">Google Chrome n'est pas à jour</translation>
 <translation id="7165736900384873061">Commencer à utiliser le lecteur de code QR Google Chrome</translation>

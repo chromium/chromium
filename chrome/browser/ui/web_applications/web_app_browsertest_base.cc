@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -72,7 +73,8 @@ WebAppProvider& WebAppBrowserTestBase::provider() {
 }
 
 Profile* WebAppBrowserTestBase::profile() {
-  return browser()->profile();
+  CHECK(browser_profile_);
+  return browser_profile_.get();
 }
 
 webapps::AppId WebAppBrowserTestBase::InstallPWA(const GURL& start_url) {
@@ -151,7 +153,13 @@ WebAppBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
 
 std::optional<webapps::AppId>
 WebAppBrowserTestBase::FindAppWithUrlInScope(const GURL& url) {
-  return provider().registrar_unsafe().FindAppWithUrlInScope(url);
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  return provider().registrar_unsafe().FindBestAppWithUrlInScope(
+      url, {
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           });
 }
 
 Browser* WebAppBrowserTestBase::OpenPopupAndWait(
@@ -258,6 +266,11 @@ void WebAppBrowserTestBase::SetUpCommandLine(
   // Browser will both run and display insecure content.
   command_line->AppendSwitch(switches::kAllowRunningInsecureContent);
   cert_verifier_.SetUpCommandLine(command_line);
+}
+
+void WebAppBrowserTestBase::PreRunTestOnMainThread() {
+  WebAppBrowserTestBaseParent::PreRunTestOnMainThread();
+  browser_profile_ = browser()->profile()->GetWeakPtr();
 }
 
 void WebAppBrowserTestBase::SetUpOnMainThread() {

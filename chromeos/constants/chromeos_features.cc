@@ -78,6 +78,12 @@ BASE_FEATURE(kCrosComponents,
 // with Finch.
 BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Mall app for managed users. Only has an effect when kCrosMall is
+// also enabled.
+BASE_FEATURE(kCrosMallManaged,
+             "CrosMallManaged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables denying file access to dlp protected files in MyFiles.
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              "DataControlsFileAccessDefaultDeny",
@@ -128,11 +134,6 @@ BASE_FEATURE(kEnablePkcs12ToChapsDualWrite,
 BASE_FEATURE(kEssentialSearch,
              "EssentialSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable experimental goldfish web app isolation.
-BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
-             "ExperimentalWebAppStoragePartitionIsolation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature flag used to gate preinstallation of the Gemini app.
 BASE_FEATURE(kGeminiAppPreinstall,
@@ -187,6 +188,11 @@ BASE_FEATURE(kMahiDebugging,
 // Controls enabling / disabling the pompano feature.
 BASE_FEATURE(kPompano, "Pompano", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the summary of selected text feature.
+BASE_FEATURE(kMahiSummarizeSelected,
+             "MahiSummarizeSelected",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch to disable the new guest profile implementation on CrOS that is
 // consistent with desktop chrome.
 // TODO(crbug.com/40233408): Remove if the change is fully launched.
@@ -198,7 +204,7 @@ BASE_FEATURE(kNewGuestProfile,
 // notifications and 344px to 400px for notifications in the message center.
 BASE_FEATURE(kNotificationWidthIncrease,
              "NotificationWidthIncrease",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the Navigation Capturing Reimpl for the Office
 // PWA.
@@ -510,6 +516,10 @@ bool IsPlatformKeysChangesWave1Enabled() {
 
 bool IsPompanoEnabled() {
   return base::FeatureList::IsEnabled(kPompano);
+}
+
+bool IsMahiSummarizeSelectedEnabled() {
+  return base::FeatureList::IsEnabled(kMahiSummarizeSelected);
 }
 
 bool IsNotificationWidthIncreaseEnabled() {

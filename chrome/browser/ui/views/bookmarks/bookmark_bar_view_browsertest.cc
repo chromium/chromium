@@ -379,8 +379,6 @@ class PrerenderBookmarkBarNavigationTestBase
   void SetUpOnMainThread() override {
     BookmarkBarNavigationTest::SetUpOnMainThread();
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    scoped_test_timer_ =
-        std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
@@ -432,9 +430,9 @@ class PrerenderBookmarkBarNavigationTestBase
   }
 
  private:
+  base::ScopedMockElapsedTimersForTest scoped_test_timer_;
   content::test::PrerenderTestHelper prerender_helper_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
 // Following definitions are equal to content::PrerenderFinalStatus.

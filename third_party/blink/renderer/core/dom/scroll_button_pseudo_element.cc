@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -30,27 +30,27 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
   bool should_intercept =
       event.target() == this && (is_click || is_enter_or_space);
   if (should_intercept) {
+    Element* scroller = UltimateOriginatingElement();
+    double dx =
+        PageSizePercent * scroller->GetLayoutBox()->Size().width.ToDouble();
+    double dy =
+        PageSizePercent * scroller->GetLayoutBox()->Size().height.ToDouble();
+    if (GetPseudoId() == kPseudoIdScrollUpButton) {
+      scroller->scrollBy(0, -dy);
+    } else if (GetPseudoId() == kPseudoIdScrollDownButton) {
+      scroller->scrollBy(0, dy);
+    } else if (GetPseudoId() == kPseudoIdScrollLeftButton) {
+      scroller->scrollBy(-dx, 0);
+    } else if (GetPseudoId() == kPseudoIdScrollRightButton) {
+      scroller->scrollBy(dx, 0);
+    }
     GetDocument().SetFocusedElement(this,
                                     FocusParams(SelectionBehaviorOnFocus::kNone,
                                                 mojom::blink::FocusType::kNone,
                                                 /*capabilities=*/nullptr));
-    if (scroll_marker_group_) {
-      if (GetPseudoId() == kPseudoIdScrollNextButton) {
-        scroll_marker_group_->ActivateNextScrollMarker(
-            /*focus=*/false);
-      } else {
-        scroll_marker_group_->ActivatePrevScrollMarker(
-            /*focus=*/false);
-      }
-    }
     event.SetDefaultHandled();
   }
   PseudoElement::DefaultEventHandler(event);
-}
-
-void ScrollButtonPseudoElement::Trace(Visitor* v) const {
-  v->Trace(scroll_marker_group_);
-  PseudoElement::Trace(v);
 }
 
 }  // namespace blink

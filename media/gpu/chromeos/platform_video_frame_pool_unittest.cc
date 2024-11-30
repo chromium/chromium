@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -17,8 +18,8 @@
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/fourcc.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
-#include "media/video/fake_gpu_memory_buffer.h"
+#include "media/gpu/chromeos/mock_native_pixmap_dmabuf.h"
+#include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -35,15 +36,17 @@ CroStatus::Or<scoped_refptr<FrameResource>> CreateGpuMemoryBufferFrameResource(
     bool use_linear_buffers,
     bool needs_detiling,
     base::TimeDelta timestamp) {
+  constexpr gfx::BufferUsage kBufferUsage = gfx::BufferUsage::GPU_READ;
+
   std::optional<gfx::BufferFormat> gfx_format =
       VideoPixelFormatToGfxBufferFormat(format);
   DCHECK(gfx_format);
+  scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap =
+      CreateMockNativePixmapDmaBuf(format, coded_size, modifier);
+
   return static_cast<scoped_refptr<FrameResource>>(
-      VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
-          visible_rect, natural_size,
-          std::make_unique<FakeGpuMemoryBuffer>(coded_size, *gfx_format,
-                                                modifier),
-          timestamp)));
+      NativePixmapFrameResource::Create(visible_rect, natural_size, timestamp,
+                                        kBufferUsage, std::move(pixmap)));
 }
 
 }  // namespace
@@ -56,7 +59,7 @@ class PlatformVideoFramePoolTestBase : public ::testing::Test {
     pool_->SetCustomFrameAllocator(
         base::BindRepeating(&CreateGpuMemoryBufferFrameResource<
                             gfx::NativePixmapHandle::kNoModifier>),
-        VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+        VideoFrame::STORAGE_DMABUFS);
     pool_->set_parent_task_runner(
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
@@ -307,7 +310,7 @@ TEST_P(PlatformVideoFramePoolTest, InitializeFail) {
         return CroStatus::Or<scoped_refptr<FrameResource>>(
             CroStatus::Codes::kFailedToCreateVideoFrame);
       }),
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+      VideoFrame::STORAGE_DMABUFS);
 
   EXPECT_FALSE(Initialize(fourcc.value()));
 }
@@ -318,7 +321,7 @@ TEST_P(PlatformVideoFramePoolTest, ModifierIsPassed) {
   ASSERT_TRUE(fourcc.has_value());
   pool_->SetCustomFrameAllocator(
       base::BindRepeating(&CreateGpuMemoryBufferFrameResource<kSampleModifier>),
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+      VideoFrame::STORAGE_DMABUFS);
   ASSERT_TRUE(Initialize(fourcc.value()));
 
   EXPECT_EQ(layout_->modifier(), kSampleModifier);

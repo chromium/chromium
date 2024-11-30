@@ -55,6 +55,30 @@ namespace autofill {
 class PasswordAutofillAgent;
 class PasswordGenerationAgent;
 
+// Helper class that ensures dereferencing `form_` always returns null when
+// `kAutofillOptimizeFormExtraction` is disabled.
+// TODO(crbug.com/40947729): Remove when `kAutofillOptimizeFormExtraction`
+// launches,
+class OptionalForm {
+ public:
+  OptionalForm();
+  OptionalForm(const OptionalForm&);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  OptionalForm(std::nullopt_t);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  OptionalForm(base::optional_ref<FormData> form LIFETIME_BOUND);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  OptionalForm(FormData& form);
+  ~OptionalForm();
+
+  const FormData& operator*() const LIFETIME_BOUND;
+  explicit operator bool() const { return has_value(); }
+  bool has_value() const;
+
+ private:
+  base::optional_ref<FormData> form_;
+};
+
 // AutofillAgent deals with Autofill related communications between Blink and
 // the browser.
 //
@@ -174,6 +198,12 @@ class AutofillAgent : public content::RenderFrameObserver,
   void ExtractForm(FormRendererId form,
                    base::OnceCallback<void(const std::optional<FormData>&)>
                        callback) override;
+  void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string&)> callback) override;
+
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override;
   // Besides cases that "actually" clear the form, this function needs to be

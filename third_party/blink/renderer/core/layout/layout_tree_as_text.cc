@@ -754,7 +754,7 @@ String CounterValueForElement(Element* element) {
           element->PseudoElementLayoutObject(kPseudoIdMarker))
     WriteCounterValuesFromChildren(stream, marker, is_first_counter);
   if (LayoutObject* check =
-          element->PseudoElementLayoutObject(kPseudoIdCheck)) {
+          element->PseudoElementLayoutObject(kPseudoIdCheckMark)) {
     WriteCounterValuesFromChildren(stream, check, is_first_counter);
   }
   if (LayoutObject* before =

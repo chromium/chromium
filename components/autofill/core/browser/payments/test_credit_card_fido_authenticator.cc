@@ -94,7 +94,7 @@ std::vector<uint8_t> TestCreditCardFidoAuthenticator::GetCredentialId() {
 
 std::vector<uint8_t> TestCreditCardFidoAuthenticator::GetChallenge() {
   if (request_options_) {
-    return request_options_->challenge;
+    return *request_options_->challenge;
   } else {
     DCHECK(creation_options_);
     return creation_options_->challenge;

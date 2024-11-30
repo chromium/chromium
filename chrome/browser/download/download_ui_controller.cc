@@ -49,10 +49,6 @@
 #include "chrome/browser/download/notification/download_notification_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 // DownloadShelfUIControllerDelegate{Android,} is used when a
@@ -62,8 +58,8 @@ namespace {
 
 class AndroidUIControllerDelegate : public DownloadUIController::Delegate {
  public:
-  AndroidUIControllerDelegate() {}
-  ~AndroidUIControllerDelegate() override {}
+  AndroidUIControllerDelegate() = default;
+  ~AndroidUIControllerDelegate() override = default;
 
  private:
   // DownloadUIController::Delegate
@@ -93,7 +89,7 @@ class DownloadShelfUIControllerDelegate
   // |profile| is required to outlive DownloadShelfUIControllerDelegate.
   explicit DownloadShelfUIControllerDelegate(Profile* profile)
       : profile_(profile) {}
-  ~DownloadShelfUIControllerDelegate() override {}
+  ~DownloadShelfUIControllerDelegate() override = default;
 
  private:
   // DownloadUIController::Delegate
@@ -203,24 +199,10 @@ class CrOSUIControllerDelegate : public DownloadUIController::Delegate {
       InitializeDownloadBubbleUpdateService(profile, manager);
     }
 
-    // Generally the `DownloadNotificationManager` should always be added as it
-    // provides System UI notifications on ChromeOS.
-    bool add_download_notification_manager = true;
-
-    // In Lacros, the `DownloadNotificationManager` should be added if and only
-    // if the new downloads integration with System UI surfaces is disabled.
-    // This ensures that exactly one System UI notification provider exists.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (auto* proxy = chromeos::BrowserParamsProxy::Get();
-        proxy && proxy->IsSysUiDownloadsIntegrationV2Enabled()) {
-      add_download_notification_manager = false;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-    if (add_download_notification_manager) {
-      delegates_.emplace_back(
-          std::make_unique<DownloadNotificationManager>(profile));
-    }
+    // The `DownloadNotificationManager` should always be added as it provides
+    // System UI notifications on ChromeOS.
+    delegates_.emplace_back(
+        std::make_unique<DownloadNotificationManager>(profile));
   }
 
   CrOSUIControllerDelegate(const CrOSUIControllerDelegate&) = delete;

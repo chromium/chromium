@@ -118,6 +118,7 @@ try_.builder(
     gn_args = "ci/Mac ASAN Release Media",
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
 )
 
 try_.builder(

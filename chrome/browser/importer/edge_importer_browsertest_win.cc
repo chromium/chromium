@@ -111,7 +111,7 @@ class TestObserver : public ProfileWriter,
   }
 
  private:
-  ~TestObserver() override {}
+  ~TestObserver() override = default;
 
   // This is the count of bookmark entries observed during the test.
   size_t bookmark_count_;

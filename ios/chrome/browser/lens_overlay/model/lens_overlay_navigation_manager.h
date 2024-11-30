@@ -11,6 +11,7 @@
 #import "base/memory/raw_ptr.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/web_state_observer.h"
+#import "url/gurl.h"
 
 @protocol LensOverlayNavigationMutator;
 namespace web {
@@ -35,6 +36,11 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
   /// Called when the Lens overlay generates a `result`.
   void LensOverlayDidGenerateResult(id<ChromeLensOverlayResult> result);
 
+  /// Loads the unimodal omnibox navigation to `destinationURL` with
+  /// `omniboxText`.
+  void LoadUnimodalOmniboxNavigation(const GURL& destination_url,
+                                     const std::u16string& omnibox_text);
+
   /// Whether there is a previous navigation.
   bool CanGoBack() const;
   /// Go back to the previous navigation.
@@ -46,6 +52,14 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
+  /// Item stored in `LensResultItem`, representing a sub navigation.
+  struct LensSubNavigationItem {
+    /// URL of the navigation.
+    GURL destination_url;
+    /// Text in the omnibox.
+    std::u16string omnibox_text;
+  };
+
   /// Item stored in the navigation container, representing a lens result and
   /// its sub-navigations.
   class LensResultItem {
@@ -57,8 +71,10 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
 
     id<ChromeLensOverlayResult> lens_result() const { return lens_result_; }
     const std::string& comparison_key() const { return comparison_key_; }
-    std::vector<GURL>& sub_navigations() { return sub_navigations_; }
-    const std::vector<GURL>& sub_navigations() const {
+    std::vector<LensSubNavigationItem>& sub_navigations() {
+      return sub_navigations_;
+    }
+    const std::vector<LensSubNavigationItem>& sub_navigations() const {
       return sub_navigations_;
     }
 
@@ -76,7 +92,7 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
     /// Key to compare two lens results when reloading.
     std::string comparison_key_;
     /// Sub navigations that originate from the same lens result.
-    std::vector<GURL> sub_navigations_;
+    std::vector<LensSubNavigationItem> sub_navigations_;
   };  // class LensResultItem
 
   /// Called when the navigation list has changed.
@@ -89,7 +105,10 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
 
   /// Adds the sub navigation to the current `LensResultItem` if it's not a
   /// reload.
-  void RegisterSubNavigation(GURL url);
+  void RegisterSubNavigation(GURL url, const std::u16string& omnibox_text);
+
+  /// Returns the omnibox text from the previous sub navigation.
+  std::u16string PreviousOmniboxText() const;
 
   /// List of Lens navigation. Going back will load the previous Lens
   /// navigation or the previous sub-navigation if available.

@@ -470,9 +470,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     quad->SetNew(shared_state, output_rect, output_rect,
                  false /*needs_blending*/, ResourceId(1),
                  false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-                 SkColors::kTransparent, false /*flipped*/,
-                 false /*nearest_neighbor*/, false /*secure_output_only*/,
-                 gfx::ProtectedVideoType::kClear);
+                 SkColors::kTransparent, false /*nearest_neighbor*/,
+                 false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
 
     if (per_quad_damage_output) {
       quad->damage_rect = output_rect;
@@ -5826,15 +5825,14 @@ CompositorFrame BuildCompositorFrameWithResources(
     const gfx::PointF uv_top_left;
     const gfx::PointF uv_bottom_right;
     SkColor4f background_color = SkColors::kGreen;
-    bool flipped = false;
     bool nearest_neighbor = false;
     bool secure_output_only = true;
     gfx::ProtectedVideoType protected_video_type =
         gfx::ProtectedVideoType::kClear;
     quad->SetAll(sqs, rect, visible_rect, needs_blending, resource_id,
                  gfx::Size(), premultiplied_alpha, uv_top_left, uv_bottom_right,
-                 background_color, flipped, nearest_neighbor,
-                 secure_output_only, protected_video_type);
+                 background_color, nearest_neighbor, secure_output_only,
+                 protected_video_type);
   }
   frame.render_pass_list.push_back(std::move(pass));
   return frame;
@@ -6096,6 +6094,82 @@ TEST_F(SurfaceAggregatorWithResourcesTest, SecureOutputTexture) {
   // Output is insecure, so texture should be drawn.
   EXPECT_EQ(DrawQuad::Material::kSolidColor,
             render_pass->quad_list.back()->material);
+}
+
+TEST_F(SurfaceAggregatorWithResourcesTest, OverrideChildPaintFlags) {
+  auto support1 = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, FrameSinkId(3, 1), /*is_root=*/false);
+  auto support2 = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, FrameSinkId(4, 2), /*is_root=*/false);
+  LocalSurfaceId local_frame1_id(7u, base::UnguessableToken::Create());
+  SurfaceId surface1_id(support1->frame_sink_id(), local_frame1_id);
+
+  LocalSurfaceId local_frame2_id(8u, base::UnguessableToken::Create());
+  SurfaceId surface2_id(support2->frame_sink_id(), local_frame2_id);
+
+  std::vector<ResourceId> ids = {ResourceId(11)};
+  SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support1.get(),
+                                     surface1_id);
+
+  auto frame = AggregateFrame(surface1_id);
+
+  auto* render_pass = frame.render_pass_list.back().get();
+
+  EXPECT_EQ(DrawQuad::Material::kTextureContent,
+            render_pass->quad_list.back()->material);
+  EXPECT_FALSE(static_cast<TextureDrawQuad*>(render_pass->quad_list.back())
+                   ->nearest_neighbor);
+
+  SurfaceDrawQuad* surface_quad = nullptr;
+  {
+    auto pass = CompositorRenderPass::Create();
+    pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(0, 0, 20, 20),
+                 gfx::Rect(), gfx::Transform());
+    auto* sqs = pass->CreateAndAppendSharedQuadState();
+    sqs->opacity = 1.f;
+    surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+    surface_quad->SetNew(sqs, gfx::Rect(0, 0, 1, 1), gfx::Rect(0, 0, 1, 1),
+                         SurfaceRange(std::nullopt, surface1_id),
+                         SkColors::kWhite,
+                         /*stretch_content_to_fill_bounds=*/false);
+
+    CompositorFrame compositor_frame =
+        CompositorFrameBuilder().AddRenderPass(std::move(pass)).Build();
+
+    support2->SubmitCompositorFrame(local_frame2_id,
+                                    std::move(compositor_frame));
+  }
+
+  // By default nearest-neighbor is false.
+  frame = AggregateFrame(surface2_id);
+  EXPECT_EQ(1u, frame.render_pass_list.size());
+  render_pass = frame.render_pass_list.front().get();
+  EXPECT_EQ(DrawQuad::Material::kTextureContent,
+            render_pass->quad_list.front()->material);
+  EXPECT_FALSE(static_cast<TextureDrawQuad*>(render_pass->quad_list.back())
+                   ->nearest_neighbor);
+
+  // Force nearest-neighbor filtering on the child texture layer.
+  surface_quad->override_child_filter_quality =
+      cc::PaintFlags::FilterQuality::kNone;
+  frame = AggregateFrame(surface2_id);
+  EXPECT_EQ(1u, frame.render_pass_list.size());
+  render_pass = frame.render_pass_list.front().get();
+  EXPECT_EQ(DrawQuad::Material::kTextureContent,
+            render_pass->quad_list.front()->material);
+  EXPECT_TRUE(static_cast<TextureDrawQuad*>(render_pass->quad_list.back())
+                  ->nearest_neighbor);
+
+  // Force not-nearest-neighbor filtering on the child texture layer.
+  surface_quad->override_child_filter_quality =
+      cc::PaintFlags::FilterQuality::kLow;
+  frame = AggregateFrame(surface2_id);
+  EXPECT_EQ(1u, frame.render_pass_list.size());
+  render_pass = frame.render_pass_list.front().get();
+  EXPECT_EQ(DrawQuad::Material::kTextureContent,
+            render_pass->quad_list.front()->material);
+  EXPECT_FALSE(static_cast<TextureDrawQuad*>(render_pass->quad_list.back())
+                   ->nearest_neighbor);
 }
 
 // Ensure that the render passes have correct color spaces. This test
@@ -7751,9 +7825,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, PerQuadDamageSameSharedQuadState) {
     texure_quad->SetNew(
         sqs, quad_rects[i], quad_rects[i], false /*needs_blending*/,
         ResourceId(1), false /*premultiplied_alpha*/, kUVTopLeft,
-        kUVBottomRight, SkColors::kTransparent, false /*flipped*/,
-        false /*nearest_neighbor*/, false /*secure_output_only*/,
-        gfx::ProtectedVideoType::kClear);
+        kUVBottomRight, SkColors::kTransparent, false /*nearest_neighbor*/,
+        false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
 
     texure_quad->damage_rect = damage_rects[i];
   }

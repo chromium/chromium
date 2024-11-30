@@ -20,11 +20,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
@@ -52,6 +54,8 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class QuickDeleteDialogDelegateUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Callback<Integer> mOnDismissCallbackMock;
     @Mock private TabModelSelector mTabModelSelectorMock;
     @Mock private Tab mTabMock;
@@ -65,7 +69,6 @@ public class QuickDeleteDialogDelegateUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mTabModelSelectorMock.getCurrentTab()).thenReturn(mTabMock);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
 

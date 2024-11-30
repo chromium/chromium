@@ -434,8 +434,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     base::WeakPtr<Browser> browser,
-    int fixed_width,
-    bool is_in_partial_view)
+    int fixed_width)
     : info_(info),
       context_menu_(std::make_unique<DownloadShelfContextMenuView>(
           info_->model()->GetWeakPtr(),
@@ -452,8 +451,6 @@ DownloadBubbleRowView::DownloadBubbleRowView(
                               base::Unretained(this))),
       input_protector_(
           std::make_unique<views::InputEventActivationProtector>()),
-      shown_time_(base::Time::Now()),
-      is_in_partial_view_(is_in_partial_view),
       fixed_width_(fixed_width) {
   CHECK(info_->model());
   info_->AddObserver(this);
@@ -812,17 +809,6 @@ void DownloadBubbleRowView::OnMainButtonPressed(const ui::Event& event) {
   if (!bubble_controller_ || !navigation_handler_ ||
       !info_->main_button_enabled() || !info_->model()) {
     return;
-  }
-  // Log histograms for how long users take to open a download by clicking the
-  // main button, if the download has no warning. This is logged before the
-  // input_protector_ check to capture attempted clicks sooner than 500 ms.
-  if (!info_->has_subpage() && is_in_partial_view_) {
-    base::Time now = base::Time::Now();
-    base::UmaHistogramTimes("Download.PartialView.StartTimeToOpenDownloadClick",
-                            now - model()->GetStartTime());
-    base::UmaHistogramTimes(
-        "Download.PartialView.RowShownTimeToOpenDownloadClick",
-        now - shown_time_);
   }
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;

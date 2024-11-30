@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
@@ -159,6 +160,10 @@ blink_platform_sources("loader") {
     "fetch/url_loader/worker_main_script_loader.h",
     "fetch/url_loader/worker_main_script_loader_client.h",
     "fetch/worker_resource_timing_notifier.h",
+    "identity_digest.cc",
+    "identity_digest.h",
+    "integrity_report.cc",
+    "integrity_report.h",
     "internet_disconnected_url_loader.cc",
     "internet_disconnected_url_loader.h",
     "link_header.cc",
@@ -244,6 +249,7 @@ source_set("unit_tests") {
     "fetch/url_loader/sync_load_context_unittest.cc",
     "fetch/url_loader/url_loader_unittest.cc",
     "fetch/url_loader/worker_main_script_loader_unittest.cc",
+    "identity_digest_unittest.cc",
     "link_header_test.cc",
     "static_data_navigation_body_loader_test.cc",
     "subresource_integrity_test.cc",
@@ -262,6 +268,27 @@ source_set("unit_tests") {
     "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/platform:platform",
     "//third_party/blink/renderer/platform:test_support",
+  ]
+}
+
+test("identity_digest_fuzzer") {
+  sources = [ "identity_digest_fuzzer.cc" ]
+
+  deps = [
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  fuzztests = [
+    "IdentityDigest.CreateFuzzer",
+    "IdentityDigest.MatchFuzzer",
   ]
 }
 

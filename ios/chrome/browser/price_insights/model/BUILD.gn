@@ -63,7 +63,9 @@ source_set("feature") {
     "//base",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
+    "//components/variations/service:service",
     "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
   ]

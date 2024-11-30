@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -300,8 +301,86 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest, ParentNavigatesSubframes) {
             child0_instance->group());
 }
 
+// The same as DataURLSiteInstanceGroupTest, but with kSitePerProcess disabled.
+class DataURLSiteInstanceGroupTestWithoutSiteIsolation
+    : public DataURLSiteInstanceGroupTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->RemoveSwitch(switches::kSitePerProcess);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+};
+
+// Ensure that when SiteIsolation is disabled, a data: subframe in an isolated
+// main frame can create and navigate a subframe successfully. E.g.
+// A_isolated(data(B)). This is a regression test for crbug.com/379385125.
+IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTestWithoutSiteIsolation,
+                       DataSubframeOpensSubframeAndNavigates) {
+  // Explicitly isolate a.com since SiteIsolation is disabled.
+  IsolateOriginsForTesting(embedded_test_server(), web_contents(), {"a.com"});
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Add a data: URL subframe.
+  {
+    TestNavigationObserver observer(web_contents());
+    GURL data_url("data:text/html,test");
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'data_frame'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        data_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    observer.Wait();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    ASSERT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_EQ(data_url, observer.last_navigation_url());
+  }
+  SiteInstanceImpl* a_instance = main_frame_host()->GetSiteInstance();
+
+  FrameTreeNode* data_frame = main_frame()->child_at(0);
+  SiteInstanceImpl* data_instance =
+      data_frame->current_frame_host()->GetSiteInstance();
+
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(a_instance, data_instance);
+  } else {
+    EXPECT_EQ(a_instance, data_instance);
+  }
+  EXPECT_EQ(a_instance->group(), data_instance->group());
+
+  // Add a subframe of the data: URL, and navigate it to b.com.
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  {
+    TestNavigationObserver observer(web_contents());
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'child_frame_of_data'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        url_b.spec().c_str());
+    EXPECT_TRUE(ExecJs(data_frame, js_str));
+    observer.Wait();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    EXPECT_EQ(url_b, observer.last_navigation_url());
+  }
+
+  FrameTreeNode* b_frame = data_frame->child_at(0);
+  SiteInstanceImpl* b_instance =
+      b_frame->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(data_instance, b_instance);
+  EXPECT_NE(data_instance->group(), b_instance->group());
+  EXPECT_NE(data_instance->GetProcess(), b_instance->GetProcess());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DataURLSiteInstanceGroupTest,
+                         ::testing::Bool(),
+                         &DataURLSiteInstanceGroupTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         DataURLSiteInstanceGroupTestWithoutSiteIsolation,
                          ::testing::Bool(),
                          &DataURLSiteInstanceGroupTest::DescribeParams);
 }  // namespace content

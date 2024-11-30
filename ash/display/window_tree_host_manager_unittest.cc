@@ -1909,7 +1909,7 @@ TEST_F(WindowTreeHostManagerTest, ReplacePrimary) {
   primary_root->RemoveObserver(&test_observer);
 }
 
-TEST_F(WindowTreeHostManagerTest, UpdateMouseLocationAfterDisplayChange_Noop) {
+TEST_F(WindowTreeHostManagerTest, UpdateMouseLocationAfterDisplayChangeNoop) {
   UpdateDisplay("1600x1000*.9");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 

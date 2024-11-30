@@ -25,8 +25,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -71,19 +69,14 @@ import java.util.List;
 
 /** Unit tests for {@link TabGroupContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU, ChromeFeatureList.DATA_SHARING})
 public class TabGroupContextMenuCoordinatorUnitTest {
-    private static final String GAIA_ID = "Z";
-    private static final String EMAIL = "fake@gmail.com";
-    private static final String COLLABORATION_ID = "A";
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private Activity mActivity;
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     private OnItemClickedCallback mOnItemClickedCallback;
     private int mTabId;
@@ -105,8 +98,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
     @Mock private Callback<Boolean> mCallback;
 
-    @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCaptor;
-
     @Before
     public void setUp() {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
@@ -114,24 +105,25 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
 
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        LayoutInflater inflater = LayoutInflater.from(mActivity);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        LayoutInflater inflater = LayoutInflater.from(activity);
         mMenuView = inflater.inflate(R.layout.tab_strip_group_menu_layout, null);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
         when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
-        when(mWeakReferenceActivity.get()).thenReturn(mActivity);
+        when(mWeakReferenceActivity.get()).thenReturn(activity);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModel.isIncognito()).thenReturn(false);
         mTabModel.setTabRemoverForTesting(mTabRemover);
+        mTabModel.setTabCreatorForTesting(mTabCreator);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mProfile.isOffTheRecord()).thenReturn(true);
         mTabId = 1;
         mOnItemClickedCallback =
                 TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
-                        mActivity,
+                        activity,
                         mTabGroupModelFilter,
                         mActionConfirmationManager,
                         mModalDialogManager,
-                        mTabCreator,
                         mDataSharingTabManager,
                         mCallback);
         mTabGroupContextMenuCoordinator =
@@ -140,7 +132,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mTabGroupModelFilter,
                         mActionConfirmationManager,
                         mModalDialogManager,
-                        mTabCreator,
                         mWindowAndroid,
                         mDataSharingTabManager,
                         mCallback);
@@ -150,7 +141,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems() {
         // Build custom view first to setup menu view.
@@ -245,7 +235,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     @Feature("Tab Strip Group Context Menu")
     public void testCollaborationMenuItems_Owner() {
         ModelList modelList = new ModelList();
@@ -272,7 +261,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     @Feature("Tab Strip Group Context Menu")
     public void testCollaborationMenuItems_Member() {
         ModelList modelList = new ModelList();

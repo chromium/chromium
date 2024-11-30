@@ -124,6 +124,7 @@ class ManagePasswordsUIController
   void OnPasskeyDeleted() override;
   void OnPasskeyUpdated(std::string passkey_rp_id) override;
   void OnPasskeyNotAccepted(std::string passkey_rp_id) override;
+  void OnPasskeyUpgrade(std::string passkey_rp_id) override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);
@@ -277,6 +278,9 @@ class ManagePasswordsUIController
   void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) override;
   void OnLeakDialogHidden() override;
+  void ChangePassword(const GURL& url,
+                      const std::u16string& username,
+                      const std::u16string& password) override;
 
   enum class BubbleStatus {
     NOT_SHOWN,

@@ -512,11 +512,6 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsPeripheralsIsSelected, false);
 
-  registry->RegisterBooleanPref(::prefs::kHatsPrivacyHubPostLaunchIsSelected,
-                                false);
-
-  registry->RegisterInt64Pref(::prefs::kHatsPrivacyHubPostLaunchCycleEndTs, 0);
-
   // Personalization HaTS survey prefs for avatar, screensaver, and wallpaper
   // features.
   registry->RegisterInt64Pref(

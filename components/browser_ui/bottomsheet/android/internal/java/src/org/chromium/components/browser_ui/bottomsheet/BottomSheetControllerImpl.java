@@ -37,7 +37,7 @@ import java.util.PriorityQueue;
  * and call {@link #requestShowContent(BottomSheetContent, boolean)} which will return true if the
  * content was actually shown (see full doc on method).
  */
-class BottomSheetControllerImpl implements ManagedBottomSheetController {
+class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCoordinator.Observer {
     /** The initial capacity for the priority queue handling pending content show requests. */
     private static final int INITIAL_QUEUE_CAPACITY = 1;
 
@@ -109,6 +109,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private int mAppHeaderHeight;
+    private int mBottomControlsHeight;
 
     /**
      * Build a new controller of the bottom sheet.
@@ -142,6 +143,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.addObserver(this);
         }
+
         mSheetInitializer =
                 () -> {
                     initializeSheet(initializedCallback, window, keyboardDelegate, root);
@@ -215,7 +217,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                 keyboardDelegate,
                 mAlwaysFullWidth,
                 mEdgeToEdgeBottomInsetSupplier,
-                mAppHeaderHeight);
+                mAppHeaderHeight,
+                mBottomControlsHeight);
 
         // Initialize the queue with a comparator that checks content priority.
         mContentQueue =
@@ -243,16 +246,18 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mBottomSheet.addObserver(
                 new EmptyBottomSheetObserver() {
                     /**
-                     * Whether the scrim was shown for the last content.
-                     * TODO(mdjones): We should try to make sure the content in the sheet is not nulled
-                     *                prior to the close event occurring; sheets that don't have a peek
-                     *                state make this difficult since the sheet needs to be hidden before it
-                     *                is closed.
+                     * Whether the scrim was shown for the last content. TODO(mdjones): We should
+                     * try to make sure the content in the sheet is not nulled prior to the close
+                     * event occurring; sheets that don't have a peek state make this difficult
+                     * since the sheet needs to be hidden before it is closed.
                      */
                     private boolean mScrimShown;
 
                     @Override
                     public void onSheetOpened(@StateChangeReason int reason) {
+                        // The scrim may start visible, meaning we won't get an update. Manually
+                        // trigger an update to account for this possibility.
+                        scrimVisibilityChanged(mScrimCoordinatorSupplier.get().isShowingScrim());
                         if (mBottomSheet.getCurrentSheetContent() != null
                                 && mBottomSheet
                                         .getCurrentSheetContent()
@@ -322,6 +327,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                     }
                 });
 
+        mScrimCoordinatorSupplier.get().addObserver(this);
         // Add any of the pending observers that were added prior to the sheet being created.
         for (int i = 0; i < mPendingSheetObservers.size(); i++) {
             mBottomSheet.addObserver(mPendingSheetObservers.get(i));
@@ -334,6 +340,16 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     @Override
     public void setBrowserControlsHiddenRatio(float ratio) {
         if (mBottomSheet != null) mBottomSheet.setBrowserControlsHiddenRatio(ratio);
+    }
+
+    @Override
+    public void setBottomControlsHeight(int bottomControlsHeight) {
+        if (mBottomControlsHeight == bottomControlsHeight) return;
+        mBottomControlsHeight = bottomControlsHeight;
+        if (mScrimCoordinatorSupplier.hasValue()) {
+            // Set the appropriate offset for the current scrim state.
+            scrimVisibilityChanged(mScrimCoordinatorSupplier.get().isShowingScrim());
+        }
     }
 
     @Override
@@ -500,6 +516,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     View getBottomSheetViewForTesting() {
         return mBottomSheet;
+    }
+
+    ViewGroup getBottomSheetContainerForTesting() {
+        return mBottomSheetContainer;
     }
 
     public void endAnimationsForTesting() {
@@ -671,8 +691,28 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         return mBottomSheet.isSmallScreen();
     }
 
+    // ScrimCoordinator.Observer
+    @Override
+    public void scrimVisibilityChanged(boolean scrimVisible) {
+        if (mBottomSheet == null) return;
+        if (scrimVisible && mBottomSheet.isSheetOpen()) {
+            // Scrimmed bottom sheet. Draw the bottom sheet container on top of all sibling views,
+            // originating from the bottom of the screen.
+            mBottomSheetContainer.setZ(1.0f);
+            mBottomSheet.setBottomMargin(0);
+
+        } else {
+            // Unscrimmed bottom sheet. Draw the bottom sheet container in its "natural" order; i.e.
+            // in the order specified in res_app/layout/main.xml. Draw originating from the top of
+            // the bottom controls.
+            mBottomSheetContainer.setZ(0.0f);
+            mBottomSheet.setBottomMargin(mBottomControlsHeight);
+        }
+    }
+
     /**
      * Remove all contents from {@code iterator} that don't have a custom lifecycle.
+     *
      * @param iterator The iterator whose items must be removed.
      */
     private void clearRequests(Iterator<BottomSheetContent> iterator) {

@@ -72,7 +72,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         // set a MaterialComponents theme which is required for the `OutlinedBox` text field.
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ false);
+        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);

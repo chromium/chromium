@@ -56,8 +56,8 @@ abstract class OnDeviceModel<T> implements Model<T> {
   private async executeRaw(text: string): Promise<ModelResponse<string>> {
     const session = new SessionRemote();
     this.remote.startSession(session.$.bindNewPipeAndPassReceiver());
-    const inputPiece = {text};
-    const {size} = await session.getSizeInTokens({pieces: [inputPiece]});
+    const inputPieces = {pieces: [{text}]};
+    const {size} = await session.getSizeInTokens(inputPieces);
 
     if (size < MIN_TOKEN_LENGTH) {
       return {
@@ -92,16 +92,13 @@ abstract class OnDeviceModel<T> implements Model<T> {
     );
     session.execute(
       {
-        // TODO: b/363288363 - Migrate to `input`.
-        text,
         ignoreContext: false,
-        maxTokens: null,
-        tokenOffset: null,
-        maxOutputTokens: null,
-        unusedSafetyInterval: null,
+        maxTokens: 0,
+        tokenOffset: 0,
+        maxOutputTokens: 0,
         topK: 1,
         temperature: 0,
-        input: null,
+        input: inputPieces,
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
     );

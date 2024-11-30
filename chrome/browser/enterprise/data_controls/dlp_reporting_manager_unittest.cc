@@ -18,8 +18,8 @@
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "components/account_id/account_id.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/rule.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/encryption/primitives.h"
@@ -83,7 +83,7 @@ class DlpReportingManagerTest : public testing::Test {
 
     ASSERT_EQ(events_.size(), event_number + 1);
     EXPECT_EQ(events_[event_number].source().url(), kCompanyUrl);
-    EXPECT_FALSE(events_[event_number].destination().has_url());
+    EXPECT_EQ(events_[event_number].destination().url(), "");
     EXPECT_EQ(events_[event_number].destination().component(), event_component);
     EXPECT_EQ(events_[event_number].restriction(),
               DlpPolicyEvent_Restriction_CLIPBOARD);
@@ -163,7 +163,7 @@ TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_EQ(events_[0].source().url(), kCompanyUrl);
   EXPECT_EQ(events_[0].destination().url(), dst_url);
-  EXPECT_FALSE(events_[0].destination().has_component());
+  EXPECT_EQ(events_[0].destination().component(), DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT);
   EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_CLIPBOARD);
   EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
   EXPECT_EQ(events_[0].triggered_rule_name(), kRuleName);
@@ -204,8 +204,8 @@ TEST_F(DlpReportingManagerTest, ReportEventWithoutNameAndRuleId) {
   EXPECT_FALSE(events_[0].has_destination());
   EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_PRINTING);
   EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
-  EXPECT_FALSE(events_[0].has_triggered_rule_name());
-  EXPECT_FALSE(events_[0].has_triggered_rule_id());
+  EXPECT_EQ(events_[0].triggered_rule_name(), "");
+  EXPECT_EQ(events_[0].triggered_rule_id(), "");
 }
 
 TEST_F(DlpReportingManagerTest, MetricsReported) {
@@ -336,8 +336,8 @@ TEST_F(DlpReportingManagerTest, CreateEventWithEmptyRuleMetadata) {
   DlpPolicyEvent event = event_builder->Create();
   EXPECT_EQ(event.source().url(), kCompanyUrl);
   EXPECT_EQ(event.mode(), DlpPolicyEvent_Mode_BLOCK);
-  EXPECT_FALSE(event.has_triggered_rule_name());
-  EXPECT_FALSE(event.has_triggered_rule_id());
+  EXPECT_EQ(event.triggered_rule_name(), "");
+  EXPECT_EQ(event.triggered_rule_id(), "");
 }
 
 TEST_F(DlpReportingManagerTest, Timestamp) {
@@ -347,7 +347,6 @@ TEST_F(DlpReportingManagerTest, Timestamp) {
       CreateDlpPolicyEvent(kCompanyUrl, Rule::Restriction::kPrinting, kRuleName,
                            kRuleId, Rule::Level::kBlock);
 
-  ASSERT_TRUE(event.has_timestamp_micro());
   const base::TimeDelta time_since_epoch =
       base::Microseconds(event.timestamp_micro());
   const base::Time upper_bound = base::Time::Now();
@@ -397,8 +396,8 @@ TEST_F(DlpReportingManagerTest, OnEventEnqueuedError) {
 }
 
 TEST_F(DlpReportingManagerTest, ReportLongEvent) {
-  const std::string rand_source_url = base::RandBytesAsString(64 * 1024);
-  const std::string rand_destination_url = base::RandBytesAsString(64 * 1024);
+  const std::string rand_source_url = std::string(64 * 1024, 'a');
+  const std::string rand_destination_url = std::string(64 * 1024, 'b');
 
   manager_->ReportEvent(rand_source_url, rand_destination_url,
                         Rule::Restriction::kPrinting, Rule::Level::kBlock,

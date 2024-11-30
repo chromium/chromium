@@ -2644,7 +2644,7 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   // Check first tab in group focused.
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   std::optional<tab_groups::TabGroupId> restored_group_id =
-      browser()->tab_strip_model()->GetActiveTab()->group();
+      browser()->tab_strip_model()->GetActiveTab()->GetGroup();
   ASSERT_TRUE(restored_group_id.has_value());
   EXPECT_TRUE(service->GetGroup(restored_group_id.value()));
 }

@@ -23,13 +23,17 @@ TestMenuDelegate::TestMenuDelegate() = default;
 
 TestMenuDelegate::~TestMenuDelegate() = default;
 
+void TestMenuDelegate::DisableContextMenuForCommandId(int command_id) {
+  commands_without_context_menus_.insert(command_id);
+}
+
 bool TestMenuDelegate::ShowContextMenu(MenuItemView* source,
                                        int id,
                                        const gfx::Point& p,
                                        ui::mojom::MenuSourceType source_type) {
   show_context_menu_count_++;
   show_context_menu_source_ = source;
-  return true;
+  return !commands_without_context_menus_.contains(id);
 }
 
 void TestMenuDelegate::ExecuteCommand(int id) {

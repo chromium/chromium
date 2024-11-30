@@ -9,6 +9,7 @@
 
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class ChromeAccountManagerService;
@@ -50,6 +51,24 @@ IdentitySigninState GetPrimaryIdentitySigninState(ProfileIOS* profile);
 
 // Converts a SystemIdentityCapabilityResult to a Tribool.
 Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result);
+
+// Returns the list of all accounts on the device, including the ones that are
+// assigned to other profiles, in the order provided by the system, from
+// (depending on feature flags) IdentityManager and/or
+// ChromeAccountManagerService.
+NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(
+    signin::IdentityManager* identityManager,
+    ChromeAccountManagerService* accountManagerService);
+// Convenience version that grabs the required services from the `profile`.
+NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(ProfileIOS* profile);
+
+// Returns the default identity on the device, i.e. the first one returned by
+// GetIdentitiesOnDevice(), or nil if there are none.
+id<SystemIdentity> GetDefaultIdentityOnDevice(
+    signin::IdentityManager* identityManager,
+    ChromeAccountManagerService* accountManagerService);
+// Convenience version that grabs the required services from the `profile`.
+id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile);
 
 }  // namespace signin
 

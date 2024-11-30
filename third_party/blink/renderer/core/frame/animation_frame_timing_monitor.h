@@ -55,7 +55,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void BeginMainFrame(LocalDOMWindow& local_root_window);
   void WillPerformStyleAndLayoutCalculation();
-  void DidBeginMainFrame(LocalDOMWindow& local_root_window);
+  void RecordRenderingUpdateEndTime(LocalDOMWindow& local_root_window,
+                                    base::TimeTicks);
   void OnTaskCompleted(base::TimeTicks start_time,
                        base::TimeTicks end_time,
                        LocalFrame* frame);

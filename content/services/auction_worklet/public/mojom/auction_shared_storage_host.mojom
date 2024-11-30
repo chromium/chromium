@@ -18,7 +18,8 @@ enum AuctionWorkletFunction {
 // storage API (i.e. the setter methods). We intentionally do not return the
 // result of these calls to avoid leaking state to the worklet.
 interface AuctionSharedStorageHost {
-  // Handle the modifier method `method`.
-  SharedStorageUpdate(network.mojom.SharedStorageModifierMethod method,
-                      AuctionWorkletFunction source_auction_worklet_function);
+  // Handle the modifier method `method_with_options`.
+  SharedStorageUpdate(
+    network.mojom.SharedStorageModifierMethodWithOptions method_with_options,
+    AuctionWorkletFunction source_auction_worklet_function);
 };

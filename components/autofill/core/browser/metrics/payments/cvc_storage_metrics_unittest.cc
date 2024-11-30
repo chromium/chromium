@@ -175,7 +175,7 @@ TEST_P(CvcStorageMetricsTest, LogSelectedMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetExpectedHistogramName()),
@@ -192,7 +192,7 @@ TEST_P(CvcStorageMetricsTest, LogSelectedMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetExpectedHistogramName()),
@@ -220,12 +220,11 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   if (!using_local_card()) {
     test_api(autofill_manager())
         .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                             AutofillTriggerSource::kPopup,
-                             CreditCardFetchResult::kSuccess, &card());
+                             AutofillTriggerSource::kPopup, card());
   }
 
   EXPECT_THAT(
@@ -243,12 +242,11 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   if (!using_local_card()) {
     test_api(autofill_manager())
         .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                             AutofillTriggerSource::kPopup,
-                             CreditCardFetchResult::kSuccess, &card());
+                             AutofillTriggerSource::kPopup, card());
   }
 
   EXPECT_THAT(
@@ -279,12 +277,11 @@ TEST_P(CvcStorageMetricsTest, LogSubmitMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   if (!using_local_card()) {
     test_api(autofill_manager())
         .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                             AutofillTriggerSource::kPopup,
-                             CreditCardFetchResult::kSuccess, &card());
+                             AutofillTriggerSource::kPopup, card());
   }
   SubmitForm(form());
 

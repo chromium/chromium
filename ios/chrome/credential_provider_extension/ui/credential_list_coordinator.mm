@@ -187,11 +187,11 @@
   }
 }
 
-- (BOOL)isRequestingPasskey {
+- (NSString*)relyingPartyIdentifier {
   if (@available(iOS 17.0, *)) {
-    return self.requestParameters != nil;
+    return self.requestParameters.relyingPartyIdentifier;
   } else {
-    return NO;
+    return nil;
   }
 }
 

@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -123,8 +124,7 @@ std::string_view GetCanCreateTranslatorResultString(
 class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
  public:
   OnDeviceTranslationBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kEnableTranslationAPI);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kTranslationAPI);
     CHECK(tmp_dir_.CreateUniqueTempDir());
   }
   ~OnDeviceTranslationBrowserTest() override = default;
@@ -761,7 +761,7 @@ class OnDeviceTranslationCrashingLangBrowserTest
     // Need to set TranslationAPIAcceptLanguagesCheck to false to use a fake
     // language code `cause_crash` to trigger a crash.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kEnableTranslationAPI,
+        {{blink::features::kTranslationAPI,
           {{"TranslationAPIAcceptLanguagesCheck", "false"}}}},
         {});
   }
@@ -1211,6 +1211,37 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       "en", "ko", CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
 }
 
+// Test that calling both the legacy and new API works.
+// This is a regression test for https://crbug.com/381344025.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, UseBothLegacyAndNewAPI) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  // Test that Translator legacy API works.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const translator = await translation.createTranslator({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      return await translator.translate('hello');
+    )"),
+            "en to ja: hello");
+
+  // Test that Translator new API works.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const translator = await ai.translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      return await translator.translate('hello');
+    )"),
+            "en to ja: hello");
+}
+
 // Test the behavior of canTranslate() when PassAcceptLanguagesCheck() checks
 // is skipped.
 class OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest
@@ -1218,7 +1249,7 @@ class OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest
  public:
   OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kEnableTranslationAPI,
+        {{blink::features::kTranslationAPI,
           {{"TranslationAPIAcceptLanguagesCheck", "false"}}}},
         {});
   }
@@ -1245,7 +1276,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
     // Use a reduced value for TranslationAPIMaxServiceCount to speed
     // up the test.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kEnableTranslationAPI,
+        {{blink::features::kTranslationAPI,
           {{"TranslationAPIMaxServiceCount", "2"}}}},
         {});
     CHECK_EQ(kTranslationAPIMaxServiceCount.Get(), 2u);
@@ -1645,6 +1676,34 @@ class OnDeviceTranslationOriginTrialBrowserTest : public InProcessBrowserTest {
                                   std::string(kOriginTrialToken).c_str())));
   }
 
+  bool IsDefinedJs(std::string js_expression) {
+    return EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                  base::StringPrintf("(%s) !== undefined", js_expression))
+        .ExtractBool();
+  }
+
+  // Tests that `window.translation.canTranslate` and
+  // `window.translation.canTranslate` don't exist.
+  void ExpectAPIDisabled() {
+    if (!IsDefinedJs("window.translation")) {
+      // `window.translate` is not there, we're done.
+      return;
+    }
+
+    // We expect to find the detection API but no translate API.
+    EXPECT_TRUE(IsDefinedJs("window.translation.canDetect"));
+    EXPECT_FALSE(IsDefinedJs("window.translation.canTranslate"));
+    EXPECT_FALSE(IsDefinedJs("window.translation.createTranslator"));
+  }
+
+  // Tests that `window.translation.canTranslate` and
+  // `window.translation.canTranslate` both exist.
+  void ExpectAPIEnabled() {
+    EXPECT_TRUE(IsDefinedJs("window.translation"));
+    EXPECT_TRUE(IsDefinedJs("window.translation.canTranslate"));
+    EXPECT_TRUE(IsDefinedJs("window.translation.createTranslator"));
+  }
+
  private:
   // URLLoaderInterceptor callback
   static bool InterceptRequest(
@@ -1679,15 +1738,11 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialBrowserTest,
   CHECK(ui_test_utils::NavigateToURL(
       browser(), GURL("https://translation-api.test/blank.html")));
   // The API is not available without the Origin Trial token.
-  EXPECT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "window.translation === undefined")
-                  .ExtractBool());
+  ExpectAPIDisabled();
   // Inject the Origin Trial token into the page.
   InjectOriginTrialMetaTag();
   // The API is available with the Origin Trial token.
-  EXPECT_FALSE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "window.translation === undefined")
-                   .ExtractBool());
+  ExpectAPIEnabled();
 
   // Test the behavior of Translation API.
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
@@ -1704,9 +1759,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialBrowserTest,
   CHECK(ui_test_utils::NavigateToURL(
       browser(), GURL("https://translation-api.test/ot_token_header.html")));
   // The API is available when the Origin Trial token is in the header.
-  EXPECT_FALSE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "window.translation === undefined")
-                   .ExtractBool());
+  ExpectAPIEnabled();
 
   // Test the behavior of Translation API.
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
@@ -1722,7 +1775,7 @@ class OnDeviceTranslationOriginTrialKillSwitchBrowserTest
   OnDeviceTranslationOriginTrialKillSwitchBrowserTest() {
     // Disable the feature to enable the kill switch.
     scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kEnableTranslationAPI);
+        blink::features::kTranslationAPI);
   }
   ~OnDeviceTranslationOriginTrialKillSwitchBrowserTest() override = default;
 
@@ -1737,16 +1790,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialKillSwitchBrowserTest,
   CHECK(ui_test_utils::NavigateToURL(
       browser(), GURL("https://translation-api.test/blank.html")));
   // The API is not available when the kill switch is enabled.
-  EXPECT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "window.translation === undefined")
-                  .ExtractBool());
+  ExpectAPIDisabled();
   // Inject the Origin Trial token into the page.
   InjectOriginTrialMetaTag();
   // The API is not available when the kill switch is enabled even if the Origin
   // Trial token is injected.
-  EXPECT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "window.translation === undefined")
-                  .ExtractBool());
+  ExpectAPIDisabled();
 }
 
 // Tests the behavior of the Origin Trial token header when the kill switch is
@@ -1758,9 +1807,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialKillSwitchBrowserTest,
       browser(), GURL("https://translation-api.test/ot_token_header.html")));
   // The API is not available when the kill switch is enabled even if the Origin
   // Trial token is in the header.
-  EXPECT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "window.translation === undefined")
-                  .ExtractBool());
+  ExpectAPIDisabled();
 }
 
 // Tests the behavior of when the command line flag "translate-kit-binary-path"

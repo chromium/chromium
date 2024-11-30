@@ -121,11 +121,14 @@ enum class CameraRollContextMenuDownload {
 
 // Keep in sync with corresponding MoreAppsButtonLoadingState enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
+//
+// LINT.IfChange(MoreAppsButtonLoadingState)
 enum class MoreAppsButtonLoadingState {
   kAnimationShown = 0,
   kMoreAppsButtonLoaded = 1,
   kMaxValue = kMoreAppsButtonLoaded
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:MoreAppsButtonLoadingState)
 
 // Keep in sync with corresponding RecentAppsViewUiState enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.

@@ -35,12 +35,6 @@ namespace {
 // YUV format.
 constexpr base::TimeDelta kDelayForRetryingYUVFormat = base::Minutes(10);
 
-// Some drivers fail to correctly handle BT.709 video in overlays. This flag
-// converts them to BT.601 in the video processor.
-BASE_FEATURE(kFallbackBT709VideoToBT601,
-             "FallbackBT709VideoToBT601",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDisableVPBLTUpscale,
              "DisableVPBLTUpscale",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -54,10 +48,6 @@ gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
                                     bool is_yuv_swapchain) {
   gfx::ColorSpace output_color_space =
       is_yuv_swapchain ? input_color_space : gfx::ColorSpace::CreateSRGB();
-  if (base::FeatureList::IsEnabled(kFallbackBT709VideoToBT601) &&
-      (output_color_space == gfx::ColorSpace::CreateREC709())) {
-    output_color_space = gfx::ColorSpace::CreateREC601();
-  }
   if (input_color_space.IsHDR()) {
     output_color_space = gfx::ColorSpace::CreateHDR10();
   }
@@ -1238,6 +1228,22 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   }
   if (swap_chain_size_rounded.height() % 2 == 1) {
     swap_chain_size.set_height(swap_chain_size.height() + 1);
+  }
+
+  // Adjust `swap_chain_size` to fit into the max texture size.
+  const gfx::SizeF max_texture_size(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION,
+                                    D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
+  if (swap_chain_size.width() > max_texture_size.width() ||
+      swap_chain_size.height() > max_texture_size.height()) {
+    if (max_texture_size.AspectRatio() > swap_chain_size.AspectRatio()) {
+      swap_chain_size =
+          gfx::SizeF(max_texture_size.height() * swap_chain_size.AspectRatio(),
+                     max_texture_size.height());
+    } else {
+      swap_chain_size =
+          gfx::SizeF(max_texture_size.width(),
+                     max_texture_size.width() / swap_chain_size.AspectRatio());
+    }
   }
 
   // Adjust the transform matrix.

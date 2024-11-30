@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -196,40 +197,6 @@ MLContext* CreateContext(V8TestingScope& scope, MLContextOptions* options) {
 
   return NativeValueTraits<MLContext>::NativeValue(
       scope.GetIsolate(), tester.Value().V8Value(), scope.GetExceptionState());
-}
-
-template <typename T>
-MLOperand* BuildConstant(ScriptState* script_state,
-                         MLGraphBuilder* builder,
-                         const Vector<uint32_t>& dimensions,
-                         V8MLOperandDataType::Enum data_type,
-                         const Vector<T>& values,
-                         ExceptionState& exception_state) {
-  size_t buffer_size = std::accumulate(dimensions.begin(), dimensions.end(),
-                                       size_t(1), std::multiplies<uint32_t>());
-  auto buffer = CreateDOMArrayBufferView(buffer_size, data_type);
-  DCHECK_EQ(buffer->byteLength(), values.size() * sizeof(T));
-  memcpy(buffer->BaseAddress(), values.data(), buffer->byteLength());
-  return BuildConstant(script_state, builder, dimensions, data_type,
-                       exception_state, buffer);
-}
-
-MLOperand* BuildConv2d(
-    V8TestingScope& scope,
-    MLGraphBuilder* builder,
-    MLOperand* input,
-    MLOperand* filter,
-    const MLConv2dOptions* options = MLConv2dOptions::Create()) {
-  auto* output =
-      builder->conv2d(input, filter, options, scope.GetExceptionState());
-  EXPECT_THAT(output, testing::NotNull());
-  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
-  EXPECT_EQ(output->DataType(), input->DataType());
-  auto* conv2d = output->Operator();
-  EXPECT_THAT(conv2d, testing::NotNull());
-  EXPECT_EQ(conv2d->Kind(), webnn::mojom::blink::Operation::Tag::kConv2d);
-  EXPECT_THAT(conv2d->Options(), testing::NotNull());
-  return output;
 }
 
 MLOperand* BuildGemm(V8TestingScope& scope,
@@ -485,6 +452,19 @@ class FakeWebNNGraphBuilder : public blink_mojom::WebNNGraphBuilder {
 
     std::move(callback).Run(blink_mojom::CreateGraphResult::NewGraphRemote(
         std::move(blink_remote)));
+  }
+
+  void CreatePendingConstant(const WebNNPendingConstantToken& constant_handle,
+                             webnn::OperandDataType data_type,
+                             mojo_base::BigBuffer data) override {
+    NOTIMPLEMENTED();
+  }
+
+  void IsValidGraphForTesting(
+      const webnn::ContextProperties& context_properties,
+      webnn::mojom::blink::GraphInfoPtr graph_info,
+      IsValidGraphForTestingCallback callback) override {
+    NOTIMPLEMENTED();
   }
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
@@ -850,40 +830,6 @@ TEST_F(MLGraphTest, BuildTest) {
               "The operand with name \"output\" is not an output operand.");
   }
   {
-    // Test throwing exception if the named output is a constant operand.
-    DummyExceptionStateForTesting exception_state;
-    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           exception_state);
-    ASSERT_THAT(builder, testing::NotNull());
-    auto* constant =
-        BuildConstant(scope.GetScriptState(), builder, {3, 4, 5},
-                      V8MLOperandDataType::Enum::kFloat32, exception_state);
-    auto [graph, error_name, error_message] =
-        BuildGraph(scope, builder, {{"output", constant}});
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "The operand with name \"output\" is not an output operand.");
-  }
-  {
-    // Test throwing exception if the named outputs is a mix of input and
-    // constant operands.
-    DummyExceptionStateForTesting exception_state;
-    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           exception_state);
-    ASSERT_THAT(builder, testing::NotNull());
-    auto* input =
-        BuildInput(scope.GetScriptState(), builder, "input", {3, 4, 5},
-                   V8MLOperandDataType::Enum::kFloat32, exception_state);
-    auto* constant =
-        BuildConstant(scope.GetScriptState(), builder, {3, 4, 5},
-                      V8MLOperandDataType::Enum::kFloat32, exception_state);
-    auto [graph, error_name, error_message] =
-        BuildGraph(scope, builder, {{"output1", input}, {"output2", constant}});
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "The operand with name \"output1\" is not an output operand.");
-  }
-  {
     // Test throwing exception if two inputs have the same name.
     DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
@@ -982,38 +928,6 @@ TEST_F(MLGraphTest, BuildTest) {
     const auto& outputs = graph->GetOutputConstraints();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(*outputs.at("c"), c->Descriptor());
-  }
-  {
-    DummyExceptionStateForTesting exception_state;
-    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           exception_state);
-    ASSERT_THAT(builder, testing::NotNull());
-    // Test building a fake graph with conv2d, add and relu operations.
-    auto* input =
-        BuildInput(scope.GetScriptState(), builder, "input", {1, 1, 5, 5},
-                   V8MLOperandDataType::Enum::kFloat32, exception_state);
-    auto* filter =
-        BuildConstant(scope.GetScriptState(), builder, {1, 1, 3, 3},
-                      V8MLOperandDataType::Enum::kFloat32, exception_state);
-    auto* conv2d = BuildConv2d(scope, builder, input, filter);
-    auto* bias =
-        BuildConstant(scope.GetScriptState(), builder, {1},
-                      V8MLOperandDataType::Enum::kFloat32, exception_state);
-    const MLOperatorOptions* options = MLOperatorOptions::Create();
-    auto* add = builder->add(conv2d, bias, options, exception_state);
-    ASSERT_THAT(add, testing::NotNull());
-    auto* output = builder->relu(add, options, exception_state);
-    ASSERT_THAT(output, testing::NotNull());
-
-    auto [graph, error_name, error_message] =
-        BuildGraph(scope, builder, {{"output", output}});
-    ASSERT_THAT(graph, testing::NotNull());
-    const auto& inputs = graph->GetInputConstraints();
-    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(*inputs.at("input"), input->Descriptor());
-    const auto& outputs = graph->GetOutputConstraints();
-    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(*outputs.at("output"), output->Descriptor());
   }
 }
 
@@ -1313,118 +1227,6 @@ TEST_F(MLGraphTest, SoftmaxTest) {
                   .dimensions = {1, 5}},
         .expected_descriptor = ToDescriptor(webnn::OperandDataType::kFloat16,
                                             std::array<uint32_t, 2>{1, 5})}
-        .Test(*this, scope, context);
-  }
-}
-
-template <typename T>
-struct ConstantTester {
-  OperandInfo<T> constant;
-  webnn::OperandDescriptor expected_descriptor;
-  Vector<T> expected_constant_data;
-
-  void Test(MLGraphTest& helper, V8TestingScope& scope, MLContext* context) {
-    // Build the graph.
-    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           scope.GetExceptionState());
-    ASSERT_THAT(builder, testing::NotNull());
-    auto* constant_operand = BuildConstant(
-        scope.GetScriptState(), builder, constant.dimensions,
-        constant.data_type, constant.values, scope.GetExceptionState());
-    const MLOperatorOptions* options = MLOperatorOptions::Create();
-    auto* output_operand =
-        builder->relu(constant_operand, options, scope.GetExceptionState());
-    auto [graph, error_name, error_message] =
-        helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_THAT(graph, testing::NotNull());
-
-    auto graph_info = helper.GetGraphInfo();
-    // Verify the graph information of mojo are as expected.
-    EXPECT_EQ(graph_info->id_to_operand_map.size(), 2u);
-    EXPECT_EQ(graph_info->constant_id_to_buffer_map.size(), 1u);
-    // Verify the constant `mojo::Operand`.
-    for (auto& [constant_id, constant_buffer] :
-         graph_info->constant_id_to_buffer_map) {
-      auto constant_operand_iter =
-          graph_info->id_to_operand_map.find(constant_id);
-      ASSERT_TRUE(constant_operand_iter != graph_info->id_to_operand_map.end());
-      EXPECT_EQ(constant_operand_iter->value->kind,
-                blink_mojom::Operand::Kind::kConstant);
-      EXPECT_EQ(constant_operand_iter->value->descriptor, expected_descriptor);
-      EXPECT_TRUE(constant_operand_iter->value->name.empty());
-      // Verify the constant data in the mojo.
-      const wtf_size_t constant_size =
-          base::checked_cast<wtf_size_t>(constant_buffer.size() / sizeof(T));
-      Vector<T> constant_data(constant_size);
-      memcpy(constant_data.data(), constant_buffer.data(),
-             constant_buffer.size());
-      EXPECT_EQ(expected_constant_data, constant_data);
-    }
-  }
-};
-
-TEST_F(MLGraphTest, ConstantTest) {
-  V8TestingScope scope;
-  // Bind fake WebNN Context in the service for testing.
-  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
-
-  auto* options = MLContextOptions::Create();
-  // Create WebNN Context with GPU device type.
-  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
-  MLContext* context = CreateContext(scope, options);
-
-  {  // Test scalar constant operand.
-    ConstantTester<float>{
-        .constant = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                     .dimensions = {},
-                     .values = {1.0}},
-        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kFloat32,
-                                            std::array<uint32_t, 0>{}),
-        .expected_constant_data = {1.0}}
-        .Test(*this, scope, context);
-  }
-  {
-    // Test Constant operand for Float32 data type.
-    ConstantTester<float>{
-        .constant = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                     .dimensions = {2, 3},
-                     .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}},
-        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kFloat32,
-                                            std::array<uint32_t, 2>{2, 3}),
-        .expected_constant_data = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}}
-        .Test(*this, scope, context);
-  }
-  {
-    // Test Constant operand for Float16 data type.
-    ConstantTester<uint16_t>{
-        .constant = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                     .dimensions = {2, 3},
-                     .values = {1, 2, 3, 4, 5, 6}},
-        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kFloat16,
-                                            std::array<uint32_t, 2>{2, 3}),
-        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
-        .Test(*this, scope, context);
-  }
-  {
-    // Test Constant operand for Int32 data type.
-    ConstantTester<int32_t>{
-        .constant = {.data_type = V8MLOperandDataType::Enum::kInt32,
-                     .dimensions = {2, 3},
-                     .values = {1, 2, 3, 4, 5, 6}},
-        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kInt32,
-                                            std::array<uint32_t, 2>{2, 3}),
-        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
-        .Test(*this, scope, context);
-  }
-  {
-    // Test Constant operand for Int8 data type.
-    ConstantTester<int8_t>{
-        .constant = {.data_type = V8MLOperandDataType::Enum::kInt8,
-                     .dimensions = {2, 3},
-                     .values = {1, 2, 3, 4, 5, 6}},
-        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kInt8,
-                                            std::array<uint32_t, 2>{2, 3}),
-        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, context);
   }
 }

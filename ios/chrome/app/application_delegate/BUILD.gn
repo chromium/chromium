@@ -30,12 +30,15 @@ source_set("unit_tests") {
     "url_opener_unittest.mm",
   ]
   deps = [
+    ":app_state",
     ":application_delegate",
-    ":application_delegate_internal",
     ":metric_kit_subscriber",
+    ":metrics_mediator",
     ":observing_app_state_agent",
+    ":startup_information",
     ":tab_opening",
     ":test_support",
+    ":url_opener",
     ":url_opener_params",
     "//base",
     "//base/test:test_support",
@@ -51,8 +54,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/device_sharing/model",
     "//ios/chrome/browser/geolocation/model",
+    "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/safe_mode/ui_bundled",
+    "//ios/chrome/browser/settings/ui_bundled",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
@@ -66,9 +72,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",
-    "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/settings",
-    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/device_orientation",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
     "//ios/chrome/common/app_group",
@@ -89,7 +93,6 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
-  frameworks = [ "CoreSpotlight.framework" ]
 }
 
 source_set("tab_opening") {
@@ -101,10 +104,7 @@ source_set("tab_opening") {
     "//ios/chrome/browser/shared/model/browser",
     "//ui/base",
   ]
-  frameworks = [
-    "CoreSpotlight.framework",
-    "UIKit.framework",
-  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("url_opener_params") {
@@ -131,21 +131,37 @@ source_set("metric_kit_subscriber") {
   ]
 }
 
-source_set("app_state_header") {
+source_set("app_init_stage") {
+  sources = [ "app_init_stage.h" ]
+}
+
+source_set("startup_information") {
+  sources = [ "startup_information.h" ]
+}
+
+source_set("app_state") {
   sources = [
-    "app_init_stage.h",
     "app_state+Testing.h",
     "app_state.h",
+    "app_state.mm",
     "app_state_agent.h",
     "app_state_observer.h",
-    "startup_information.h",
   ]
-  public_deps = [
+  deps = [
+    ":app_init_stage",
+    ":startup_information",
+    "//base",
+    "//ios/chrome/app",
+    "//ios/chrome/app:task_names",
     "//ios/chrome/app/background_refresh:headers",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/device_orientation",
-    "//ios/chrome/browser/ui/scoped_ui_blocker",
   ]
+
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("observing_app_state_agent") {
@@ -156,101 +172,81 @@ source_set("observing_app_state_agent") {
 
   frameworks = [ "UIKit.framework" ]
 
-  deps = [ "//base" ]
-
-  public_deps = [
-    ":app_state_header",
+  deps = [
+    ":app_state",
+    "//base",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
   ]
 }
 
-source_set("application_delegate_internal") {
-  public_deps = [ ":app_state_header" ]
+source_set("url_opener") {
   sources = [
-    "app_state.mm",
-    "metrics_mediator.h",
-    "metrics_mediator.mm",
     "url_opener.h",
     "url_opener.mm",
   ]
   deps = [
-    ":application_delegate",
-    ":metric_kit_subscriber",
+    ":startup_information",
     ":tab_opening",
     ":url_opener_params",
     "//base",
-    "//build:branding_buildflags",
-    "//components/crash/core/common",
-    "//components/enterprise/idle",
-    "//components/feature_engagement",
-    "//components/metrics",
-    "//components/previous_session_info",
-    "//components/ukm/ios:ukm_reporting_ios_util",
-    "//ios/chrome/app",
-    "//ios/chrome/app:task_names",
+    "//components/prefs",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/startup",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//url",
+  ]
+}
+
+source_set("metrics_mediator") {
+  sources = [
+    "metrics_mediator.h",
+    "metrics_mediator.mm",
+  ]
+  deps = [
+    ":app_state",
+    ":metric_kit_subscriber",
+    ":startup_information",
+    "//base",
+    "//build:branding_buildflags",
+    "//components/crash/core/common",
+    "//components/metrics",
+    "//components/metrics:metrics_pref_names",
+    "//components/prefs",
+    "//components/previous_session_info",
+    "//components/signin/public/identity_manager:tribool",
+    "//components/ukm/ios:ukm_reporting_ios_util",
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
-    "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/device_sharing/model",
-    "//ios/chrome/browser/enterprise/model/idle",
-    "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/geolocation/model",
-    "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model:util",
-    "//ios/chrome/browser/policy/model:policy_util",
-    "//ios/chrome/browser/shared/coordinator/scene",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/signin/model:authentication_service",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:signin_util",
-    "//ios/chrome/browser/signin/model:system_identity_manager",
-    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/tabs/model/inactive_tabs",
-    "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/device_orientation",
-    "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/browser/web_state_list/model:session_metrics",
-    "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
     "//ios/chrome/browser/widget_kit/model:features",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:main_app",
     "//ios/chrome/common/credential_provider",
-    "//ios/net",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
-    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
-    "//ios/web",
-    "//net",
-    "//ui/base",
+    "//ios/web/public",
+    "//ios/web/public/thread",
     "//url",
   ]
 
   if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit/model" ]
   }
-
-  frameworks = [
-    "CoreSpotlight.framework",
-    "UIKit.framework",
-  ]
-  allow_circular_includes_from = [
-    "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/browser/shared/coordinator/scene",
-  ]
 }
 
 source_set("test_support") {
@@ -267,7 +263,9 @@ source_set("test_support") {
     "mock_tab_opener.mm",
   ]
   deps = [
-    ":application_delegate_internal",
+    ":app_init_stage",
+    ":app_state",
+    ":startup_information",
     ":tab_opening",
     "//base",
     "//base/test:test_support",

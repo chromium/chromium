@@ -12,10 +12,12 @@
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/exo/buffer.h"
@@ -1195,14 +1197,14 @@ TEST_P(SurfaceTest, SetAlpha) {
 // TODO(crbug.com/369003507): This unit test is checking
 // temporarily disable non YUV overlays on hatch devices
 TEST_P(SurfaceTest, DisableNonYUVOverlays) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDisableNonYUVOverlaysFromExo);
-
   gfx::Size buffer_size(2, 2);
   auto buffer_non_yuv = test::ExoTestHelper::CreateBuffer(
       buffer_size, gfx::BufferFormat::RGBA_8888, /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  base::test::ScopedChromeOSVersionInfo version_info(
+      "CHROMEOS_RELEASE_BOARD=DRALLION\n", base::Time());
 
   {
     surface->Attach(buffer_non_yuv.get());

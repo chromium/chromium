@@ -91,7 +91,7 @@ WITH
     FROM slice
     WHERE category = 'blink.user_timing' AND name GLOB 'iteration-*'
   )
-SELECT *, CAST(iteration_str AS INT) AS iteration
+SELECT *, cast_int!(iteration_str) AS iteration
 FROM data
 WHERE iteration_str = iteration;
 
@@ -100,13 +100,13 @@ WHERE iteration_str = iteration;
 -- There are two intervals that are measured for every test: sync and async.
 CREATE PERFETTO TABLE chrome_speedometer_3_measure(
   -- Start timestamp of the measure slice
-  ts INT,
+  ts TIMESTAMP,
   -- Duration of the measure slice
-  dur INT,
+  dur DURATION,
   -- Full measure name
   name STRING,
   -- Speedometer iteration the slice belongs to.
-  iteration INT,
+  iteration LONG,
   -- Suite name
   suite_name STRING,
   -- Test name
@@ -133,13 +133,13 @@ ORDER BY s.ts ASC;
 -- ~100us) so the actual values might differ a bit.
 CREATE PERFETTO TABLE chrome_speedometer_3_iteration(
   -- Start timestamp of the iteration
-  ts INT,
+  ts TIMESTAMP,
   -- Duration of the iteration
-  dur INT,
+  dur DURATION,
   -- Iteration name
   name STRING,
   -- Iteration number
-  iteration INT,
+  iteration LONG,
   -- Geometric mean of the suite durations for this iteration.
   geomean DOUBLE,
   -- Speedometer score for this iteration (The total score for a run in the
@@ -175,7 +175,7 @@ SELECT AVG(score) FROM chrome_speedometer_3_iteration;
 -- Returns the utid for the main thread that ran Speedometer 3
 CREATE PERFETTO FUNCTION chrome_speedometer_3_renderer_main_utid()
 -- Renderer main utid
-RETURNS INT
+RETURNS LONG
 AS
 WITH
   start_event AS (

@@ -40,6 +40,7 @@ class AudioStreamBrokerFactoryImpl final : public AudioStreamBrokerFactory {
   std::unique_ptr<AudioStreamBroker> CreateAudioOutputStreamBroker(
       int render_process_id,
       int render_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       int stream_id,
       const std::string& output_device_id,
       const media::AudioParameters& params,

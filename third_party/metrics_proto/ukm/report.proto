@@ -18,7 +18,7 @@ import "system_profile.proto";
 import "user_demographics.proto";
 
 // This is the message type sent from Chrome to the UKM collector.
-// Next tag: 14
+// Next tag: 15
 message Report {
   // A unique identifier for a Chrome install. This ID should be used only
   // in UKM reports, and not linked to any other data sources.
@@ -96,4 +96,27 @@ message Report {
   repeated HighLevelWebFeatures web_features = 13;
   // List of Entries containing aggregated UKM data.
   repeated Aggregate aggregates = 7;
+
+  message DownsamplingRate {
+    // Hash of the event name to identify the event type. This field should
+    // always be set when any other field in this message is set.
+    optional fixed64 event_hash = 1;
+    // Rate computed by standard UKM downsampling.
+    // A value of N means that this event type is downsampled at a rate of
+    // 1-in-N, meaning this event type is only recorded for every 1 in N page
+    // loads. Unset means that the user didn't receive a parameter to
+    // downsample this event when events are collected in this reporting
+    // interval, thus no downsampling is applied.
+    optional uint32 standard_rate = 2;
+    // Any other further downsampling logic by custom client-side
+    // implementation.
+    // A value of M means that this event type is downsampled at a rate of
+    // 1-in-M, in addition to the standard downsampling rate by the UKM infra at
+    // the page load level.
+    optional uint32 custom_rate = 3;
+  }
+
+  // TODO(yrsun): populated this field, and add the milestone number when this
+  // is available for querying here.
+  repeated DownsamplingRate downsampling_rates = 14;
 }

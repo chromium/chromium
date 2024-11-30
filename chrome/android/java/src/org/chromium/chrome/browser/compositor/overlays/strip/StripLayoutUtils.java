@@ -15,6 +15,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 public class StripLayoutUtils {
     // Position Constants.
@@ -98,6 +101,29 @@ public class StripLayoutUtils {
         for (int i = 0; i < groupTitles.length; i++) {
             final StripLayoutGroupTitle groupTitle = groupTitles[i];
             if (groupTitle.getRootId() == rootId) return groupTitle;
+        }
+        return null;
+    }
+
+    /**
+     * @param groupTitles A list of {@link StripLayoutGroupTitle}.
+     * @param collaborationId he sharing ID associated with the group.
+     * @param tabGroupSyncService The sync service to get tab group data form.
+     * @return The {@link StripLayoutGroupTitle} with the given tab group ID. {@code null}
+     *     otherwise.
+     */
+    static StripLayoutGroupTitle findGroupTitleByCollaborationId(
+            StripLayoutGroupTitle[] groupTitles,
+            String collaborationId,
+            TabGroupSyncService tabGroupSyncService) {
+        for (StripLayoutGroupTitle groupTitle : groupTitles) {
+            SavedTabGroup savedTabGroup =
+                    tabGroupSyncService.getGroup(new LocalTabGroupId(groupTitle.getTabGroupId()));
+            if (savedTabGroup != null
+                    && savedTabGroup.collaborationId != null
+                    && savedTabGroup.collaborationId.equals(collaborationId)) {
+                return groupTitle;
+            }
         }
         return null;
     }
@@ -208,6 +234,14 @@ public class StripLayoutUtils {
             array[i + 1] = array[i];
         }
         array[newIndex] = elem;
+    }
+
+    static <T> boolean arrayContains(T[] array, T desiredElem) {
+        for (int i = 0; i < array.length; i++) {
+            final T elem = array[i];
+            if (elem == desiredElem) return true;
+        }
+        return false;
     }
 
     // Other methods.

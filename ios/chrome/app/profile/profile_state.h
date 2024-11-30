@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/app/profile/profile_init_stage.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
 
 @class AppState;
 @class DeferredInitializationRunner;

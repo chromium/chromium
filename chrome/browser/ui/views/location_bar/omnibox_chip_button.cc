@@ -51,10 +51,10 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback)
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   // Equalizing padding on the left, right and between icon and label.
   SetImageLabelSpacing(kChipImagePadding);
-    SetCustomPadding(
-        gfx::Insets::VH(kChipVerticalPadding, kChipHorizontalPadding));
-    label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
-  SetCornerRadius(GetCornerRadius());
+  SetCustomPadding(
+      gfx::Insets::VH(kChipVerticalPadding, kChipHorizontalPadding));
+  label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  SetCornerRadius(GetLayoutConstant(LOCATION_BAR_CHILD_CORNER_RADIUS));
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
 
   UpdateIconAndColors();
@@ -111,7 +111,8 @@ void OmniboxChipButton::UpdateBackgroundColor() {
   } else {
     SkColor color = GetColorProvider()->GetColor(GetBackgroundColorId());
     SetBackground(CreateBackgroundFromPainter(
-        views::Painter::CreateSolidRoundRectPainter(color, GetCornerRadius())));
+        views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
+            color, GetCornerRadii())));
   }
 }
 
@@ -192,11 +193,6 @@ int OmniboxChipButton::GetIconSize() const {
     return GetLayoutConstant((theme_ == OmniboxChipTheme::kIconStyle)
                                  ? LOCATION_BAR_TRAILING_ICON_SIZE
                                  : LOCATION_BAR_CHIP_ICON_SIZE);
-}
-
-int OmniboxChipButton::GetCornerRadius() const {
-  DCHECK(theme_ != OmniboxChipTheme::kIconStyle);
-    return GetLayoutConstant(LOCATION_BAR_CHILD_CORNER_RADIUS);
 }
 
 void OmniboxChipButton::AddObserver(Observer* observer) {

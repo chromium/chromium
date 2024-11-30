@@ -37,7 +37,6 @@
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
@@ -221,8 +220,6 @@ class WebApp {
   const GURL& note_taking_new_note_url() const {
     return note_taking_new_note_url_;
   }
-
-  const apps::UrlHandlers& url_handlers() const { return url_handlers_; }
 
   const base::flat_set<ScopeExtensionInfo>& scope_extensions() const {
     return scope_extensions_;
@@ -426,7 +423,6 @@ class WebApp {
       base::flat_set<std::string> allowed_launch_protocols);
   void SetDisallowedLaunchProtocols(
       base::flat_set<std::string> disallowed_launch_protocols);
-  void SetUrlHandlers(apps::UrlHandlers url_handlers);
   void SetScopeExtensions(base::flat_set<ScopeExtensionInfo> scope_extensions);
   void SetValidatedScopeExtensions(
       base::flat_set<ScopeExtensionInfo> validated_scope_extensions);
@@ -542,8 +538,6 @@ class WebApp {
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
   base::flat_set<std::string> allowed_launch_protocols_;
   base::flat_set<std::string> disallowed_launch_protocols_;
-  // TODO(crbug.com/40127045): No longer aiming to ship, remove.
-  apps::UrlHandlers url_handlers_;
   base::flat_set<ScopeExtensionInfo> scope_extensions_;
   base::flat_set<ScopeExtensionInfo> validated_scope_extensions_;
   GURL lock_screen_start_url_;

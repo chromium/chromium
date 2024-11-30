@@ -4936,6 +4936,25 @@ TEST_F(CaptureModeTest, KeyboardShortcutTest) {
       EndRecordingReason::kKeyboardShortcut, 1);
 }
 
+TEST_F(CaptureModeTest, StopRecordingButtonTrayAccessibleName) {
+  ash::CaptureModeTestApi test_api;
+  test_api.StartForFullscreen(/*for_video=*/true);
+  test_api.PerformCapture();
+  test_api.FlushRecordingServiceForTesting();
+
+  auto* stop_recording_button = Shell::GetPrimaryRootWindowController()
+                                    ->GetStatusAreaWidget()
+                                    ->stop_recording_button_tray();
+  EXPECT_TRUE(stop_recording_button->visible_preferred());
+
+  ui::AXNodeData tray_data;
+  stop_recording_button->GetViewAccessibility().GetAccessibleNodeData(
+      &tray_data);
+  EXPECT_EQ(tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME));
+}
+
 namespace {
 
 // -----------------------------------------------------------------------------

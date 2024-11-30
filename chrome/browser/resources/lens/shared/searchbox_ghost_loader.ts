@@ -51,7 +51,7 @@ export class SearchboxGhostLoaderElement extends PolymerElement {
 
     const callbackRouter = this.browserProxy.callbackRouter;
     this.listenerIds = [
-      callbackRouter.notifyAutocompleteStopTimerTriggered.addListener(() => {
+      callbackRouter.showErrorState.addListener(() => {
         this.showErrorState = true;
       }),
     ];

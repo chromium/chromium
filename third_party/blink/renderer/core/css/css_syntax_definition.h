@@ -23,7 +23,8 @@ class CORE_EXPORT CSSSyntaxDefinition {
   static std::optional<CSSSyntaxDefinition> Consume(CSSParserTokenStream&);
   const CSSValue* Parse(StringView,
                         const CSSParserContext&,
-                        bool is_animation_tainted) const;
+                        bool is_animation_tainted,
+                        bool is_attr_tainted = false) const;
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-descriptor
   bool IsUniversal() const {

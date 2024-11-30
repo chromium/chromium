@@ -32,6 +32,9 @@ enum class LensEntrypoint;
 - (void)lensControllerDidGenerateLoadParams:
     (const web::NavigationManager::WebLoadParams&)params;
 
+// Called when the user picked or captured an image.
+- (void)lensControllerDidGenerateImage:(UIImage*)image;
+
 // Returns the frame of the web content area of the browser.
 - (CGRect)webContentFrame;
 

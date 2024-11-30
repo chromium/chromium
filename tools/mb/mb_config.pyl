@@ -138,8 +138,6 @@
     },
 
     'client.v8.chromium': {
-      'Linux - Future': 'v8_future_release_bot_reclient',
-      'Linux - Future (dbg)': 'v8_future_debug_bot_reclient',
       'Linux V8 API Stability': 'release_bot_reclient',
     },
 
@@ -174,6 +172,12 @@
     'internal.optimization_guide': {
       # Linux and win64 CI bots use official builds to catch official-specific ODML bugs. These
       # take significantly longer to compile, and thus are only for these two builders.
+      'model_validation-linux': 'optimization_guide_rel',
+      'model_validation-mac-arm64': 'optimization_guide_mac_arm64_rel',
+      'model_validation-mac-x64': 'optimization_guide_rel',
+      'model_validation-win-arm64': 'optimization_guide_win_arm64_rel',
+      'model_validation-win32': 'optimization_guide_x86_rel',
+      'model_validation-win64': 'optimization_guide_rel',
       'optimization_guide-android-arm64': 'optimization_guide_android_arm64_rel',
       'optimization_guide-chromeos': 'optimization_guide_cros_rel',
       'optimization_guide-ios-device': 'optimization_guide_ios_device_rel',
@@ -247,8 +251,9 @@
 
     'tryserver.internal.optimization_guide': {
       'model_validation-linux': 'optimization_guide_rel',
-      'model_validation-mac-arm64': 'optimization_guide_rel',
+      'model_validation-mac-arm64': 'optimization_guide_mac_arm64_rel',
       'model_validation-mac-x64': 'optimization_guide_rel',
+      'model_validation-win-arm64': 'optimization_guide_win_arm64_rel',
       'model_validation-win32': 'optimization_guide_x86_rel',
       'model_validation-win64': 'optimization_guide_rel',
       'optimization_guide-android-arm64': 'optimization_guide_android_arm64_rel',
@@ -651,14 +656,6 @@
     'release_trybot_reclient_siso': [
       'release_trybot_reclient', 'use_siso',
     ],
-
-    'v8_future_debug_bot_reclient': [
-      'v8_future', 'debug_bot_reclient',
-    ],
-
-    'v8_future_release_bot_reclient': [
-      'v8_future', 'release_bot_reclient',
-    ],
   },
 
   # This is a dict mapping a given 'mixin' name to a dict of settings that
@@ -813,7 +810,7 @@
       'mixins': ['cronet_common'],
       'gn_args': ('use_partition_alloc=false enable_reporting=true '
                   'use_hashed_jni_names=true '
-                  'default_min_sdk_version=21 '
+                  'default_min_sdk_version=23 '
                   'enable_base_tracing=false '
                   'clang_use_default_sample_profile=false '
                   'media_use_ffmpeg = false'
@@ -1100,10 +1097,6 @@
 
     'v8_enable_debugging_features': {
       'gn_args': 'v8_enable_debugging_features=true',
-    },
-
-    'v8_future': {
-      'gn_args': 'v8_enable_future=true',
     },
 
     'v8_pointer_compression': {

@@ -322,4 +322,13 @@ public class TabModelUtils {
         }
         return ret;
     }
+
+    /** Returns the list of Tab IDs for the given Tabs. */
+    public static List<Integer> getTabIds(Collection<Tab> tabs) {
+        List<Integer> ret = new ArrayList<>(tabs.size());
+        for (Tab tab : tabs) {
+            ret.add(tab.getId());
+        }
+        return ret;
+    }
 }

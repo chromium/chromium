@@ -449,7 +449,7 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
     case kSwitchToPreviousUser:
       return crosapi::lacros_startup_state::IsLacrosEnabled();
     case kPrivacyScreenToggle:
-      return accelerators::CanTogglePrivacyScreen();
+      return !accelerators::CanTogglePrivacyScreen();
     case kTilingWindowResizeLeft:
     case kTilingWindowResizeRight:
     case kTilingWindowResizeUp:

@@ -13,16 +13,43 @@
   border-radius: var(--ntp-module-item-border-radius);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   margin: 8px;
   padding: 32px 40px;
+}
+
+:host([format='wide']) #contents {
+  flex-direction: row;
+  gap: 38px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #authImg {
+    content: url(modules/v2/authentication/icons/microsoft_auth_dark.svg);
+  }
+}
+
+#headingsAndButton {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+:host([format='wide']) #headingsAndButton {
+  align-items: flex-start;
 }
 
 #headings {
   text-align: center;
 }
 
+:host([format='wide']) #headings {
+  text-align: initial;
+}
+
 #heading {
+  color: var(--color-new-tab-page-primary-foreground);
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
@@ -30,6 +57,7 @@
 }
 
 #subheading {
+  color: var(--color-new-tab-page-secondary-foreground);
   font-size: var(--ntp-module-text-size);
   font-weight: 400;
   line-height: var(--ntp-module-line-height);

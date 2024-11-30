@@ -114,10 +114,10 @@ class AutofillSaveCardInfoBarDelegateMobileTest
 };
 
 AutofillSaveCardInfoBarDelegateMobileTest::
-    AutofillSaveCardInfoBarDelegateMobileTest() {}
+    AutofillSaveCardInfoBarDelegateMobileTest() = default;
 
 AutofillSaveCardInfoBarDelegateMobileTest::
-    ~AutofillSaveCardInfoBarDelegateMobileTest() {}
+    ~AutofillSaveCardInfoBarDelegateMobileTest() = default;
 
 void AutofillSaveCardInfoBarDelegateMobileTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();

@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -2441,7 +2440,7 @@ void AXObjectCacheImpl::NodeIsConnected(Node* node) {
   if (Element* element = DynamicTo<Element>(node)) {
     if (relation_cache_) {
       // Register relation ids so that reverse relations can be computed.
-      relation_cache_->CacheRelationIds(*element);
+      relation_cache_->CacheRelations(*element);
       ScheduleAXUpdate();
     }
     if (AXObject::HasARIAOwns(element)) {
@@ -2627,7 +2626,7 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
   CHECK(obj);
   CHECK(obj->ParentObject());
 
-  if (element && element->HasID()) {
+  if (element) {
     MaybeNewRelationTarget(*node, obj);
   }
 
@@ -4154,7 +4153,7 @@ void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
   CHECK(relation_cache_);
   relation_cache_->UpdateRelatedTree(&node, obj);
   if (Element* element = DynamicTo<Element>(node)) {
-    relation_cache_->UpdateRelatedTreeForIdChange(*element);
+    relation_cache_->UpdateRelatedTreeAfterChange(*element);
   }
 }
 
@@ -6344,15 +6343,8 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
       line_cursor.MoveToNextInlineLeafOnLine();
 
       if (!line_object) [[unlikely]] {
-        // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to CHECK().
-        DUMP_WILL_BE_NOTREACHED()
-            << "InlineCursor says that has an existing position however no "
-               "LayoutObject was found. Found this while processing "
-            << layout_object << "(" << Get(layout_object) << ") after " << runs
-            << " runs.";
         break;
       }
-      if (line_object) {
         auto* next_line_object =
             line_cursor ? line_cursor.CurrentMutableLayoutObject() : nullptr;
 
@@ -6381,7 +6373,6 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
           // previous line.
           ConnectToTrailingWhitespaceOnLine(*line_object, *block_flow);
         }
-      }
     }
     cursor.MoveToNextLine();
   } while (cursor);

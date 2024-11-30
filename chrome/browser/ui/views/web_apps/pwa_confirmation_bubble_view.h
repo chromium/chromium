@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -60,9 +59,6 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
       delete;
 
   ~PWAConfirmationBubbleView() override;
-
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallButton);
-  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kInstalledPWAEventId);
 
   static bool IsShowing();
   static PWAConfirmationBubbleView* GetBubble();

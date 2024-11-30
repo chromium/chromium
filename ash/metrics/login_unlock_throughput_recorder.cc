@@ -483,8 +483,15 @@ void LoginUnlockThroughputRecorder::SetLoginFinishedReportedForTesting() {
 }
 
 void LoginUnlockThroughputRecorder::StartDeferredTaskRunner() {
-  if (!post_login_deferred_task_runner_->Started()) {
-    post_login_deferred_task_runner_->Start();
+  if (post_login_deferred_task_runner_->Started()) {
+    return;
+  }
+
+  post_login_deferred_task_runner_->Start();
+
+  auto now = base::TimeTicks::Now();
+  for (auto& obs : observers_) {
+    obs.OnDeferredTasksStarted(now);
   }
 }
 

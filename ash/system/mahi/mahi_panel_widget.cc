@@ -156,6 +156,13 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
 
     // If resizable, disable the resize shadow on the window border.
     params.init_properties_container.SetProperty(kDisableResizeShadow, true);
+
+    params.init_properties_container.SetProperty(
+        kWindowResizeHistogramName,
+        new std::string(mahi_constants::kMahiPanelResizingHistogram));
+    params.init_properties_container.SetProperty(
+        kWindowResizeMaxLatencyHistogramName,
+        new std::string(mahi_constants::kMahiPanelResizingMaxLatencyHistogram));
   }
 
   // `SystemModalContainer` can travel across displays, is not automatically

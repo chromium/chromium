@@ -32,16 +32,16 @@ class WebAuthnHandler : public DevToolsDomainHandler,
   void Wire(UberDispatcher* dispatcher) override;
 
   // WebAuthn::Backend
-  CONTENT_EXPORT Response Enable(Maybe<bool> enable_ui) override;
+  CONTENT_EXPORT Response Enable(std::optional<bool> enable_ui) override;
   CONTENT_EXPORT Response Disable() override;
   Response AddVirtualAuthenticator(
       std::unique_ptr<WebAuthn::VirtualAuthenticatorOptions> options,
       String* out_authenticator_id) override;
   Response RemoveVirtualAuthenticator(const String& authenticator_id) override;
   Response SetResponseOverrideBits(const String& authenticator_id,
-                                   Maybe<bool> is_bogus_signature,
-                                   Maybe<bool> is_bad_uv,
-                                   Maybe<bool> is_bad_up) override;
+                                   std::optional<bool> is_bogus_signature,
+                                   std::optional<bool> is_bad_uv,
+                                   std::optional<bool> is_bad_up) override;
   void AddCredential(const String& authenticator_id,
                      std::unique_ptr<protocol::WebAuthn::Credential> credential,
                      std::unique_ptr<AddCredentialCallback> callback) override;
@@ -60,8 +60,8 @@ class WebAuthnHandler : public DevToolsDomainHandler,
                                           bool enabled) override;
   Response SetCredentialProperties(const String& authenticator_id,
                                    const Binary& credential_id,
-                                   Maybe<bool> backup_eligibility,
-                                   Maybe<bool> backup_state) override;
+                                   std::optional<bool> backup_eligibility,
+                                   std::optional<bool> backup_state) override;
 
  private:
   // Finds the authenticator with the given |id|. Returns Response::OK() if

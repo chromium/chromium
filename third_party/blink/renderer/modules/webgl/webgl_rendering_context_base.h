@@ -722,7 +722,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }
   bool UsingSwapChain() const override;
-  bool IsOriginTopLeft() const override;
   void PageVisibilityChanged() override;
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
   bool CopyRenderingResultsToVideoFrame(
@@ -834,8 +833,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   scoped_refptr<DrawingBuffer> drawing_buffer_;
 
   Member<WebGLContextGroup> context_group_;
-
-  bool is_origin_top_left_ = false;
 
   LostContextMode context_lost_mode_ = kNotLostContext;
   AutoRecoveryMethod auto_recovery_method_ = kManual;

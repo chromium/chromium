@@ -27,11 +27,13 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
+import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.ui.test.transit.SoftKeyboardElement;
 
 import java.util.List;
 
@@ -53,24 +55,29 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     private final List<Integer> mTabIdsToGroup;
     private final String mTitle;
     private final @Nullable @TabGroupColorId Integer mSelectedColor;
+    private final SoftKeyboardFacility mSoftKeyboard;
     private ViewSpec mTitleInputSpec;
 
     /** Constructor. Expects no particular title or selected color. */
-    public NewTabGroupDialogFacility(List<Integer> tabIdsToGroup) {
+    public NewTabGroupDialogFacility(
+            List<Integer> tabIdsToGroup, SoftKeyboardFacility softKeyboard) {
         this(
                 tabIdsToGroup,
                 TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size()),
-                /* selectedColor= */ null);
+                /* selectedColor= */ null,
+                softKeyboard);
     }
 
     /** Constructor. Expects a specific title and selected color. */
     public NewTabGroupDialogFacility(
             List<Integer> tabIdsToGroup,
             String title,
-            @Nullable @TabGroupColorId Integer selectedColor) {
+            @Nullable @TabGroupColorId Integer selectedColor,
+            SoftKeyboardFacility softKeyboard) {
         mTabIdsToGroup = tabIdsToGroup;
         mTitle = title;
         mSelectedColor = selectedColor;
+        mSoftKeyboard = softKeyboard;
     }
 
     @Override
@@ -98,8 +105,6 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         }
 
         elements.declareView(DONE_BUTTON);
-
-        elements.declareElement(new SoftKeyboardElement(mHostStation.getActivityElement()));
     }
 
     private ViewSpec colorPickerIconSpec(
@@ -123,7 +128,8 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     public NewTabGroupDialogFacility inputName(String newTabGroupName) {
         return mHostStation.swapFacilitySync(
                 this,
-                new NewTabGroupDialogFacility(mTabIdsToGroup, newTabGroupName, mSelectedColor),
+                new NewTabGroupDialogFacility(
+                        mTabIdsToGroup, newTabGroupName, mSelectedColor, mSoftKeyboard),
                 () -> mTitleInputSpec.perform(replaceText(newTabGroupName)));
     }
 
@@ -131,13 +137,28 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     public NewTabGroupDialogFacility pickColor(@TabGroupColorId int newColor) {
         return mHostStation.swapFacilitySync(
                 this,
-                new NewTabGroupDialogFacility(mTabIdsToGroup, mTitle, newColor),
+                new NewTabGroupDialogFacility(mTabIdsToGroup, mTitle, newColor, mSoftKeyboard),
                 colorPickerIconSpec(newColor, /* selected= */ false)::click);
     }
 
     /** Press "Done" to confirm the tab group name and color. */
     public TabSwitcherGroupCardFacility pressDone() {
+        if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
+            mSoftKeyboard.close();
+        } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
+            // Do nothing as the soft keyboard has already been closed
+        } else {
+            throw new IllegalArgumentException(
+                    "SoftKeyboardFacility is in phase " + mSoftKeyboard.getPhase());
+        }
+
+        // The reason we can pass an expected card index is because the tab group has already been
+        // created.
+        TabModel currentModel = mHostStation.getTabModelSelectorSupplier().get().getCurrentModel();
+        int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
         return mHostStation.swapFacilitySync(
-                this, new TabSwitcherGroupCardFacility(mTabIdsToGroup, mTitle), DONE_BUTTON::click);
+                this,
+                new TabSwitcherGroupCardFacility(expectedCardIndex, mTabIdsToGroup, mTitle),
+                DONE_BUTTON::click);
     }
 }

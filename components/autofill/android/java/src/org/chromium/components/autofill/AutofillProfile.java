@@ -11,6 +11,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.base.CollectionUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +24,7 @@ import java.util.Map;
  * {@link VerificationStatus.USER_VERIFIED} status.
  */
 @JNINamespace("autofill")
+@SuppressWarnings("UnusedMethod") // Some of private getters are unused, but exist for completeness.
 public class AutofillProfile {
     private String mGUID;
     private @RecordType int mRecordType;
@@ -271,7 +274,7 @@ public class AutofillProfile {
 
     @CalledByNative
     private @JniType("std::vector<int32_t>") int[] getFieldTypes() {
-        return mFields.keySet().stream().mapToInt(i -> i).toArray();
+        return CollectionUtil.integerCollectionToIntArray(mFields.keySet());
     }
 
     @CalledByNative

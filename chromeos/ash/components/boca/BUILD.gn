@@ -67,6 +67,20 @@ static_library("invalidations") {
   ]
 }
 
+static_library("spotlight") {
+  sources = [
+    "spotlight/view_screen_request.cc",
+    "spotlight/view_screen_request.h",
+  ]
+  deps = [
+    ":boca",
+    "//base",
+    "//chromeos/ash/components/boca/session_api",
+    "//google_apis/common:common",
+    "//net",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -78,11 +92,13 @@ source_set("unit_tests") {
     "invalidations/fcm_handler_unittest.cc",
     "invalidations/invalidation_service_impl_unittest.cc",
     "notifications/boca_notification_handler_unittest.cc",
+    "spotlight/view_screen_request_unittest.cc",
   ]
 
   deps = [
     ":boca",
     ":invalidations",
+    ":spotlight",
     "//ash:test_support",
     "//base",
     "//base/test:test_support",
@@ -102,6 +118,7 @@ source_set("unit_tests") {
     "//components/user_manager:test_support",
     "//content/test:test_support",
     "//google_apis/common",
+    "//google_apis/common:test_support",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp/",

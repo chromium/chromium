@@ -1269,13 +1269,6 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   encoder_info_.supports_frame_size_change =
       !workarounds_.disable_media_foundation_frame_size_change;
 
-  if (rate_ctrl_) {
-    // Software rate control should always have a trusted QP. We are safe to
-    // report encoder info right away.
-    client_->NotifyEncoderInfoChange(encoder_info_);
-    encoder_info_sent_ = true;
-  }
-
   if (!base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing) ||
       config.input_format == PIXEL_FORMAT_NV12) {
     return true;
@@ -1314,6 +1307,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
       << "Using video processor to convert from " << config.input_format
       << " to encoder accepted " << vp_config.output_format;
 
+  // Notify encoder info change to client after initialization succeeded.
+  client_->NotifyEncoderInfoChange(encoder_info_);
   return true;
 }
 
@@ -1507,15 +1502,24 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
   DCHECK(imf_output_media_type_);
   DCHECK(imf_input_media_type_);
   DCHECK(encoder_);
+
+  // RTC will pass a very small bitrate(1 bps) to the encoder when its bitrate
+  // allocator assigns zero bitrate as part of initial setup. Ignore the request
+  // to avoid CHECK failures on those BRC creations.
+  if (bitrate_allocation.GetSumBps() <= 1) {
+    DLOG(WARNING) << "Ignoring bitrate allocation request with 1 bps or less.";
+    return;
+  }
+
   if (bitrate_allocation.GetMode() != bitrate_allocation_.GetMode()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
                        "Can't change bitrate mode after Initialize()"});
     return;
   }
 
-  framerate = std::clamp(framerate, 1u,
-                         static_cast<uint32_t>(kDefaultFrameRateNumerator /
-                                               kDefaultFrameRateDenominator));
+  if (framerate == 0) {
+    framerate = kDefaultFrameRateNumerator / kDefaultFrameRateDenominator;
+  }
 
   if (framerate == frame_rate_ && bitrate_allocation == bitrate_allocation_ &&
       !size.has_value()) {
@@ -2688,7 +2692,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   // the QP is trusted (`encoder_info_.reports_average_qp` is true, which it is
   // by default).
   std::optional<int32_t> frame_qp;
-  bool should_notify_encoder_info_change = false;
+  bool should_notify_reports_average_qp_change = false;
   // If there exists a valid qp in sample metadata, do not query HMFT for
   // MFSampleExtension_VideoEncodeQP.
   if (metadata.qp.has_value()) {
@@ -2702,7 +2706,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     if (vendor_ == DriverVendor::kIntel) {
       if ((FAILED(hr) || !IsValidQp(codec_, frame_qp_from_sample)) &&
           encoder_info_.reports_average_qp) {
-        should_notify_encoder_info_change = true;
+        should_notify_reports_average_qp_change = true;
         encoder_info_.reports_average_qp = false;
       }
     }
@@ -2711,9 +2715,8 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
       frame_qp = AVEncQPtoQindex(codec_, frame_qp_from_sample & 0xfffful);
     }
   }
-  if (!encoder_info_sent_ || should_notify_encoder_info_change) {
+  if (should_notify_reports_average_qp_change) {
     client_->NotifyEncoderInfoChange(encoder_info_);
-    encoder_info_sent_ = true;
   }
 
   const bool keyframe = MFGetAttributeUINT32(
@@ -2746,7 +2749,15 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     if (codec_ == VideoCodec::kH264) {
       md.h264.emplace().temporal_idx = temporal_id;
     } else if (codec_ == VideoCodec::kHEVC) {
-      md.svc_generic.emplace().temporal_idx = temporal_id;
+      SVCGenericMetadata& svc = md.svc_generic.emplace();
+      svc.temporal_idx = temporal_id;
+      svc.spatial_idx = 0;
+      // We only get the temporal id from NALU header of output bitstream
+      // without extracting the reference structure, so we are not able to
+      // provide the reference flags and refresh flags for HEVC, if the
+      // |follow_svc_spec| flag is false, and RTC will not send dependency
+      // descriptor RTP extension.
+      svc.follow_svc_spec = encoder_produces_svc_spec_compliant_bitstream_;
     } else if (codec_ == VideoCodec::kAV1) {
       SVCGenericMetadata& svc = md.svc_generic.emplace();
       svc.temporal_idx = temporal_id;

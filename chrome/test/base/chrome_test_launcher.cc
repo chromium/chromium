@@ -147,7 +147,7 @@ auto RunEchoService(mojo::PendingReceiver<echo::mojom::EchoService> receiver) {
 ChromeTestLauncherDelegate::ChromeTestLauncherDelegate(
     ChromeTestSuiteRunner* runner)
     : runner_(runner) {}
-ChromeTestLauncherDelegate::~ChromeTestLauncherDelegate() {}
+ChromeTestLauncherDelegate::~ChromeTestLauncherDelegate() = default;
 
 int ChromeTestLauncherDelegate::RunTestSuite(int argc, char** argv) {
   return runner_->RunTestSuite(argc, argv);

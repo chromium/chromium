@@ -24,6 +24,14 @@ QueuedFeaturePromo::QueuedFeaturePromo(FeaturePromoParams params_,
 QueuedFeaturePromo::QueuedFeaturePromo(QueuedFeaturePromo&&) noexcept = default;
 QueuedFeaturePromo::~QueuedFeaturePromo() = default;
 
+EligibleFeaturePromo::EligibleFeaturePromo(FeaturePromoParams promo_params_)
+    : promo_params(std::move(promo_params_)) {}
+EligibleFeaturePromo::EligibleFeaturePromo(EligibleFeaturePromo&&) noexcept =
+    default;
+EligibleFeaturePromo& EligibleFeaturePromo::operator=(
+    EligibleFeaturePromo&&) noexcept = default;
+EligibleFeaturePromo::~EligibleFeaturePromo() = default;
+
 FeaturePromoQueue::FeaturePromoQueue(
     const PreconditionListProvider& required_preconditions_provider,
     const PreconditionListProvider& wait_for_preconditions_provider,
@@ -103,7 +111,7 @@ const base::Feature* FeaturePromoQueue::UpdateAndIdentifyNextEligiblePromo() {
   return IdentifyNextEligiblePromo();
 }
 
-std::optional<FeaturePromoParams>
+std::optional<EligibleFeaturePromo>
 FeaturePromoQueue::UpdateAndGetNextEligiblePromo() {
   RemoveIneligiblePromos();
   return GetNextEligiblePromo();
@@ -179,13 +187,15 @@ const base::Feature* FeaturePromoQueue::IdentifyNextEligiblePromo() {
   return nullptr;
 }
 
-std::optional<FeaturePromoParams> FeaturePromoQueue::GetNextEligiblePromo() {
+std::optional<EligibleFeaturePromo> FeaturePromoQueue::GetNextEligiblePromo() {
   for (auto it = queued_promos_.begin(); it != queued_promos_.end(); ++it) {
     const auto result = it->wait_for_preconditions.CheckPreconditions();
     if (result) {
-      FeaturePromoParams params = std::move(it->params);
+      EligibleFeaturePromo eligible_promo(std::move(it->params));
+      it->required_preconditions.ExtractCachedData(eligible_promo.cached_data);
+      it->wait_for_preconditions.ExtractCachedData(eligible_promo.cached_data);
       queued_promos_.erase(it);
-      return std::move(params);
+      return std::move(eligible_promo);
     }
   }
   return std::nullopt;

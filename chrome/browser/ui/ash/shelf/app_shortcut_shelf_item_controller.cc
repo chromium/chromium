@@ -260,8 +260,7 @@ AppShortcutShelfItemController::~AppShortcutShelfItemController() {
 // triggered when Ash is the Chrome browser and when an SWA or PWA icon on
 // the shelf is clicked, or when the Alt+N accelerator is triggered for the
 // SWA or PWA. For Ash-chrome please refer to
-// BrowserShortcutShelfItemController. For Lacros please refer to
-// BrowserAppShelfItemController.
+// BrowserShortcutShelfItemController.
 void AppShortcutShelfItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,
     int64_t display_id,

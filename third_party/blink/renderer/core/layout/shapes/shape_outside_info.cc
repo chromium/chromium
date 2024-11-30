@@ -192,20 +192,6 @@ static PhysicalRect GetShapeImagePhysicalMarginRect(
       margin_border_padding.VerticalSum() + reference_physical_size.height);
 }
 
-static LogicalRect GetShapeImageMarginRect(
-    const LayoutBox& layout_box,
-    const LogicalSize& reference_box_logical_size) {
-  BoxStrut outsets =
-      (layout_box.MarginBoxOutsets() + layout_box.BorderOutsets() +
-       layout_box.PaddingOutsets())
-          .ConvertToLogical(layout_box.Style()->GetWritingDirection());
-  LogicalOffset margin_box_origin(-outsets.inline_start, -outsets.block_start);
-  LogicalSize margin_rect_size = reference_box_logical_size;
-  margin_rect_size.Expand(outsets.InlineSum(), outsets.BlockSum());
-  margin_rect_size.ClampNegativeToZero();
-  return LogicalRect(margin_box_origin, margin_rect_size);
-}
-
 PhysicalSize ShapeOutsideInfo::ReferenceBoxPhysicalSize() const {
   return ToPhysicalSize(
       reference_box_logical_size_,
@@ -226,40 +212,23 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   const gfx::SizeF image_size = style_image->ImageSize(
       layout_box_->StyleRef().EffectiveZoom(),
-      RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
-          ? gfx::SizeF(reference_physical_size)
-          : gfx::SizeF(reference_box_logical_size_.inline_size.ToFloat(),
-                       reference_box_logical_size_.block_size.ToFloat()),
-      respect_orientation);
+      gfx::SizeF(reference_physical_size), respect_orientation);
 
-  LogicalRect margin_rect;
-  if (RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()) {
-    WritingModeConverter converter({writing_mode, TextDirection::kLtr},
-                                   reference_physical_size);
-    margin_rect = converter.ToLogical(
-        GetShapeImagePhysicalMarginRect(*layout_box_, reference_physical_size));
-    margin_rect.size.inline_size =
-        margin_rect.size.inline_size.ClampNegativeToZero();
-    margin_rect.size.block_size =
-        margin_rect.size.block_size.ClampNegativeToZero();
-  } else {
-    margin_rect =
-        GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
-  }
+  WritingModeConverter converter({writing_mode, TextDirection::kLtr},
+                                 reference_physical_size);
+  LogicalRect margin_rect = converter.ToLogical(
+      GetShapeImagePhysicalMarginRect(*layout_box_, reference_physical_size));
+  margin_rect.size.inline_size =
+      margin_rect.size.inline_size.ClampNegativeToZero();
+  margin_rect.size.block_size =
+      margin_rect.size.block_size.ClampNegativeToZero();
 
-  gfx::Rect image_rect;
   const PhysicalRect image_physical_rect =
       layout_box_->IsLayoutImage()
           ? To<LayoutImage>(layout_box_.Get())->ReplacedContentRect()
           : PhysicalRect({}, PhysicalSize::FromSizeFRound(image_size));
-  if (RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()) {
-    WritingModeConverter converter({writing_mode, TextDirection::kLtr},
-                                   reference_physical_size);
-    image_rect =
-        ToPixelSnappedLogicalRect(converter.ToLogical(image_physical_rect));
-  } else {
-    image_rect = ToPixelSnappedRect(image_physical_rect);
-  }
+  gfx::Rect image_rect =
+      ToPixelSnappedLogicalRect(converter.ToLogical(image_physical_rect));
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
@@ -315,15 +284,8 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
                                    shape_image_threshold, writing_mode, margin);
       break;
     case ShapeValue::kBox: {
-      // TODO(layout-dev): It seems incorrect to pass logical size to
-      // RoundedBorderGeometry().
-      PhysicalSize size =
-          RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
-              ? ReferenceBoxPhysicalSize()
-              : PhysicalSize(reference_box_logical_size_.inline_size,
-                             reference_box_logical_size_.block_size);
       const FloatRoundedRect& shape_rect = RoundedBorderGeometry::RoundedBorder(
-          style, PhysicalRect(PhysicalOffset(), size));
+          style, PhysicalRect(PhysicalOffset(), ReferenceBoxPhysicalSize()));
       shape_ = Shape::CreateLayoutBoxShape(shape_rect, writing_mode, margin);
       break;
     }

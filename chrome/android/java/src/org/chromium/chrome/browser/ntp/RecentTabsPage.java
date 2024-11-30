@@ -20,9 +20,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -61,8 +66,10 @@ public class RecentTabsPage
     private boolean mIsAttachedToWindow;
 
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private Callback<Integer> mTabStripHeightChangeCallback;
     private SmoothTransitionDelegate mSmoothTransitionDelegate;
+    private EdgeToEdgePadAdjuster mPadAdjuster;
 
     /**
      * Constructor returns an instance of RecentTabsPage.
@@ -72,12 +79,14 @@ public class RecentTabsPage
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} used to provide
      *     offset values.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
+     * @param edgeToEdgeSupplier Supplier for the {@link EdgeToEdgeController} for bottom insets.
      */
     public RecentTabsPage(
             Activity activity,
             RecentTabsManager recentTabsManager,
             BrowserControlsStateProvider browserControlsStateProvider,
-            ObservableSupplier<Integer> tabStripHeightSupplier) {
+            ObservableSupplier<Integer> tabStripHeightSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mRecentTabsManager = recentTabsManager;
         Resources resources = activity.getResources();
@@ -117,6 +126,12 @@ public class RecentTabsPage
                                 mView.getPaddingRight(),
                                 mView.getPaddingBottom());
         mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
+            mPadAdjuster =
+                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                            mListView, mEdgeToEdgeSupplier);
+        }
 
         onUpdated();
     }
@@ -162,6 +177,11 @@ public class RecentTabsPage
     }
 
     @Override
+    public boolean supportsEdgeToEdge() {
+        return !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e.getValue();
+    }
+
+    @Override
     public void destroy() {
         assert !mIsAttachedToWindow : "Destroy called before removed from window";
         mRecentTabsManager.destroy();
@@ -176,6 +196,10 @@ public class RecentTabsPage
         }
 
         mTabStripHeightSupplier.removeObserver(mTabStripHeightChangeCallback);
+        if (mPadAdjuster != null) {
+            mPadAdjuster.destroy();
+            mPadAdjuster = null;
+        }
     }
 
     @Override

@@ -11,6 +11,7 @@
 #define BASE_STRINGS_STRING_UTIL_IMPL_HELPERS_H_
 
 #include <algorithm>
+#include <numeric>
 #include <optional>
 #include <string_view>
 
@@ -220,39 +221,33 @@ inline bool DoIsStringUTF8(std::string_view str) {
   return true;
 }
 
+// Lookup table for fast ASCII case-insensitive comparison.
+inline constexpr std::array<unsigned char, 256> kToLower = []() {
+  std::array<unsigned char, 256> table;
+  std::iota(table.begin(), table.end(), 0);
+  std::iota(table.begin() + size_t{'A'}, table.begin() + size_t{'Z'} + 1, 'a');
+  return table;
+}();
+
+inline constexpr auto lower = [](auto c) constexpr {
+  return kToLower[static_cast<unsigned char>(c)];
+};
+
 template <typename T, typename CharT = typename T::value_type>
-bool StartsWithT(T str, T search_for, CompareCase case_sensitivity) {
-  if (search_for.size() > str.size())
-    return false;
-
-  std::basic_string_view<CharT> source = str.substr(0, search_for.size());
-
-  switch (case_sensitivity) {
-    case CompareCase::SENSITIVE:
-      return source == search_for;
-
-    case CompareCase::INSENSITIVE_ASCII:
-      return std::equal(search_for.begin(), search_for.end(), source.begin(),
-                        CaseInsensitiveCompareASCII<CharT>());
-  }
+constexpr bool StartsWithT(T str, T search_for, CompareCase case_sensitivity) {
+  return case_sensitivity == CompareCase::SENSITIVE
+             ? str.starts_with(search_for)
+             : std::ranges::equal(str.substr(0, search_for.size()), search_for,
+                                  {}, lower, lower);
 }
 
 template <typename T, typename CharT = typename T::value_type>
-bool EndsWithT(T str, T search_for, CompareCase case_sensitivity) {
-  if (search_for.size() > str.size())
-    return false;
-
-  std::basic_string_view<CharT> source =
-      str.substr(str.size() - search_for.size(), search_for.size());
-
-  switch (case_sensitivity) {
-    case CompareCase::SENSITIVE:
-      return source == search_for;
-
-    case CompareCase::INSENSITIVE_ASCII:
-      return std::equal(source.begin(), source.end(), search_for.begin(),
-                        CaseInsensitiveCompareASCII<CharT>());
-  }
+constexpr bool EndsWithT(T str, T search_for, CompareCase case_sensitivity) {
+  return case_sensitivity == CompareCase::SENSITIVE
+             ? str.ends_with(search_for)
+             : (search_for.size() <= str.size() &&
+                std::ranges::equal(str.substr(str.size() - search_for.size()),
+                                   search_for, {}, lower, lower));
 }
 
 // A Matcher for DoReplaceMatchesAfterOffset() that matches substrings.

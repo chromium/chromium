@@ -65,7 +65,7 @@ enum PseudoId : uint8_t {
   kPseudoIdNone,
   kPseudoIdFirstLine,
   kPseudoIdFirstLetter,
-  kPseudoIdCheck,
+  kPseudoIdCheckMark,
   kPseudoIdBefore,
   kPseudoIdAfter,
   kPseudoIdSelectArrow,
@@ -75,16 +75,16 @@ enum PseudoId : uint8_t {
   kPseudoIdScrollbar,
   kPseudoIdScrollMarker,
   kPseudoIdScrollMarkerGroup,
-  kPseudoIdScrollNextButton,
-  kPseudoIdScrollPrevButton,
+  kPseudoIdScrollButton,
+  kPseudoIdScrollUpButton,
+  kPseudoIdScrollDownButton,
+  kPseudoIdScrollLeftButton,
+  kPseudoIdScrollRightButton,
   kPseudoIdColumn,
   kPseudoIdSearchText,
   kPseudoIdTargetText,
   kPseudoIdHighlight,
   kPseudoIdSpellingError,
-  kPseudoIdColumnScrollMarker,  // Used to store the combined
-                                // ::column::scroll-marker style on the
-                                // originating element's ComputedStyle cache.
   kPseudoIdGrammarError,
   // The following IDs are public but not tracked.
   kPseudoIdViewTransition,

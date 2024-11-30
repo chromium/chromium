@@ -87,21 +87,17 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
     return;
   }
 
-  auto* context_provider = context_provider_wrapper->ContextProvider();
-  if (!context_provider) {
-    DLOG(ERROR) << "Context lost, skipping frame";
-    return;
-  }
+  auto& context_provider = context_provider_wrapper->ContextProvider();
 
   // Readback to YUV is only used when result is opaque.
   const bool result_is_opaque =
       image->CurrentFrameKnownToBeOpaque() || can_discard_alpha_;
 
   const bool supports_yuv_readback =
-      context_provider->GetCapabilities().supports_yuv_readback;
+      context_provider.GetCapabilities().supports_yuv_readback;
   // If supports_rgb_to_yuv_conversion is true, supports_yuv_readback must also
   // be.
-  CHECK(!context_provider->GetCapabilities().supports_rgb_to_yuv_conversion ||
+  CHECK(!context_provider.GetCapabilities().supports_rgb_to_yuv_conversion ||
         supports_yuv_readback);
 
   // Try async reading if image is texture backed.
@@ -126,10 +122,10 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
         return;
       }
     }
-    ReadYUVPixelsAsync(image, context_provider,
+    ReadYUVPixelsAsync(image, &context_provider,
                        std::move(split_callback.second));
   } else {
-    ReadARGBPixelsAsync(image, context_provider, std::move(callback));
+    ReadARGBPixelsAsync(image, &context_provider, std::move(callback));
   }
 
   TRACE_EVENT1("blink", "StaticBitmapImageToVideoFrameCopier::Convert",

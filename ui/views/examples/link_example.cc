@@ -31,7 +31,7 @@ void LinkExample::CreateExampleView(View* container) {
                   .SetText(GetStringUTF16(IDS_LINK_CLICK_PROMPT_LABEL))
                   .Build();
   link->SetCallback(base::BindRepeating(
-      &LogStatus, GetStringUTF8(IDS_LINK_CLICK_CONFIRMED_LABEL)));
+      &PrintStatus, GetStringUTF8(IDS_LINK_CLICK_CONFIRMED_LABEL)));
 
   container->SetLayoutManager(std::make_unique<FillLayout>());
   container->AddChildView(std::move(link));

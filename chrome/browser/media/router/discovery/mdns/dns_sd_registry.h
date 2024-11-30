@@ -37,7 +37,7 @@ class DnsSdRegistry : public DnsSdDelegate {
     virtual void OnDnsSdPermissionRejected() = 0;
 
    protected:
-    virtual ~DnsSdObserver() {}
+    virtual ~DnsSdObserver() = default;
   };
 
   static DnsSdRegistry* GetInstance();

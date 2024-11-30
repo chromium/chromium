@@ -1140,11 +1140,13 @@ public class PersonalDataManager implements Destroyable {
     }
 
     private void fetchCreditCardArtImages() {
-        mImageFetcher.prefetchImages(
-                getCreditCardsToSuggest().stream()
-                        .map(card -> card.getCardArtUrl())
-                        .toArray(GURL[]::new),
-                new int[] {ImageSize.SMALL, ImageSize.LARGE});
+        List<CreditCard> cardsToSuggest = getCreditCardsToSuggest();
+        int size = cardsToSuggest.size();
+        GURL[] cardArtUrls = new GURL[size];
+        for (int i = 0; i < size; ++i) {
+            cardArtUrls[i] = cardsToSuggest.get(i).getCardArtUrl();
+        }
+        mImageFetcher.prefetchImages(cardArtUrls, new int[] {ImageSize.SMALL, ImageSize.LARGE});
     }
 
     /**
@@ -1182,6 +1184,16 @@ public class PersonalDataManager implements Destroyable {
     /** Returns the preference value for supporting payments using Pix. */
     public boolean getFacilitatedPaymentsPixPref() {
         return mPrefService.getBoolean(Pref.FACILITATED_PAYMENTS_PIX);
+    }
+
+    /** Sets the preference value for supporting payments using Ewallet. */
+    public void setFacilitatedPaymentsEwalletPref(boolean value) {
+        mPrefService.setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, value);
+    }
+
+    /** Returns the preference value for supporting payments using Ewallet. */
+    public boolean getFacilitatedPaymentsEwalletPref() {
+        return mPrefService.getBoolean(Pref.FACILITATED_PAYMENTS_EWALLET);
     }
 
     @NativeMethods

@@ -27,6 +27,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/test/test_cookie_manager.h"
@@ -71,9 +72,9 @@ class AccountsCookieMutatorTest
 
   AccountsCookieMutatorTest()
       : kTestUnavailableAccountId(
-            CoreAccountId::FromGaiaId("unavailable_account_id")),
+            CoreAccountId::FromGaiaId(GaiaId("unavailable_account_id"))),
         kTestOtherUnavailableAccountId(
-            CoreAccountId::FromGaiaId("other_unavailable_account_id")),
+            CoreAccountId::FromGaiaId(GaiaId("other_unavailable_account_id"))),
         test_signin_client_(&prefs_),
         identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            &prefs_,
@@ -338,7 +339,7 @@ TEST_F(AccountsCookieMutatorTest, TriggerCookieJarUpdate_OneListedAccounts) {
             1U);
   EXPECT_EQ(
       accounts_in_jar_info.GetPotentiallyInvalidSignedInAccounts()[0].gaia_id,
-      kTestAccountGaiaId);
+      GaiaId(kTestAccountGaiaId));
   EXPECT_EQ(
       accounts_in_jar_info.GetPotentiallyInvalidSignedInAccounts()[0].email,
       kTestAccountEmail);

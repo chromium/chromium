@@ -260,7 +260,7 @@ ResourcePrefetchPredictor::ResourcePrefetchPredictor(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-ResourcePrefetchPredictor::~ResourcePrefetchPredictor() {}
+ResourcePrefetchPredictor::~ResourcePrefetchPredictor() = default;
 
 void ResourcePrefetchPredictor::StartInitialization() {
   TRACE_EVENT0("browser", "ResourcePrefetchPredictor::StartInitialization");

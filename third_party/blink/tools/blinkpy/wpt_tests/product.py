@@ -117,7 +117,6 @@ class DesktopProduct(Product):
         super().update_runner_options(options)
         options.binary = self._port.path_to_driver()
         options.binary_args.extend(self.additional_binary_args())
-        options.enable_swiftshader = True
 
     def additional_binary_args(self) -> List[str]:
         # Base args applicable to all embedders.

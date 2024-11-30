@@ -13,8 +13,6 @@
 
 namespace history_embeddings {
 
-class CpuHistogramLogger;
-
 inline constexpr char kModelInfoMetricName[] =
     "History.Embeddings.Embedder.ModelInfoStatus";
 
@@ -75,15 +73,11 @@ class PassageEmbeddingsServiceController {
 
  protected:
   // Reset both service_remote_ and embedder_remote_.
-  void ResetRemotes();
+  virtual void ResetRemotes();
 
   mojo::Remote<passage_embeddings::mojom::PassageEmbeddingsService>
       service_remote_;
   mojo::Remote<passage_embeddings::mojom::PassageEmbedder> embedder_remote_;
-
-  // When the embeddings service is running, the logger will periodically sample
-  // and log the CPU time used by the service process.
-  std::unique_ptr<CpuHistogramLogger> cpu_logger_;
 
  private:
   // Called when the model files on disks are opened and ready to be sent to

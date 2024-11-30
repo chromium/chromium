@@ -28,11 +28,14 @@ build_webui("build") {
     "browser_proxy.ts",
     "event_log.html.ts",
     "event_log.ts",
+    "model_status.html.ts",
+    "model_status.ts",
   ]
 
   css_files = [
     "app.css",
     "event_log.css",
+    "model_status.css",
   ]
 
   ts_deps = [

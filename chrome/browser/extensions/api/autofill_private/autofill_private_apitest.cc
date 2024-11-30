@@ -60,8 +60,8 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
     // the observers under the `AutofillPrivateEventRouter`.
     AutofillPrivateEventRouterFactory::GetForProfile(browser_context())
         ->RebindPersonalDataManagerForTesting(
-            autofill_client()->GetPersonalDataManager());
-    autofill_client()->GetPersonalDataManager()->SetPrefService(
+            &autofill_client()->GetPersonalDataManager());
+    autofill_client()->GetPersonalDataManager().SetPrefService(
         autofill_client()->GetPrefs());
     UserAnnotationsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
@@ -155,19 +155,19 @@ IN_PROC_BROWSER_TEST_F(
     AddCreditCard_Metrics_StoredCreditCardCountBeforeCardAdded) {
   base::HistogramTester histogram_tester;
 
-  autofill::TestPersonalDataManager* personal_data_manager =
+  autofill::TestPersonalDataManager& personal_data_manager =
       autofill_client()->GetPersonalDataManager();
   // Required for adding the server card.
-  personal_data_manager->payments_data_manager().SetSyncingForTest(
+  personal_data_manager.payments_data_manager().SetSyncingForTest(
       /*is_syncing_for_test=*/true);
 
   // Set up the personal data manager with 2 existing cards.
-  personal_data_manager->payments_data_manager().AddCreditCard(
+  personal_data_manager.payments_data_manager().AddCreditCard(
       autofill::test::GetCreditCard2());
-  personal_data_manager->test_payments_data_manager().AddServerCreditCard(
+  personal_data_manager.test_payments_data_manager().AddServerCreditCard(
       autofill::test::GetMaskedServerCard());
   EXPECT_EQ(
-      personal_data_manager->payments_data_manager().GetCreditCards().size(),
+      personal_data_manager.payments_data_manager().GetCreditCards().size(),
       2u);
 
   EXPECT_TRUE(RunAutofillSubtest("addNewCreditCard")) << message_;
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 
   autofill_client()
       ->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .SetPaymentMethodsMandatoryReauthEnabled(true);
   auto* mock_mandatory_reauth_manager =
       autofill_client()
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 
   autofill_client()
       ->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .SetPaymentMethodsMandatoryReauthEnabled(false);
   auto* mock_mandatory_reauth_manager =
       autofill_client()
@@ -423,29 +423,29 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, MigrateCreditCards) {
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddVirtualCard) {
-  autofill::TestPersonalDataManager* personal_data_manager =
+  autofill::TestPersonalDataManager& personal_data_manager =
       autofill_client()->GetPersonalDataManager();
   autofill_client()
       ->GetPaymentsAutofillClient()
       ->set_test_payments_network_interface(
           std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
               autofill_client()->GetURLLoaderFactory(),
-              autofill_client()->GetIdentityManager(), personal_data_manager));
+              autofill_client()->GetIdentityManager(), &personal_data_manager));
   // Required for adding the server card.
-  personal_data_manager->payments_data_manager().SetSyncingForTest(
+  personal_data_manager.payments_data_manager().SetSyncingForTest(
       /*is_syncing_for_test=*/true);
-  personal_data_manager->test_payments_data_manager().AddServerCreditCard(
+  personal_data_manager.test_payments_data_manager().AddServerCreditCard(
       autofill::test::GetMaskedServerCard());
   EXPECT_TRUE(RunAutofillSubtest("addVirtualCard")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                        TriggerAnnotationsBootstrapping_Success) {
-  autofill::TestPersonalDataManager* test_personal_data_manager =
-      static_cast<autofill::TestPersonalDataManager*>(
+  autofill::TestPersonalDataManager& test_personal_data_manager =
+      static_cast<autofill::TestPersonalDataManager&>(
           autofill_client()->GetPersonalDataManager());
   autofill::TestAddressDataManager& test_address_data_manager =
-      test_personal_data_manager->test_address_data_manager();
+      test_personal_data_manager.test_address_data_manager();
 
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   test_address_data_manager.AddProfile(profile);
@@ -456,11 +456,11 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                        TriggerAnnotationsBootstrapping_Failure) {
-  autofill::TestPersonalDataManager* test_personal_data_manager =
-      static_cast<autofill::TestPersonalDataManager*>(
+  autofill::TestPersonalDataManager& test_personal_data_manager =
+      static_cast<autofill::TestPersonalDataManager&>(
           autofill_client()->GetPersonalDataManager());
   autofill::TestAddressDataManager& test_address_data_manager =
-      test_personal_data_manager->test_address_data_manager();
+      test_personal_data_manager.test_address_data_manager();
 
   test_address_data_manager.ClearProfiles();
 

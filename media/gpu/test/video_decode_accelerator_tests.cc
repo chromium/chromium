@@ -608,7 +608,7 @@ TEST_F(VideoDecoderTest, ResolutionChangeAbortedByReset) {
 
 // Play video from start to end. Multiple buffer decodes will be queued in the
 // decoder, without waiting for the result of the previous decode requests.
-TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleOutstandingDecodes) {
+TEST_F(VideoDecoderTest, FlushAtEndOfStreamMultipleOutstandingDecodes) {
   DecoderWrapperConfig config;
   config.max_outstanding_decode_requests = 4;
   auto tvp = CreateDecoderListener(g_env->Video(), config);
@@ -622,7 +622,7 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleOutstandingDecodes) {
 }
 
 // Play multiple videos simultaneously from start to finish.
-TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleConcurrentDecodes) {
+TEST_F(VideoDecoderTest, FlushAtEndOfStreamMultipleConcurrentDecodes) {
   // The minimal number of concurrent decoders we expect to be supported.
   constexpr size_t kMinSupportedConcurrentDecoders = 3;
 

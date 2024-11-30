@@ -11,7 +11,7 @@
 // Test harness for integration tests using BookmarkEditorView.
 class BookmarkEditorViewBrowserTest : public DialogBrowserTest {
  public:
-  BookmarkEditorViewBrowserTest() {}
+  BookmarkEditorViewBrowserTest() = default;
 
   BookmarkEditorViewBrowserTest(const BookmarkEditorViewBrowserTest&) = delete;
   BookmarkEditorViewBrowserTest& operator=(

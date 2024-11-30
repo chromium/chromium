@@ -5,7 +5,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 
 #include <linux/input.h>
-#include <stylus-unstable-v2-client-protocol.h>
 
 #include "base/logging.h"
 #include "base/version.h"
@@ -49,8 +48,6 @@ WaylandPointer::WaylandPointer(wl_pointer* pointer,
       .axis_value120 = &OnAxisValue120,
   };
   wl_pointer_add_listener(obj_.get(), &kPointerListener, this);
-
-  SetupStylus();
 }
 
 WaylandPointer::~WaylandPointer() {
@@ -242,68 +239,6 @@ void WaylandPointer::OnAxisValue120(void* data,
   // TODO(crbug.com/40720099): Use this event for better handling of mouse wheel
   // events.
   NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void WaylandPointer::SetupStylus() {
-  auto* stylus_v2 = connection_->stylus_v2();
-  if (!stylus_v2)
-    return;
-
-  zcr_pointer_stylus_v2_.reset(
-      zcr_stylus_v2_get_pointer_stylus(stylus_v2, obj_.get()));
-
-  static zcr_pointer_stylus_v2_listener kPointerStylusV2Listener = {
-      .tool = &OnTool, .force = &OnForce, .tilt = &OnTilt};
-  zcr_pointer_stylus_v2_add_listener(zcr_pointer_stylus_v2_.get(),
-                                     &kPointerStylusV2Listener, this);
-}
-
-// static
-void WaylandPointer::OnTool(void* data,
-                            struct zcr_pointer_stylus_v2* stylus,
-                            uint32_t wl_pointer_type) {
-  auto* self = static_cast<WaylandPointer*>(data);
-
-  ui::EventPointerType pointer_type = ui::EventPointerType::kMouse;
-  switch (wl_pointer_type) {
-    case (ZCR_POINTER_STYLUS_V2_TOOL_TYPE_PEN):
-      pointer_type = EventPointerType::kPen;
-      break;
-    case (ZCR_POINTER_STYLUS_V2_TOOL_TYPE_ERASER):
-      pointer_type = ui::EventPointerType::kEraser;
-      break;
-    case (ZCR_POINTER_STYLUS_V2_TOOL_TYPE_TOUCH):
-      pointer_type = EventPointerType::kTouch;
-      break;
-    case (ZCR_POINTER_STYLUS_V2_TOOL_TYPE_NONE):
-      break;
-  }
-
-  self->delegate_->OnPointerStylusToolChanged(pointer_type);
-}
-
-// static
-void WaylandPointer::OnForce(void* data,
-                             struct zcr_pointer_stylus_v2* stylus,
-                             uint32_t time,
-                             wl_fixed_t force) {
-  auto* self = static_cast<WaylandPointer*>(data);
-  DCHECK(self);
-
-  self->delegate_->OnPointerStylusForceChanged(wl_fixed_to_double(force));
-}
-
-// static
-void WaylandPointer::OnTilt(void* data,
-                            struct zcr_pointer_stylus_v2* stylus,
-                            uint32_t time,
-                            wl_fixed_t tilt_x,
-                            wl_fixed_t tilt_y) {
-  auto* self = static_cast<WaylandPointer*>(data);
-  DCHECK(self);
-
-  self->delegate_->OnPointerStylusTiltChanged(
-      gfx::Vector2dF(wl_fixed_to_double(tilt_x), wl_fixed_to_double(tilt_y)));
 }
 
 }  // namespace ui

@@ -45,8 +45,6 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
       {SHARED_IMAGE_USAGE_MIPMAP, "Mipmap"},
       {SHARED_IMAGE_USAGE_CPU_WRITE, "CpuWrite"},
       {SHARED_IMAGE_USAGE_RAW_DRAW, "RawDraw"},
-      {SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING,
-       "RasterDelegatedCompositing"},
       {SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU, "HighPerformanceGpu"},
       {SHARED_IMAGE_USAGE_CPU_UPLOAD, "CpuUpload"},
       {SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE, "ScanoutDCompSurface"},
@@ -75,6 +73,10 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
   DCHECK(!label.empty());
 
   return label;
+}
+
+std::string SharedImageUsageSet::ToString() const {
+  return CreateLabelForSharedImageUsage(*this);
 }
 
 }  // namespace gpu

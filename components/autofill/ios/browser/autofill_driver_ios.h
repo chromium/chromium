@@ -90,6 +90,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   AutofillDriverIOS* GetParent() override;
   AutofillClient& GetAutofillClient() override;
   BrowserAutofillManager& GetAutofillManager() override;
+  ukm::SourceId GetPageUkmSourceId() const override;
   bool IsActive() const override;
   bool IsInAnyMainFrame() const override;
   bool HasSharedAutofillPermission() const override;
@@ -126,6 +127,12 @@ class AutofillDriverIOS final : public AutofillDriver,
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
+  void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string& amount)> response_callback)
+      override;
 
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -21,6 +22,20 @@ NSErrorDomain const kCredentialProviderMigratorErrorDomain =
 typedef enum : NSInteger {
   CredentialProviderMigratorErrorAlreadyRunning,
 } CredentialProviderMigratorErrors;
+
+// Name of the passkey migration related histogram.
+static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
+
+// Values of the UMA Passkeys.IOSMigration histogram. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class PasskeysMigration {
+  // New passkey from the CPE migrated to Chrome.
+  kPasskeyCreated = 0,
+  // Existing passkey used by the CPE updated in Chrome.
+  kPasskeyUpdated = 1,
+  kMaxValue = kPasskeyUpdated
+};
 
 @interface CredentialProviderMigrator () {
   // Passkey store.
@@ -109,11 +124,15 @@ typedef enum : NSInteger {
           _passkeyStore->UpdatePasskeyTimestamp(
               credentialId, base::Time::FromDeltaSinceWindowsEpoch(
                                 base::Microseconds(credential.lastUsedTime)));
+          base::UmaHistogramEnumeration(kPasskeysIOSMigration,
+                                        PasskeysMigration::kPasskeyUpdated);
         }
       } else {
         sync_pb::WebauthnCredentialSpecifics passkey =
             PasskeyFromCredential(credential);
         _passkeyStore->CreatePasskey(passkey);
+        base::UmaHistogramEnumeration(kPasskeysIOSMigration,
+                                      PasskeysMigration::kPasskeyCreated);
       }
     } else {
       password_manager::PasswordForm form =

@@ -26,9 +26,7 @@
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -204,6 +202,7 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
     const GURL& url,
     bool is_navigation_from_link,
     int redirection_chain_size) {
+  CHECK(web_contents);
   AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
 
   AppIdsToLaunchForUrl app_ids_to_launch = FindAppIdsToLaunchForUrl(proxy, url);
@@ -234,11 +233,9 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   // previous early return didn't trigger, this means we are in an app window
   // but out of scope of the original app, and navigating will put us back in
   // scope.
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
-  if (provider && base::ValuesEquivalent(
-                      provider->ui_manager().GetAppIdForWindow(web_contents),
-                      &launch_app_id.value())) {
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  if (tab_helper && tab_helper->window_app_id() == launch_app_id) {
     return std::nullopt;
   }
 

@@ -126,14 +126,15 @@ class PageInfoMainView : public views::View,
   // the label depending on the number of visible permissions.
   void UpdateResetButton(const PermissionInfoList& permission_info_list);
 
-  // Creates 'About this site' section which contains a button that opens a
-  // subpage and two separators.
-  [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSiteSection(
+  // Creates 'About this site' button that opens a subpage.
+  [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSiteButton(
       const page_info::proto::SiteInfo& info);
 
-  // Creates 'Ad personalization' section which contains a button that opens a
-  // subpage and a separator.
-  [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationSection();
+  // Creates 'Ad personalization' button that opens a subpage.
+  [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationButton();
+
+  // Creates 'Merchant trust' button that opens a subpage.
+  [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustButton();
 
   raw_ptr<PageInfo, AcrossTasksDanglingUntriaged> presenter_;
 
@@ -155,22 +156,28 @@ class PageInfoMainView : public views::View,
   raw_ptr<RichHoverButton> cookie_button_ = nullptr;
 
   // The button that opens up "Site Settings".
-  raw_ptr<views::View> site_settings_link_ = nullptr;
+  raw_ptr<RichHoverButton> site_settings_link_ = nullptr;
 
   // The view that contains the scroll view with permission rows and the reset
   // button, surrounded by separators.
   raw_ptr<views::View> permissions_view_ = nullptr;
 
-  // The section that contains "About this site" button that opens a
-  // subpage and two separators.
+  // The section that contains a separator and buttons with extended site
+  // information: "About this site" and "Merchant trust". The section is only
+  // shown when at least of one the buttons is available.
+  raw_ptr<views::View> extended_site_info_section_ = nullptr;
+
+  // "About this site" button that opens a subpage.
   raw_ptr<views::View> about_this_site_section_ = nullptr;
+
+  // "Merchant trust" button that opens a subpage.
+  raw_ptr<views::View> merchant_trust_section_ = nullptr;
 
   // The view that contains `SecurityInformationView` and a certificate button.
   raw_ptr<PageInfoSecurityContentView, AcrossTasksDanglingUntriaged>
       security_content_view_ = nullptr;
 
-  // The section that contains 'Ad personalization' button that opens a
-  // subpage.
+  // "Ad personalization" button that opens a subpage.
   raw_ptr<views::View> ads_personalization_section_ = nullptr;
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)

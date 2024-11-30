@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -155,22 +155,13 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
   // interleaved style recalc.
   if ((result & (kRecalcSizeContainerFlags | kSuppressRecalc)) ==
       kRecalcSizeContainer) {
-    if (!RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled() &&
-        IsShadowHost(element)) {
-      // Since the nearest container is found in shadow-including ancestors and
-      // not in flat tree ancestors, and style recalc traversal happens in flat
-      // tree order, we need to invalidate inside flat tree descendant
-      // containers if such containers are inside shadow trees.
-      result |= kRecalcDescendantSizeContainers;
-    } else {
-      // Don't traverse into children if we hit a descendant container while
-      // recalculating container queries. If the queries for this container also
-      // changes, we will enter another container query recalc for this subtree
-      // from layout.
-      const ComputedStyle* old_style = element.GetComputedStyle();
-      if (old_style && old_style->CanMatchSizeContainerQueries(element)) {
-        result &= ~kRecalcSizeContainer;
-      }
+    // Don't traverse into children if we hit a descendant container while
+    // recalculating container queries. If the queries for this container also
+    // changes, we will enter another container query recalc for this subtree
+    // from layout.
+    const ComputedStyle* old_style = element.GetComputedStyle();
+    if (old_style && old_style->CanMatchSizeContainerQueries(element)) {
+      result &= ~kRecalcSizeContainer;
     }
   }
 

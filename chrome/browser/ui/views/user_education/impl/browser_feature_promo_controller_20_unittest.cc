@@ -17,7 +17,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -1413,11 +1415,12 @@ class BrowserFeaturePromoController20ViewsTest
   auto MaybeShowPromo(
       user_education::FeaturePromoParams params,
       FeaturePromoResult expected = FeaturePromoResult::Success()) {
-    std::ostringstream desc;
-    desc << "MaybeShowPromo(" << params.feature->name << ", " << expected
-         << ") - %s";
     auto result =
         base::MakeRefCounted<base::RefCountedData<FeaturePromoResult>>();
+    // Must be computed before `WithElement()` below, which consumes `params`.
+    const std::string caller =
+        base::StrCat({"MaybeShowPromo( ", params.feature->name, ", ",
+                      base::ToString(expected), " )"});
     auto steps = Steps(
         WithElement(
             kBrowserViewElementId,
@@ -1455,7 +1458,7 @@ class BrowserFeaturePromoController20ViewsTest
             }),
         WaitForEvent(kBrowserViewElementId, kPromoShownEvent),
         CheckResult([result]() { return result->data; }, expected));
-    AddDescription(steps, desc.str());
+    AddDescriptionPrefix(steps, caller);
     return steps;
   }
 
@@ -2083,8 +2086,9 @@ class BrowserFeaturePromoController20PriorityTest
   }
 
   auto MaybeShowStartupPromo(user_education::FeaturePromoParams params) {
-    std::ostringstream desc;
-    desc << "MaybeShowStartupPromo(" << params.feature->name << ")";
+    // Must be computed before `Do()`, which consumes `params`.
+    const std::string caller =
+        base::StrCat({"MaybeShowStartupPromo( ", params.feature->name, " )"});
     return std::move(Do([this, p = std::move(params)]() mutable {
                        // This is insurance, a parameter could be added to
                        // specify whether the feature is expected to check the
@@ -2093,7 +2097,7 @@ class BrowserFeaturePromoController20PriorityTest
                                    ShouldTriggerHelpUI(Ref(*p.feature)))
                            .WillRepeatedly(Return(true));
                        controller_->MaybeShowStartupPromo(std::move(p));
-                     }).SetDescription(desc.str()));
+                     }).AddDescriptionPrefix(caller));
   }
 
   auto ExpectShowingPromo(const base::Feature* feature) {
@@ -2121,7 +2125,7 @@ class BrowserFeaturePromoController20PriorityTest
                   ->user_education_session_manager(),
               session_data, policy_data, session_data.most_recent_active_time,
               now_);
-        }).SetDescription("ResetSessionData"));
+        }).AddDescriptionPrefix("ResetSessionData()"));
   }
 
   auto AdvanceTime(std::optional<base::TimeDelta> until_new_last_active,
@@ -2142,13 +2146,13 @@ class BrowserFeaturePromoController20PriorityTest
 
   auto CheckPromoStatus(const base::Feature& iph_feature,
                         FeaturePromoStatus status) {
-    std::ostringstream oss;
-    oss << "CheckPromoStatus(" << iph_feature.name << ", " << status << ")";
     return CheckResult(
         [this, &iph_feature]() {
           return controller()->GetPromoStatus(iph_feature);
         },
-        status, oss.str());
+        status,
+        base::StrCat({"CheckPromoStatus( ", iph_feature.name, ", ",
+                      base::ToString(status), " )"}));
   }
 
   const base::TimeDelta kLessThanGracePeriod =

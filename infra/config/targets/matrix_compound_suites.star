@@ -535,6 +535,58 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "model_validation_gce_matrix_tests",
+    basic_suites = {
+        "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            # Run model validation tests on GCE when possible to save bare
+            # metal resources. This cannot be done for ondevice_stability_tests
+            # because it requires a GPU.
+            mixins = [
+                "gce",
+            ],
+            variants = [
+                "CHANNEL_BETA",
+                "CHANNEL_DEV",
+                "CHANNEL_STABLE",
+            ],
+        ),
+        "ondevice_stability_tests_light_suite": targets.legacy_matrix_config(
+            # For stability tests we need a GPU, so we run them on NVIDIA
+            # GeForce GTX 1660s, which are most available in the intelligence
+            # pool.
+            mixins = [
+                "nvidia_geforce_gtx_1660",
+            ],
+            variants = [
+                "CHANNEL_BETA",
+                "CHANNEL_DEV",
+                "CHANNEL_STABLE",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "model_validation_matrix_tests",
+    basic_suites = {
+        "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            variants = [
+                "CHANNEL_BETA",
+                "CHANNEL_DEV",
+                "CHANNEL_STABLE",
+            ],
+        ),
+        "ondevice_stability_tests_light_suite": targets.legacy_matrix_config(
+            variants = [
+                "CHANNEL_BETA",
+                "CHANNEL_DEV",
+                "CHANNEL_STABLE",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "optimization_guide_desktop_gtests",
     basic_suites = {
         "optimization_guide_nogpu_gtests": None,
@@ -570,7 +622,12 @@ targets.legacy_matrix_compound_suite(
         "model_validation_tests_suite": None,
         "model_validation_tests_light_suite": None,
         "ondevice_stability_tests_suite": None,
-        "chrome_ai_wpt_tests_suite": None,
+        "chrome_ai_wpt_tests_suite": targets.legacy_matrix_config(
+            mixins = [
+                # TODO: crbug.com/378549335 Remove experiments after stablization.
+                "experiments",
+            ],
+        ),
     },
 )
 
@@ -640,7 +697,29 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "optimization_guide_win_script_tests",
+    name = "optimization_guide_win32_script_tests",
+    basic_suites = {
+        "model_validation_tests_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
+        "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
+        "ondevice_stability_tests_suite": targets.legacy_matrix_config(
+            variants = [
+                "AMD_RADEON_RX_5500_XT",
+                "NVIDIA_GEFORCE_GTX_1660",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_win64_script_tests",
     basic_suites = {
         "model_validation_tests_suite": targets.legacy_matrix_config(
             mixins = [

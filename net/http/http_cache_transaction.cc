@@ -51,6 +51,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/disk_cache/memory_entry_data_hints.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_cache_writers.h"
 #include "net/http/http_log_util.h"
@@ -3469,10 +3470,15 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
   // Summarize some info on cacheability in memory. Don't do it if doomed
   // since then |entry_| isn't definitive for |cache_key_|.
   if (!entry_->IsDoomed()) {
-    cache_->GetCurrentBackend()->SetEntryInMemoryData(
-        cache_key_, ComputeUnusablePerCachingHeaders()
-                        ? HINT_UNUSABLE_PER_CACHING_HEADERS
-                        : 0);
+    uint8_t in_memory_data = 0;
+    if (ComputeUnusablePerCachingHeaders()) {
+      in_memory_data |= HINT_UNUSABLE_PER_CACHING_HEADERS;
+    }
+    if (request_->is_main_frame_navigation) {
+      in_memory_data |= HINT_HIGH_PRIORITY;
+    }
+    cache_->GetCurrentBackend()->SetEntryInMemoryData(cache_key_,
+                                                      in_memory_data);
   }
 
   BeginDiskCacheAccessTimeCount();

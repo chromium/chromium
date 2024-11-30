@@ -188,7 +188,7 @@ public class AndroidShareSheetControllerUnitTest {
                         false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
-                        /* trackOcclusion= */ false);
+                        /* trackOcclusion= */ true);
         mPrintCallback = new PayloadCallbackHelper<>();
         // Set up mock tab
         doReturn(mWindow).when(mTab).getWindowAndroid();
@@ -840,14 +840,6 @@ public class AndroidShareSheetControllerUnitTest {
                         })
                 .when(mMockFaviconHelperJni)
                 .getLocalFaviconImageForURL(anyLong(), eq(mProfile), any(), anyInt(), any());
-    }
-
-    private void runModifyActionFromChooserIntent(Intent chooserIntent) throws CanceledException {
-        Bundle modifyAction =
-                chooserIntent.getParcelableExtra(Intent.EXTRA_CHOOSER_MODIFY_SHARE_ACTION);
-        PendingIntent action = modifyAction.getParcelable(KEY_CHOOSER_ACTION_ACTION);
-        action.send();
-        ShadowLooper.idleMainLooper();
     }
 
     private void assertCustomActions(Intent chooserIntent, Integer... expectedStringRes) {

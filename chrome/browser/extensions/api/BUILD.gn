@@ -27,6 +27,7 @@ group("api_implementations") {
   # TODO(https://crbug.com/356905053): Add more APIs here.
   public_deps = [
     "//chrome/browser/extensions/api/browsing_data",
+    "//chrome/browser/extensions/api/module",
     "//chrome/browser/extensions/api/notifications",
   ]
 
@@ -47,7 +48,6 @@ group("api_implementations") {
       "//chrome/browser/extensions/api/font_settings",
       "//chrome/browser/extensions/api/idltest",
       "//chrome/browser/extensions/api/mdns",
-      "//chrome/browser/extensions/api/module",
       "//chrome/browser/extensions/api/networking_private",
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/extensions/api/page_capture",
@@ -65,6 +65,7 @@ group("api_implementations") {
       "//chrome/browser/extensions/api/tab_capture",
       "//chrome/browser/extensions/api/tab_groups",
       "//chrome/browser/extensions/api/web_authentication_proxy",
+      "//chrome/browser/extensions/api/web_navigation",
       "//chrome/browser/extensions/api/web_view",
       "//chrome/browser/extensions/api/webrtc_audio_private",
       "//chrome/browser/extensions/api/webrtc_desktop_capture_private",

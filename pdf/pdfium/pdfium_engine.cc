@@ -2248,6 +2248,12 @@ void PDFiumEngine::DisplayAnnotations(bool display) {
   InvalidateAllPages();
 }
 
+std::u16string PDFiumEngine::GetPageText(int page_index) {
+  CHECK(PageIndexInBounds(page_index));
+  auto range = PDFiumRange::AllTextOnPage(pages_[page_index].get());
+  return range.GetText();
+}
+
 void PDFiumEngine::InvalidateAllPages() {
   CancelPaints();
   StopFind();

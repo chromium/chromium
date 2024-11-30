@@ -25,8 +25,8 @@ BASE_FEATURE(kAboutThisSiteAsyncFetching,
              "AboutThisSiteAsyncFetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMerchantTrust,
-             "MerchantTrust",
+BASE_FEATURE(kPrivacyPolicyInsights,
+             "PrivacyPolicyInsights",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace page_info

@@ -59,8 +59,6 @@ void OnDeviceInternalsUI::CreatePageHandler(
   if (!service) {
     return;
   }
-  OptimizationGuideLogger* optimization_guide_logger =
-      service->GetOptimizationGuideLogger();
   page_handler_ = std::make_unique<OnDeviceInternalsPageHandler>(
-      std::move(receiver), std::move(page), optimization_guide_logger);
+      std::move(receiver), std::move(page), service);
 }

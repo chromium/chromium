@@ -41,7 +41,7 @@ class MockSpeechRecognitionEventObserverImpl
       const MockSpeechRecognitionEventObserverImpl&) = delete;
   MockSpeechRecognitionEventObserverImpl& operator=(
       const MockSpeechRecognitionEventObserverImpl&) = delete;
-  ~MockSpeechRecognitionEventObserverImpl() override {}
+  ~MockSpeechRecognitionEventObserverImpl() override = default;
 
   void OnStop() override { on_stop_callback_.Run(); }
   void OnResult(ax::mojom::SpeechRecognitionResultEventPtr event) override {

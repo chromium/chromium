@@ -241,6 +241,7 @@
 <translation id="2556326187583116255">ChromeVox मा अन रहेको जुनसुकै वाक् सुविधा अफ गर्न २ वटा औँलाले ट्याप गर्नुहोस्</translation>
 <translation id="2573256689920773241">नेभिगेट गर्ने सामान्य तरिका</translation>
 <translation id="257674075312929031">समूह</translation>
+<translation id="2577127557293415225">एकैछिन दुवै आँखा चिम्लिनुहोस्</translation>
 <translation id="2582407057977008361">अलग</translation>
 <translation id="2592212930811759050">सम्पादन गर्ने कार्य सुरु गर्न डबल ट्याप गर्नुहोस्</translation>
 <translation id="2598495320872286378">व्याकरणसम्बन्धी त्रुटि</translation>
@@ -404,7 +405,7 @@
 <translation id="3435494200763325275">ट्याब नेभिगेट गर्ने कार्य (जारी छ)</translation>
 <translation id="344800400831402066">पेरू</translation>
 <translation id="3457000393508828486">आंशिक रूपमा थिचिएको</translation>
-<translation id="3458865416877308321"><ph name="NAME" /> को स्विच निष्क्रिय छ</translation>
+<translation id="3458865416877308321"><ph name="NAME" /> को स्विच अफ छ</translation>
 <translation id="3466530247399808663">कुनै अमान्य कुञ्जी थिचियो</translation>
 <translation id="3468959318854349468">कुनै पनि शीर्षक छैन</translation>
 <translation id="3469413619751135069">फिक्का हरियो</translation>
@@ -483,7 +484,7 @@
 <translation id="3991317907213946254">मोकासिन</translation>
 <translation id="4002709828007663583">गाढा अर्किड</translation>
 <translation id="4004802134384979325">जाँच गरियो</translation>
-<translation id="4006140876663370126">छवि</translation>
+<translation id="4006140876663370126">फोटो</translation>
 <translation id="4021716437419160885">तलतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="4035381225449278841">वसन्त</translation>
 <translation id="4038098586530338813">रिडू गर्नुहोस्</translation>
@@ -560,7 +561,7 @@
 <translation id="4479068155583208887">फायर ब्रिक</translation>
 <translation id="4481524099194084725">सिस्टम भ्वाइस प्रयोग गर्नुहोस्</translation>
 <translation id="4482330759234983253">अघिल्लो तालिका</translation>
-<translation id="4491109536499578614">छवि</translation>
+<translation id="4491109536499578614">फोटो</translation>
 <translation id="4507332368061453500">हालको वस्तुमा केही बेरसम्म क्लिक गर्नुहोस्</translation>
 <translation id="4511186779140817916">रातोपना कम भएको बदामको रङ्ग</translation>
 <translation id="451510441928265982">अघिल्लो कुनै पनि लेभल २ शीर्षक छैन</translation>

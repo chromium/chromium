@@ -37,6 +37,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -82,8 +83,9 @@ base::span<const SearchConcept> GetPrivacySearchConceptsSharedWithGuestMode() {
   return tags;
 }
 
-base::span<const SearchConcept> GetPrivacySearchConcepts() {
-  DCHECK(!IsGuestModeActive());
+base::span<const SearchConcept> GetPrivacySearchConcepts(
+    const user_manager::User* user) {
+  DCHECK(!IsGuestModeActive(user));
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MANAGE_OTHER_PEOPLE_PAGE,
        mojom::kManageOtherPeopleSubpagePathV2,
@@ -252,8 +254,9 @@ base::span<const SearchConcept> GetPrivacyGoogleChromeSearchConcepts() {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-base::span<const SearchConcept> GetPrivacyControlsSearchConcepts() {
-  DCHECK(!IsGuestModeActive());
+base::span<const SearchConcept> GetPrivacyControlsSearchConcepts(
+    const user_manager::User* user) {
+  DCHECK(!IsGuestModeActive(user));
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PRIVACY_CONTROLS,
        mojom::kPrivacyHubSubpagePath,
@@ -277,8 +280,9 @@ base::span<const SearchConcept> GetPrivacyControlsSearchConcepts() {
   return tags;
 }
 
-base::span<const SearchConcept> GetPrivacyControlsLocationSearchConcepts() {
-  DCHECK(!IsGuestModeActive());
+base::span<const SearchConcept> GetPrivacyControlsLocationSearchConcepts(
+    const user_manager::User* user) {
+  DCHECK(!IsGuestModeActive(user));
   DCHECK(features::IsCrosPrivacyHubLocationEnabled());
   static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_GEOLOCATION,
@@ -315,8 +319,9 @@ PrivacySection::PrivacySection(Profile* profile,
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrivacySearchConceptsSharedWithGuestMode());
-  if (!IsGuestModeActive()) {
-    updater.AddSearchTags(GetPrivacySearchConcepts());
+  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (!IsGuestModeActive(user)) {
+    updater.AddSearchTags(GetPrivacySearchConcepts(user));
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   updater.AddSearchTags(GetPrivacyGoogleChromeSearchConcepts());
@@ -324,7 +329,7 @@ PrivacySection::PrivacySection(Profile* profile,
 
   // Fingerprint search tags are added if necessary. Remove fingerprint search
   // tags update dynamically during a user session.
-  if (!IsGuestModeActive() && AreFingerprintSettingsAllowed()) {
+  if (!IsGuestModeActive(user) && AreFingerprintSettingsAllowed()) {
     updater.AddSearchTags(GetFingerprintSearchConcepts());
 
     fingerprint_pref_change_registrar_.Init(pref_service_);
@@ -349,12 +354,12 @@ PrivacySection::PrivacySection(Profile* profile,
     updater.AddSearchTags(GetSmartPrivacySearchConcepts());
   }
 
-  if (!IsGuestModeActive()) {
+  if (!IsGuestModeActive(user)) {
     // Adds search concepts for the contents in the Privacy controls page
     // depending on the enabled flags.
-    updater.AddSearchTags(GetPrivacyControlsSearchConcepts());
+    updater.AddSearchTags(GetPrivacyControlsSearchConcepts(user));
     if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
-      updater.AddSearchTags(GetPrivacyControlsLocationSearchConcepts());
+      updater.AddSearchTags(GetPrivacyControlsLocationSearchConcepts(user));
     }
   }
 }
@@ -362,7 +367,8 @@ PrivacySection::PrivacySection(Profile* profile,
 PrivacySection::~PrivacySection() = default;
 
 void PrivacySection::AddHandlers(content::WebUI* web_ui) {
-  web_ui->AddMessageHandler(std::make_unique<PeripheralDataAccessHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<PeripheralDataAccessHandler>(profile()));
 
   web_ui->AddMessageHandler(std::make_unique<MetricsConsentHandler>(
       profile(), g_browser_process->metrics_service(),
@@ -625,10 +631,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isAuthPanelEnabled",
                           ash::features::IsUseAuthPanelInSessionEnabled());
 
-  html_source->AddBoolean(
-      "isPrivacyHubHatsEnabled",
-      base::FeatureList::IsEnabled(
-          ::features::kHappinessTrackingPrivacyHubPostLaunch));
   html_source->AddBoolean("showPrivacyHubLocationControl",
                           ash::features::IsCrosPrivacyHubLocationEnabled());
   html_source->AddBoolean("showSpeakOnMuteDetectionPage",

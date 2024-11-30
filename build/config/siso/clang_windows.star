@@ -11,6 +11,7 @@ load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
+load("./reproxy.star", "reproxy")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 load("./win_sdk.star", "win_sdk")
 
@@ -72,7 +73,7 @@ def __step_config(ctx, step_config):
         canonicalize_dir = not input_root_absolute_path
 
         timeout = "2m"
-        if gn.args(ctx).get("use_reclient") == "false" and windowsWorker:
+        if (not reproxy.enabled(ctx)) and windowsWorker:
             # use longer timeout for siso native
             # it takes long time for input fetch (many files in sysroot etc)
             timeout = "4m"

@@ -1,3 +1,5 @@
+# Tokens used by the fuzzers.
+
 # symbols
 " "
 "\""
@@ -744,8 +746,6 @@
 "path"
 "ray"
 "sides"
-"calc"
-"-webkit-calc"
 "x"
 "y"
 "mandatory"
@@ -940,6 +940,12 @@
 "accentcolor"
 "accentcolortext"
 "-internal-auto-base-select"
+
+# Math functions (TODO: We're missing a lot of them)
+"calc"
+"-webkit-calc"
+"sibling-index"
+"sibling-count"
 
 # display-state
 # normal

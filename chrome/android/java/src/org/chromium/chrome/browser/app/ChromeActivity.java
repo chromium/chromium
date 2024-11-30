@@ -90,8 +90,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManagerHandler;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
-import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerUiUtils;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -133,6 +131,7 @@ import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -214,7 +213,6 @@ import org.chromium.components.webapps.pwa_universal_install.PwaUniversalInstall
 import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
@@ -243,11 +241,8 @@ import java.util.List;
 /**
  * A {@link AsyncInitializationActivity} that builds and manages a {@link CompositorViewHolder} and
  * associated classes.
- *
- * @param <C> - type of associated Dagger component.
  */
-public abstract class ChromeActivity<C extends ChromeActivityComponent>
-        extends AsyncInitializationActivity
+public abstract class ChromeActivity extends AsyncInitializationActivity
         implements TabCreatorManager,
                 PolicyChangeListener,
                 SnackbarManageable,
@@ -262,7 +257,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private static final int CONTENT_VIS_DELAY_MS = 5;
     public static final String UNFOLD_LATENCY_BEGIN_TIMESTAMP = "unfold_latency_begin_timestamp";
     public static final String IS_FROM_RECREATING = "is_from_recreating";
-    private C mComponent;
 
     /** Used to generate a unique ID for each ChromeActivity. */
     private static long sNextActivityId;
@@ -494,10 +488,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 new StylusWritingCoordinator(
                         this, getLifecycleDispatcher(), getActivityTabProvider());
 
-        // Create component before calling super to give its members a chance to catch
-        // onPreInflationStartup event.
-        mComponent = createComponent();
-
         // Create the orchestrator that manages Tab models and persistence
         mTabModelOrchestrator = createTabModelOrchestrator();
         mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
@@ -564,57 +554,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /** Subclasses must create a {@link RootUiCoordinator}. */
     protected abstract RootUiCoordinator createRootUiCoordinator();
-
-    private C createComponent() {
-        ChromeActivityCommonsModule commonsModule =
-                new ChromeActivityCommonsModule(
-                        this,
-                        getFullscreenManager(),
-                        getLayoutManagerSupplier(),
-                        this::getSnackbarManager,
-                        getProfileProviderSupplier(),
-                        mActivityTabProvider,
-                        getTabContentManager(),
-                        getWindowAndroid(),
-                        mCompositorViewHolderSupplier,
-                        /* tabCreatorManager= */ this,
-                        this::getCurrentTabCreator,
-                        mRootUiCoordinator.getStatusBarColorController(),
-                        ScreenOrientationProvider.getInstance(),
-                        getTabContentManagerSupplier(),
-                        this::getLegacyTabStartupMetricsTracker,
-                        this::getStartupMetricsTracker,
-                        /* compositorViewHolderInitializer= */ this,
-                        getModalDialogManagerSupplier(),
-                        this::getSavedInstanceState,
-                        mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
-                        getShareDelegateSupplier(),
-                        /* tabModelInitializer= */ this,
-                        getActivityType());
-
-        return createComponent(commonsModule);
-    }
-
-    /**
-     * Override this to create a component that represents a richer dependency graph for a
-     * particular subclass of ChromeActivity. The specialized component should be activity-scoped
-     * and include all modules for ChromeActivityComponent, such as
-     * {@link ChromeActivityCommonsModule}, along with any additional modules.
-     *
-     * You may immediately resolve some of the classes belonging to the component in this method.
-     */
-    @SuppressWarnings("unchecked")
-    protected C createComponent(ChromeActivityCommonsModule commonsModule) {
-        return (C)
-                ChromeApplicationImpl.getComponent().createChromeActivityComponent(commonsModule);
-    }
-
-    /**
-     * @return the activity-scoped component associated with this instance of activity.
-     */
-    public final C getComponent() {
-        return mComponent;
-    }
 
     @SuppressLint("NewApi")
     @Override
@@ -1517,6 +1456,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // No information is provided in incognito mode and overview mode.
         if (tab != null && !tab.isIncognito() && !isInOverviewMode()) {
             outContent.setWebUri(Uri.parse(tab.getUrl().getSpec()));
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_PDF_ASSIST_CONTENT)
+                    && tab.getNativePage() instanceof PdfPage pdfPage) {
+                String structuredData = pdfPage.requestAssistContent();
+                if (structuredData != null) {
+                    outContent.setStructuredData(structuredData);
+                }
+            }
         }
     }
 
@@ -1670,8 +1616,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         warmupManager.clearViewHierarchy();
 
         mActivityTabProvider.destroy();
-
-        mComponent = null;
 
         super.onDestroy();
     }
@@ -1902,12 +1846,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * {@link TabModelSelector} no longer implements TabModel.  Use getTabModelSelector() or
-     * getCurrentTabModel() depending on your needs.
-     * @return The {@link TabModelSelector}, possibly null.
-     * @deprecated in favor of getTabModelSelectorSupplier.
+     * @return The {@link TabModelSelector}, if initialized
+     * @throws IllegalStateException if not initialized. Use getTabModelSelectorSupplier() if it
+     *     might not be initialized.
      */
-    @Deprecated
     public TabModelSelector getTabModelSelector() {
         if (!areTabModelsInitialized()) {
             throw new IllegalStateException(
@@ -1921,10 +1863,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return mTabModelOrchestratorSupplier;
     }
 
-    /**
-     * Returns an {@link ObservableSupplier} for {@link TabModelSelector}. Prefer this method over
-     * using {@link #getTabModelSelector()} directly.
-     */
+    /** Returns an {@link ObservableSupplier} for {@link TabModelSelector}. */
     public final ObservableSupplier<TabModelSelector> getTabModelSelectorSupplier() {
         return mTabModelSelectorSupplier;
     }
@@ -2318,11 +2257,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (ChromeApplicationImpl.isSevereMemorySignal(level)) {
             clearToolbarResourceCache();
         }
-    }
-
-    private SelectionPopupController getSelectionPopupController() {
-        WebContents webContents = getCurrentWebContents();
-        return webContents != null ? SelectionPopupController.fromWebContents(webContents) : null;
     }
 
     /** Opens the chrome://management page on a new tab. */

@@ -44,8 +44,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_async_cursor.h"
 #endif
 
-struct zwp_keyboard_shortcuts_inhibitor_v1;
-
 namespace wl {
 
 struct WaylandOverlayConfig;
@@ -707,11 +705,6 @@ class WaylandWindow : public PlatformWindow,
   WmDragHandler::DragFinishedCallback drag_finished_callback_;
 
   base::OnceClosure drag_loop_quit_closure_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  wl::Object<zwp_keyboard_shortcuts_inhibitor_v1>
-      permanent_keyboard_shortcuts_inhibitor_;
-#endif
 
 #if DCHECK_IS_ON()
   bool disable_null_target_dcheck_for_test_ = false;

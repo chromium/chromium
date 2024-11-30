@@ -124,7 +124,6 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
     const auto organization_feature =
         tab_search_prefs::GetTabOrganizationFeatureFromInt(
             prefs->GetInteger(tab_search_prefs::kTabOrganizationFeature));
-    bubble_created_time_.reset();
     if (section == tab_search::mojom::TabSearchSection::kSearch) {
       return;
     }
@@ -141,6 +140,11 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
           "Tab.Organization.DeclutterCTR",
           tab_search::mojom::DeclutterCTREvent::kDeclutterShown);
     }
+  } else if (!visible && bubble_created_time_.has_value()) {
+    const base::TimeDelta time_to_close =
+        base::TimeTicks::Now() - bubble_created_time_.value();
+    base::UmaHistogramMediumTimes("Tabs.TabSearch.TimeToClose", time_to_close);
+    bubble_created_time_.reset();
   }
 }
 

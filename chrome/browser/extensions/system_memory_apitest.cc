@@ -35,7 +35,7 @@ class MockMemoryInfoProviderImpl : public MemoryInfoProvider {
 // Desktop android only supports manifest v3 and later, don't need to run
 // tests for MV2 extensions.
 #if !BUILDFLAG(IS_ANDROID)
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class SystemMemoryApiTest : public ExtensionApiTest,
                             public testing::WithParamInterface<ContextType> {

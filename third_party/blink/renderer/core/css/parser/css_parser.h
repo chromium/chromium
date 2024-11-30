@@ -47,7 +47,6 @@ class CORE_EXPORT CSSParser {
                                   StyleSheetContents* style_sheet,
                                   CSSNestingType,
                                   StyleRule* parent_rule_for_nesting,
-                                  bool is_within_scope,
                                   const String& rule);
 
   static ParseSheetResult ParseSheet(
@@ -62,7 +61,6 @@ class CORE_EXPORT CSSParser {
       const CSSParserContext*,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
-      bool is_within_scope,
       StyleSheetContents*,
       const String&,
       HeapVector<CSSSelector>& arena);
@@ -80,7 +78,6 @@ class CORE_EXPORT CSSParser {
       const CSSParserContext*,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
-      bool is_within_scope,
       StringView);
 
   static MutableCSSPropertyValueSet::SetResult ParseValue(

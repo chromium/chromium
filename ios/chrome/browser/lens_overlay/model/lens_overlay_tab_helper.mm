@@ -47,6 +47,12 @@ void LensOverlayTabHelper::SetLensOverlayUIAttachedAndAlive(
   }
 }
 
+bool LensOverlayTabHelper::IsLensOverlayInvokedOnItem(
+    web::NavigationItem* navigation_item) {
+  return is_ui_attached_and_alive_ &&
+         invokation_navigation_id_ == navigation_item->GetUniqueID();
+}
+
 #pragma mark - WebStateObserver
 
 void LensOverlayTabHelper::DidStartNavigation(
@@ -83,7 +89,12 @@ void LensOverlayTabHelper::DidStartNavigation(
 void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
   CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
 
-  if (is_ui_attached_and_alive_) {
+  if (IsLensOverlaySameTabNavigationEnabled()) {
+    if (IsLensOverlayInvokedOnItem(
+            web_state->GetNavigationManager()->GetVisibleItem())) {
+      [commands_handler_ showLensUI:YES];
+    }
+  } else if (is_ui_attached_and_alive_) {
     [commands_handler_ showLensUI:YES];
   }
 }

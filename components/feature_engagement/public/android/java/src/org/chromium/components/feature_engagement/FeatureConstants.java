@@ -70,7 +70,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
     FeatureConstants.TAB_GROUPS_SURFACE,
     FeatureConstants.TAB_GROUPS_SURFACE_ON_HIDE,
-    FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
     FeatureConstants.FEED_HEADER_MENU_FEATURE,
     FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
     FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE,
@@ -291,12 +290,6 @@ public @interface FeatureConstants {
      * services" preferences.
      */
     String IDENTITY_DISC_FEATURE = "IPH_IdentityDisc";
-
-    /**
-     * An IPH feature showing up the first time the user is presented with the quieter version of
-     * the permission prompt (for notifications).
-     */
-    String QUIET_NOTIFICATION_PROMPTS_FEATURE = "IPH_QuietNotificationPrompts";
 
     /** An IPH feature to show on the feed header menu button of the FeedNewTabPage. */
     String FEED_HEADER_MENU_FEATURE = "IPH_FeedHeaderMenu";

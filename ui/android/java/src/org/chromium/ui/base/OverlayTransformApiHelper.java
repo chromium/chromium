@@ -14,6 +14,7 @@ import android.view.Window;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.Log;
 import org.chromium.ui.gfx.OverlayTransform;
 
 import java.lang.ref.WeakReference;
@@ -23,6 +24,8 @@ import java.lang.ref.WeakReference;
 final class OverlayTransformApiHelper
         implements AttachedSurfaceControl.OnBufferTransformHintChangedListener,
                 Window.OnFrameMetricsAvailableListener {
+    private static final String TAG = "OverlayTransformAH";
+
     private final WindowAndroid mWindowAndroid;
     private final WeakReference<Window> mWindow;
     private boolean mBufferTransformListenerAdded;
@@ -107,7 +110,15 @@ final class OverlayTransformApiHelper
         if (!mFrameMetricsListenerAdded) return;
         Window window = mWindow.get();
         if (window == null) return;
-        window.removeOnFrameMetricsAvailableListener(this);
+        try {
+            window.removeOnFrameMetricsAvailableListener(this);
+        } catch (IllegalArgumentException e) {
+            // Ignoring this unexplained exception. See crbug.com/367818761.
+            Log.w(
+                    TAG,
+                    "Ignoring IllegalArgumentException from removeOnFrameMetricsAvailableListener",
+                    e);
+        }
         mFrameMetricsListenerAdded = false;
     }
 

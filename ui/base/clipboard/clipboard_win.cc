@@ -757,8 +757,7 @@ void ClipboardWin::WriteSvg(std::string_view markup) {
 }
 
 void ClipboardWin::WriteRTF(std::string_view rtf) {
-  WriteData(ClipboardFormatType::RtfType(),
-            base::as_bytes(base::make_span(rtf)));
+  WriteData(ClipboardFormatType::RtfType(), base::as_byte_span(rtf));
 }
 
 void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
@@ -830,7 +829,7 @@ void ClipboardWin::WriteClipboardHistory() {
   DWORD value = 0;
   WriteData(
       ClipboardFormatType::ClipboardHistoryType(),
-      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
 }
 
 void ClipboardWin::WriteUploadCloudClipboard() {
@@ -839,7 +838,7 @@ void ClipboardWin::WriteUploadCloudClipboard() {
   DWORD value = 0;
   WriteData(
       ClipboardFormatType::UploadCloudClipboardType(),
-      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
 }
 
 void ClipboardWin::WriteConfidentialDataForPassword() {
@@ -848,10 +847,10 @@ void ClipboardWin::WriteConfidentialDataForPassword() {
   DWORD value = 0;
   WriteData(
       ClipboardFormatType::ClipboardHistoryType(),
-      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
   WriteData(
       ClipboardFormatType::UploadCloudClipboardType(),
-      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+      base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
 }
 
 std::vector<uint8_t> ClipboardWin::ReadPngInternal(

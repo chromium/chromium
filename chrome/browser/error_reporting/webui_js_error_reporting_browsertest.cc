@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
@@ -24,6 +25,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -129,6 +131,8 @@ class WebUIJSErrorReportingTest : public InProcessBrowserTest {
  public:
   WebUIJSErrorReportingTest() : error_url_(chrome::kChromeUIWebUIJsErrorURL) {
     CHECK(error_url_.is_valid());
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebUIJSErrorReportingExtended);
   }
 
   void SetUpOnMainThread() override {
@@ -140,6 +144,7 @@ class WebUIJSErrorReportingTest : public InProcessBrowserTest {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   // NoErrorsAfterNavigation needs a second embedded test server to serve up
   // its error page, since embedded_test_server() is in use by the
   // MockCrashEndpoint.
@@ -172,8 +177,11 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
       browser()->tab_strip_model()->GetActiveWebContents();
   // Trigger uncaught exception. Simulating mouse clicks on a button requires
   // there to not be CSP on the JavaScript, so use accesskeys instead.
+  // On mac, the accesskey is activated by Ctrl+Option+Key. On other platforms,
+  // the accesskey is activate by Alt+Key.
+  constexpr bool press_ctrl = BUILDFLAG(IS_MAC);
   content::SimulateKeyPress(web_contents, ui::DomKey::NONE, ui::DomCode::US_T,
-                            ui::VKEY_T, /*control=*/false, /*shift=*/false,
+                            ui::VKEY_T, press_ctrl, /*shift=*/false,
                             /*alt=*/true, /*command=*/false);
   report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(2));
@@ -187,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   endpoint.clear_last_report();
   // Trigger console.error call.
   content::SimulateKeyPress(web_contents, ui::DomKey::NONE, ui::DomCode::US_L,
-                            ui::VKEY_L, /*control=*/false, /*shift=*/false,
+                            ui::VKEY_L, press_ctrl, /*shift=*/false,
                             /*alt=*/true, /*command=*/false);
   report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(3));
@@ -202,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   endpoint.clear_last_report();
   // Trigger unhandled promise rejection.
   content::SimulateKeyPress(web_contents, ui::DomKey::NONE, ui::DomCode::US_P,
-                            ui::VKEY_P, /*control=*/false, /*shift=*/false,
+                            ui::VKEY_P, press_ctrl, /*shift=*/false,
                             /*alt=*/true, /*command=*/false);
   report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(4));

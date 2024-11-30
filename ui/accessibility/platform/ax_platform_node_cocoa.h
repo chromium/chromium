@@ -80,6 +80,16 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // essentially tests the deprecated API.
 - (NSMutableArray*)internalAccessibilityAttributeNames;
 
+// Returns YES if `method` has been implemented in the transition to the new
+// accessibility API, and is supported by this node (based on its role).
+- (BOOL)supportsNewAccessibilityAPIMethod:(NSString*)method;
+
+// The new NSAccessibility API is method-based, but the old NSAccessibility
+// is attribute-based. For every method, there is a corresponding attribute.
+// This function returns the map between the methods and the attributes
+// for purposes of migrating to the new API.
++ (NSDictionary*)newAccessibilityAPIMethodToAttributeMap;
+
 // Returns YES if `attribute`'s value is available through the new Cocoa
 // accessibility API.
 + (BOOL)isAttributeAvailableThroughNewAccessibilityAPI:(NSString*)attribute;

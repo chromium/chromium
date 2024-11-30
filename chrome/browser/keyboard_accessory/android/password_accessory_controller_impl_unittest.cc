@@ -114,6 +114,7 @@ using IsExactMatch = autofill::UserInfo::IsExactMatch;
 using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 constexpr char kExampleSite[] = "https://example.com";
+constexpr char kExampleAndroidApp[] = "android://hash@com.example.android";
 constexpr char kExampleHttpSite[] = "http://example.com";
 constexpr char16_t kExampleHttpSite16[] = u"http://example.com";
 constexpr char kExampleSiteMobile[] = "https://m.example.com";
@@ -230,6 +231,10 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
   MOCK_METHOD(void,
               OfferPlusAddressCreation,
               (const url::Origin&, bool, autofill::PlusAddressCallback),
+              (override));
+  MOCK_METHOD(void,
+              TriggerPlusAddressUserPerceptionSurvey,
+              (plus_addresses::hats::SurveyType),
               (override));
 };
 
@@ -1562,6 +1567,47 @@ TEST_F(PasswordAccessoryControllerTest,
        ShowsAcknowledgementBeforeFillingGroupedPassword) {
   CreateSheetController();
 
+  PasswordForm form;
+  form.username_value = u"Ben";
+  form.password_value = u"S3cur3";
+  form.signon_realm = kExampleAndroidApp;
+  form.match_type = PasswordForm::MatchType::kGrouped;
+  form.app_display_name = "Example android app";
+  std::vector<PasswordForm> matches = {form};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/true);
+
+  AccessorySheetField selected_field =
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
+          .SetDisplayText(u"S3cur3")
+          .SetIsObfuscated(true)
+          .SetSelectable(true)
+          .Build();
+
+  // Should not call `driver()->FillIntoFocusedField` yet. Should show ack sheet
+  // instead.
+  base::OnceCallback<void(bool)> callback;
+  EXPECT_CALL(*grouped_credential_sheet_test_helper.jni_bridge(),
+              Show(_, form.app_display_name));
+  EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+
+  // Ack sheet is accepted; should call `driver()->FillIntoFocusedField` now.
+  EXPECT_CALL(*driver(), FillIntoFocusedField);
+  grouped_credential_sheet_test_helper.DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       DoesNotFillIfAcknowledgementDeclinedForGroupedPassword) {
+  CreateSheetController();
+
   std::vector<PasswordForm> matches = {CreateEntry(
       "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kGrouped)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
@@ -1587,9 +1633,10 @@ TEST_F(PasswordAccessoryControllerTest,
   EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 
-  // Ack sheet is accepted; should call `driver()->FillIntoFocusedField` now.
-  EXPECT_CALL(*driver(), FillIntoFocusedField);
-  grouped_credential_sheet_test_helper.DismissSheet(/*accepted=*/true);
+  // Ack sheet is dismissed; should not call `driver()->FillIntoFocusedField`.
+  EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
+  grouped_credential_sheet_test_helper.DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kIgnore);
 }
 
 TEST_F(PasswordAccessoryControllerTest,
@@ -1644,7 +1691,6 @@ TEST_F(PasswordAccessoryControllerTest,
 
   // Should not call `driver()->FillIntoFocusedField` yet. Should show ack sheet
   // instead.
-  base::OnceCallback<void(bool)> callback;
   EXPECT_CALL(*grouped_credential_sheet_test_helper.jni_bridge(), Show);
   EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
@@ -1654,7 +1700,8 @@ TEST_F(PasswordAccessoryControllerTest,
 
   // Ack sheet is accepted; should call `driver()->FillIntoFocusedField` now.
   EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
-  grouped_credential_sheet_test_helper.DismissSheet(/*accepted=*/true);
+  grouped_credential_sheet_test_helper.DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
 }
 
 TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
@@ -1709,6 +1756,9 @@ TEST_F(PasswordAccessoryControllerTest, FillsPlusAddressSuggestion) {
       FocusedFieldType::kFillableUsernameField,
       /*is_field_eligible_for_manual_generation=*/false);
 
+  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey(
+                                     plus_addresses::hats::SurveyType::
+                                         kFilledPlusAddressViaManualFallack));
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(
                   false, Eq(plus_addresses::test::kFakePlusAddressU16)));

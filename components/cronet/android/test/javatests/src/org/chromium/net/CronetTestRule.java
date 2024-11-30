@@ -720,10 +720,6 @@ public class CronetTestRule implements TestRule {
                     break;
             }
         }
-
-        private void checkImplClass(CronetEngine engine, Class expectedClass) {
-            assertThat(engine).isInstanceOf(expectedClass);
-        }
     }
 
     @Nullable
@@ -736,12 +732,5 @@ public class CronetTestRule implements TestRule {
     private static <T extends Annotation> T getTestClassAnnotation(
             Description description, Class<T> clazz) {
         return description.getTestClass().getAnnotation(clazz);
-    }
-
-    private static String safeGetIgnoreReason(IgnoreFor ignoreAnnotation) {
-        if (ignoreAnnotation == null) {
-            return "";
-        }
-        return ignoreAnnotation.reason();
     }
 }

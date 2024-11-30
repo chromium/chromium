@@ -30,6 +30,7 @@
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
@@ -193,13 +194,6 @@ SessionImpl::SessionImpl(
       optimization_guide_logger_(optimization_guide_logger),
       model_quality_uploader_service_(model_quality_uploader_service),
       sampling_params_(ResolveSamplingParams(config_params, on_device_opts)) {
-  if (config_params && config_params->on_device_execution_timeout) {
-    on_device_execution_timeout_ =
-        *(config_params->on_device_execution_timeout);
-  } else {
-    on_device_execution_timeout_ =
-        features::GetOnDeviceModelTimeForInitialResponse();
-  }
   if (on_device_opts && on_device_opts->ShouldUse()) {
     on_device_state_.emplace(std::move(*on_device_opts), this);
     // Prewarm the initial session to make sure the service is started.
@@ -295,9 +289,11 @@ void SessionImpl::Score(const std::string& text,
     std::move(callback).Run(std::nullopt);
     return;
   }
-  on_device_state_->session->Score(text, base::BindOnce([](float score) {
-                                           return std::optional<float>(score);
-                                         }).Then(std::move(callback)));
+  on_device_state_->session->Score(
+      text,
+      base::BindOnce([](float score) { return std::optional<float>(score); })
+          .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                            std::nullopt)));
 }
 
 void SessionImpl::ExecuteModel(
@@ -336,7 +332,7 @@ void SessionImpl::ExecuteModel(
     CancelPendingResponse(ExecuteModelResult::kCancelled);
     DestroyOnDeviceState();
     execute_remote_fn_.Run(
-        feature_, *last_message_, on_device_execution_timeout_,
+        feature_, *last_message_, std::nullopt,
         /*log_ai_data_request=*/nullptr,
         base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
                        std::move(callback)));
@@ -422,9 +418,6 @@ void SessionImpl::ExecuteModel(
 
   on_device_state_->log_ai_data_request = std::move(log_ai_data_request);
   on_device_state_->start = base::TimeTicks::Now();
-  on_device_state_->timer_for_first_response.Start(
-      FROM_HERE, on_device_execution_timeout_,
-      base::BindOnce(&SessionImpl::OnSessionTimedOut, base::Unretained(this)));
 
   auto options = on_device_model::mojom::InputOptions::New();
   options->input = std::move(input->input);
@@ -481,8 +474,6 @@ void SessionImpl::BeginRequestExecution(
 
 // on_device_model::mojom::StreamingResponder:
 void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
-  on_device_state_->timer_for_first_response.Stop();
-
   proto::OnDeviceModelServiceResponse* logged_response =
       on_device_state_->MutableLoggedResponse();
 
@@ -530,9 +521,6 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
 
 void SessionImpl::OnComplete(
     on_device_model::mojom::ResponseSummaryPtr summary) {
-  // Stop timer, just in case we didn't already via OnResponse().
-  on_device_state_->timer_for_first_response.Stop();
-
   proto::OnDeviceModelServiceResponse* logged_response =
       on_device_state_->MutableLoggedResponse();
   LogResponseHasRepeats(feature_, logged_response->has_repeats());
@@ -778,8 +766,8 @@ void SessionImpl::SendSuccessCompletionCallback(
                          success_response_metadata);
     on_device_state_->MutableLoggedResponse()->set_status(
         proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
-    log_entry = std::make_unique<ModelQualityLogEntry>(
-        model_quality_uploader_service_);
+    log_entry =
+        std::make_unique<ModelQualityLogEntry>(model_quality_uploader_service_);
     log_entry->log_ai_data_request()->MergeFrom(
         *on_device_state_->log_ai_data_request);
     std::string model_execution_id = GenerateExecutionId();
@@ -804,11 +792,6 @@ bool SessionImpl::ShouldUseOnDeviceModel() const {
   return on_device_state_ && on_device_state_->opts.model_client->ShouldUse();
 }
 
-void SessionImpl::OnSessionTimedOut() {
-  on_device_state_->opts.model_client->OnSessionTimedOut();
-  DestroyOnDeviceStateAndFallbackToRemote(ExecuteModelResult::kTimedOut);
-}
-
 void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
     ExecuteModelResult result) {
   if (on_device_state_->histogram_logger) {
@@ -818,8 +801,7 @@ void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
   auto callback = std::move(on_device_state_->callback);
   DestroyOnDeviceState();
   execute_remote_fn_.Run(
-      feature_, *last_message_, on_device_execution_timeout_,
-      std::move(log_ai_data_request),
+      feature_, *last_message_, std::nullopt, std::move(log_ai_data_request),
       base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
                      std::move(callback)));
 }
@@ -860,8 +842,7 @@ void SessionImpl::RunTextSafetyRemoteFallbackAndCompletionCallback(
   ts_request_log->set_url(ts_request->url());
 
   execute_remote_fn_.Run(
-      ModelBasedCapabilityKey::kTextSafety, *ts_request,
-      on_device_execution_timeout_,
+      ModelBasedCapabilityKey::kTextSafety, *ts_request, std::nullopt,
       /*log_ai_data_request=*/nullptr,
       base::BindOnce(&SessionImpl::OnTextSafetyRemoteResponse,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
@@ -954,7 +935,6 @@ void SessionImpl::OnDeviceState::ResetRequestState() {
   callback.Reset();
   current_response.clear();
   start = base::TimeTicks();
-  timer_for_first_response.Stop();
   histogram_logger.reset();
   log_ai_data_request.reset();
   num_unchecked_response_tokens = 0;
@@ -978,13 +958,16 @@ SessionImpl::ExecuteModelHistogramLogger::~ExecuteModelHistogramLogger() {
 void SessionImpl::GetSizeInTokens(
     const std::string& text,
     OptimizationGuideModelSizeInTokenCallback callback) {
+  // TODO(crbug.com/377539962): Return nullopt on error instead.
   if (!ShouldUseOnDeviceModel()) {
     std::move(callback).Run(0);
     return;
   }
   auto input = on_device_model::mojom::Input::New();
   input->pieces.push_back(text);
-  GetOrCreateSession().GetSizeInTokens(std::move(input), std::move(callback));
+  GetOrCreateSession().GetSizeInTokens(
+      std::move(input),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
 }
 
 void SessionImpl::GetExecutionInputSizeInTokens(
@@ -1013,6 +996,7 @@ void SessionImpl::GetSizeInTokensInternal(
     const google::protobuf::MessageLite& request,
     OptimizationGuideModelSizeInTokenCallback callback,
     bool want_input_context) {
+  // TODO(crbug.com/377539962): Return nullopt on error instead.
   if (!ShouldUseOnDeviceModel()) {
     std::move(callback).Run(0);
     return;
@@ -1023,8 +1007,9 @@ void SessionImpl::GetSizeInTokensInternal(
     std::move(callback).Run(0);
     return;
   }
-  GetOrCreateSession().GetSizeInTokens(std::move(input->input),
-                                       std::move(callback));
+  GetOrCreateSession().GetSizeInTokens(
+      std::move(input->input),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
 }
 
 }  // namespace optimization_guide

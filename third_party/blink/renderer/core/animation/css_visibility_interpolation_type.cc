@@ -68,7 +68,6 @@ class UnderlyingVisibilityChecker final
 
   ~UnderlyingVisibilityChecker() final = default;
 
-
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
@@ -114,7 +113,7 @@ InterpolationValue CSSVisibilityInterpolationType::MaybeConvertNeutral(
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double underlying_fraction =
       To<InterpolableNumber>(*underlying.interpolable_value)
-          .Value(CSSToLengthConversionData());
+          .Value(CSSToLengthConversionData(/*element=*/nullptr));
   EVisibility underlying_visibility =
       To<CSSVisibilityNonInterpolableValue>(*underlying.non_interpolable_value)
           .Visibility(underlying_fraction);

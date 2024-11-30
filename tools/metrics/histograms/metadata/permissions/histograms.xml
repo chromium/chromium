@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Chip.TimeToInteraction" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Engagement.Accepted" units="%"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -544,13 +544,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.GetLastCommittedOriginAsURL.IsFileURL"
-    enum="Boolean" expires_after="2024-10-30">
+    enum="Boolean" expires_after="2025-10-30">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Recorded whenever a RenderFrameHost is used to fetch an origin for
     permission verification on Android. This histogram is needed to verify if
     the file url override rule is still needed.
+
+    Warning: this histogram was expired from 2024-10-03 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -594,6 +597,17 @@ chromium-metrics-reviews@google.com.
     ignored or not.
   </summary>
   <token key="PermissionType" variants="Top2PermissionTypes"/>
+</histogram>
+
+<histogram
+    name="Permissions.OneTimePermission.Android.NegativeButtonOutOfScreen"
+    enum="Boolean" expires_after="2025-04-13">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever the negative button is shown on one time permission prompt
+    Records whether the button is out of screen or not. Android only.
+  </summary>
 </histogram>
 
 <histogram name="Permissions.OneTimePermission.{PermissionType}.Event"
@@ -725,7 +739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Accepted.PriorIgnoreCount2" units="units"
-    expires_after="2024-10-31">
+    expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -734,11 +748,14 @@ chromium-metrics-reviews@google.com.
     user explicitly set the permission state or cleared history / site data and
     prior to the accept. The suffix of the histogram indicates which particular
     permission.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Permissions.Prompt.AcceptedOnce" enum="PermissionRequestType"
-    expires_after="2024-10-31">
+    expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -746,11 +763,14 @@ chromium-metrics-reviews@google.com.
     prompt. Tracks the permission bubbles (merged and non-merged) that are
     accepted once. Merged bubbles are considered accepted if all permissions are
     allowed.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Permissions.Prompt.AcceptedOnce.PriorDismissCount2"
-    units="units" expires_after="2024-10-31">
+    units="units" expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -759,11 +779,14 @@ chromium-metrics-reviews@google.com.
     the last time the user explicitly set the permission state or cleared
     history / site data and prior to the accept. The suffix of the histogram
     indicates which particular permission.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Permissions.Prompt.AcceptedOnce.PriorIgnoreCount2"
-    units="units" expires_after="2024-10-31">
+    units="units" expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -772,6 +795,9 @@ chromium-metrics-reviews@google.com.
     last time the user explicitly set the permission state or cleared history /
     site data and prior to the accept. The suffix of the histogram indicates
     which particular permission.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -786,7 +812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Denied.PriorDismissCount2" units="units"
-    expires_after="2024-10-31">
+    expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -795,11 +821,14 @@ chromium-metrics-reviews@google.com.
     the user explicitly set the permission state or cleared history / site data
     and prior to the accept. The suffix of the histogram indicates which
     particular permission.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Permissions.Prompt.Denied.PriorIgnoreCount2" units="units"
-    expires_after="2024-10-31">
+    expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -808,6 +837,9 @@ chromium-metrics-reviews@google.com.
     user explicitly set the permission state or cleared history / site data and
     prior to the accept. The suffix of the histogram indicates which particular
     permission.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -824,7 +856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Dismissed.PriorDismissCount2" units="units"
-    expires_after="2024-07-09">
+    expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -833,11 +865,14 @@ chromium-metrics-reviews@google.com.
     time the user explicitly set the permission state or cleared history / site
     data and prior to the dismiss. The suffix of the histogram indicates which
     particular permission.
+
+    Warning: this histogram was expired from 2024-07-09 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Permissions.Prompt.Dismissed.PriorIgnoreCount2" units="units"
-    expires_after="2024-10-31">
+    expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -846,6 +881,9 @@ chromium-metrics-reviews@google.com.
     the user explicitly set the permission state or cleared history / site data
     and prior to the dismiss. The suffix of the histogram indicates which
     particular permission.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -865,7 +903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Ignored.PriorDismissCount2" units="units"
-    expires_after="2024-10-31">
+    expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -874,11 +912,14 @@ chromium-metrics-reviews@google.com.
     the user explicitly set the permission state or cleared history / site data
     and prior to the ignore. The suffix of the histogram indicates which
     particular permission.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Permissions.Prompt.Ignored.PriorIgnoreCount2" units="units"
-    expires_after="2024-10-31">
+    expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -887,11 +928,14 @@ chromium-metrics-reviews@google.com.
     user explicitly set the permission state or cleared history / site data and
     prior to the ignore. The suffix of the histogram indicates which particular
     permission.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Permissions.Prompt.Notifications.EnabledAppLevel"
-    enum="Boolean" expires_after="2024-12-24">
+    enum="Boolean" expires_after="2025-10-31">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -997,7 +1041,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.{PermissionType}.{Disposition}.Dismissed.Method"
-    enum="PermissionPromptDismissMethod" expires_after="2024-12-31">
+    enum="PermissionPromptDismissMethod" expires_after="2025-10-31">
   <owner>fjacky@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1106,7 +1150,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.{PermissionType}.{Disposition}.{Action}.{ButtonClick}"
-    enum="Boolean" expires_after="2024-10-31">
+    enum="Boolean" expires_after="2025-10-31">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1114,6 +1158,9 @@ chromium-metrics-reviews@google.com.
     &quot;Manage&quot; buttons on the quiet chip of type {PermissionType} with
     {Disposition} disposition. Recorded when the permission prompt gets resolved
     with {Action} action and only for the quiet chip.
+
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
+    be missing.
   </summary>
   <token key="ButtonClick">
     <variant name="DidClickLearnMore"/>
@@ -1139,7 +1186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.{PermissionType}.{Gesture}.Attempt"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-12-08">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>Recorded when a permission prompt creation is in progress.</summary>
@@ -1211,7 +1258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.QuietPrompt.Preignore" enum="PermissionType"
-    expires_after="2024-11-15">
+    expires_after="2025-11-15">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1313,7 +1360,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Permissions.Usage.ElapsedTimeSinceGrant.{PermissionType}.{Source}"
-    units="seconds" expires_after="2024-12-08">
+    units="seconds" expires_after="2025-10-31">
   <owner>fjacky@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1327,7 +1374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Usage.ElapsedTimeSinceLastUsage.{PermissionType}"
-    enum="Duration" expires_after="2025-03-09">
+    units="ms" expires_after="2025-03-09">
   <owner>lyf@chromium.org</owner>
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -1336,7 +1383,9 @@ chromium-metrics-reviews@google.com.
     buckets of time between two adjacent permission usages.
   </summary>
   <token key="PermissionType">
+    <variant name="AudioCapture"/>
     <variant name="Geolocation"/>
+    <variant name="VideoCapture"/>
   </token>
 </histogram>
 

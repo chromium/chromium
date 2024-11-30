@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static android.app.Activity.OVERRIDE_TRANSITION_CLOSE;
+import static android.app.Activity.OVERRIDE_TRANSITION_OPEN;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
@@ -13,6 +15,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -24,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
@@ -42,6 +46,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
@@ -54,7 +60,9 @@ import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ImmutableWeakReference;
@@ -104,12 +112,16 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();
+    protected final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier =
+            new OneshotSupplierImpl<>();
+
     private NightModeStateProvider mNightModeStateProvider;
     private LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
     private ServiceTracingProxyProvider mServiceTracingProxyProvider;
     private InsetObserver mInsetObserver;
-    private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
+    private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private EdgeToEdgeManager mEdgeToEdgeManager;
+    private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -157,11 +169,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         BundleUtils.restoreLoadedSplits(savedInstanceState);
 
-        mInsetObserver = createInsetObserver();
-        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
-            mEdgeToEdgeLayoutCoordinator = getEdgeToEdgeLayoutCoordinator();
-        }
-        mEdgeToEdgeManager = new EdgeToEdgeManager(this, supportsEdgeToEdge());
+        mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(getWindow());
 
         mModalDialogManagerSupplier.set(createModalDialogManager());
 
@@ -176,6 +184,57 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
 
         setDefaultTaskDescription();
+
+        mInsetObserver = createInsetObserver();
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            mEdgeToEdgeLayoutCoordinator = ensureEdgeToEdgeLayoutCoordinator();
+        }
+        mEdgeToEdgeManager =
+                new EdgeToEdgeManager(
+                        this,
+                        mEdgeToEdgeStateProvider,
+                        createSystemBarColorHelperSupplier(),
+                        supportsEdgeToEdge());
+
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            initializeSystemBarColors();
+        }
+
+        if (VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE
+                && ChromeFeatureList.sEnableXAxisActivityTransition.isEnabled()) {
+            overrideActivityTransition(
+                    OVERRIDE_TRANSITION_OPEN,
+                    R.anim.shared_x_axis_open_enter,
+                    R.anim.shared_x_axis_open_exit,
+                    SemanticColorUtils.getDefaultBgColor(this));
+
+            overrideActivityTransition(
+                    OVERRIDE_TRANSITION_CLOSE,
+                    R.anim.shared_x_axis_close_enter,
+                    R.anim.shared_x_axis_close_exit,
+                    SemanticColorUtils.getDefaultBgColor(this));
+        }
+    }
+
+    /**
+     * Returns a one-shot supplier for the {@link SystemBarColorHelper} that's appropriate for the
+     * activity.
+     */
+    protected OneshotSupplier<SystemBarColorHelper> createSystemBarColorHelperSupplier() {
+        if (mEdgeToEdgeLayoutCoordinator != null) {
+            mSystemBarColorHelperSupplier.set(mEdgeToEdgeLayoutCoordinator);
+        }
+        return mSystemBarColorHelperSupplier;
+    }
+
+    /** Set the default colors of the system bars for this activity. */
+    protected void initializeSystemBarColors() {
+        // TODO(crbug.com/379174458): Set color from Theme.
+        final @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(this);
+        mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper().setStatusBarColor(defaultBgColor);
+        mEdgeToEdgeManager
+                .getEdgeToEdgeSystemBarColorHelper()
+                .setNavigationBarColor(defaultBgColor);
     }
 
     @Override
@@ -189,6 +248,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             mEdgeToEdgeLayoutCoordinator.destroy();
             mEdgeToEdgeLayoutCoordinator = null;
         }
+        mEdgeToEdgeManager.destroy();
         super.onDestroy();
     }
 
@@ -272,7 +332,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         return null;
     }
 
-    private EdgeToEdgeLayoutCoordinator getEdgeToEdgeLayoutCoordinator() {
+    @VisibleForTesting
+    public EdgeToEdgeLayoutCoordinator ensureEdgeToEdgeLayoutCoordinator() {
         if (mEdgeToEdgeLayoutCoordinator == null) {
             mEdgeToEdgeLayoutCoordinator = new EdgeToEdgeLayoutCoordinator(this, mInsetObserver);
         }
@@ -348,6 +409,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // Note that if you're adding new overlays here, it's quite likely they're needed
         // in org.chromium.chrome.browser.WarmupManager#applyContextOverrides for Custom Tabs
         // UI that's pre-inflated using a themed application context as part of CCT warmup.
+        // Note: this should be called before any calls to `Window#getDecorView`.
         DynamicColors.applyToActivityIfAvailable(this);
 
         DeferredStartupHandler.getInstance()
@@ -435,7 +497,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             stub.inflate();
         } else if (shouldContentFitWindowInsets()) {
             FrameLayout baseLayout = new FrameLayout(this);
-            super.setContentView(getEdgeToEdgeLayoutCoordinator().wrapContentView(baseLayout));
+            super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(baseLayout));
             getLayoutInflater().inflate(layoutResID, baseLayout, /* attachToRoot= */ true);
         } else {
             super.setContentView(layoutResID);
@@ -452,7 +514,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         } else if (shouldContentFitWindowInsets()) {
-            super.setContentView(getEdgeToEdgeLayoutCoordinator().wrapContentView(view));
+            super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view));
         } else {
             super.setContentView(view);
         }
@@ -469,7 +531,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             linearLayout.setLayoutParams(params);
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         } else if (shouldContentFitWindowInsets()) {
-            super.setContentView(getEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
+            super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
         } else {
             super.setContentView(view, params);
         }
@@ -492,7 +554,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             setAutomotiveToolbarBackButtonAction();
             automotiveLayout.addView(view, params);
         } else if (shouldContentFitWindowInsets()) {
-            super.setContentView(getEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
+            super.setContentView(ensureEdgeToEdgeLayoutCoordinator().wrapContentView(view, params));
         } else {
             super.addContentView(view, params);
         }
@@ -518,7 +580,12 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * edge-to-edge state.
      */
     protected EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
-        return mEdgeToEdgeManager.getEdgeToEdgeStateProvider();
+        return mEdgeToEdgeStateProvider;
+    }
+
+    /** Returns the {@link EdgeToEdgeManager} for access to core edge-to-edge logic. */
+    protected EdgeToEdgeManager getEdgeToEdgeManager() {
+        return mEdgeToEdgeManager;
     }
 
     /** Returns the {@link InsetObserver} for observing changes to the system insets. */

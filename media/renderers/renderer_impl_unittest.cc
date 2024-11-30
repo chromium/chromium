@@ -373,11 +373,11 @@ TEST_F(RendererImplTest, NoStreams) {
   InitializeAndExpect(PIPELINE_ERROR_COULD_NOT_RENDER);
 }
 
-TEST_F(RendererImplTest, Destroy_BeforeInitialize) {
+TEST_F(RendererImplTest, DestroyBeforeInitialize) {
   Destroy();
 }
 
-TEST_F(RendererImplTest, Destroy_PendingInitialize) {
+TEST_F(RendererImplTest, DestroyPendingInitialize) {
   CreateAudioAndVideoStream();
 
   SetAudioRendererInitializeExpectations(PIPELINE_OK);
@@ -390,7 +390,7 @@ TEST_F(RendererImplTest, Destroy_PendingInitialize) {
   Destroy();
 }
 
-TEST_F(RendererImplTest, Destroy_PendingInitializeWithoutCdm) {
+TEST_F(RendererImplTest, DestroyPendingInitializeWithoutCdm) {
   CreateAudioStream();
   CreateEncryptedVideoStream();
 
@@ -404,7 +404,7 @@ TEST_F(RendererImplTest, Destroy_PendingInitializeWithoutCdm) {
   Destroy();
 }
 
-TEST_F(RendererImplTest, Destroy_PendingInitializeAfterSetCdm) {
+TEST_F(RendererImplTest, DestroyPendingInitializeAfterSetCdm) {
   CreateAudioStream();
   CreateEncryptedVideoStream();
 
@@ -438,26 +438,26 @@ TEST_F(RendererImplTest, InitializeWithAudioVideo) {
   InitializeWithAudioAndVideo();
 }
 
-TEST_F(RendererImplTest, InitializeWithAudio_Failed) {
+TEST_F(RendererImplTest, InitializeWithAudioFailed) {
   CreateAudioStream();
   SetAudioRendererInitializeExpectations(PIPELINE_ERROR_INITIALIZATION_FAILED);
   InitializeAndExpect(PIPELINE_ERROR_INITIALIZATION_FAILED);
 }
 
-TEST_F(RendererImplTest, InitializeWithVideo_Failed) {
+TEST_F(RendererImplTest, InitializeWithVideoFailed) {
   CreateVideoStream();
   SetVideoRendererInitializeExpectations(PIPELINE_ERROR_INITIALIZATION_FAILED);
   InitializeAndExpect(PIPELINE_ERROR_INITIALIZATION_FAILED);
 }
 
-TEST_F(RendererImplTest, InitializeWithAudioVideo_AudioRendererFailed) {
+TEST_F(RendererImplTest, InitializeWithAudioVideoAudioRendererFailed) {
   CreateAudioAndVideoStream();
   SetAudioRendererInitializeExpectations(PIPELINE_ERROR_INITIALIZATION_FAILED);
   // VideoRenderer::Initialize() should not be called.
   InitializeAndExpect(PIPELINE_ERROR_INITIALIZATION_FAILED);
 }
 
-TEST_F(RendererImplTest, InitializeWithAudioVideo_VideoRendererFailed) {
+TEST_F(RendererImplTest, InitializeWithAudioVideoVideoRendererFailed) {
   CreateAudioAndVideoStream();
   SetAudioRendererInitializeExpectations(PIPELINE_OK);
   SetVideoRendererInitializeExpectations(PIPELINE_ERROR_INITIALIZATION_FAILED);
@@ -470,7 +470,7 @@ TEST_F(RendererImplTest, SetCdmBeforeInitialize) {
   SetCdmAndExpect(true);
 }
 
-TEST_F(RendererImplTest, SetCdmAfterInitialize_ClearStream) {
+TEST_F(RendererImplTest, SetCdmAfterInitializeClearStream) {
   InitializeWithAudioAndVideo();
   EXPECT_EQ(PIPELINE_OK, initialization_status_);
 
@@ -479,7 +479,7 @@ TEST_F(RendererImplTest, SetCdmAfterInitialize_ClearStream) {
   SetCdmAndExpect(true);
 }
 
-TEST_F(RendererImplTest, SetCdmAfterInitialize_EncryptedStream_Success) {
+TEST_F(RendererImplTest, SetCdmAfterInitializeEncryptedStreamSuccess) {
   CreateAudioStream();
   CreateEncryptedVideoStream();
 
@@ -493,7 +493,7 @@ TEST_F(RendererImplTest, SetCdmAfterInitialize_EncryptedStream_Success) {
   EXPECT_EQ(PIPELINE_OK, initialization_status_);
 }
 
-TEST_F(RendererImplTest, SetCdmAfterInitialize_EncryptedStream_Failure) {
+TEST_F(RendererImplTest, SetCdmAfterInitializeEncryptedStreamFailure) {
   CreateAudioStream();
   CreateEncryptedVideoStream();
 

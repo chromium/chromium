@@ -94,12 +94,12 @@ class VectorMathPerfTest : public testing::Test {
 
 // Benchmarks for each optimized vector_math::FMAC() method.
 // Benchmark FMAC_C().
-TEST_F(VectorMathPerfTest, FMAC_unoptimized) {
+TEST_F(VectorMathPerfTest, FMACUnoptimized) {
   RunBenchmark(vector_math::FMAC_C, true, "_fmac", "unoptimized");
 }
 
 // Benchmark FMAC_FUNC() with unaligned size.
-TEST_F(VectorMathPerfTest, FMAC_optimized_unaligned) {
+TEST_F(VectorMathPerfTest, FMACOptimizedUnaligned) {
   ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                  sizeof(float)), 0U);
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -115,7 +115,7 @@ TEST_F(VectorMathPerfTest, FMAC_optimized_unaligned) {
 }
 
 // Benchmark FMAC_FUNC() with aligned size.
-TEST_F(VectorMathPerfTest, FMAC_optimized_aligned) {
+TEST_F(VectorMathPerfTest, FMACOptimizedAligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -132,12 +132,12 @@ TEST_F(VectorMathPerfTest, FMAC_optimized_aligned) {
 
 // Benchmarks for each optimized vector_math::FMUL() method.
 // Benchmark FMUL_C().
-TEST_F(VectorMathPerfTest, FMUL_unoptimized) {
+TEST_F(VectorMathPerfTest, FMULUnoptimized) {
   RunBenchmark(vector_math::FMUL_C, true, "_fmul", "unoptimized");
 }
 
 // Benchmark FMUL_FUNC() with unaligned size.
-TEST_F(VectorMathPerfTest, FMUL_optimized_unaligned) {
+TEST_F(VectorMathPerfTest, FMULOptimizedUnaligned) {
   ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                  sizeof(float)), 0U);
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -153,7 +153,7 @@ TEST_F(VectorMathPerfTest, FMUL_optimized_unaligned) {
 }
 
 // Benchmark FMUL_FUNC() with aligned size.
-TEST_F(VectorMathPerfTest, FMUL_optimized_aligned) {
+TEST_F(VectorMathPerfTest, FMULOptimizedAligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -170,13 +170,13 @@ TEST_F(VectorMathPerfTest, FMUL_optimized_aligned) {
 
 // Benchmarks for each optimized vector_math::EWMAAndMaxPower() method.
 // Benchmark EWMAAndMaxPower_C().
-TEST_F(VectorMathPerfTest, EWMAAndMaxPower_unoptimized) {
+TEST_F(VectorMathPerfTest, EWMAAndMaxPowerUnoptimized) {
   RunBenchmark(vector_math::EWMAAndMaxPower_C, kVectorSize,
                "_ewma_and_max_power", "unoptimized");
 }
 
 // Benchmark EWMAAndMaxPower_FUNC() with unaligned size.
-TEST_F(VectorMathPerfTest, EWMAAndMaxPower_optimized_unaligned) {
+TEST_F(VectorMathPerfTest, EWMAAndMaxPowerOptimizedUnaligned) {
   ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                  sizeof(float)), 0U);
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -195,7 +195,7 @@ TEST_F(VectorMathPerfTest, EWMAAndMaxPower_optimized_unaligned) {
 }
 
 // Benchmark EWMAAndMaxPower_FUNC() with aligned size.
-TEST_F(VectorMathPerfTest, EWMAAndMaxPower_optimized_aligned) {
+TEST_F(VectorMathPerfTest, EWMAAndMaxPowerOptimizedAligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
 #if defined(ARCH_CPU_X86_FAMILY)

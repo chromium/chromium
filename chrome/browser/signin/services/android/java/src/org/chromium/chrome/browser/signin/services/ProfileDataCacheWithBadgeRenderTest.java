@@ -14,11 +14,14 @@ import androidx.annotation.DrawableRes;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -26,7 +29,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
@@ -37,7 +40,12 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
-public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTestCase {
+public class ProfileDataCacheWithBadgeRenderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -52,20 +60,24 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     private ImageView mImageView;
     private ProfileDataCache mProfileDataCache;
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
     @Before
     public void setUp() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Activity activity = getActivity();
-                    mContentView = new FrameLayout(activity);
-                    mImageView = new ChromeImageView(activity);
+                    mContentView = new FrameLayout(sActivity);
+                    mImageView = new ChromeImageView(sActivity);
                     mContentView.addView(
                             mImageView,
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
-                    activity.setContentView(mContentView);
+                    sActivity.setContentView(mContentView);
                 });
     }
 
@@ -129,9 +141,9 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
                     mProfileDataCache =
                             badgeResId != 0
                                     ? ProfileDataCache.createWithDefaultImageSize(
-                                            getActivity(), badgeResId)
+                                            sActivity, badgeResId)
                                     : ProfileDataCache.createWithoutBadge(
-                                            getActivity(), R.dimen.user_picture_size);
+                                            sActivity, R.dimen.user_picture_size);
                 });
         CriteriaHelper.pollUiThread(
                 () -> {

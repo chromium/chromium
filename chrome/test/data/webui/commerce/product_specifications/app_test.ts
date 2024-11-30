@@ -124,6 +124,8 @@ suite('AppTest', () => {
   const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
   const router = TestMock.fromClass(Router);
 
+  const testId = 'abcdef01-2345-6789-abcd-ef0123456789';
+
   async function createAppElement(): Promise<ProductSpecificationsElement> {
     appElement = document.createElement('product-specifications-app');
 
@@ -281,7 +283,6 @@ suite('AppTest', () => {
   test('prioritizes id param over urls param', async () => {
     const specsSetUrls =
         [{url: 'https://example.com/'}, {url: 'https://example2.com/'}];
-    const testId = 'foo123';
     const specsSet =
         createSpecsSet({urls: specsSetUrls, uuid: {value: testId}});
     shoppingServiceApi.setResultFor(
@@ -310,6 +311,56 @@ suite('AppTest', () => {
     // Ensure that a specs set was not added for the `urls` search parameter.
     assertEquals(
         0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
+  });
+
+  suite('handles invalid IDs', () => {
+    test('too long', async () => {
+      const promiseValues = createAppPromiseValues({
+        idParam: 'abcdef01-2345-6789-abcd-ef01234567890',
+      });
+      await createAppElementWithPromiseValues(promiseValues);
+
+      assertEquals(1, router.getCallCount('getCurrentQuery'));
+      assertEquals(
+          0,
+          shoppingServiceApi.getCallCount('getProductSpecificationsSetByUuid'));
+    });
+
+    test('too short', async () => {
+      const promiseValues = createAppPromiseValues({
+        idParam: 'abcdef01-2345-6789-abcd-ef012345678',
+      });
+      await createAppElementWithPromiseValues(promiseValues);
+
+      assertEquals(1, router.getCallCount('getCurrentQuery'));
+      assertEquals(
+          0,
+          shoppingServiceApi.getCallCount('getProductSpecificationsSetByUuid'));
+    });
+
+    test('non-hex character', async () => {
+      const promiseValues = createAppPromiseValues({
+        idParam: 'abcdeg01-2345-6789-abcd-ef0123456789',
+      });
+      await createAppElementWithPromiseValues(promiseValues);
+
+      assertEquals(1, router.getCallCount('getCurrentQuery'));
+      assertEquals(
+          0,
+          shoppingServiceApi.getCallCount('getProductSpecificationsSetByUuid'));
+    });
+
+    test('wrong hyphenation', async () => {
+      const promiseValues = createAppPromiseValues({
+        idParam: 'abcdef0-12345-6789-abcd-ef0123456789',
+      });
+      await createAppElementWithPromiseValues(promiseValues);
+
+      assertEquals(1, router.getCallCount('getCurrentQuery'));
+      assertEquals(
+          0,
+          shoppingServiceApi.getCallCount('getProductSpecificationsSetByUuid'));
+    });
   });
 
   test('creates id for urls param', async () => {
@@ -349,6 +400,7 @@ suite('AppTest', () => {
           title: '',
           faviconUrl: {url: ''},
           thumbnailUrl: {url: ''},
+          previewText: '',
         }],
       }],
       specificationDescriptions: [
@@ -365,6 +417,7 @@ suite('AppTest', () => {
                     title: '',
                     faviconUrl: {url: ''},
                     thumbnailUrl: {url: ''},
+                    previewText: '',
                   }],
                 },
                 {
@@ -374,6 +427,7 @@ suite('AppTest', () => {
                     title: '',
                     faviconUrl: {url: ''},
                     thumbnailUrl: {url: ''},
+                    previewText: '',
                   }],
                 },
               ],
@@ -465,6 +519,7 @@ suite('AppTest', () => {
                       title: '',
                       faviconUrl: {url: ''},
                       thumbnailUrl: {url: ''},
+                      previewText: '',
                     }],
                   }],
                 },
@@ -510,6 +565,7 @@ suite('AppTest', () => {
                     title: '',
                     faviconUrl: {url: ''},
                     thumbnailUrl: {url: ''},
+                    previewText: '',
                   }],
                 },
               ],
@@ -587,6 +643,7 @@ suite('AppTest', () => {
                     title: '',
                     faviconUrl: {url: ''},
                     thumbnailUrl: {url: ''},
+                    previewText: '',
                   }],
                 },
               ],
@@ -627,6 +684,7 @@ suite('AppTest', () => {
                     title: '',
                     faviconUrl: {url: ''},
                     thumbnailUrl: {url: ''},
+                    previewText: '',
                   }],
                 },
               ],
@@ -769,6 +827,7 @@ suite('AppTest', () => {
                     title: '',
                     faviconUrl: {url: ''},
                     thumbnailUrl: {url: ''},
+                    previewText: '',
                   }],
                 },
               ],
@@ -810,6 +869,7 @@ suite('AppTest', () => {
                     title: '',
                     faviconUrl: {url: ''},
                     thumbnailUrl: {url: ''},
+                    previewText: '',
                   }],
                 },
               ],
@@ -834,7 +894,6 @@ suite('AppTest', () => {
 
     const specsSetUrls =
         [{url: 'https://example.com/1'}, {url: 'https://example.com/2'}];
-    const testId = '00000000-0000-0000-0000-000000000001';
     const specsSet =
         createSpecsSet({urls: specsSetUrls, uuid: {value: testId}});
     shoppingServiceApi.setResultFor(
@@ -939,7 +998,6 @@ suite('AppTest', () => {
       imageUrl: {url: 'http://example.com/image.png'},
     });
     const specsSetUrls = [{url: 'https://example.com/'}];
-    const testId = '00000000-0000-0000-0000-000000000001';
     const specsSet =
         createSpecsSet({urls: specsSetUrls, uuid: {value: testId}});
     shoppingServiceApi.setResultFor(
@@ -991,7 +1049,6 @@ suite('AppTest', () => {
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'http://example.com/image.png'},
     });
-    const testId = '00000000-0000-0000-0000-000000000001';
     const specsSet = createSpecsSet(
         {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
     shoppingServiceApi.setResultFor(
@@ -1123,7 +1180,6 @@ suite('AppTest', () => {
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'http://example.com/image.png'},
     });
-    const testId = '00000000-0000-0000-0000-000000000001';
     const promiseValues = createAppPromiseValues({
       idParam: testId,
       specs: createSpecs({
@@ -1170,7 +1226,6 @@ suite('AppTest', () => {
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'http://example.com/image.png'},
     });
-    const testId = '00000000-0000-0000-0000-000000000001';
     const promiseValues = createAppPromiseValues({
       idParam: testId,
       specs: createSpecs({
@@ -1254,7 +1309,6 @@ suite('AppTest', () => {
         productUrl: {url: 'https://example.com/'},
         imageUrl: {url: 'http://example.com/image.png'},
       });
-      const testId = '00000000-0000-0000-0000-000000000001';
       const promiseValues = createAppPromiseValues({
         idParam: testId,
         specs: createSpecs({
@@ -1404,7 +1458,6 @@ suite('AppTest', () => {
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'http://example.com/image.png'},
     });
-    const testId = '00000000-0000-0000-0000-000000000001';
     const promiseValues = createAppPromiseValues({
       idParam: testId,
       specs: createSpecs({
@@ -1581,7 +1634,6 @@ suite('AppTest', () => {
 
   test('updates table on url removal', async () => {
     const testUrl = 'https://example.com/';
-    const testId = 'foo';
     const promiseValues = createAppPromiseValues({
       urlsParam: [testUrl],
       specsSet: createSpecsSet({
@@ -1655,7 +1707,6 @@ suite('AppTest', () => {
 
   test('fire `url-order-update` event w/ id param', async () => {
     const specsSetUrls = [{url: 'https://0'}, {url: 'https://1'}];
-    const testId = 'foo123';
     const specsSet =
         createSpecsSet({urls: specsSetUrls, uuid: {value: testId}});
     shoppingServiceApi.setResultFor(
@@ -1699,7 +1750,7 @@ suite('AppTest', () => {
           'getProductSpecificationsSetByUuid',
           Promise.resolve({set: specsSet}));
 
-      const promiseValues = createAppPromiseValues({idParam: 'foo123'});
+      const promiseValues = createAppPromiseValues({idParam: testId});
       await createAppElementWithPromiseValues(promiseValues);
 
       assertEquals('fooName', appElement.$.header.subtitle);
@@ -1748,6 +1799,11 @@ suite('AppTest', () => {
       assertTrue(isVisible(appElement.$.specs));
     });
 
+    test('hides summary container when app loads', async () => {
+      const appElement = await createAppElement();
+      assertFalse(isVisible(appElement.$.summaryContainer));
+    });
+
     test('hides empty state after product selection', async () => {
       const url = 'https://example.com/';
       const productTabs = [{
@@ -1793,7 +1849,6 @@ suite('AppTest', () => {
 
     test('removing last column shows empty state', async () => {
       const testUrl = 'https://example.com/';
-      const testId = 'foo';
       const promiseValues = createAppPromiseValues({
         urlsParam: [testUrl],
         specsSet: createSpecsSet({
@@ -2098,7 +2153,7 @@ suite('AppTest', () => {
               isAllowedForEnterprise: true,
             },
           }));
-      createAppElement();
+      await createAppElement();
       await shoppingServiceApi.whenCalled(
           'getProductSpecificationsFeatureState');
 

@@ -45,7 +45,7 @@ Response BrowserHandler::Disable() {
 }
 
 Response BrowserHandler::GetWindowForTarget(
-    Maybe<std::string> target_id,
+    std::optional<std::string> target_id,
     int* out_window_id,
     std::unique_ptr<Browser::Bounds>* out_bounds) {
   auto agent_host =
@@ -115,8 +115,9 @@ Response BrowserHandler::SetWindowBounds(
   return Response::Success();
 }
 
-protocol::Response BrowserHandler::SetDockTile(Maybe<std::string> label,
-                                               Maybe<protocol::Binary> image) {
+protocol::Response BrowserHandler::SetDockTile(
+    std::optional<std::string> label,
+    std::optional<protocol::Binary> image) {
   return Response::Success();
 }
 

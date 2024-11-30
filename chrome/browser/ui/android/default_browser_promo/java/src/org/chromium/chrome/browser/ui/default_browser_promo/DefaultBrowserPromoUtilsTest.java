@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -78,7 +80,7 @@ public class DefaultBrowserPromoUtilsTest {
                         false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
-                        /* trackOcclusion= */ false);
+                        /* trackOcclusion= */ true);
         TrackerFactory.setTrackerForTests(mMockTracker);
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMockMessageDispatcher);
         SearchEngineChoiceService.setInstanceForTests(mMockSearchEngineChoiceService);
@@ -291,6 +293,19 @@ public class DefaultBrowserPromoUtilsTest {
                 "Message icon resource ID should match.",
                 R.drawable.ic_chrome,
                 message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
+    }
+
+    @Test
+    public void testNotifyDefaultBrowserPromoVisible() {
+        DefaultBrowserPromoTriggerStateListener listener =
+                Mockito.mock(DefaultBrowserPromoTriggerStateListener.class);
+        mUtils.addListener(listener);
+        mUtils.notifyDefaultBrowserPromoVisible();
+        verify(listener).onDefaultBrowserPromoTriggered();
+
+        mUtils.removeListener(listener);
+        mUtils.notifyDefaultBrowserPromoVisible();
+        verify(listener).onDefaultBrowserPromoTriggered();
     }
 
     private void setDepsMockWithDefaultValues() {

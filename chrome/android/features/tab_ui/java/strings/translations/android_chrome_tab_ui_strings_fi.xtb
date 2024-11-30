@@ -188,7 +188,6 @@ Jos lähdet, menetät heti pääsyn välilehtiryhmään "<ph name="TITLE_OF_GROU
 <translation id="8887921976452567404">Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista.</translation>
 <translation id="8915916167043355778">Sulje kaikki</translation>
 <translation id="9090098097337832354">"Tietoja tästä kaupasta" suljettu</translation>
-<translation id="9111228330448174435">Näytä valintaikkuna uuden välilehtiryhmän luomisen yhteydessä</translation>
 <translation id="9114502155681725011">Avaa välilehtiryhmän toimintovalikko välilehtiryhmälle <ph name="TITLE_OF_GROUP" />, värinä <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Luo ryhmään uusi välilehti</translation>
 <translation id="9216898458513705996">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" /></translation>

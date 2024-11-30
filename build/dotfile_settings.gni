@@ -35,6 +35,7 @@ build_dotfile_settings = {
     "//build/toolchain/concurrent_links.gni",
     "//build/toolchain/nacl/BUILD.gn",
     "//build/toolchain/rbe.gni",
+    "//build/toolchain/siso.gni",
     "//build/toolchain/toolchain.gni",
     "//build/toolchain/win/BUILD.gn",
     "//build/toolchain/win/win_toolchain_data.gni",

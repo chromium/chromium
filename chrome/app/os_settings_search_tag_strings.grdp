@@ -1608,6 +1608,12 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_SLOW_KEYS" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable slow keys.">
     Slow keys
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a dropdown to enable/disable the internal touchpad">
+    Disable Touchpad
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD_ALT1" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a dropdown to enable/disable the internal touchpad">
+    Disable Trackpad
+  </message>
 
   <!-- Reset section. -->
   <message name="IDS_OS_SETTINGS_TAG_RESET" desc="Text for search result item which, when clicked, navigates the user to reset settings.">

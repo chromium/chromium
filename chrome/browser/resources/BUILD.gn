@@ -70,10 +70,7 @@ group("resources") {
       "whats_new:resources",
     ]
     if (is_chrome_branded) {
-      public_deps += [
-        "lens:resources",
-        "media_router/cast_feedback:resources",
-      ]
+      public_deps += [ "media_router/cast_feedback:resources" ]
     }
   }
 
@@ -255,6 +252,7 @@ group("dev_ui_resources") {
     "device_log:resources",
     "engagement:resources",
     "family_link_user_internals:resources",
+    "internal_debug_pages_disabled:resources",
     "internals:resources",
     "location_internals:resources",
     "media:resources",
@@ -321,6 +319,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/device_log_resources.pak",
     "$root_gen_dir/chrome/engagement_resources.pak",
     "$root_gen_dir/chrome/family_link_user_internals_resources.pak",
+    "$root_gen_dir/chrome/internal_debug_pages_disabled_resources.pak",
     "$root_gen_dir/chrome/internals_resources.pak",
     "$root_gen_dir/chrome/location_internals_resources.pak",
     "$root_gen_dir/chrome/media_resources.pak",

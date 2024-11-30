@@ -16,7 +16,7 @@ namespace blink {
 class DeviceMotionEventPump;
 class Event;
 class ScriptState;
-class V8DeviceOrientationPermissionState;
+class V8PermissionState;
 
 class MODULES_EXPORT DeviceMotionController final
     : public DeviceSingleWindowEventController,
@@ -35,8 +35,7 @@ class MODULES_EXPORT DeviceMotionController final
 
   void Trace(Visitor*) const override;
 
-  ScriptPromise<V8DeviceOrientationPermissionState> RequestPermission(
-      ScriptState*);
+  ScriptPromise<V8PermissionState> RequestPermission(ScriptState*);
 
  private:
   // Inherited from PlatformEventController.

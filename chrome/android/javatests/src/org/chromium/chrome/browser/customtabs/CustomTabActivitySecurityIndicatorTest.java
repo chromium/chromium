@@ -65,10 +65,6 @@ public class CustomTabActivitySecurityIndicatorTest {
         ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
     }
 
-    private CustomTabActivity getActivity() {
-        return mCustomTabActivityTestRule.getActivity();
-    }
-
     // Custom tabs should use the new security indicators.
     @Test
     @MediumTest
@@ -98,6 +94,6 @@ public class CustomTabActivitySecurityIndicatorTest {
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
         CustomTabLocationBar locationBar = (CustomTabLocationBar) toolbar.getLocationBar();
         Assert.assertEquals(locationBar.getSecurityIconResourceForTesting(),
-                            R.drawable.omnibox_https_valid_refresh);
+                            R.drawable.omnibox_https_valid_page_info);
     }
 }

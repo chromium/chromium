@@ -6,7 +6,7 @@ package org.chromium.base.test;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.jni_zero.JniTestOverrides;
+import org.jni_zero.JniTestInstancesSnapshot;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -76,7 +76,7 @@ public class BaseRobolectricTestRule implements TestRule {
         // configuring the Application instance, and it does so from within methodBlock rather than
         // classBlock().
         ResettersForTesting.beforeHooksWillExecute();
-        JniTestOverrides.clearAllForTesting();
+        JniTestInstancesSnapshot.clearAllForTesting();
         FeatureList.setDisableNativeForTesting(true);
         CommandLineFlags.ensureInitialized();
         UmaRecorderHolder.setUpNativeUmaRecorder(false);

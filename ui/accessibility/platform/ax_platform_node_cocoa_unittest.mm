@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
@@ -385,8 +386,9 @@ TEST_P(AXPlatformNodeCocoaTest, TestCocoaActionListLayout) {
 // Tests that the correct methods are enabled based on migration mode.
 TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
   NSArray<NSString*>* array = @[
-    @"accessibilityDisclosedByRow", @"accessibilityDisclosedRows",
-    @"accessibilityDisclosureLevel", @"accessibilityIndex",
+    @"accessibilityColumnCount", @"accessibilityDisclosedByRow",
+    @"accessibilityDisclosedRows", @"accessibilityDisclosureLevel",
+    @"accessibilityHeader", @"accessibilityIndex", @"accessibilityRowCount",
     @"accessibilitySortDirection", @"isAccessibilityDisclosed",
     @"isAccessibilityExpanded", @"isAccessibilityFocused"
   ];
@@ -469,6 +471,39 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowIndexRange) {
   NSRange range = [cell accessibilityRowIndexRange];
   EXPECT_EQ(range.location, 0UL);  // Row index should start at 0
   EXPECT_EQ(range.length, 1UL);    // Only one row in this simple setup
+}
+
+// accessibilityVisibleColumns on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleColumns) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kColumn
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  AXPlatformNodeCocoa* column = GetCocoaNode(2);
+  NSArray* columns = [table accessibilityVisibleColumns];
+  EXPECT_EQ([columns count], 1UL);
+  EXPECT_EQ([[columns firstObject] node]->GetUniqueId(),
+            [column node]->GetUniqueId());
+}
+
+// accessibilityVisibleCells on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleCells) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  AXPlatformNodeCocoa* cell = GetCocoaNode(3);
+  NSArray* cells = [table accessibilityVisibleCells];
+  EXPECT_EQ([cells count], 1UL);
+  EXPECT_EQ([[cells firstObject] node]->GetUniqueId(),
+            [cell node]->GetUniqueId());
 }
 
 // Non-header cells should not support accessibilitySortDirection, even if
@@ -703,6 +738,64 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityIndexOnRowsAndColumns) {
   EXPECT_TRUE(
       [[child accessibilityRole] isEqualToString:NSAccessibilityGroupRole]);
   EXPECT_EQ([child accessibilityIndex], NSNotFound);
+}
+
+// `accessibilityRowCount` and `accessibilityColumnCount` on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowAndColumnCount) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+    ++++++4 kCell
+    ++++5 kRow
+    ++++++6 kCell
+    ++++++7 kCell
+    ++++8 kRow
+    ++++++9 kCell
+    ++++++10 kCell
+  )HTML"));
+  Init(update);
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  EXPECT_EQ([table accessibilityColumnCount], 2U);
+  EXPECT_EQ([table accessibilityRowCount], 3U);
+
+  // These attributes are only supported on the table/grid.
+  AXPlatformNodeCocoa* row = GetCocoaNode(2);
+  EXPECT_EQ([row accessibilityColumnCount], NSNotFound);
+  EXPECT_EQ([row accessibilityRowCount], NSNotFound);
+}
+
+// Tests that the string keys returned in
+// newAccessibilityAPIMethodToAttributeMap are all selectors supported on an
+// AXPlatformNodeCocoa instance.
+TEST_P(AXPlatformNodeCocoaTestNewAPI,
+       AccessibilityAPIToAttributeMapKeysAreSelectors) {
+  NSDictionary* map =
+      [AXPlatformNodeCocoa newAccessibilityAPIMethodToAttributeMap];
+  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc] initWithNode:nil];
+  for (NSString* selector_string in map) {
+    EXPECT_TRUE(
+        [node respondsToSelector:NSSelectorFromString(selector_string)]);
+  }
+}
+
+// Test that supportsNewAccessibilityAPIMethod returns true for a
+// new accessibility API that is supported on all role types
+// (isAccessibilityFocused) by testing whether it available
+// for an arbitrary role.
+TEST_P(AXPlatformNodeCocoaTest, SupportsNewAccessibilityAPIMethod) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kHeading;
+  Init(root);
+  TestAXNodeWrapper* wrapper =
+      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
+  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
+      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  EXPECT_TRUE([[node accessibilityRole] isEqualToString:@"AXHeading"]);
+  EXPECT_EQ([node internalRole], ax::mojom::Role::kHeading);
+  EXPECT_TRUE(
+      [node supportsNewAccessibilityAPIMethod:@"isAccessibilityFocused"]);
 }
 
 }  // namespace ui

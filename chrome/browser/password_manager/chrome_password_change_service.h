@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 
 class GURL;
+class PasswordChangeController;
 
 namespace affiliations {
 class AffiliationService;
@@ -37,6 +38,7 @@ class ChromePasswordChangeService
                            const std::u16string& username,
                            const std::u16string& password,
                            content::WebContents* originator);
+
   // Responds whether password change is ongoing for a given |web_contents|.
   // This is true both for originator and a tab where password change is
   // performed.
@@ -46,7 +48,10 @@ class ChromePasswordChangeService
   bool IsPasswordChangeSupported(const GURL& url) override;
 
  private:
-  raw_ptr<affiliations::AffiliationService> affiliation_service_;
+  const raw_ptr<affiliations::AffiliationService> affiliation_service_;
+
+  std::vector<std::unique_ptr<PasswordChangeController>>
+      password_change_controllers_;
 
   base::WeakPtrFactory<ChromePasswordChangeService> weak_ptr_factory_{this};
 };

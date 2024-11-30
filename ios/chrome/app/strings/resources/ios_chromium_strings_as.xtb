@@ -19,6 +19,7 @@
 <translation id="146407871188825689">ডিফ’ল্ট হিচাপে iPadত Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="1471084500615228555">Chromiumত ব্ৰাউজিঙৰ ডেটা মচক</translation>
 <translation id="1472013873724362412">আপোনাৰ একউণ্টটো Chromiumত কাম নকৰে। ছাইন ইন কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ ড’মেইনৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক বা সচৰাচৰ ব্যৱহাৰ কৰা এটা Google Account ব্যৱহাৰ কৰক।</translation>
+<translation id="148576268809812097">Chromiumত আপোনাৰ পাছৱৰ্ডসমূহ ছেভ কৰক</translation>
 <translation id="1501302548410882220">সকলোতে Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="1503199973012840174">আপোনাৰ Chromiumৰ ম্যাদ উকলিছে। সুৰক্ষিত হৈ থাকিবলৈ ইয়াক আপডে'ট কৰক।</translation>
 <translation id="1515748263297244785">ডিফ’ল্ট হিচাপে iPadৰ বাবে Chromium ব্যৱহাৰ কৰক</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">আপোনাৰ পাছৱৰ্ডটো আপোনাৰ একাউণ্ট (<ph name="EMAIL" />)ত ছেভ কৰা হ’ব।</translation>
 <translation id="1811860791247653035">ব্যক্তিগতকৰণ আৰু অন্য সুবিধাসমূহ পাবলৈ, ৱেব আৰু <ph name="FEATURE_NAME_1" /> আৰু <ph name="FEATURE_NAME_2" />ত Chromiumক অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="1838412507805038478">Chromiumএ সত্যাপন কৰিলে <ph name="ISSUER" />এ এই ৱেবছাইটৰ প্ৰমাণপত্ৰ প্ৰদান কৰে।</translation>
+<translation id="1839447949248872139">ডিফ’ল্ট হিচাপে Chromiumত লিংকসমূহ খোলক</translation>
 <translation id="1843424232666537147">আপোনাক Chromiumত থকা সুবিধাসমূহে নিজৰ ইণ্টাৰনেট ডেটা আৰু কিমান ক্ষিপ্ৰতাৰে আপুনি ৱেবপৃষ্ঠাসমূহ ল’ড কৰিব পাৰে সেইয়া পৰিচালনা কৰাত সহায় কৰিব।
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromiumত Maps</translation>
@@ -160,6 +162,7 @@
 <translation id="5048795749726991615">আপোনাৰ অন্য এপ্‌সমূহত আপোনাৰ ছেভ কৰা পাছৱৰ্ডসমূহ সহজে পাবলৈ, স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ বাবে Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="5053429694249468757">Chromiumৰ ডেটা মচি থকা হৈছে…</translation>
 <translation id="5071749685031362629">iOSৰ বাবে Chromium</translation>
+<translation id="5088872414922783602">আপোনাৰ গৃহ স্ক্ৰীনৰ ড’কৰ পৰা অধিক দ্ৰুতভাৱে Chromium এক্সেছ কৰক।</translation>
 <translation id="5124429847818367226">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংক ব্ৰাউজ কৰিলে বা টিপিলে যিকোনো সময়তে Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="5131565040785979529">আপোনাৰ প্ৰতিষ্ঠানে, <ph name="DOMAIN" />, আপুনি ছাইন ইন কৰা একাউণ্টটো আৰু Chromium কেনেকৈ ব্যৱহাৰ কৰা হয় পৰিচালনা কৰে।</translation>
 <translation id="5224391634244552924">ছেভ কৰা কোনো পাছৱৰ্ড নাই। আপুনি নিজৰ পাছৱর্ডসমূহ ছেভ কৰিলে Chromiumএ সেইবোৰ পৰীক্ষা কৰিব পাৰে।</translation>
@@ -273,6 +276,7 @@
 <translation id="800380310260616129">ইয়াত Chromium ডাউনল’ড কৰক।</translation>
 <translation id="8013573822802650211">আপুনি Chromium ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ আপোনাৰ সকলো ডিভাইচত ছাইন ইন কৰক</translation>
 <translation id="8014091604604659473">Chromium ছাইন আউট হৈ আছে</translation>
+<translation id="8035379487371146621">Chromiumক ড’কলৈ নিয়ক</translation>
 <translation id="8104697640054703121">বিপজ্জনক ছাইটৰ পৰা Chromiumৰ আটাইতকৈ বৰ্ধিত সুৰক্ষাৰ সুবিধা লাভ কৰক</translation>
 <translation id="8119542592987737574">আপোনাৰ iPhoneৰ গৃহ স্ক্ৰীনৰ ড’কৰ পৰা অধিক দ্ৰুতভাৱে Chromium এক্সেছ কৰক।</translation>
 <translation id="8164086860209325020">Chromiumৰ ছেটিঙলৈ যাওক</translation>

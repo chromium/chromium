@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotEquals;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -345,13 +344,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
 
         // Some tests need to inject JavaScript.
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-    }
-
-    private int getPageColor() {
-        Bitmap bitmap =
-                GraphicsTestUtils.drawAwContentsOnUiThread(
-                        mAwContents, mContainerView.getWidth(), mContainerView.getHeight());
-        return bitmap.getPixel(0, 0);
     }
 
     private void loadGreenPage() throws Exception {

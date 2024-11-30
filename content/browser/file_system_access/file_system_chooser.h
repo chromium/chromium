@@ -69,6 +69,8 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
     std::vector<std::u16string> mime_types_;
 #endif
     std::u16string title_;
+    // Combination of optional default_directory and optional suggested_name.
+    // Wiill end with a trailing separator if suggested_name is empty.
     base::FilePath default_path_;
   };
 

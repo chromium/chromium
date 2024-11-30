@@ -695,7 +695,7 @@ void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
       data_endpoint.get(), &result);
   if (result.size() >= blink::mojom::ClipboardHost::kMaxDataSize)
     return;
-  base::span<const uint8_t> span = base::as_bytes(base::make_span(result));
+  base::span<const uint8_t> span = base::as_byte_span(result);
   mojo_base::BigBuffer buffer = mojo_base::BigBuffer(span);
   std::move(callback).Run(std::move(buffer));
 }

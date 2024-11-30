@@ -28,19 +28,18 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataTestUtils.ShoppingServiceResponse;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -53,8 +52,7 @@ import java.util.concurrent.TimeoutException;
 public class ShoppingPersistedTabDataServiceTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
-    @Mock protected OptimizationGuideBridgeFactory.Natives mOptimizationGuideBridgeFactoryJniMock;
-    @Mock protected OptimizationGuideBridge mOptimizationGuideBridgeMock;
+    @Mock ShoppingService mShoppingService;
 
     @Mock protected Profile mProfileMock;
 
@@ -67,11 +65,6 @@ public class ShoppingPersistedTabDataServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        OptimizationGuideBridgeFactoryJni.setInstanceForTesting(
-                mOptimizationGuideBridgeFactoryJniMock);
-        doReturn(mOptimizationGuideBridgeMock)
-                .when(mOptimizationGuideBridgeFactoryJniMock)
-                .getForProfile(mProfileMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PersistedTabDataConfiguration.setUseTestConfig(true);
@@ -80,6 +73,7 @@ public class ShoppingPersistedTabDataServiceTest {
         mService = new ShoppingPersistedTabDataService();
         mSharedPrefsManager = ChromeSharedPreferences.getInstance();
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
 
     @After
@@ -200,34 +194,22 @@ public class ShoppingPersistedTabDataServiceTest {
         MockTab tab1 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(123, mProfileMock);
         GURL url1 = ShoppingPersistedTabDataTestUtils.DEFAULT_GURL;
         tab1.setGurlOverrideForTesting(url1);
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseForURL(
-                url1,
-                mOptimizationGuideBridgeMock,
-                OptimizationType.PRICE_TRACKING,
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_INITIAL);
+        ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
+                mShoppingService, url1, ShoppingServiceResponse.PRICE);
 
         // tab2 is eligible.
         MockTab tab2 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(456, mProfileMock);
         GURL url2 = ShoppingPersistedTabDataTestUtils.GURL_FOO;
         tab2.setGurlOverrideForTesting(url2);
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseForURL(
-                url2,
-                mOptimizationGuideBridgeMock,
-                OptimizationType.PRICE_TRACKING,
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
+        ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
+                mShoppingService, url2, ShoppingServiceResponse.PRICE_DROP_1);
 
         // tab3 is eligible.
         MockTab tab3 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(789, mProfileMock);
         GURL url3 = ShoppingPersistedTabDataTestUtils.GURL_BAR;
         tab3.setGurlOverrideForTesting(url3);
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseForURL(
-                url3,
-                mOptimizationGuideBridgeMock,
-                OptimizationType.PRICE_TRACKING,
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE_TWO);
+        ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
+                mShoppingService, url3, ShoppingServiceResponse.PRICE_DROP_2);
 
         // Set up the recency to be tab1 > tab3 > tab2.
         long currentTimeStamp = System.currentTimeMillis();

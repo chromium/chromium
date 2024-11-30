@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
@@ -93,6 +92,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
@@ -1286,17 +1286,20 @@ void ExistingUserController::CancelPasswordChangedFlow() {
 
 void ExistingUserController::StartAutoLoginTimer() {
   auto session_state = session_manager::SessionManager::Get()->session_state();
+  bool is_demo_mode = demo_mode::IsDeviceInDemoMode();
   if (is_login_in_progress_ ||
       !public_session_auto_login_account_id_.is_valid() ||
-      (session_state == session_manager::SessionState::OOBE &&
-       !DemoSession::IsDeviceInDemoMode())) {
+      (session_state == session_manager::SessionState::OOBE && !is_demo_mode) ||
+      (is_demo_mode && !demo_mode::ShouldFallBackToMGS())) {
     VLOG(2) << "Not starting autologin timer, because:";
     VLOG_IF(2, is_login_in_progress_) << "* Login is in process;";
     VLOG_IF(2, !public_session_auto_login_account_id_.is_valid())
         << "* No valid autologin account;";
     VLOG_IF(2, session_state == session_manager::SessionState::OOBE &&
-                   !DemoSession::IsDeviceInDemoMode())
+                   !is_demo_mode)
         << "* OOBE isn't completed and device isn't in demo mode;";
+    VLOG_IF(2, is_demo_mode && !demo_mode::ShouldFallBackToMGS())
+        << "* Should not fall back to manage guest session for demo mode;";
     return;
   }
   VLOG(2) << "Starting autologin timer with delay: " << auto_login_delay_;

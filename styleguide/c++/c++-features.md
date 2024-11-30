@@ -33,7 +33,7 @@ The current status of existing standards and Abseil features is:
 *   **C++17:** _Default allowed; see banned features below_
 *   **C++20:** _Initially supported November 13, 2023; see allowed/banned/TBD
     features below_
-*   **C++23:** _Not yet officially standardized_
+*   **C++23:** _Not yet supported_
 *   **Abseil:** _Default allowed; see banned/TBD features below. The following
     dates represent the start of the two-year TBD periods for certain parts of
     Abseil:_
@@ -1607,6 +1607,22 @@ primarily allow authors to create similar functionality.
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
 ***
 
+### &lt;span&gt; <sup>[banned]</sup>
+
+```c++
+#include <span>
+```
+
+**Description:** Utilities for non-owning views over a sequence of objects.
+
+**Documentation:**
+[](https://en.cppreference.com/w/cpp/header/span)
+
+**Notes:**
+*** promo
+Superseded by `base::span`, which has a richer functionality set.
+***
+
 ### std::to_address <sup>[banned]</sup>
 
 ```c++
@@ -1750,24 +1766,6 @@ filenames, function names, and line numbers.
 **Notes:**
 *** promo
 Seems to regress code size vs. `base::Location`.
-***
-
-### &lt;span&gt; <sup>[tbd]</sup>
-
-```c++
-#include <span>
-```
-
-**Description:** Utilities for non-owning views over a sequence of objects.
-
-**Documentation:**
-[](https://en.cppreference.com/w/cpp/header/span)
-
-**Notes:**
-*** promo
-Use `base::span` for now.
-
-[Migration bug](https://crbug.com/1414652)
 ***
 
 ### std::u8string <sup>[tbd]</sup>

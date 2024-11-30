@@ -359,12 +359,12 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnQuicBroken() override {}
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolSwitchingInfo switching_info) override {
+      HttpStreamPoolRequestInfo request_info) override {
     CHECK(base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
     CHECK(request_);
 
     request_ = session_->http_stream_pool()->RequestStream(
-        this, std::move(switching_info), priority_, allowed_bad_certs_,
+        this, std::move(request_info), priority_, allowed_bad_certs_,
         enable_ip_based_pooling_, enable_alternative_services_,
         NetLogWithSource());
 
@@ -1291,7 +1291,7 @@ TEST_P(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
     const AlternativeService alternative_service(kProtoQUIC, url.host().c_str(),
                                                  url.IntPort());
     base::Time expiration = base::Time::Now() + base::Days(1);
-    HostPortPair host_port_pair(alternative_service.host_port_pair());
+    HostPortPair host_port_pair(alternative_service.GetHostPortPair());
     url::SchemeHostPort server("https", host_port_pair.host(),
                                host_port_pair.port());
     http_server_properties.SetQuicAlternativeService(
@@ -4316,7 +4316,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicIetf) {
   for (size_t i = 0; i < alternatives.size(); ++i) {
     EXPECT_EQ(kProtoQUIC, alternatives[i].protocol());
     EXPECT_EQ(HostPortPair("example.com", 443),
-              alternatives[i].host_port_pair());
+              alternatives[i].GetHostPortPair());
     EXPECT_EQ(1u, alternatives[i].advertised_versions().size());
     EXPECT_EQ(versions[i], alternatives[i].advertised_versions()[0]);
   }
@@ -4343,7 +4343,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcHttp2) {
   ASSERT_EQ(1u, alternatives.size());
   EXPECT_EQ(kProtoHTTP2, alternatives[0].protocol());
   EXPECT_EQ(HostPortPair("other.example.com", 443),
-            alternatives[0].host_port_pair());
+            alternatives[0].GetHostPortPair());
   EXPECT_EQ(0u, alternatives[0].advertised_versions().size());
 }
 

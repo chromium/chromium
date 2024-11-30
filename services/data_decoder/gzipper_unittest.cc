@@ -30,15 +30,15 @@ TEST_F(GzipperTest, DeflateAndInflate) {
   gzipper.Deflate({input},
                   base::BindOnce(&CopyResultCallback, std::ref(compressed)));
   ASSERT_TRUE(compressed.has_value());
-  EXPECT_THAT(base::make_span(*compressed),
-              testing::Not(testing::ElementsAreArray(base::make_span(input))));
+  EXPECT_THAT(base::span(*compressed),
+              testing::Not(testing::ElementsAreArray(base::span(input))));
 
   std::optional<mojo_base::BigBuffer> uncompressed;
   gzipper.Inflate(std::move(*compressed), input.size(),
                   base::BindOnce(&CopyResultCallback, std::ref(uncompressed)));
   ASSERT_TRUE(uncompressed.has_value());
-  EXPECT_THAT(base::make_span(*uncompressed),
-              testing::ElementsAreArray(base::make_span(input)));
+  EXPECT_THAT(base::span(*uncompressed),
+              testing::ElementsAreArray(base::span(input)));
 }
 
 // Test not allocating enough space to inflate data.
@@ -67,8 +67,8 @@ TEST_F(GzipperTest, InflateTrimsSize) {
   gzipper.Inflate(std::move(*compressed), input.size() + 1,
                   base::BindOnce(&CopyResultCallback, std::ref(uncompressed)));
   ASSERT_TRUE(uncompressed.has_value());
-  EXPECT_THAT(base::make_span(*uncompressed),
-              testing::ElementsAreArray(base::make_span(input)));
+  EXPECT_THAT(base::span(*uncompressed),
+              testing::ElementsAreArray(base::span(input)));
 }
 
 TEST_F(GzipperTest, CompressAndUncompress) {
@@ -78,16 +78,16 @@ TEST_F(GzipperTest, CompressAndUncompress) {
   gzipper.Compress({input},
                    base::BindOnce(&CopyResultCallback, std::ref(compressed)));
   ASSERT_TRUE(compressed.has_value());
-  EXPECT_THAT(base::make_span(*compressed),
-              testing::Not(testing::ElementsAreArray(base::make_span(input))));
+  EXPECT_THAT(base::span(*compressed),
+              testing::Not(testing::ElementsAreArray(base::span(input))));
 
   std::optional<mojo_base::BigBuffer> uncompressed;
   gzipper.Uncompress(
       std::move(*compressed),
       base::BindOnce(&CopyResultCallback, std::ref(uncompressed)));
   ASSERT_TRUE(uncompressed.has_value());
-  EXPECT_THAT(base::make_span(*uncompressed),
-              testing::ElementsAreArray(base::make_span(input)));
+  EXPECT_THAT(base::span(*uncompressed),
+              testing::ElementsAreArray(base::span(input)));
 }
 
 }  // namespace data_decoder

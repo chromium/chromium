@@ -27,7 +27,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -54,19 +53,15 @@ using ::ip_protection::TryGetAuthTokensAndroidResult;
 
 AwIpProtectionCoreHost::AwIpProtectionCoreHost(
     AwBrowserContext* aw_browser_context)
-    : aw_browser_context_(aw_browser_context),
-      token_fetcher_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+    : aw_browser_context_(aw_browser_context) {}
 
 AwIpProtectionCoreHost::~AwIpProtectionCoreHost() = default;
 
 void AwIpProtectionCoreHost::SetUp() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!ip_protection_token_ipc_fetcher_) {
-    ip_protection_token_ipc_fetcher_ =
-        base::SequenceBound<ip_protection::IpProtectionTokenIpcFetcher>(
-            token_fetcher_task_runner_);
+  if (!ip_protection_token_fetcher_) {
+    ip_protection_token_fetcher_ =
+        std::make_unique<ip_protection::IpProtectionTokenIpcFetcher>(this);
   }
 
   if (!ip_protection_proxy_config_fetcher_) {
@@ -76,9 +71,8 @@ void AwIpProtectionCoreHost::SetUp() {
             aw_browser_context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get(),
-            ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding,
-            base::BindRepeating(&AwIpProtectionCoreHost::AuthenticateCallback,
-                                weak_ptr_factory_.GetWeakPtr()));
+            ip_protection::IpProtectionTokenFetcherHelper::kWebViewIpBlinding,
+            this);
   }
 }
 
@@ -88,18 +82,17 @@ void AwIpProtectionCoreHost::SetUpForTesting(
   for_testing_ = true;
 
   // Carefully destroy any existing values in the correct order.
-  ip_protection_token_ipc_fetcher_.Reset();
+  ip_protection_token_fetcher_ = nullptr;
   ip_protection_proxy_config_fetcher_ = nullptr;
 
-  ip_protection_token_ipc_fetcher_ =
-      base::SequenceBound<ip_protection::IpProtectionTokenIpcFetcher>(
-          token_fetcher_task_runner_, std::move(bsa));
+  ip_protection_token_fetcher_ =
+      std::make_unique<ip_protection::IpProtectionTokenIpcFetcher>(
+          this, std::move(bsa));
   ip_protection_proxy_config_fetcher_ =
       std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
           std::move(url_loader_factory),
-          ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding,
-          base::BindRepeating(&AwIpProtectionCoreHost::AuthenticateCallback,
-                              weak_ptr_factory_.GetWeakPtr()));
+          ip_protection::IpProtectionTokenFetcherHelper::kWebViewIpBlinding,
+          this);
 }
 
 void AwIpProtectionCoreHost::GetProxyConfig(GetProxyConfigCallback callback) {
@@ -114,13 +107,22 @@ void AwIpProtectionCoreHost::GetProxyConfig(GetProxyConfigCallback callback) {
     return;
   }
 
-  ip_protection_proxy_config_fetcher_->GetProxyConfig(std::move(callback));
+  ip_protection_proxy_config_fetcher_->GetProxyConfig(base::BindOnce(
+      // Convert the mojo style callback, which takes `const
+      // std::optional<..>&`, to the preferred style, passing `std::optional` by
+      // value.
+      [](GetProxyConfigCallback callback,
+         std::optional<std::vector<::net::ProxyChain>> proxy_chain,
+         std::optional<ip_protection::GeoHint> geo_hint) {
+        std::move(callback).Run(proxy_chain, geo_hint);
+      },
+      std::move(callback)));
 }
 
-void AwIpProtectionCoreHost::AuthenticateCallback(
+void AwIpProtectionCoreHost::AuthenticateRequest(
     std::unique_ptr<network::ResourceRequest> resource_request,
-    ip_protection::IpProtectionProxyConfigDirectFetcher::
-        AuthenticateDoneCallback callback) {
+    ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate::
+        AuthenticateRequestCallback callback) {
   google_apis::AddAPIKeyToRequest(
       *resource_request,
       google_apis::GetAPIKey(version_info::android::GetChannel()));
@@ -129,7 +131,7 @@ void AwIpProtectionCoreHost::AuthenticateCallback(
 
 void AwIpProtectionCoreHost::TryGetAuthTokens(
     uint32_t batch_size,
-    ip_protection::mojom::ProxyLayer proxy_layer,
+    ip_protection::ProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
@@ -142,160 +144,19 @@ void AwIpProtectionCoreHost::TryGetAuthTokens(
     return;
   }
 
-  // If IP Protection is disabled then don't attempt to fetch tokens.
-  if (!IsIpProtectionEnabled()) {
-    TryGetAuthTokensComplete(
-        /*bsa_tokens=*/std::nullopt, std::move(callback),
-        TryGetAuthTokensAndroidResult::kFailedDisabled);
-    return;
-  }
+  // The mojo callback requires `std::optional<..>&`, while the fetcher callback
+  // provides arguments by value. This seemingly-redundant lambda converts the
+  // two.
+  auto callback_with_refs = base::BindOnce(
+      [](TryGetAuthTokensCallback callback,
+         std::optional<std::vector<ip_protection::BlindSignedAuthToken>> tokens,
+         std::optional<::base::Time> try_again_after) {
+        std::move(callback).Run(tokens, try_again_after);
+      },
+      std::move(callback));
 
-  auto quiche_proxy_layer =
-      proxy_layer == ip_protection::mojom::ProxyLayer::kProxyA
-          ? quiche::ProxyLayer::kProxyA
-          : quiche::ProxyLayer::kProxyB;
-  FetchBlindSignedToken(base::checked_cast<int>(batch_size), quiche_proxy_layer,
-                        std::move(callback));
-}
-
-void AwIpProtectionCoreHost::FetchBlindSignedToken(
-    int batch_size,
-    quiche::ProxyLayer quiche_proxy_layer,
-    TryGetAuthTokensCallback callback) {
-  auto bsa_get_tokens_start_time = base::TimeTicks::Now();
-  ip_protection_token_ipc_fetcher_
-      .AsyncCall(
-          &ip_protection::IpProtectionTokenIpcFetcher::FetchBlindSignedToken)
-      .WithArgs(
-          /*access_token=*/std::nullopt, batch_size, quiche_proxy_layer,
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &AwIpProtectionCoreHost::OnFetchBlindSignedTokenCompleted,
-              weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
-              std::move(callback))));
-}
-
-void AwIpProtectionCoreHost::OnFetchBlindSignedTokenCompleted(
-    base::TimeTicks bsa_get_tokens_start_time,
-    TryGetAuthTokensCallback callback,
-    absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (is_shutting_down_) {
-    return;
-  }
-  if (!tokens.ok()) {
-    TryGetAuthTokensAndroidResult result;
-    switch (tokens.status().code()) {
-      case absl::StatusCode::kUnavailable:
-        result = TryGetAuthTokensAndroidResult::kFailedBSATransient;
-        break;
-      case absl::StatusCode::kFailedPrecondition:
-        result = TryGetAuthTokensAndroidResult::kFailedBSAPersistent;
-        break;
-      default:
-        result = TryGetAuthTokensAndroidResult::kFailedBSAOther;
-        break;
-    }
-    VLOG(2) << "AwIpProtectionCoreHost::OnFetchBlindSignedTokenCompleted "
-               "got an error: "
-            << static_cast<int>(result);
-    TryGetAuthTokensComplete(/*bsa_tokens=*/std::nullopt, std::move(callback),
-                             result);
-    return;
-  }
-
-  if (tokens.value().size() == 0) {
-    VLOG(2) << "AwIpProtectionCoreHost::"
-               "OnFetchBlindSignedTokenCompleted called with no tokens";
-    TryGetAuthTokensComplete(
-        /*bsa_tokens=*/std::nullopt, std::move(callback),
-        TryGetAuthTokensAndroidResult::kFailedBSAOther);
-    return;
-  }
-
-  std::vector<ip_protection::BlindSignedAuthToken> bsa_tokens;
-  for (const quiche::BlindSignToken& token : tokens.value()) {
-    std::optional<ip_protection::BlindSignedAuthToken> converted_token =
-        ip_protection::IpProtectionCoreHostHelper::
-            CreateBlindSignedAuthToken(token);
-    if (!converted_token.has_value() || converted_token->token.empty()) {
-      VLOG(2) << "AwIpProtectionCoreHost::"
-                 "OnFetchBlindSignedTokenCompleted failed to convert "
-                 "`quiche::BlindSignAuth` token to a "
-                 "`network::mojom::BlindSignedAuthToken`";
-      TryGetAuthTokensComplete(
-          /*bsa_tokens=*/std::nullopt, std::move(callback),
-          TryGetAuthTokensAndroidResult::kFailedBSAOther);
-      return;
-    } else {
-      bsa_tokens.push_back(std::move(converted_token).value());
-    }
-  }
-
-  const base::TimeTicks current_time = base::TimeTicks::Now();
-  TryGetAuthTokensComplete(std::move(bsa_tokens), std::move(callback),
-                           TryGetAuthTokensAndroidResult::kSuccess,
-                           current_time - bsa_get_tokens_start_time);
-}
-
-void AwIpProtectionCoreHost::TryGetAuthTokensComplete(
-    std::optional<std::vector<ip_protection::BlindSignedAuthToken>> bsa_tokens,
-    TryGetAuthTokensCallback callback,
-    ip_protection::TryGetAuthTokensAndroidResult result,
-    std::optional<base::TimeDelta> duration) {
-  if (result == TryGetAuthTokensAndroidResult::kSuccess) {
-    CHECK(bsa_tokens.has_value() && !bsa_tokens->empty());
-  }
-
-  ip_protection::Telemetry().AndroidTokenBatchFetchComplete(result, duration);
-
-  std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
-  std::optional<base::Time> try_again_after;
-  if (backoff) {
-    if (*backoff == base::TimeDelta::Max()) {
-      try_again_after = base::Time::Max();
-    } else {
-      try_again_after = base::Time::Now() + *backoff;
-    }
-  }
-  DCHECK(bsa_tokens.has_value() || try_again_after.has_value());
-  std::move(callback).Run(std::move(bsa_tokens), try_again_after);
-}
-
-std::optional<base::TimeDelta> AwIpProtectionCoreHost::CalculateBackoff(
-    TryGetAuthTokensAndroidResult result) {
-  std::optional<base::TimeDelta> backoff;
-  switch (result) {
-    case TryGetAuthTokensAndroidResult::kSuccess:
-      break;
-    case TryGetAuthTokensAndroidResult::kFailedBSAPersistent:
-    case TryGetAuthTokensAndroidResult::kFailedDisabled:
-      backoff = base::TimeDelta::Max();
-      break;
-    case TryGetAuthTokensAndroidResult::kFailedBSATransient:
-    case TryGetAuthTokensAndroidResult::kFailedBSAOther:
-      backoff =
-          ip_protection::IpProtectionCoreHostHelper::kTransientBackoff;
-      // Note that we calculate the backoff assuming that we've waited for
-      // `last_try_get_auth_tokens_backoff_` time already, but this may not be
-      // the case when:
-      //  - Concurrent calls to `TryGetAuthTokens` from two network contexts are
-      //  made and both fail in the same way
-      //
-      //  - The network service restarts (the new network context(s) won't know
-      //  to backoff until after the first request(s))
-      //
-      // We can't do much about the first case, but for the others we could
-      // track the backoff time here and not request tokens again until
-      // afterward.
-      if (last_try_get_auth_tokens_backoff_ &&
-          last_try_get_auth_tokens_result_ == result) {
-        backoff = *last_try_get_auth_tokens_backoff_ * 2;
-      }
-      break;
-  }
-  last_try_get_auth_tokens_result_ = result;
-  last_try_get_auth_tokens_backoff_ = backoff;
-  return backoff;
+  ip_protection_token_fetcher_->TryGetAuthTokens(batch_size, proxy_layer,
+                                                 std::move(callback_with_refs));
 }
 
 void AwIpProtectionCoreHost::Shutdown() {
@@ -305,7 +166,7 @@ void AwIpProtectionCoreHost::Shutdown() {
   is_shutting_down_ = true;
   receivers_.Clear();
 
-  ip_protection_token_ipc_fetcher_.Reset();
+  ip_protection_token_fetcher_ = nullptr;
   aw_browser_context_ = nullptr;
   ip_protection_proxy_config_fetcher_ = nullptr;
 }
@@ -337,6 +198,14 @@ bool AwIpProtectionCoreHost::IsIpProtectionEnabled() {
     return false;
   }
   return CanIpProtectionBeEnabled();
+}
+
+bool AwIpProtectionCoreHost::IsProxyConfigFetchEnabled() {
+  return IsIpProtectionEnabled();
+}
+
+bool AwIpProtectionCoreHost::IsTokenFetchEnabled() {
+  return IsIpProtectionEnabled();
 }
 
 }  // namespace android_webview

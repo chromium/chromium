@@ -41,6 +41,7 @@
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -159,7 +160,6 @@ constexpr char kTestAdminTemplateFormat[] =
     "\"created_time_usec\": \"1633535632\",\"updated_time_usec\": "
     "\"1633535632\",\"desk\":{}}]";
 constexpr char kTestTabGroupNameFormat[] = "test_tab_group_%u";
-constexpr char kTestAppName[] = "test_app_name";
 constexpr char kUnknownTestAppName[] = "unknown_test_app_name";
 constexpr char kUnknownTestAppId[] = "07eb07d7-f338-48aa-a996-7beb76a5042c";
 
@@ -2545,7 +2545,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   auto* overview_grid = ash::GetOverviewSession()->GetGridWithRootWindow(
       ash::Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
-  auto* save_desk_button = overview_grid->GetSaveDeskForLaterButton();
+  auto* save_desk_button =
+      ash::OverviewGridTestApi(overview_grid).GetSaveDeskForLaterButton();
   ASSERT_TRUE(save_desk_button);
 
   // Wait for the bounds to finish animating.

@@ -3,164 +3,39 @@
 // found in the LICENSE file.
 
 #include "skia/ext/cicp.h"
-#include "skia/ext/skcolorspace_primaries.h"
-#include "skia/ext/skcolorspace_trfn.h"
 
 namespace skia {
-
-bool CICPGetPrimaries(uint8_t primaries, SkColorSpacePrimaries& sk_primaries) {
-  // Rec. ITU-T H.273, Table 2.
-  switch (primaries) {
-    case 0:
-      // Reserved.
-      break;
-    case 1:
-      sk_primaries = SkNamedPrimariesExt::kRec709;
-      return true;
-    case 2:
-      // Unspecified.
-      break;
-    case 3:
-      // Reserved.
-      break;
-    case 4:
-      sk_primaries = SkNamedPrimariesExt::kRec470SystemM;
-      return true;
-    case 5:
-      sk_primaries = SkNamedPrimariesExt::kRec470SystemBG;
-      return true;
-    case 6:
-      sk_primaries = SkNamedPrimariesExt::kRec601;
-      return true;
-    case 7:
-      sk_primaries = SkNamedPrimariesExt::kSMPTE_ST_240;
-      return true;
-    case 8:
-      sk_primaries = SkNamedPrimariesExt::kGenericFilm;
-      return true;
-    case 9:
-      sk_primaries = SkNamedPrimariesExt::kRec2020;
-      return true;
-    case 10:
-      sk_primaries = SkNamedPrimariesExt::kSMPTE_ST_428_1;
-      return true;
-    case 11:
-      sk_primaries = SkNamedPrimariesExt::kSMPTE_RP_431_2;
-      return true;
-    case 12:
-      sk_primaries = SkNamedPrimariesExt::kSMPTE_EG_432_1;
-      return true;
-    case 22:
-      sk_primaries = SkNamedPrimariesExt::kITU_T_H273_Value22;
-      return true;
-    default:
-      // Reserved.
-      break;
-  }
-  sk_primaries = SkNamedPrimariesExt::kInvalid;
-  return false;
-}
-
-bool CICPGetTransferFn(uint8_t transfer_characteristics,
-                       bool prefer_srgb_trfn,
-                       skcms_TransferFunction& trfn) {
-  // Rec. ITU-T H.273, Table 3.
-  switch (transfer_characteristics) {
-    case 0:
-      // Reserved.
-      break;
-    case 1:
-      trfn = prefer_srgb_trfn ? SkNamedTransferFnExt::kSRGB
-                              : SkNamedTransferFnExt::kRec709;
-      return true;
-    case 2:
-      // Unspecified.
-      break;
-    case 3:
-      // Reserved.
-      break;
-    case 4:
-      trfn = SkNamedTransferFnExt::kRec470SystemM;
-      return true;
-    case 5:
-      trfn = SkNamedTransferFnExt::kRec470SystemBG;
-      return true;
-    case 6:
-      trfn = prefer_srgb_trfn ? SkNamedTransferFnExt::kSRGB
-                              : SkNamedTransferFnExt::kRec601;
-      return true;
-    case 7:
-      trfn = SkNamedTransferFnExt::kSMPTE_ST_240;
-      return true;
-    case 8:
-      trfn = SkNamedTransferFn::kLinear;
-      return true;
-    case 9:
-      // Logarithmic transfer characteristic (100:1 range).
-      break;
-    case 10:
-      // Logarithmic transfer characteristic (100 * Sqrt( 10 ) : 1 range).
-      break;
-    case 11:
-      trfn = prefer_srgb_trfn ? SkNamedTransferFnExt::kSRGB
-                              : SkNamedTransferFnExt::kIEC61966_2_4;
-      break;
-    case 12:
-      // Rec. ITU-R BT.1361-0 extended colour gamut system (historical).
-      // Same as kRec709 on positive values, differs on negative values.
-      break;
-    case 13:
-      // IEC 61966-2-1.
-      trfn = SkNamedTransferFnExt::kSRGB;
-      return true;
-    case 14:
-      trfn = SkNamedTransferFnExt::kRec2020_10bit;
-      return true;
-    case 15:
-      trfn = SkNamedTransferFnExt::kRec2020_12bit;
-      return true;
-    case 16:
-      trfn = SkNamedTransferFn::kPQ;
-      return true;
-    case 17:
-      trfn = SkNamedTransferFnExt::kSMPTE_ST_428_1;
-      return true;
-    case 18:
-      trfn = SkNamedTransferFn::kHLG;
-      return true;
-    default:
-      // 19-255 Reserved.
-      break;
-  }
-
-  trfn = SkNamedTransferFnExt::kInvalid;
-  return false;
-}
 
 sk_sp<SkColorSpace> CICPGetSkColorSpace(uint8_t color_primaries,
                                         uint8_t transfer_characteristics,
                                         uint8_t matrix_coefficients,
                                         uint8_t full_range_flag,
                                         bool prefer_srgb_trfn) {
-  if (matrix_coefficients != 0)
+  if (matrix_coefficients != 0) {
     return nullptr;
+  }
 
-  if (full_range_flag != 1)
+  // TODO(https://crbug.com/40229816): Implement this if needed.
+  if (full_range_flag != 1) {
     return nullptr;
+  }
 
-  skcms_TransferFunction trfn;
-  if (!CICPGetTransferFn(transfer_characteristics, prefer_srgb_trfn, trfn))
-    return nullptr;
+  auto transfer_id =
+      static_cast<SkNamedTransferFn::CicpId>(transfer_characteristics);
+  if (prefer_srgb_trfn) {
+    switch (transfer_id) {
+      case SkNamedTransferFn::CicpId::kRec709:
+      case SkNamedTransferFn::CicpId::kRec601:
+      case SkNamedTransferFn::CicpId::kIEC61966_2_4:
+        transfer_id = SkNamedTransferFn::CicpId::kSRGB;
+        break;
+      default:
+        break;
+    };
+  }
 
-  SkColorSpacePrimaries primaries;
-  if (!CICPGetPrimaries(color_primaries, primaries))
-    return nullptr;
-
-  skcms_Matrix3x3 primaries_matrix;
-  if (!primaries.toXYZD50(&primaries_matrix))
-    return nullptr;
-
-  return SkColorSpace::MakeRGB(trfn, primaries_matrix);
+  auto primaries_id = static_cast<SkNamedPrimaries::CicpId>(color_primaries);
+  return SkColorSpace::MakeCICP(primaries_id, transfer_id);
 }
 
 bool CICPGetSkYUVColorSpace(uint8_t matrix_coefficients,

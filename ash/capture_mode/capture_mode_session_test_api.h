@@ -15,13 +15,14 @@ class Label;
 
 namespace ash {
 
+class ActionButtonView;
 class BaseCaptureModeSession;
 class CaptureLabelView;
 class CaptureModeBarView;
 class CaptureModeSettingsView;
 class CaptureRegionOverlayController;
 class MagnifierGlass;
-class ActionButtonView;
+class PillButton;
 class RecordingTypeMenuView;
 class UserNudgeController;
 
@@ -51,9 +52,13 @@ class CaptureModeSessionTestApi {
 
   views::Widget* GetActionContainerWidget();
 
+  views::Widget* GetDisclaimerWidget();
+
   views::Widget* GetRecordingTypeMenuWidget();
 
   views::Widget* GetDimensionsLabelWidget();
+
+  views::Widget* GetFeedbackButtonWidget();
 
   UserNudgeController* GetUserNudgeController();
 
@@ -91,6 +96,8 @@ class CaptureModeSessionTestApi {
   ActionButtonView* GetButtonWithViewID(ActionButtonViewID id) const;
 
   CaptureRegionOverlayController* GetCaptureRegionOverlayController() const;
+
+  PillButton* GetFeedbackButton();
 
  private:
   const raw_ptr<CaptureModeSession, DanglingUntriaged> session_;

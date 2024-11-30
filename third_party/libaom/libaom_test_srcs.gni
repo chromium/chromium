@@ -59,7 +59,6 @@ aom_unit_test_encoder_sources = [
   "//third_party/libaom/source/libaom/test/avg_test.cc",
   "//third_party/libaom/source/libaom/test/blend_a64_mask_1d_test.cc",
   "//third_party/libaom/source/libaom/test/blend_a64_mask_test.cc",
-  "//third_party/libaom/source/libaom/test/comp_avg_pred_test.cc",
   "//third_party/libaom/source/libaom/test/comp_mask_pred_test.cc",
   "//third_party/libaom/source/libaom/test/datarate_test.cc",
   "//third_party/libaom/source/libaom/test/datarate_test.h",

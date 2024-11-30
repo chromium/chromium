@@ -1044,6 +1044,7 @@
 <translation id="6058625436358447366">終了するには、古いパスワードと新しいパスワードを入力してください</translation>
 <translation id="6061772781719867950">HTTP リクエストが失敗しました</translation>
 <translation id="6073292342939316679">キーボードの明るさを下げる</translation>
+<translation id="6074752328838739425">概要を非表示</translation>
 <translation id="6075872808778243331">（Android）HTTP レイテンシ</translation>
 <translation id="6078323886959318429">ショートカットを追加</translation>
 <translation id="6091080061796993741">黄色</translation>
@@ -1233,6 +1234,7 @@
 <translation id="6866732840889595464">デイジー</translation>
 <translation id="6871256179359663621">ライトパープル</translation>
 <translation id="6889786074662672253">再起動中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。この処理には数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
+<translation id="6899460405678814458">概要を表示</translation>
 <translation id="6900701049656042631">このアルバムには写真がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
 <translation id="6902359863093437070">AI で背景を作成</translation>
 <translation id="6905163627763043954">使ってみる</translation>

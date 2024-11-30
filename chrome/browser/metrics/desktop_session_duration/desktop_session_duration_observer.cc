@@ -20,7 +20,7 @@ DesktopSessionDurationObserver::DesktopSessionDurationObserver(
   RegisterInputEventObserver(web_contents->GetPrimaryMainFrame());
 }
 
-DesktopSessionDurationObserver::~DesktopSessionDurationObserver() {}
+DesktopSessionDurationObserver::~DesktopSessionDurationObserver() = default;
 
 // static
 DesktopSessionDurationObserver*

@@ -148,7 +148,7 @@ OpaqueBrowserFrameView::OpaqueBrowserFrameView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
 }
 
-OpaqueBrowserFrameView::~OpaqueBrowserFrameView() {}
+OpaqueBrowserFrameView::~OpaqueBrowserFrameView() = default;
 
 void OpaqueBrowserFrameView::InitViews() {
   web_app::AppBrowserController* controller =

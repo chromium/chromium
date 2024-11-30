@@ -16,7 +16,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/android/view_android.h"
@@ -64,6 +65,12 @@ namespace android_autofill {
 //
 // It is created by either AwContents or ChromeAutofillClient and owned by the
 // WebContents that it is attached to.
+//
+// BEWARE OF SUBCLASSING in tests: virtual function calls during construction
+// may lead to very surprising behavior. The class is not `final` because one
+// test derives from it. Member functions should be final unless they need to be
+// mocked or overridden in subclasses and you have verified that they are not
+// called, directly or indirectly, from the constructor.
 class AndroidAutofillClient : public autofill::ContentAutofillClient {
  public:
   static void CreateForWebContents(content::WebContents* contents);
@@ -74,66 +81,59 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   ~AndroidAutofillClient() override;
 
   // AutofillClient:
-  base::WeakPtr<AutofillClient> GetWeakPtr() override;
-  const std::string& GetAppLocale() const override;
-  bool IsOffTheRecord() const override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
-  autofill::PersonalDataManager* GetPersonalDataManager() override;
-  autofill::SingleFieldFillRouter& GetSingleFieldFillRouter() override;
-  autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager()
-      override;
-  PrefService* GetPrefs() override;
-  const PrefService* GetPrefs() const override;
-  syncer::SyncService* GetSyncService() override;
-  signin::IdentityManager* GetIdentityManager() override;
-  const signin::IdentityManager* GetIdentityManager() const override;
-  autofill::FormDataImporter* GetFormDataImporter() override;
-  autofill::StrikeDatabase* GetStrikeDatabase() override;
-  ukm::UkmRecorder* GetUkmRecorder() override;
-  ukm::SourceId GetUkmSourceId() override;
-  autofill::AddressNormalizer* GetAddressNormalizer() override;
-  const GURL& GetLastCommittedPrimaryMainFrameURL() const override;
-  url::Origin GetLastCommittedPrimaryMainFrameOrigin() const override;
-  security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
-  const translate::LanguageState* GetLanguageState() override;
-  translate::TranslateDriver* GetTranslateDriver() override;
-  void ShowAutofillSettings(autofill::SuggestionType suggestion_type) override;
+  base::WeakPtr<AutofillClient> GetWeakPtr() final;
+  const std::string& GetAppLocale() const final;
+  bool IsOffTheRecord() const final;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
+  autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() final;
+  autofill::PersonalDataManager& GetPersonalDataManager() final;
+  autofill::SingleFieldFillRouter& GetSingleFieldFillRouter() final;
+  autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
+  PrefService* GetPrefs() final;
+  const PrefService* GetPrefs() const final;
+  syncer::SyncService* GetSyncService() final;
+  signin::IdentityManager* GetIdentityManager() final;
+  const signin::IdentityManager* GetIdentityManager() const final;
+  autofill::FormDataImporter* GetFormDataImporter() final;
+  autofill::StrikeDatabase* GetStrikeDatabase() final;
+  ukm::UkmRecorder* GetUkmRecorder() final;
+  autofill::AddressNormalizer* GetAddressNormalizer() final;
+  const GURL& GetLastCommittedPrimaryMainFrameURL() const final;
+  url::Origin GetLastCommittedPrimaryMainFrameOrigin() const final;
+  security_state::SecurityLevel GetSecurityLevelForUmaHistograms() final;
+  const translate::LanguageState* GetLanguageState() final;
+  translate::TranslateDriver* GetTranslateDriver() final;
+  void ShowAutofillSettings(autofill::SuggestionType suggestion_type) final;
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,
       bool is_migration_to_account,
-      AddressProfileSavePromptCallback callback) override;
-  void ShowEditAddressProfileDialog(
-      const autofill::AutofillProfile& profile,
-      AddressProfileSavePromptCallback on_user_decision_callback) override;
-  void ShowDeleteAddressProfileDialog(
-      const autofill::AutofillProfile& profile,
-      AddressProfileDeleteDialogCallback delete_dialog_callback) override;
+      AddressProfileSavePromptCallback callback) final;
   SuggestionUiSessionId ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
-      base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;
+      base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) final;
   void UpdateAutofillDataListValues(
-      base::span<const autofill::SelectOption> datalist) override;
-  void PinAutofillSuggestions() override;
-  void HideAutofillSuggestions(
-      autofill::SuggestionHidingReason reason) override;
-  bool IsAutofillEnabled() const override;
-  bool IsAutofillProfileEnabled() const override;
-  bool IsAutofillPaymentMethodsEnabled() const override;
-  bool IsAutocompleteEnabled() const override;
-  bool IsPasswordManagerEnabled() const override;
+      base::span<const autofill::SelectOption> datalist) final;
+  void PinAutofillSuggestions() final;
+  void HideAutofillSuggestions(autofill::SuggestionHidingReason reason) final;
+  bool IsAutofillEnabled() const final;
+  bool IsAutofillProfileEnabled() const final;
+  bool IsAutofillPaymentMethodsEnabled() const final;
+  bool IsAutocompleteEnabled() const final;
+  bool IsPasswordManagerEnabled() const final;
   void DidFillOrPreviewForm(
       autofill::mojom::ActionPersistence action_persistence,
       autofill::AutofillTriggerSource trigger_source,
-      bool is_refill) override;
-  bool IsContextSecure() const override;
-  autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
+      bool is_refill) final;
+  bool IsContextSecure() const final;
+  autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
+  autofill::autofill_metrics::FormInteractionsUkmLogger&
+  GetFormInteractionsUkmLogger() final;
 
   // ContentAutofillClient:
   std::unique_ptr<autofill::AutofillManager> CreateManager(
       base::PassKey<autofill::ContentAutofillDriver> pass_key,
-      autofill::ContentAutofillDriver& driver) override;
+      autofill::ContentAutofillDriver& driver) final;
 
  protected:
   // Protected for testing.
@@ -148,6 +148,9 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
 
   std::unique_ptr<autofill::AutofillCrowdsourcingManager>
       crowdsourcing_manager_;
+
+  autofill::autofill_metrics::FormInteractionsUkmLogger
+      form_interactions_ukm_logger_{this};
 
   base::WeakPtrFactory<AndroidAutofillClient> weak_ptr_factory_{this};
 };

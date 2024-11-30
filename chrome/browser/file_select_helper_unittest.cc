@@ -89,7 +89,7 @@ void PrepareContentAnalysisCompletionCallbackArgs(
 
 class FileSelectHelperTest : public testing::Test {
  public:
-  FileSelectHelperTest() {}
+  FileSelectHelperTest() = default;
 
   FileSelectHelperTest(const FileSelectHelperTest&) = delete;
   FileSelectHelperTest& operator=(const FileSelectHelperTest&) = delete;

@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Omogočanje spletnemu mestu shranjevanje podatkov v napravi.</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1384959399684842514">Prenos je zaustavljen</translation>
+<translation id="1396327438254055134">Spletnemu mestu dovolite uporabo orodja za optimiziranje mehanizma V8.</translation>
 <translation id="1415402041810619267">URL je skrajšan</translation>
 <translation id="1448064542941920355">Zmanjšanje povečave/pomanjšave</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> spletnem mestu}one{<ph name="SITE_COUNT" /> spletnem mestu}two{<ph name="SITE_COUNT" /> spletnih mestih}few{<ph name="SITE_COUNT" /> spletnih mestih}other{<ph name="SITE_COUNT" /> spletnih mestih}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Slikovni dekodirnik</translation>
 <translation id="1785415724048343560">Priporočljivo za najboljšo izkušnjo</translation>
 <translation id="1799920918471566157">Nasveti za Chrome</translation>
+<translation id="1816835383954230954">Če je vklopljeno, Chrome deluje hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno. Če je izklopljeno, se zmanjša učinkovitost delovanja, vendar je mehanizem V8 odpornejši proti napadom.</translation>
 <translation id="1818308510395330587">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo razširjene resničnosti, prav tako vklopite fotoaparat v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Dostop do lokacije je izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Prekini</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo kamere. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati kamere.</translation>
 <translation id="3521663503435878242">Spletna mesta domene <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Spletnim mestom ni dovoljeno sledenje potezam z dlanmi</translation>
+<translation id="3532312529397438268">Spletna mesta ne morejo uporabljati orodja za optimiziranje mehanizma V8</translation>
 <translation id="3536227077203206203">Tokrat dovoljeno</translation>
 <translation id="3538390592868664640">Preprečevanje, da bi spletna mesta ustvarila 3D-zemljevid vaše okolice ali spremljala položaj kamere</translation>
 <translation id="3544058026430919413">Podjetje lahko določi skupino spletnih mest, ki lahko uporabljajo piškotke za deljenje vaše dejavnosti v skupini. V anonimnem načinu je to izklopljeno.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Povečaj</translation>
 <translation id="4807122856660838973">Vklop Varnega brskanja</translation>
 <translation id="4811450222531576619">Preberite več o njenem viru in temi</translation>
+<translation id="481168145262973879">Spletna mesta lahko uporabljajo orodje za optimiziranje mehanizma V8</translation>
 <translation id="4816495437032298535">Shranjena povečava za spletna mesta</translation>
 <translation id="4836046166855586901">Vprašaj, ko želi spletno mesto vedeti, kdaj aktivno uporabljate to napravo.</translation>
 <translation id="483914009762354899">Vključi vsa spletna mesta v tej domeni</translation>
@@ -337,10 +341,8 @@
 <translation id="6071501408666570960">Morda ste odjavljeni s tega spletnega mesta.</translation>
 <translation id="6085954183010297841">Želite izbrisati dovoljenje za urejanje datoteke? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Če je ta možnost vklopljena, spletna mesta lahko vprašajo, ali aktivno uporabljate napravo. Če je ta možnost izklopljena, spletna mesta ne smejo vprašati, ali aktivno uporabljate napravo.</translation>
-<translation id="6140839633433422817">Ali ste prepričani, da želite ponastaviti dovoljenja in izbrisati piškotke ter podatke spletnega mesta?</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6171020522141473435">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav Bluetooth. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav Bluetooth.</translation>
-<translation id="6177111841848151710">Blokirano za trenutni iskalnik</translation>
 <translation id="6177128806592000436">Povezava s tem spletnim mestom ni varna</translation>
 <translation id="6181444274883918285">Dodaj izjemo za spletno mesto</translation>
 <translation id="6192792657125177640">Izjeme</translation>
@@ -405,8 +407,8 @@
 <translation id="6980861169612950611">Želite izbrisati podatke spletnega mesta? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Dostopnost</translation>
 <translation id="6992289844737586249">Prikaži poziv, preden se spletnim mestom dovoli uporaba mikrofona (priporočeno)</translation>
+<translation id="6999131147875565462">Chrome se izvaja hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno</translation>
 <translation id="7000754031042624318">Izklopljeno v nastavitvah za Android</translation>
-<translation id="7016516562562142042">Dovoljeno za trenutni iskalnik</translation>
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 izbran}one{# izbran}two{# izbrana}few{# izbrani}other{# izbranih}}</translation>
@@ -425,7 +427,6 @@
 <translation id="7250468141469952378">Št. izbranih: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dovoljeno: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav za navidezno resničnost. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav za navidezno resničnost.</translation>
-<translation id="7302486331832100261">Obvestila običajno blokirate. Če želite to omogočiti, se dotaknite Podrobnosti.</translation>
 <translation id="7366415735885268578">Dodajanje spletnega mesta</translation>
 <translation id="7368695150573390554">Vsi podatki brez povezave bodo izbrisani</translation>
 <translation id="7383715096023715447">Nastavitve za domeno <ph name="DOMAIN" /></translation>
@@ -542,7 +543,6 @@
 <translation id="8928445016601307354">Preprečevanje ogleda in spreminjanja podatkov v napravah NFC spletnim mestom</translation>
 <translation id="8944485226638699751">Omejeno</translation>
 <translation id="8959122750345127698">Krmarjenje ni dosegljivo: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Pozabi</translation>
 <translation id="8990043154272859344">Odjavljeni boste z vseh spletnih mest.</translation>
 <translation id="8993853206419610596">Razširi vse zahteve</translation>
 <translation id="9002538116239926534">Če je ta možnost vklopljena, spletna mesta lahko shranjujejo podatke v napravi. Če je ta možnost izklopljena, spletna mesta ne smejo shranjevati podatkov v napravi.</translation>
@@ -555,8 +555,8 @@
 <translation id="913657688200966289">V <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" /> vklopite dovoljenja za aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Trenutna povečava/pomanjšava je <ph name="ZOOM_LEVEL" /> %%.</translation>
 <translation id="9162462602695099906">Ta stran je nevarna.</translation>
-<translation id="930525582205581608">Želite, da se to spletno mesto pozabi?</translation>
 <translation id="947156494302904893">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resnična oseba in ne bot</translation>
 <translation id="959682366969460160">Postanite bolj organizirani</translation>
 <translation id="967624055006145463">Shranjeni podatki</translation>
+<translation id="969975166333045662">Spletnemu mestu prepreči uporabo orodja za optimiziranje mehanizma V8.</translation>
 </translationbundle>

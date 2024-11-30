@@ -98,10 +98,6 @@ class CC_EXPORT FrameSequenceMetrics {
 
   struct CC_EXPORT CustomReportData {
     CustomReportData();
-    CustomReportData(uint32_t frames_expected,
-                     uint32_t frames_dropped,
-                     uint32_t jank_count,
-                     std::vector<Jank> janks);
 
     CustomReportData(const CustomReportData&);
     CustomReportData& operator=(const CustomReportData&);

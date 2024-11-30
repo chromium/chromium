@@ -102,8 +102,9 @@ void FakeDataSharingSDKDelegate::ReadGroups(
         const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>
         callback) {
   data_sharing_pb::ReadGroupsResult result;
-  for (const auto& raw_group_id : params.group_ids()) {
-    const GroupId group_id(raw_group_id);
+  for (const data_sharing_pb::ReadGroupsParams::GroupParams& group_params :
+       params.group_params()) {
+    const GroupId group_id(group_params.group_id());
     if (groups_.find(group_id) != groups_.end()) {
       *result.add_group_data() = groups_[group_id];
     } else {

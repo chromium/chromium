@@ -38,6 +38,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_util.h"
 
+using autofill::FieldGlobalId;
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
 using autofill::FormFieldData;
@@ -308,6 +309,12 @@ struct SignificantFields {
         }
     }
   }
+
+  // Returns true if the field was parsed as one of the significant fields.
+  bool HasField(const FormFieldData* field) const {
+    return (field == username) || (field == password) ||
+           (field == new_password) || (field == confirmation_password);
+  }
 };
 
 // For debugging.
@@ -421,30 +428,24 @@ void ParseUsingServerPredictions(std::vector<ProcessedField>& processed_fields,
   const FormFieldData* second_username = nullptr;
 
   for (const PasswordFieldPrediction& prediction : predictions.fields) {
-    ProcessedField* processed_field = nullptr;
-
+    ProcessedField* processed_field = FindField(processed_fields, prediction);
+    if (!processed_field) {
+      continue;
+    }
     CredentialFieldType field_type = DeriveFromFieldType(prediction.type);
 
     switch (field_type) {
       case CredentialFieldType::kUsername:
         if (!result->username) {
-          processed_field = FindField(processed_fields, prediction);
-          if (processed_field) {
-            result->username = processed_field->field;
-          }
+          result->username = processed_field->field;
         } else if (!second_username) {
-          processed_field = FindField(processed_fields, prediction);
-          if (processed_field) {
-            second_username = processed_field->field;
-          }
+          second_username = processed_field->field;
         } else {
           prevent_handling_two_usernames = true;
         }
         break;
       case CredentialFieldType::kSingleUsername:
-        processed_field = FindField(processed_fields, prediction);
-        if (processed_field &&
-            CanBeConsideredAsSingleUsernameField(processed_field->field)) {
+        if (CanBeConsideredAsSingleUsernameField(processed_field->field)) {
           result->username = processed_field->field;
           result->is_single_username = true;
           base::UmaHistogramBoolean(
@@ -457,13 +458,10 @@ void ParseUsingServerPredictions(std::vector<ProcessedField>& processed_fields,
         if (result->password) {
           prevent_handling_two_usernames = true;
         } else {
-          processed_field = FindField(processed_fields, prediction);
-          if (processed_field) {
-            if (!processed_field->is_password) {
-              continue;
-            }
-            result->password = processed_field->field;
+          if (!processed_field->is_password) {
+            continue;
           }
+          result->password = processed_field->field;
         }
         break;
       case CredentialFieldType::kNewPassword:
@@ -479,26 +477,21 @@ void ParseUsingServerPredictions(std::vector<ProcessedField>& processed_fields,
         // before the user has thought of and typed their new password
         // elsewhere. See https://crbug.com/902700 for more details.
         if (!result->new_password) {
-          processed_field = FindField(processed_fields, prediction);
-          if (processed_field) {
-            if (processed_field->is_password || prediction.is_override) {
-              // Overrides ignore field type since the overrides are curated by
-              // developers.
-              result->new_password = processed_field->field;
-              processed_field->is_predicted_as_password = true;
-            } else {
-              // Don't show automatic password generation suggestion, but allow
-              // the manual generation.
-              result->manual_generation_enabled_fields.push_back(
-                  processed_field->field->renderer_id());
-            }
+          if (processed_field->is_password || prediction.is_override) {
+            // Overrides ignore field type since the overrides are curated by
+            // developers.
+            result->new_password = processed_field->field;
+            processed_field->is_predicted_as_password = true;
+          } else {
+            // Don't show automatic password generation suggestion, but allow
+            // the manual generation.
+            result->manual_generation_enabled_fields.push_back(
+                processed_field->field->renderer_id());
           }
         }
         break;
       case CredentialFieldType::kConfirmationPassword:
-        processed_field = FindField(processed_fields, prediction);
-        if (processed_field &&
-            (processed_field->is_password || prediction.is_override)) {
+        if (processed_field->is_password || prediction.is_override) {
           result->confirmation_password = processed_field->field;
           processed_field->is_predicted_as_password = true;
         }
@@ -506,10 +499,7 @@ void ParseUsingServerPredictions(std::vector<ProcessedField>& processed_fields,
       case CredentialFieldType::kNonCredential:
         // Fields with non credential fields predictions do not participate in
         // filling/saving.
-        processed_field = FindField(processed_fields, prediction);
-        if (processed_field) {
-          processed_field->server_hints_non_credential_field = true;
-        }
+        processed_field->server_hints_non_credential_field = true;
         break;
       case CredentialFieldType::kNone:
         break;
@@ -905,6 +895,78 @@ void ParseUsingBaseHeuristics(
   return;
 }
 
+// Tries to parse `processed_fields` based on model `predictions'.
+// Iterate over the `processed_fields`, looking up fields in `predictions`,
+// returns true if predictions were available for all the fields in the form.
+bool ParseUsingModelPredictions(
+    std::vector<ProcessedField>& processed_fields,
+    const base::flat_map<FieldGlobalId, autofill::FieldType>& predictions,
+    FormDataParser::Mode mode,
+    SignificantFields* result) {
+  // Verify that predictions are available for all fields.
+  bool predictions_complete = true;
+
+  for (auto& field : processed_fields) {
+    auto prediction = predictions.find(field.field->global_id());
+    if (prediction == predictions.end()) {
+      predictions_complete = false;
+      continue;
+    }
+
+    switch (prediction->second) {
+      case autofill::USERNAME:
+        result->username = field.field;
+        break;
+      case autofill::PASSWORD:
+        if (!field.is_password) {
+          // TODO(crbug.com/371933424): Log metrics about cleartext fields that
+          // the model predicted as password fields.
+          break;
+        }
+        result->password = field.field;
+        break;
+      case autofill::ACCOUNT_CREATION_PASSWORD:
+        result->new_password = field.field;
+        // Enable automatic and manual password generation.
+        field.is_predicted_as_password = true;
+        result->manual_generation_enabled_fields.push_back(
+            field.field->renderer_id());
+        break;
+      case autofill::CONFIRMATION_PASSWORD:
+        result->confirmation_password = field.field;
+        field.is_predicted_as_password = true;
+        break;
+      case autofill::UNKNOWN_TYPE:
+        // The field is unrelated to passwords, do not update the parsing
+        // result.
+        break;
+      case autofill::NO_SERVER_DATA:
+        predictions_complete = false;
+        break;
+      default:
+        NOTREACHED()
+            << "Unexpected field type in password manager model predictions.";
+    }
+  }
+
+  // If the model suggested there is a confirmation field but no new password
+  // field, something went wrong. Clear all received password predictions and
+  // consider parsing incomplete.
+  if (result->confirmation_password && !result->new_password) {
+    result->ClearAllPasswordFields();
+    predictions_complete = false;
+  }
+
+  if (predictions_complete && result->username && !result->HasPasswords()) {
+    result->is_single_username = true;
+  }
+
+  // TODO(crbug.com/371933424): Log metrics about renderer-recognized
+  // credential forms the model predicted to be unrelated to passwords.
+
+  return predictions_complete;
+}
+
 // Set username and password fields in |password_form| based on
 // |significant_fields| .
 void SetFields(const SignificantFields& significant_fields,
@@ -948,8 +1010,8 @@ void SetFields(const SignificantFields& significant_fields,
 // ProcessedField instances, or an empty vector if there was not a single
 // password field. Also, computes the vector of all password values and
 // associated element names in |all_alternative_passwords|, and similarly for
-// usernames in |all_alternative_usernames|. If |mode| is |kSaving|, fields with
-// empty values are ignored.
+// usernames in |all_alternative_usernames|. If |mode| is |kSaving|, fields
+// with empty values are ignored.
 std::vector<ProcessedField> ProcessFields(
     const std::vector<FormFieldData>& fields,
     AlternativeElementVector* all_alternative_passwords,
@@ -1100,6 +1162,24 @@ bool FieldMaxLengthAllowsPasswordGeneration(const FormFieldData& field) {
          autofill::password_generation::kMinimumPasswordLength;
 }
 
+bool ShouldUpdateUsernameDetectionMethod(
+    UsernameDetectionMethod method,
+    const SignificantFields& significant_fields) {
+  return (method == UsernameDetectionMethod::kNoUsernameDetected) &&
+         significant_fields.username;
+}
+
+bool ShouldContinueParsing(bool parsing_complete_with_model_predictions,
+                           const SignificantFields& significant_fields) {
+  // Model predictions provide field types for all fields in the form and are
+  // the most reliable source of data. If the form was fully parsed with model
+  // predictions, no further parsing is required to fill the gaps.
+  return !parsing_complete_with_model_predictions &&
+         // Single username forms consist of username only. If the username is
+         // already found, no further action is required.
+         !significant_fields.is_single_username;
+}
+
 }  // namespace
 
 FormParsingResult::FormParsingResult() = default;
@@ -1150,11 +1230,25 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
   SignificantFields significant_fields;
   UsernameDetectionMethod method = UsernameDetectionMethod::kNoUsernameDetected;
 
-  // (1) First, try to parse with server predictions.
-  if (server_predictions_) {
+  // (1) Parse with model predictions if they are available.
+  bool parsing_complete_with_model_predictions = false;
+  if (model_predictions_.has_value()) {
+    parsing_complete_with_model_predictions = ParseUsingModelPredictions(
+        processed_fields, *model_predictions_, mode, &significant_fields);
+    if (ShouldUpdateUsernameDetectionMethod(method, significant_fields)) {
+      method = UsernameDetectionMethod::kModelPrediction;
+    }
+  }
+
+  // (2)  If that failed, try to parse with server predictions.
+  // TODO(crbug.com/371933424): Allow applying manual overrides to server
+  // predictions.
+  if (ShouldContinueParsing(parsing_complete_with_model_predictions,
+                            significant_fields) &&
+      server_predictions_.has_value()) {
     ParseUsingServerPredictions(processed_fields, *server_predictions_, mode,
                                 &significant_fields);
-    if (significant_fields.username) {
+    if (ShouldUpdateUsernameDetectionMethod(method, significant_fields)) {
       method = UsernameDetectionMethod::kServerSidePrediction;
     }
   }
@@ -1168,10 +1262,12 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
       suggestion_banned_fields.push_back(field.field->renderer_id());
     }
   }
-  std::erase_if(processed_fields, [](const ProcessedField& field) {
-    return field.server_hints_non_credential_field;
-  });
-  // Server classified all fields as not related to credentials, early return.
+  std::erase_if(processed_fields,
+                [&significant_fields](const ProcessedField& field) {
+                  return field.server_hints_non_credential_field &&
+                         !significant_fields.HasField(field.field);
+                });
+  // All fields are not related to credentials, early return.
   if (processed_fields.empty()) {
     return FormParsingResult();
   }
@@ -1186,28 +1282,27 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
     }
   }
 
-  // (2) If that failed, try to parse with autocomplete attributes.
-  if (!significant_fields.is_single_username) {
+  // (3) If parsing is not complete, try to parse with autocomplete attributes.
+  if (ShouldContinueParsing(parsing_complete_with_model_predictions,
+                            significant_fields)) {
     ParseUsingAutocomplete(processed_fields, mode, &significant_fields);
-    if (method == UsernameDetectionMethod::kNoUsernameDetected &&
-        significant_fields.username) {
+    if (ShouldUpdateUsernameDetectionMethod(method, significant_fields)) {
       method = UsernameDetectionMethod::kAutocompleteAttribute;
     }
   }
 
-  // (3) Now try to fill the gaps.
   const bool username_found_before_heuristic = significant_fields.username;
   const bool new_password_found_before_heuristic =
       significant_fields.new_password;
 
-  // Try to parse with base heuristic.
-  if (!significant_fields.is_single_username) {
+  // (4) If there are still gaps to fill, attempt to fill them using heuristics.
+  if (ShouldContinueParsing(parsing_complete_with_model_predictions,
+                            significant_fields)) {
     Interactability username_max = Interactability::kUnlikely;
     ParseUsingBaseHeuristics(processed_fields, stored_usernames, mode,
                              &significant_fields, &username_max,
                              &readonly_status_);
-    if (method == UsernameDetectionMethod::kNoUsernameDetected &&
-        significant_fields.username) {
+    if (ShouldUpdateUsernameDetectionMethod(method, significant_fields)) {
       method = UsernameDetectionMethod::kBaseHeuristic;
     }
 
@@ -1217,8 +1312,8 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
     // analysis.
     if (!username_found_before_heuristic) {
       const FormFieldData* username_field_by_context =
-          FindUsernameInPredictions(form_data.username_predictions(),
-                                    processed_fields, username_max);
+          FindUsernameInHtmlParserResult(form_data.username_predictions(),
+                                         processed_fields, username_max);
       if (username_field_by_context &&
           !(mode == FormDataParser::Mode::kSaving &&
             username_field_by_context->value().empty())) {
@@ -1320,7 +1415,7 @@ std::string GetSignonRealm(const GURL& url) {
   return url.ReplaceComponents(rep).spec();
 }
 
-const FormFieldData* FindUsernameInPredictions(
+const FormFieldData* FindUsernameInHtmlParserResult(
     const std::vector<autofill::FieldRendererId>& username_predictions,
     const std::vector<ProcessedField>& processed_fields,
     Interactability username_max) {
@@ -1353,10 +1448,10 @@ autofill::PasswordFormClassification ClassifyAsPasswordForm(
   autofill::PasswordFormClassification result{
       .type = pw_form->GetPasswordFormType()};
   auto maybe_assign = [frame = renderer_form.host_frame()](
-                          std::optional<autofill::FieldGlobalId>& member,
+                          std::optional<FieldGlobalId>& member,
                           autofill::FieldRendererId id) {
     if (!id.is_null()) {
-      member = autofill::FieldGlobalId(frame, id);
+      member = FieldGlobalId(frame, id);
     }
   };
   maybe_assign(result.username_field, pw_form->username_element_renderer_id);

@@ -56,6 +56,8 @@ class MahiCondensedMenuButton : public views::LabelButton {
     SetImageModel(views::Button::ButtonState::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
                       kMahiSparkIcon, ui::kColorSysOnSurface, kButtonIconSize));
+    SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP));
     SetImageLabelSpacing(kButtonIconLabelSpacing);
     SetBorder(views::CreateEmptyBorder(kButtonBorderInsets));
     SetInstallFocusRingOnFocus(false);

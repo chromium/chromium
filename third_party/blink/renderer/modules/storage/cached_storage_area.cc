@@ -764,7 +764,7 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
           break;
         }
         case StorageFormat::Latin1:
-          result = String(base::span(input).subspan(1));
+          result = String(base::span(input).subspan<1>());
           break;
         default:
           corrupt = true;

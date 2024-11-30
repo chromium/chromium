@@ -96,6 +96,7 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   void setAriaOwnsElements(HeapVector<Member<Element>>* given_elements);
 
   bool HasAttribute(const QualifiedName& attribute) const;
+  bool HasAnyAttribute() const { return !accessibility_semantics_map_.empty(); }
   const HashMap<QualifiedName, AtomicString>& GetAttributes() const;
 
  private:

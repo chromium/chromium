@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
-import android.content.Context;
-import android.content.Intent;
-
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -65,17 +62,5 @@ class PrivacyGuideUtils {
 
     static @CookieControlsMode int getCookieControlsMode(Profile profile) {
         return UserPrefs.get(profile).getInteger(PrefNames.COOKIE_CONTROLS_MODE);
-    }
-
-    /**
-     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
-     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
-     * TODO(crbug.com/40751023): Update when LaunchIntentDispatcher is (partially-)modularized.
-     */
-    public interface CustomTabIntentHelper {
-        /**
-         * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
-         */
-        Intent createCustomTabActivityIntent(Context context, Intent intent);
     }
 }

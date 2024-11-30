@@ -15,7 +15,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, PageDisplayerElement, Router, routes, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, PageDisplayerElement, Router, routes, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -51,14 +51,6 @@ suite('<os-settings-ui> page visibility', () => {
         '#left os-settings-menu');
     assert(menuEl);
     menu = menuEl;
-
-    // Force load advanced page container
-    const advancedPageTemplate =
-        mainPageContainer.shadowRoot!.querySelector<SettingsIdleLoadElement>(
-            '#advancedPageTemplate');
-    assert(advancedPageTemplate);
-    await advancedPageTemplate.get();
-    flush();
   }
 
   function queryMenuItemByPath(path: string): HTMLElement|null {

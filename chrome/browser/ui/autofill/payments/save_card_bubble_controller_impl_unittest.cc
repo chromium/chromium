@@ -71,7 +71,7 @@ class ObserveHideTestAutofillBubble : public AutofillBubbleBase {
  public:
   explicit ObserveHideTestAutofillBubble(content::WebContents* web_contents)
       : web_contents_(web_contents->GetWeakPtr()) {}
-  virtual ~ObserveHideTestAutofillBubble() = default;
+  ~ObserveHideTestAutofillBubble() override = default;
 
   void Show() { is_visible_ = true; }
 
@@ -1504,21 +1504,6 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             u"To pay faster next time, save your card and encrypted security "
             u"code to your device");
-}
-
-TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
-       UploadCardSaveWithCvcDialogContent) {
-  // Show the server card save with CVC bubble.
-  ShowUploadBubble(
-      /*options=*/SaveCreditCardOptions()
-          .with_card_save_type(CardSaveType::kCardSaveWithCvc)
-          .with_show_prompt(true));
-
-  ASSERT_EQ(BubbleType::UPLOAD_SAVE, controller()->GetBubbleType());
-  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
-  EXPECT_EQ(controller()->GetExplanatoryMessage(),
-            u"To pay faster next time, save your card, encrypted security "
-            u"code, and billing address in your Google Account");
 }
 
 using UploadCardUpdatedDesktopUiTestData =

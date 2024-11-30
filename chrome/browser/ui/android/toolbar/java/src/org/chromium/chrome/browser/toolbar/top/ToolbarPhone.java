@@ -117,10 +117,6 @@ public class ToolbarPhone extends ToolbarLayout
     protected static final int ENTERING_TAB_SWITCHER = 2;
     protected static final int EXITING_TAB_SWITCHER = 3;
 
-    // Finch params and default values for code cleanup.
-    private static final String PARAM_REMOVE_REDUNDANT_ANIM_CALL =
-            "remove_redundant_ntpupdate_in_lbvisualupdate";
-    private static final boolean PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL = true;
     private static final String PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR =
             "remove_gts_layout_location_bar";
     private static final boolean PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR_DEFAULT_VAL = true;
@@ -604,14 +600,24 @@ public class ToolbarPhone extends ToolbarLayout
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
-
         if (!mDisableLocationBarRelayout) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
             boolean changed =
                     layoutLocationBarWithoutAnimationExpansion(
                             MeasureSpec.getSize(widthMeasureSpec));
-            updateUrlExpansionAnimation();
+            // Avoid URL expansion while in or transitioning to/from tab switcher.
+            // updateUrlExpansionAnimation() is called for these states via
+            // setTabSwitcherMode()/onTabSwitcherTransitionFinished() ->
+            // updateVisualsForLocationBarState()
+            if (!ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()
+                    || !isInTabSwitcherMode()) {
+                if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
+                    updateUrlExpansionAnimation();
+                } else {
+                    invokeTransition(false);
+                }
+            }
             if (!changed) return;
         } else {
             updateUnfocusedLocationBarLayoutParams();
@@ -899,7 +905,11 @@ public class ToolbarPhone extends ToolbarLayout
             updateLocationBarForNtp(mVisualState, urlHasFocus());
         }
         updateUrlExpansionFraction();
-        updateUrlExpansionAnimation();
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
+            updateUrlExpansionAnimation();
+        } else {
+            invokeTransition(false);
+        }
     }
 
     /**
@@ -1010,7 +1020,11 @@ public class ToolbarPhone extends ToolbarLayout
     private void setUrlFocusChangeFraction(float fraction) {
         mUrlFocusChangeFraction = fraction;
         updateUrlExpansionFraction();
-        updateUrlExpansionAnimation();
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
+            updateUrlExpansionAnimation();
+        } else {
+            invokeTransition(false);
+        }
     }
 
     private void updateUrlExpansionFraction() {
@@ -1027,6 +1041,23 @@ public class ToolbarPhone extends ToolbarLayout
      * focus change or scrolling the New Tab Page.
      */
     private void updateUrlExpansionAnimation() {
+        // When exiting tab switcher, run / reset NTP animations based on if page is NTP.
+        Tab currentTab = getToolbarDataProvider().getTab();
+        if (ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()
+                && !ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()
+                && currentTab != null
+                && mTabSwitcherState == EXITING_TAB_SWITCHER) {
+            if (isLocationBarShownInNtp()) {
+                updateNtpTransitionAnimation();
+            } else {
+                // Reset these values in case we transitioned to a different page during the
+                // transition.
+                resetNtpAnimationValues();
+            }
+            // Return since we do not need to perform focus change animations here.
+            return;
+        }
+
         // TODO(crbug.com/40585866): Prevent url expansion signals from happening while the
         // toolbar is not visible (e.g. in tab switcher mode).
         if (isInTabSwitcherMode()) return;
@@ -1102,9 +1133,11 @@ public class ToolbarPhone extends ToolbarLayout
 
         locationBarBaseTranslationX *= 1f - mUrlExpansionFraction;
 
-        mLocationBarBackgroundNtpOffset.setEmpty();
-        mLocationBarNtpOffsetLeft = 0;
-        mLocationBarNtpOffsetRight = 0;
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
+            mLocationBarBackgroundNtpOffset.setEmpty();
+            mLocationBarNtpOffsetLeft = 0;
+            mLocationBarNtpOffsetRight = 0;
+        }
 
         boolean isLocationBarShownInNtp = isLocationBarShownInNtp();
         Tab currentTab = getToolbarDataProvider().getTab();
@@ -1112,12 +1145,14 @@ public class ToolbarPhone extends ToolbarLayout
             getToolbarDataProvider()
                     .getNewTabPageDelegate()
                     .setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
-            if (isLocationBarShownInNtp) {
-                updateNtpTransitionAnimation();
-            } else {
-                // Reset these values in case we transitioned to a different page during the
-                // transition.
-                resetNtpAnimationValues();
+            if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
+                if (isLocationBarShownInNtp) {
+                    updateNtpTransitionAnimation();
+                } else {
+                    // Reset these values in case we transitioned to a different page during the
+                    // transition.
+                    resetNtpAnimationValues();
+                }
             }
         }
 
@@ -1258,6 +1293,10 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private void resetNtpAnimationValues() {
         mLocationBarBackgroundNtpOffset.setEmpty();
+        if (ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
+            mLocationBarNtpOffsetLeft = 0;
+            mLocationBarNtpOffsetRight = 0;
+        }
         mActiveLocationBarBackground = mLocationBarBackground;
         mNtpSearchBoxTranslation.set(0, 0);
         mLocationBar.getPhoneCoordinator().setTranslationY(0);
@@ -1900,7 +1939,6 @@ public class ToolbarPhone extends ToolbarLayout
                     layoutLocationBar(getMeasuredWidth());
                 }
             }
-
             updateViewsForTabSwitcherMode();
         }
 
@@ -2324,7 +2362,11 @@ public class ToolbarPhone extends ToolbarLayout
         boolean wasShowingNtp = ntpDelegate.wasShowingNtp();
         float previousNtpScrollFraction = mNtpSearchBoxScrollFraction;
 
-        resetNtpAnimationValues();
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
+            resetNtpAnimationValues();
+        } else {
+            invokeTransition(true);
+        }
         ntpDelegate.setSearchBoxScrollListener(this::onNtpScrollChanged);
         if (ntpDelegate.isLocationBarShown()) {
             updateToNtpBackground();
@@ -2550,7 +2592,11 @@ public class ToolbarPhone extends ToolbarLayout
             mLayoutUpdater.run();
         }
         updateShadowVisibility();
-        updateUrlExpansionAnimation();
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
+            updateUrlExpansionAnimation();
+        } else {
+            invokeTransition(false);
+        }
 
         // This exception is to prevent early change of theme color when exiting the tab switcher
         // since currently visual state does not map correctly to tab switcher state. See
@@ -2560,10 +2606,8 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         if (!visualStateChanged) {
-            if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.TOOLBAR_PHONE_CLEANUP,
-                    PARAM_REMOVE_REDUNDANT_ANIM_CALL,
-                    PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL)) {
+            if (!ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()) {
+                assert !ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue();
                 if (mVisualState == VisualState.NEW_TAB_NORMAL) {
                     updateNtpTransitionAnimation();
                 } else {
@@ -2585,11 +2629,8 @@ public class ToolbarPhone extends ToolbarLayout
         updateModernLocationBarColor(getLocationBarColorForToolbarColor(currentPrimaryColor));
 
         mLocationBar.updateVisualsForState();
-
-        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.TOOLBAR_PHONE_CLEANUP,
-                PARAM_REMOVE_REDUNDANT_ANIM_CALL,
-                PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL)) {
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()) {
+            assert !ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue();
             // These are used to skip setting state unnecessarily while in the tab switcher.
             boolean inOrEnteringStaticTab =
                     mTabSwitcherState == STATIC_TAB || mTabSwitcherState == EXITING_TAB_SWITCHER;
@@ -2945,5 +2986,39 @@ public class ToolbarPhone extends ToolbarLayout
 
     void setNtpSearchBoxScrollFractionForTesting(float ntpSearchBoxScrollFraction) {
         mNtpSearchBoxScrollFraction = ntpSearchBoxScrollFraction;
+    }
+
+    /**
+     * Triggers NTP transition animation (if toolbar is shown on NTP) and URL expansion animation.
+     *
+     * @param resetNtpTransition if the transition is to reset NTP animation.
+     */
+    private void invokeTransition(boolean resetNtpTransition) {
+        assert (ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()
+                && ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue());
+        if (resetNtpTransition) {
+            resetNtpAnimationValues();
+            return;
+        }
+
+        // No-op when entering or in tab switcher.
+        if (inOrEnteringTabSwitcher()) {
+            return;
+        }
+
+        /*
+         * Invoke NTP translation before URL expansion - NTP animation determines offsets for
+         * locationBar and urlAction X-translations during URL expansion.
+         */
+        if (isLocationBarShownInNtp()) {
+            updateNtpTransitionAnimation();
+        } else {
+            resetNtpAnimationValues();
+        }
+        updateUrlExpansionAnimation();
+    }
+
+    private boolean inOrEnteringTabSwitcher() {
+        return mTabSwitcherState == TAB_SWITCHER || mTabSwitcherState == ENTERING_TAB_SWITCHER;
     }
 }

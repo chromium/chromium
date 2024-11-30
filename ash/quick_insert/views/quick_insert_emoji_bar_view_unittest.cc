@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/model/quick_insert_action_type.h"
 #include "ash/quick_insert/quick_insert_search_result.h"
 #include "ash/quick_insert/quick_insert_test_util.h"
@@ -17,6 +18,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -54,7 +56,7 @@ class MockEmojiBarViewDelegate : public QuickInsertEmojiBarViewDelegate {
               SelectSearchResult,
               (const QuickInsertSearchResult&),
               (override));
-  MOCK_METHOD(void, ToggleGifs, (), (override));
+  MOCK_METHOD(void, ToggleGifs, (bool), (override));
   MOCK_METHOD(void, ShowEmojiPicker, (ui::EmojiPickerCategory), (override));
 };
 
@@ -236,7 +238,8 @@ TEST_F(QuickInsertEmojiBarViewTest,
       l10n_util::GetStringUTF16(IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
 }
 
-TEST_F(QuickInsertEmojiBarViewTest, ClickingGifsButton) {
+TEST_F(QuickInsertEmojiBarViewTest,
+       ClickingGifsButtonDoesNotToggleCheckedState) {
   MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -246,9 +249,30 @@ TEST_F(QuickInsertEmojiBarViewTest, ClickingGifsButton) {
           &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/true));
   widget->Show();
 
-  EXPECT_CALL(mock_delegate, ToggleGifs()).Times(1);
+  EXPECT_CALL(mock_delegate, ToggleGifs(false)).Times(2);
 
   ViewDrawnWaiter().Wait(emoji_bar->gifs_button_for_testing());
+  LeftClickOn(*emoji_bar->gifs_button_for_testing());
+  LeftClickOn(*emoji_bar->gifs_button_for_testing());
+}
+
+TEST_F(QuickInsertEmojiBarViewTest, ClickingGifsToggleTogglesCheckedState) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
+  MockEmojiBarViewDelegate mock_delegate;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* emoji_bar =
+      widget->SetContentsView(std::make_unique<QuickInsertEmojiBarView>(
+          &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/true));
+  widget->Show();
+
+  testing::InSequence seq;
+  EXPECT_CALL(mock_delegate, ToggleGifs(true)).Times(1);
+  EXPECT_CALL(mock_delegate, ToggleGifs(false)).Times(1);
+
+  ViewDrawnWaiter().Wait(emoji_bar->gifs_button_for_testing());
+  LeftClickOn(*emoji_bar->gifs_button_for_testing());
   LeftClickOn(*emoji_bar->gifs_button_for_testing());
 }
 

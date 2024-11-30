@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -669,6 +668,66 @@ bool IsExemptFromInlineBlockCheck(ax::mojom::blink::Role role) {
          role == ax::mojom::blink::Role::kEmbeddedObject;
 }
 
+bool AXNodeObject::ShouldIncludeCustomElement() const {
+  Element* element = GetElement();
+  DCHECK(element);
+  DCHECK(element->IsCustomElement());
+  // Custom elements are generally ignored in the tree, with some exceptions:
+
+  // * Has aria role. This indicates the developer wants it in the tree.
+  if (RawAriaRole() != ax::mojom::blink::Role::kUnknown ||
+      role_ == ax::mojom::blink::Role::kGenericContainer) {
+    return true;
+  }
+
+  // * Has aria-live. This is a legitimate use case for ARIA semantics on
+  // a custom element.
+  if (HasAriaAttribute(html_names::kAriaLiveAttr)) {
+    return true;
+  }
+
+  // * Has aria-owns. Not keeping an element with aria-owns in the tree
+  // would break tree reordering expectations and create confusing situations.
+  if (HasARIAOwns(element)) {
+    return true;
+  }
+
+  // * Uses element internals with an accessibility attribute set.
+  // As element internals are not a convenient way to declare semantics, this
+  // indicates that it is more about hiding an implementation of semantics on
+  // the custom element, they are not likely to be used for semantics that
+  // are to be passed down into the shadow subtree by copying.
+  if (element->GetElementInternals() &&
+      element->GetElementInternals()->HasAnyAttribute()) {
+    return true;
+  }
+
+  // * Has element attributes (explicotly set attribute elements)
+  // As element internals are not a convenient way to declare semantics, and
+  // are used to create relations that cross shadow boundaries, they would
+  // not be useful for passing semantics via DOM attributes.
+  if (GetDocument()->HasExplicitlySetAttrElements(element)) {
+    return true;
+  }
+
+  // * Focusable.
+  if (element->IsKeyboardFocusable(
+          Element::UpdateBehavior::kNoneForAccessibility)) {
+    return true;
+  }
+
+  // * <webview> (special deprecated element used in ChromeOS WebUI apps, and
+  //   kept in tree to pass AutomationApiTest.LocationInWebView).
+  //   Custom elements in actual web content always have a hyphenated name,
+  //   and therefore <webview> in real web content cannot be a custom element.
+  DEFINE_STATIC_LOCAL(const AtomicString, web_view_tag, ("webview"));
+  if (element->HasLocalName(web_view_tag)) {
+    return true;
+  }
+
+  return false;
+}
+
 AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     IgnoredReasons* ignored_reasons) const {
   DCHECK(GetDocument());
@@ -716,6 +775,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
     }
     return kIgnoreObject;
+  }
+
+  // Custom elements are generally ignored in the tree.
+  if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+    if (element->IsCustomElement() && !ShouldIncludeCustomElement()) {
+      return kIgnoreObject;
+    }
   }
 
   if (IsA<SVGElement>(node)) {
@@ -932,12 +998,28 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
   }
 
-  // Using the title or accessibility description (so we
-  // check if there's some kind of accessible name for the element)
-  // to decide an element's visibility is not as definitive as
-  // previous checks, so this should remain as one of the last.
-  if (HasAriaAttribute() ||
-      !GetElement()->FastGetAttribute(kTitleAttr).empty()) {
+  // Interesting ARIA properties are enough to cause objects to be included,
+  // unless the computed role is none. Note that global ARIA properties usually
+  // undo role=none (exception has been made for custom roles).
+  // See https://w3c.github.io/aria/#conflict_resolution_presentation_none
+  // for more details.
+  if (ElementHasAnyAriaAttribute()) {
+    if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+      // role="none" is now expected to be on some custom elements, where it
+      // will remove the custom element from the ax tree, in order to avoid
+      // duplicate semantics when they are copied to descendant elements inside
+      // the custom element's dom.
+      if (RoleValue() != ax::mojom::blink::Role::kNone ||
+          !GetElement()->IsCustomElement()) {
+        return kIncludeObject;
+      }
+    } else {
+      return kIncludeObject;
+    }
+  }
+
+  // Using a title for a name or description causes an object to be included.
+  if (!GetElement()->FastGetAttribute(kTitleAttr).empty()) {
     return kIncludeObject;
   }
 
@@ -1046,7 +1128,6 @@ bool AXNodeObject::ComputeIsIgnored(
   }
 
   // Handle content that is either visible or in a canvas subtree.
-
   AXObjectInclusion include = ShouldIncludeBasedOnSemantics(ignored_reasons);
   if (include == kIncludeObject) {
     return false;
@@ -5604,8 +5685,8 @@ void AXNodeObject::AddNodeChildren() {
       closest_layout_parent->IsReadingFlowContainer()) {
     HeapHashSet<Member<Node>> ax_children_added;
     // Add all reading flow items first, in the reading flow order.
-    for (Element* reading_flow_item :
-         closest_layout_parent->GetLayoutBox()->ReadingFlowElements()) {
+    for (Node* reading_flow_item :
+         closest_layout_parent->GetLayoutBox()->ReadingFlowNodes()) {
       // reading_flow_item or its parent (for example, display: contents) might
       // be a child of element. Loop the parents and only add the node if its
       // LayoutTreeBuilderTraversal::Parent is this element.

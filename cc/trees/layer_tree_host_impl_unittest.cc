@@ -297,7 +297,8 @@ class LayerTreeHostImplTestBase : public testing::Test,
                                          ElementListType tree_type) override {}
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override {}
-  void NotifyThroughputTrackerResults(CustomTrackerResults results) override {}
+  void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) override {}
 
   void DidObserveFirstScrollDelay(
       int source_frame_number,
@@ -1067,7 +1068,8 @@ class TestInputHandlerClient : public InputHandlerClient {
   void DidFinishImplFrame() override {}
   bool HasQueuedInput() const override { return false; }
   void SetScrollEventDispatchMode(
-      InputHandlerClient::ScrollEventDispatchMode mode) override {}
+      InputHandlerClient::ScrollEventDispatchMode mode,
+      double scroll_deadline_ratio) override {}
 
   gfx::PointF last_set_scroll_offset() { return last_set_scroll_offset_; }
 
@@ -2941,11 +2943,8 @@ TEST_P(LayerTreeHostImplTest, SnapAnimationTargetUpdated) {
   EXPECT_FALSE(
       GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   // Finish the smooth scroll animation for wheel.
-  const int scroll_animation_duration_ms =
-      features::IsImpulseScrollAnimationEnabled() ? 300 : 150;
-  BeginImplFrameAndAnimate(
-      begin_frame_args,
-      start_time + base::Milliseconds(scroll_animation_duration_ms));
+  BeginImplFrameAndAnimate(begin_frame_args,
+                           start_time + base::Milliseconds(150));
 
   // At the end of the previous scroll animation, a new animation for the
   // snapping should have started.
@@ -14476,8 +14475,10 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
 
   BeginMainFrameMetrics begin_frame_metrics;
   begin_frame_metrics.should_measure_smoothness = true;
-  host_impl_->ReadyToCommit(args, true, &begin_frame_metrics);
-  dropped_frame_counter->SetTimeFcpReceivedForTesting(args.frame_time);
+  host_impl_->ReadyToCommit(args, /*scroll_and_viewport_changes_synced=*/true,
+                            &begin_frame_metrics, /*commit_timeout=*/false);
+  dropped_frame_counter->SetTimeFirstContentfulPaintReceivedForTesting(
+      args.frame_time);
   dropped_frame_counter->OnEndFrame(
       args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
   EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 1u);
@@ -14508,7 +14509,8 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
       deadline, interval, viz::BeginFrameArgs::NORMAL);
   BeginMainFrameMetrics begin_frame_metrics;
   begin_frame_metrics.should_measure_smoothness = true;
-  host_impl_->ReadyToCommit(arg1, true, &begin_frame_metrics);
+  host_impl_->ReadyToCommit(arg1, /*scroll_and_viewport_changes_synced=*/true,
+                            &begin_frame_metrics, /*commit_timeout=*/false);
   EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
   total_frame_counter->set_total_frames_for_testing(1u);
@@ -14523,7 +14525,8 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
       deadline, interval, viz::BeginFrameArgs::NORMAL);
   // Consecutive BeginFrameMetrics with the same |should_measure_smoothness|
   // flag should not reset the counter.
-  host_impl_->ReadyToCommit(arg2, true, &begin_frame_metrics);
+  host_impl_->ReadyToCommit(arg2, /*scroll_and_viewport_changes_synced=*/true,
+                            &begin_frame_metrics, /*commit_timeout=*/false);
   EXPECT_EQ(total_frame_counter->total_frames(), 1u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
 }
@@ -15209,13 +15212,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollUpdateTargetBeforeStarting) {
 
   // Verify no jump.
   float y = CurrentScrollOffset(scrolling_layer).y();
-  if (features::IsImpulseScrollAnimationEnabled()) {
-    // Impulse scroll animation is faster than non-impulse, which results in a
-    // traveled distance larger than the original 50px.
-    EXPECT_TRUE(y > 50 && y < 100);
-  } else {
-    EXPECT_TRUE(y > 1 && y < 49);
-  }
+  EXPECT_TRUE(y > 1 && y < 49);
 }
 
 TEST_P(LayerTreeHostImplTest, ScrollAnimatedWithDelay) {
@@ -15262,8 +15259,7 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedWithDelay) {
   begin_frame_args.frame_id.sequence_number++;
   host_impl_->WillBeginImplFrame(begin_frame_args);
   host_impl_->UpdateAnimationState(true);
-  EXPECT_NEAR((features::IsImpulseScrollAnimationEnabled() ? 87 : 50),
-              CurrentScrollOffset(scrolling_layer).y(), 1);
+  EXPECT_EQ(50, CurrentScrollOffset(scrolling_layer).y());
   host_impl_->DidFinishImplFrame(begin_frame_args);
 
   // Update target.
@@ -17718,69 +17714,6 @@ TEST_F(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
                   .find(input)
                   ->second.second->EqualsForTesting(record));
   EXPECT_FALSE(did_prepare_tiles_);
-}
-
-// Verify that the device scale factor is not used to rescale scrollbar deltas
-// in percent-based scrolling.
-TEST_P(LayerTreeHostImplTest, PercentBasedScrollbarDeltasDSF3) {
-  LayerTreeSettings settings = DefaultSettings();
-  settings.percent_based_scrolling = true;
-  settings.use_painted_device_scale_factor = true;
-  CreateHostImpl(settings, CreateLayerTreeFrameSink());
-
-  const gfx::Size viewport_size = gfx::Size(800, 800);
-  SetupViewportLayersOuterScrolls(viewport_size, viewport_size);
-
-  LayerImpl* content_layer = AddContentLayer();
-  LayerImpl* scroll_layer = AddScrollableLayer(
-      content_layer, gfx::Size(185, 500), gfx::Size(185, 3800));
-
-  auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
-      host_impl_->active_tree(), ScrollbarOrientation::kVertical, false, true);
-  SetupScrollbarLayer(scroll_layer, scrollbar);
-
-  scrollbar->SetBounds(gfx::Size(15, 500));
-
-  scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
-  scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 485));
-
-  scrollbar->SetBackButtonRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(15, 15)));
-  scrollbar->SetForwardButtonRect(
-      gfx::Rect(gfx::Point(0, 485), gfx::Size(15, 15)));
-  scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(185, 0));
-
-  DrawFrame();
-
-  TestInputHandlerClient input_handler_client;
-  GetInputHandler().BindToClient(&input_handler_client);
-
-  // Test scrolling with device scale factor = 3.
-  const float expected_delta = kPercentDeltaForDirectionalScroll * 500;
-
-  host_impl_->active_tree()->set_painted_device_scale_factor(3);
-
-  InputHandlerPointerResult scroll_result =
-      GetInputHandler().MouseDown(gfx::PointF(190, 490), false);
-  GetInputHandler().MouseUp(gfx::PointF(190, 490));
-
-  EXPECT_EQ(scroll_result.scroll_delta.y(), expected_delta);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
-
-  // Test with DSF = 1. As the scrollable layers aren't rescaled by the DSF,
-  // neither the scroll offset, the same result for DSF = 3 is expected.
-  host_impl_->active_tree()->set_painted_device_scale_factor(1);
-
-  InputHandlerPointerResult scroll_with_dsf_1 =
-      GetInputHandler().MouseDown(gfx::PointF(190, 490), false);
-  GetInputHandler().MouseUp(gfx::PointF(190, 490));
-
-  EXPECT_EQ(scroll_with_dsf_1.scroll_delta.y(), expected_delta);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
-
-  // Tear down the LayerTreeHostImpl before the InputHandlerClient.
-  host_impl_->ReleaseLayerTreeFrameSink();
-  host_impl_ = nullptr;
 }
 
 // Verify that page based scrolling resolves to the correct amount of scroll

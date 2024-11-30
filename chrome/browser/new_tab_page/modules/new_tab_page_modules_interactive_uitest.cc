@@ -24,6 +24,7 @@ const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules-v2",
                                        "#container"};
 const DeepQuery kModulesV2Wrapper = {"ntp-app", "ntp-modules-v2", "#container",
                                      "ntp-module-wrapper"};
+const DeepQuery kMicrosoftAuthIframe = {"ntp-app", "#microsoftAuth"};
 
 struct ModuleLink {
   const DeepQuery query;
@@ -45,8 +46,7 @@ ModuleDetails kMostRelevantTabResumptionModuleDetails = {
     ntp_features::kNtpMostRelevantTabResumptionModule,
     {{ntp_features::kNtpMostRelevantTabResumptionModule,
       {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam,
-        "Fake Data"}}},
-     {ntp_features::kNtpModulesRedesigned, {}}},
+        "Fake Data"}}}},
     {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
      "ntp-most-relevant-tab-resumption"},
     {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
@@ -66,8 +66,7 @@ ModuleDetails kMostRelevantTabResumptionModuleDetails = {
 ModuleDetails kGoogleCalendarModuleDetails = {
     ntp_features::kNtpCalendarModule,
     {{ntp_features::kNtpCalendarModule,
-      {{ntp_features::kNtpCalendarModuleDataParam, "fake"}}},
-     {ntp_features::kNtpModulesRedesigned, {}}},
+      {{ntp_features::kNtpCalendarModuleDataParam, "fake"}}}},
     {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
      "ntp-google-calendar-module"},
     {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
@@ -136,6 +135,16 @@ class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
                                      GURL(chrome::kChromeUINewTabPageURL)),
                  WaitForWebContentsReady(kNewTabPageElementId,
                                          GURL(chrome::kChromeUINewTabPageURL)));
+  }
+
+  InteractiveTestApi::MultiStep WaitForElementToLoad(
+      const WebContentsInteractionTestUtil::DeepQuery& element) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementLoaded);
+    WebContentsInteractionTestUtil::StateChange element_loaded;
+    element_loaded.event = kElementLoaded;
+    element_loaded.where = element;
+    element_loaded.test_function = "(el) => { return el !== null; }";
+    return WaitForStateChange(kNewTabPageElementId, element_loaded);
   }
 
   InteractiveTestApi::MultiStep WaitForElementToRender(
@@ -336,4 +345,31 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveLinkUiTest,
       // 6. Verify that the tab navigates to the tile's link.
       WaitForWebContentsNavigation(kNewTabPageElementId,
                                    GURL(ModuleLink().url)));
+}
+
+class NewTabPageModulesInteractiveMicrosoftAuthUiTest
+    : public NewTabPageModulesInteractiveUiBaseTest {
+ public:
+  NewTabPageModulesInteractiveMicrosoftAuthUiTest() = default;
+  ~NewTabPageModulesInteractiveMicrosoftAuthUiTest() override = default;
+  NewTabPageModulesInteractiveMicrosoftAuthUiTest(
+      const NewTabPageModulesInteractiveMicrosoftAuthUiTest&) = delete;
+  void operator=(const NewTabPageModulesInteractiveMicrosoftAuthUiTest&) =
+      delete;
+
+  void SetUp() override {
+    features.InitWithFeatures({ntp_features::kNtpMicrosoftAuthenticationModule,
+                               ntp_features::kNtpSharepointModule},
+                              {});
+    InteractiveBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveMicrosoftAuthUiTest,
+                       LoadMicrosoftAuthIframe) {
+  RunTestSequence(
+      // 1. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 2. Wait for iframe to load.
+      WaitForElementToLoad(kMicrosoftAuthIframe));
 }

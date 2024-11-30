@@ -400,6 +400,10 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // border radius, if they are both the same value.
   void SetCornerRadius(int radius);
 
+  // Sets or removes the expanded/collapsed state of the menu item if it's a
+  // submenu.
+  void UpdateAccessibleExpandedCollapsedState();
+
   // Shows an alert on this menu item. An alerted menu item is rendered
   // differently to draw attention to it. This must be called before the menu is
   // run.

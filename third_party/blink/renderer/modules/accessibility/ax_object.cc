@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -1181,11 +1180,14 @@ void AXObject::ShowAXTreeForThis() const {
 #endif
 
 // static
-bool AXObject::HasAriaAttribute(Element& element,
+bool AXObject::HasAriaAttribute(const Element& element,
                                 const QualifiedName& attribute) {
-  return element.FastHasAttribute(attribute) ||
-         (element.DidAttachInternals() &&
-          element.EnsureElementInternals().HasAttribute(attribute));
+  if (element.FastHasAttribute(attribute)) {
+    return true;
+  }
+
+  const ElementInternals* internals = element.GetElementInternals();
+  return internals && internals->HasAttribute(attribute);
 }
 
 bool AXObject::HasAriaAttribute(const QualifiedName& attribute) const {
@@ -1197,7 +1199,7 @@ bool AXObject::HasAriaAttribute(const QualifiedName& attribute) const {
 }
 
 // static
-const AtomicString& AXObject::AriaAttribute(Element& element,
+const AtomicString& AXObject::AriaAttribute(const Element& element,
                                             const QualifiedName& attribute) {
   const AtomicString& value = element.FastGetAttribute(attribute);
   if (!value.IsNull()) {
@@ -1212,7 +1214,7 @@ const AtomicString& AXObject::AriaAttribute(
 }
 
 // static
-bool AXObject::IsAriaAttributeTrue(Element& element,
+bool AXObject::IsAriaAttributeTrue(const Element& element,
                                    const QualifiedName& attribute) {
   const AtomicString& value = AriaAttribute(element, attribute);
   return !value.empty() && !EqualIgnoringASCIICase(value, "undefined") &&
@@ -1314,12 +1316,13 @@ const AtomicString& AXObject::AriaTokenAttribute(
 
 // static
 const AtomicString& AXObject::GetInternalsAttribute(
-    Element& element,
+    const Element& element,
     const QualifiedName& attribute) {
-  if (!element.DidAttachInternals()) {
+  const ElementInternals* internals = element.GetElementInternals();
+  if (!internals) {
     return g_null_atom;
   }
-  return element.EnsureElementInternals().FastGetAttribute(attribute);
+  return internals->FastGetAttribute(attribute);
 }
 
 namespace {
@@ -1722,6 +1725,18 @@ void AXObject::SerializeHTMLNonStandardAttributesForJAWS(
         std::make_pair(data_at_shortcutkeys_attr.LocalName().Utf8(),
                        data_at_shorcutkeys_value.Utf8()));
   }
+
+  // formcontrolname: a nonstandard attribute used by Angular and consumed by
+  // some password managers (see https://crbug.com/378908266).
+  DEFINE_STATIC_LOCAL(QualifiedName, formcontrolname_attr,
+                      (AtomicString("formcontrolname")));
+  const AtomicString& formcontrolname_value =
+      GetElement()->FastGetAttribute(formcontrolname_attr);
+  if (formcontrolname_value) {
+    node_data->html_attributes.push_back(std::make_pair(
+        formcontrolname_attr.LocalName().Utf8(), formcontrolname_value.Utf8()));
+  }
+
 #endif
 }
 
@@ -1953,7 +1968,7 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const 
     }
 
     // Whether it has ARIA attributes at all.
-    if (HasAriaAttribute()) {
+    if (ElementHasAnyAriaAttribute()) {
       node_data->AddBoolAttribute(
           ax::mojom::blink::BoolAttribute::kHasAriaAttribute, true);
     }
@@ -2290,8 +2305,8 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
   if (ui::IsTableRow(RoleValue())) {
     AXObject* header = HeaderObject();
     if (header && !header->IsDetached()) {
-      // TODO(accessibility): these should be computed by ui::AXTableInfo and
-      // removed here.
+      // TODO(crbug.com/380211806): these should be computed by ui::AXTableInfo
+      // and removed here.
       node_data->AddIntAttribute(
           ax::mojom::blink::IntAttribute::kTableRowHeaderId,
           header->AXObjectID());
@@ -2510,13 +2525,19 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                   ax::mojom::blink::StringAttribute::kValue,
                                   GetValueForControl());
 
-    if (IsA<HTMLInputElement>(element)) {
+    if (auto* input = DynamicTo<HTMLInputElement>(element)) {
       String type = element->getAttribute(html_names::kTypeAttr);
       if (type.empty()) {
         type = "text";
       }
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kInputType, type);
+      // Serialize <input name> for use by password managers.
+      if (const AtomicString& input_name = input->GetName()) {
+        TruncateAndAddStringAttribute(
+            node_data, ax::mojom::blink::StringAttribute::kHtmlInputName,
+            input_name);
+      }
     }
 
     if (IsAtomicTextField()) {
@@ -3034,6 +3055,21 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
     if (role_ == ax::mojom::blink::Role::kGenericContainer && IsFocused() &&
         !HasAriaAttribute(html_names::kRoleAttr)) {
       return ax::mojom::blink::Role::kGroup;
+    }
+  }
+
+  // In some cases custom elements are ignored to avoid duplicated semantics,
+  // since authors will often copy the ARIA properties into an element within
+  // the shadow dom. In these cases the role is also supposed to be "none". We
+  // do that here so a complex internal role change does not need to occur when
+  // focusability, aria-owns or aria-live change. See also
+  // AXNodeObject::ShouldIncludeBasedOnSemantics(). Note: since the node is
+  // ignored this does not impact any platform trees, but it does make this case
+  // easier to spot in blink dump tree tests
+  if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+    if (role_ == ax::mojom::blink::Role::kGenericContainer && IsIgnored() &&
+        GetElement() && GetElement()->IsCustomElement()) {
+      return ax::mojom::blink::Role::kNone;
     }
   }
 
@@ -3648,10 +3684,15 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     // The document root is never a live region root.
     cached_live_region_root_ = nullptr;
   } else {
-    DCHECK(parent_);
+    DUMP_WILL_BE_CHECK(!IsMissingParent()) << this;
     // Is a live region root if this or an ancestor is a live region.
-    cached_live_region_root_ =
-        IsLiveRegionRoot() ? this : parent_->LiveRegionRoot();
+    if (IsLiveRegionRoot()) {
+      cached_live_region_root_ = this;
+    } else {
+      // TODO(accessibility) Remove null parent check after above missing parent
+      // check stops occurring.
+      cached_live_region_root_ = parent_ ? parent_->LiveRegionRoot() : nullptr;
+    }
   }
   if (cached_live_region_root_ != previous_live_region_root) {
     is_changing_inherited_values = true;
@@ -4235,8 +4276,10 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   if (element && (element->GetPseudoElement(kPseudoIdBefore) ||
                   element->GetPseudoElement(kPseudoIdAfter) ||
                   element->GetPseudoElement(kPseudoIdMarker) ||
-                  element->GetPseudoElement(kPseudoIdScrollNextButton) ||
-                  element->GetPseudoElement(kPseudoIdScrollPrevButton) ||
+                  element->GetPseudoElement(kPseudoIdScrollUpButton) ||
+                  element->GetPseudoElement(kPseudoIdScrollDownButton) ||
+                  element->GetPseudoElement(kPseudoIdScrollLeftButton) ||
+                  element->GetPseudoElement(kPseudoIdScrollRightButton) ||
                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore) ||
                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter) ||
                   element->GetPseudoElement(kPseudoIdScrollMarker))) {
@@ -5433,6 +5476,7 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
       HashSet<AtomicString>, aria_global_properties,
       ({
         AtomicString("ARIA-ATOMIC"),
+        AtomicString("ARIA-BRAILLELABEL"),
         AtomicString("ARIA-BRAILLEROLEDESCRIPTION"),
         AtomicString("ARIA-BUSY"),
         AtomicString("ARIA-CONTROLS"),
@@ -5441,7 +5485,6 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
         AtomicString("ARIA-DESCRIPTION"),
         AtomicString("ARIA-DETAILS"),
         AtomicString("ARIA-FLOWTO"),
-        AtomicString("ARIA-GRABBED"),
         AtomicString("ARIA-KEYSHORTCUTS"),
         AtomicString("ARIA-LABEL"),
         AtomicString("ARIA-LABELEDBY"),
@@ -5456,7 +5499,8 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
   return aria_global_properties.Contains(name);
 }
 
-bool AXObject::HasAriaAttribute(bool does_undo_role_presentation) const {
+bool AXObject::ElementHasAnyAriaAttribute(
+    bool does_undo_role_presentation) const {
   auto* element = GetElement();
   if (!element)
     return false;
@@ -5712,14 +5756,24 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
     if ((GetElement() && GetElement()->SupportsFocus(
                              Element::UpdateBehavior::kNoneForAccessibility) !=
                              FocusableState::kNotFocusable) ||
-        HasAriaAttribute(true /* does_undo_role_presentation */)) {
-      // Must be exposed with a role if focusable or has a global ARIA property
-      // that is allowed in this context. See
-      // https://w3c.github.io/aria/#presentation for more information about the
-      // conditions upon which elements with role="none"/"presentation" must be
-      // included in the tree. Return Role::kUnknown, so that the native HTML
-      // role is used instead.
-      return ax::mojom::blink::Role::kUnknown;
+        ElementHasAnyAriaAttribute(true /* does_undo_role_presentation */)) {
+      // Must be exposed with a role if focusable or has a global ARIA
+      // property that is allowed in this context. See
+      // https://w3c.github.io/aria/#presentation for more information about
+      // the conditions upon which elements with role="none"/"presentation"
+      // must be included in the tree. Return Role::kUnknown, so that the
+      // native HTML role is used instead.
+      if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+        if (!GetElement()->IsCustomElement()) {
+          // Custom elements that have ARIA
+          // attributes are allowed to use role="none" to hide themselves,
+          // because it's assumed they will copy the ARIA attributes into inner
+          // elements. See https://github.com/w3c/aria/issues/2303.
+          return ax::mojom::blink::Role::kUnknown;
+        }
+      } else {
+        return ax::mojom::blink::Role::kUnknown;
+      }
     }
   }
 
@@ -8384,6 +8438,16 @@ String AXObject::ToString(bool verbose) const {
     if (!cached_values_only) {
       ax::mojom::blink::NameFrom name_from;
       String name = ComputedName(&name_from);
+      ax::mojom::blink::DescriptionFrom desc_from;
+      AXObjectVector desc_objects;
+      String desc = Description(name_from, desc_from, &desc_objects);
+      if (!desc.empty()) {
+        std::ostringstream desc_from_str;
+        desc_from_str << desc_from;
+        string_builder = string_builder +
+                         " descFrom=" + String(desc_from_str.str()) +
+                         " desc=" + desc;
+      }
       std::ostringstream name_from_str;
       name_from_str << name_from;
       if (!name.empty()) {

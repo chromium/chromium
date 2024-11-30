@@ -139,6 +139,30 @@ class CookieSettingsBase {
     kMaxValue = kAllowByTrackingProtectionException,
   };
 
+  // Enum for recording what type of storage permissions or overrides are
+  // present on allowed cookies. These values are persisted to logs. Entries
+  // should not be renumbered and numeric values should never be reused.
+  enum class AllowedByStorageAccessType {
+    // The cookie was not accessible through TopLevelStorageAccess or
+    // StorageAccess.
+    kNone = 0,
+
+    // The cookie was accessible via TopLevelStorageAccess.
+    kTopLevelOnly = 1,
+
+    // The cookie was accessible via StorageAccess.
+    kStorageAccessOnly = 2,
+
+    // The cookie was accessible via TopLevelStorageAccess and StorageAccess
+    //
+    // This value should not be hit but is here for type completeness and to
+    // allow metrics to accurately report the unexpected case where both
+    // permissions are present, if it does occur.
+    kTopLevelAndStorageAccess = 3,
+
+    kMaxValue = kTopLevelAndStorageAccess,
+  };
+
   // Returns true if the allow mechanism represents one of the multiple allow
   // mechanisms derived from the TPCD Mitigations Metadata.
   static bool IsAnyTpcdMetadataAllowMechanism(
@@ -161,7 +185,9 @@ class CookieSettingsBase {
         bool allow_partitioned_cookies,
         bool is_explicit_setting,
         ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism,
-        bool is_third_party_request);
+        bool is_third_party_request,
+        AllowedByStorageAccessType allowed_by_storage_access_type =
+            AllowedByStorageAccessType::kNone);
 
     // Returns true iff the setting is "block" due to the user's
     // third-party-cookie-blocking setting.
@@ -181,6 +207,10 @@ class CookieSettingsBase {
 
     bool is_third_party_request() const { return is_third_party_request_; }
 
+    AllowedByStorageAccessType allowed_by_storage_access_type() const {
+      return allowed_by_storage_access_type_;
+    }
+
    private:
     // The setting itself.
     ContentSetting cookie_setting_ = ContentSetting::CONTENT_SETTING_ALLOW;
@@ -197,10 +227,17 @@ class CookieSettingsBase {
 
     // Whether the request is considered third-party.
     bool is_third_party_request_;
+
+    // TODO( https://crbug.com/378872426): remove value when
+    // `API.TopLevelStorageAccess.AllowedByStorageAccessType` is no longer being
+    // collected. Evaluation of if the metric should be removed should occur no
+    // earlier than 6 months after https://crbug.com/issues/379892196 is
+    // completed.
+    AllowedByStorageAccessType allowed_by_storage_access_type_;
   };
 
   // Set of types relevant for CookieSettings.
-  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 11>;
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 12>;
 
   // ContentSettings listed in this set will be automatically synced to the
   // CookieSettings instance in the network service.
@@ -283,6 +320,23 @@ class CookieSettingsBase {
   // CanonicalCookie::Domain(), i.e. any leading dot does not have to be
   // removed.
   ContentSetting GetSettingForLegacyCookieAccess(
+      const std::string& cookie_domain) const;
+
+  // Gets the setting that controls whether legacy scope is allowed for a given
+  // cookie domain. The `cookie_domain` can be provided as the direct output of
+  // CanonicalCookie::Domain(), i.e. any leading dot does not have to be
+  // removed.
+  ContentSetting GetSettingForLegacyCookieScope(
+      const std::string& cookie_domain) const;
+
+  // Returns the cookie legacy scope (legacy or nonlegacy) to be applied for
+  // cookies on the given domain. The `cookie_domain` can be provided as the
+  // direct output of CanonicalCookie::Domain(), i.e. any leading dot does not
+  // have to be removed.
+  //
+  // Legacy behavior is based on the domain of the cookie itself, effectively
+  // the domain of the requested URL, which may be embedded in another domain.
+  net::CookieLegacyScope GetCookieLegacyScopeForDomain(
       const std::string& cookie_domain) const;
 
   // Returns whether a cookie should be attached regardless of its SameSite
@@ -418,9 +472,16 @@ class CookieSettingsBase {
       const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
+  // TODO(https://crbug.com/378872426): remove `storage_access_permissions` when
+  // `API.TopLevelStorageAccess.AllowedByStorageAccessType` is no longer being
+  // collected. Evaluation of if the metric should be removed should occur no
+  // earlier than 6 months after https://crbug.com/issues/379892196 is
+  // completed.
   struct AllowAllCookies {
     ThirdPartyCookieAllowMechanism mechanism =
         ThirdPartyCookieAllowMechanism::kNone;
+    AllowedByStorageAccessType allowed_by_storage_access_type =
+        AllowedByStorageAccessType::kNone;
   };
   struct AllowPartitionedCookies {};
   struct BlockAllCookies {};

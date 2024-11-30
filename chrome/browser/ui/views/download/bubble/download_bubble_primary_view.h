@@ -54,9 +54,6 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
 
   views::ScrollView* scroll_view_for_testing() { return scroll_view_; }
 
-  // Whether this primary view is a partial view.
-  virtual bool IsPartialView() const = 0;
-
  protected:
   // TODO(crbug.com/40853007): Add support for refreshing the scroll view
   // contents.

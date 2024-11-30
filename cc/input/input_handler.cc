@@ -55,6 +55,11 @@ InputHandlerClient::ScrollEventDispatchMode GetScrollEventDispatchMode() {
                  kScrollEventDispatchModeUseScrollPredictorForDeadline) {
     return InputHandlerClient::ScrollEventDispatchMode::
         kUseScrollPredictorForDeadline;
+  } else if (mode_name ==
+             ::features::
+                 kScrollEventDispatchModeDispatchScrollEventsUntilDeadline) {
+    return InputHandlerClient::ScrollEventDispatchMode::
+        kDispatchScrollEventsUntilDeadline;
   }
 
   return InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents;
@@ -101,7 +106,8 @@ void InputHandler::BindToClient(InputHandlerClient* client) {
   input_handler_client_->SetPrefersReducedMotion(prefers_reduced_motion_);
   if (base::FeatureList::IsEnabled(::features::kWaitForLateScrollEvents)) {
     input_handler_client_->SetScrollEventDispatchMode(
-        GetScrollEventDispatchMode());
+        GetScrollEventDispatchMode(),
+        ::features::kWaitForLateScrollEventsDeadlineRatio.Get());
   }
 }
 
@@ -1488,13 +1494,6 @@ gfx::Vector2dF InputHandler::ResolveScrollGranularityToPixels(
   gfx::Vector2dF pixel_delta = scroll_delta;
 
   if (granularity == ui::ScrollGranularity::kScrollByPage) {
-    // Page should use a percentage of the scroller so change the parameters
-    // and let the percentage case below resolve it.
-    granularity = ui::ScrollGranularity::kScrollByPercentage;
-    pixel_delta.Scale(kMinFractionToStepWhenPaging);
-  }
-
-  if (granularity == ui::ScrollGranularity::kScrollByPercentage) {
     gfx::SizeF scroller_size = gfx::SizeF(scroll_node.container_bounds);
     gfx::SizeF viewport_size(compositor_delegate_->VisualDeviceViewportSize());
 
@@ -1506,6 +1505,7 @@ gfx::Vector2dF InputHandler::ResolveScrollGranularityToPixels(
     // enabled, `DeviceScaleFactor()` returns 1).
     viewport_size.InvScale(compositor_delegate_->DeviceScaleFactor());
 
+    pixel_delta.Scale(kMinFractionToStepWhenPaging);
     pixel_delta = ScrollUtils::ResolveScrollPercentageToPixels(
         pixel_delta, scroller_size, viewport_size);
   }
@@ -2164,18 +2164,19 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   SnapContainerData& data = scroll_node->snap_container_data.value();
   gfx::PointF current_position = GetVisualScrollOffset(*scroll_node);
 
-  if (!snap_strategy_ || last_scroll_update_state_->is_in_inertial_phase()) {
-    // If this was a constrained native fling, SnapFlingController would not
-    // have had the correct final scroll position with which to create the snap
+  // You might think that if a scroll never received a scroll update we
+  // could just drop the snap. However, if the GSB+GSE arrived while we were
+  // mid-snap from a previous gesture, this would leave the scroller at a
+  // non-snap-point.
+  DCHECK(last_scroll_update_state_ || last_scroll_begin_state_);
+  ScrollState& last_scroll_state = last_scroll_update_state_
+                                       ? *last_scroll_update_state_
+                                       : *last_scroll_begin_state_;
+
+  if (!snap_strategy_ || last_scroll_state.is_in_inertial_phase()) {
+    // If this was a fling, SnapFlingController would not have had the
+    // correct final scroll position with which to create the snap
     // strategy.
-    // Also, you might think that if a scroll never received a scroll update we
-    // could just drop the snap. However, if the GSB+GSE arrived while we were
-    // mid-snap from a previous gesture, this would leave the scroller at a
-    // non-snap-point.
-    DCHECK(last_scroll_update_state_ || last_scroll_begin_state_);
-    ScrollState& last_scroll_state = last_scroll_update_state_
-                                         ? *last_scroll_update_state_
-                                         : *last_scroll_begin_state_;
     snap_strategy_ =
         CreateSnapStrategy(last_scroll_state, current_position, reason);
   }

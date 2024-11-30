@@ -62,10 +62,9 @@ void WebContentsObserverConsistencyChecker::RenderFrameCreated(
   bool frame_exists = !live_routes_.insert(routing_pair).second;
   deleted_routes_.erase(routing_pair);
 
-  if (frame_exists) {
-    CHECK(false) << "RenderFrameCreated called more than once for routing pair:"
-                 << Format(render_frame_host);
-  }
+  CHECK(!frame_exists)
+      << "RenderFrameCreated called more than once for routing pair:"
+      << Format(render_frame_host);
 
   CHECK(render_frame_host->GetProcess()->IsInitializedAndNotDead())
       << "RenderFrameCreated was called for a RenderFrameHost whose render "
@@ -101,14 +100,12 @@ void WebContentsObserverConsistencyChecker::RenderFrameDeleted(
   bool was_live = !!live_routes_.erase(routing_pair);
   bool was_dead_already = !deleted_routes_.insert(routing_pair).second;
 
-  if (was_dead_already) {
-    CHECK(false) << "RenderFrameDeleted called more than once for routing pair "
-                 << Format(render_frame_host);
-  } else if (!was_live) {
-    CHECK(false) << "RenderFrameDeleted called for routing pair "
-                 << Format(render_frame_host)
-                 << " for which RenderFrameCreated was never called";
-  }
+  CHECK(!was_dead_already)
+      << "RenderFrameDeleted called more than once for routing pair "
+      << Format(render_frame_host);
+  CHECK(was_live) << "RenderFrameDeleted called for routing pair "
+                  << Format(render_frame_host)
+                  << " for which RenderFrameCreated was never called";
 
   EnsureStableParentValue(render_frame_host);
   CHECK(!HasAnyChildren(render_frame_host));
@@ -137,11 +134,9 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
     // false.
     CHECK(!old_host->IsActive());
     bool old_did_exist = !!current_hosts_.erase(routing_pair);
-    if (!old_did_exist) {
-      CHECK(false)
-          << "RenderFrameHostChanged called with old host that did not exist:"
-          << Format(old_host);
-    }
+    CHECK(old_did_exist)
+        << "RenderFrameHostChanged called with old host that did not exist:"
+        << Format(old_host);
   } else {
     CHECK(frame_tree_node_ids_.insert(new_host->GetFrameTreeNodeId()).second);
   }

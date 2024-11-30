@@ -24,7 +24,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
-import org.chromium.components.infobars.InfoBar;
 
 import java.util.concurrent.TimeoutException;
 
@@ -79,16 +78,5 @@ public class InfoBarAppearanceTest {
                 () -> InfoBarContainer.get(mTab).addInfoBarForTesting(new NearOomInfoBar()));
         mListener.addInfoBarAnimationFinished("InfoBar was not added.");
         sScreenShooter.shoot("oom_infobar");
-    }
-
-    private void captureMiniAndRegularInfobar(InfoBar infobar) throws TimeoutException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> InfoBarContainer.get(mTab).addInfoBarForTesting(infobar));
-        mListener.addInfoBarAnimationFinished("InfoBar was not added.");
-        sScreenShooter.shoot("compact");
-
-        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
-        mListener.swapInfoBarAnimationFinished("InfoBar did not expand.");
-        sScreenShooter.shoot("expanded");
     }
 }

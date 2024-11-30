@@ -1895,8 +1895,7 @@
                   "width": 15,
                   "x": 0,
                   "y": 15
-               },
-               "y_flipped": false
+               }
             }, {
                "background_color": {
                   "alpha": 0.0,
@@ -1936,8 +1935,7 @@
                   "width": 15,
                   "x": 0,
                   "y": 0
-               },
-               "y_flipped": false
+               }
             }, {
                "force_anti_aliasing_off": false,
                "is_premultiplied": true,
@@ -2431,8 +2429,7 @@
                   "width": 15,
                   "x": 0,
                   "y": 15
-               },
-               "y_flipped": false
+               }
             }, {
                "background_color": {
                   "alpha": 0.0,
@@ -2472,8 +2469,7 @@
                   "width": 15,
                   "x": 0,
                   "y": 0
-               },
-               "y_flipped": false
+               }
             }, {
                "background_color": {
                   "alpha": 0.0,
@@ -2513,8 +2509,7 @@
                   "width": 1087,
                   "x": 15,
                   "y": 0
-               },
-               "y_flipped": false
+               }
             }, {
                "background_color": {
                   "alpha": 0.0,
@@ -2554,8 +2549,7 @@
                   "width": 1125,
                   "x": 0,
                   "y": 0
-               },
-               "y_flipped": false
+               }
             }, {
                "force_anti_aliasing_off": false,
                "is_premultiplied": true,
@@ -4630,8 +4624,7 @@
                   "width": 300,
                   "x": 0,
                   "y": 0
-               },
-               "y_flipped": true
+               }
             } ],
             "shared_quad_state_list": [ {
                "are_contents_opaque": true,

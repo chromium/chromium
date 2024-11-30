@@ -37,8 +37,7 @@ uint64_t kBytesPerMb = 1024 * 1024;
 uint64_t kKilobytesPerMb = 1024;
 #endif
 
-base::TimeDelta kCpuThroughputSamplingInterval = base::Minutes(5);
-
+#if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 enum class CpuThroughputEstimatedStatus {
   kNormal,
   kUnknown,
@@ -203,6 +202,7 @@ void EmitCpuStatusSamplingTraceEvents(base::TimeTicks posted_at_time,
       kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
       TRACE_ID_LOCAL(id), started_running_time + wall_time);
 }
+#endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 
 }  // namespace
 
@@ -362,9 +362,9 @@ MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
       base::BindRepeating(&MetricsProviderDesktop::RecordAvailableMemoryMetrics,
                           base::Unretained(this)));
 
-  if constexpr (ShouldCollectCpuFrequencyMetrics()) {
-    ScheduleCpuFrequencyTask();
-  }
+#if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
+  ScheduleCpuFrequencyTask();
+#endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 }
 
 void MetricsProviderDesktop::OnBatterySaverActiveChanged(bool is_active) {
@@ -460,15 +460,11 @@ void MetricsProviderDesktop::ResetTrackers() {
       "PerformanceManager.UserTuning.MemorySaverModeEnabledPercent");
 }
 
+#if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 // static
 void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
     base::TimeTicks posted_at_time) {
   auto started_running_time = base::TimeTicks::Now();
-
-  // Check this after computing started_running_time so that
-  // started_running_time is as close to reality as possible.
-  CHECK(ShouldCollectCpuFrequencyMetrics());
-
   auto queued_time = started_running_time - posted_at_time;
 
   static const double kHzInMhz = 1000 * 1000;
@@ -565,6 +561,8 @@ void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
 
 // static
 void MetricsProviderDesktop::ScheduleCpuFrequencyTask() {
+  static constexpr base::TimeDelta kCpuThroughputSamplingInterval =
+      base::Minutes(5);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
@@ -582,6 +580,7 @@ void MetricsProviderDesktop::PostCpuFrequencyEstimation() {
       base::BindOnce(&MetricsProviderDesktop::RecordCpuFrequencyMetrics,
                      base::TimeTicks::Now()));
 }
+#endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 
 void MetricsProviderDesktop::RecordDiskMetrics() {
   if (!pending_disk_metrics_) {

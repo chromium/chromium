@@ -3611,7 +3611,7 @@ TEST_P(SpdyNetworkTransactionTest, PartialWrite) {
       MockRead(ASYNC, 0, kChunks + 2)  // EOF
   };
 
-  SequencedSocketData data(reads, base::make_span(writes.get(), kChunks));
+  SequencedSocketData data(reads, base::span(writes.get(), kChunks));
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
   helper.RunToCompletion(&data);
   TransactionHelperResult out = helper.output();
@@ -5323,8 +5323,7 @@ TEST_P(SpdyNetworkTransactionTest, VerifyRetryOnConnectionReset) {
 
   for (size_t variant = VARIANT_RST_DURING_SEND_COMPLETION;
        variant <= VARIANT_RST_DURING_READ_COMPLETION; ++variant) {
-    SequencedSocketData data1(reads,
-                              base::make_span(writes1).first(1u + variant));
+    SequencedSocketData data1(reads, base::span(writes1).first(variant + 1));
 
     SequencedSocketData data2(reads2, writes2);
 

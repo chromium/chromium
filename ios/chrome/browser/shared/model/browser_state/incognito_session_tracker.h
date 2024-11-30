@@ -45,6 +45,10 @@ class IncognitoSessionTracker final : public ProfileManagerObserverIOS {
                         ProfileIOS* profile) override;
   void OnProfileLoaded(ProfileManagerIOS* manager,
                        ProfileIOS* profile) override;
+  void OnProfileUnloaded(ProfileManagerIOS* manager,
+                         ProfileIOS* profile) override;
+  void OnProfileMarkedForPermanentDeletion(ProfileManagerIOS* manager,
+                                           ProfileIOS* profile) override;
 
  private:
   // Forward-declaration of the observer used to track the state of

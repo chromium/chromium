@@ -27,15 +27,18 @@ IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 
 // CollaborationControllerDelegate.
 void IOSCollaborationControllerDelegate::PrepareFlowUI(ResultCallback result) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
   // TODO(crbug.com/377306986): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::ShowError(ResultCallback result,
                                                    const ErrorInfo& error) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
   // TODO(crbug.com/377306986): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
   // TODO(crbug.com/377306986): Implement this.
 }
 
@@ -55,7 +58,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult sign_in_result,
-                          SigninCompletionInfo* completion_info) {
+                          id<SystemIdentity> completion_info) {
                bool completion_result =
                    sign_in_result == SigninCoordinatorResultSuccess;
                CollaborationControllerDelegate::Outcome outcome =
@@ -73,7 +76,9 @@ void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange() {
   collaboration_flow_->share_kit_service()->PrimaryAccountChanged();
 }
 
-void IOSCollaborationControllerDelegate::ShowJoinDialog(ResultCallback result) {
+void IOSCollaborationControllerDelegate::ShowJoinDialog(
+    data_sharing::SharedDataPreview preview_data,
+    ResultCallback result) {
   CHECK_EQ(collaboration_flow_->type(),
            CollaborationFlowConfiguration::Type::kJoin);
   const CollaborationFlowConfigurationJoin& join_flow =
@@ -124,6 +129,10 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
 
 void IOSCollaborationControllerDelegate::PromoteTabGroup(
     ResultCallback result) {
+  // TODO(crbug.com/377306986): Implement this.
+}
+
+void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {
   // TODO(crbug.com/377306986): Implement this.
 }
 

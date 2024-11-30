@@ -547,20 +547,9 @@ class MockAuctionProcessManager
   WorkletProcess::ProcessContext CreateProcessInternal(
       WorkletProcess& worklet_process) override {
     mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-
-    // Have to flush the receiver set, so that any closed receivers are removed,
-    // before searching for duplicate worklets.
-    receiver_set_.FlushForTesting();
-
-    WorkletInfo info{worklet_process.worklet_type(), worklet_process.origin()};
-
-    for (auto context : receiver_set_.GetAllContexts()) {
-      EXPECT_NE(*context.second, info);
-    }
-
-    receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver(),
-                      std::move(info));
-
+    receiver_set_.Add(
+        this, service.InitWithNewPipeAndPassReceiver(),
+        WorkletInfo(worklet_process.worklet_type(), worklet_process.origin()));
     return WorkletProcess::ProcessContext(std::move(service));
   }
 
@@ -811,15 +800,17 @@ class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
+    auction_process_manager_ = std::make_unique<MockAuctionProcessManager>();
     auction_metrics_recorder_manager_ =
         std::make_unique<AuctionMetricsRecorderManager>(
             ukm::AssignNewSourceId());
     auction_worklet_manager_ = std::make_unique<AuctionWorkletManager>(
-        &auction_process_manager_, kTopWindowOrigin, kFrameOrigin, this);
+        auction_process_manager_.get(), kTopWindowOrigin, kFrameOrigin, this);
   }
 
   void TearDown() override {
     auction_worklet_manager_.reset();
+    auction_process_manager_.reset();
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -887,7 +878,7 @@ class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
   std::string bad_message_;
 
   network::TestURLLoaderFactory url_loader_factory_;
-  MockAuctionProcessManager auction_process_manager_;
+  std::unique_ptr<MockAuctionProcessManager> auction_process_manager_;
   std::unique_ptr<AuctionMetricsRecorderManager>
       auction_metrics_recorder_manager_;
   std::unique_ptr<AuctionWorkletManager> auction_worklet_manager_;
@@ -911,7 +902,7 @@ TEST_F(AuctionWorkletManagerTest, SingleBidderWorklet) {
   handle->AuthorizeSubresourceUrls(kPopulatedSubresourceBuilder);
 
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
   EXPECT_EQ(kWasmUrl, bidder_worklet->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
@@ -961,7 +952,7 @@ TEST_F(AuctionWorkletManagerTest, SingleSellerWorklet) {
   handle->AuthorizeSubresourceUrls(kPopulatedSubresourceBuilder);
 
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
   EXPECT_EQ(kTopWindowOrigin, seller_worklet->top_window_origin());
@@ -1011,7 +1002,7 @@ TEST_F(AuctionWorkletManagerTest,
   handle->AuthorizeSubresourceUrls(kEmptySubresourceBuilder);
 
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
 
   EXPECT_TRUE(
       handle->GetSubresourceUrlAuthorizationsForTesting().IsEmptyForTesting());
@@ -1032,7 +1023,7 @@ TEST_F(AuctionWorkletManagerTest,
   handle->AuthorizeSubresourceUrls(kEmptySubresourceBuilder);
 
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
 
   EXPECT_TRUE(
       handle->GetSubresourceUrlAuthorizationsForTesting().IsEmptyForTesting());
@@ -1051,7 +1042,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
   std::list<std::unique_ptr<MockBidderWorklet>> bidder_worklets;
   std::list<std::unique_ptr<AuctionWorkletManager::WorkletHandle>> handles;
   for (size_t i = 0; i < AuctionProcessManager::kMaxBidderProcesses; ++i) {
-    EXPECT_EQ(i, auction_process_manager_.GetBidderProcessCountForTesting());
+    EXPECT_EQ(i, auction_process_manager_->GetBidderProcessCountForTesting());
 
     GURL decision_logic_url =
         GURL(base::StringPrintf("https://origin%zu.test", i));
@@ -1070,10 +1061,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetBidderWorklet());
     EXPECT_EQ(i + 1,
-              auction_process_manager_.GetBidderProcessCountForTesting());
+              auction_process_manager_->GetBidderProcessCountForTesting());
 
     std::unique_ptr<MockBidderWorklet> bidder_worklet =
-        auction_process_manager_.WaitForBidderWorklet();
+        auction_process_manager_->WaitForBidderWorklet();
     EXPECT_EQ(decision_logic_url, bidder_worklet->script_source_url());
     EXPECT_EQ(std::nullopt, bidder_worklet->wasm_url());
     EXPECT_EQ(std::nullopt, bidder_worklet->trusted_bidding_signals_url());
@@ -1089,7 +1080,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
 
   // Should be at the bidder process limit.
   EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
-            auction_process_manager_.GetBidderProcessCountForTesting());
+            auction_process_manager_->GetBidderProcessCountForTesting());
 
   // The next request for a distinct bidder worklet should not be able to
   // complete for now, since there's no available process quota.
@@ -1105,7 +1096,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
       handle,
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
-            auction_process_manager_.GetBidderProcessCountForTesting());
+            auction_process_manager_->GetBidderProcessCountForTesting());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(worklet_available2.IsReady());
 
@@ -1117,7 +1108,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
   EXPECT_TRUE(handle->GetBidderWorklet());
 
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
   EXPECT_EQ(kWasmUrl, bidder_worklet->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
@@ -1129,7 +1120,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
 
   // Should still be at the process limit.
   EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
-            auction_process_manager_.GetBidderProcessCountForTesting());
+            auction_process_manager_->GetBidderProcessCountForTesting());
 }
 
 // Test the case where  a process assignment completes asynchronously. This
@@ -1145,7 +1136,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
   std::list<std::unique_ptr<MockSellerWorklet>> seller_worklets;
   std::list<std::unique_ptr<AuctionWorkletManager::WorkletHandle>> handles;
   for (size_t i = 0; i < AuctionProcessManager::kMaxSellerProcesses; ++i) {
-    EXPECT_EQ(i, auction_process_manager_.GetSellerProcessCountForTesting());
+    EXPECT_EQ(i, auction_process_manager_->GetSellerProcessCountForTesting());
 
     GURL decision_logic_url =
         GURL(base::StringPrintf("https://origin%zu.test", i));
@@ -1162,10 +1153,10 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetSellerWorklet());
     EXPECT_EQ(i + 1,
-              auction_process_manager_.GetSellerProcessCountForTesting());
+              auction_process_manager_->GetSellerProcessCountForTesting());
 
     std::unique_ptr<MockSellerWorklet> seller_worklet =
-        auction_process_manager_.WaitForSellerWorklet();
+        auction_process_manager_->WaitForSellerWorklet();
     EXPECT_EQ(decision_logic_url, seller_worklet->script_source_url());
     EXPECT_EQ(std::nullopt, seller_worklet->trusted_scoring_signals_url());
     EXPECT_EQ(kTopWindowOrigin, seller_worklet->top_window_origin());
@@ -1180,7 +1171,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
 
   // Should be at the seller process limit.
   EXPECT_EQ(AuctionProcessManager::kMaxSellerProcesses,
-            auction_process_manager_.GetSellerProcessCountForTesting());
+            auction_process_manager_->GetSellerProcessCountForTesting());
 
   // The next request for a distinct seller worklet should not be able to
   // complete for now, since there's no available process quota.
@@ -1194,7 +1185,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
       handle,
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   EXPECT_EQ(AuctionProcessManager::kMaxSellerProcesses,
-            auction_process_manager_.GetSellerProcessCountForTesting());
+            auction_process_manager_->GetSellerProcessCountForTesting());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(worklet_available_loop.AnyQuitCalled());
 
@@ -1206,7 +1197,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
   EXPECT_TRUE(handle->GetSellerWorklet());
 
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
   EXPECT_EQ(kTopWindowOrigin, seller_worklet->top_window_origin());
@@ -1217,7 +1208,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
 
   // Should still be at the process limit.
   EXPECT_EQ(AuctionProcessManager::kMaxSellerProcesses,
-            auction_process_manager_.GetSellerProcessCountForTesting());
+            auction_process_manager_->GetSellerProcessCountForTesting());
 }
 
 // Test that requests with the same parameters reuse bidder worklets.
@@ -1237,7 +1228,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet1->script_source_url());
   EXPECT_EQ(kWasmUrl, bidder_worklet1->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet1->trusted_bidding_signals_url());
@@ -1245,7 +1236,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
   handle1->GetBidderWorklet()->SendPendingSignalsRequests();
   bidder_worklet1->WaitForSendPendingSignalsRequests(1);
   // Should only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle1->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1));
 
@@ -1264,11 +1255,11 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_EQ(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
-  EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
+  EXPECT_FALSE(auction_process_manager_->HasBidderWorkletRequest());
   handle2->GetBidderWorklet()->SendPendingSignalsRequests();
   bidder_worklet1->WaitForSendPendingSignalsRequests(2);
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   // ... but used by both auctions.
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1, kAuction2));
@@ -1276,7 +1267,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
   // Close original handle. Worklet should still be alive, and so should its
   // process.
   handle1.reset();
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   // We should no longer attribute its work to the first auction, however.
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2));
@@ -1296,11 +1287,11 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_EQ(handle2->GetBidderWorklet(), handle3->GetBidderWorklet());
-  EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
+  EXPECT_FALSE(auction_process_manager_->HasBidderWorkletRequest());
   handle3->GetBidderWorklet()->SendPendingSignalsRequests();
   bidder_worklet1->WaitForSendPendingSignalsRequests(3);
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle3->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2, kAuction3));
 
@@ -1309,7 +1300,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
   handle3.reset();
 
   // Process should be destroyed.
-  EXPECT_EQ(0u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(0u, auction_process_manager_->GetBidderProcessCountForTesting());
 
   // Request another bidder worklet. A new BidderWorklet in a new process should
   // be created.
@@ -1327,14 +1318,14 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet2->script_source_url());
   EXPECT_EQ(kWasmUrl, bidder_worklet2->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet2->trusted_bidding_signals_url());
   EXPECT_EQ(kTopWindowOrigin, bidder_worklet2->top_window_origin());
   handle4->GetBidderWorklet()->SendPendingSignalsRequests();
   bidder_worklet2->WaitForSendPendingSignalsRequests(1);
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle4->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction4));
 }
@@ -1354,14 +1345,14 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet1 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet1->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet1->trusted_scoring_signals_url());
   EXPECT_EQ(kTopWindowOrigin, seller_worklet1->top_window_origin());
   handle1->GetSellerWorklet()->SendPendingSignalsRequests();
   seller_worklet1->WaitForSendPendingSignalsRequests(1);
   // Should only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   EXPECT_THAT(handle1->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1));
 
@@ -1378,11 +1369,11 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_EQ(handle1->GetSellerWorklet(), handle2->GetSellerWorklet());
-  EXPECT_FALSE(auction_process_manager_.HasSellerWorkletRequest());
+  EXPECT_FALSE(auction_process_manager_->HasSellerWorkletRequest());
   handle2->GetSellerWorklet()->SendPendingSignalsRequests();
   seller_worklet1->WaitForSendPendingSignalsRequests(2);
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   // ... but used by both auctions.
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1, kAuction2));
@@ -1390,7 +1381,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
   // Close original handle. Worklet should still be alive, and so should its
   // process.
   handle1.reset();
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   // We should no longer attribute its work to the first auction, however.
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2));
@@ -1408,11 +1399,11 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_EQ(handle2->GetSellerWorklet(), handle3->GetSellerWorklet());
-  EXPECT_FALSE(auction_process_manager_.HasSellerWorkletRequest());
+  EXPECT_FALSE(auction_process_manager_->HasSellerWorkletRequest());
   handle3->GetSellerWorklet()->SendPendingSignalsRequests();
   seller_worklet1->WaitForSendPendingSignalsRequests(3);
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2, kAuction3));
 
@@ -1421,7 +1412,7 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
   handle3.reset();
 
   // Process should be destroyed.
-  EXPECT_EQ(0u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(0u, auction_process_manager_->GetSellerProcessCountForTesting());
 
   // Request another seller worklet. A new SellerWorklet in a new process should
   // be created.
@@ -1437,14 +1428,14 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet2 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet2->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet2->trusted_scoring_signals_url());
   EXPECT_EQ(kTopWindowOrigin, seller_worklet2->top_window_origin());
   EXPECT_EQ(0, seller_worklet2->num_send_pending_signals_requests_calls());
   handle4->GetSellerWorklet()->SendPendingSignalsRequests();
   seller_worklet2->WaitForSendPendingSignalsRequests(1);
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   EXPECT_THAT(handle4->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction4));
 }
@@ -1466,13 +1457,13 @@ TEST_F(AuctionWorkletManagerTest, DifferentBidderWorklets) {
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet1->script_source_url());
   EXPECT_EQ(kWasmUrl, bidder_worklet1->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet1->trusted_bidding_signals_url());
   EXPECT_EQ(kTopWindowOrigin, bidder_worklet1->top_window_origin());
   // Should only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle1->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1));
 
@@ -1495,13 +1486,13 @@ TEST_F(AuctionWorkletManagerTest, DifferentBidderWorklets) {
   EXPECT_TRUE(handle1->GetBidderWorklet());
   EXPECT_NE(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDifferentDecisionLogicUrl, bidder_worklet2->script_source_url());
   EXPECT_EQ(kWasmUrl, bidder_worklet2->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet2->trusted_bidding_signals_url());
   EXPECT_EQ(kTopWindowOrigin, bidder_worklet2->top_window_origin());
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2));
 
@@ -1524,13 +1515,13 @@ TEST_F(AuctionWorkletManagerTest, DifferentBidderWorklets) {
   EXPECT_NE(handle1->GetBidderWorklet(), handle3->GetBidderWorklet());
   EXPECT_NE(handle2->GetBidderWorklet(), handle3->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet3 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet3->script_source_url());
   EXPECT_EQ(kWasmUrl, bidder_worklet3->wasm_url());
   EXPECT_EQ(std::nullopt, bidder_worklet3->trusted_bidding_signals_url());
   EXPECT_EQ(kTopWindowOrigin, bidder_worklet3->top_window_origin());
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle3->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction3));
 
@@ -1553,13 +1544,13 @@ TEST_F(AuctionWorkletManagerTest, DifferentBidderWorklets) {
   EXPECT_NE(handle2->GetBidderWorklet(), handle4->GetBidderWorklet());
   EXPECT_NE(handle3->GetBidderWorklet(), handle4->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet4 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet4->script_source_url());
   EXPECT_EQ(std::nullopt, bidder_worklet4->wasm_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet4->trusted_bidding_signals_url());
   EXPECT_EQ(kTopWindowOrigin, bidder_worklet4->top_window_origin());
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle4->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction4));
 }
@@ -1582,7 +1573,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletExperimentIDs) {
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
 
   // Request one with a different experiment ID. Should result in a different
   // worklet.
@@ -1599,7 +1590,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletExperimentIDs) {
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_NE(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
 
   // Now try with different trusted signals URL (using WASM url instead).
@@ -1616,7 +1607,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletExperimentIDs) {
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_TRUE(handle3->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet3 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_NE(handle1->GetBidderWorklet(), handle3->GetBidderWorklet());
   EXPECT_NE(handle2->GetBidderWorklet(), handle3->GetBidderWorklet());
 
@@ -1636,7 +1627,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletExperimentIDs) {
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet4 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_NE(handle1->GetBidderWorklet(), handle4->GetBidderWorklet());
   EXPECT_NE(handle2->GetBidderWorklet(), handle4->GetBidderWorklet());
   EXPECT_NE(handle3->GetBidderWorklet(), handle4->GetBidderWorklet());
@@ -1676,7 +1667,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCORSForAdditionalBid) {
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
 
   // Request one with a different CORS setting. Should result in a different
   // worklet.
@@ -1694,7 +1685,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCORSForAdditionalBid) {
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_NE(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
 }
 
@@ -1713,12 +1704,12 @@ TEST_F(AuctionWorkletManagerTest, DifferentSellerWorklets) {
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet1 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet1->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet1->trusted_scoring_signals_url());
   EXPECT_EQ(kTopWindowOrigin, seller_worklet1->top_window_origin());
   // Should only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
 
   // Load a seller worklet with a different decision logic URL. A new worklet
   // should be created, using the same process.
@@ -1737,12 +1728,12 @@ TEST_F(AuctionWorkletManagerTest, DifferentSellerWorklets) {
   EXPECT_TRUE(handle1->GetSellerWorklet());
   EXPECT_NE(handle1->GetSellerWorklet(), handle2->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet2 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDifferentDecisionLogicUrl, seller_worklet2->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet2->trusted_scoring_signals_url());
   EXPECT_EQ(kTopWindowOrigin, seller_worklet2->top_window_origin());
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
 
   // Load a seller worklet with a different (null) trusted signals URL. A new
   // worklet should be created, using the same process.
@@ -1761,12 +1752,12 @@ TEST_F(AuctionWorkletManagerTest, DifferentSellerWorklets) {
   EXPECT_NE(handle1->GetSellerWorklet(), handle3->GetSellerWorklet());
   EXPECT_NE(handle2->GetSellerWorklet(), handle3->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet3 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet3->script_source_url());
   EXPECT_EQ(std::nullopt, seller_worklet3->trusted_scoring_signals_url());
   EXPECT_EQ(kTopWindowOrigin, seller_worklet3->top_window_origin());
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
 }
 
 // Test seller worklet matching with different experiment IDs.
@@ -1785,7 +1776,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet1 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
 
   // Request one with a different experiment ID. Should result in a different
   // worklet.
@@ -1800,7 +1791,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet2 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_NE(handle1->GetSellerWorklet(), handle2->GetSellerWorklet());
 
   // Now try with different trusted signals URL (using WASM url instead).
@@ -1815,7 +1806,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_TRUE(handle3->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet3 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_NE(handle1->GetSellerWorklet(), handle3->GetSellerWorklet());
   EXPECT_NE(handle2->GetSellerWorklet(), handle3->GetSellerWorklet());
 
@@ -1834,7 +1825,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet4 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_NE(handle1->GetSellerWorklet(), handle4->GetSellerWorklet());
   EXPECT_NE(handle2->GetSellerWorklet(), handle4->GetSellerWorklet());
   EXPECT_NE(handle3->GetSellerWorklet(), handle4->GetSellerWorklet());
@@ -1852,7 +1843,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   ASSERT_TRUE(worklet_available5.Wait());
   EXPECT_TRUE(handle5->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet5 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_NE(handle1->GetSellerWorklet(), handle5->GetSellerWorklet());
   EXPECT_NE(handle2->GetSellerWorklet(), handle5->GetSellerWorklet());
   EXPECT_NE(handle3->GetSellerWorklet(), handle5->GetSellerWorklet());
@@ -1879,7 +1870,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletLoadError) {
 
   // Return a load error.
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   bidder_worklet->ClosePipe(kErrorText);
 
   // Wait for the load error, check the parameters.
@@ -1910,7 +1901,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletLoadError) {
   EXPECT_TRUE(handle2->GetBidderWorklet());
   EXPECT_NE(handle->GetBidderWorklet(), handle2->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2));
 }
@@ -1925,7 +1916,7 @@ TEST_F(AuctionWorkletManagerTest, LoadErrorWithoutProcessAssigned) {
   // it makes a bunch of extra notifications get dispatched from the nested
   // event loop, making it hard to precisely inject a failure. Since this test
   // doesn't care about that, just turn that functionality off.
-  auction_process_manager_.DisableBidderWorkletDtorPendingSignalsCheck();
+  auction_process_manager_->DisableBidderWorkletDtorPendingSignalsCheck();
 
   size_t success_callbacks = 0;
   size_t error_callbacks = 0;
@@ -1961,7 +1952,7 @@ TEST_F(AuctionWorkletManagerTest, LoadErrorWithoutProcessAssigned) {
 
   // Grab the first worklet to inject a simulated crash.
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   bidder_worklet.reset();
 
   task_environment()->RunUntilIdle();
@@ -2005,7 +1996,7 @@ TEST_F(AuctionWorkletManagerTest, LoadSuccessOrder) {
   run_loop.Run();
   EXPECT_EQ(kNumWorklets, success_callbacks);
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
 }
 
 TEST_F(AuctionWorkletManagerTest, SellerWorkletLoadError) {
@@ -2026,7 +2017,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletLoadError) {
 
   // Return a load error.
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   seller_worklet->ClosePipe(kErrorText);
 
   // Wait for the load error, check the parameters.
@@ -2055,7 +2046,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletLoadError) {
   EXPECT_TRUE(handle2->GetSellerWorklet());
   EXPECT_NE(handle->GetSellerWorklet(), handle2->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet2 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
 }
 
 TEST_F(AuctionWorkletManagerTest, BidderWorkletCrash) {
@@ -2076,7 +2067,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCrash) {
 
   // Close the worklet pipe, simulating a worklet crash.
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   bidder_worklet.reset();
 
   // Wait for the error, check the parameters.
@@ -2109,7 +2100,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCrash) {
   EXPECT_TRUE(handle2->GetBidderWorklet());
   EXPECT_NE(handle->GetBidderWorklet(), handle2->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
 }
 
 TEST_F(AuctionWorkletManagerTest, SellerWorkletCrash) {
@@ -2128,7 +2119,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletCrash) {
 
   // Close the worklet pipe, simulating a worklet crash.
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   seller_worklet.reset();
 
   // Wait for the error, check the parameters.
@@ -2159,7 +2150,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletCrash) {
   EXPECT_TRUE(handle2->GetSellerWorklet());
   EXPECT_NE(handle->GetSellerWorklet(), handle2->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet2 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2));
 }
@@ -2192,12 +2183,12 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletDeleteOnError) {
 
   // Return a load error.
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   bidder_worklet->ClosePipe(kErrorText);
 
   run_loop.Run();
   // The process should have been deleted, and there should be no crashes.
-  EXPECT_EQ(0u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(0u, auction_process_manager_->GetBidderProcessCountForTesting());
 }
 
 // Test re-entrant deletion of a WorkletHandle on success, and following
@@ -2258,7 +2249,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletDeleteOnSuccess) {
 
   // Return a load error.
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   bidder_worklet->ClosePipe(kErrorText);
 
   // Only that 6 that weren't cancelled should receive it.
@@ -2292,12 +2283,12 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletDeleteOnError) {
 
   // Return a load error.
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   seller_worklet->ClosePipe(kErrorText);
 
   run_loop.Run();
   // The process should have been deleted, and there should be no crashes.
-  EXPECT_EQ(0u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(0u, auction_process_manager_->GetSellerProcessCountForTesting());
 }
 
 // Minimal test that bidder worklets' AuctionURLLoaderFactoryProxies are
@@ -2317,7 +2308,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletUrlRequestProtection) {
   EXPECT_TRUE(handle->GetBidderWorklet());
 
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
 
   struct AllowedUrls {
     GURL url;
@@ -2389,7 +2380,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletWithKVv2FeatureDisabled) {
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
   EXPECT_TRUE(!bidder_worklet->public_key());
@@ -2410,7 +2401,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
   EXPECT_TRUE(handle->GetSellerWorklet());
 
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
 
   struct AllowedUrlMapping {
     GURL url;
@@ -2482,7 +2473,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletWithKVv2FeatureDisabled) {
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
 }
@@ -2809,7 +2800,7 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptCoordinator) {
 
 TEST_F(AuctionWorkletManagerTest,
        DoesNotCrashWhenProcessReadyAfterWorkletDestroyed) {
-  auction_process_manager_.DeferOnLaunchedForHandles();
+  auction_process_manager_->DeferOnLaunchedForHandles();
 
   std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
   base::test::TestFuture<void> worklet_available;
@@ -2824,12 +2815,12 @@ TEST_F(AuctionWorkletManagerTest,
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
 
   bidder_worklet.reset();
 
   handle.reset();
-  auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
+  auction_process_manager_->CallOnLaunchedWithPidForAllHandles();
 }
 
 class AuctionWorkletManagerKVv2Test : public AuctionWorkletManagerTest {
@@ -2894,7 +2885,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetBidderWorklet());
     std::unique_ptr<MockBidderWorklet> bidder_worklet =
-        auction_process_manager_.WaitForBidderWorklet();
+        auction_process_manager_->WaitForBidderWorklet();
     EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
     EXPECT_EQ(kTrustedSignalsUrl,
               bidder_worklet->trusted_bidding_signals_url());
@@ -2907,7 +2898,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
       expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
                        base::unexpected("Failed to fetch public key.")};
-  auction_process_manager_.DeferOnLaunchedForHandles();
+  auction_process_manager_->DeferOnLaunchedForHandles();
   synchronous_fetch_ = false;
 
   for (const auto& key : expected_keys) {
@@ -2924,12 +2915,12 @@ TEST_F(AuctionWorkletManagerKVv2Test,
         handle,
         auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
     std::move(fetch_key_callback_).Run(key_);
-    auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
+    auction_process_manager_->CallOnLaunchedWithPidForAllHandles();
 
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetBidderWorklet());
     std::unique_ptr<MockBidderWorklet> bidder_worklet =
-        auction_process_manager_.WaitForBidderWorklet();
+        auction_process_manager_->WaitForBidderWorklet();
     EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
     EXPECT_EQ(kTrustedSignalsUrl,
               bidder_worklet->trusted_bidding_signals_url());
@@ -2942,7 +2933,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
       expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
                        base::unexpected("Failed to fetch public key.")};
-  auction_process_manager_.DeferOnLaunchedForHandles();
+  auction_process_manager_->DeferOnLaunchedForHandles();
   synchronous_fetch_ = false;
 
   for (const auto& key : expected_keys) {
@@ -2958,13 +2949,13 @@ TEST_F(AuctionWorkletManagerKVv2Test,
         worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
         handle,
         auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
-    auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
+    auction_process_manager_->CallOnLaunchedWithPidForAllHandles();
     std::move(fetch_key_callback_).Run(key_);
 
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetBidderWorklet());
     std::unique_ptr<MockBidderWorklet> bidder_worklet =
-        auction_process_manager_.WaitForBidderWorklet();
+        auction_process_manager_->WaitForBidderWorklet();
     EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
     EXPECT_EQ(kTrustedSignalsUrl,
               bidder_worklet->trusted_bidding_signals_url());
@@ -2991,12 +2982,12 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet1->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet1->trusted_bidding_signals_url());
   EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet1->public_key(), key_));
   // Should only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle1->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1));
 
@@ -3019,12 +3010,12 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   EXPECT_TRUE(handle1->GetBidderWorklet());
   EXPECT_NE(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDifferentDecisionLogicUrl, bidder_worklet2->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet2->trusted_bidding_signals_url());
   EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet2->public_key(), key_));
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2));
 }
@@ -3047,14 +3038,14 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseBidderWorklet) {
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet1->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet1->trusted_bidding_signals_url());
   EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet1->public_key(), key_));
   handle1->GetBidderWorklet()->SendPendingSignalsRequests();
   bidder_worklet1->WaitForSendPendingSignalsRequests(1);
   // Should only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle1->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1));
 
@@ -3074,11 +3065,11 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseBidderWorklet) {
 
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_EQ(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
-  EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
+  EXPECT_FALSE(auction_process_manager_->HasBidderWorkletRequest());
   handle2->GetBidderWorklet()->SendPendingSignalsRequests();
   bidder_worklet1->WaitForSendPendingSignalsRequests(2);
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   // ... but used by both auctions.
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1, kAuction2));
@@ -3086,7 +3077,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseBidderWorklet) {
   // Close original handle. Worklet should still be alive, and so should its
   // process.
   handle1.reset();
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   // We should no longer attribute its work to the first auction, however.
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2));
@@ -3106,11 +3097,11 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseBidderWorklet) {
 
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_EQ(handle2->GetBidderWorklet(), handle3->GetBidderWorklet());
-  EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
+  EXPECT_FALSE(auction_process_manager_->HasBidderWorkletRequest());
   handle3->GetBidderWorklet()->SendPendingSignalsRequests();
   bidder_worklet1->WaitForSendPendingSignalsRequests(3);
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle3->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2, kAuction3));
 
@@ -3119,7 +3110,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseBidderWorklet) {
   handle3.reset();
 
   // Process should be destroyed.
-  EXPECT_EQ(0u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(0u, auction_process_manager_->GetBidderProcessCountForTesting());
 
   // Request another KVv2 bidder worklet. A new BidderWorklet in a new process
   // should be created.
@@ -3136,13 +3127,13 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseBidderWorklet) {
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet2->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet2->trusted_bidding_signals_url());
   EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet2->public_key(), key_));
   handle4->GetBidderWorklet()->SendPendingSignalsRequests();
   bidder_worklet2->WaitForSendPendingSignalsRequests(1);
-  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetBidderProcessCountForTesting());
   EXPECT_THAT(handle4->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction4));
 }
@@ -3165,7 +3156,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, BidderWorkletWithoutCoordinator) {
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
   EXPECT_TRUE(!bidder_worklet->public_key());
@@ -3194,7 +3185,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetSellerWorklet());
     std::unique_ptr<MockSellerWorklet> seller_worklet =
-        auction_process_manager_.WaitForSellerWorklet();
+        auction_process_manager_->WaitForSellerWorklet();
     EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
     EXPECT_EQ(kTrustedSignalsUrl,
               seller_worklet->trusted_scoring_signals_url());
@@ -3207,7 +3198,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
       expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
                        base::unexpected("Failed to fetch public key.")};
-  auction_process_manager_.DeferOnLaunchedForHandles();
+  auction_process_manager_->DeferOnLaunchedForHandles();
   synchronous_fetch_ = false;
 
   for (const auto& key : expected_keys) {
@@ -3224,12 +3215,12 @@ TEST_F(AuctionWorkletManagerKVv2Test,
         handle,
         auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
     std::move(fetch_key_callback_).Run(key_);
-    auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
+    auction_process_manager_->CallOnLaunchedWithPidForAllHandles();
 
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetSellerWorklet());
     std::unique_ptr<MockSellerWorklet> seller_worklet =
-        auction_process_manager_.WaitForSellerWorklet();
+        auction_process_manager_->WaitForSellerWorklet();
     EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
     EXPECT_EQ(kTrustedSignalsUrl,
               seller_worklet->trusted_scoring_signals_url());
@@ -3242,7 +3233,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
       expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
                        base::unexpected("Failed to fetch public key.")};
-  auction_process_manager_.DeferOnLaunchedForHandles();
+  auction_process_manager_->DeferOnLaunchedForHandles();
   synchronous_fetch_ = false;
 
   for (const auto& key : expected_keys) {
@@ -3258,13 +3249,13 @@ TEST_F(AuctionWorkletManagerKVv2Test,
         worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
         handle,
         auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
-    auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
+    auction_process_manager_->CallOnLaunchedWithPidForAllHandles();
     std::move(fetch_key_callback_).Run(key_);
 
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetSellerWorklet());
     std::unique_ptr<MockSellerWorklet> seller_worklet =
-        auction_process_manager_.WaitForSellerWorklet();
+        auction_process_manager_->WaitForSellerWorklet();
     EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
     EXPECT_EQ(kTrustedSignalsUrl,
               seller_worklet->trusted_scoring_signals_url());
@@ -3289,12 +3280,12 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet1 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet1->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet1->trusted_scoring_signals_url());
   EXPECT_TRUE(PublicKeyEvaluateHelper(seller_worklet1->public_key(), key_));
   // Should only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   EXPECT_THAT(handle1->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1));
 
@@ -3316,12 +3307,12 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   EXPECT_TRUE(handle1->GetSellerWorklet());
   EXPECT_NE(handle1->GetSellerWorklet(), handle2->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet2 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDifferentDecisionLogicUrl, seller_worklet2->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet2->trusted_scoring_signals_url());
   EXPECT_TRUE(PublicKeyEvaluateHelper(seller_worklet2->public_key(), key_));
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2));
 }
@@ -3342,14 +3333,14 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet1 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet1->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet1->trusted_scoring_signals_url());
   EXPECT_TRUE(PublicKeyEvaluateHelper(seller_worklet1->public_key(), key_));
   handle1->GetSellerWorklet()->SendPendingSignalsRequests();
   seller_worklet1->WaitForSendPendingSignalsRequests(1);
   // Should only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   EXPECT_THAT(handle1->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1));
 
@@ -3367,11 +3358,11 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
 
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_EQ(handle1->GetSellerWorklet(), handle2->GetSellerWorklet());
-  EXPECT_FALSE(auction_process_manager_.HasSellerWorkletRequest());
+  EXPECT_FALSE(auction_process_manager_->HasSellerWorkletRequest());
   handle2->GetSellerWorklet()->SendPendingSignalsRequests();
   seller_worklet1->WaitForSendPendingSignalsRequests(2);
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   // ... but used by both auctions.
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction1, kAuction2));
@@ -3379,7 +3370,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
   // Close original handle. Worklet should still be alive, and so should its
   // process.
   handle1.reset();
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   // We should no longer attribute its work to the first auction, however.
   EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2));
@@ -3397,11 +3388,11 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
 
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_EQ(handle2->GetSellerWorklet(), handle3->GetSellerWorklet());
-  EXPECT_FALSE(auction_process_manager_.HasSellerWorkletRequest());
+  EXPECT_FALSE(auction_process_manager_->HasSellerWorkletRequest());
   handle3->GetSellerWorklet()->SendPendingSignalsRequests();
   seller_worklet1->WaitForSendPendingSignalsRequests(3);
   // Should still only be one process.
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   EXPECT_THAT(handle3->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction2, kAuction3));
 
@@ -3410,7 +3401,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
   handle3.reset();
 
   // Process should be destroyed.
-  EXPECT_EQ(0u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(0u, auction_process_manager_->GetSellerProcessCountForTesting());
 
   // Request another KVv2 seller worklet. A new SellerWorklet in a new process
   // should be created.
@@ -3425,13 +3416,13 @@ TEST_F(AuctionWorkletManagerKVv2Test, ReuseSellerWorklet) {
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet2 =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet2->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet2->trusted_scoring_signals_url());
   EXPECT_TRUE(PublicKeyEvaluateHelper(seller_worklet2->public_key(), key_));
   handle4->GetSellerWorklet()->SendPendingSignalsRequests();
   seller_worklet2->WaitForSendPendingSignalsRequests(1);
-  EXPECT_EQ(1u, auction_process_manager_.GetSellerProcessCountForTesting());
+  EXPECT_EQ(1u, auction_process_manager_->GetSellerProcessCountForTesting());
   EXPECT_THAT(handle4->GetDevtoolsAuctionIdsForTesting(),
               UnorderedElementsAre(kAuction4));
 }
@@ -3452,17 +3443,15 @@ TEST_F(AuctionWorkletManagerKVv2Test, SellerWorkletWithoutCoordinator) {
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
   EXPECT_TRUE(!seller_worklet->public_key());
 }
 
 // Test that when both kFledgeTrustedSignalsKVv2Support and
-// kFledgeUseKVv2SignalsCache are enabled, bidder worklets don't get
-// TrustedSignalsPublicKey, but seller worklets do. This is because the cache
-// currently only supports bidder worklets, and manages the keys itself, while
-// seller worklet KVv2 requests still must be managed by the worklet process.
+// kFledgeUseKVv2SignalsCache are enabled, worklets don't get
+// TrustedSignalsPublicKeys.
 TEST_F(AuctionWorkletManagerKVv2Test, KVv2SignalsCacheEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFledgeUseKVv2SignalsCache);
@@ -3480,7 +3469,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, KVv2SignalsCacheEnabled) {
   ASSERT_TRUE(bidder_worklet_available.Wait());
   EXPECT_TRUE(bidder_handle->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_.WaitForBidderWorklet();
+      auction_process_manager_->WaitForBidderWorklet();
   EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
   EXPECT_FALSE(bidder_worklet->public_key());
@@ -3496,10 +3485,10 @@ TEST_F(AuctionWorkletManagerKVv2Test, KVv2SignalsCacheEnabled) {
   ASSERT_TRUE(seller_worklet_available.Wait());
   EXPECT_TRUE(seller_handle->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_.WaitForSellerWorklet();
+      auction_process_manager_->WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
-  EXPECT_TRUE(PublicKeyEvaluateHelper(seller_worklet->public_key(), key_));
+  EXPECT_FALSE(seller_worklet->public_key());
 }
 
 TEST_F(AuctionWorkletManagerKVv2Test,
@@ -3511,9 +3500,9 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       GURL("https://other.origin.test/trusted_signals");
 
   QuerySignalsUrlAllowedHelper helper1;
-  auction_process_manager_.set_trusted_signals_url_allowed(false);
+  auction_process_manager_->set_trusted_signals_url_allowed(false);
   auction_worklet_manager_->RequestSellerWorklet(
-      kAuction1, kCrossOriginTrustedSignalsUrl, kTrustedSignalsUrl,
+      kAuction1, kDecisionLogicUrl, kCrossOriginTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://origin.test/")), helper1.GetCallback(),
@@ -3524,10 +3513,10 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   helper1.handle().reset();
   // Wait for the SellerWorklet request to be observed, and then destroy it, by
   // throwing away the returned MockSellerWorklet.
-  auction_process_manager_.WaitForSellerWorklet();
+  auction_process_manager_->WaitForSellerWorklet();
 
   QuerySignalsUrlAllowedHelper helper2;
-  auction_process_manager_.set_trusted_signals_url_allowed(true);
+  auction_process_manager_->set_trusted_signals_url_allowed(true);
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kCrossOriginTrustedSignalsUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
@@ -3536,11 +3525,6 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       NeverInvokedFatalErrorCallback(), helper2.handle(),
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   EXPECT_TRUE(helper2.ScoringSignalsUrlAllowed());
-  // Destroy seller worklet. The teardown order is a bit weird in these tests
-  // due to RenderViewHostTestHarness. If it's not explicitly destroyed here, it
-  // will outlive the ScopedTaskEnvironment, and destroying Mojo objects after
-  // that will CHECK.
-  auction_process_manager_.WaitForSellerWorklet();
 }
 
 // Check the case that the process crashes while waiting for the
@@ -3558,7 +3542,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   FatalLoadErrorHelper load_error_helper;
   std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
   auction_worklet_manager_->RequestSellerWorklet(
-      kAuction1, kCrossOriginTrustedSignalsUrl, kTrustedSignalsUrl,
+      kAuction1, kDecisionLogicUrl, kCrossOriginTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://origin.test/")),
@@ -3567,7 +3551,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   // Wait for the SellerWorklet request to be observed, and then close it with
   // an error.
-  auction_process_manager_.WaitForSellerWorklet()->ClosePipe(kErrorText);
+  auction_process_manager_->WaitForSellerWorklet()->ClosePipe(kErrorText);
   load_error_helper.WaitForResult();
   EXPECT_THAT(load_error_helper.errors(), testing::ElementsAre(kErrorText));
   EXPECT_EQ(AuctionWorkletManager::FatalErrorType::kScriptLoadFailed,
@@ -3578,7 +3562,7 @@ TEST_F(AuctionWorkletManagerKVv2Test,
   FatalLoadErrorHelper load_error_helper2;
   std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle2;
   auction_worklet_manager_->RequestSellerWorklet(
-      kAuction1, kCrossOriginTrustedSignalsUrl, kTrustedSignalsUrl,
+      kAuction1, kDecisionLogicUrl, kCrossOriginTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/
       url::Origin::Create(GURL("https://origin.test/")),
@@ -3587,11 +3571,10 @@ TEST_F(AuctionWorkletManagerKVv2Test,
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   // Wait for the SellerWorklet request to be observed, and then destroy it, by
   // throwing away the returned MockSellerWorklet.
-  auction_process_manager_.WaitForSellerWorklet();
+  auction_process_manager_->WaitForSellerWorklet();
   load_error_helper2.WaitForResult();
   EXPECT_THAT(load_error_helper2.errors(),
-              testing::ElementsAre(
-                  "https://other.origin.test/trusted_signals crashed."));
+              testing::ElementsAre("https://origin.test/script crashed."));
   EXPECT_EQ(AuctionWorkletManager::FatalErrorType::kWorkletCrash,
             load_error_helper2.fatal_error_type());
 }

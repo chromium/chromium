@@ -11,10 +11,8 @@ namespace user_education {
 
 FeaturePromoPreconditionBase::FeaturePromoPreconditionBase(
     Identifier identifier,
-    FeaturePromoResult::Failure failure,
     std::string description)
     : identifier_(identifier),
-      failure_(failure),
       description_(std::move(description)) {}
 
 FeaturePromoPreconditionBase::~FeaturePromoPreconditionBase() = default;
@@ -22,10 +20,6 @@ FeaturePromoPreconditionBase::~FeaturePromoPreconditionBase() = default;
 FeaturePromoPreconditionBase::Identifier
 FeaturePromoPreconditionBase::GetIdentifier() const {
   return identifier_;
-}
-
-FeaturePromoResult::Failure FeaturePromoPreconditionBase::GetFailure() const {
-  return failure_;
 }
 
 const std::string& FeaturePromoPreconditionBase::GetDescription() const {
@@ -44,32 +38,30 @@ void FeaturePromoPreconditionBase::ExtractCachedData(
 
 CachingFeaturePromoPrecondition::CachingFeaturePromoPrecondition(
     Identifier identifier,
-    FeaturePromoResult::Failure failure,
     std::string description,
-    bool initial_state)
-    : FeaturePromoPreconditionBase(identifier, failure, std::move(description)),
-      is_allowed_(initial_state) {}
+    FeaturePromoResult initial_state)
+    : FeaturePromoPreconditionBase(identifier, std::move(description)),
+      check_result_(initial_state) {}
 
 CachingFeaturePromoPrecondition::~CachingFeaturePromoPrecondition() = default;
 
-bool CachingFeaturePromoPrecondition::IsAllowed() const {
-  return is_allowed_;
+FeaturePromoResult CachingFeaturePromoPrecondition::CheckPrecondition() const {
+  return check_result_;
 }
 
 CallbackFeaturePromoPrecondition::CallbackFeaturePromoPrecondition(
     Identifier identifier,
-    FeaturePromoResult::Failure failure,
     std::string description,
-    base::RepeatingCallback<bool()> is_allowed_callback)
-    : FeaturePromoPreconditionBase(identifier, failure, std::move(description)),
-      is_allowed_callback_(std::move(is_allowed_callback)) {
-  CHECK(!is_allowed_callback_.is_null());
+    base::RepeatingCallback<FeaturePromoResult()> check_result_callback)
+    : FeaturePromoPreconditionBase(identifier, std::move(description)),
+      check_result_callback_(std::move(check_result_callback)) {
+  CHECK(!check_result_callback_.is_null());
 }
 
 CallbackFeaturePromoPrecondition::~CallbackFeaturePromoPrecondition() = default;
 
-bool CallbackFeaturePromoPrecondition::IsAllowed() const {
-  return is_allowed_callback_.Run();
+FeaturePromoResult CallbackFeaturePromoPrecondition::CheckPrecondition() const {
+  return check_result_callback_.Run();
 }
 
 ForwardingFeaturePromoPrecondition::ForwardingFeaturePromoPrecondition(
@@ -84,17 +76,13 @@ ForwardingFeaturePromoPrecondition::GetIdentifier() const {
   return source_->GetIdentifier();
 }
 
-FeaturePromoResult::Failure ForwardingFeaturePromoPrecondition::GetFailure()
-    const {
-  return source_->GetFailure();
-}
-
 const std::string& ForwardingFeaturePromoPrecondition::GetDescription() const {
   return source_->GetDescription();
 }
 
-bool ForwardingFeaturePromoPrecondition::IsAllowed() const {
-  return source_->IsAllowed();
+FeaturePromoResult ForwardingFeaturePromoPrecondition::CheckPrecondition()
+    const {
+  return source_->CheckPrecondition();
 }
 
 FeaturePromoPreconditionList::FeaturePromoPreconditionList(
@@ -106,9 +94,9 @@ FeaturePromoPreconditionList::~FeaturePromoPreconditionList() = default;
 FeaturePromoPreconditionList::CheckResult
 FeaturePromoPreconditionList::CheckPreconditions() const {
   for (const auto& precondition : preconditions_) {
-    if (!precondition->IsAllowed()) {
-      return CheckResult(precondition->GetFailure(),
-                         precondition->GetIdentifier());
+    const auto result = precondition->CheckPrecondition();
+    if (!result) {
+      return CheckResult(result, precondition->GetIdentifier());
     }
   }
   return CheckResult(FeaturePromoResult::Success(), {});

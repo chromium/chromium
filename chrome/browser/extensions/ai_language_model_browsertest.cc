@@ -82,8 +82,8 @@ static constexpr char kServiceWorkerScript[] =
     )JS";
 
 // The boolean tuple describing:
-// 1. the feature flag value for `kEnableAIPromptAPIForWebPlatform`;
-// 2. the feature flag value for `kEnableAIPromptAPIForExtension`;
+// 1. the feature flag value for `kAIPromptAPIForWebPlatform`;
+// 2. the feature flag value for `kAIPromptAPIForExtension`;
 // 3. if the kill switch is triggered;
 // 4. if the extension requests for the right permission;
 // 5. if the extension is participating in the origin trial.
@@ -155,7 +155,8 @@ class ExtensionAILanguageModelBrowserTest
     std::vector<std::string_view> enabled_features;
     // Disable all the other AI APIs to avoid unexpected ai namespace.
     std::vector<std::string_view> disabled_features{
-        "AISummarizationAPI", "AIWriterAPI", "AIRewriterAPI"};
+        "AISummarizationAPI", "AIWriterAPI", "AIRewriterAPI",
+        "LanguageDetectionAPI"};
 
     if (IsPromptAPIForWebPlatformEnabled(GetParam())) {
       enabled_features.push_back("AIPromptAPIForWebPlatform");
@@ -183,14 +184,14 @@ class ExtensionAILanguageModelBrowserTest
     // The base feature for the web platform prompt API should be enabled so we
     // don't apply the kill switch to it.
     std::vector<base::test::FeatureRefAndParams> enabled_base_features{
-        {blink::features::kEnableAIPromptAPIForWebPlatform, {}}};
+        {blink::features::kAIPromptAPIForWebPlatform, {}}};
     std::vector<base::test::FeatureRef> disabled_base_features;
     if (IsPromptAPIForExtensionKillSwitchTriggered(GetParam())) {
       disabled_base_features.push_back(
-          {blink::features::kEnableAIPromptAPIForExtension});
+          {blink::features::kAIPromptAPIForExtension});
     } else {
       enabled_base_features.push_back(
-          {blink::features::kEnableAIPromptAPIForExtension, {}});
+          {blink::features::kAIPromptAPIForExtension, {}});
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_base_features,
                                                 disabled_base_features);

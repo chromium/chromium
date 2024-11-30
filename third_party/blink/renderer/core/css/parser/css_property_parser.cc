@@ -45,6 +45,7 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
   DCHECK(property.IsProperty());
   switch (rule_type) {
     case StyleRule::kStyle:
+    case StyleRule::kScope:
       return true;
     case StyleRule::kPage:
     case StyleRule::kPageMargin:

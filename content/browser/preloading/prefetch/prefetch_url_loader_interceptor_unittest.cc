@@ -270,9 +270,6 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     attempt_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
             content_preloading_predictor::kSpeculationRules);
-
-    scoped_test_timer_ =
-        std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void TearDown() override {
@@ -515,6 +512,8 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_for_new_wait_loop_;
 
  private:
+  base::ScopedMockElapsedTimersForTest scoped_test_timer_;
+
   std::unique_ptr<PrefetchURLLoaderInterceptor> interceptor_;
 
   base::HistogramTester histogram_tester_;
@@ -529,7 +528,6 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
 
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
   // Disable sampling of UKM preloading logs.
   content::test::PreloadingConfigOverride preloading_config_override_;
 

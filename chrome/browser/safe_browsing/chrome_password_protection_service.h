@@ -246,7 +246,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
           matching_reused_credentials) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
+  ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
 #endif
   // Returns the PasswordReuseManager associated with this instance.

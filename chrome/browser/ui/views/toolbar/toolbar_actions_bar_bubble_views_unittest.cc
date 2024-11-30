@@ -42,7 +42,7 @@ const char16_t kExtraViewText[] = u"Learn";
 
 class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
  protected:
-  ToolbarActionsBarBubbleViewsTest() {}
+  ToolbarActionsBarBubbleViewsTest() = default;
   ToolbarActionsBarBubbleViewsTest(const ToolbarActionsBarBubbleViewsTest&) =
       delete;
   ToolbarActionsBarBubbleViewsTest& operator=(

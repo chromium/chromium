@@ -91,7 +91,7 @@ class MockUpdateCheckDelegate : public UpdateCheckDelegate {
 // instance.
 class GoogleUpdateFactory {
  public:
-  virtual ~GoogleUpdateFactory() {}
+  virtual ~GoogleUpdateFactory() = default;
   virtual HRESULT Create(
       Microsoft::WRL::ComPtr<IGoogleUpdate3Web>* google_update) = 0;
 };
@@ -103,7 +103,7 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
     COM_INTERFACE_ENTRY(ICurrentState)
   END_COM_MAP()
 
-  MockCurrentState() {}
+  MockCurrentState() = default;
 
   MockCurrentState(const MockCurrentState&) = delete;
   MockCurrentState& operator=(const MockCurrentState&) = delete;
@@ -362,7 +362,7 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
     COM_INTERFACE_ENTRY(IAppBundleWeb)
   END_COM_MAP()
 
-  MockAppBundle() {}
+  MockAppBundle() = default;
 
   MockAppBundle(const MockAppBundle&) = delete;
   MockAppBundle& operator=(const MockAppBundle&) = delete;
@@ -468,7 +468,7 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
     COM_INTERFACE_ENTRY(IGoogleUpdate3Web)
   END_COM_MAP()
 
-  MockGoogleUpdate() {}
+  MockGoogleUpdate() = default;
 
   MockGoogleUpdate(const MockGoogleUpdate&) = delete;
   MockGoogleUpdate& operator=(const MockGoogleUpdate&) = delete;
@@ -514,7 +514,7 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
 // A mock factory for creating an IGoogleUpdate3Web instance.
 class MockGoogleUpdateFactory : public GoogleUpdateFactory {
  public:
-  MockGoogleUpdateFactory() {}
+  MockGoogleUpdateFactory() = default;
 
   MockGoogleUpdateFactory(const MockGoogleUpdateFactory&) = delete;
   MockGoogleUpdateFactory& operator=(const MockGoogleUpdateFactory&) = delete;

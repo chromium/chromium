@@ -33,7 +33,7 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionApiTabTest : public extensions::ExtensionApiTest {
  public:
@@ -250,7 +250,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 // https://crbug.com/1450747 Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/381214152): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_CaptureVisibleTabJpeg DISABLED_CaptureVisibleTabJpeg
 #else
 #define MAYBE_CaptureVisibleTabJpeg CaptureVisibleTabJpeg
@@ -261,7 +262,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
 }
 
 // https://crbug.com/1450933 Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/381277829): Flaky on ASAN and MSAN builds.
+#if BUILDFLAG(IS_MAC) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_CaptureVisibleTabPng DISABLED_CaptureVisibleTabPng
 #else
 #define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng

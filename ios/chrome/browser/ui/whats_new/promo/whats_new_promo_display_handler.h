@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_WHATS_NEW_PROMO_WHATS_NEW_PROMO_DISPLAY_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_WHATS_NEW_PROMO_WHATS_NEW_PROMO_DISPLAY_HANDLER_H_
 
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_display_handler.h"
 
 class PromosManager;
 

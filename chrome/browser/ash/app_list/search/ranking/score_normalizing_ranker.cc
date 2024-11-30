@@ -45,7 +45,7 @@ ScoreNormalizingRanker::ScoreNormalizingRanker(
     ash::PersistentProto<ScoreNormalizerProto> proto)
     : normalizer_(std::move(proto), params) {}
 
-ScoreNormalizingRanker::~ScoreNormalizingRanker() {}
+ScoreNormalizingRanker::~ScoreNormalizingRanker() = default;
 
 void ScoreNormalizingRanker::UpdateResultRanks(ResultsMap& results,
                                                ProviderType provider) {

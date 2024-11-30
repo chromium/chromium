@@ -32,7 +32,7 @@ void RecentTabsPagePrefs::Destroy(JNIEnv* env) {
   delete this;
 }
 
-RecentTabsPagePrefs::~RecentTabsPagePrefs() {}
+RecentTabsPagePrefs::~RecentTabsPagePrefs() = default;
 
 jboolean RecentTabsPagePrefs::GetSnapshotDocumentCollapsed(JNIEnv* env) {
   return profile_->GetPrefs()->GetBoolean(prefs::kNtpCollapsedSnapshotDocument);

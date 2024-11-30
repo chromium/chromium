@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "components/compose/buildflags.h"
-#include "components/lens/buildflags.h"
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
@@ -30,6 +29,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/ash/config/chrome_untrusted_web_ui_configs_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void RegisterChromeUntrustedWebUIConfigs() {
   // Don't add calls to `AddUntrustedWebUIConfig()` for ash-specific UIs here.
@@ -63,4 +66,9 @@ void RegisterChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(
       std::make_unique<printing::PrintPreviewUIUntrustedConfig>());
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+#if !BUILDFLAG(IS_ANDROID)
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<NtpMicrosoftAuthUntrustedUIConfig>());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }

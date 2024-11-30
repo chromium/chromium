@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "net/base/isolation_info.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
 
@@ -147,6 +148,17 @@ class AutofillDriver {
 
   // Returns the AutofillManager owned by the AutofillDriver.
   virtual AutofillManager& GetAutofillManager() = 0;
+
+  // Gets the UKM source ID associated with this driver's outermost main frame's
+  // document.
+  //
+  // That implies the following properties:
+  // - A child frame has the same UKM source ID as its parent frame.
+  // - When a cross-document navigation in the outermost main frame leads to ...
+  //   - ... a *new* AutofillDriver, the new driver has a new UKM source ID.
+  //   - ... the *same* AutofillDriver (i.e., the driver transitions into the
+  //     LifecycleState::kPendingReset), the driver gets a new UKM source ID.
+  virtual ukm::SourceId GetPageUkmSourceId() const = 0;
 
   // Returns whether the AutofillDriver instance is associated with an active
   // frame in the MPArch sense.
@@ -307,6 +319,16 @@ class AutofillDriver {
   virtual void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) = 0;
+
+  // Searches for the final checkout amount in the DOM and returns the amount
+  // back to the browser process.
+  // See `form_util::ExtractFinalCheckoutAmountFromDom()` for details.
+  virtual void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string& amount)>
+          response_callback) = 0;
 
  private:
   friend class AutofillDriverTestApi;

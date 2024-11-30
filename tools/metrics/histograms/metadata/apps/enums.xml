@@ -489,6 +489,30 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Load icon via non-mojom call"/>
 </enum>
 
+<enum name="ImageAnnotationWorkerIcaStatus">
+  <int value="0" label="Start with Ocr"/>
+  <int value="1" label="Start without Ocr"/>
+  <int value="2" label="Ocr succeed"/>
+  <int value="3" label="Ica succeed"/>
+  <int value="4" label="Ocr inserted into DB"/>
+  <int value="5" label="Ica inserted into DB"/>
+  <int value="6" label="Ica failed"/>
+  <int value="7" label="Ica is disabled"/>
+  <int value="8" label="Annotation starts"/>
+  <int value="9" label="Data init failed"/>
+  <int value="10" label="Mapped Region is invalid"/>
+  <int value="11" label="Request sent to ML service"/>
+  <int value="12" label="Timeout"/>
+  <int value="13" label="Start to insert Ocr annotations"/>
+  <int value="14" label="Start to insert Ica annotations"/>
+  <int value="15" label="Ocr document insert failed"/>
+  <int value="16" label="Ica document insert failed"/>
+  <int value="17" label="Ocr annotation insert failed"/>
+  <int value="18" label="Ica annotation insert failed"/>
+  <int value="19" label="Ocr status update failed"/>
+  <int value="20" label="Ica status update failed"/>
+</enum>
+
 <enum name="ImageAnnotationWorkerIndexingStatus">
   <int value="0" label="Start indexing"/>
   <int value="1" label="Start OCR processing"/>

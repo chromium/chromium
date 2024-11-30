@@ -14,6 +14,7 @@
 #include "components/user_education/test/test_user_education_storage_service.h"
 #include "components/user_education/test/user_education_session_mocks.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 
 namespace user_education {
 
@@ -50,6 +51,7 @@ class TestNotice {
 
  private:
   void OnReadyToShow(RequiredNoticePriorityHandle handle) {
+    CHECK(handle);
     shown_ = true;
     handle_ = std::move(handle);
   }
@@ -370,6 +372,37 @@ TEST_F(ProductMessagingControllerTest,
   EXPECT_TRUE(notice1.showing());
   notice1.Done();
   EXPECT_FALSE(controller().has_pending_notices());
+}
+
+TEST_F(ProductMessagingControllerTest, StatusCallbacks) {
+  UNCALLED_MOCK_CALLBACK(ProductMessagingController::StatusUpdateCallback,
+                         granted);
+  UNCALLED_MOCK_CALLBACK(ProductMessagingController::StatusUpdateCallback,
+                         shown);
+  const auto sub1 = controller().AddRequiredNoticePriorityHandleGrantedCallback(
+      granted.Get());
+  const auto sub2 = controller().AddRequiredNoticeShownCallback(shown.Get());
+
+  // Queue one notice.
+  TestNotice notice1(controller(), kNoticeId1);
+
+  // Notice should be granted when events are processed, which should trigger a
+  // callback on `granted`.
+  EXPECT_CALL_IN_SCOPE(granted, Run(kNoticeId1), FlushEvents());
+
+  // Queue a second notice.
+  TestNotice notice2(controller(), kNoticeId2);
+
+  // Mark the first notice as shown, triggering the `shown` callback, and
+  // complete it.
+  EXPECT_CALL_IN_SCOPE(shown, Run(kNoticeId1), notice1.Done(true));
+
+  // Now the second notice is free to be granted.
+  EXPECT_CALL_IN_SCOPE(granted, Run(kNoticeId2), FlushEvents());
+
+  // End the second notice without showing it; this results in no `shown`
+  // callback.
+  notice2.Done(false);
 }
 
 }  // namespace user_education

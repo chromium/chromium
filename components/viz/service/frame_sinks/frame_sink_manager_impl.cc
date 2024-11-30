@@ -815,6 +815,15 @@ void FrameSinkManagerImpl::DidFinishFrame(const FrameSinkId& frame_sink_id,
     observer.OnFrameSinkDidFinishFrame(frame_sink_id, args);
 }
 
+void FrameSinkManagerImpl::OnFrameSinkDeviceScaleFactorChanged(
+    const FrameSinkId& frame_sink_id,
+    float device_scale_factor) {
+  for (auto& observer : observer_list_) {
+    observer.OnFrameSinkDeviceScaleFactorChanged(frame_sink_id,
+                                                 device_scale_factor);
+  }
+}
+
 void FrameSinkManagerImpl::AddObserver(FrameSinkObserver* obs) {
   observer_list_.AddObserver(obs);
 }

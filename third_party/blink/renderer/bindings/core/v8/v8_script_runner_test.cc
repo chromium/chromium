@@ -141,8 +141,8 @@ class V8ScriptRunnerTest : public testing::Test {
                                  const WTF::TextEncoding& encoding,
                                  Vector<uint8_t> serialized_metadata,
                                  std::optional<String> code = {}) {
-    return CreateResource(isolate, encoding,
-                          base::make_span(serialized_metadata), code);
+    return CreateResource(isolate, encoding, base::span(serialized_metadata),
+                          code);
   }
 
   ScriptResource* CreateResource(

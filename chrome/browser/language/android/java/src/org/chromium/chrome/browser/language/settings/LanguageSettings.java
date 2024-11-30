@@ -66,7 +66,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         mPageTitle.set(getString(R.string.language_settings));
-        mPrefChangeRegistrar = new PrefChangeRegistrar();
+        mPrefChangeRegistrar = new PrefChangeRegistrar(getProfile());
 
         // Create the correct version of language settings.
         if (shouldShowDetailedPreferences()) {

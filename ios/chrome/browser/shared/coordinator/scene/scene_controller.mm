@@ -77,8 +77,16 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intents/user_activity_browser_agent.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/main/ui_bundled/browser_view_wrangler.h"
+#import "ios/chrome/browser/main/ui_bundled/default_browser_promo_scene_agent.h"
+#import "ios/chrome/browser/main/ui_bundled/incognito_blocker_scene_agent.h"
+#import "ios/chrome/browser/main/ui_bundled/ui_blocker_scene_agent.h"
+#import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -95,11 +103,20 @@
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_scene_agent.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_saving_scene_agent.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
@@ -147,28 +164,13 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_scene_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
-#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
-#import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
-#import "ios/chrome/browser/ui/main/default_browser_promo_scene_agent.h"
-#import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
-#import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
-#import "ios/chrome/browser/ui/main/wrangled_browser.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
-#import "ios/chrome/browser/ui/promos_manager/utils.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
-#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
-#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/browser/ui/settings/utils/password_utils.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -646,18 +648,12 @@ void OnListFamilyMembersResponse(
   if (self.startupParameters) {
     if ([self isIncognitoForced]) {
       [self.startupParameters
-          setUnexpectedMode:self.startupParameters.applicationMode ==
-                            ApplicationModeForTabOpening::NORMAL];
-      // When only incognito mode is available.
-      [self.startupParameters
-          setApplicationMode:ApplicationModeForTabOpening::INCOGNITO];
+            setApplicationMode:ApplicationModeForTabOpening::INCOGNITO
+          forceApplicationMode:YES];
     } else if ([self isIncognitoDisabled]) {
       [self.startupParameters
-          setUnexpectedMode:self.startupParameters.applicationMode ==
-                            ApplicationModeForTabOpening::INCOGNITO];
-      // When incognito mode is disabled.
-      [self.startupParameters
-          setApplicationMode:ApplicationModeForTabOpening::NORMAL];
+            setApplicationMode:ApplicationModeForTabOpening::NORMAL
+          forceApplicationMode:YES];
     }
 
     userActivityBrowserAgent->RouteToCorrectTab();
@@ -736,7 +732,8 @@ void OnListFamilyMembersResponse(
   // Perform the action in incognito when only incognito mode is available.
   if ([self isIncognitoForced]) {
     [self.startupParameters
-        setApplicationMode:ApplicationModeForTabOpening::INCOGNITO];
+          setApplicationMode:ApplicationModeForTabOpening::INCOGNITO
+        forceApplicationMode:YES];
   }
   UserActivityBrowserAgent* userActivityBrowserAgent =
       UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
@@ -802,6 +799,11 @@ void OnListFamilyMembersResponse(
 
 #pragma mark - private
 
+- (void)stopSigninCoordinator {
+  [self.signinCoordinator stop];
+  self.signinCoordinator = nil;
+}
+
 // Creates, if needed, and presents saved passwords settings. Assumes all modal
 // dialods are dismissed and `baseViewController` is available to present.
 - (void)showSavedPasswordsSettingsAfterModalDismissFromViewController:
@@ -857,6 +859,18 @@ void OnListFamilyMembersResponse(
   self.passwordCheckupCoordinator.delegate = self;
 
   [self.passwordCheckupCoordinator start];
+}
+
+// Shows the Password Checkup page for `referrer`.
+- (void)showPasswordCheckupPageForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+
+  [self startPasswordCheckupCoordinator:referrer];
+
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
 }
 
 // Shows the Incognito interstitial on top of `activeViewController`.
@@ -1763,6 +1777,9 @@ using UserFeedbackDataCallback =
       (baseViewController.presentedViewController ||
        ![self isTabAvailableToPresentViewController])) {
     // Make sure the UI is available to present the sign-in view.
+    if (command.completion) {
+      command.completion(SigninCoordinatorUINotAvailable, nil);
+    }
     return;
   }
   if (self.signinCoordinator) {
@@ -1872,7 +1889,7 @@ using UserFeedbackDataCallback =
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.
   [self startSigninCoordinatorWithCompletion:^(SigninCoordinatorResult result,
-                                               SigninCompletionInfo*) {
+                                               id<SystemIdentity>) {
     if (completion) {
       completion();
     }
@@ -1951,7 +1968,7 @@ using UserFeedbackDataCallback =
   GURL copiedURL = url;
   [self startSigninCoordinatorWithCompletion:^(
             SigninCoordinatorResult result,
-            SigninCompletionInfo* completionInfo) {
+            id<SystemIdentity> completionIdentity) {
     // If the sign-in is not successful or the scene controller is shut down do
     // not load the continuation URL.
     BOOL success = result == SigninCoordinatorResultSuccess;
@@ -2274,16 +2291,12 @@ using UserFeedbackDataCallback =
   }];
 }
 
-// Shows the Password Checkup page for `referrer`.
-- (void)showPasswordCheckupPageForReferrer:
+- (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
-  UIViewController* baseViewController = self.currentInterface.viewController;
-
-  [self startPasswordCheckupCoordinator:referrer];
-
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
+  __weak SceneController* weakSelf = self;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf showPasswordCheckupPageForReferrer:referrer];
+  }];
 }
 
 - (void)showPasswordDetailsForCredential:
@@ -3337,6 +3350,13 @@ using UserFeedbackDataCallback =
   return self.currentInterface.browser;
 }
 
+- (UrlLoadingBrowserAgent*)browserAgentForIncognito:(BOOL)incognito {
+  if (incognito) {
+    return UrlLoadingBrowserAgent::FromBrowser(self.incognitoInterface.browser);
+  }
+  return UrlLoadingBrowserAgent::FromBrowser(self.mainInterface.browser);
+}
+
 // Asks the respective Snapshot helper to update the snapshot for the active
 // WebState.
 - (void)updateActiveWebStateSnapshot {
@@ -3377,9 +3397,21 @@ using UserFeedbackDataCallback =
   web::WebState* currentWebState =
       targetInterface.browser->GetWebStateList()->GetActiveWebState();
 
-  BOOL alwaysInsertNewTab =
+  // Refrain from reusing the same tab for Lens Overlay initiated requests.
+  BOOL initiatedByLensOverlay = false;
+  if (IsLensOverlayAvailable() && currentWebState) {
+    if (LensOverlayTabHelper* lensOverlayTabHelper =
+            LensOverlayTabHelper::FromWebState(currentWebState)) {
+      initiatedByLensOverlay =
+          lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+    }
+  }
+
+  BOOL forceNewTabForIntentSearch =
       base::FeatureList::IsEnabled(kForceNewTabForIntentSearch) &&
       (self.startupParameters.postOpeningAction == FOCUS_OMNIBOX);
+  BOOL alwaysInsertNewTab =
+      initiatedByLensOverlay || forceNewTabForIntentSearch;
 
   // Don't call loadWithParams for chrome://newtab when it's already loaded.
   // Note that it's safe to use -GetVisibleURL here, as it doesn't matter if the
@@ -3505,7 +3537,7 @@ using UserFeedbackDataCallback =
 
   __weak __typeof(self) weakSelf = self;
   BOOL resetSigninState = self.signinCoordinator != nil;
-  completion = ^{
+  ProceduralBlock resetAndDismiss = ^{
     __typeof(self) strongSelf = weakSelf;
     // Cleanup settings resources after dismissal.
     [strongSelf settingsWasDismissed];
@@ -3533,10 +3565,10 @@ using UserFeedbackDataCallback =
       if (strongPresentingViewController) {
         [strongPresentingViewController
             dismissViewControllerAnimated:animated
-                               completion:completion];
+                               completion:resetAndDismiss];
       } else {
         // The view is already dismissed. Completion should still be called.
-        completion();
+        resetAndDismiss();
       }
       weakSelf.dismissingSettings = NO;
     };
@@ -3554,9 +3586,10 @@ using UserFeedbackDataCallback =
   } else if (self.signinCoordinator) {
     // `self.signinCoordinator` can be presented without settings, from the
     // bookmarks or the recent tabs view.
-    [self interruptSigninCoordinatorAnimated:animated completion:completion];
+    [self interruptSigninCoordinatorAnimated:animated
+                                  completion:resetAndDismiss];
   } else {
-    completion();
+    resetAndDismiss();
   }
 }
 
@@ -3576,7 +3609,7 @@ using UserFeedbackDataCallback =
 // Starts the sign-in coordinator with a default cleanup completion.
 // Call completion with Cancelled if the current scene is blocked.
 - (void)startSigninCoordinatorWithCompletion:
-    (ShowSigninCommandCompletionCallback)completion {
+    (SigninCoordinatorCompletionCallback)completion {
   DCHECK(self.signinCoordinator);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(
@@ -3589,12 +3622,11 @@ using UserFeedbackDataCallback =
       if (completion) {
         completion(SigninCoordinatorResultDisabled, nil);
       }
-      [self.signinCoordinator stop];
+      [self stopSigninCoordinator];
       id<PolicyChangeCommands> handler = HandlerForProtocol(
           self.signinCoordinator.browser->GetCommandDispatcher(),
           PolicyChangeCommands);
       [handler showForceSignedOutPrompt];
-      self.signinCoordinator = nil;
       return;
     }
     case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
@@ -3626,17 +3658,16 @@ using UserFeedbackDataCallback =
       std::make_unique<ScopedUIBlocker>(self.sceneState);
   __weak SceneController* weakSelf = self;
   self.signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
         if (!weakSelf) {
           return;
         }
         __typeof(self) strongSelf = weakSelf;
-        [strongSelf.signinCoordinator stop];
-        strongSelf.signinCoordinator = nil;
+        [strongSelf stopSigninCoordinator];
         uiBlocker.reset();
 
         if (completion) {
-          completion(result, info);
+          completion(result, identity);
         }
 
         if (!weakSelf.dismissingSigninPromptFromExternalTrigger) {
@@ -3648,18 +3679,6 @@ using UserFeedbackDataCallback =
           weakSelf.sceneState.signinInProgress = NO;
         }
 
-        switch (info.signinCompletionAction) {
-          case SigninCompletionActionNone:
-            break;
-          case SigninCompletionActionShowManagedLearnMore:
-            id<ApplicationCommands> dispatcher = HandlerForProtocol(
-                strongSelf.mainInterface.browser->GetCommandDispatcher(),
-                ApplicationCommands);
-            OpenNewTabCommand* command = [OpenNewTabCommand
-                commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
-            [dispatcher closePresentedViewsAndOpenURL:command];
-            break;
-        }
 
         if (IsSigninForcedByPolicy()) {
           // Handle intents after sign-in is done when the forced sign-in policy

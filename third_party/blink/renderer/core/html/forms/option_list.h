@@ -27,6 +27,11 @@ class CORE_EXPORT OptionListIterator final {
     if (current_)
       Advance(current_);
   }
+  void operator--() {
+    if (current_) {
+      Retreat(current_);
+    }
+  }
   bool operator==(const OptionListIterator& other) const {
     return current_ == other.current_;
   }
@@ -36,6 +41,7 @@ class CORE_EXPORT OptionListIterator final {
 
  private:
   void Advance(HTMLOptionElement* current);
+  void Retreat(HTMLOptionElement* current);
 
   const HTMLSelectElement* select_;
   HTMLOptionElement* current_;  // nullptr means we reached to the end.

@@ -138,17 +138,9 @@ class ASH_EXPORT CaptureModeController
   views::Widget* search_results_panel_widget() {
     return search_results_panel_widget_.get();
   }
-  views::Widget* disclaimer_widget() { return disclaimer_.get(); }
 
   // Returns the search results panel, or nullptr if none exists.
   SearchResultsPanel* GetSearchResultsPanel() const;
-
-  // Checks if the controller needs to show the disclaimer and shows if
-  // necessary. Call back is run if disclaimer is accepted.
-  // Takes a repeating closure because the button that triggers this (Smart
-  // actions button) will continue to appear after the disclaimer is dismissed,
-  // allowing the user to click on it again and trigger the callback again.
-  void MaybeShowDisclaimer(base::RepeatingClosure accept_callback);
 
   // Shows the results panel with the captured region as `image` and the search
   // results `url`.
@@ -157,6 +149,9 @@ class ASH_EXPORT CaptureModeController
   // Called explicitly by `CaptureModeSession` on a mouse drag, to hide the
   // panel.
   void OnLocatedEventDragged();
+
+  // Updates the search results panel bounds if the widget exists.
+  void MaybeUpdateSearchResultsPanelBounds();
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
@@ -552,12 +547,6 @@ class ASH_EXPORT CaptureModeController
   // clipboard, show a notification, and close the capture session.
   void OnCopyTextButtonClicked(const std::u16string& text);
 
-  // Called by the consent disclaimer on accept.
-  void OnDisclaimerAccepted(base::RepeatingClosure callback);
-
-  // Called by the consent disclaimer on decline.
-  void OnDisclaimerDeclined();
-
   // Called back when the Scanner feature has processed a captured image to
   // suggest available Scanner actions.
   void OnScannerActionsFetched(
@@ -737,6 +726,10 @@ class ASH_EXPORT CaptureModeController
   // otherwise.
   CaptureModeBehavior* GetBehavior(BehaviorType behavior_type);
 
+  // Deletes the `path` on `blocking_task_runner_` if local or calls delegate to
+  // remove it if remote.
+  void DeleteFileAsync(const base::FilePath& path);
+
   // The ID of this object as a client of the video conference manager.
   const base::UnguessableToken vc_client_id_ = base::UnguessableToken::Create();
 
@@ -875,8 +868,6 @@ class ASH_EXPORT CaptureModeController
   base::ObserverList<CaptureModeObserver> observers_;
 
   std::unique_ptr<CaptureModeEducationController> education_controller_;
-
-  views::UniqueWidgetPtr disclaimer_;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

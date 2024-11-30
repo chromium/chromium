@@ -27,8 +27,7 @@ class TranslatorAPIPolicyTest : public PolicyTest {
  public:
   TranslatorAPIPolicyTest() {
     // Need to enable the feature to test the policy.
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kEnableTranslationAPI);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kTranslationAPI);
     CHECK(tmp_dir_.CreateUniqueTempDir());
   }
   ~TranslatorAPIPolicyTest() override = default;

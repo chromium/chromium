@@ -93,17 +93,24 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   CSSSelectorList* Copy() const;
   static HeapVector<CSSSelector> Copy(const CSSSelector* selector_list);
 
-  bool IsValid() const {
-    return first_selector_[0].Match() != CSSSelector::kInvalidList;
+  static bool IsValid(const CSSSelector& first) {
+    return first.Match() != CSSSelector::kInvalidList;
   }
+  bool IsValid() const { return IsValid(*first_selector_); }
   const CSSSelector* First() const {
     return IsValid() ? first_selector_ : nullptr;
   }
   static const CSSSelector* Next(const CSSSelector&);
   static CSSSelector* Next(CSSSelector&);
 
-  // The CSS selector represents a single sequence of simple selectors.
-  bool HasOneSelector() const { return IsValid() && !Next(*first_selector_); }
+  // Returns true when there is exactly one complex selector in the list,
+  // and false otherwise.
+  static bool IsSingleComplexSelector(const CSSSelector& first) {
+    return IsValid(first) && !Next(first);
+  }
+  bool IsSingleComplexSelector() const {
+    return IsSingleComplexSelector(*first_selector_);
+  }
   const CSSSelector& SelectorAt(wtf_size_t index) const {
     DCHECK(IsValid());
     return first_selector_[index];
@@ -139,6 +146,10 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   void Reparent(StyleRule* new_parent) {
     CSSSelectorList::Reparent(first_selector_, new_parent);
   }
+
+  // True if at least one (complex) selector in the list
+  // is allowed inside '&' (see CSSSelector::IsAllowedInParentPseudo).
+  static bool IsAnyAllowedInParentPseudo(const CSSSelector* selector_list);
 
   CSSSelectorList(const CSSSelectorList&) = delete;
   CSSSelectorList& operator=(const CSSSelectorList&) = delete;

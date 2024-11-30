@@ -495,7 +495,16 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   // Note 2: `EnqueueFrame` may drop the frame instead of enqueuing it for many
   // reasons, so if this happens drop our info entry. These dropped frames will
   // be accounted for during the next Render() call.
-  if (pending_frames_info_.size() != rendering_frame_buffer_->frames_queued()) {
+  //
+  // The LowLatencyVideoRendererAlgorithm algorithm does not drop frames during
+  // EnqueueFrame. It drops them during Render. This algorithm is enabled if the
+  // maximum_composition_delay_in_frames field is set in the video frame
+  // metadata. See  VideoReceiveStream2::UpdatePlayoutDelays() for how this
+  // value is computed.
+  if ((rendering_frame_buffer_->renderer_algorithm() !=
+       VideoRendererAlgorithmWrapper::kLowLatency) &&
+      (pending_frames_info_.size() !=
+       rendering_frame_buffer_->frames_queued())) {
     pending_frames_info_.pop_back();
     DCHECK_EQ(pending_frames_info_.size(),
               rendering_frame_buffer_->frames_queued());

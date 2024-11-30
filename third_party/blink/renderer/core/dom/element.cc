@@ -105,7 +105,6 @@
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -841,7 +840,7 @@ void Element::SetBooleanAttribute(const QualifiedName& name, bool value) {
 }
 
 bool Element::HasExplicitlySetAttrAssociatedElements(
-    const QualifiedName& name) {
+    const QualifiedName& name) const {
   return GetExplicitlySetElementsForAttr(name);
 }
 
@@ -899,7 +898,8 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
 }
 
 Element* Element::GetShadowReferenceTarget(const QualifiedName& name) const {
-  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()) {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetExecutionContext())) {
     return nullptr;
   }
 
@@ -1235,6 +1235,14 @@ Vector<AtomicString> Element::getAttributeNames() const {
   auto view = getAttributeNamesForBindings();
   std::transform(view.begin(), view.end(), std::back_inserter(result),
                  [](const String& str) { return AtomicString(str); });
+  return result;
+}
+
+Vector<QualifiedName> Element::getAttributeQualifiedNames() const {
+  Vector<QualifiedName> result;
+  auto attrs = Attributes();
+  std::transform(attrs.begin(), attrs.end(), std::back_inserter(result),
+                 [](const Attribute& attr) { return attr.GetName(); });
   return result;
 }
 
@@ -3312,6 +3320,10 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
 
   AttachPseudoElement(kPseudoIdScrollMarkerGroupBefore, context);
+  AttachPseudoElement(kPseudoIdScrollUpButton, context);
+  AttachPseudoElement(kPseudoIdScrollLeftButton, context);
+  AttachPseudoElement(kPseudoIdScrollRightButton, context);
+  AttachPseudoElement(kPseudoIdScrollDownButton, context);
 
   AttachContext children_context(context);
   LayoutObject* layout_object = nullptr;
@@ -3673,7 +3685,7 @@ bool Element::SkipStyleRecalcForContainer(
   // ::scroll-marker-group boxes are created outside their originating element's
   // box and cannot be skipped if the originating element is a size container
   // because the pseudo element and its box need to be created before layout.
-  if (style.HasPseudoElementStyle(kPseudoIdScrollMarkerGroup)) {
+  if (!style.ScrollMarkerGroupNone()) {
     return false;
   }
 
@@ -3855,7 +3867,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   if (child_change.TraversePseudoElements(*this)) {
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollPrevButton, child_change,
+    UpdatePseudoElement(kPseudoIdScrollUpButton, child_change,
+                        child_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollDownButton, child_change,
+                        child_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollLeftButton, child_change,
+                        child_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollRightButton, child_change,
                         child_recalc_context);
     UpdateScrollMarkerGroupPseudoElement(kPseudoIdScrollMarkerGroupBefore,
                                          child_change, child_recalc_context);
@@ -3866,7 +3884,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
     if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       if (DynamicTo<HTMLOptionElement>(this)) {
-        UpdatePseudoElement(kPseudoIdCheck, child_change, child_recalc_context);
+        UpdatePseudoElement(kPseudoIdCheckMark, child_change,
+                            child_recalc_context);
       }
     }
 
@@ -3881,8 +3900,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
         MarkNonSlottedHostChildrenForStyleRecalc();
       }
     } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
-      slot->RecalcStyleForSlotChildren(
-          child_change, child_recalc_context.ForSlotChildren(*slot));
+      slot->RecalcStyleForSlotChildren(child_change, child_recalc_context);
     } else {
       RecalcDescendantStyles(child_change, child_recalc_context);
     }
@@ -3900,8 +3918,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
     UpdateScrollMarkerGroupPseudoElement(kPseudoIdScrollMarkerGroupAfter,
                                          child_change, child_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollNextButton, child_change,
-                        child_recalc_context);
 
     // If we are re-attaching us or any of our descendants, we need to attach
     // the descendants before we know if this element generates a ::first-letter
@@ -4405,7 +4421,6 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     } else {
       child_attacher = &whitespace_attacher;
     }
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollNextButton, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdSelectArrow, *child_attacher);
     if (GetShadowRoot()) {
@@ -4413,12 +4428,15 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     } else {
       RebuildChildrenLayoutTrees(*child_attacher);
     }
-    RebuildPseudoElementLayoutTree(kPseudoIdCheck, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdCheckMark, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollDownButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollRightButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollLeftButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollUpButton, local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
                                    local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollPrevButton, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
     RebuildFirstLetterLayoutTree();
     ClearChildNeedsReattachLayoutTree();
@@ -4769,8 +4787,7 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality() const {
           }
         } else if (Element* slotted_element =
                        DynamicTo<Element>(slotted_node)) {
-          if (include_in_traversal(slotted_element) ||
-              !RuntimeEnabledFeatures::DirAutoFixSlotExclusionsEnabled()) {
+          if (include_in_traversal(slotted_element)) {
             std::optional<TextDirection> slotted_child_result =
                 contained_text_auto_directionality(slotted_element);
             if (slotted_child_result) {
@@ -5770,7 +5787,8 @@ ShadowRoot& Element::AttachShadowRootInternal(
       << type;
   DCHECK(!AlwaysCreateUserAgentShadowRoot());
   DCHECK(reference_target.IsNull() ||
-         RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled());
+         RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+             GetExecutionContext()));
 
   GetDocument().SetContainsShadowRoot();
 
@@ -6809,9 +6827,6 @@ void Element::FocusVisibleStateChanged() {
 }
 
 void Element::ActiveViewTransitionStateChanged() {
-  if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
-    return;
-  }
   SetNeedsStyleRecalc(kLocalStyleChange,
                       StyleChangeReasonForTracing::CreateWithExtraData(
                           style_change_reason::kPseudoClass,
@@ -6820,9 +6835,6 @@ void Element::ActiveViewTransitionStateChanged() {
 }
 
 void Element::ActiveViewTransitionTypeStateChanged() {
-  if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
-    return;
-  }
   SetNeedsStyleRecalc(
       kLocalStyleChange,
       StyleChangeReasonForTracing::CreateWithExtraData(
@@ -7664,7 +7676,7 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
-           type == CSSSelector::kPseudoCheck ||
+           type == CSSSelector::kPseudoCheckMark ||
            id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }
@@ -8209,8 +8221,7 @@ PseudoElement* Element::UpdateScrollMarkerGroupPseudoElement(
     // candidate to avoid crashing. Note that the originating element can still
     // be a query container for style() queries, for instance.
     scroll_marker_group_context.container =
-        ContainerQueryEvaluator::ParentContainerCandidateElement(
-            *style_recalc_context.container);
+        FlatTreeTraversal::ParentElement(*style_recalc_context.container);
   }
   return UpdatePseudoElement(pseudo_id, change, scroll_marker_group_context);
 }
@@ -8518,7 +8529,7 @@ const ComputedStyle* Element::StyleForPseudoElement(
                            : request.pseudo_id;
 
   const bool is_before_or_after_like =
-      pseudo_id == kPseudoIdCheck || pseudo_id == kPseudoIdBefore ||
+      pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
       pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdSelectArrow;
 
   if (is_before_or_after_like) {
@@ -10654,7 +10665,7 @@ Element* Element::ImplicitAnchorElement() const {
   }
   if (const PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {
-      case kPseudoIdCheck:
+      case kPseudoIdCheckMark:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
       case kPseudoIdSelectArrow:
@@ -10662,8 +10673,10 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollMarkerGroupBefore:
       case kPseudoIdScrollMarkerGroupAfter:
       case kPseudoIdScrollMarker:
-      case kPseudoIdScrollNextButton:
-      case kPseudoIdScrollPrevButton:
+      case kPseudoIdScrollUpButton:
+      case kPseudoIdScrollDownButton:
+      case kPseudoIdScrollLeftButton:
+      case kPseudoIdScrollRightButton:
         return pseudo_element->UltimateOriginatingElement()
             ->ImplicitAnchorElement();
       default:

@@ -1914,6 +1914,7 @@ message WebViewStartup {
     GET_DEFAULT_WEB_STORAGE = 7;
     GET_DEFAULT_WEBVIEW_DATABASE = 8;
     GET_TRACING_CONTROLLER = 9;
+    ASYNC_WEBVIEW_STARTUP = 10;
   }
   optional CallSite call_site = 2;
 }

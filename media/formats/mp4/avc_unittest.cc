@@ -16,6 +16,7 @@
 #include <optional>
 #include <ostream>
 
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "media/base/decrypt_config.h"
@@ -79,8 +80,7 @@ static std::string NALUTypeToString(int type) {
     case H264NALU::kReserved18:
     case H264NALU::kCodedSliceAux:
     case H264NALU::kCodedSliceExtension:
-      CHECK(false) << "Unexpected type: " << type;
-      break;
+      NOTREACHED() << "Unexpected type: " << type;
   };
 
   return "UnsupportedType";

@@ -67,7 +67,6 @@ const char kListenerEventCategoryType[] = "listener:";
 }  // namespace
 
 namespace blink {
-using protocol::Maybe;
 namespace {
 // Returns the key that we use to identify the brekpoint in
 // event_listener_breakpoints_. |target_name| may be "", in which case
@@ -231,7 +230,7 @@ void InspectorDOMDebuggerAgent::Restore() {
 
 protocol::Response InspectorDOMDebuggerAgent::setEventListenerBreakpoint(
     const String& event_name,
-    Maybe<String> target_name) {
+    std::optional<String> target_name) {
   return SetBreakpoint(event_name, target_name.value_or(String()));
 }
 
@@ -248,7 +247,7 @@ protocol::Response InspectorDOMDebuggerAgent::SetBreakpoint(
 
 protocol::Response InspectorDOMDebuggerAgent::removeEventListenerBreakpoint(
     const String& event_name,
-    Maybe<String> target_name) {
+    std::optional<String> target_name) {
   return RemoveBreakpoint(event_name, target_name.value_or(String()));
 }
 
@@ -429,8 +428,8 @@ protocol::Response InspectorDOMDebuggerAgent::removeDOMBreakpoint(
 
 protocol::Response InspectorDOMDebuggerAgent::getEventListeners(
     const String& object_id,
-    Maybe<int> depth,
-    Maybe<bool> pierce,
+    std::optional<int> depth,
+    std::optional<bool> pierce,
     std::unique_ptr<protocol::Array<protocol::DOMDebugger::EventListener>>*
         listeners_array) {
   v8::HandleScope handles(isolate_);

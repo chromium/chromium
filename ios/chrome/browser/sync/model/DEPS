@@ -40,6 +40,6 @@ specific_include_rules = {
   "sync_error_browser_agent\.mm": [
     "+ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h",
     "+ios/chrome/browser/ui/authentication/signin_presenter.h",
-    "+ios/chrome/browser/ui/settings/sync/utils/sync_util.h",
+    "+ios/chrome/browser/settings/ui_bundled/sync/utils/sync_util.h",
   ],
 }

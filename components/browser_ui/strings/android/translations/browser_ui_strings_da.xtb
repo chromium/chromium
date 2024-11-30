@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Tillad, at et website gemmer data på din enhed</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1384959399684842514">Download er sat på pause</translation>
+<translation id="1396327438254055134">Tillad, at websitet anvender V8-optimering.</translation>
 <translation id="1415402041810619267">Webadressen er forkortet</translation>
 <translation id="1448064542941920355">Zoom ud</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> website}one{<ph name="SITE_COUNT" /> website}other{<ph name="SITE_COUNT" /> websites}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
 <translation id="1785415724048343560">Anbefales for at få den bedste oplevelse</translation>
 <translation id="1799920918471566157">Tip til Chrome</translation>
+<translation id="1816835383954230954">Når denne indstilling er aktiveret, kører Chrome hurtigere, og funktioner, der anvender JavaScript, bør fungere som forventet. Når denne indstilling er deaktiveret, reducerer den ydeevnen, men gør V8 mere modstandsdygtig over for angreb.</translation>
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Læg på</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Når dette er slået til, kan websites anmode om at anvende dit kamera. Når dette er slået fra, kan websites ikke anvende dit kamera.</translation>
 <translation id="3521663503435878242">Websites på <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Tillad ikke, at websites registrerer dine hænder</translation>
+<translation id="3532312529397438268">Websites kan ikke anvende V8-optimering</translation>
 <translation id="3536227077203206203">Der er givet adgang denne gang</translation>
 <translation id="3538390592868664640">Bloker oprettelsen af 3D-kort over dine omgivelser eller registrering af kamerapositionen for websites</translation>
 <translation id="3544058026430919413">En virksomhed kan definere en gruppe af websites, der kan bruge cookies til at dele din aktivitet i gruppen. Dette er deaktiveret i inkognitotilstand.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Aktivér Beskyttet browsing</translation>
 <translation id="4811450222531576619">Få oplysninger om sidens kilde og emne</translation>
+<translation id="481168145262973879">Websites kan anvende V8-optimering</translation>
 <translation id="4816495437032298535">Gemt zoomniveau for websites</translation>
 <translation id="4836046166855586901">Spørg, når et website vil vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="483914009762354899">Medtag alle websites under dette domæne</translation>
@@ -337,10 +341,8 @@
 <translation id="6071501408666570960">Du bliver muligvis logget ud af dette website</translation>
 <translation id="6085954183010297841">Vil du slette tilladelsen til filredigering? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Når dette er slået til, kan websites anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed. Når dette er slået fra, kan websites ikke se, hvornår du aktivt bruger din enhed.</translation>
-<translation id="6140839633433422817">Er du sikker på, at du vil nulstille tilladelser og slette cookies og websitedata?</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6171020522141473435">Når dette er slået til, kan websites anmode om tilladelse til at bruge Bluetooth-enheder. Når dette er slået fra, kan websites ikke bruge Bluetooth-enheder.</translation>
-<translation id="6177111841848151710">Blokeret for den nuværende søgemaskine</translation>
 <translation id="6177128806592000436">Din forbindelse til dette website er ikke sikker.</translation>
 <translation id="6181444274883918285">Tilføj en undtagelse for et website</translation>
 <translation id="6192792657125177640">Undtagelser</translation>
@@ -405,8 +407,8 @@
 <translation id="6980861169612950611">Vil du slette websitedata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="6992289844737586249">Spørg, før websites bruger din mikrofon (anbefales)</translation>
+<translation id="6999131147875565462">Chrome kører hurtigere, og funktioner, der anvender JavaScript, bør fungere som forventet</translation>
 <translation id="7000754031042624318">Deaktiveret i indstillingerne for Android</translation>
-<translation id="7016516562562142042">Tilladt for den nuværende søgemaskine</translation>
 <translation id="702275896380648118">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites. Dette website indhenter også dine annonceemner fra Chrome med henblik på at vise dig mere relevante annoncer.</translation>
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}one{# er valgt}other{# er valgt}}</translation>
@@ -425,7 +427,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er markeret</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>
 <translation id="7276071417425470385">Når dette er slået til, kan websites anmode om tilladelse til at bruge virtual reality-enheder. Når dette er slået fra, kan websites ikke bruge virtual reality-enheder.</translation>
-<translation id="7302486331832100261">Du blokerer som regel notifikationer. Tryk på Info for at give tilladelse.</translation>
 <translation id="7366415735885268578">Tilføj et website</translation>
 <translation id="7368695150573390554">Alle offlinedata slettes</translation>
 <translation id="7383715096023715447">Indstillinger for <ph name="DOMAIN" /></translation>
@@ -542,7 +543,6 @@
 <translation id="8928445016601307354">Bloker websites, så de ikke kan få adgang til og ændre oplysninger på NFC-enheder</translation>
 <translation id="8944485226638699751">Begrænset</translation>
 <translation id="8959122750345127698">Navigationen er ikke mulig: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Glem</translation>
 <translation id="8990043154272859344">Du bliver logget ud af alle websites</translation>
 <translation id="8993853206419610596">Udvid alle anmodninger</translation>
 <translation id="9002538116239926534">Når dette er slået til, kan websites gemme data på din enhed. Når dette er slået fra, kan websites ikke gemme data på din enhed.</translation>
@@ -555,8 +555,8 @@
 <translation id="913657688200966289">Aktivér tilladelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Det aktuelle zoomniveau er <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Denne side er farlig</translation>
-<translation id="930525582205581608">Vil du glemme dette website?</translation>
 <translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="959682366969460160">Bliv velorganiseret</translation>
 <translation id="967624055006145463">Lagrede data</translation>
+<translation id="969975166333045662">Bloker websitet, så det ikke kan anvende V8-optimering.</translation>
 </translationbundle>

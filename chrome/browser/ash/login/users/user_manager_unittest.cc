@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -714,6 +715,35 @@ TEST_F(UserManagerTest,
       user_manager::UserManagerImpl::kDeprecatedArcKioskUsersHistogramName,
       user_manager::UserManagerImpl::DeprecatedArcKioskUserStatus::kHidden,
       /* expected_count= */ 1);
+}
+
+// Test that profile prefs is available for `User` under its profile created
+// callback.
+TEST_F(UserManagerTest, ProfilePrefs) {
+  // Simulates login.
+  user_manager_->UserLoggedIn(kAccountId0, kAccountId0.GetUserEmail(),
+                              /*browser_restart=*/false,
+                              /*is_child=*/false);
+
+  // Adds a profile created callback and verifies profile prefs is available
+  // when the callback runs.
+  bool callback_called = false;
+  user_manager::User* user = user_manager_->GetActiveUser();
+  user->AddProfileCreatedObserver(base::BindLambdaForTesting([&]() {
+    EXPECT_NE(user->GetProfilePrefs(), nullptr);
+    callback_called = true;
+  }));
+
+  // Triggers profile created callback.
+  TestingPrefServiceSimple prefs;
+  user_manager::UserManagerImpl::RegisterProfilePrefs(prefs.registry());
+  user_manager_->OnUserProfileCreated(kAccountId0, &prefs);
+
+  // Profile created callback should be called.
+  EXPECT_TRUE(callback_called);
+
+  // Cleans up references to `prefs` since it will go out of scope.
+  user_manager_->OnUserProfileWillBeDestroyed(kAccountId0);
 }
 
 }  // namespace ash

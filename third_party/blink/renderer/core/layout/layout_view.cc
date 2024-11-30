@@ -23,6 +23,7 @@
 
 #include <inttypes.h>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
@@ -514,10 +515,18 @@ PhysicalRect LayoutView::ViewRect() const {
       // one pixel) than the frame on mobile viewport. Investigate why. Consider
       // adding `<meta name="viewport" content="width=device-width">` to the
       // HTML if this occurs.
-      CHECK_GE(transition->GetSnapshotRootSize().width(),
-               frame_view_->Size().width());
-      CHECK_GE(transition->GetSnapshotRootSize().height(),
-               frame_view_->Size().height());
+      if (transition->GetSnapshotRootSize().width() <
+              frame_view_->Size().width() ||
+          transition->GetSnapshotRootSize().height() <
+              frame_view_->Size().height()) {
+        // TODO(https://issues.chromium.org/362991812) This can happen on
+        // ChromeOS devices in portrait mode, and we need to investigate why.
+        base::debug::DumpWithoutCrashing();
+
+        transition->SkipTransitionSoon();
+        return PhysicalRect(PhysicalOffset(),
+                            PhysicalSize(frame_view_->Size()));
+      }
 
       return PhysicalRect(
           PhysicalOffset(transition->GetFrameToSnapshotRootOffset()),

@@ -739,8 +739,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   SkColor default_color = browser()->window()->GetColorProvider()->GetColor(
       ui::kColorLiveCaptionBubbleForegroundDefault);
-  SkColor header_color = browser()->window()->GetColorProvider()->GetColor(
-      ui::kColorLiveCaptionBubbleButtonIcon);
+  SkColor language_label_color =
+      browser()->window()->GetColorProvider()->GetColor(ui::kColorRefPrimary80);
   ui::CaptionStyle caption_style;
 
   GetController()->UpdateCaptionStyle(std::nullopt);
@@ -750,8 +750,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
-  EXPECT_EQ(header_color, GetSourceLanguageLabel()->GetEnabledColor());
-  EXPECT_EQ(header_color, GetTargetLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(language_label_color, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(language_label_color, GetTargetLanguageLabel()->GetEnabledColor());
 
   // Set the text color to red.
   caption_style.text_color = "rgba(255,0,0,1)";
@@ -768,8 +768,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
-  EXPECT_EQ(header_color, GetSourceLanguageLabel()->GetEnabledColor());
-  EXPECT_EQ(header_color, GetTargetLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(language_label_color, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(language_label_color, GetTargetLanguageLabel()->GetEnabledColor());
 
   // Set the text color to blue !important with 0.5 opacity.
   caption_style.text_color = "rgba(0,0,255,0.5) !important";
@@ -797,8 +797,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
-  EXPECT_EQ(header_color, GetSourceLanguageLabel()->GetEnabledColor());
-  EXPECT_EQ(header_color, GetTargetLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(language_label_color, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(language_label_color, GetTargetLanguageLabel()->GetEnabledColor());
 
   // Set the text color to green with spaces between the commas.
   caption_style.text_color = "rgba(0, 255, 0, 1)";
@@ -815,8 +815,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
-  EXPECT_EQ(header_color, GetSourceLanguageLabel()->GetEnabledColor());
-  EXPECT_EQ(header_color, GetTargetLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(language_label_color, GetSourceLanguageLabel()->GetEnabledColor());
+  EXPECT_EQ(language_label_color, GetTargetLanguageLabel()->GetEnabledColor());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,

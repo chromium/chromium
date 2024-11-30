@@ -230,7 +230,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="test_dummy" label="Test Dummy Module"/>
   <suffix name="vr" label="Virtual Reality Module"/>
   <affected-histogram name="Android.IsolatedSplits.ClassLoaderReplaced"/>
-  <affected-histogram name="Android.IsolatedSplits.ContextCreateTime"/>
+  <affected-histogram name="Android.IsolatedSplits.ContextCreateTime2"/>
   <affected-histogram name="Android.IsolatedSplits.PreloadWaitTime"/>
 </histogram_suffixes>
 
@@ -747,8 +747,10 @@ chromium-metrics-reviews@google.com.
   <suffix name="TemporaryAllowThirdParty"
       label="Third-party cookies temporarily allowed on a domain"/>
   <affected-histogram name="ContentSettings.RegularProfile.Exceptions.cookies"/>
-  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.javascript-jit"/>
-  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.javascript-optimizer"/>
+  <affected-histogram
+      name="ContentSettings.RegularProfile.Exceptions.javascript-jit"/>
+  <affected-histogram
+      name="ContentSettings.RegularProfile.Exceptions.javascript-optimizer"/>
   <affected-histogram name="ContentSettings.RegularProfile.Exceptions.popups"/>
   <affected-histogram
       name="ContentSettings.RegularProfile.Exceptions.storage-access"/>

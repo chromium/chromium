@@ -10,7 +10,7 @@
 <translation id="1468038450257740950">WebGL समर्थित छैन।</translation>
 <translation id="1610570795592207282">स्क्रिप्टको css '<ph name="RELATIVE_PATH" />' लोड गर्न सकिएन।</translation>
 <translation id="1803557475693955505">पृष्ठभूमि पृष्ठ '<ph name="BACKGROUND_PAGE" />' लोड गर्न सकिएन।</translation>
-<translation id="2159915644201199628">छवि डिकोड गर्न सकिएन: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2159915644201199628">फोटो डिकोड गर्न सकिएन: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">अनुवाद प्रयोग गरिएको, तर सूचीमा पूर्वनिर्धारित_लोकेल तोकिएको</translation>
 <translation id="2576842806987913196">त्यहाँ पहिले नै यो नाम भएको CRX फाइल उपस्थित छ।</translation>
 <translation id="2785530881066938471">सामग्री स्क्रिप्टको लागि फाइल '<ph name="RELATIVE_PATH" />' लोड गर्न सकेन। त्यो UFT-8 इन्कोडेड छैन।</translation>

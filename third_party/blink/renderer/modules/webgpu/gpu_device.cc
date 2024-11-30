@@ -154,18 +154,8 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
       DawnObject(dawn_control_client, label),
       adapter_(adapter),
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
-      error_callback_(BindWGPURepeatingCallback(&GPUDevice::OnUncapturedError,
-                                                WrapWeakPersistent(this))),
       logging_callback_(BindWGPURepeatingCallback(&GPUDevice::OnLogging,
-                                                  WrapWeakPersistent(this))),
-      // Note: This is a *repeating* callback even though we expect it to only
-      // be called once. This is because it may be called *zero* times.
-      // Because it might never be called, the GPUDevice needs to own the
-      // allocation so it can be appropriately freed on destruction. Thus, the
-      // callback should not be a OnceCallback which self-deletes after it is
-      // called.
-      lost_callback_(BindWGPURepeatingCallback(&GPUDevice::OnDeviceLostError,
-                                               WrapWeakPersistent(this))) {}
+                                                  WrapWeakPersistent(this))) {}
 
 void GPUDevice::Initialize(wgpu::Device handle,
                            const GPUDeviceDescriptor* descriptor,
@@ -179,9 +169,7 @@ void GPUDevice::Initialize(wgpu::Device handle,
   wgpu::SupportedLimits limits = {};
   // Chain to get subgroup limits, if device has subgroups feature.
   wgpu::DawnExperimentalSubgroupLimits subgroupLimits = {};
-  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
-  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups) ||
-      features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
+  if (features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
     limits.nextInChain = &subgroupLimits;
   }
 
@@ -217,11 +205,8 @@ GPUDevice::~GPUDevice() {
   // other GC objects).
 
   // Clear the callbacks since we can't handle callbacks after finalization.
-  // error_callback_, logging_callback_, and lost_callback_ will be deleted.
   if (GetHandle().Get() != nullptr) {
-    GetHandle().SetUncapturedErrorCallback(nullptr, nullptr);
     GetHandle().SetLoggingCallback(nullptr, nullptr);
-    GetHandle().SetDeviceLostCallback(nullptr, nullptr);
   }
 }
 
@@ -422,9 +407,11 @@ void GPUDevice::OnLogging(WGPULoggingType cLoggingType,
   }
 }
 
-void GPUDevice::OnDeviceLostError(const wgpu::Device& device,
-                                  wgpu::DeviceLostReason reason,
-                                  wgpu::StringView message) {
+void GPUDevice::OnDeviceLost(
+    std::unique_ptr<WGPURepeatingCallback<wgpu::UncapturedErrorCallback<void>>>,
+    const wgpu::Device& device,
+    wgpu::DeviceLostReason reason,
+    wgpu::StringView message) {
   // Early-out if the context is being destroyed (see WrapCallbackInScriptScope)
   if (!GetExecutionContext()) {
     return;
@@ -579,8 +566,9 @@ GPUBindGroupLayout* GPUDevice::createBindGroupLayout(
 }
 
 GPUPipelineLayout* GPUDevice::createPipelineLayout(
+    ScriptState* script_state,
     const GPUPipelineLayoutDescriptor* descriptor) {
-  return GPUPipelineLayout::Create(this, descriptor);
+  return GPUPipelineLayout::Create(script_state, this, descriptor);
 }
 
 GPUShaderModule* GPUDevice::createShaderModule(
@@ -641,16 +629,6 @@ ScriptPromise<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
   OwnedProgrammableStage computeStage;
   wgpu::ComputePipelineDescriptor dawn_desc =
       AsDawnType(this, descriptor, &desc_label, &computeStage);
-
-  // If ChromiumExperimentalSubgroups feature is enabled, chain the full
-  // subgroups options after compute pipeline descriptor.
-  wgpu::DawnComputePipelineFullSubgroups fullSubgroupsOptions = {};
-  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
-  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
-    fullSubgroupsOptions.requiresFullSubgroups =
-        descriptor->getRequiresFullSubgroupsOr(false);
-    dawn_desc.nextInChain = &fullSubgroupsOptions;
-  }
 
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&GPUDevice::OnCreateComputePipelineAsyncCallback,
@@ -824,15 +802,20 @@ void GPUDevice::UntrackTextureWithMailbox(GPUTexture* texture) {
   textures_with_mailbox_.erase(texture);
 }
 
-WGPURepeatingCallback<
-    void(const wgpu::Device&, wgpu::ErrorType, wgpu::StringView)>*
-GPUDevice::error_callback() {
-  return error_callback_.get();
-}
+void GPUDevice::SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc) {
+  // Set the uncaptured error callback first because it's ownership will be
+  // passed to the device lost callback immediately after.
+  std::unique_ptr<WGPURepeatingCallback<wgpu::UncapturedErrorCallback<void>>>
+      error_callback(BindWGPURepeatingCallback(&GPUDevice::OnUncapturedError,
+                                               WrapWeakPersistent(this)));
+  dawn_desc.SetUncapturedErrorCallback(error_callback->UnboundCallback(),
+                                       error_callback->AsUserdata());
 
-WGPURepeatingCallback<
-    void(const wgpu::Device&, wgpu::DeviceLostReason, wgpu::StringView)>*
-GPUDevice::lost_callback() {
-  return lost_callback_.get();
+  auto* lost_callback = MakeWGPUOnceCallback(
+      WTF::BindOnce(&GPUDevice::OnDeviceLost, WrapWeakPersistent(this),
+                    std::move(error_callback)));
+  dawn_desc.SetDeviceLostCallback(wgpu::CallbackMode::AllowSpontaneous,
+                                  lost_callback->UnboundCallback(),
+                                  lost_callback->AsUserdata());
 }
 }  // namespace blink

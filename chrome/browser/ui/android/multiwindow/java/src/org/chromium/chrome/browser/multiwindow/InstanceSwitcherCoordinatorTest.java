@@ -26,11 +26,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,7 +42,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -48,7 +50,11 @@ import java.util.Arrays;
 /** Unit tests for {@link InstanceSwitcherCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase {
+public class InstanceSwitcherCoordinatorTest {
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     private LargeIconBridge mIconBridge;
 
     private ModalDialogManager mModalDialogManager;
@@ -56,11 +62,11 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
 
     @Before
     public void setUp() throws Exception {
-        super.setUpTest();
+        mActivityTestRule.launchActivity(null);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppModalPresenter = new AppModalPresenter(getActivity());
+                    mAppModalPresenter = new AppModalPresenter(mActivityTestRule.getActivity());
                     mModalDialogManager =
                             new ModalDialogManager(
                                     mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
@@ -99,7 +105,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
-                            getActivity(),
+                            mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
                             openCallback,
@@ -127,7 +133,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
-                            getActivity(),
+                            mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
                             null,
@@ -157,7 +163,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
-                            getActivity(),
+                            mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
                             null,
@@ -203,7 +209,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
-                            getActivity(),
+                            mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
                             null,
@@ -238,7 +244,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
-                            getActivity(),
+                            mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
                             null,
@@ -283,7 +289,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
-                            getActivity(),
+                            mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
                             null,

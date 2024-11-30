@@ -33,7 +33,10 @@ class AcknowledgeGroupedCredentialSheetControllerTestHelper {
                 (const gfx::NativeWindow,
                  AcknowledgeGroupedCredentialSheetBridge*),
                 (override));
-    MOCK_METHOD(void, Show, (std::string, std::string), (override));
+    MOCK_METHOD(void,
+                Show,
+                (const std::string&, const std::string&),
+                (override));
     MOCK_METHOD(void, Dismiss, (), (override));
   };
 
@@ -47,7 +50,8 @@ class AcknowledgeGroupedCredentialSheetControllerTestHelper {
   std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
   CreateController();
 
-  void DismissSheet(bool accepted);
+  void DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason);
 
   MockJniDelegate* jni_bridge() { return jni_bridge_; }
 

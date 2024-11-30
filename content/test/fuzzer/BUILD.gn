@@ -508,3 +508,19 @@ if (enable_mojom_fuzzer) {
     testonly = true
   }
 }
+
+if (use_fuzzing_engine) {
+  test("cookie_readiness_list_parser_fuzzer") {
+    sources = [ "../../browser/cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser_fuzztest.cc" ]
+
+    fuzztests = [ "CookieReadinessListParserFuzzTest.ParseReadinessListSuccessfullyParsesAnyString" ]
+
+    testonly = true
+    deps = [
+      "//base",
+      "//content/browser",
+      "//content/public/browser:browser_sources",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
+}

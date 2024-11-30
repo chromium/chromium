@@ -95,6 +95,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabSearchTabName", IDS_TAB_SEARCH_TAB_NAME},
       // Auto tab groups UI strings
+      {"a11yTabExcludedFromGroup", IDS_TAB_ORGANIZATION_A11Y_TAB_EXCLUDED},
       {"clearAriaLabel", IDS_TAB_ORGANIZATION_CLEAR_ARIA_LABEL},
       {"clearSuggestions", IDS_TAB_ORGANIZATION_CLEAR_SUGGESTIONS},
       {"createGroup", IDS_TAB_ORGANIZATION_CREATE_GROUP},
@@ -153,6 +154,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"thumbsDown", IDS_TAB_ORGANIZATION_THUMBS_DOWN},
       {"thumbsUp", IDS_TAB_ORGANIZATION_THUMBS_UP},
       // Declutter UI strings
+      {"a11yTabExcludedFromList", IDS_DECLUTTER_A11Y_TAB_EXCLUDED},
       {"closeTabs", IDS_DECLUTTER_CLOSE_TABS},
       {"declutterCloseTabAriaLabel", IDS_DECLUTTER_CLOSE_TAB_ARIA_LABEL},
       {"declutterCloseTabTooltip", IDS_DECLUTTER_CLOSE_TAB_TOOLTIP},
@@ -173,9 +175,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 
   source->AddLocalizedString("close", IDS_CLOSE);
 
-  source->AddInteger(
-      "recentlyClosedDefaultItemDisplayCount",
-      features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
+  source->AddInteger("recentlyClosedDefaultItemDisplayCount",
+                     TabSearchPageHandler::kMinRecentlyClosedItemDisplayCount);
 
   bool tab_organization_enabled = false;
   if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
@@ -195,6 +196,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddBoolean(
       "tabOrganizationModelStrategyEnabled",
       base::FeatureList::IsEnabled(features::kTabOrganizationModelStrategy));
+  source->AddBoolean(
+      "TabOrganizationUserInstructionEnabled",
+      base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction));
 
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
   source->AddBoolean(

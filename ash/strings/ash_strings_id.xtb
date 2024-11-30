@@ -1529,7 +1529,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6121838516699723042">Konfirmasi download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asisten Google tidak tersedia dalam sesi tamu.</translation>
 <translation id="6127395413317891856">Anda sedang offline. Periksa koneksi dan coba lagi.</translation>
-<translation id="6129953537138746214">Spasi</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455">Buka dialog hapus untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Apa yang ingin Anda fokuskan?</translation>
 <translation id="6141988275892716286">Konfirmasi download</translation>
@@ -2124,6 +2124,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8142699993796781067">Jaringan pribadi</translation>
 <translation id="8144760705599030999">Simpan <ph name="NAME" /> Anda ke <ph name="EMAIL" /> agar dapat terhubung lebih cepat ke perangkat Anda yang lain</translation>
 <translation id="8144914663975476336">Pilih format rekaman</translation>
+<translation id="8145272500474066209">AI generatif dapat membuat kesalahan, termasuk tentang orang. Jadi, harap periksa kembali responsnya. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Tampilkan setelan Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Tekan Ctrl + W untuk menutup.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Dilengkapi otomatis</translation>

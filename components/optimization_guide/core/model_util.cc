@@ -136,6 +136,8 @@ std::string GetStringNameForOptimizationTarget(
     case proto::
         OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT:
       return "ModelExecutionFeatureHistoryQueryIntent";
+    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION:
+      return "ModelExecutionFeatureScamDetection";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

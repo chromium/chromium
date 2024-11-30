@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/service/display/surface_aggregator.h"
+
 #include <map>
 #include <memory>
 #include <string>
@@ -18,12 +20,12 @@
 #include "components/viz/common/quads/render_pass_io.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
-#include "components/viz/service/display/surface_aggregator.h"
 #include "components/viz/service/display/viz_perftest.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -128,12 +130,11 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         const gfx::PointF uv_top_left;
         const gfx::PointF uv_bottom_right;
         SkColor4f background_color = SkColors::kGreen;
-        bool flipped = false;
         bool nearest_neighbor = false;
         quad->SetAll(sqs, rect, visible_rect, needs_blending, ResourceId(j),
                      gfx::Size(), premultiplied_alpha, uv_top_left,
-                     uv_bottom_right, background_color, flipped,
-                     nearest_neighbor, /*secure_output_only=*/false,
+                     uv_bottom_right, background_color, nearest_neighbor,
+                     /*secure_output_only=*/false,
                      gfx::ProtectedVideoType::kClear);
       }
       sqs = pass->CreateAndAppendSharedQuadState();
@@ -221,7 +222,8 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
     std::set<ResourceId> resources_added;
     for (auto& render_pass : *render_pass_list) {
       for (auto* quad : render_pass->quad_list) {
-        for (ResourceId resource_id : quad->resources) {
+        if (auto resource_id = quad->resource_id;
+            quad->resource_id != kInvalidResourceId) {
           // Only add resources to the resource list once.
           if (resources_added.find(resource_id) != resources_added.end()) {
             continue;

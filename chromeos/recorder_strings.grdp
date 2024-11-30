@@ -492,6 +492,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header of the transcription and summary section in settings." name="IDS_RECORDER_SETTINGS_SECTION_TRANSCRIPTION_SUMMARY_HEADER">
     Transcription and summary
   </message>
+  <message desc="Tooltip of the arrow button to collapse the summary view." name="IDS_RECORDER_SUMMARY_COLLAPSE_TOOLTIP">
+    Hide summary
+  </message>
   <message desc="Label when summary is disabled." name="IDS_RECORDER_SUMMARY_DISABLED_LABEL">
     Summary is off
   </message>
@@ -515,6 +518,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Status message for screen reader to update that the model is downloading." name="IDS_RECORDER_SUMMARY_DOWNLOAD_STARTED_STATUS_MESSAGE">
     Model download in progress
+  </message>
+  <message desc="Tooltip of the arrow button to expand the summary view." name="IDS_RECORDER_SUMMARY_EXPAND_TOOLTIP">
+    Show summary
   </message>
   <message desc="Status message for screen reader to update that the summary generation failed." name="IDS_RECORDER_SUMMARY_FAILED_STATUS_MESSAGE">
     Failed to generate summary

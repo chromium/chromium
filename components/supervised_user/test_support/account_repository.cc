@@ -15,46 +15,54 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_value_converter.h"
+#include "base/path_service.h"
 #include "base/rand_util.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 
 namespace supervised_user {
 
 namespace {
+
 // Account repositories in files are only defined for platforms that support
 // end-to-end tests.
+const base::FilePath::StringPieceType kAccountRepositoryDirectory =
+    FILE_PATH_LITERAL("chrome/browser/internal/resources/supervised_user");
+
 #if BUILDFLAG(IS_WIN)
-const base::FilePath::StringPieceType kDefaultAccountRepositoryPath =
-    FILE_PATH_LITERAL(
-        "chrome/browser/internal/resources/supervised_user/"
-        "win_test_accounts.json");
+const base::FilePath::StringPieceType kAccountRepositoryFileName =
+    FILE_PATH_LITERAL("win_test_accounts.json");
 #elif BUILDFLAG(IS_LINUX)
-const base::FilePath::StringPieceType kDefaultAccountRepositoryPath =
-    FILE_PATH_LITERAL(
-        "chrome/browser/internal/resources/supervised_user/"
-        "linux_test_accounts.json");
+const base::FilePath::StringPieceType kAccountRepositoryFileName =
+    FILE_PATH_LITERAL("linux_test_accounts.json");
 #elif BUILDFLAG(IS_IOS)
-const base::FilePath::StringPieceType kDefaultAccountRepositoryPath =
-    FILE_PATH_LITERAL(
-        "chrome/browser/internal/resources/supervised_user/"
-        "ios_test_accounts.json");
+const base::FilePath::StringPieceType kAccountRepositoryFileName =
+    FILE_PATH_LITERAL("ios_test_accounts.json");
 #else
 #error Unsupported platform
 #endif
 
-test_accounts::Repository ParseFromFile(const base::FilePath& path) {
+base::FilePath GetAbsolutePath(
+    const base::FilePath& account_repository_filename) {
+  base::FilePath root_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
+  return base::MakeAbsoluteFilePath(
+      root_path.Append(kAccountRepositoryDirectory)
+          .Append(account_repository_filename));
+}
+
+test_accounts::Repository ParseFromTestResource(base::FilePath path) {
   int error_code = 0;
   std::string error_str;
   JSONFileValueDeserializer deserializer(path);
   std::unique_ptr<base::Value> json =
       deserializer.Deserialize(&error_code, &error_str);
-  CHECK(error_code == 0) << "Error reading json file at " << path
-                         << ". Error code: " << error_code << " " << error_str;
-  CHECK(json);
-
+  CHECK(error_code == 0 && json)
+      << "Error reading json file at " << path << ". Error code: " << error_code
+      << " " << error_str;
   test_accounts::Repository repository;
   base::JSONValueConverter<test_accounts::Repository> converter;
-  CHECK(converter.Convert(*json, &repository));
+  CHECK(converter.Convert(*json, &repository))
+      << "Error converting the repository to data structure";
   return repository;
 }
 }  // namespace
@@ -86,9 +94,10 @@ std::optional<test_accounts::FamilyMember> GetFirstFamilyMemberByRole(
 }
 
 TestAccountRepository::TestAccountRepository()
-    : TestAccountRepository(base::FilePath(kDefaultAccountRepositoryPath)) {}
+    : TestAccountRepository(
+          GetAbsolutePath(base::FilePath(kAccountRepositoryFileName))) {}
 TestAccountRepository::TestAccountRepository(const base::FilePath& path)
-    : repository_(ParseFromFile(path)) {}
+    : repository_(ParseFromTestResource(path)) {}
 TestAccountRepository::~TestAccountRepository() = default;
 
 namespace test_accounts {
@@ -177,6 +186,12 @@ Repository& Repository::operator=(const Repository& other) {
   return *this;
 }
 Repository::~Repository() = default;
+
+bool IsDefaultAccountRepositoryAvailable() {
+  return base::PathExists(
+      GetAbsolutePath(base::FilePath(kAccountRepositoryFileName)));
+}
+
 }  // namespace test_accounts
 
 }  // namespace supervised_user

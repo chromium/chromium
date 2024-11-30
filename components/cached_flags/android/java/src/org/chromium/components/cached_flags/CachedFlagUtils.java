@@ -11,8 +11,8 @@ import java.util.List;
 /** Utility methods for {@link CachedFlag}s. */
 public class CachedFlagUtils {
     /** Caches flags that must take effect on startup but are set via native code. */
-    public static void cacheNativeFlags(List<CachedFlag>... listsOfFeaturesToCache) {
-        if (listsOfFeaturesToCache.length == 0) return;
+    public static void cacheNativeFlags(List<List<CachedFlag>> listsOfFeaturesToCache) {
+        if (listsOfFeaturesToCache.isEmpty()) return;
 
         // Batch the updates into a single apply() call to avoid calling the expensive
         // SharedPreferencesImpl$EditorImpl.commitToMemory() method many times unnecessarily.

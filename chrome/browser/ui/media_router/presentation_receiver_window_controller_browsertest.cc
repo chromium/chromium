@@ -75,7 +75,7 @@ base::FilePath GetResourceFile(base::FilePath::StringPieceType relative_path) {
 class FakeControllerConnection final
     : public blink::mojom::PresentationConnection {
  public:
-  FakeControllerConnection() {}
+  FakeControllerConnection() = default;
 
   FakeControllerConnection(const FakeControllerConnection&) = delete;
   FakeControllerConnection& operator=(const FakeControllerConnection&) = delete;

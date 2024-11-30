@@ -12,6 +12,8 @@
 namespace webnn {
 
 // Bad messages Mojo errors.
+inline constexpr char kBadMessageInvalidPendingConstant[] =
+    "Invalid constant buffer from renderer.";
 inline constexpr char kBadMessageInvalidGraph[] =
     "Invalid graph from renderer.";
 inline constexpr char kBadMessageInvalidTensor[] =

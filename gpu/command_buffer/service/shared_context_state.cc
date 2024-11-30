@@ -9,6 +9,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -43,6 +44,7 @@
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/mock/GrMockTypes.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/PrecompileContext.h"
 #include "third_party/skia/include/gpu/graphite/precompile/PaintOptions.h"
 #include "third_party/skia/include/gpu/graphite/precompile/Precompile.h"
 #include "ui/gl/gl_bindings.h"
@@ -103,7 +105,8 @@ size_t MaxNumSkSurface() {
 
 // TODO: crbug.com/376667859 - passing the graphite::Context to here isn't safe.
 // Correct when a suitable Skia object is added.
-void PerformPrecompilation(skgpu::graphite::Context* context) {
+void PerformPrecompilation(
+    std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext) {
   constexpr skgpu::graphite::RenderPassProperties kProps = {
       skgpu::graphite::DepthStencilFlags::kDepth, kBGRA_8888_SkColorType,
       /* requiresMSAA= */ false};
@@ -112,7 +115,7 @@ void PerformPrecompilation(skgpu::graphite::Context* context) {
   skgpu::graphite::PaintOptions paintOptions;
   paintOptions.setBlendModes({SkBlendMode::kSrcOver});
 
-  Precompile(context, paintOptions,
+  Precompile(precompileContext.get(), paintOptions,
              skgpu::graphite::DrawTypeFlags::kBitmapText_Mask, {&kProps, 1});
 }
 
@@ -121,13 +124,17 @@ void InitiatePrecompilation(skgpu::graphite::Context* context) {
       base::TaskPriority::BEST_EFFORT,
       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
+  std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext =
+      context->makePrecompileContext();
+
   // TODO: crbug.com/358074434 - need to determine the actual delay or initiate
   // precompilation at first idle
   constexpr base::TimeDelta precompile_wait = base::Seconds(1);
 
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, precompile_traits,
-      base::BindOnce(&PerformPrecompilation, context), precompile_wait);
+      base::BindOnce(&PerformPrecompilation, std::move(precompileContext)),
+      precompile_wait);
 }
 
 // Creates a Graphite recorder, supplying it with a GraphiteImageProvider.
@@ -361,7 +368,8 @@ SharedContextState::SharedContextState(
     viz::MetalContextProvider* metal_context_provider,
     DawnContextProvider* dawn_context_provider,
     base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor,
-    bool created_on_compositor_gpu_thread)
+    bool created_on_compositor_gpu_thread,
+    const GrContextOptionsProvider* gr_context_options_provider)
     : use_virtualized_gl_contexts_(use_virtualized_gl_contexts),
       context_lost_callback_(std::move(context_lost_callback)),
       gr_context_type_(gr_context_type),
@@ -371,6 +379,7 @@ SharedContextState::SharedContextState(
       vk_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
+      gr_context_options_provider_(gr_context_options_provider),
       created_on_compositor_gpu_thread_(created_on_compositor_gpu_thread),
       share_group_(std::move(share_group)),
       context_(context),
@@ -570,6 +579,10 @@ bool SharedContextState::InitializeGanesh(
   if (gpu_preferences.force_max_texture_size)
     options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
 
+  if (gr_context_options_provider_) {
+    gr_context_options_provider_->SetCustomGrContextOptions(options);
+  }
+
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
     sk_sp<GrGLInterface> gr_gl_interface(gl::init::CreateGrGLInterface(
@@ -663,7 +676,7 @@ bool SharedContextState::InitializeGraphite(
       // GPU process in this case to trigger browser-side fallback logic (either
       // to software or to Ganesh depending on the platform).
       // TODO(crbug.com/325000752): Handle this case within the GPU process.
-      CHECK(0);
+      NOTREACHED();
     }
 #endif
   } else {

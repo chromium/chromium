@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -15,18 +16,17 @@
 using content::WebContents;
 
 TabStripModelChange::RemovedTab::RemovedTab(
-    content::WebContents* contents,
+    tabs::TabInterface* tab,
     int index,
     RemoveReason remove_reason,
     tabs::TabInterface::DetachReason tab_detach_reason,
-    std::optional<SessionID> session_id,
-    tabs::TabInterface* tab)
-    : contents(contents),
+    std::optional<SessionID> session_id)
+    : tab(tab),
+      contents(tab ? tab->GetContents() : nullptr),
       index(index),
       remove_reason(remove_reason),
       tab_detach_reason(tab_detach_reason),
-      session_id(session_id),
-      tab(tab) {}
+      session_id(session_id) {}
 TabStripModelChange::RemovedTab::~RemovedTab() = default;
 TabStripModelChange::RemovedTab::RemovedTab(RemovedTab&& other) = default;
 
@@ -139,13 +139,14 @@ void TabStripModelChange::WriteIntoTrace(perfetto::TracedValue context) const {
 TabStripSelectionChange::TabStripSelectionChange() = default;
 
 TabStripSelectionChange::TabStripSelectionChange(
-    content::WebContents* contents,
+    tabs::TabInterface* tab,
     const ui::ListSelectionModel& selection_model)
-    : old_contents(contents),
-      new_contents(contents),
+    : old_tab(tab),
+      new_tab(tab),
+      old_contents(tab ? tab->GetContents() : nullptr),
+      new_contents(tab ? tab->GetContents() : nullptr),
       old_model(selection_model),
-      new_model(selection_model),
-      reason(0) {}
+      new_model(selection_model) {}
 
 TabStripSelectionChange::~TabStripSelectionChange() = default;
 
@@ -185,7 +186,7 @@ TabGroupChange::TabGroupChange(TabStripModel* model,
 ////////////////////////////////////////////////////////////////////////////////
 // TabStripModelObserver
 //
-TabStripModelObserver::TabStripModelObserver() {}
+TabStripModelObserver::TabStripModelObserver() = default;
 
 TabStripModelObserver::~TabStripModelObserver() {
   std::set<raw_ptr<TabStripModel, SetExperimental>> models(

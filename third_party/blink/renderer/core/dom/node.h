@@ -35,13 +35,11 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_options.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
-#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -63,7 +61,6 @@ class Rect;
 
 namespace blink {
 
-class ComputedStyle;
 class ContainerNode;
 class Document;
 class Element;
@@ -351,7 +348,7 @@ class CORE_EXPORT Node : public EventTarget {
   }
 
   DISABLE_CFI_PERF bool IsCheckPseudoElement() const {
-    return GetPseudoId() == kPseudoIdCheck;
+    return GetPseudoId() == kPseudoIdCheckMark;
   }
   DISABLE_CFI_PERF bool IsBeforePseudoElement() const {
     return GetPseudoId() == kPseudoIdBefore;
@@ -368,11 +365,17 @@ class CORE_EXPORT Node : public EventTarget {
   DISABLE_CFI_PERF bool IsScrollMarkerGroupAfterPseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollMarkerGroupAfter;
   }
-  DISABLE_CFI_PERF bool IsScrollNextButtonPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollNextButton;
+  DISABLE_CFI_PERF bool IsScrollUpButtonPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollUpButton;
   }
-  DISABLE_CFI_PERF bool IsScrollPrevButtonPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollPrevButton;
+  DISABLE_CFI_PERF bool IsScrollDownButtonPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollDownButton;
+  }
+  DISABLE_CFI_PERF bool IsScrollLeftButtonPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollLeftButton;
+  }
+  DISABLE_CFI_PERF bool IsScrollRightButtonPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollRightButton;
   }
   DISABLE_CFI_PERF bool IsMarkerPseudoElement() const {
     return GetPseudoId() == kPseudoIdMarker;
@@ -575,13 +578,7 @@ class CORE_EXPORT Node : public EventTarget {
     if (ShouldSkipMarkingStyleDirty())
       return;
     if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
-      DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
-          TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
-          "StyleRecalcInvalidationTracking",
-          inspector_style_recalc_invalidation_tracking_event::Data, this,
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::Create(
-              style_change_reason::kNodeInserted));
+      MaybeAddNodeInsertedTraceEvent();
     }
     if (!NeedsStyleRecalc())
       SetStyleChange(kLocalStyleChange);
@@ -813,19 +810,6 @@ class CORE_EXPORT Node : public EventTarget {
   virtual void DetachLayoutTree(bool performing_reattach);
 
   void ReattachLayoutTree(AttachContext&);
-
-  // ---------------------------------------------------------------------------
-  // Inline ComputedStyle accessor
-  //
-  // Note that the following 'inline' function is not defined in this header,
-  // but in node_computed_style.h. Please include that file if you want to use
-  // this function.
-  //
-  // DO NOT USE - TO BE REMOVED: Only elements have computed styles. This method
-  // falls back to retrieve a ComputedStyle from the LayoutObject for LayoutText
-  // and LayoutView. Use Element::GetComputedStyle() or LayoutObject::Style()
-  // instead.
-  inline const ComputedStyle* GetComputedStyleForElementOrLayoutObject() const;
 
   bool ShouldSkipMarkingStyleDirty() const;
 
@@ -1252,6 +1236,8 @@ class CORE_EXPORT Node : public EventTarget {
 
   // Used exclusively by |EnsureRareData|.
   NodeRareData& CreateRareData();
+
+  void MaybeAddNodeInsertedTraceEvent();
 
   const HeapVector<Member<MutationObserverRegistration>>*
   MutationObserverRegistry();

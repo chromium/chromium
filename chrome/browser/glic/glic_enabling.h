@@ -12,7 +12,8 @@ namespace glic {
 enum class GlicEnabledStatus {
   kEnabled = 0,
   kGlicFeatureFlagDisabled = 1,
-  kMaxValue = 1
+  kTabstripComboButtonDisabled = 2,
+  kMaxValue = 2
 };
 }  // namespace glic
 
@@ -21,8 +22,9 @@ enum class GlicEnabledStatus {
 // such as based on user preferences or system settings.
 class GlicEnabling {
  public:
-  // Returns whether the Glic feature is enabled for Chrome.
-  static bool IsEnabled();
+  // Returns whether the Glic feature is enabled for Chrome. This status will
+  // not change at runtime.
+  static bool IsEnabledByFlags();
 
  private:
   // Private helper function that returns enabled status for fine grain logging

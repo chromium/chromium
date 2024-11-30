@@ -73,8 +73,7 @@ void SharedMemoryMapping::Unmap() {
   size_t adjusted_size =
       mapped_span_.size() +
       static_cast<size_t>(mapped_span_.data() - aligned_data);
-  span<uint8_t> span_to_unmap = make_span(aligned_data, adjusted_size);
-  mapper->Unmap(span_to_unmap);
+  mapper->Unmap(span(aligned_data, adjusted_size));
 }
 
 ReadOnlySharedMemoryMapping::ReadOnlySharedMemoryMapping() = default;

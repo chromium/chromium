@@ -5,6 +5,7 @@
 #include "headless/lib/browser/headless_web_contents_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -261,6 +262,13 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     return is_fullscreen_;
   }
 
+  blink::mojom::DisplayMode GetDisplayMode(
+      const content::WebContents* web_contents) override {
+    return IsFullscreenForTabOrPending(web_contents)
+               ? blink::mojom::DisplayMode::kFullscreen
+               : blink::mojom::DisplayMode::kBrowser;
+  }
+
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
@@ -272,33 +280,30 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
 
     is_fullscreen_ = fullscreen;
 
-    content::RenderViewHost* rvh =
-        web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
-    CHECK(rvh);
+    content::RenderWidgetHost* rwh =
+        web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
+    CHECK(rwh);
 
-    content::RenderWidgetHostView* view = rvh->GetWidget()->GetView();
-    if (view) {
+    if (content::RenderWidgetHostView* view = rwh->GetView()) {
       if (fullscreen) {
-        // Headless chrome does not have screen to set the view bounds to, so
-        // just double the size of the existing view to trigger the expected
-        // window size change notifications.
         before_fullscreen_bounds_ = view->GetViewBounds();
-        gfx::Rect bounds = before_fullscreen_bounds_;
-        bounds.set_width(bounds.width() * 2);
-        bounds.set_height(bounds.height() * 2);
+        gfx::Rect bounds = rwh->GetScreenInfo().available_rect;
         view->SetBounds(bounds);
       } else {
-        view->SetBounds(before_fullscreen_bounds_);
+        if (before_fullscreen_bounds_) {
+          view->SetBounds(before_fullscreen_bounds_.value());
+          before_fullscreen_bounds_.reset();
+        }
       }
     }
 
-    rvh->GetWidget()->SynchronizeVisualProperties();
+    rwh->SynchronizeVisualProperties();
   }
 
   raw_ptr<HeadlessWebContentsImpl> headless_web_contents_;  // Not owned.
 
   bool is_fullscreen_ = false;
-  gfx::Rect before_fullscreen_bounds_;
+  std::optional<gfx::Rect> before_fullscreen_bounds_;
 };
 
 namespace {

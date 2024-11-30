@@ -1619,7 +1619,7 @@ TEST_P(SSLClientSocketReadTest, Read) {
 
 // Tests that SSLClientSocket properly handles when the underlying transport
 // synchronously fails a transport write in during the handshake.
-TEST_F(SSLClientSocketTest, Connect_WithSynchronousError) {
+TEST_F(SSLClientSocketTest, ConnectWithSynchronousError) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
 
@@ -1646,7 +1646,7 @@ TEST_F(SSLClientSocketTest, Connect_WithSynchronousError) {
 // synchronously returns an error code - such as if an intermediary terminates
 // the socket connection uncleanly.
 // This is a regression test for http://crbug.com/238536
-TEST_P(SSLClientSocketReadTest, Read_WithSynchronousError) {
+TEST_P(SSLClientSocketReadTest, ReadWithSynchronousError) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -1696,7 +1696,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithSynchronousError) {
 // asynchronously returns an error code while writing data - such as if an
 // intermediary terminates the socket connection uncleanly.
 // This is a regression test for http://crbug.com/249848
-TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousError) {
+TEST_P(SSLClientSocketVersionTest, WriteWithSynchronousError) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -1761,7 +1761,7 @@ TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousError) {
 // the write error will not be returned to the client until a future Read or
 // Write operation, SSLClientSocket should not spin attempting to re-write on
 // the socket. This is a regression test for part of https://crbug.com/381160.
-TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousErrorNoRead) {
+TEST_P(SSLClientSocketVersionTest, WriteWithSynchronousErrorNoRead) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
 
@@ -1819,7 +1819,7 @@ TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousErrorNoRead) {
 
 // Test the full duplex mode, with Read and Write pending at the same time.
 // This test also serves as a regression test for http://crbug.com/29815.
-TEST_P(SSLClientSocketReadTest, Read_FullDuplex) {
+TEST_P(SSLClientSocketReadTest, ReadFullDuplex) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -1862,7 +1862,7 @@ TEST_P(SSLClientSocketReadTest, Read_FullDuplex) {
 // Read() and Write() callbacks. If the socket is deleted by the Read()
 // callback, the Write() callback should not be invoked.
 // Regression test for http://crbug.com/232633
-TEST_P(SSLClientSocketReadTest, Read_DeleteWhilePendingFullDuplex) {
+TEST_P(SSLClientSocketReadTest, ReadDeleteWhilePendingFullDuplex) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -1946,7 +1946,7 @@ TEST_P(SSLClientSocketReadTest, Read_DeleteWhilePendingFullDuplex) {
 // transport socket after a failing write. This can occur if we have a Write
 // error in a SPDY socket.
 // Regression test for http://crbug.com/335557
-TEST_P(SSLClientSocketReadTest, Read_WithWriteError) {
+TEST_P(SSLClientSocketReadTest, ReadWithWriteError) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2033,7 +2033,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithWriteError) {
 
 // Tests that SSLClientSocket fails the handshake if the underlying
 // transport is cleanly closed.
-TEST_F(SSLClientSocketTest, Connect_WithZeroReturn) {
+TEST_F(SSLClientSocketTest, ConnectWithZeroReturn) {
   // There is no need to vary by TLS version because this test never reads a
   // response from the server.
   ASSERT_TRUE(
@@ -2061,7 +2061,7 @@ TEST_F(SSLClientSocketTest, Connect_WithZeroReturn) {
 // Tests that SSLClientSocket returns a Read of size 0 if the underlying socket
 // is cleanly closed, but the peer does not send close_notify.
 // This is a regression test for https://crbug.com/422246
-TEST_P(SSLClientSocketReadTest, Read_WithZeroReturn) {
+TEST_P(SSLClientSocketReadTest, ReadWithZeroReturn) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2092,7 +2092,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithZeroReturn) {
 // Tests that SSLClientSocket cleanly returns a Read of size 0 if the
 // underlying socket is cleanly closed asynchronously.
 // This is a regression test for https://crbug.com/422246
-TEST_P(SSLClientSocketReadTest, Read_WithAsyncZeroReturn) {
+TEST_P(SSLClientSocketReadTest, ReadWithAsyncZeroReturn) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2131,7 +2131,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithAsyncZeroReturn) {
 
 // Tests that fatal alerts from the peer are processed. This is a regression
 // test for https://crbug.com/466303.
-TEST_P(SSLClientSocketReadTest, Read_WithFatalAlert) {
+TEST_P(SSLClientSocketReadTest, ReadWithFatalAlert) {
   SSLServerConfig server_config = GetServerConfig();
   server_config.alert_after_handshake_for_testing = SSL_AD_INTERNAL_ERROR;
   ASSERT_TRUE(
@@ -2148,7 +2148,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithFatalAlert) {
             ReadAndWaitForCompletion(sock_.get(), buf.get(), 4096));
 }
 
-TEST_P(SSLClientSocketReadTest, Read_SmallChunks) {
+TEST_P(SSLClientSocketReadTest, ReadSmallChunks) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2174,7 +2174,7 @@ TEST_P(SSLClientSocketReadTest, Read_SmallChunks) {
   } while (rv > 0);
 }
 
-TEST_P(SSLClientSocketReadTest, Read_ManySmallRecords) {
+TEST_P(SSLClientSocketReadTest, ReadManySmallRecords) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2224,7 +2224,7 @@ TEST_P(SSLClientSocketReadTest, Read_ManySmallRecords) {
   ASSERT_EQ(rv, 8192);
 }
 
-TEST_P(SSLClientSocketReadTest, Read_Interrupted) {
+TEST_P(SSLClientSocketReadTest, ReadInterrupted) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2249,7 +2249,7 @@ TEST_P(SSLClientSocketReadTest, Read_Interrupted) {
   EXPECT_GT(rv, 0);
 }
 
-TEST_P(SSLClientSocketReadTest, Read_FullLogging) {
+TEST_P(SSLClientSocketReadTest, ReadFullLogging) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2417,38 +2417,34 @@ TEST_P(SSLClientSocketVersionTest, ExportKeyingMaterial) {
 
   const int kKeyingMaterialSize = 32;
   const char kKeyingLabel1[] = "client-socket-test-1";
-  const char kKeyingContext1[] = "";
-  unsigned char client_out1[kKeyingMaterialSize];
-  memset(client_out1, 0, sizeof(client_out1));
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, false, kKeyingContext1,
-                                   client_out1, sizeof(client_out1));
+  std::array<uint8_t, kKeyingMaterialSize> client_out1;
+  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, std::nullopt, client_out1);
   EXPECT_EQ(rv, OK);
 
   const char kKeyingLabel2[] = "client-socket-test-2";
-  unsigned char client_out2[kKeyingMaterialSize];
-  memset(client_out2, 0, sizeof(client_out2));
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel2, false, kKeyingContext1,
-                                   client_out2, sizeof(client_out2));
+  std::array<uint8_t, kKeyingMaterialSize> client_out2;
+  rv = sock_->ExportKeyingMaterial(kKeyingLabel2, std::nullopt, client_out2);
   EXPECT_EQ(rv, OK);
-  EXPECT_NE(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+  EXPECT_NE(client_out1, client_out2);
 
   const char kKeyingContext2[] = "context";
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, true, kKeyingContext2,
-                                   client_out2, sizeof(client_out2));
+  client_out2.fill(0);
+  rv = sock_->ExportKeyingMaterial(
+      kKeyingLabel1, base::as_byte_span(kKeyingContext2), client_out2);
   EXPECT_EQ(rv, OK);
-  EXPECT_NE(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+  EXPECT_NE(client_out1, client_out2);
 
   // Prior to TLS 1.3, using an empty context should give different key material
   // from not using a context at all. In TLS 1.3, the distinction is deprecated
   // and they are the same.
-  memset(client_out2, 0, sizeof(client_out2));
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, true, kKeyingContext1,
-                                   client_out2, sizeof(client_out2));
+  client_out2.fill(0);
+  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, base::span<const uint8_t>(),
+                                   client_out2);
   EXPECT_EQ(rv, OK);
   if (version() >= SSL_PROTOCOL_VERSION_TLS1_3) {
-    EXPECT_EQ(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+    EXPECT_EQ(client_out1, client_out2);
   } else {
-    EXPECT_NE(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+    EXPECT_NE(client_out1, client_out2);
   }
 }
 
@@ -2937,7 +2933,7 @@ class FakePeerAddressSocket : public WrappedStreamSocket {
 
 }  // namespace
 
-TEST_F(SSLClientSocketTest, SessionResumption_RSA) {
+TEST_F(SSLClientSocketTest, SessionResumptionRSA) {
   for (bool use_rsa : {false, true}) {
     SCOPED_TRACE(use_rsa);
 

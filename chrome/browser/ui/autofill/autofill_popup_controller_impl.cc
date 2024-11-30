@@ -64,7 +64,6 @@ namespace {
 // level.
 constexpr DenseSet<AutofillSuggestionTriggerSource>
     kTriggerSourcesExemptFromPaintChecks = {
-        AutofillSuggestionTriggerSource::kManualFallbackAddress,
         AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess};
 
 // Trigger sources for which the `NextIdleBarrier` is not reset. Note that this
@@ -124,7 +123,6 @@ bool ShouldLogPopupInteractionShown(
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kManualFallbackAddress:
     case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
     case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:

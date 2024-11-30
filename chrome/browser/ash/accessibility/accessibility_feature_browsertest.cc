@@ -10,9 +10,9 @@
 
 namespace ash {
 
-AccessibilityFeatureBrowserTest::AccessibilityFeatureBrowserTest() {}
+AccessibilityFeatureBrowserTest::AccessibilityFeatureBrowserTest() = default;
 
-AccessibilityFeatureBrowserTest::~AccessibilityFeatureBrowserTest() {}
+AccessibilityFeatureBrowserTest::~AccessibilityFeatureBrowserTest() = default;
 
 void AccessibilityFeatureBrowserTest::NavigateToUrl(const GURL& url) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(

@@ -7,18 +7,9 @@
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
-load("./protoc_wrapper.star", "protoc_wrapper")
 
 def __filegroups(ctx):
     return {}
-
-def __protoc_wrapper(ctx, cmd):
-    inputs = protoc_wrapper.scandeps(ctx, cmd.args)
-    ctx.actions.fix(inputs = cmd.expanded_inputs() + inputs)
-
-__handlers = {
-    "protoc_wrapper": __protoc_wrapper,
-}
 
 def __step_config(ctx, step_config):
     remote_run = True  # Turn this to False when you do file access trace.
@@ -33,7 +24,11 @@ def __step_config(ctx, step_config):
                 "*.cc",
                 # "*_pb2.py",
             ],
-            "handler": "protoc_wrapper",
+            # TODO(https://crrev.com/c/6057248): remove this after
+            # proto_library.gni change.
+            "inputs": [
+                "third_party/protobuf/src/google/protobuf/descriptor.proto",
+            ],
             "remote": remote_run,
             # chromeos generates default.profraw?
             "ignore_extra_output_pattern": ".*default.profraw",
@@ -48,5 +43,5 @@ proto = module(
     "proto",
     step_config = __step_config,
     filegroups = __filegroups,
-    handlers = __handlers,
+    handlers = {},
 )

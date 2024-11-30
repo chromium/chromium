@@ -66,9 +66,15 @@ class SavedDeskLibraryViewTestApi {
   SavedDeskLibraryViewTestApi& operator=(SavedDeskLibraryViewTestApi&) = delete;
   ~SavedDeskLibraryViewTestApi() = default;
 
-  const views::ScrollView* scroll_view() { return library_view_->scroll_view_; }
+  const SavedDeskGridView* coral_grid_view() const {
+    return library_view_->coral_grid_view_;
+  }
 
-  const views::Label* no_items_label() {
+  const views::ScrollView* scroll_view() const {
+    return library_view_->scroll_view_;
+  }
+
+  const views::Label* no_items_label() const {
     return library_view_->no_items_label_;
   }
 

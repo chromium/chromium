@@ -2839,10 +2839,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 // with the prompt and the cancel animation is still playing, another navigation
 // commits in the main frame. The animator should continue animating and the
 // live page should be replaced by the page that was navigated to.
-//
-// TODO(https://crbug.com/379166889): Investigate and re-enable.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       DISABLED_BeforeUnload_RequestCancelledBeforeStart) {
+                       BeforeUnload_RequestCancelledBeforeStart) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
@@ -3994,9 +3992,11 @@ IN_PROC_BROWSER_TEST_F(
 // with the prompt and the cancel animation is still playing, another navigation
 // commits in the main frame. The live page should be replaced by the page that
 // was navigated to while the animation continues.
+//
+// TODO(crbug.com/376867441): Flaky.
 IN_PROC_BROWSER_TEST_F(
     BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
-    BeforeUnload_RequestCancelledBeforeStart) {
+    DISABLED_BeforeUnload_RequestCancelledBeforeStart) {
   auto* iframe = GetIFrameFrameTreeNodeAt(0);
   ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), RedURL());
 

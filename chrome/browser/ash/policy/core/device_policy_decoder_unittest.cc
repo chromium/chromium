@@ -793,8 +793,9 @@ TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenTouchVirtualKeyboardPolicy) {
   device_policy.mutable_deviceloginscreentouchvirtualkeyboardenabled()
       ->set_value(true);
 
-  DecodeDevicePolicyTestHelper(device_policy, key::kTouchVirtualKeyboardEnabled,
-                               base::Value(true));
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
+      base::Value(true));
 }
 
 TEST_F(DevicePolicyDecoderTest, DeviceExtendedAutoUpdateEnabled) {

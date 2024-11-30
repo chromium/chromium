@@ -45,7 +45,7 @@
 <translation id="1779089405699405702">Penyahkod imej</translation>
 <translation id="1785415724048343560">Disyorkan untuk pengalaman terbaik</translation>
 <translation id="1799920918471566157">Petua Chrome</translation>
-<translation id="1816835383954230954">Apabila dihidupkan, Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti yang direka bentuk. Apabila dimatikan, prestasi akan dikurangkan tetapi menjadikan V8 lebih tahan terhadap serangan.</translation>
+<translation id="1816835383954230954">Apabila dihidupkan, Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti spesifikasinya. Apabila dimatikan, prestasi akan berkurang tetapi menjadikan V8 lebih tahan terhadap serangan.</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Akses lokasi dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Masukkan alamat web</translation>
 <translation id="5975083100439434680">Zum keluar</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Kini anda boleh mengakses tab yang dicadangkan dengan pantas daripada senarai apl peranti anda dan dalam hasil carian peranti. Matikan ciri ini pada bila-bila masa dalam tetapan Chrome.</translation>
 <translation id="6015775454662021376">Kawal akses tapak ini kepada peranti anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lagi</translation>
@@ -341,10 +342,8 @@
 <translation id="6071501408666570960">Anda mungkin akan dilog keluar dari laman ini</translation>
 <translation id="6085954183010297841">Padamkan kebenaran pengeditan fail? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Apabila dihidupkan, laman dapat meminta untuk mengetahui waktu anda menggunakan peranti secara aktif. Apabila dimatikan, laman tidak dapat mengetahui waktu anda menggunakan peranti secara aktif.</translation>
-<translation id="6140839633433422817">Adakah anda pasti mahu menetapkan semula kebenaran dan memadamkan kuki serta data laman?</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6171020522141473435">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti Bluetooth. Apabila dimatikan, laman tidak dapat menggunakan peranti Bluetooth.</translation>
-<translation id="6177111841848151710">Disekat untuk enjin carian semasa</translation>
 <translation id="6177128806592000436">Sambungan anda ke tapak ini tidak selamat</translation>
 <translation id="6181444274883918285">Tambah pengecualian tapak</translation>
 <translation id="6192792657125177640">Pengecualian</translation>
@@ -409,9 +408,8 @@
 <translation id="6980861169612950611">Padamkan data laman? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
 <translation id="6992289844737586249">Tanya dahulu sebelum membenarkan tapak menggunakan mikrofon anda (disyorkan)</translation>
-<translation id="6999131147875565462">Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti yang direka bentuk</translation>
+<translation id="6999131147875565462">Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti spesifikasinya.</translation>
 <translation id="7000754031042624318">Dimatikan dalam tetapan Android</translation>
-<translation id="7016516562562142042">Dibenarkan untuk enjin carian semasa</translation>
 <translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 dipilih}other{# dipilih}}</translation>
@@ -430,7 +428,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> dipilih</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> dibenarkan</translation>
 <translation id="7276071417425470385">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti realiti maya. Apabila dimatikan, laman tidak dapat menggunakan peranti realiti maya.</translation>
-<translation id="7302486331832100261">Anda biasanya menyekat pemberitahuan. Untuk membenarkan pemberitahuan, ketik Butiran.</translation>
 <translation id="7366415735885268578">Tambahkan tapak</translation>
 <translation id="7368695150573390554">Mana-mana data luar talian akan dipadamkan</translation>
 <translation id="7383715096023715447">Tetapan untuk <ph name="DOMAIN" /></translation>
@@ -439,6 +436,7 @@
 <translation id="7423098979219808738">Tanya dahulu</translation>
 <translation id="7423538860840206698">Disekat daripada membaca papan keratan</translation>
 <translation id="7425915948813553151">Tema gelap untuk laman</translation>
+<translation id="7488573225650545859">Sembunyikan Lihat tab dalam senarai apl anda</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Apabila dihidupkan, laman dapat memaparkan gesaan log masuk. Apabila dimatikan, laman tidak dapat memaparkan gesaan log masuk.</translation>
 <translation id="7553211568594248088">Keluar daripada carian hab</translation>
@@ -478,6 +476,7 @@
 <translation id="8087000398470557479">Kandungan ini adalah daripada <ph name="DOMAIN_NAME" />, disampaikan oleh Google.</translation>
 <translation id="8088603949666785339">Lagi pilihan dalam <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Mengurangkan prestasi tetapi menjadikan V8 lebih tahan kepada serangan</translation>
+<translation id="8112925981674547014">Lihat tab dalam senarai apl anda</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome akan mengehadkan kuki lagi esok}other{# hari sehingga Chrome mengehadkan kuki lagi}}</translation>
 <translation id="8116925261070264013">Diredam</translation>
 <translation id="8117244575099414087">Apabila dihidupkan, laman dapat menggunakan penderia peranti anda. Apabila dimatikan, laman tidak dapat menggunakan penderia.</translation>
@@ -547,7 +546,6 @@
 <translation id="8928445016601307354">Sekat laman daripada melihat dan menukar maklumat pada peranti NFC</translation>
 <translation id="8944485226638699751">Terhad</translation>
 <translation id="8959122750345127698">Tidak dapat mencapai navigasi: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Lupa</translation>
 <translation id="8990043154272859344">Anda akan dilog keluar daripada semua laman</translation>
 <translation id="8993853206419610596">Kembangkan semua permintaan</translation>
 <translation id="9002538116239926534">Apabila dihidupkan, laman dapat menyimpan data pada peranti anda. Apabila dimatikan, laman tidak dapat menyimpan data pada peranti anda.</translation>
@@ -560,7 +558,6 @@
 <translation id="913657688200966289">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zum semasa ialah <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
-<translation id="930525582205581608">Lupakan laman ini?</translation>
 <translation id="947156494302904893">Laman yang anda lawati boleh mengesahkan bahawa anda orang sebenar dan bukan bot</translation>
 <translation id="959682366969460160">Jadi teratur</translation>
 <translation id="967624055006145463">Data disimpan</translation>

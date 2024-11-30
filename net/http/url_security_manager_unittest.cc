@@ -92,7 +92,7 @@ TEST(URLSecurityManager, CanDelegate) {
   }
 }
 
-TEST(URLSecurityManager, CanDelegate_NoAllowlist) {
+TEST(URLSecurityManager, CanDelegateNoAllowlist) {
   // Nothing can delegate in this case.
   std::unique_ptr<URLSecurityManager> url_security_manager(
       URLSecurityManager::Create());

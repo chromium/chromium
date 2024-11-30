@@ -60,6 +60,8 @@ class FakeDelegate : public ClientSideDetectionService::Delegate {
       content::BrowserContext* context) override {
     return true;
   }
+  void StartListeningToOnDeviceModelUpdate() override { return; }
+  void StopListeningToOnDeviceModelUpdate() override { return; }
 };
 
 class FakeClientSideDetectionService : public ClientSideDetectionService {

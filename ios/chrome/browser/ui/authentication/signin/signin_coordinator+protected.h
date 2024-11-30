@@ -14,9 +14,9 @@
 
 // Runs the sign-in completion callback.
 // `signinResult` is the state of sign-in at add account flow completion.
-// `completionInfo` is the info about the sign-in completion.
+// `completionIdentity` is the info about the sign-in completion.
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
-                       completionInfo:(SigninCompletionInfo*)completionInfo
+                   completionIdentity:(id<SystemIdentity>)completionIdentity
     NS_REQUIRES_SUPER;
 
 @end

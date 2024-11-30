@@ -24,8 +24,8 @@ float ConsumeInterpolableControlAxis(const InterpolableValue* number,
   // Note: using default CSSToLengthConversionData here as it's
   // guaranteed to be a double.
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
-  double value =
-      To<InterpolableNumber>(number)->Value(CSSToLengthConversionData());
+  double value = To<InterpolableNumber>(number)->Value(
+      CSSToLengthConversionData(/*element=*/nullptr));
   return ClampTo<float>(is_absolute ? value : value - current_value);
 }
 
@@ -44,8 +44,8 @@ float ConsumeInterpolableCoordinateAxis(const InterpolableValue* number,
                                         bool is_absolute,
                                         double& current_value) {
   double previous_value = current_value;
-  current_value =
-      To<InterpolableNumber>(number)->Value(CSSToLengthConversionData());
+  current_value = To<InterpolableNumber>(number)->Value(
+      CSSToLengthConversionData(/*element=*/nullptr));
   return ClampTo<float>(is_absolute ? current_value
                                     : current_value - previous_value);
 }
@@ -216,7 +216,7 @@ PathSegmentData ConsumeInterpolableArc(const InterpolableValue& value,
       list.Get(0), is_absolute, coordinates.current_x));
   segment.target_point.set_y(ConsumeInterpolableCoordinateAxis(
       list.Get(1), is_absolute, coordinates.current_y));
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   segment.SetArcRadiusX(
       To<InterpolableNumber>(list.Get(2))->Value(length_resolver));
   segment.SetArcRadiusY(

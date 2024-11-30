@@ -23,7 +23,6 @@ void AddFile(const std::string& value_name,
              const std::string& boundary,
              scoped_refptr<network::ResourceRequestBody> request_body) {
   const char delimiter[] = "\r\n";
-  const size_t delimiter_length = 2;
   std::string mime_header;
   // First line is the boundary.
   mime_header.append("--" + boundary + delimiter);
@@ -42,7 +41,7 @@ void AddFile(const std::string& value_name,
   // Leave an empty line before appending the file_uri.
   mime_header.append(delimiter);
 
-  request_body->AppendBytes(mime_header.c_str(), mime_header.length());
+  request_body->AppendCopyOfBytes(base::as_byte_span(mime_header));
 
   request_body->AppendFileRange(
 #if BUILDFLAG(IS_WIN)
@@ -52,7 +51,7 @@ void AddFile(const std::string& value_name,
 #endif
       0, -1, base::Time());
 
-  request_body->AppendBytes(delimiter, delimiter_length);
+  request_body->AppendCopyOfBytes(base::byte_span_from_cstring(delimiter));
 }
 
 void AddPlainText(const std::string& value_name,
@@ -69,7 +68,7 @@ void AddPlainText(const std::string& value_name,
     net::AddMultipartValueForUploadWithFileName(value_name, file_name, value,
                                                 boundary, content_type, &item);
   }
-  request_body->AppendBytes(item.c_str(), item.length());
+  request_body->AppendCopyOfBytes(base::as_byte_span(item));
 }
 
 }  // namespace
@@ -123,7 +122,7 @@ scoped_refptr<network::ResourceRequestBody> ComputeMultipartBody(
 
   std::string final_delimiter;
   net::AddMultipartFinalDelimiterForUpload(boundary, &final_delimiter);
-  request_body->AppendBytes(final_delimiter.c_str(), final_delimiter.length());
+  request_body->AppendCopyOfBytes(base::as_byte_span(final_delimiter));
 
   return request_body;
 }

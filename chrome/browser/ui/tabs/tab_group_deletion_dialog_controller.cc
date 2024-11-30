@@ -30,9 +30,6 @@
 #include "ui/base/models/dialog_model.h"
 
 namespace tab_groups {
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDeletionDialogDontAskCheckboxId);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDeletionDialogCancelButtonId);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDeletionDialogOkButtonId);
 
 namespace {
 // The text that shows on the checkbox.

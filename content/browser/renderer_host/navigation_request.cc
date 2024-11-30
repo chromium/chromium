@@ -166,6 +166,7 @@
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -1795,7 +1796,7 @@ NavigationRequest::NavigationRequest(
 
   if (IsInPrimaryMainFrame()) {
     loading_mem_tracker_ = PeakGpuMemoryTrackerFactory::Create(
-        input::PeakGpuMemoryTracker::Usage::PAGE_LOAD);
+        viz::PeakGpuMemoryTracker::Usage::PAGE_LOAD);
   }
 
   if (frame_tree_node_->IsInFencedFrameTree()) {
@@ -1803,8 +1804,7 @@ NavigationRequest::NavigationRequest(
         blink::kFencedFrameForcedSandboxFlags;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
-      base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118)) {
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
     shared_storage_writable_opted_in_ =
         frame_tree_node_->shared_storage_writable_opted_in();
     shared_storage_writable_eligible_ =
@@ -2077,31 +2077,6 @@ NavigationRequest::NavigationRequest(
         context->CheckHasServiceWorker(GetURL(), key, base::DoNothing());
       }
     }
-
-    // Ask the service worker context to speculatively start a service worker
-    // for the request URL if necessary for optimization purposes. Don't ask to
-    // do that if this request is for ReloadType::BYPASSING_CACHE that is
-    // supposed to skip a service worker. There are cases where we have already
-    // started the service worker (e.g, Prerendering or the previous navigation
-    // already started the service worker), but this call does nothing if the
-    // service worker already started for the URL.
-    if (reload_type_ != ReloadType::BYPASSING_CACHE &&
-        base::FeatureList::IsEnabled(
-            features::kSpeculativeServiceWorkerStartup)) {
-      if (ServiceWorkerContext* context =
-              frame_tree_node_->navigator()
-                  .controller()
-                  .GetBrowserContext()
-                  ->GetStoragePartition(site_info_.storage_partition_config())
-                  ->GetServiceWorkerContext()) {
-        const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
-            GetTentativeOriginAtRequestTime());
-        if (context->MaybeHasRegistrationForStorageKey(key)) {
-          context->StartServiceWorkerForNavigationHint(GetURL(), key,
-                                                       base::DoNothing());
-        }
-      }
-    }
   }
 
   // Only update the BackForwardCacheMetrics if this is for a navigation that
@@ -2119,9 +2094,15 @@ NavigationRequest::NavigationRequest(
       // the NotRestoredReasons API.
       commit_params_->not_restored_reasons =
           metrics->GetWebExposedNotRestoredReasons();
-      // Check that the reasons are not null since |this| is not served from
-      // back/forward cache.
-      CHECK(!commit_params_->not_restored_reasons.is_null());
+
+      if (!base::FeatureList::IsEnabled(
+              blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)) {
+        // Check that the reasons are not null since |this| is not served from
+        // back/forward cache.
+        // Session restored cases will be reported as null with the flag on and
+        // this check will no longer hold true.
+        CHECK(!commit_params_->not_restored_reasons.is_null());
+      }
     }
   }
   // Check that the reasons are null when |this| is served from back/forward
@@ -4180,7 +4161,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         } else if (GetOriginToCommit()) {
           precursor = GetOriginToCommit()->GetTupleOrPrecursorTupleIfOpaque();
         } else {
-          CHECK(false) << "No origin-to-commit for sandboxed url = "
+          NOTREACHED() << "No origin-to-commit for sandboxed url = "
                        << GetURL();
         }
 
@@ -4604,11 +4585,9 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     // should never be NONE here.
     DCHECK_NE(AssociatedRenderFrameHostType::NONE, associated_rfh_type_);
 
-    if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-            GetRenderFrameHost(), GetUrlInfo(),
-            /* is_renderer_initiated_check */ false)) {
-      CHECK(false);
-    }
+    CHECK(Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
+        GetRenderFrameHost(), GetUrlInfo(),
+        /* is_renderer_initiated_check */ false));
   } else {
     render_frame_host_ = std::nullopt;
   }
@@ -4893,11 +4872,16 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
       shared_dictionary_observer;
   Clone(shared_dictionary_observer.InitWithNewPipeAndPassReceiver());
 
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observer;
+  Clone(device_bound_session_observer.InitWithNewPipeAndPassReceiver());
+
   network::mojom::URLLoaderFactoryParamsPtr url_loader_factory_params =
       URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
           process, tentative_origin, *this, early_hints,
           std::move(cookie_observer), std::move(trust_token_observer),
-          std::move(shared_dictionary_observer));
+          std::move(shared_dictionary_observer),
+          std::move(device_bound_session_observer));
 
   net::IsolationInfo isolation_info = url_loader_factory_params->isolation_info;
 
@@ -5090,11 +5074,9 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
   // enabled for this failed navigation. It is possible for subframe error page
   // to be committed in a WebUI process as shown in https://crbug.com/944086.
   if (frame_tree_node_->IsErrorPageIsolationEnabled()) {
-    if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-            GetRenderFrameHost(), GetUrlInfo(),
-            /* is_renderer_initiated_check */ false)) {
-      CHECK(false);
-    }
+    CHECK(Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
+        GetRenderFrameHost(), GetUrlInfo(),
+        /* is_renderer_initiated_check */ false));
   }
 
   has_stale_copy_in_cache_ = exists_in_cache;
@@ -5344,7 +5326,8 @@ void NavigationRequest::OnStartChecksComplete(
       static_cast<StoragePartitionImpl*>(partition)
           ->CreateURLLoaderNetworkObserverForNavigationRequest(*this),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
-      std::move(cached_response_head), std::move(interceptor));
+      CreateDeviceBoundSessionObserver(), std::move(cached_response_head),
+      std::move(interceptor));
   DCHECK(!HasRenderFrameHost());
 
   // If needed, perform an early RenderFrameHost swap after notifying observers
@@ -9437,7 +9420,7 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   return true;
 }
 
-std::unique_ptr<input::PeakGpuMemoryTracker>
+std::unique_ptr<viz::PeakGpuMemoryTracker>
 NavigationRequest::TakePeakGpuMemoryTracker() {
   return std::move(loading_mem_tracker_);
 }
@@ -9553,11 +9536,12 @@ NavigationRequest::BuildClientSecurityStateForCommittedDocument() {
 }
 
 std::string NavigationRequest::GetUserAgentOverride() {
-  return is_overriding_user_agent() ? frame_tree_node_->navigator()
-                                          .GetDelegate()
-                                          ->GetUserAgentOverride()
-                                          .ua_string_override
-                                    : std::string();
+  return is_overriding_user_agent()
+             ? frame_tree_node_->navigator()
+                   .GetDelegate()
+                   ->GetUserAgentOverride(frame_tree_node_->frame_tree())
+                   .ua_string_override
+             : std::string();
 }
 
 NavigationControllerImpl* NavigationRequest::GetNavigationController() const {
@@ -9591,6 +9575,14 @@ NavigationRequest::CreateSharedDictionaryAccessObserver() {
   mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver> remote;
   shared_dictionary_observers_.Add(this,
                                    remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
+mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+NavigationRequest::CreateDeviceBoundSessionObserver() {
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver> remote;
+  device_bound_session_observers_.Add(this,
+                                      remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }
 
@@ -9676,10 +9668,26 @@ void NavigationRequest::Clone(
   shared_dictionary_observers_.Add(this, std::move(observer));
 }
 
+void NavigationRequest::OnDeviceBoundSessionAccessed(
+    const net::device_bound_sessions::SessionKey& session) {
+  GetDelegate()->OnDeviceBoundSessionAccessed(this, session);
+}
+void NavigationRequest::Clone(
+    mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+        observer) {
+  device_bound_session_observers_.Add(this, std::move(observer));
+}
+
 std::vector<
     mojo::PendingReceiver<network::mojom::SharedDictionaryAccessObserver>>
 NavigationRequest::TakeSharedDictionaryAccessObservers() {
   return shared_dictionary_observers_.TakeReceivers();
+}
+
+std::vector<
+    mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>>
+NavigationRequest::TakeDeviceBoundSessionAccessObservers() {
+  return device_bound_session_observers_.TakeReceivers();
 }
 
 RenderFrameHostImpl* NavigationRequest::GetInitiatorDocumentRenderFrameHost() {

@@ -64,7 +64,7 @@
 #include "ui/views/window/client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #endif
 
 // NOTE: For more information about the objects and files in this directory,
@@ -802,7 +802,7 @@ class BrowserView : public BrowserWindow,
 
   void CreateTabSearchBubble(
       tab_search::mojom::TabSearchSection section =
-          tab_search::mojom::TabSearchSection::kNone,
+          tab_search::mojom::TabSearchSection::kSearch,
       tab_search::mojom::TabOrganizationFeature organization_feature =
           tab_search::mojom::TabOrganizationFeature::kNone) override;
   // Closes the tab search bubble if open for the given browser instance.
@@ -1055,11 +1055,6 @@ class BrowserView : public BrowserWindow,
   void MaybeShowExperimentalAIIPH();
 
   void UpdateWindowControlsOverlayEnabled();
-
-  // `window.setResizable(bool)` API (part of Additional Windowing Controls)
-  // can block the use of APIs resizing the window, such as `resizeTo` and
-  // `resizeBy`. window.moveTo | window.moveBy should not be blocked.
-  bool CanSetBounds(const gfx::Rect& new_bounds);
 
   // Updates the visibility of the Window Controls Overlay toggle button.
   void UpdateWindowControlsOverlayToggleVisible();

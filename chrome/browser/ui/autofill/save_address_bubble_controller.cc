@@ -149,7 +149,7 @@ SaveAddressBubbleController::GetHeaderImages() const {
 
 std::u16string SaveAddressBubbleController::GetBodyText() const {
   if (is_migration_to_account_ && web_contents()) {
-    PersonalDataManager* pdm =
+    PersonalDataManager& pdm =
         ContentAutofillClient::FromWebContents(web_contents())
             ->GetPersonalDataManager();
 
@@ -157,10 +157,9 @@ std::u16string SaveAddressBubbleController::GetBodyText() const {
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
 
-    int string_id =
-        pdm->address_data_manager().IsSyncFeatureEnabledForAutofill()
-            ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
-            : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
+    int string_id = pdm.address_data_manager().IsSyncFeatureEnabledForAutofill()
+                        ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
+                        : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
 
     return l10n_util::GetStringFUTF16(string_id,
                                       base::UTF8ToUTF16(account->email));

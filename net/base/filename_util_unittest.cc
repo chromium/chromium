@@ -416,7 +416,7 @@ TEST(FilenameUtilTest, GenerateSafeFileName) {
   }
 }
 
-TEST(FilenameUtilTest, GenerateFileName_Assumptions) {
+TEST(FilenameUtilTest, GenerateFileNameAssumptions) {
   base::FilePath::StringType extension;
   EXPECT_TRUE(GetPreferredExtensionForMimeType("application/x-chrome-extension",
                                                &extension));

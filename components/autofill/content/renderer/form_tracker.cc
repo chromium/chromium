@@ -326,6 +326,10 @@ void FormTracker::WillDetach(blink::DetachReason detach_reason) {
 
 void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  if (base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
+    CHECK(form);
+    UpdateLastInteractedElement(form_util::GetFormRendererId(form));
+  }
   for (auto& observer : observers_) {
     observer.OnProvisionallySaveForm(
         form, blink::WebFormControlElement(),

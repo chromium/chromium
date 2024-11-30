@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
@@ -100,7 +101,7 @@ bool TsPacket::ParseHeader(const uint8_t* buf) {
   RCHECK(bit_reader.ReadBits(2, &adaptation_field_control));
   RCHECK(bit_reader.ReadBits(4, &continuity_counter_));
   payload_unit_start_indicator_ = (payload_unit_start_indicator != 0);
-  payload_ = payload_.subspan(4);
+  payload_ = payload_.subspan<4>();
 
   // Default values when no adaptation field.
   discontinuity_indicator_ = false;
@@ -111,10 +112,10 @@ bool TsPacket::ParseHeader(const uint8_t* buf) {
     return true;
 
   // Read the adaptation field if needed.
-  int adaptation_field_length;
+  size_t adaptation_field_length;
   RCHECK(bit_reader.ReadBits(8, &adaptation_field_length));
   DVLOG(LOG_LEVEL_TS) << "adaptation_field_length=" << adaptation_field_length;
-  payload_ = payload_.subspan(1);
+  payload_ = payload_.subspan<1>();
   if ((adaptation_field_control & 0x1) == 0 &&
        adaptation_field_length != 183) {
     DVLOG(1) << "adaptation_field_length=" << adaptation_field_length;
@@ -140,8 +141,8 @@ bool TsPacket::ParseHeader(const uint8_t* buf) {
 }
 
 bool TsPacket::ParseAdaptationField(BitReader* bit_reader,
-                                    int adaptation_field_length) {
-  DCHECK_GT(adaptation_field_length, 0);
+                                    size_t adaptation_field_length) {
+  DCHECK_GT(adaptation_field_length, 0u);
   int adaptation_field_start_marker = bit_reader->bits_available() / 8;
 
   int discontinuity_indicator;
@@ -200,10 +201,10 @@ bool TsPacket::ParseAdaptationField(BitReader* bit_reader,
   }
 
   // The rest of the adaptation field should be stuffing bytes.
-  int adaptation_field_remaining_size = adaptation_field_length -
-      (adaptation_field_start_marker - bit_reader->bits_available() / 8);
-  RCHECK(adaptation_field_remaining_size >= 0);
-  for (int k = 0; k < adaptation_field_remaining_size; k++) {
+  const auto bits_used = base::checked_cast<size_t>(
+      adaptation_field_start_marker - bit_reader->bits_available() / 8);
+  RCHECK(adaptation_field_length >= bits_used);
+  for (size_t k = 0; k < adaptation_field_length - bits_used; ++k) {
     int stuffing_byte;
     RCHECK(bit_reader->ReadBits(8, &stuffing_byte));
     // Unfortunately, a lot of streams exist in the field that do not fill

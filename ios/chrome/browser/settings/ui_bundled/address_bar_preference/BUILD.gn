@@ -1,0 +1,57 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("address_bar_preference") {
+  sources = [
+    "address_bar_preference_coordinator.h",
+    "address_bar_preference_coordinator.mm",
+    "address_bar_preference_mediator.h",
+    "address_bar_preference_mediator.mm",
+  ]
+  deps = [
+    ":ui",
+    "//components/prefs",
+    "//ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/utils",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "address_bar_preference_consumer.h",
+    "address_bar_preference_view_controller.h",
+    "address_bar_preference_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "address_bar_preference_egtest.mm" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

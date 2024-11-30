@@ -107,8 +107,10 @@ void OnTabOrganizationModelExecutionResult(
                                std::move(response_tab_ids), group_id);
   }
 
-  const std::string execution_id =
-      log_entry->log_ai_data_request()->model_execution_info().execution_id();
+  const std::string execution_id = log_entry->log_ai_data_request()
+                                       ->tab_organization()
+                                       .model_execution_info()
+                                       .execution_id();
 
   std::unique_ptr<TabOrganizationResponse> local_response =
       std::make_unique<TabOrganizationResponse>(
@@ -206,6 +208,13 @@ void PerformTabOrganizationExecution(
             optimization_guide::proto::
                 TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_UNSPECIFIED);
         break;
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction)) {
+    if (request->user_instruction().has_value()) {
+      tab_organization_request.set_user_command(
+          request->user_instruction().value());
     }
   }
 

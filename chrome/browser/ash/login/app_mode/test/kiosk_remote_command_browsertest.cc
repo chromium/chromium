@@ -2,26 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#include <cstdint>
+#include <string_view>
 
+#include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/json/json_writer.h"
 #include "base/scoped_observation.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
-#include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "base/values.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/policy/test_support/remote_commands_service_mixin.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/core/common/remote_commands/test_support/remote_command_builders.h"
 #include "components/policy/core/common/remote_commands/test_support/testing_remote_commands_server.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 
 namespace ash {
@@ -46,35 +50,47 @@ constexpr char kKioskRemoteRebootCommandTag[] =
 constexpr char kKioskRemoteScreenshotCommandTag[] =
     "screenplay-110c74bf-7c94-4e88-8904-95b6bbc7d649";
 
-class TestRebootObserver : public chromeos::PowerManagerClient::Observer {
+policy::RemoteCommandBuilder NewRemoteCommandBuilder() {
+  return policy::RemoteCommandBuilder().SetTargetDeviceId(kDeviceId);
+}
+
+// Observes requests sent to `PowerManagerClient` to restart the device.
+class RestartRequestObserver : public chromeos::PowerManagerClient::Observer {
  public:
-  TestRebootObserver() = default;
-  ~TestRebootObserver() override = default;
-  TestRebootObserver(const TestRebootObserver&) = delete;
-  TestRebootObserver& operator=(const TestRebootObserver&) = delete;
+  explicit RestartRequestObserver(chromeos::PowerManagerClient* client) {
+    CHECK_NE(client, nullptr);
+    observation_.Observe(client);
+  }
+  RestartRequestObserver(const RestartRequestObserver&) = delete;
+  RestartRequestObserver& operator=(const RestartRequestObserver&) = delete;
+  ~RestartRequestObserver() override = default;
 
-  power_manager::RequestRestartReason Get() { return reboot_future_.Get(); }
+  // Waits until a restart request happens and returns its reason.
+  power_manager::RequestRestartReason WaitForRestartRequest() {
+    return reason_future_.Get();
+  }
 
-  // chromeos::PowerManagerClient::Observer
+  // `chromeos::PowerManagerClient::Observer` implementation:
   void RestartRequested(power_manager::RequestRestartReason reason) override {
-    reboot_future_.SetValue(reason);
+    reason_future_.SetValue(reason);
   }
 
  private:
-  base::test::TestFuture<power_manager::RequestRestartReason> reboot_future_;
+  base::test::TestFuture<power_manager::RequestRestartReason> reason_future_;
+  base::ScopedObservation<chromeos::PowerManagerClient, RestartRequestObserver>
+      observation_{this};
 };
 
-class TestAudioObserver : public ash::CrasAudioHandler::AudioObserver {
+class VolumeChangeObserver : public CrasAudioHandler::AudioObserver {
  public:
-  explicit TestAudioObserver(ash::CrasAudioHandler& handler)
-      : observation_(this) {
+  explicit VolumeChangeObserver(CrasAudioHandler& handler) {
     observation_.Observe(&handler);
   }
-  TestAudioObserver(const TestAudioObserver&) = delete;
-  TestAudioObserver& operator=(const TestAudioObserver&) = delete;
-  ~TestAudioObserver() override = default;
+  VolumeChangeObserver(const VolumeChangeObserver&) = delete;
+  VolumeChangeObserver& operator=(const VolumeChangeObserver&) = delete;
+  ~VolumeChangeObserver() override = default;
 
-  // `ash::CrasAudioHandler::AudioObserver` implementation:
+  // `CrasAudioHandler::AudioObserver` implementation:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override {
     waiter_.SetValue(volume);
   }
@@ -86,34 +102,30 @@ class TestAudioObserver : public ash::CrasAudioHandler::AudioObserver {
 
  private:
   base::test::TestFuture<int> waiter_;
-  base::ScopedObservation<ash::CrasAudioHandler,
-                          ash::CrasAudioHandler::AudioObserver>
-      observation_;
+  base::ScopedObservation<CrasAudioHandler, CrasAudioHandler::AudioObserver>
+      observation_{this};
 };
 
 }  // namespace
 
-// Kiosk tests with a fake device owner setup and a remote commands server
-// configured.
-class KioskRemoteCommandTest : public KioskBaseTest {
+class KioskRemoteCommandTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<KioskMixin::Config> {
  public:
-  KioskRemoteCommandTest() {
-    settings_helper_.SetString(kDeviceOwner,
-                               test_owner_account_id_.GetUserEmail());
-    login_manager_.AppendRegularUsers(1);
-  }
+  KioskRemoteCommandTest() = default;
+
+  KioskRemoteCommandTest(const KioskRemoteCommandTest&) = delete;
+  KioskRemoteCommandTest& operator=(const KioskRemoteCommandTest&) = delete;
+
+  ~KioskRemoteCommandTest() override = default;
 
   void SetUpOnMainThread() override {
-    KioskBaseTest::SetUpOnMainThread();
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 
     // On real hardware volume change events are reported asynchronous, so
     // ensure the test behaves similar so they are realistic (and catch the
     // timing issues this can cause).
-    ash::FakeCrasAudioClient::Get()->send_volume_change_events_asynchronous();
-  }
-
-  policy::RemoteCommandBuilder BuildRemoteCommand() {
-    return policy::RemoteCommandBuilder().SetTargetDeviceId(kDeviceId);
+    FakeCrasAudioClient::Get()->send_volume_change_events_asynchronous();
   }
 
   em::RemoteCommandResult IssueCommandAndGetResponse(
@@ -121,44 +133,35 @@ class KioskRemoteCommandTest : public KioskBaseTest {
     return remote_commands_service_mixin_.SendRemoteCommand(command);
   }
 
-  void LaunchKioskApp() {
-    StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-    WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
-                                /*terminate_app=*/false,
-                                /*keep_app_open=*/true);
-  }
+  const KioskMixin::Config& kiosk_mixin_config() { return GetParam(); }
+
+  KioskMixin kiosk_{&mixin_host_,
+                    /*cached_configuration=*/kiosk_mixin_config()};
 
  private:
-  LoginManagerMixin login_manager_{
-      &mixin_host_,
-      {{LoginManagerMixin::TestUserInfo{test_owner_account_id_}}}};
-
-  DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   policy::RemoteCommandsServiceMixin remote_commands_service_mixin_{
       mixin_host_, policy_test_server_mixin_};
 };
 
-IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
+IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
   base::AddFeatureIdTagToTestResult(kKioskRemoteVolumeCommandTag);
 
   constexpr int kInitVolumePercent = 50;
   constexpr int kExpectedVolumePercent = 72;
 
-  // Set audio handler and initial volume
-  ash::CrasAudioHandler* audio_handler = ash::CrasAudioHandler::Get();
-  TestAudioObserver audio_observer(*audio_handler);
-  audio_handler->SetOutputVolumePercent(kInitVolumePercent);
+  // Set audio handler and initial volume.
+  CrasAudioHandler& audio_handler = CHECK_DEREF(CrasAudioHandler::Get());
+  VolumeChangeObserver audio_observer(audio_handler);
+  audio_handler.SetOutputVolumePercent(kInitVolumePercent);
   audio_observer.WaitForVolumeChange();
-  ASSERT_EQ(kInitVolumePercent, audio_handler->GetOutputVolumePercent());
+  ASSERT_EQ(kInitVolumePercent, audio_handler.GetOutputVolumePercent());
 
-  LaunchKioskApp();
+  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
 
-  // Create a remote command, enqueue from the server, fetch from the client
+  // Create a remote command, enqueue from the server and fetch from the client.
   auto response = IssueCommandAndGetResponse(
-      BuildRemoteCommand()
+      NewRemoteCommandBuilder()
           .SetType(em::RemoteCommand_Type_DEVICE_SET_VOLUME)
           .SetPayload(
               base::WriteJson(base::Value::Dict()  //
@@ -166,57 +169,58 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
                   .value())
           .Build());
 
-  // Check that remote command passed and the new volume level was set
+  // Check that remote command succeeded and the new volume level was set.
   EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
             response.result());
   audio_observer.WaitForVolumeChange();
-  EXPECT_EQ(kExpectedVolumePercent, audio_handler->GetOutputVolumePercent());
+  EXPECT_EQ(kExpectedVolumePercent, audio_handler.GetOutputVolumePercent());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, RebootWithRemoteCommand) {
+IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, RebootWithRemoteCommand) {
   base::AddFeatureIdTagToTestResult(kKioskRemoteRebootCommandTag);
 
-  LaunchKioskApp();
+  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
 
-  // Get PowerManagerClient and start observing a restart request
-  chromeos::PowerManagerClient* power_manager_client =
-      chromeos::PowerManagerClient::Get();
-  ASSERT_NE(power_manager_client, nullptr);
+  // Start observing restart requests in `PowerManagerClient`.
+  RestartRequestObserver observer(chromeos::PowerManagerClient::Get());
 
-  TestRebootObserver observer;
-  power_manager_client->AddObserver(&observer);
-
-  // Create a remote command, enqueue from the server, fetch from the client
+  // Create a remote command, enqueue from the server, fetch from the client.
   auto response = IssueCommandAndGetResponse(
-      BuildRemoteCommand()
+      NewRemoteCommandBuilder()
           .SetType(em::RemoteCommand_Type_DEVICE_REBOOT)
           .Build());
 
-  // Check that remote cmd passed and reboot was requested (via observer event)
+  // Check that remote cmd passed and reboot was requested (via observer event).
   EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
             response.result());
   EXPECT_EQ(power_manager::REQUEST_RESTART_REMOTE_ACTION_REBOOT,
-            observer.Get());
+            observer.WaitForRestartRequest());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, ScreenshotWithRemoteCommand) {
+IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, ScreenshotWithRemoteCommand) {
   base::AddFeatureIdTagToTestResult(kKioskRemoteScreenshotCommandTag);
 
-  LaunchKioskApp();
+  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
 
-  // skips real image upload
-  // TODO(b/269432279): Try real upload with local url and EmbeddedTestServer
+  // Skips real image upload.
+  // TODO(crbug.com/269432279): Try real upload with embedded test server.
   policy::DeviceCommandsFactoryAsh::set_commands_for_testing(true);
 
   auto response = IssueCommandAndGetResponse(
-      BuildRemoteCommand()
+      NewRemoteCommandBuilder()
           .SetType(em::RemoteCommand_Type_DEVICE_SCREENSHOT)
           .SetPayload(R"( {"fileUploadUrl": "http://example.com/upload"} )")
           .Build());
 
-  // Check that remote cmd passed
+  // Check that the remote command succeeded.
   EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
             response.result());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KioskRemoteCommandTest,
+    testing::ValuesIn(KioskMixin::ConfigsToAutoLaunchEachAppType()),
+    KioskMixin::ConfigName);
 
 }  // namespace ash

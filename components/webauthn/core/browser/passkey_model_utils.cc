@@ -57,6 +57,10 @@ constexpr std::string_view kAadWebauthnCredentialSpecificsEncrypted =
 // `WebAuthnCredentialSpecifics.private_key` (empty).
 constexpr std::string_view kAadWebauthnCredentialSpecificsPrivateKey = "";
 
+// Signature counter, as defined in the w3c spec here:
+// https://www.w3.org/TR/webauthn-2/#signature-counter
+constexpr uint8_t kSignatureCounter[4] = {0};
+
 struct PasskeyComparator {
   bool operator()(const sync_pb::WebauthnCredentialSpecifics& a,
                   const sync_pb::WebauthnCredentialSpecifics& b) const {
@@ -239,12 +243,13 @@ bool EncryptWebauthnCredentialSpecificsData(
 
 std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id) {
   using Flag = device::AuthenticatorData::Flag;
+  uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
+                  base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
+                  base::strict_cast<uint8_t>(Flag::kBackupEligible) |
+                  base::strict_cast<uint8_t>(Flag::kBackupState);
   return device::AuthenticatorData(
-             crypto::SHA256Hash(base::as_byte_span(rp_id)),
-             {Flag::kTestOfUserPresence, Flag::kTestOfUserVerification,
-              Flag::kBackupEligible, Flag::kBackupState},
-             /*sign_counter=*/0u,
-             /*attested_credential_data=*/std::nullopt,
+             crypto::SHA256Hash(base::as_byte_span(rp_id)), flags,
+             kSignatureCounter, /*data=*/std::nullopt,
              /*extensions=*/std::nullopt)
       .SerializeToByteArray();
 }
@@ -264,12 +269,14 @@ std::vector<uint8_t> MakeAttestationObjectForCreation(
           public_key_spki_der);
   device::AttestedCredentialData attested_credential_data(
       kGpmAaguid, credential_id, std::move(public_key));
+  uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
+                  base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
+                  base::strict_cast<uint8_t>(Flag::kBackupEligible) |
+                  base::strict_cast<uint8_t>(Flag::kBackupState) |
+                  base::strict_cast<uint8_t>(Flag::kAttestation);
   device::AuthenticatorData authenticator_data(
-      crypto::SHA256Hash(base::as_byte_span(rp_id)),
-      {Flag::kTestOfUserPresence, Flag::kTestOfUserVerification,
-       Flag::kBackupEligible, Flag::kBackupState, Flag::kAttestation},
-      /*sign_counter=*/0u, std::move(attested_credential_data),
-      /*extensions=*/std::nullopt);
+      crypto::SHA256Hash(base::as_byte_span(rp_id)), flags, kSignatureCounter,
+      std::move(attested_credential_data), /*extensions=*/std::nullopt);
   device::AttestationObject attestationObject(
       std::move(authenticator_data),
       std::make_unique<device::NoneAttestationStatement>());

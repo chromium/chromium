@@ -62,9 +62,15 @@ LensPreselectionBubble::LensPreselectionBubble(
       offline_(offline),
       exit_clicked_callback_(std::move(exit_clicked_callback)) {
   SetShowCloseButton(false);
-  // Should be true for menu button to work, although this constraint is not
-  // being upheld on Mac and Linux. See crbug.com/378566071.
+  // Should be true to enable the menu button, although this constraint is not
+  // being upheld on Mac and Linux, and setting it to true on Mac causes
+  // undesired mouse pointer behavior on the overlay. See crbug.com/378566071.
+  // TODO(crbug.com/379927907): Rewrite this class to avoid these issues.
+#if BUILDFLAG(IS_MAC)
+  SetCanActivate(false);
+#else
   SetCanActivate(true);
+#endif
   set_close_on_deactivate(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(48);

@@ -10,6 +10,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "kiosk_mixin.cc",
+    "kiosk_mixin.h",
     "kiosk_session_initialized_waiter.cc",
     "kiosk_session_initialized_waiter.h",
     "network_state_mixin.cc",
@@ -20,7 +22,10 @@ static_library("test_support") {
 
   deps = [
     "//chrome/browser",
+    "//chrome/browser/app_mode/test:test_support",
+    "//chrome/browser/ash/app_mode:test_support",
     "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support_ui",

@@ -15,7 +15,7 @@ BASE_FEATURE(kDeferredSyncStartupCustomDelay,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kEnableBatchUploadFromSettings,
              "EnableBatchUploadFromSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnoPhase2FollowUp,
              "UnoPhase2FollowUp",
@@ -40,7 +40,7 @@ BASE_FEATURE(kSyncAutofillWalletCredentialData,
 
 BASE_FEATURE(kSyncPlusAddressSetting,
              "SyncPlusAddressSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kSyncChromeOSAppsToggleSharing,
@@ -50,7 +50,7 @@ BASE_FEATURE(kSyncChromeOSAppsToggleSharing,
 
 BASE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated,
              "SkipInvalidationOptimizationsWhenDeviceInfoUpdated",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode,
              "SyncEnableContactInfoDataTypeInTransportMode",
@@ -92,10 +92,6 @@ BASE_FEATURE(kEnablePreferencesAccountStorage,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
-             "SyncIgnoreGetUpdatesRetryDelay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupsSaveNudgeDelay,
              "TabGroupsSaveNudgeDelay",

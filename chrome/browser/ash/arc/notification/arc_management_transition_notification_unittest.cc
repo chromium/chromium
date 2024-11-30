@@ -7,14 +7,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -57,9 +55,6 @@ class ArcManagementTransitionNotificationTest
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
     arc_app_test_.SetUp(profile());
-
-    feature_list_.InitAndEnableFeature(
-        kEnableUnmanagedToManagedTransitionFeature);
   }
 
   void TearDown() override {
@@ -86,8 +81,6 @@ class ArcManagementTransitionNotificationTest
   ArcAppTest arc_app_test_;
 
   content::BrowserTaskEnvironment task_environment_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -79,7 +79,7 @@ public class SelectFileDialogTest {
                     /* listenToActivityState= */ true,
                     IntentRequestTracker.createFromActivity(activity),
                     insetObserver,
-                    /* trackOcclusion= */ false);
+                    /* trackOcclusion= */ true);
         }
 
         @Override

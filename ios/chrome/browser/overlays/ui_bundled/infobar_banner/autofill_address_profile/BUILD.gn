@@ -10,13 +10,13 @@ source_set("autofill_address_profile") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/infobars/banners",
     "//ui/base",
   ]
 }
@@ -34,14 +34,14 @@ source_set("unit_tests") {
     "//components/infobars/core",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/infobars/ui_bundled/banners/test",
+    "//ios/chrome/browser/infobars/ui_bundled/test",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
     "//ios/chrome/browser/overlays/model/test",
     "//ios/chrome/browser/overlays/ui_bundled/test",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/infobars/banners/test",
-    "//ios/chrome/browser/ui/infobars/test",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

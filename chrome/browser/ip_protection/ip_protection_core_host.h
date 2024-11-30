@@ -11,11 +11,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -40,7 +38,6 @@ class Profile;
 namespace quiche {
 class BlindSignAuthInterface;
 enum class ProxyLayer;
-struct BlindSignToken;
 }  // namespace quiche
 
 // Fetches IP protection tokens on demand for the network service.
@@ -52,7 +49,9 @@ class IpProtectionCoreHost
     : public KeyedService,
       public ip_protection::mojom::CoreHost,
       public signin::IdentityManager::Observer,
-      public privacy_sandbox::TrackingProtectionSettingsObserver {
+      public privacy_sandbox::TrackingProtectionSettingsObserver,
+      public ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate,
+      public ip_protection::IpProtectionTokenDirectFetcher::Delegate {
  public:
   IpProtectionCoreHost(
       signin::IdentityManager* identity_manager,
@@ -62,21 +61,30 @@ class IpProtectionCoreHost
 
   ~IpProtectionCoreHost() override;
 
-  // IpProtectionConfigGetter:
+  // CoreHost implementation:
 
   // Get a batch of blind-signed auth tokens. It is forbidden for two calls to
   // this method for the same proxy layer to be outstanding at the same time.
   void TryGetAuthTokens(uint32_t batch_size,
-                        ip_protection::mojom::ProxyLayer proxy_layer,
+                        ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
-  // Get the list of IP Protection proxies.
   void GetProxyConfig(GetProxyConfigCallback callback) override;
 
   static bool CanIpProtectionBeEnabled();
-
-  // Checks if IP Protection is disabled via user settings.
   bool IsIpProtectionEnabled();
+  bool CanRequestOAuthToken();
 
+  // IpProtectionTokenDirectFetcher::Delegate implementation.
+  bool IsTokenFetchEnabled() override;
+  void RequestOAuthToken(
+      ip_protection::IpProtectionTokenDirectFetcher::Delegate::
+          RequestOAuthTokenCallback callback) override;
+
+  // IpProtectionProxyConfigDirectFetcher::Delegate implementation.
+  bool IsProxyConfigFetchEnabled() override;
+  void AuthenticateRequest(std::unique_ptr<network::ResourceRequest>,
+                           ip_protection::IpProtectionProxyConfigDirectFetcher::
+                               Delegate::AuthenticateRequestCallback) override;
   // Add bidirectional pipes to a new network service.
   void AddNetworkService(
       mojo::PendingReceiver<ip_protection::mojom::CoreHost> pending_receiver,
@@ -97,27 +105,26 @@ class IpProtectionCoreHost
 
   // Like `SetUp()`, but providing values for each of the member variables. Note
   // `bsa` is moved onto a separate sequence when initializing
-  // `ip_protection_token_direct_fetcher_`.
+  // `ip_protection_token_fetcher_`.
   void SetUpForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
  private:
   friend class IpProtectionCoreHostTest;
-  FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostTest, CalculateBackoff);
   FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostIdentityBrowserTest,
                            BackoffTimeResetAfterProfileAvailabilityChange);
   FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostUserSettingBrowserTest,
                            OnIpProtectionEnabledChanged);
 
-  // Set up `ip_protection_proxy_config_fetcher_`,
-  // `ip_protection_token_direct_fetcher_` and `url_loader_factory_`, if
+  // Set up `ip_protection_proxy_config_fetcher_` and
+  // `ip_protection_token_fetcher_` if
   // not already initialized. This accomplishes lazy loading of these components
   // to break dependency loops in browser startup.
   void SetUp();
 
   // `FetchBlindSignedToken()` uses the
-  // `ip_protection_token_direct_fetcher_` to make an async call on the
+  // `ip_protection_token_fetcher_` to make an async call on the
   // bound sequence into the `quiche::BlindSignAuth` library to request a
   // blind-signed auth token for use at the IP Protection proxies.
   void FetchBlindSignedToken(
@@ -140,50 +147,21 @@ class IpProtectionCoreHost
       ip_protection::TryGetAuthTokensResult result,
       std::optional<base::TimeDelta> duration = std::nullopt);
 
-  // Calculates the backoff time for the given result, based on
-  // `last_try_get_auth_tokens_..` fields, and updates those fields.
-  std::optional<base::TimeDelta> CalculateBackoff(
-      ip_protection::TryGetAuthTokensResult result);
-
-  void AuthenticateCallback(
-      std::unique_ptr<network::ResourceRequest>,
-      ip_protection::IpProtectionProxyConfigDirectFetcher::
-          AuthenticateDoneCallback);
-
   // Creating a generic callback in order for `RequestOAuthToken()` to work for
   // `TryGetAuthTokens()` and `GetProxyConfig()`.
-  using RequestOAuthTokenCallback =
+  using RequestOAuthTokenInternalCallback =
       base::OnceCallback<void(GoogleServiceAuthError error,
                               signin::AccessTokenInfo access_token_info)>;
+
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user. This method must only be called when
   // `CanRequestOAuthToken()` returns true.
-  void RequestOAuthToken(RequestOAuthTokenCallback callback);
-  bool CanRequestOAuthToken();
+  void RequestOAuthTokenInternal(RequestOAuthTokenInternalCallback callback);
 
-  void OnRequestOAuthTokenCompleted(
-      std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-          oauth_token_fetcher,
-      RequestOAuthTokenCallback callback,
-      GoogleServiceAuthError error,
-      signin::AccessTokenInfo access_token_info);
-
-  void OnRequestOAuthTokenCompletedForTryGetAuthTokens(
-      uint32_t batch_size,
-      quiche::ProxyLayer quiche_proxy_layer,
-      TryGetAuthTokensCallback callback,
-      base::TimeTicks oauth_token_fetch_start_time,
-      GoogleServiceAuthError error,
-      signin::AccessTokenInfo access_token_info);
-
-  void OnRequestOAuthTokenCompletedForGetProxyConfig(
-      std::unique_ptr<network::ResourceRequest> resource_request,
-      ip_protection::IpProtectionProxyConfigDirectFetcher::
-          AuthenticateDoneCallback callback,
-      GoogleServiceAuthError error,
-      signin::AccessTokenInfo access_token_info);
-
-  void ClearOAuthTokenProblemBackoff();
+  // The status of the account has changed, either becoming available or
+  // becoming unavailable. This is a signal to reset various timeouts (if
+  // available) or extend them (if not).
+  void AccountStatusChanged(bool account_available);
 
   // The object used to get an OAuth token. `identity_manager_` will be set to
   // nullptr after `Shutdown()` is called, but will otherwise be non-null.
@@ -219,33 +197,13 @@ class IpProtectionCoreHost
   // TrackingProtectionSettingsObserver:
   void OnIpProtectionEnabledChanged() override;
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<ip_protection::IpProtectionProxyConfigDirectFetcher>
       ip_protection_proxy_config_fetcher_;
-
-  // The thread pool task runner on which async calls are made to
-  // `ip_protection_token_direct_fetcher_` to fetch blind signed tokens.
-  // This is needed to move some of the expensive token generation work off the
-  // UI thread.
-  scoped_refptr<base::SequencedTaskRunner> token_fetcher_task_runner_;
-
-  // An IpProtectionTokenFetcher instance that is bound to the given sequenced
-  // `token_fetcher_task_runner_` on which all calls to the
-  // `quiche::BlindSignAuth` library will happen on.
-  base::SequenceBound<ip_protection::IpProtectionTokenDirectFetcher>
-      ip_protection_token_direct_fetcher_;
+  std::unique_ptr<ip_protection::IpProtectionTokenDirectFetcher>
+      ip_protection_token_fetcher_;
 
   // Whether `Shutdown()` has been called.
   bool is_shutting_down_ = false;
-
-  // The result of the last call to `TryGetAuthTokens()`, and the
-  // backoff applied to `try_again_after`. `last_try_get_auth_tokens_backoff_`
-  // will be set to `base::TimeDelta::Max()` if no further attempts to get
-  // tokens should be made. These will be updated by calls from any receiver
-  // (so, from either the main profile or an associated incognito mode profile).
-  ip_protection::TryGetAuthTokensResult last_try_get_auth_tokens_result_ =
-      ip_protection::TryGetAuthTokensResult::kSuccess;
-  std::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
 
   // The `mojo::Receiver` objects allowing the network service to call methods
   // on `this`.

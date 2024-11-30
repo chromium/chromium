@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -29,11 +30,13 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -136,11 +139,11 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   Browser* browser =
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+
   // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these
   // are loaded in iSL.
-  RunSystemCapabilitiesPrefetch(
-      ChromeAccountManagerServiceFactory::GetForProfile(browser->GetProfile())
-          ->GetAllIdentities());
+  ProfileIOS* profile = browser->GetProfile();
+  RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
 
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
     return;

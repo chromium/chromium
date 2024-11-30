@@ -207,6 +207,15 @@ class PdfInkModule {
   using DocumentV2InkPathShapesMap = std::map<int, PageV2InkPathShapes>;
 
   struct DrawingStrokeState {
+    struct EventDetails {
+      // The event position.  Coordinates match the screen-based position that
+      // are provided during stroking from `blink::WebMouseEvent` positions.
+      gfx::PointF position;
+
+      // The event time.
+      base::TimeTicks timestamp;
+    };
+
     DrawingStrokeState();
     DrawingStrokeState(const DrawingStrokeState&) = delete;
     DrawingStrokeState& operator=(const DrawingStrokeState&) = delete;
@@ -220,12 +229,12 @@ class PdfInkModule {
     // The 0-based page index which is currently being stroked.
     int page_index = -1;
 
-    // The event position for the last input.  Coordinates match the
-    // screen-based position that are provided during stroking from
-    // `blink::WebMouseEvent` positions.  Used after stroking has already
-    // started, for invalidation and for extrapolating where a stroke crosses
-    // the page boundary.
-    std::optional<gfx::PointF> input_last_event_position;
+    // Details from the last input.  Used after stroking has already started,
+    // for invalidation and for extrapolating where a stroke crosses the page
+    // boundary.  Also used to compensate for missed events, when an end event
+    // was consumed by a different view and this is detected afterwards when
+    // PdfInkModule finally sees input events again.
+    std::optional<EventDetails> input_last_event;
 
     // The points that make up the current stroke, divided into segments.
     // A new segment will be necessary each time the input leaves the page
@@ -258,6 +267,10 @@ class PdfInkModule {
 
     bool erasing = false;
     base::flat_set<int> page_indices_with_erasures;
+
+    // The event position for the last input, similar to what is stored in
+    // `DrawingStrokeState` for compensating for missed input events.
+    std::optional<gfx::PointF> input_last_event_position;
   };
 
   // Returns whether the event was handled or not.

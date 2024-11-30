@@ -168,6 +168,20 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kError"/>
 </enum>
 
+<enum name="CoralStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown Error"/>
+  <int value="2" label="Load Model Failed"/>
+  <int value="3" label="Invalid Arguments"/>
+  <int value="4" label="Model Execution Failed"/>
+  <int value="5" label="Clustering Error"/>
+</enum>
+
+<enum name="CoralTitleGenerationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Empty Model Output"/>
+</enum>
+
 <enum name="Cr50BoardIdFlags">
   <int value="-1" label="Unprogrammed (0xffffffff)"/>
   <int value="16" label="test pre-pvt (0x10)"/>
@@ -2520,6 +2534,7 @@ Full version information for the fingerprint enum values:
   <int value="58020716" label="CROS Ti50 0.21.1"/>
   <int value="67287287" label="CROS Cr50 0.4.26 aka 0.6.0"/>
   <int value="70763054" label="CROS Ti50 0.24.1"/>
+  <int value="73349705" label="CROS Ti50 0.24.131"/>
   <int value="79646227" label="CROS Ti50 0.24.60"/>
   <int value="91611772" label="CROS Cr50 0.4.21"/>
   <int value="91664959" label="CROS Cr50 0.0.16"/>

@@ -199,7 +199,7 @@ class DirectWritingServiceBinder {
         mPackageName = "";
     }
 
-    void onWindowFocusChanged(Context context, boolean hasWindowFocus) {
+    void handleWindowFocusChanged(Context context, boolean hasWindowFocus) {
         if (hasWindowFocus) {
             // Need to register DW service callback object again when window gets focus, so that
             // commit happens in the intended Chrome instance and web input. This is required even
@@ -313,16 +313,16 @@ class DirectWritingServiceBinder {
         }
     }
 
-    void hideDWToolbar() {
+    void hideDwToolbar() {
         if (!isServiceConnected()) return;
         try {
             Bundle bundle = DirectWritingBundleUtil.buildBundle();
             mRemoteDwService.onEditTextActionModeStarted(bundle);
         } catch (DeadObjectException e) {
-            Log.e(TAG, "hideDWToolbar failed due to DeadObjectException.", e);
+            Log.e(TAG, "hideDwToolbar failed due to DeadObjectException.", e);
             resetDwServiceConnection();
         } catch (Exception e) {
-            Log.e(TAG, "hideDWToolbar failed.", e);
+            Log.e(TAG, "hideDwToolbar failed.", e);
         }
     }
 }

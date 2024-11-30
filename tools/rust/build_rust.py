@@ -65,8 +65,12 @@ from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
                          GetRustClangRevision)
 
 EXCLUDED_TESTS = [
+    # Temporarily disabled due to https://crbug.com/380707238
+    os.path.join('tests', 'codegen', 'aarch64-softfloat.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
+    # Temporarily disabled due to https://crbug.com/379308086
+    os.path.join('tests', 'ui', 'asan-odr-win', 'asan_odr_windows.rs'),
 ]
 EXCLUDED_TESTS_MAC = [
 ]

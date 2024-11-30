@@ -84,6 +84,7 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -175,6 +176,24 @@ gfx::Point GetRightCenterInScreenCoordinates(const views::View* view) {
   center.set_x(center.x() + view->GetLocalBounds().width() / 4);
   views::View::ConvertPointToScreen(view, &center);
   return center;
+}
+
+Browser* WaitForActiveBrowser(const BrowserList* list, size_t num_browsers) {
+  if (num_browsers != list->size()) {
+    ADD_FAILURE() << "Unexpected browser count: expected " << num_browsers
+                  << ", got " << list->size();
+    return nullptr;
+  }
+  Browser* new_browser = list->get(num_browsers - 1);
+
+  views::test::WaitForWidgetActive(
+      BrowserView::GetBrowserViewForBrowser(new_browser)->GetWidget(), true);
+  if (!new_browser->window()->IsActive()) {
+    ADD_FAILURE() << "New browser window isn't active";
+    return nullptr;
+  }
+
+  return new_browser;
 }
 
 }  // namespace
@@ -420,6 +439,7 @@ using test::GetTabStripForBrowser;
 using test::IDString;
 using test::ResetIDs;
 using test::SetID;
+using test::WaitForActiveBrowser;
 using ui_test_utils::GetCenterInScreenCoordinates;
 
 TabDragControllerTest::TabDragControllerTest()
@@ -2046,10 +2066,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 
   // There should now be another browser.
-  ASSERT_EQ(2u, browser_list()->size());
-  Browser* new_browser = browser_list()->get(1);
-
-  EXPECT_TRUE(new_browser->window()->IsActive());
+  Browser* new_browser = WaitForActiveBrowser(browser_list(), 2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
   EXPECT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
 
@@ -2096,7 +2113,7 @@ class TestDialog : public views::DialogDelegateView {
   TestDialog(const TestDialog&) = delete;
   TestDialog& operator=(const TestDialog&) = delete;
 
-  ~TestDialog() override {}
+  ~TestDialog() override = default;
 
   views::View* GetInitiallyFocusedView() override { return this; }
 };
@@ -2192,10 +2209,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 
   // There should now be another browser.
-  ASSERT_EQ(2u, browser_list()->size());
-  Browser* new_browser = browser_list()->get(1);
-
-  EXPECT_TRUE(new_browser->window()->IsActive());
+  Browser* new_browser = WaitForActiveBrowser(browser_list(), 2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
   EXPECT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
 
@@ -2242,9 +2256,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 
   // There should now be another browser.
-  ASSERT_EQ(2u, browser_list()->size());
-  Browser* new_browser = browser_list()->get(1);
-  ASSERT_TRUE(new_browser->window()->IsActive());
+  Browser* new_browser = WaitForActiveBrowser(browser_list(), 2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
 
@@ -2298,9 +2310,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 
   // There should now be another browser.
-  ASSERT_EQ(2u, browser_list()->size());
-  Browser* new_browser = browser_list()->get(1);
-  ASSERT_TRUE(new_browser->window()->IsActive());
+  Browser* new_browser = WaitForActiveBrowser(browser_list(), 2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
 
@@ -2366,9 +2376,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 
   // There should now be another browser.
-  ASSERT_EQ(2u, browser_list()->size());
-  Browser* new_browser = browser_list()->get(1);
-  ASSERT_TRUE(new_browser->window()->IsActive());
+  Browser* new_browser = WaitForActiveBrowser(browser_list(), 2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
 
@@ -4076,9 +4084,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 
   // Should be two browsers.
-  ASSERT_EQ(2u, browser_list()->size());
-  Browser* new_browser = browser_list()->get(1);
-  ASSERT_TRUE(new_browser->window()->IsActive());
+  Browser* new_browser = WaitForActiveBrowser(browser_list(), 2);
 
   EXPECT_TRUE(browser()->window()->GetNativeWindow()->IsVisible());
   EXPECT_TRUE(new_browser->window()->GetNativeWindow()->IsVisible());
@@ -4422,12 +4428,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
 class DetachToBrowserInSeparateDisplayTabDragControllerTest
     : public DetachToBrowserTabDragControllerTest {
  public:
-  DetachToBrowserInSeparateDisplayTabDragControllerTest() {}
+  DetachToBrowserInSeparateDisplayTabDragControllerTest() = default;
   DetachToBrowserInSeparateDisplayTabDragControllerTest(
       const DetachToBrowserInSeparateDisplayTabDragControllerTest&) = delete;
   DetachToBrowserInSeparateDisplayTabDragControllerTest& operator=(
       const DetachToBrowserInSeparateDisplayTabDragControllerTest&) = delete;
-  virtual ~DetachToBrowserInSeparateDisplayTabDragControllerTest() {}
+  virtual ~DetachToBrowserInSeparateDisplayTabDragControllerTest() = default;
 
   void SetUpOnMainThread() override {
     DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
@@ -4490,9 +4496,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 
   // There should now be another browser.
-  ASSERT_EQ(2u, browser_list()->size());
-  Browser* new_browser = browser_list()->get(1);
-  ASSERT_TRUE(new_browser->window()->IsActive());
+  Browser* new_browser = WaitForActiveBrowser(browser_list(), 2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
 
@@ -4644,9 +4648,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_FALSE(TabDragController::IsActive());
 
   // There should only be a single browser.
-  ASSERT_EQ(1u, browser_list()->size());
-  ASSERT_EQ(browser(), browser_list()->get(0));
-  ASSERT_TRUE(browser()->window()->IsActive());
+  WaitForActiveBrowser(browser_list(), 1);
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
 
   // Browser now resides in display 2.
@@ -4875,12 +4877,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
 class DifferentDeviceScaleFactorDisplayTabDragControllerTest
     : public DetachToBrowserTabDragControllerTest {
  public:
-  DifferentDeviceScaleFactorDisplayTabDragControllerTest() {}
+  DifferentDeviceScaleFactorDisplayTabDragControllerTest() = default;
   DifferentDeviceScaleFactorDisplayTabDragControllerTest(
       const DifferentDeviceScaleFactorDisplayTabDragControllerTest&) = delete;
   DifferentDeviceScaleFactorDisplayTabDragControllerTest& operator=(
       const DifferentDeviceScaleFactorDisplayTabDragControllerTest&) = delete;
-  virtual ~DifferentDeviceScaleFactorDisplayTabDragControllerTest() {}
+  virtual ~DifferentDeviceScaleFactorDisplayTabDragControllerTest() = default;
 
   void SetUpOnMainThread() override {
     DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
@@ -4971,7 +4973,7 @@ IN_PROC_BROWSER_TEST_P(DifferentDeviceScaleFactorDisplayTabDragControllerTest,
 class DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest
     : public DetachToBrowserTabDragControllerTest {
  public:
-  DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest() {}
+  DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest() = default;
   DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest(
       const DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest&) =
       delete;
@@ -5124,12 +5126,12 @@ IN_PROC_BROWSER_TEST_P(
 class DetachToBrowserTabDragControllerTestTouch
     : public DetachToBrowserTabDragControllerTest {
  public:
-  DetachToBrowserTabDragControllerTestTouch() {}
+  DetachToBrowserTabDragControllerTestTouch() = default;
   DetachToBrowserTabDragControllerTestTouch(
       const DetachToBrowserTabDragControllerTestTouch&) = delete;
   DetachToBrowserTabDragControllerTestTouch& operator=(
       const DetachToBrowserTabDragControllerTestTouch&) = delete;
-  virtual ~DetachToBrowserTabDragControllerTestTouch() {}
+  virtual ~DetachToBrowserTabDragControllerTestTouch() = default;
 
   void TearDown() override {
     ui::SetEventTickClockForTesting(nullptr);
@@ -5194,9 +5196,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   ASSERT_FALSE(TabDragController::IsActive());
 
   // There should now be another browser.
-  ASSERT_EQ(2u, browser_list()->size());
-  Browser* new_browser = browser_list()->get(1);
-  ASSERT_TRUE(new_browser->window()->IsActive());
+  Browser* new_browser = WaitForActiveBrowser(browser_list(), 2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
 

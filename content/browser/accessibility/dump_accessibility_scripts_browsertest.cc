@@ -534,6 +534,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   RunTypedTest<kMacMethods>("accessibility-custom-content.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityHeader) {
+  RunTypedTest<kMacMethods>("accessibility-header.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityIsIgnored) {
   RunTypedTest<kMacMethods>("accessibility-is-ignored.html");
 }
@@ -612,6 +616,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   Migration_RunTypedTest<kMacMethods>("accessibility-disclosure-level.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityColumnCount) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-column-count.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityRowCount) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-row-count.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityColumnIndexRange) {
   Migration_RunTypedTest<kMacMethods>("accessibility-column-index-range.html");
@@ -625,6 +637,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilitySortDirection) {
   Migration_RunTypedTest<kMacMethods>("accessibility-sort-direction.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityVisibleColumns) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-visible-columns.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityVisibleCells) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-visible-cells.html");
 }
 
 // Parameterized attributes

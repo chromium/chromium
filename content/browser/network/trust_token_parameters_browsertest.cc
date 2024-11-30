@@ -4,7 +4,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/escape.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/network_service_util.h"
@@ -156,16 +156,13 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_TRUE(
-      ExecJs(shell(),
-             base::StringPrintfNonConstexpr(
-                 JsReplace("let request = new XMLHttpRequest();"
-                           "request.open($1, $2);"
-                           "request.setPrivateToken(%s);"
-                           "request.send();",
-                           "GET", trust_token_url)
-                     .c_str(),
-                 expected_params_and_serialization.serialized_params.c_str())));
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      base::StrCat({"let request = new XMLHttpRequest(); ",
+                    JsReplace("request.open(\"GET\", $1);", trust_token_url),
+                    "request.setPrivateToken(",
+                    expected_params_and_serialization.serialized_params,
+                    "); request.send();"})));
 
   monitor.WaitForUrls();
   std::optional<network::ResourceRequest> request =

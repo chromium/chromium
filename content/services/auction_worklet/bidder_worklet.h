@@ -668,10 +668,14 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     base::LRUCache<url::Origin, std::unique_ptr<ContextRecycler>>
         context_recyclers_for_origin_group_mode_;
 
-    // ContextRecyclers we prepare in advance. These can be used by any
-    // execution mode, but for "frozen-context" mode, the context will need to
-    // be frozen before it's used.
-    std::vector<std::unique_ptr<ContextRecycler>> unused_context_recyclers_;
+    // ContextRecyclers we prepare in advance, along with a bool indicating if
+    // there was a timeout and any errors in preparing the context. These can be
+    // used by any execution mode, but for "frozen-context" mode, the context
+    // will need to be frozen before it's used.
+    std::vector<std::tuple<std::unique_ptr<ContextRecycler>,
+                           bool,
+                           std::vector<std::string>>>
+        unused_context_recyclers_;
 
     // The number of contexts we created that were not premade. Used for UMA:
     // Ads.InterestGroup.Auction.NonPremadeContextsCreated.

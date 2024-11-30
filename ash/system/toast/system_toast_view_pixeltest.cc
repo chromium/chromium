@@ -98,7 +98,7 @@ TEST_F(SystemToastViewPixelTest, WithLeadingIconAndButton) {
       "screenshot", /*revision_number=*/6, GetContentsView()));
 }
 
-TEST_F(SystemToastViewPixelTest, Multiline_TextOnly) {
+TEST_F(SystemToastViewPixelTest, MultilineTextOnly) {
   GetContentsView()->AddChildView(
       std::make_unique<SystemToastView>(kTestLongText));
 
@@ -106,7 +106,7 @@ TEST_F(SystemToastViewPixelTest, Multiline_TextOnly) {
       "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
-TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIcon) {
+TEST_F(SystemToastViewPixelTest, MultilineWithLeadingIcon) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
       /*text=*/kTestLongText, /*dismiss_text=*/std::u16string(),
       /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
@@ -115,7 +115,7 @@ TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIcon) {
       "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
-TEST_F(SystemToastViewPixelTest, Multiline_WithButton) {
+TEST_F(SystemToastViewPixelTest, MultilineWithButton) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
       /*text=*/kTestLongText, /*dismiss_text=*/kTestButtonText));
 
@@ -123,7 +123,7 @@ TEST_F(SystemToastViewPixelTest, Multiline_WithButton) {
       "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
-TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIconAndButton) {
+TEST_F(SystemToastViewPixelTest, MultilineWithLeadingIconAndButton) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
       /*text=*/kTestLongText, /*dismiss_text=*/kTestButtonText,
       /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));

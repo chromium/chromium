@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -140,7 +141,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
                     ->GetElementContext();
               }),
               InAnyContext(WaitForShow(kAppPageId)));
-    AddDescription(steps, base::StringPrintf("OpenApp( %s, %%s )", app_id));
+    AddDescriptionPrefix(steps, base::StrCat({"OpenApp( ", app_id, " )"}));
     return steps;
   }
 
@@ -155,10 +156,8 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
                     "queue was flushed."),
         WaitForState(kLatestDomMessage,
                      testing::HasSubstr("FinishedNavigating")));
-    AddDescription(
-        steps,
-        "Waiting for PleaseFlushLaunchQueue and FinishedNavigating messages, "
-        "flushing launch queues and notifying pages of completion in between.");
+    AddDescriptionPrefix(steps,
+                         "WaitForLaunchQueuesFlushedAndNavigationComplete()");
     return steps;
   }
 
@@ -168,7 +167,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
                        ObserveState(kLatestDomMessage, kStartPageId),
                        NavigateWebContents(kStartPageId, GetStartUrl()),
                        WaitForLaunchQueuesFlushedAndNavigationComplete());
-    AddDescription(steps, "OpenStartPage( %s )");
+    AddDescriptionPrefix(steps, "OpenStartPage()");
     return steps;
   }
 
@@ -188,7 +187,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
         InSameContext(
             Steps(ObserveState(kLatestDomMessage, kStartPageId),
                   WaitForLaunchQueuesFlushedAndNavigationComplete())));
-    AddDescription(steps, "OpenAppStartPage( %s )");
+    AddDescriptionPrefix(steps, "OpenAppStartPage()");
     return steps;
   }
 
@@ -202,6 +201,16 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
     return InAnyContext(
         ClickElement(kStartPageId, {"#" + element_id}, button, accel)
             .SetDescription("ClickLaunchLink()"));
+  }
+
+  auto TriggerNavigateExisting(
+      const std::string& element_id,
+      ui_controls::MouseButton button,
+      ui_controls::AcceleratorState accel = ui_controls::kNoAccelerator) {
+    auto steps = Steps(ClickLaunchLink(element_id, button, accel),
+                       InAnyContext(WaitForShow(kDestinationPageId)));
+    AddDescriptionPrefix(steps, "TriggerNavigateExisting()");
+    return steps;
   }
 
   // Clicks on `element_id` in the start page, which must be open in at least
@@ -223,7 +232,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
               InSameContext(CheckViewProperty(
                   kBrowserViewElementId, &BrowserView::browser,
                   testing::Ne(expect_new_browser ? browser() : nullptr))));
-    AddDescription(steps, "TriggerAppLaunch( %s )");
+    AddDescriptionPrefix(steps, "TriggerAppLaunch()");
     return steps;
   }
 
@@ -406,18 +415,22 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
-                       IPHShownForAppInTab) {
+                       IPHShownForNavigateExistingAppInTab) {
   webapps::AppId app_id = test::InstallWebApp(
       browser()->profile(),
       WebAppInstallInfo::CreateForTesting(
           GetDestinationUrl(), blink::mojom::DisplayMode::kBrowser,
           mojom::UserDisplayMode::kBrowser,
-          blink::mojom::ManifestLaunchHandler_ClientMode::kAuto));
+          blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting));
   RunTestSequence(
       OpenStartPage(),
       TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
                        ui_controls::kNoAccelerator,
                        /* expect_new_browser= */ false),
+      // The second launch is required to trigger the kNavigateExisting behavior
+      // and show the IPH.
+      TriggerNavigateExisting(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
+                              ui_controls::kNoAccelerator),
       // The app will launch in a new tab in the same browser window, so
       // InSameContext can be used throughout.
       If([this]() { return NavigationCapturingV2Enabled(); },

@@ -46,7 +46,7 @@ BASE_FEATURE(kSigninInterceptSimpleButtons,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kEnterprizeBadgeSource[] = "cr:domain";
-constexpr char kSupervisedBadgeSource[] = "cr20:kite";
+constexpr char kSupervisedBadgeSource[] = "cr:kite";
 
 // Returns true if the account is managed (aka Enterprise, or Dasher).
 bool IsManaged(const AccountInfo& info) {

@@ -1529,7 +1529,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> ডাউনলোড নিশ্চিত করুন</translation>
 <translation id="612734058257491180">Google অ্যাসিস্ট্যান্ট কোনও গেস্ট সেশনে উপলভ্য নয়।</translation>
 <translation id="6127395413317891856">আপনি অফলাইন আছেন। আপনার ডিভাইসের কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন।</translation>
-<translation id="6129953537138746214">ব্যবধান</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য, 'অ্যাকাউন্ট সরিয়ে দিন' ডায়ালগ খুলুন</translation>
 <translation id="6141205840878048728">আপনি কীসের উপর ফোকাস করতে চান?</translation>
 <translation id="6141988275892716286">ডাউনলোড নিশ্চিত করুন</translation>
@@ -2125,6 +2125,7 @@
 <translation id="8142699993796781067">ব্যক্তিগত নেটওয়ার্ক</translation>
 <translation id="8144760705599030999">অন্যান্য ডিভাইসের সাথে আরও দ্রুত পেয়ার করতে <ph name="NAME" />-কে <ph name="EMAIL" />-এ সেভ করুন</translation>
 <translation id="8144914663975476336">রেকর্ডিং ফর্ম্যাট বেছে নিন</translation>
+<translation id="8145272500474066209">জেনারেটিভ AI ভুল করতে পারে যেমন কোনও ব্যক্তি সম্পর্কে ভুল তথ্য দিতে পারে, তাই এটি ডবল-চেক করুন। <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">ব্লুটুথ সেটিংস দেখান। <ph name="STATE_TEXT" />।</translation>
 <translation id="8152092012181020186">বন্ধ করতে Ctrl + W প্রেস করুন।</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, নিজে থেকে সম্পূর্ন করা</translation>

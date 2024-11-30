@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html class="reftest-wait">
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement(): </title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/WICG/canvas-place-element" />
+  <meta name="assert" content="Checks that canvas placed elements are
+    affected by 3d css transforms.">
+  <link rel="match" href="placeElement-3d-transform-ref.html">
+  <style>
+    #placed {
+      background-color: green;
+      transform: rotateX(30deg);
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+    <div id="placed">Placed Element</div>
+  </canvas>
+</body>
+
+<script>
+  const ctx = document.querySelector("canvas").getContext("2d");
+  const placed = document.getElementById("placed");
+  ctx.placeElement(placed, 0, 0);
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      placed.style.transform = "rotateX(45deg)";
+      document.documentElement.classList.remove("reftest-wait");
+    }, 0);
+  });
+</script>
+
+</html>

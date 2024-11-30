@@ -113,7 +113,7 @@ Status::Status(StatusCode code, const std::string& details, const Status& cause)
     stack_trace_ = cause.stack_trace();
 }
 
-Status::~Status() {}
+Status::~Status() = default;
 
 void Status::AddDetails(const std::string& details) {
   msg_ += base::StringPrintf("\n  (%s)", details.c_str());

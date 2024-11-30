@@ -11,6 +11,9 @@
         overflow: scroll;
         scroll-marker-group: before;
         height: 100px;
+        scroll-behavior: smooth;
+        background-color: purple;
+        border: solid 1px black;
     }
 
     #scroller::scroll-marker-group {
@@ -34,7 +37,7 @@
         border-radius: 50%;
     }
 
-    #scroller div::scroll-marker:checked {
+    #scroller div::scroll-marker:target-current {
         background-color: green;
     }
 

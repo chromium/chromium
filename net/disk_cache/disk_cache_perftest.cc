@@ -159,8 +159,8 @@ class WriteHandler {
                disk_cache::Backend* cache,
                net::CompletionOnceCallback final_callback)
       : test_(test), cache_(cache), final_callback_(std::move(final_callback)) {
-    CacheTestFillBuffer(headers_buffer_->data(), kHeadersSize, false);
-    CacheTestFillBuffer(body_buffer_->data(), kChunkSize, false);
+    CacheTestFillBuffer(headers_buffer_->span(), false);
+    CacheTestFillBuffer(body_buffer_->span(), false);
   }
 
   void Run();
@@ -595,8 +595,8 @@ TEST_F(DiskCachePerfTest, SimpleCacheInitialReadPortion) {
   auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kHeadersSize);
   auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(kBodySize);
 
-  CacheTestFillBuffer(buffer1->data(), kHeadersSize, false);
-  CacheTestFillBuffer(buffer2->data(), kBodySize, false);
+  CacheTestFillBuffer(buffer1->span(), false);
+  CacheTestFillBuffer(buffer2->span(), false);
 
   disk_cache::Entry* cache_entry[kBatchSize];
   for (int i = 0; i < kBatchSize; ++i) {

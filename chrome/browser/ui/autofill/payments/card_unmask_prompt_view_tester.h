@@ -19,7 +19,7 @@ class CardUnmaskPromptViewTester {
   static std::unique_ptr<CardUnmaskPromptViewTester> For(
       CardUnmaskPromptView* view);
 
-  virtual ~CardUnmaskPromptViewTester() {}
+  virtual ~CardUnmaskPromptViewTester() = default;
 
   virtual void Close() = 0;
 

@@ -46,10 +46,10 @@ class ServerCertificateDatabase {
   static std::optional<bssl::CertificateTrustType> GetUserCertificateTrust(
       const net::ServerCertificateDatabase::CertInformation& cert_info);
 
-  // Insert a new certificate into the database, or if the certificate is
-  // already present (as indicated by cert_info.sha256hash_hex), update the
+  // Insert new certificates into the database, or if some of the certificates
+  // are already present (as indicated by cert_info.sha256hash_hex), update the
   // entry in the database.
-  bool InsertOrUpdateCert(const CertInformation& cert_info);
+  bool InsertOrUpdateCerts(const std::vector<CertInformation>& cert_infos);
 
   // Retrieve all of the certificates from the database.
   std::vector<CertInformation> RetrieveAllCertificates();

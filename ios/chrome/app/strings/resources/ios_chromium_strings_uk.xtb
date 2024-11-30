@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Використовуйте Chromium як вебпереглядач за умовчанням на iPad</translation>
 <translation id="1471084500615228555">Видалити дані вебперегляду в Chromium</translation>
 <translation id="1472013873724362412">Ваш обліковий запис не працює в Chromium. Зв’яжіться з адміністратором свого домену або ввійдіть у звичайний обліковий запис Google.</translation>
+<translation id="148576268809812097">Зберігайте паролі в Chromium</translation>
 <translation id="1501302548410882220">Користуйтеся Chromium будь-де</translation>
 <translation id="1503199973012840174">Версія Chromium застаріла. Оновіть її, щоб захистити свої дані.</translation>
 <translation id="1515748263297244785">Використовуйте Chromium як вебпереглядач за умовчанням на iPad</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Ваш пароль буде збережено в обліковому записі (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">Щоб користуватися персоналізацією і іншими можливостями, включіть Chromium у такі функції: <ph name="FEATURE_NAME_1" /> і <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium підтвердив, що сертифікат цьому веб-сайту надала компанія <ph name="ISSUER" />.</translation>
+<translation id="1839447949248872139">Відкривайте посилання в Chromium за умовчанням</translation>
 <translation id="1843424232666537147">У Chromium є функції, які допомагають керувати інтернет-даними та швидкістю завантаження веб-сторінок.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Карти в Chromium</translation>
@@ -160,6 +162,7 @@
 <translation id="5048795749726991615">Щоб легко використовувати збережені паролі в інших додатках, застосовуйте функцію автозаповнення в Chromium</translation>
 <translation id="5053429694249468757">Видалення даних Chromium…</translation>
 <translation id="5071749685031362629">Chromium для iOS</translation>
+<translation id="5088872414922783602">Відкривайте Chromium швидше з панелі Dock головного екрана.</translation>
 <translation id="5124429847818367226">Тепер ви можете переглядати й відкривати в Chromium посилання з повідомлень, документів і інших додатків.</translation>
 <translation id="5131565040785979529">Ваша організація (<ph name="DOMAIN" />) керує обліковим записом, у який ви ввійшли, і тим, як використовується Chromium.</translation>
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
@@ -273,6 +276,7 @@
 <translation id="800380310260616129">Завантажте Chromium тут.</translation>
 <translation id="8013573822802650211">Щоб переглядати свої вкладки Chromium на будь-якому пристрої, увійдіть на ньому в обліковий запис</translation>
 <translation id="8014091604604659473">Ви вийшли з Chromium</translation>
+<translation id="8035379487371146621">Перемістіть Chromium на панель Dock</translation>
 <translation id="8104697640054703121">Отримайте найвищий рівень захисту від небезпечних сайтів у Chromium</translation>
 <translation id="8119542592987737574">Відкривайте Chromium швидше з панелі Dock головного екрана iPhone.</translation>
 <translation id="8164086860209325020">Перейдіть у налаштування Chromium</translation>

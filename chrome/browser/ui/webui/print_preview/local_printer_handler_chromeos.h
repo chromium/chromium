@@ -28,6 +28,26 @@ class WebContents;
 
 namespace printing {
 
+// Managed print options constants.
+inline constexpr char kManagedPrintOptions[] = "managedPrintOptions";
+
+inline constexpr char kManagedPrintOptions_DefaultValue[] = "defaultValue";
+inline constexpr char kManagedPrintOptions_AllowedValues[] = "allowedValues";
+
+inline constexpr char kManagedPrintOptions_SizeWidth[] = "width";
+inline constexpr char kManagedPrintOptions_SizeHeight[] = "height";
+
+inline constexpr char kManagedPrintOptions_DpiHorizontal[] = "horizontal";
+inline constexpr char kManagedPrintOptions_DpiVertical[] = "vertical";
+
+inline constexpr char kManagedPrintOptions_MediaSize[] = "mediaSize";
+inline constexpr char kManagedPrintOptions_MediaType[] = "mediaType";
+inline constexpr char kManagedPrintOptions_Duplex[] = "duplex";
+inline constexpr char kManagedPrintOptions_Color[] = "color";
+inline constexpr char kManagedPrintOptions_Dpi[] = "dpi";
+inline constexpr char kManagedPrintOptions_Quality[] = "quality";
+inline constexpr char kManagedPrintOptions_PrintAsImage[] = "printAsImage";
+
 // This class must be created and used on the UI thread.
 class LocalPrinterHandlerChromeos : public PrinterHandler {
  public:
@@ -63,9 +83,14 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
       crosapi::mojom::CapabilitiesResponsePtr caps);
 
   // Returns a PrinterStatus object (defined in
-  // chrome/browser/resources/print_preview/data/printer_status_cros.js).
+  // chrome/browser/resources/print_preview/data/printer_status_cros.ts).
   static base::Value::Dict StatusToValue(
       const crosapi::mojom::PrinterStatus& status);
+
+  // Return a ManagedPrintOptions object (defined in
+  // chrome/browser/resources/print_preview/data/managed_print_options_cros.ts).
+  static base::Value::Dict ManagedPrintOptionsToValue(
+      const crosapi::mojom::ManagedPrintOptions& managed_print_options);
 
   // PrinterHandler implementation.
   void Reset() override;

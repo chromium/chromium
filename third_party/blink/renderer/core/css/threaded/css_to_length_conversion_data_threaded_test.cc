@@ -26,7 +26,7 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, Construction) {
     CSSToLengthConversionData::Flags ignored_flags = 0;
     CSSToLengthConversionData conversion_data(
         WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
-        container_sizes, anchor_data, 1, ignored_flags);
+        container_sizes, anchor_data, 1, ignored_flags, /*element=*/nullptr);
   });
 }
 
@@ -42,7 +42,7 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionEm) {
     CSSToLengthConversionData::Flags ignored_flags = 0;
     CSSToLengthConversionData conversion_data(
         WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
-        container_sizes, anchor_data, 1, ignored_flags);
+        container_sizes, anchor_data, 1, ignored_flags, /*element=*/nullptr);
 
     CSSPrimitiveValue& value = *CSSNumericLiteralValue::Create(
         3.14, CSSPrimitiveValue::UnitType::kEms);
@@ -64,7 +64,7 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionPixel) {
     CSSToLengthConversionData::Flags ignored_flags = 0;
     CSSToLengthConversionData conversion_data(
         WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
-        container_sizes, anchor_data, 1, ignored_flags);
+        container_sizes, anchor_data, 1, ignored_flags, /*element=*/nullptr);
 
     CSSPrimitiveValue& value = *CSSNumericLiteralValue::Create(
         44, CSSPrimitiveValue::UnitType::kPixels);
@@ -86,7 +86,7 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionViewport) {
     CSSToLengthConversionData::Flags ignored_flags = 0;
     CSSToLengthConversionData conversion_data(
         WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
-        container_sizes, anchor_data, 1, ignored_flags);
+        container_sizes, anchor_data, 1, ignored_flags, /*element=*/nullptr);
 
     CSSPrimitiveValue& value = *CSSNumericLiteralValue::Create(
         1, CSSPrimitiveValue::UnitType::kViewportWidth);
@@ -108,7 +108,7 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionRem) {
     CSSToLengthConversionData::Flags ignored_flags = 0;
     CSSToLengthConversionData conversion_data(
         WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
-        container_sizes, anchor_data, 1, ignored_flags);
+        container_sizes, anchor_data, 1, ignored_flags, /*element=*/nullptr);
 
     CSSPrimitiveValue& value =
         *CSSNumericLiteralValue::Create(1, CSSPrimitiveValue::UnitType::kRems);

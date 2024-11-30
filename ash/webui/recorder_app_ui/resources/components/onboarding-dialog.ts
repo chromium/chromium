@@ -20,11 +20,10 @@ import {
 import {i18n, NoArgStringName} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {LanguageCode} from '../core/soda/language_info.js';
 import {settings, SpeakerLabelEnableState} from '../core/state/settings.js';
 import {
   disableTranscription,
-  enableTranscription,
+  enableTranscriptionSkipConsentCheck,
   setTranscriptionLanguage,
 } from '../core/state/transcription.js';
 import {
@@ -258,8 +257,7 @@ export class OnboardingDialog extends ReactiveLitElement {
       }
       case 1: {
         const turnOnTranscription = () => {
-          enableTranscription();
-          setTranscriptionLanguage(LanguageCode.EN_US);
+          enableTranscriptionSkipConsentCheck();
           if (!this.platformHandler.canUseSpeakerLabel.value) {
             // Speaker label isn't supported on this platform.
             this.close();
@@ -296,7 +294,7 @@ export class OnboardingDialog extends ReactiveLitElement {
       }
       case 2: {
         const turnOnTranscription = () => {
-          enableTranscription();
+          enableTranscriptionSkipConsentCheck();
           this.step = 3;
         };
         const turnOffTranscription = () => {

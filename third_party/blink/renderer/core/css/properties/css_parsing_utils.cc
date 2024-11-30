@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
-#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
@@ -1277,8 +1276,16 @@ CSSPrimitiveValue* ConsumeNumberOrPercent(
   }
   if (CSSPrimitiveValue* value =
           ConsumePercent(stream, context, value_stream)) {
-    return CSSNumericLiteralValue::Create(value->GetDoubleValue() / 100.0,
-                                          CSSPrimitiveValue::UnitType::kNumber);
+    if (value->IsNumericLiteralValue()) {
+      return CSSNumericLiteralValue::Create(
+          value->GetDoubleValue() / 100.0,
+          CSSPrimitiveValue::UnitType::kNumber);
+    } else {
+      // Just return it directly; when the caller calls ComputeNumber(),
+      // it will convert from percent to val / 100.0 for us.
+      DCHECK(value->IsCalculated());
+      return value;
+    }
   }
   return nullptr;
 }
@@ -1684,7 +1691,7 @@ CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
     return CSSParserToken(kEOFToken);
   }
   wtf_size_t value_end_offset = stream.LookAheadOffset();
-  if (IsAttrTainted(stream, value_start_offset, value_end_offset)) {
+  if (stream.IsAttrTainted(value_start_offset, value_end_offset)) {
     return CSSParserToken(kEOFToken);
   }
   return IsFetchRestricted(token.Value(), context)
@@ -2503,25 +2510,22 @@ static bool ConsumeDeprecatedGradientColorStop(
   {
     CSSParserTokenStream::BlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    double position;
     if (id == CSSValueID::kFrom || id == CSSValueID::kTo) {
-      position = (id == CSSValueID::kFrom) ? 0 : 1;
+      double position = (id == CSSValueID::kFrom) ? 0 : 1;
+      stop.offset_ = CSSNumericLiteralValue::Create(
+          position, CSSPrimitiveValue::UnitType::kNumber);
     } else {
       DCHECK(id == CSSValueID::kColorStop);
-      if (CSSPrimitiveValue* percent_value = ConsumePercent(
-              stream, context, CSSPrimitiveValue::ValueRange::kAll)) {
-        position = percent_value->GetDoubleValue() / 100.0;
-      } else if (!ConsumeNumberRaw(stream, context, position)) {
+      stop.offset_ = ConsumeNumberOrPercent(
+          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+      if (!stop.offset_) {
         return false;
       }
-
       if (!ConsumeCommaIncludingWhitespace(stream)) {
         return false;
       }
     }
 
-    stop.offset_ = CSSNumericLiteralValue::Create(
-        position, CSSPrimitiveValue::UnitType::kNumber);
     stop.color_ = ConsumeDeprecatedGradientStopColor(stream, context);
     if (!stream.AtEnd()) {
       return false;
@@ -3045,22 +3049,18 @@ static CSSValue* ConsumeDeprecatedWebkitCrossFade(
     return nullptr;
   }
 
-  CSSPrimitiveValue* percentage = nullptr;
-  if (CSSPrimitiveValue* percent_value = ConsumePercent(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll)) {
-    percentage = CSSNumericLiteralValue::Create(
-        ClampTo<double>(percent_value->GetDoubleValue() / 100.0, 0, 1),
-        CSSPrimitiveValue::UnitType::kNumber);
-  } else if (CSSPrimitiveValue* number_value = ConsumeNumber(
-                 stream, context, CSSPrimitiveValue::ValueRange::kAll)) {
-    percentage = CSSNumericLiteralValue::Create(
-        ClampTo<double>(number_value->GetDoubleValue(), 0, 1),
-        CSSPrimitiveValue::UnitType::kNumber);
-  }
-
+  CSSPrimitiveValue* percentage = ConsumeNumberOrPercent(
+      stream, context, CSSPrimitiveValue::ValueRange::kAll);
   if (!percentage) {
     return nullptr;
   }
+
+  if (percentage->IsNumericLiteralValue()) {
+    percentage = CSSNumericLiteralValue::Create(
+        ClampTo<double>(percentage->GetDoubleValue(), 0, 1),
+        CSSPrimitiveValue::UnitType::kNumber);
+  }
+
   return MakeGarbageCollected<cssvalue::CSSCrossfadeValue>(
       /*is_legacy_variant=*/true,
       HeapVector<std::pair<Member<CSSValue>, Member<CSSPrimitiveValue>>>{
@@ -3378,7 +3378,7 @@ CSSValue* ConsumeImage(
     String uri_string = ConsumeStringAsString(stream);
     if (!uri_string.IsNull()) {
       wtf_size_t value_end_offset = stream.LookAheadOffset();
-      if (IsAttrTainted(stream, value_start_offset, value_end_offset)) {
+      if (stream.IsAttrTainted(value_start_offset, value_end_offset)) {
         // https://drafts.csswg.org/css-values-5/#attr-security
         // “Additionally, attr() is not allowed to be used in any <url> value,
         // whether directly or indirectly. Doing so makes the property it’s used
@@ -4153,10 +4153,8 @@ CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeAnimationDuration(CSSParserTokenStream& stream,
                                    const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::ScrollTimelineEnabled()) {
-    if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(stream)) {
-      return ident;
-    }
+  if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(stream)) {
+    return ident;
   }
   return ConsumeTime(stream, context,
                      CSSPrimitiveValue::ValueRange::kNonNegative);
@@ -4193,7 +4191,6 @@ CSSValue* ConsumeAnimationDelay(CSSParserTokenStream& stream,
 CSSValue* ConsumeAnimationRange(CSSParserTokenStream& stream,
                                 const CSSParserContext& context,
                                 double default_offset_percent) {
-  DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
   if (CSSValue* ident = ConsumeIdent<CSSValueID::kNormal>(stream)) {
     return ident;
   }
@@ -4206,7 +4203,7 @@ CSSValue* ConsumeAnimationRange(CSSParserTokenStream& stream,
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
   if (percentage &&
       !(range_name && percentage->IsPercentage() &&
-        percentage->GetValue<double>() == default_offset_percent)) {
+        percentage->GetValueIfKnown() == default_offset_percent)) {
     list->Append(*percentage);
   } else if (!range_name) {
     return nullptr;
@@ -5085,6 +5082,12 @@ CSSValue* ConsumeGapDecorationPropertyList(
     }
   } while (!stream.AtEnd());
 
+  // If there are no values, return nullptr rather than an empty list so that we
+  // use the default value for the property.
+  if (values->length() == 0) {
+    return nullptr;
+  }
+
   return values;
 }
 
@@ -5689,13 +5692,18 @@ CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenStream& stream,
     }
   }
 
-  int tag_value = 1;
+  CSSPrimitiveValue* tag_value = nullptr;
   // Feature tag values could follow: <integer> | on | off
   if (CSSPrimitiveValue* value = ConsumeInteger(stream, context, 0)) {
-    tag_value = ClampTo<int>(value->GetDoubleValue());
+    tag_value = value;
   } else if (stream.Peek().Id() == CSSValueID::kOn ||
              stream.Peek().Id() == CSSValueID::kOff) {
-    tag_value = stream.ConsumeIncludingWhitespace().Id() == CSSValueID::kOn;
+    tag_value = CSSNumericLiteralValue::Create(
+        stream.ConsumeIncludingWhitespace().Id() == CSSValueID::kOn,
+        CSSPrimitiveValue::UnitType::kNumber);
+  } else {
+    tag_value =
+        CSSNumericLiteralValue::Create(1, CSSPrimitiveValue::UnitType::kNumber);
   }
   return MakeGarbageCollected<CSSFontFeatureValue>(tag, tag_value);
 }
@@ -6185,17 +6193,20 @@ CSSValue* ConsumeGridLine(CSSParserTokenStream& stream,
   if (span_value && !numeric_value && !grid_line_name) {
     return nullptr;  // "span" keyword alone is invalid.
   }
-  if (span_value && numeric_value && numeric_value->GetIntValue() < 0) {
+  if (span_value && numeric_value &&
+      numeric_value->GetValueIfKnown().has_value() &&
+      *numeric_value->GetValueIfKnown() < 0) {
     return nullptr;  // Negative numbers are not allowed for span.
   }
-  if (numeric_value && numeric_value->GetIntValue() == 0) {
+  if (numeric_value && numeric_value->GetValueIfKnown() == 0) {
     return nullptr;  // An <integer> value of zero makes the declaration
                      // invalid.
   }
 
-  if (numeric_value) {
+  if (numeric_value && numeric_value->GetValueIfKnown().has_value()) {
     numeric_value = CSSNumericLiteralValue::Create(
-        ClampTo(numeric_value->GetIntValue(), -kGridMaxTracks, kGridMaxTracks),
+        ClampTo(*numeric_value->GetValueIfKnown(), -kGridMaxTracks,
+                kGridMaxTracks),
         CSSPrimitiveValue::UnitType::kInteger);
   }
 
@@ -6204,8 +6215,8 @@ CSSValue* ConsumeGridLine(CSSParserTokenStream& stream,
     values->Append(*span_value);
   }
   // If span is present, omit `1` if there's a trailing identifier.
-  if (numeric_value &&
-      (!span_value || !grid_line_name || numeric_value->GetIntValue() != 1)) {
+  if (numeric_value && (!span_value || !grid_line_name ||
+                        !(numeric_value->GetValueIfKnown() == 1))) {
     values->Append(*numeric_value);
   }
   if (grid_line_name) {
@@ -7631,29 +7642,6 @@ CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
   return list;
 }
 
-// position-area( <position-area> )
-CSSValue* ConsumePositionAreaFunction(CSSParserTokenStream& stream) {
-  CHECK(!RuntimeEnabledFeatures::CSSPositionAreaValueEnabled());
-
-  if (stream.Peek().FunctionId() != CSSValueID::kPositionArea) {
-    return nullptr;
-  }
-  const CSSValue* position_area;
-  {
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    position_area = ConsumePositionArea(stream);
-    if (!position_area) {
-      return nullptr;
-    }
-  }
-  stream.ConsumeWhitespace();
-  auto* function =
-      MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPositionArea);
-  function->Append(*position_area);
-  return function;
-}
-
 }  // namespace
 
 CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream& stream,
@@ -7662,12 +7650,8 @@ CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream& stream,
   if (CSSValue* value = ConsumeDashedIdentOrTactic(stream, context)) {
     return value;
   }
-  if (RuntimeEnabledFeatures::CSSPositionAreaValueEnabled()) {
-    // <position-area>
-    return ConsumePositionArea(stream);
-  }
-  // position-area( <position-area> )
-  return ConsumePositionAreaFunction(stream);
+  // <position-area>
+  return ConsumePositionArea(stream);
 }
 
 CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream& stream,

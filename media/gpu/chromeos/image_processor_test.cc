@@ -507,7 +507,7 @@ class ImageProcessorParamTest
   std::vector<scoped_refptr<const VideoFrame>> model_frames_;
 };
 
-TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
+TEST_P(ImageProcessorParamTest, ConvertOneTimeMemToMem) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
   test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));

@@ -528,12 +528,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
           this.previousPostSelection.height,
           this.previousPostSelection.requester);
     } else if (newCurrentController === ShimmerControlRequester.NONE) {
-      if (this.areResultsShowing) {
-        // Hide shimmer if user focusing on results.
-        this.context.globalAlpha = 0;
-      } else {
-        this.setTransitionState(ShimmerState.TRANSITION_TO_STEADY_STATE);
-      }
+      this.setTransitionState(ShimmerState.TRANSITION_TO_STEADY_STATE);
     }
   }
 

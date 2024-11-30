@@ -19,7 +19,7 @@
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/password_form_classification.h"
@@ -32,6 +32,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -91,6 +92,10 @@ class SingleFieldFillRouter;
 class StrikeDatabase;
 struct Suggestion;
 enum class WebauthnDialogState;
+
+namespace autofill_metrics {
+class FormInteractionsUkmLogger;
+}
 
 namespace payments {
 class PaymentsAutofillClient;
@@ -242,8 +247,8 @@ class AutofillClient {
   // profile.
   // To distinguish between (non-)incognito mode when deciding to persist data,
   // use the client's `IsOffTheRecord()` function.
-  virtual PersonalDataManager* GetPersonalDataManager() = 0;
-  const PersonalDataManager* GetPersonalDataManager() const;
+  virtual PersonalDataManager& GetPersonalDataManager() = 0;
+  const PersonalDataManager& GetPersonalDataManager() const;
 
   // Gets the AutofillOptimizationGuide instance associated with the client.
   // This function can return nullptr if we are on an unsupported platform, or
@@ -340,9 +345,6 @@ class AutofillClient {
   // Gets the UKM service associated with this client (for metrics).
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
 
-  // Gets the UKM source id associated with this client (for metrics).
-  virtual ukm::SourceId GetUkmSourceId() = 0;
-
   // Gets an AddressNormalizer instance (can be null).
   virtual AddressNormalizer* GetAddressNormalizer() = 0;
 
@@ -375,19 +377,6 @@ class AutofillClient {
 
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(SuggestionType suggestion_type) = 0;
-
-  // Show an edit address profile dialog, giving the user an option to alter
-  // autofill profile data. `on_user_decision_callback` is used to react to the
-  // user decision of either saving changes or not.
-  virtual void ShowEditAddressProfileDialog(
-      const AutofillProfile& profile,
-      AddressProfileSavePromptCallback on_user_decision_callback) = 0;
-
-  // Show a delete address profile dialog asking if users want to proceed with
-  // deletion.
-  virtual void ShowDeleteAddressProfileDialog(
-      const AutofillProfile& profile,
-      AddressProfileDeleteDialogCallback delete_dialog_callback) = 0;
 
   // Shows the offer-to-save (or update) address profile bubble. If
   // `original_profile` is nullptr, this renders a save prompt. Otherwise, it
@@ -506,6 +495,9 @@ class AutofillClient {
   // this.
   virtual LogManager* GetLogManager() const;
 
+  virtual autofill_metrics::FormInteractionsUkmLogger&
+  GetFormInteractionsUkmLogger() = 0;
+
   virtual const AutofillAblationStudy& GetAblationStudy() const;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -569,6 +561,11 @@ class AutofillClient {
       AutofillManager& manager,
       FormGlobalId form_id,
       FieldGlobalId field_id) const;
+
+  // Triggers the HaTS survey of the `survey_type`.
+  // TODO: crbug.com/348139343 - Move back for components/plus_addresses.
+  virtual void TriggerPlusAddressUserPerceptionSurvey(
+      plus_addresses::hats::SurveyType survey_type);
 };
 
 }  // namespace autofill

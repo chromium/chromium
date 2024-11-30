@@ -25,6 +25,7 @@ DataTransferEndpoint::DataTransferEndpoint(EndpointType type,
                                            DataTransferEndpointOptions options)
     : type_(type),
       url_(std::nullopt),
+      off_the_record_(options.off_the_record),
       notify_if_restricted_(options.notify_if_restricted) {
   DCHECK_NE(type, EndpointType::kUrl);
 }

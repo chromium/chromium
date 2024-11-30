@@ -1,0 +1,36 @@
+source_set("launcher") {
+  sources = [
+    "glic_background_mode_manager.cc",
+    "glic_background_mode_manager.h",
+    "glic_configuration.cc",
+    "glic_configuration.h",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/common:constants",
+    "//components/keep_alive_registry",
+    "//components/prefs",
+    "//ui/base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "glic_background_mode_manager_browsertest.cc" ]
+
+  deps = [
+    ":launcher",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/test:test_support_ui",
+    "//components/keep_alive_registry",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

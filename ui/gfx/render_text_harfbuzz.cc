@@ -1252,7 +1252,7 @@ struct ShapeRunWithFontInput {
     hash = base::HashInts(hash, skia_face->uniqueID());
     hash = base::HashInts(hash, script);
     hash = base::HashInts(hash, font_size);
-    hash = base::FastHash(base::as_bytes(base::make_span(text)));
+    hash = base::FastHash(base::as_byte_span(text));
     hash = base::HashInts(hash, range.start());
     hash = base::HashInts(hash, range.length());
   }
@@ -1337,7 +1337,7 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
     hb_glyph_info_t* data = hb_buffer_get_glyph_infos(buffer, &count);
     // SAFETY: harfbuzz guarantees that hb_buffer_get_glyph_infos() writes the
     // count for the returned data array into count.
-    return UNSAFE_BUFFERS(base::make_span(data, count));
+    return UNSAFE_BUFFERS(base::span(data, count));
   }(buffer);
 
   out->glyph_count = infos.size();
@@ -1347,7 +1347,7 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
     hb_glyph_position_t* data = hb_buffer_get_glyph_positions(buffer, &count);
     // SAFETY: harfbuzz guarantees that hb_buffer_get_glyph_positions() writes
     // the count for the returned data array into count.
-    return UNSAFE_BUFFERS(base::make_span(data, count));
+    return UNSAFE_BUFFERS(base::span(data, count));
   }(buffer);
 
   out->glyphs.resize(out->glyph_count);

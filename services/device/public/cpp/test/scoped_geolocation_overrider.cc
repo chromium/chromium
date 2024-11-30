@@ -83,7 +83,7 @@ class ScopedGeolocationOverrider::FakeGeolocation : public mojom::Geolocation {
 
   // mojom::Geolocation implementation:
   void QueryNextPosition(QueryNextPositionCallback callback) override;
-  void SetHighAccuracy(bool high_accuracy) override;
+  void SetHighAccuracyHint(bool high_accuracy) override;
   const GURL& url() { return url_; }
 
  private:
@@ -320,7 +320,7 @@ void ScopedGeolocationOverrider::FakeGeolocation::QueryNextPosition(
   RunPositionCallbackIfNeeded();
 }
 
-void ScopedGeolocationOverrider::FakeGeolocation::SetHighAccuracy(
+void ScopedGeolocationOverrider::FakeGeolocation::SetHighAccuracyHint(
     bool high_accuracy) {}
 
 }  // namespace device

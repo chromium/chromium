@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageProvider;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -146,6 +147,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @NonNull TabCreator mRegularTabCreator;
     private final @NonNull BackPressManager mBackPressManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private @Nullable Profile mProfile;
     private @Nullable PriceMessageService mPriceMessageService;
@@ -168,6 +170,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * @param regularTabCreator Manages the creation of regular tabs.
      * @param backPressManager Manages the different back press handlers in the app.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     public TabSwitcherMessageManager(
             @NonNull Activity activity,
@@ -182,7 +185,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @NonNull ViewGroup rootView,
             @NonNull TabCreator regularTabCreator,
             @NonNull BackPressManager backPressManager,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mLifecylceDispatcher = lifecycleDispatcher;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
@@ -209,6 +213,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mMultiWindowModeStateDispatcher.addObserver(mMultiWindowModeObserver);
         mOnTabGroupModelFilterChanged.onResult(
                 currentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged));
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
     }
 
     /**
@@ -305,7 +310,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                                     appendNextMessage(
                                             MessageService.MessageType.ARCHIVED_TABS_MESSAGE),
                             mTabListCoordinatorSupplier,
-                            mDesktopWindowStateManager);
+                            mDesktopWindowStateManager,
+                            mEdgeToEdgeSupplier);
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }
@@ -382,6 +388,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         }
         if (mArchivedTabsMessageService != null) {
             mArchivedTabsMessageService.destroy();
+            mArchivedTabsMessageService = null;
         }
     }
 

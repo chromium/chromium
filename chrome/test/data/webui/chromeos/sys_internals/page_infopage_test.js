@@ -43,6 +43,8 @@ suite('Page_InfoPage', function() {
     assertEquals(getTextById('infopage-zram-orig'), '200.00 GB');
     assertEquals(getTextById('infopage-zram-compr'), '100.00 GB');
     assertEquals(getTextById('infopage-zram-compr-ratio'), '50.00%');
+    assertEquals(getTextById('infopage-gpu-usage'), '0.00%');
+    assertEquals(getTextById('infopage-npu-usage'), '0.00%');
 
     handleUpdateData(
         getTestData([

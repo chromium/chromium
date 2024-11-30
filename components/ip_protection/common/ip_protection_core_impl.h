@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_H_
 
-#include <deque>
 #include <map>
 #include <memory>
 #include <string>
@@ -13,33 +12,36 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
-#include "components/ip_protection/common/ip_protection_config_getter.h"
-#include "components/ip_protection/common/ip_protection_control.h"
 #include "components/ip_protection/common/ip_protection_core.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
-#include "components/ip_protection/common/ip_protection_token_manager.h"
-#include "components/ip_protection/common/masked_domain_list_manager.h"
-#include "net/base/features.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/proxy_chain.h"
+
+namespace net {
+
+class NetworkAnonymizationKey;
+class ProxyChain;
+
+}  // namespace net
 
 namespace ip_protection {
 
-// An implementation of IpProtectionCore that makes IPC calls to the
-// IpProtectionConfigGetter in the browser process.
-class IpProtectionCoreImpl : public IpProtectionCore,
-                             net::NetworkChangeNotifier::NetworkChangeObserver,
-                             public IpProtectionControl {
+class IpProtectionProxyConfigManager;
+class IpProtectionTokenManager;
+class MaskedDomainListManager;
+enum class ProxyLayer;
+
+// The generic implementation of IpProtectionCore. Subclasses provide additional
+// functionality for specific circumstances, such as interaction with other
+// processes via IPC.
+class IpProtectionCoreImpl
+    : public IpProtectionCore,
+      public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
-  // If `config_getter` is unbound, no tokens will be provided.
-  explicit IpProtectionCoreImpl(
-      std::unique_ptr<IpProtectionConfigGetter> config_getter,
+  IpProtectionCoreImpl(
       MaskedDomainListManager* masked_domain_list_manager,
+      std::unique_ptr<IpProtectionProxyConfigManager>
+          ip_protection_proxy_config_manager,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
+          ip_protection_token_managers,
       bool is_ip_protection_enabled);
   ~IpProtectionCoreImpl() override;
 
@@ -58,33 +60,25 @@ class IpProtectionCoreImpl : public IpProtectionCore,
   void RequestRefreshProxyList() override;
   void GeoObserved(const std::string& geo_id) override;
 
-  void SetIpProtectionTokenManagerForTesting(
-      ProxyLayer proxy_layer,
-      std::unique_ptr<IpProtectionTokenManager> ipp_token_manager);
   IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
       ProxyLayer proxy_layer);
-  void SetIpProtectionProxyConfigManagerForTesting(
-      std::unique_ptr<IpProtectionProxyConfigManager> ipp_proxy_config_manager);
   IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting();
 
   // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
-  // `IpProtectionControl` implementation.
-  void VerifyIpProtectionCoreHostForTesting(
-      VerifyIpProtectionCoreHostForTestingCallback callback) override;
-  void AuthTokensMayBeAvailable() override;
-  void SetIpProtectionEnabled(bool enabled) override;
-  bool IsIpProtectionEnabledForTesting() override;
+ protected:
+  // Set the enabled status of IP Protection.
+  void set_ip_protection_enabled(bool enabled);
+  bool is_ip_protection_enabled() { return is_ip_protection_enabled_; }
+
+  std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>&
+  ip_protection_token_managers() {
+    return ipp_token_managers_;
+  }
 
  private:
-  void OnIpProtectionConfigAvailableForTesting(
-      VerifyIpProtectionCoreHostForTestingCallback callback);
-
-  // Source of auth tokens and proxy list, when needed.
-  std::unique_ptr<IpProtectionConfigGetter> config_getter_;
-
   // The MDL manager, owned by the NetworkService.
   raw_ptr<MaskedDomainListManager> masked_domain_list_manager_;
 

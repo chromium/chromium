@@ -56,7 +56,7 @@ MediaGalleriesPermission::MediaGalleriesPermission(
     : SetDisjunctionPermission<MediaGalleriesPermissionData,
                                MediaGalleriesPermission>(info) {}
 
-MediaGalleriesPermission::~MediaGalleriesPermission() {}
+MediaGalleriesPermission::~MediaGalleriesPermission() = default;
 
 bool MediaGalleriesPermission::FromValue(
     const base::Value* value,

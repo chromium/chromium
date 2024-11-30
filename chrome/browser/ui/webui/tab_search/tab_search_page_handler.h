@@ -78,7 +78,8 @@ class TabSearchPageHandler
 
   // tab_search::mojom::PageHandler:
   void CloseTab(int32_t tab_id) override;
-  void DeclutterTabs(const std::vector<int32_t>& tab_ids) override;
+  void DeclutterTabs(const std::vector<int32_t>& tab_ids,
+                     const std::vector<GURL>& urls) override;
   void AcceptTabOrganization(
       int32_t session_id,
       int32_t organization_id,
@@ -89,8 +90,9 @@ class TabSearchPageHandler
                              int32_t organization_id,
                              const std::u16string& name) override;
   void ExcludeFromStaleTabs(int32_t tab_id) override;
+  void ExcludeFromDuplicateTabs(const GURL& url) override;
   void GetProfileData(GetProfileDataCallback callback) override;
-  void GetStaleTabs(GetStaleTabsCallback callback) override;
+  void GetUnusedTabs(GetUnusedTabsCallback callback) override;
   void GetTabSearchSection(GetTabSearchSectionCallback callback) override;
   void GetTabOrganizationFeature(
       GetTabOrganizationFeatureCallback callback) override;
@@ -108,8 +110,6 @@ class TabSearchPageHandler
   void RejectSession(int32_t session_id) override;
   void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
-  void SetTabSearchSection(
-      tab_search::mojom::TabSearchSection section) override;
   void SetOrganizationFeature(
       tab_search::mojom::TabOrganizationFeature feature) override;
   void StartTabGroupTutorial() override;
@@ -118,6 +118,8 @@ class TabSearchPageHandler
   void OpenHelpPage() override;
   void SetTabOrganizationModelStrategy(
       tab_search::mojom::TabOrganizationModelStrategy strategy) override;
+  void SetTabOrganizationUserInstruction(
+      const std::string& user_instruction) override;
   void SetUserFeedback(int32_t session_id,
                        int32_t organization_id,
                        tab_search::mojom::UserFeedback feedback) override;
@@ -173,6 +175,8 @@ class TabSearchPageHandler
 
   void SetTabDeclutterControllerForTesting(
       tabs::TabDeclutterController* tab_declutter_controller);
+
+  static constexpr int kMinRecentlyClosedItemDisplayCount = 8;
 
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
@@ -254,7 +258,11 @@ class TabSearchPageHandler
 
   void NotifyShowFREPrefChanged(const Profile* profile);
 
+  mojo::StructPtr<tab_search::mojom::UnusedTabInfo> GetMojoUnusedTabs();
   std::vector<mojo::StructPtr<tab_search::mojom::Tab>> GetMojoStaleTabs();
+  base::flat_map<std::string,
+                 std::vector<mojo::StructPtr<tab_search::mojom::Tab>>>
+  GetMojoDuplicateTabs();
 
   void UnregisterTabCallbacks();
   void RegisterTabDeclutterCallbacks(tabs::TabInterface* tab);

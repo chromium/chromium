@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
+#include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -1090,7 +1091,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
   if (browser_provided_passkeys_available && !IsVirtualEnvironmentEnabled() &&
-      request_source == RequestSource::kWebAuthentication) {
+      request_source == RequestSource::kWebAuthentication &&
+      dialog_controller_->ui_presentation() !=
+          UIPresentation::kPasskeyUpgrade) {
     // Creating credentials in GPM can be disabled by policy, but get() is
     // always allowed.
     if (request_type == device::FidoRequestType::kGetAssertion ||
@@ -1246,6 +1249,19 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
   if (enclave_controller_) {
     enclave_controller_->ConfigureDiscoveries(discovery_factory);
+  }
+
+  if (dialog_controller_->ui_presentation() ==
+      UIPresentation::kPasskeyUpgrade) {
+    // PasskeyUpgradeController drives enclave interaction during upgrade
+    // requests (conditional create). GPMEnclaveController must not be
+    // instantiated.
+    // TODO(crbug.com/377758786): Ensure all non-GPM discoveries are disabled
+    // for passkey upgrade requests.
+    CHECK(!enclave_controller_);
+    PasskeyUpgradeRequestController::GetOrCreateForCurrentDocument(
+        GetRenderFrameHost())
+        ->InitializeEnclaveRequestCallback(discovery_factory);
   }
 
   dialog_controller_->set_is_non_webauthn_request(

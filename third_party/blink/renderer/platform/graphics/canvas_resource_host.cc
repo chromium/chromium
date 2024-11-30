@@ -19,7 +19,7 @@ bool CanUseGPU() {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
   return context_provider_wrapper &&
-         !context_provider_wrapper->ContextProvider()->IsContextLost();
+         !context_provider_wrapper->ContextProvider().IsContextLost();
 }
 
 }  // namespace
@@ -59,8 +59,7 @@ void CanvasResourceHost::SetFilterQuality(
     resource_provider_->SetFilterQuality(filter_quality);
   }
   if (cc_layer_) {
-    cc_layer_->SetNearestNeighbor(filter_quality ==
-                                  cc::PaintFlags::FilterQuality::kNone);
+    cc_layer_->SetFilterQuality(filter_quality);
   }
 }
 
@@ -166,9 +165,7 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
     cc_layer_->SetHitTestable(true);
     cc_layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
     cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
-    cc_layer_->SetNearestNeighbor(FilterQuality() ==
-                                  cc::PaintFlags::FilterQuality::kNone);
-    cc_layer_->SetFlipped(false);
+    cc_layer_->SetFilterQuality(FilterQuality());
   }
   return cc_layer_.get();
 }
@@ -187,7 +184,6 @@ void ReleaseCanvasResource(CanvasResource::ReleaseCallback callback,
 }  // unnamed namespace
 
 bool CanvasResourceHost::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   CHECK(cc_layer_);  // This explodes if FinalizeFrame() was not called.

@@ -134,8 +134,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
     // The clipboard source of data being pasted into the browser. Empty for
     // non-clipboard pastes, and clipboard pastes in special cases (ex. OTR).
-    // TODO: Update description if special values are used
-    std::string clipboard_source;
+    ContentMetaData::CopiedTextSource clipboard_source;
 
     // The settings to use for the analysis of the data in this struct.
     AnalysisSettings settings;

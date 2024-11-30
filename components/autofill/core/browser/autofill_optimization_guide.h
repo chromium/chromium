@@ -43,7 +43,7 @@ class AutofillOptimizationGuide : public KeyedService {
   // type registration for certain optimization types that require additional
   // web database checks.
   virtual void OnDidParseForm(const FormStructure& form_structure,
-                              const PersonalDataManager* personal_data_manager);
+                              const PersonalDataManager& personal_data_manager);
 
   // Checks if the `url` has an applicable category benefit for the credit card
   // issuer `issuer_id`. If an optimization is found, returns the applicable

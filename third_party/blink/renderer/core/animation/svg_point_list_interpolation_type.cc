@@ -90,7 +90,7 @@ SVGPropertyBase* SVGPointListInterpolationType::AppliedSVGValue(
   // Note: using default CSSToLengthConversionData here as it's
   // guaranteed to be a double.
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   for (wtf_size_t i = 0; i < list.length(); i += 2) {
     gfx::PointF point(
         To<InterpolableNumber>(list.Get(i))->Value(length_resolver),

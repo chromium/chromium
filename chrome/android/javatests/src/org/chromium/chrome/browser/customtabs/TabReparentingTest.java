@@ -133,8 +133,7 @@ public class TabReparentingTest {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     getActivity()
-                            .getComponent()
-                            .resolveNavigationController()
+                            .getCustomTabActivityNavigationController()
                             .openCurrentUrlInBrowser();
                     assertNull(getActivity().getActivityTab());
                 });

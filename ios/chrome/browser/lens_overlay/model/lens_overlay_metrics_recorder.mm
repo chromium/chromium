@@ -8,29 +8,28 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/lens/lens_overlay_metrics.h"
-#import "components/lens/lens_overlay_page_content_mime_type.h"
+#import "components/lens/lens_overlay_mime_type.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
 
-/// Returns the `lens::PageContentMimeType` of the `web_state`.
-lens::PageContentMimeType PageContentMimeTypeFromWebState(
-    web::WebState* web_state) {
+/// Returns the `lens::MimeType` of the `web_state`.
+lens::MimeType MimeTypeFromWebState(web::WebState* web_state) {
   if (!web_state) {
-    return lens::PageContentMimeType::kNone;
+    return lens::MimeType::kUnknown;
   }
 
   const std::string& mime_type = web_state->GetContentsMimeType();
   if (mime_type == kHyperTextMarkupLanguageMimeType) {
-    return lens::PageContentMimeType::kHtml;
+    return lens::MimeType::kHtml;
   } else if (mime_type == kAdobePortableDocumentFormatMimeType) {
-    return lens::PageContentMimeType::kPdf;
+    return lens::MimeType::kPdf;
   } else if (mime_type == kTextMimeType) {
-    return lens::PageContentMimeType::kPlainText;
+    return lens::MimeType::kPlainText;
   } else {
-    return lens::PageContentMimeType::kNone;
+    return lens::MimeType::kUnknown;
   }
 }
 
@@ -54,7 +53,7 @@ lens::PageContentMimeType PageContentMimeTypeFromWebState(
   /// The source ID of the webState where lens was invoked on.
   int64_t _sourceID;
   /// The mime type of the webState where lens was invoked on.
-  lens::PageContentMimeType _mimeType;
+  lens::MimeType _mimeType;
 }
 
 - (instancetype)initWithEntrypoint:(LensOverlayEntrypoint)entrypoint
@@ -65,7 +64,7 @@ lens::PageContentMimeType PageContentMimeTypeFromWebState(
     _sourceID = associatedWebState
                     ? ukm::GetSourceIdForWebStateDocument(associatedWebState)
                     : ukm::kInvalidSourceId;
-    _mimeType = PageContentMimeTypeFromWebState(associatedWebState);
+    _mimeType = MimeTypeFromWebState(associatedWebState);
     _firstInteractionRecorded = NO;
     _searchPerformedInSession = NO;
     _invocationTime = base::ElapsedTimer();
@@ -81,12 +80,14 @@ lens::PageContentMimeType PageContentMimeTypeFromWebState(
     return;
   }
 
-  if (!lensOverlayInForeground) {
+  if (!lensOverlayInForeground && _foregroundTime != base::TimeTicks()) {
     // Add the foreground duration and reset the timer.
     _foregroundDuration =
         _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
+    _foregroundTime = base::TimeTicks();
+  } else {
+    _foregroundTime = base::TimeTicks::Now();
   }
-  _foregroundTime = base::TimeTicks();
 }
 
 - (void)recordOverflowMenuOpened {
@@ -177,9 +178,9 @@ lens::PageContentMimeType PageContentMimeTypeFromWebState(
   lens::RecordGeneratedTabCount((int)generatedTabCount);
 
   // Session end UKM metrics.
-  lens::RecordUKMSessionEndMetrics(_sourceID, _invocationSource,
-                                   _searchPerformedInSession, sessionDuration,
-                                   _foregroundDuration, generatedTabCount);
+  lens::RecordUKMSessionEndMetrics(
+      _sourceID, _invocationSource, _searchPerformedInSession, sessionDuration,
+      _mimeType, _foregroundDuration, generatedTabCount);
 }
 
 @end

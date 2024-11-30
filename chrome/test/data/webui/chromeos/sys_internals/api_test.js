@@ -56,12 +56,35 @@ suite('getSysInfo', function() {
       }
     }
 
+    function checkGpu(gpu) {
+      if (gpu === null) {
+        // gpu is an optional field.
+        return;
+      }
+      if (typeof gpu !== 'object' || !isCounter(gpu.busy)) {
+        throw new Error(`result.gpu is invalid : ${JSON.stringify(gpu)}`);
+      }
+    }
+
+
+    function checkNpu(npu) {
+      if (npu === null) {
+        // npu is an optional field.
+        return;
+      }
+      if (typeof npu !== 'object' || !isCounter(npu.busy)) {
+        throw new Error(`result.npu is invalid : ${JSON.stringify(npu)}`);
+      }
+    }
+
     sendWithPromise('getSysInfo').then(function(result) {
       try {
         checkConst(result.const);
         checkCpus(result.cpus);
         checkMemory(result.memory);
         checkZram(result.zram);
+        checkGpu(result.gpu);
+        checkNpu(result.npu);
         done();
       } catch (err) {
         done(new Error(err));

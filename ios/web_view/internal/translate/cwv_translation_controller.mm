@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/translate/core/common/language_detection_details.h"
 #import "ios/web/public/web_state.h"
@@ -80,6 +81,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
 
 @synthesize delegate = _delegate;
 @synthesize supportedLanguagesByCode = _supportedLanguagesByCode;
+@synthesize languageDetectionDetails = _languageDetectionDetails;
 
 #pragma mark - Internal Methods
 
@@ -168,18 +170,30 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
 
 - (void)onLanguageDetermined:
     (const translate::LanguageDetectionDetails&)details {
+  CWVTranslationLanguageDetectionDetails* languageDetectionDetails =
+      [CWVTranslationLanguageDetectionDetails
+          languageDetectionDetailsFrom:details];
+  _languageDetectionDetails = languageDetectionDetails;
   if ([_delegate
           respondsToSelector:@selector(translationController:
                                  didDeterminePageLanguageDetectionDetails:)]) {
-    CWVTranslationLanguageDetectionDetails* languageDetectionDetails =
-        [CWVTranslationLanguageDetectionDetails
-            languageDetectionDetailsFrom:details];
     [_delegate translationController:self
         didDeterminePageLanguageDetectionDetails:languageDetectionDetails];
   }
 }
 
 #pragma mark - Public Methods
+
+- (void)startLanguageDetection {
+  // Do not start language detection if the language has already been
+  // determined.
+  if (_languageDetectionDetails != nil) {
+    return;
+  }
+  language::IOSLanguageDetectionTabHelper* tabHelper =
+      language::IOSLanguageDetectionTabHelper::FromWebState(_webState);
+  tabHelper->StartLanguageDetection();
+}
 
 - (NSSet*)supportedLanguages {
   return [NSSet setWithArray:self.supportedLanguagesByCode.allValues];

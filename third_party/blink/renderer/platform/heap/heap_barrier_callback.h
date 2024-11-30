@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
@@ -51,7 +52,7 @@ class BarrierCallbackInfo {
 
 template <typename T>
 void ShouldNeverRun(T t) {
-  CHECK(false);
+  NOTREACHED();
 }
 
 }  // namespace internal

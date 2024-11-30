@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 
 #include "third_party/blink/renderer/core/css/css_alternate_value.h"
-#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
@@ -88,6 +87,7 @@
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
+#include "third_party/blink/renderer/core/css/css_unresolved_color_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -108,6 +108,7 @@ CSSValue* CSSValue::Create(const Length& value, float zoom) {
     case Length::kAuto:
     case Length::kMinContent:
     case Length::kMaxContent:
+    case Length::kFillAvailable:
     case Length::kStretch:
     case Length::kFitContent:
     case Length::kContent:
@@ -178,9 +179,6 @@ inline static bool CompareCSSValues(const CSSValue& first,
 }
 
 bool CSSValue::operator==(const CSSValue& other) const {
-  if (attr_tainted_ != other.attr_tainted_) {
-    return false;
-  }
   if (class_type_ == other.class_type_) {
     switch (GetClassType()) {
       case kAxisClass:
@@ -208,6 +206,9 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSColor>(*this, other);
       case kColorMixClass:
         return CompareCSSValues<cssvalue::CSSColorMixValue>(*this, other);
+      case kUnresolvedColorClass:
+        return CompareCSSValues<cssvalue::CSSUnresolvedColorValue>(*this,
+                                                                   other);
       case kCounterClass:
         return CompareCSSValues<cssvalue::CSSCounterValue>(*this, other);
       case kCursorImageClass:
@@ -376,6 +377,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSColor>(this)->CustomCSSText();
     case kColorMixClass:
       return To<cssvalue::CSSColorMixValue>(this)->CustomCSSText();
+    case kUnresolvedColorClass:
+      return To<cssvalue::CSSUnresolvedColorValue>(this)->CustomCSSText();
     case kCounterClass:
       return To<cssvalue::CSSCounterValue>(this)->CustomCSSText();
     case kCursorImageClass:
@@ -611,22 +614,13 @@ unsigned CSSValue::Hash() const {
     case kGridIntegerRepeatClass:
     case kAxisClass:
     case kRepeatClass:
+    case kUnresolvedColorClass:
       // For rare or complicated CSSValue types, we simply use the pointer value
       // as hash; it will definitely give false negatives, but those are fine.
       // The lower 32 bits should be fine, as we live inside a 4G Oilpan cage
       // anyway.
       return static_cast<unsigned>(reinterpret_cast<uintptr_t>(this));
   }
-}
-
-const CSSValue* CSSValue::UntaintedCopy() const {
-  if (const auto* v = DynamicTo<CSSValueList>(this)) {
-    return v->UntaintedCopy();
-  }
-  if (const auto* v = DynamicTo<CSSStringValue>(this)) {
-    return v->UntaintedCopy();
-  }
-  return this;
 }
 
 const CSSValue& CSSValue::PopulateWithTreeScope(
@@ -682,6 +676,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kColorMixClass:
       To<cssvalue::CSSColorMixValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kUnresolvedColorClass:
+      To<cssvalue::CSSUnresolvedColorValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kCounterClass:
       To<cssvalue::CSSCounterValue>(this)->TraceAfterDispatch(visitor);
@@ -906,6 +903,8 @@ String CSSValue::ClassTypeToString() const {
       return "ColorClass";
     case kColorMixClass:
       return "ColorMixClass";
+    case kUnresolvedColorClass:
+      return "UnresolvedColorClass";
     case kCounterClass:
       return "CounterClass";
     case kQuadClass:

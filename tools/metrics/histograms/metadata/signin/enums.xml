@@ -216,15 +216,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Was deferred"/>
 </enum>
 
-<!-- LINT.IfChange(BoundOAuth2TokenFetchEncryptionError) -->
-
-<enum name="BoundOAuth2TokenFetchEncryptionError">
-  <int value="0" label="Response is unexpectedly encrypted"/>
-  <int value="1" label="Decryption failed"/>
-</enum>
-
-<!-- LINT.ThenChange(//google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.cc:EncryptionError) -->
-
 <enum name="BoundSessionCredentialsCookieRotationGenerateAssertionResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to load the key"/>
@@ -256,6 +247,32 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Invalid session parameters"/>
   <int value="7" label="Required credential field missing"/>
 </enum>
+
+<!-- LINT.IfChange(BoundSessionParamsReadError) -->
+
+<enum name="BoundSessionParamsReadError">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kNoSessionsDict"/>
+  <int value="2" label="kSessionsDictEmpty"/>
+  <int value="3" label="kNoEncodedParams"/>
+  <int value="4" label="kBase64DecodeFailed"/>
+  <int value="5" label="kProtoParseFailed"/>
+  <int value="6" label="kSiteDoesNotMatch"/>
+  <int value="7" label="kInvalidParams"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_params_storage.cc:BoundSessionParamsReadError) -->
+
+<!-- LINT.IfChange(BoundSessionParamsWriteError) -->
+
+<enum name="BoundSessionParamsWriteError">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kParamsInvalid"/>
+  <int value="2" label="kProtoSerializeFailed"/>
+  <int value="3" label="kProtoSerializeFailedAfterCleanUp"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_params_storage.cc:BoundSessionParamsWriteError) -->
 
 <enum name="CctAccountMismatchType">
   <int value="0" label="Signed out of both Chrome and 1P app"/>
@@ -910,7 +927,7 @@ chromium-metrics-reviews@google.com.
     The primary account might be signed out when a profile is being deleted, to
     avoid that deletion of data propagates via sync to other devices.
   </int>
-  <int value="35" label="Signed out while switching to another primary profile">
+  <int value="35" label="Signed out while switching to another primary account">
     In the account menu, the user switched their primary account. As a first
     step, they get signed-out of their previous primary account.
   </int>
@@ -1000,6 +1017,21 @@ chromium-metrics-reviews@google.com.
              ProfileSeparationDomainExceptionList policy."/>
 </enum>
 
+<!-- LINT.IfChange(SuppressedReason) -->
+
+<enum name="SuppressedReason">
+  <int value="0" label="Account list not yet available"/>
+  <int value="1"
+      label="The user has already seen the mismatch notice a sufficient
+             number of times"/>
+  <int value="2" label="The user has dismissed the notice multiple times."/>
+  <int value="3" label="The user has recently seen the mismatch notice"/>
+  <int value="4" label="The user recently went through the FRE"/>
+  <int value="5" label="The displayed CCT is off-the-record"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/MismatchNotificationController.java:SuppressedReason) -->
+
 <enum name="SyncButtonClicked">
   <int value="0" label="Equal weighted sync opt-in button clicked"/>
   <int value="1" label="Equal weighted sync cancel button clicked"/>
@@ -1077,6 +1109,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/internal/identity_manager/token_binding_helper.h:Error) -->
+
+<!-- LINT.IfChange(TokenBindingResponseEncryptionError) -->
+
+<enum name="TokenBindingResponseEncryptionError">
+  <int value="0" label="Response is unexpectedly encrypted"/>
+  <int value="1" label="Decryption failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//google_apis/gaia/token_binding_response_encryption_error.h:TokenBindingResponseEncryptionError) -->
 
 </enums>
 

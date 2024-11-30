@@ -200,6 +200,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Decryption Of Server Response Failed"/>
   <int value="6" label="Failed To Parse Server Response"/>
   <int value="7" label="Other Error"/>
+  <int value="8" label="WebSocket Error"/>
 </enum>
 
 <enum name="WebAuthenticationFidoTransport">
@@ -298,6 +299,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="WebAuthn Modal Request"/>
   <int value="1" label="WebAuthn Conditional UI Request"/>
   <int value="2" label="Payment Request"/>
+  <int value="3" label="WebAuthn Passkey Upgrade Request"/>
 </enum>
 
 <enum name="WindowsForegroundedHelloDialog">

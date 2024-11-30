@@ -229,8 +229,8 @@ mojom("mojom_shared_storage") {
   public_deps = [ "//mojo/public/mojom/base" ]
 
   if (!is_ios) {
-    export_class_attribute_blink = "BLINK_MODULES_EXPORT"
-    export_define_blink = "BLINK_MODULES_IMPLEMENTATION=1"
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
     export_header_blink = "third_party/blink/public/platform/web_common.h"
   }
 
@@ -487,6 +487,7 @@ mojom("url_loader_base") {
     "fetch_api.mojom",
     "http_raw_headers.mojom",
     "http_request_headers.mojom",
+    "integrity_algorithm.mojom",
     "ip_address_space.mojom",
     "isolation_info.mojom",
     "link_header.mojom",
@@ -504,6 +505,7 @@ mojom("url_loader_base") {
     "service_worker_router_info.mojom",
     "shared_dictionary_access_observer.mojom",
     "source_location.mojom",
+    "sri_message_signature.mojom",
     "supports_loading_mode.mojom",
     "timing_allow_origin.mojom",
     "trust_token_access_observer.mojom",
@@ -528,6 +530,7 @@ mojom("url_loader_base") {
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
     ":mojom_shared_dictionary",
+    ":mojom_shared_storage",
     "//mojo/public/mojom/base",
     "//services/proxy_resolver/public/mojom",
     "//url/mojom:url_mojom_gurl",

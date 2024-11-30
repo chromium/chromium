@@ -81281,7 +81281,6 @@
     { "name": "justshare.tk", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "justweather.org", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "juwelier-schmuck.de", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "jwds.ca", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "jzagorulko.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "k-45.ru", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "k8vsy.radio", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },

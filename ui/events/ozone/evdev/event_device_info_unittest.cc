@@ -9,13 +9,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "event_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"  // nogncheck
 #endif
 
@@ -585,7 +584,7 @@ TEST(EventDeviceInfoTest, RexHeatmapTouchScreen) {
   EXPECT_TRUE(devinfo.SupportsHeatmap());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(EventDeviceInfoTest, RevenAdvantechInternalUsbTouchscreen) {
   EventDeviceInfo devinfo;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(

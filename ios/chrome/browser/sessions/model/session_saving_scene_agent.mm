@@ -58,14 +58,14 @@
   }
 
   // Since the app is about to be backgrounded or terminated, save the sessions
-  // immediately for the main and incognito Profiles (if they exists).
+  // immediately for the regular and incognito Profiles (if it exists).
   DCHECK(profileState.profile);
-  ProfileIOS* mainProfile = profileState.profile;
-  SessionRestorationServiceFactory::GetForProfile(mainProfile)->SaveSessions();
+  ProfileIOS* profile = profileState.profile;
+  SessionRestorationServiceFactory::GetForProfile(profile)->SaveSessions();
 
-  if (mainProfile->HasOffTheRecordProfile()) {
+  if (profile->HasOffTheRecordProfile()) {
     SessionRestorationServiceFactory::GetForProfile(
-        mainProfile->GetOffTheRecordProfile())
+        profile->GetOffTheRecordProfile())
         ->SaveSessions();
   }
 }

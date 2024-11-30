@@ -72,12 +72,10 @@ class IsolatedWebAppTrustChecker {
   };
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
   // Returns `true` if trust for this Web Bundle ID is established via
   // enterprise policy.
   [[nodiscard]] bool IsTrustedViaPolicy(
       const web_package::SignedWebBundleId& web_bundle_id) const;
-#endif
 
   raw_ref<Profile> profile_;
 };

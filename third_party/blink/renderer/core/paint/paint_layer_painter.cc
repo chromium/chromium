@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
@@ -133,11 +134,12 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
 
-  if (auto* node = DynamicTo<Element>(object.GetNode())) {
-    if (node->IsInCanvasSubtree() && !DynamicTo<HTMLCanvasElement>(node)) {
-      // This prevents canvas fallback content from being rendered.
-      return kFullyPainted;
-    }
+  if (((paint_flags & PaintFlag::kPlacedElement) == 0) &&
+      !IsA<HTMLCanvasElement>(object.GetNode()) &&
+      IsA<Element>(object.GetNode()) &&
+      To<Element>(object.GetNode())->IsInCanvasSubtree()) {
+    // This prevents canvas fallback content from being rendered.
+    return kFullyPainted;
   }
 
   std::optional<CheckAncestorPositionVisibilityScope>

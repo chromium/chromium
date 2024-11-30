@@ -59,6 +59,13 @@ ReadAnythingService* ReadAnythingService::Get(Profile* profile) {
 }
 
 void ReadAnythingService::OnReadAnythingSidePanelEntryShown() {
+// The TTS download extension should only be installed on non-ChromeOS devices
+// when the Read Aloud flag is enabled.
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (features::IsReadAnythingReadAloudEnabled()) {
+    InstallTtsDownloadExtension();
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   if (!features::IsReadAnythingDocsIntegrationEnabled()) {
     return;
   }
@@ -142,4 +149,21 @@ void ReadAnythingService::OnBrowserSetLastActive(Browser* browser) {
     side_panel_ui->SetNoDelaysForTesting(true);  // IN-TEST
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   }
+}
+
+void ReadAnythingService::InstallTtsDownloadExtension() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  extensions::ExtensionService* service =
+      extensions::ExtensionSystem::Get(profile_)->extension_service();
+  if (!service) {
+    // In tests, the service might not be created.
+    CHECK_IS_TEST();
+    return;
+  }
+  extensions::ComponentLoader* component_loader = service->component_loader();
+  if (!component_loader->Exists(extension_misc::kTTSEngineExtensionId)) {
+    component_loader->Add(IDR_TTS_ENGINE_MANIFEST,
+                          base::FilePath(FILE_PATH_LITERAL("tts_engine")));
+  }
+#endif  // BUILDFLAG(!IS_CHROMEOS)
 }

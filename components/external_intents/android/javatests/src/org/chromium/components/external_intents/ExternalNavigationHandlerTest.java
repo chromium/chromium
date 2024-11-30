@@ -69,7 +69,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Pattern;
 
 /** Instrumentation tests for {@link ExternalNavigationHandler}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -401,14 +400,6 @@ public class ExternalNavigationHandlerTest {
 
         checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-    }
-
-    private void assertOverrideUrlToNavigateToTab() {
-        mDelegate.setCanResolveActivityForExternalSchemes(false);
-        checkUrl(INTENT_URL_WITH_FALLBACK_URL, redirectHandlerForLinkClick())
-                .withReferrer(SEARCH_RESULT_URL_FOR_TOM_HANKS)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, IGNORE);
-        mDelegate.setCanResolveActivityForExternalSchemes(true);
     }
 
     @Test
@@ -3066,12 +3057,6 @@ public class ExternalNavigationHandlerTest {
 
         public void setIsNotSpecialized(boolean isNotSpecialized) {
             mIsNotSpecialized = isNotSpecialized;
-        }
-
-        public boolean isSpecialized() {
-            if (mIsNotSpecialized) return false;
-            // Specialized if URL prefix is more than just a scheme.
-            return Pattern.compile("[^:/]+://.+").matcher(mUrlPrefix).matches();
         }
     }
 

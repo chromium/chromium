@@ -276,7 +276,32 @@ ScriptPromise<PresentationAvailability> PresentationRequest::getAvailability(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
           script_state, exception_state.GetContext());
-  controller->GetAvailabilityState()->RequestAvailability(urls_, resolver);
+  auto screen_availability =
+      controller->GetAvailabilityState()->GetScreenAvailability(urls_);
+  // Reject Promise if screen availability is unsupported for all URLs.
+  if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        PresentationAvailability::kNotSupportedErrorInfo);
+    return resolver->Promise();
+  }
+
+  // Create availability object the first time getAvailability() is called.
+  if (!availability_) {
+    availability_ = PresentationAvailability::Take(
+        resolver->GetExecutionContext(), urls_,
+        screen_availability == mojom::blink::ScreenAvailability::AVAILABLE);
+  }
+
+  if (screen_availability != mojom::blink::ScreenAvailability::UNKNOWN) {
+    // Resolve Promise with availability object if screen availability is known.
+    resolver->Resolve(availability_);
+  } else {
+    // Start request for screen availability if it is unknown.
+    controller->GetAvailabilityState()->RequestAvailability(availability_);
+    availability_->AddResolver(resolver);
+  }
+
   return resolver->Promise();
 }
 
@@ -287,6 +312,7 @@ const Vector<KURL>& PresentationRequest::Urls() const {
 void PresentationRequest::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
+  visitor->Trace(availability_);
 }
 
 PresentationRequest::PresentationRequest(ExecutionContext* execution_context,

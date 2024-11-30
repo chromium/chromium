@@ -60,8 +60,7 @@ void DownloadBubblePrimaryView::BuildAndAddScrollView(
     const DownloadBubbleRowListViewInfo& info,
     int fixed_width) {
   auto row_list_view = std::make_unique<DownloadBubbleRowListView>(
-      browser, bubble_controller, navigation_handler, fixed_width, info,
-      IsPartialView());
+      browser, bubble_controller, navigation_handler, fixed_width, info);
   row_list_view_ = row_list_view.get();
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetContents(std::move(row_list_view));

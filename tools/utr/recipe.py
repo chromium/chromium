@@ -97,7 +97,7 @@ class LegacyRunner:
                skip_compile,
                skip_test,
                skip_prompts,
-               build_dir=None,
+               build_dir,
                additional_test_args=None,
                reuse_task=None,
                skip_coverage=False):
@@ -113,11 +113,10 @@ class LegacyRunner:
       skip_compile: If True, the UTR will only run the tests.
       skip_test: If True, the UTR will only compile.
       skip_prompts: If True, skip Y/N prompts for warnings.
-      skip_coverage: If True, skip code coverage instrumentation.
-      build_dir: pathlib.Path to the build dir to build in. Will use the UTR's
-          default otherwise if needed.
+      build_dir: pathlib.Path to the build dir to build in.
       additional_test_args: List of additional args to pass to the tests.
       reuse_task: String of a swarming task to reuse.
+      skip_coverage: If True, skip code coverage instrumentation.
     """
     self._recipes_py = recipes_py
     self._skip_coverage = skip_coverage
@@ -143,13 +142,11 @@ class LegacyRunner:
     # https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipes/chromium/universal_test_runner.proto
     input_props = builder_props.copy()
     input_props['checkout_path'] = str(_SRC_DIR)
-    input_props['$recipe_engine/path'] = {'cache_dir': str(_SRC_DIR.parent)}
     input_props['test_names'] = tests
     input_props['$build/chromium_swarming'] = {'task_realm': self._luci_realm}
+    input_props['build_dir'] = str(build_dir.absolute())
     if additional_test_args:
       input_props['additional_test_args'] = additional_test_args
-    if build_dir:
-      input_props['build_dir'] = str(build_dir.absolute())
     # The recipe will overwrite this property so we have to put it preserve it
     # elsewhere
     if 'recipe' in input_props:

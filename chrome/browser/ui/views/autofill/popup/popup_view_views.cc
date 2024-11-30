@@ -802,7 +802,10 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
            controller_->GetSuggestions(), /*comp=*/{},
            &Suggestion::iph_metadata)) {
     if (iph_metadata.feature) {
-      browser->window()->MaybeShowFeaturePromo(*iph_metadata.feature);
+      user_education::FeaturePromoParams params(*iph_metadata.feature);
+      params.body_params = iph_metadata.iph_params;
+      params.screen_reader_params = iph_metadata.iph_params;
+      browser->window()->MaybeShowFeaturePromo(std::move(params));
     }
   }
 }
@@ -1073,7 +1076,9 @@ void PopupViewViews::CreateSuggestionViews() {
           if (feature == &feature_engagement::
                              kIPHAutofillVirtualCardSuggestionFeature ||
               feature == &feature_engagement::
-                             kIPHAutofillDisabledVirtualCardSuggestionFeature) {
+                             kIPHAutofillDisabledVirtualCardSuggestionFeature ||
+              feature == &feature_engagement::
+                             kIPHAutofillCardInfoRetrievalSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardSuggestionEntryElementId);
           } else if (feature ==

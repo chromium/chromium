@@ -144,8 +144,6 @@ blink_core_sources_loader = [
   "subresource_filter.h",
   "speculation_rule_loader.h",
   "speculation_rule_loader.cc",
-  "subresource_integrity_helper.cc",
-  "subresource_integrity_helper.h",
   "text_track_loader.cc",
   "text_track_loader.h",
   "threadable_loader.cc",

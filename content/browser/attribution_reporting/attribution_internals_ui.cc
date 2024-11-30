@@ -32,8 +32,7 @@ AttributionInternalsUI::AttributionInternalsUI(WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIAttributionInternalsHost);
 
-  source->AddResourcePaths(base::make_span(kAttributionInternalsResources,
-                                           kAttributionInternalsResourcesSize));
+  source->AddResourcePaths(kAttributionInternalsResources);
 
   source->SetDefaultResource(
       IDR_ATTRIBUTION_INTERNALS_ATTRIBUTION_INTERNALS_HTML);

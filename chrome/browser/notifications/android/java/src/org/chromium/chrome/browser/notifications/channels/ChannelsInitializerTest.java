@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -42,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /** Robolectric tests for ChannelsInitializer, using ChromeChannelDefinitions. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -343,11 +343,11 @@ public class ChannelsInitializerTest {
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_multipleIds() {
         Collection<String> groupIds =
-                CollectionUtil.newHashSet(
+                Set.of(
                         ChromeChannelDefinitions.ChannelGroupId.SITES,
                         ChromeChannelDefinitions.ChannelGroupId.GENERAL);
         Collection<String> channelIds =
-                CollectionUtil.newHashSet(
+                Set.of(
                         ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK,
                         ChromeChannelDefinitions.ChannelId.BROWSER);
         mChannelsInitializer.ensureInitialized(groupIds, channelIds);

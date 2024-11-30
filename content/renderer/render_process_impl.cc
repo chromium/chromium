@@ -175,11 +175,6 @@ RenderProcessImpl::RenderProcessImpl()
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Bypass the SAB restriction for the Finch "kill switch".
-  enable_shared_array_buffer_unconditionally =
-      enable_shared_array_buffer_unconditionally ||
-      base::FeatureList::IsEnabled(features::kSharedArrayBufferOnDesktop);
-
   // Bypass the SAB restriction when enabled by Enterprise Policy.
   if (!enable_shared_array_buffer_unconditionally &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(

@@ -170,7 +170,7 @@ PredictorDatabase::PredictorDatabase(
       FROM_HERE, base::BindOnce(&PredictorDatabaseInternal::Initialize, db_));
 }
 
-PredictorDatabase::~PredictorDatabase() {}
+PredictorDatabase::~PredictorDatabase() = default;
 
 void PredictorDatabase::Shutdown() {
   db_->SetCancelled();

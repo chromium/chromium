@@ -11,6 +11,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
@@ -44,6 +45,16 @@ export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
         type: Object,
         notify: true,
       },
+      /**
+       * If true, the Ads API UX Enhancement should be shown.
+       */
+      shouldShowV2_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'isPrivacySandboxAdsApiUxEnhancementsEnabled');
+        },
+      },
     };
   }
 
@@ -55,6 +66,10 @@ export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
     this.metricsBrowserProxy_.recordAction(
         target.checked ? 'Settings.PrivacySandbox.AdMeasurement.Enabled' :
                          'Settings.PrivacySandbox.AdMeasurement.Disabled');
+  }
+
+  private onPrivacyPolicyLinkClicked_() {
+    // TODO(crbug.com/377977605): Add metrics
   }
 }
 

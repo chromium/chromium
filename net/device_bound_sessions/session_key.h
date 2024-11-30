@@ -26,6 +26,9 @@ struct NET_EXPORT SessionKey {
 
   SchemefulSite site;
   Id id;
+
+  bool operator==(const SessionKey& other) const;
+  bool operator<(const SessionKey& other) const;
 };
 
 }  // namespace net::device_bound_sessions

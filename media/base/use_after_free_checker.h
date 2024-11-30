@@ -7,6 +7,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/notreached.h"
 #include "media/base/media_export.h"
 
 namespace {
@@ -40,7 +41,7 @@ class MEDIA_EXPORT UseAfterFreeChecker {
       base::debug::ScopedCrashKeyString scoped(
           crash_key_string(),
           state_ == State::kDestructed ? "destructed" : "corrupt");
-      CHECK(false);
+      NOTREACHED();
     }
   }
 

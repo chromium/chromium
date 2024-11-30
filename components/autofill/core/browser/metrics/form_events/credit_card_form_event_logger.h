@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -26,8 +26,6 @@ enum class UnmaskAuthFlowType;
 
 namespace autofill_metrics {
 
-class FormInteractionsUkmLogger;
-
 class CreditCardFormEventLogger : public FormEventLoggerBase {
  public:
   enum class UnmaskAuthFlowEvent {
@@ -40,10 +38,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
     kMaxValue = kFormSubmitted,
   };
 
-  CreditCardFormEventLogger(
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      PersonalDataManager* personal_data_manager,
-      AutofillClient* client);
+  explicit CreditCardFormEventLogger(BrowserAutofillManager* owner);
 
   ~CreditCardFormEventLogger() override;
 
@@ -69,25 +64,15 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       bool with_offer,
       bool with_cvc,
       bool is_virtual_card_standalone_cvc_field,
-      autofill_metrics::CardMetadataLoggingContext metadata_logging_context);
+      CardMetadataLoggingContext metadata_logging_context);
 
   // TODO(crbug.com/40937936): Remove redundant parameters.
   // form_parsed_timestamp and off_the_record value can be removed, as their
-  // values can be retrieved from 'form' or 'client_'.
+  // values can be retrieved from `form` or `owner_`.
   void OnDidShowSuggestions(const FormStructure& form,
                             const AutofillField& field,
                             base::TimeTicks form_parsed_timestamp,
                             bool off_the_record) override;
-
-  // Logs the original "Masked server card suggestion selected" form event
-  // metrics. These metrics were replaced in M123 due to crbug/1513307, but this
-  // call exists in order to compare the new and old metrics, providing
-  // information on the fix's impact. Once this information is gathered, this
-  // call and its associated logging can be removed.
-  void LogDeprecatedCreditCardSelectedMetric(
-      const CreditCard& credit_card,
-      const FormStructure& form,
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
 
   void OnDidSelectCardSuggestion(
       const CreditCard& credit_card,
@@ -117,6 +102,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       const AutofillTriggerSource trigger_source);
 
   void OnDidUndoAutofill();
+
+  virtual void OnMetadataLoggingContextReceived(
+      autofill_metrics::CardMetadataLoggingContext metadata_logging_context);
 
   void Log(FormEvent event, const FormStructure& form) override;
 
@@ -208,7 +196,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, one of the cards in the suggestions fetched has cvc info saved.
   bool suggestion_contains_card_with_cvc_ = false;
 
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context_;
+  CardMetadataLoggingContext metadata_logging_context_;
 
   // Set when a list of suggestion is shown.
   base::TimeTicks suggestion_shown_timestamp_;
@@ -218,7 +206,6 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   // Weak references.
   raw_ptr<PersonalDataManager> personal_data_manager_;
-  raw_ptr<AutofillClient> client_;
 };
 
 }  // namespace autofill_metrics

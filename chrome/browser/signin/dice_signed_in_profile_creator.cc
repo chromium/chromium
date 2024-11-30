@@ -101,7 +101,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     const std::u16string& local_profile_name,
     std::optional<size_t> icon_index,
     base::OnceCallback<void(Profile*)> callback)
-    : source_profile_(source_profile),
+    : source_profile_(source_profile->GetWeakPtr()),
       account_id_(account_id),
       callback_(std::move(callback)) {
   ProfileAttributesStorage& storage =
@@ -124,7 +124,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     CoreAccountId account_id,
     const base::FilePath& target_profile_path,
     base::OnceCallback<void(Profile*)> callback)
-    : source_profile_(source_profile),
+    : source_profile_(source_profile->GetWeakPtr()),
       account_id_(account_id),
       callback_(std::move(callback)) {
   // Make sure the callback is not called synchronously.
@@ -177,14 +177,14 @@ void DiceSignedInProfileCreator::LoadNewProfileTokens(
 void DiceSignedInProfileCreator::OnNewProfileTokensLoaded(
     Profile* new_profile) {
   tokens_loaded_callback_runner_.reset();
-  if (!new_profile) {
+  if (!new_profile || !source_profile_) {
     if (callback_)
       std::move(callback_).Run(nullptr);
     return;
   }
 
   auto* accounts_mutator =
-      IdentityManagerFactory::GetForProfile(source_profile_)
+      IdentityManagerFactory::GetForProfile(source_profile_.get())
           ->GetAccountsMutator();
   auto* new_profile_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);

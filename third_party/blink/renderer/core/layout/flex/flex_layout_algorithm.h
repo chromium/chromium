@@ -94,7 +94,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
       HeapVector<Member<LayoutBox>>& oof_children);
 
   // Set reading flow so they can be accessed by LayoutBox.
-  void SetReadingFlowElements(const HeapVector<NGFlexLine>& flex_line_outputs);
+  void SetReadingFlowNodes(const HeapVector<NGFlexLine>& flex_line_outputs);
 
   MinMaxSizesResult ComputeMinMaxSizeOfRowContainerV3();
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();

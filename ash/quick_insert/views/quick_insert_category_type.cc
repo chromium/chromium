@@ -5,6 +5,7 @@
 #include "ash/quick_insert/views/quick_insert_category_type.h"
 
 #include "ash/quick_insert/quick_insert_category.h"
+#include "base/notreached.h"
 
 namespace ash {
 
@@ -29,6 +30,9 @@ GetQuickInsertCategoryType(QuickInsertCategory category) {
     case QuickInsertCategory::kDatesTimes:
     case QuickInsertCategory::kUnitsMaths:
       return QuickInsertCategoryType::kMore;
+    case QuickInsertCategory::kGifs:
+      // The GIFs category button doesn't appear in the zero state.
+      NOTREACHED();
   }
 }
 

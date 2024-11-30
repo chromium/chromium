@@ -94,15 +94,6 @@ public class PartialCustomTabSideSheetStrategyTest {
     }
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
-            @Px int widthPx, int position) {
-        return createPcctSideSheetStrategy(
-                widthPx,
-                position,
-                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
-                ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
-    }
-
-    private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
             @Px int widthPx, int position, int decorationType, int roundedCornersPosition) {
         BrowserServicesIntentDataProvider intentData = mPCCTTestRule.mIntentData;
         when(intentData.getInitialActivityWidth()).thenReturn(widthPx);

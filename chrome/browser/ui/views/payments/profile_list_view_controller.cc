@@ -63,7 +63,7 @@ class ProfileItem : public PaymentRequestItemList::Item {
   ProfileItem(const ProfileItem&) = delete;
   ProfileItem& operator=(const ProfileItem&) = delete;
 
-  ~ProfileItem() override {}
+  ~ProfileItem() override = default;
 
   base::WeakPtr<PaymentRequestRowView> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -254,7 +254,7 @@ class ContactProfileViewController : public ProfileListViewController {
   ContactProfileViewController& operator=(const ContactProfileViewController&) =
       delete;
 
-  ~ContactProfileViewController() override {}
+  ~ContactProfileViewController() override = default;
 
  protected:
   // ProfileListViewController:
@@ -344,7 +344,7 @@ ProfileListViewController::ProfileListViewController(
     base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog), list_(dialog) {}
 
-ProfileListViewController::~ProfileListViewController() {}
+ProfileListViewController::~ProfileListViewController() = default;
 
 bool ProfileListViewController::IsEnabled(autofill::AutofillProfile* profile) {
   return true;

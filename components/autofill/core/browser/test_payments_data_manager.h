@@ -38,7 +38,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void LoadCreditCardCloudTokenData() override;
   void LoadIbans() override;
   bool RemoveByGUID(const std::string& guid) override;
-  void RecordUseOfCard(const CreditCard* card) override;
+  void RecordUseOfCard(const CreditCard& card) override;
   void RecordUseOfIban(Iban& iban) override;
   void AddCreditCard(const CreditCard& credit_card) override;
   std::string AddAsLocalIban(const Iban iban) override;

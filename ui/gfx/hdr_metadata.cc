@@ -4,10 +4,11 @@
 
 #include "ui/gfx/hdr_metadata.h"
 
-#include "skia/ext/skcolorspace_primaries.h"
-
 #include <iomanip>
 #include <sstream>
+
+#include "skia/ext/skcolorspace_primaries.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace gfx {
 
@@ -52,7 +53,7 @@ std::string HdrMetadataExtendedRange::ToString() const {
 // static
 HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
     const std::optional<gfx::HDRMetadata>& hdr_metadata) {
-  constexpr HdrMetadataSmpteSt2086 kDefaults2086(SkNamedPrimariesExt::kRec2020,
+  constexpr HdrMetadataSmpteSt2086 kDefaults2086(SkNamedPrimaries::kRec2020,
                                                  1000.f, 0.f);
 
   if (!hdr_metadata)

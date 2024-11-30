@@ -18,6 +18,7 @@
 
 namespace ash {
 
+class DeskTemplate;
 class FakeCoralService;
 
 class ASH_EXPORT CoralRequest {
@@ -136,6 +137,14 @@ class ASH_EXPORT CoralController {
   void HandleCacheEmbeddingsResult(
       base::OnceCallback<void(bool)> callback,
       coral::mojom::CacheEmbeddingsResultPtr result);
+
+  // Callback that is run when we call
+  // `DesksController::CaptureActiveDeskAsSavedDesk()`. May also be called
+  // directly if a group has no apps in it. If `desk_template` is nullptr, then
+  // we create one if `tab_urls` is not empty, otherwise this function does
+  // nothing.
+  void OnTemplateCreated(const std::vector<GURL>& tab_urls,
+                         std::unique_ptr<DeskTemplate> desk_template);
 
   mojo::Remote<CoralService> coral_service_;
 

@@ -370,9 +370,9 @@ class CrossRealmTransformWritable::WriteAlgorithm final
 
   // Sends the chunk to the readable side, possibly after waiting for
   // backpressure.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformwritable
     // 8. Let writeAlgorithm be the following steps, taking a chunk argument:
     DCHECK_EQ(argc, 1);
@@ -386,15 +386,14 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     // visible asynchronously anyway. This avoids doing an extra allocation and
     // creating a TraceWrappertV8Reference.
     if (!writable_->backpressure_promise_) {
-      return DoWrite(script_state, chunk).V8Promise();
+      return DoWrite(script_state, chunk);
     }
 
     // 2. Return the result of reacting to backpressurePromise with the
     //    following fulfillment steps:
-    return writable_->backpressure_promise_->Promise()
-        .Then(script_state,
-              MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this))
-        .V8Promise();
+    return writable_->backpressure_promise_->Promise().Then(
+        script_state,
+        MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -471,9 +470,9 @@ class CrossRealmTransformWritable::CloseAlgorithm final
       : writable_(writable) {}
 
   // Sends a close message to the readable side and closes the message port.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 0);
 
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformwritable
@@ -491,11 +490,11 @@ class CrossRealmTransformWritable::CloseAlgorithm final
 
     // Error the stream if an error occurred.
     if (!success) {
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //   3. Return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -514,9 +513,9 @@ class CrossRealmTransformWritable::AbortAlgorithm final
       : writable_(writable) {}
 
   // Sends an abort message to the readable side and closes the message port.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformwritable
     // 10. Let abortAlgorithm be the following steps, taking a reason argument:
     DCHECK_EQ(argc, 1);
@@ -536,11 +535,11 @@ class CrossRealmTransformWritable::AbortAlgorithm final
     //   3. If result is an abrupt completion, return a promise rejected with
     //      result.[[Value]].
     if (!success) {
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //   4. Otherwise, return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -684,9 +683,9 @@ class CrossRealmTransformReadable::PullAlgorithm final
 
   // Sends a pull message to the writable side and then waits for backpressure
   // to clear.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 0);
     auto* isolate = script_state->GetIsolate();
 
@@ -704,13 +703,13 @@ class CrossRealmTransformReadable::PullAlgorithm final
 
     if (!success) {
       readable_->message_port_->close();
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //   2. Return a promise resolved with undefined.
     // The Streams Standard guarantees that PullAlgorithm won't be called again
     // until Enqueue() is called.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -729,9 +728,9 @@ class CrossRealmTransformReadable::CancelAlgorithm final
       : readable_(readable) {}
 
   // Sends a cancel message to the writable side and closes the message port.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformreadable
     // 8. Let cancelAlgorithm be the following steps, taking a reason argument:
     DCHECK_EQ(argc, 1);
@@ -751,11 +750,11 @@ class CrossRealmTransformReadable::CancelAlgorithm final
     //   3. If result is an abrupt completion, return a promise rejected with
     //      result.[[Value]].
     if (!success) {
-      return PromiseReject(script_state, error);
+      return ScriptPromise<IDLUndefined>::Reject(script_state, error);
     }
 
     //   4. Otherwise, return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {

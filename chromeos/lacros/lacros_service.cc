@@ -51,7 +51,6 @@
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
-#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
@@ -76,7 +75,6 @@
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
-#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
@@ -358,10 +356,6 @@ LacrosService::LacrosService()
       crosapi::mojom::DownloadController, &Crosapi::BindDownloadController,
       Crosapi::MethodMinVersions::kBindDownloadControllerMinVersion>();
   ConstructRemote<
-      crosapi::mojom::DownloadStatusUpdater,
-      &Crosapi::BindDownloadStatusUpdater,
-      Crosapi::MethodMinVersions::kBindDownloadStatusUpdaterMinVersion>();
-  ConstructRemote<
       crosapi::mojom::DriveIntegrationService,
       &crosapi::mojom::Crosapi::BindDriveIntegrationService,
       Crosapi::MethodMinVersions::kBindDriveIntegrationServiceMinVersion>();
@@ -455,10 +449,6 @@ LacrosService::LacrosService()
                   &Crosapi::BindDeviceLocalAccountExtensionService,
                   Crosapi::MethodMinVersions::
                       kBindDeviceLocalAccountExtensionServiceMinVersion>();
-  ConstructRemote<
-      crosapi::mojom::LacrosShelfItemTracker,
-      &crosapi::mojom::Crosapi::BindLacrosShelfItemTracker,
-      Crosapi::MethodMinVersions::kBindLacrosShelfItemTrackerMinVersion>();
   ConstructRemote<crosapi::mojom::LocalPrinter,
                   &crosapi::mojom::Crosapi::BindLocalPrinter,
                   Crosapi::MethodMinVersions::kBindLocalPrinterMinVersion>();

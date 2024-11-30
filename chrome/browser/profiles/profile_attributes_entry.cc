@@ -147,7 +147,7 @@ void ProfileAttributesEntry::RegisterLocalStatePrefs(
 
 ProfileAttributesEntry::ProfileAttributesEntry() = default;
 
-ProfileManagementOidcTokens::ProfileManagementOidcTokens() {}
+ProfileManagementOidcTokens::ProfileManagementOidcTokens() = default;
 
 ProfileManagementOidcTokens::ProfileManagementOidcTokens(
     const std::string& auth_token,

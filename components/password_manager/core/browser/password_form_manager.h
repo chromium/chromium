@@ -42,6 +42,7 @@ class ElapsedTimer;
 
 namespace password_manager {
 
+class PasswordFormManagerObserver;
 class PasswordFormMetricsRecorder;
 class PasswordManagerClient;
 class PasswordManagerDriver;
@@ -138,6 +139,11 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // |predictions_|.
   void ProcessServerPredictions(
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
+
+  // Stores model predictions in the `parser_`.
+  void ProcessModelPredictions(
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+          predictions);
 
   // Sends fill data to the renderer. If no server predictions exist, it
   // schedules to fill when they become available (or the wait times out).
@@ -274,6 +280,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     return votes_uploader_.has_value() ? &votes_uploader_.value() : nullptr;
   }
 #endif
+
+  void SetObserver(base::WeakPtr<PasswordFormManagerObserver> observer);
+  void ResetObserver();
 
  protected:
   // Constructor for Credentials API.
@@ -493,6 +502,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // For generating timing metrics on retrieving server-side predictions.
   std::unique_ptr<base::ElapsedTimer> server_side_predictions_timer_;
+
+  base::WeakPtr<PasswordFormManagerObserver> form_parsed_observer_;
 };
 
 // Returns whether `form_data` differs from the form observed by `form_manager`

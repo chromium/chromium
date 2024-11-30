@@ -28,6 +28,7 @@ include_rules = [
   "+components/collaboration/public/android/java",
   "+components/commerce/core",
   "+components/content_relationship_verification/android/java/src/org/chromium/components/content_relationship_verification",
+  "+components/data_sharing/test_support/android/java/src/org/chromium/components/data_sharing",
   "+components/data_sharing/public/android/java/src/org/chromium/components/data_sharing",
   "+components/dom_distiller/core",
   "+components/feature_engagement/public/android",

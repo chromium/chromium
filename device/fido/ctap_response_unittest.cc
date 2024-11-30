@@ -443,7 +443,7 @@ std::vector<uint8_t> GetTestCredentialRawIdBytes() {
 // assumed to be a CTAP2 status byte.
 std::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
   CHECK(!in.empty());
-  return cbor::Reader::Read(in.subspan(1));
+  return cbor::Reader::Read(in.subspan<1>());
 }
 
 }  // namespace
@@ -812,7 +812,7 @@ TEST(CTAPResponseTest, TestSerializeGetInfoResponse) {
   EXPECT_THAT(AuthenticatorGetInfoResponse::EncodeToCBOR(response),
               ::testing::ElementsAreArray(
                   base::make_span(test_data::kTestGetInfoResponsePlatformDevice)
-                      .subspan(1)));
+                      .subspan<1>()));
 }
 
 TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
@@ -877,10 +877,10 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
           std::move(authenticator_data),
           std::make_unique<OpaqueAttestationStatement>(
               "packed", cbor::Value(std::move(attestation_map)))));
-  EXPECT_THAT(
-      AsCTAPStyleCBORBytes(response),
-      ::testing::ElementsAreArray(
-          base::make_span(test_data::kTestMakeCredentialResponse).subspan(1)));
+  EXPECT_THAT(AsCTAPStyleCBORBytes(response),
+              ::testing::ElementsAreArray(
+                  base::make_span(test_data::kTestMakeCredentialResponse)
+                      .subspan<1>()));
 }
 
 TEST(CTAPResponseTest, AttestationObjectResponseFields) {

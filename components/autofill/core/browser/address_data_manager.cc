@@ -143,10 +143,6 @@ void AddressDataManager::RemoveObserver(AddressDataManager::Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
-void AddressDataManager::AddChangeCallback(base::OnceClosure callback) {
-  change_callbacks_.push_back(std::move(callback));
-}
-
 void AddressDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
   if (data_type == syncer::DataType::AUTOFILL_PROFILE ||
       data_type == syncer::DataType::CONTACT_INFO) {
@@ -159,13 +155,14 @@ void AddressDataManager::OnWebDataServiceRequestDone(
     std::unique_ptr<WDTypedResult> result) {
   CHECK_EQ(handle, pending_profile_query_);
   pending_profile_query_ = 0;
-  if (result) {
-    CHECK_EQ(result->GetType(), AUTOFILL_PROFILES_RESULT);
-    std::vector<AutofillProfile> profiles_from_db =
-        static_cast<WDResult<std::vector<AutofillProfile>>*>(result.get())
-            ->GetValue();
-    profiles_ = std::move(profiles_from_db);
+  if (!result) {
+    return;
   }
+  CHECK_EQ(result->GetType(), AUTOFILL_PROFILES_RESULT);
+  std::vector<AutofillProfile> profiles_from_db =
+      static_cast<WDResult<std::vector<AutofillProfile>>*>(result.get())
+          ->GetValue();
+  profiles_ = std::move(profiles_from_db);
 
   if (!has_initial_load_finished_) {
     has_initial_load_finished_ = true;
@@ -579,14 +576,11 @@ AddressDataManager::GetAddressSuggestionStrikeDatabase() const {
 }
 
 void AddressDataManager::NotifyObservers() {
-  if (!IsAwaitingPendingAddressChanges()) {
-    for (Observer& o : observers_) {
-      o.OnAddressDataChanged();
-    }
-    for (base::OnceClosure& callback : change_callbacks_) {
-      std::move(callback).Run();
-    }
-    change_callbacks_.clear();
+  if (IsAwaitingPendingAddressChanges()) {
+    return;
+  }
+  for (Observer& o : observers_) {
+    o.OnAddressDataChanged();
   }
 }
 

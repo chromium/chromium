@@ -86,6 +86,8 @@ struct ModuleSettings {
   string id;
   // The name associated with a module.
   string name;
+  // The description associated with a module.
+  string? description;
   // Whether the module is enabled or not.
   bool enabled;
 };

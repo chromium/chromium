@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
+#import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mutator.h"
 #import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -296,6 +296,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                accessibilityIdentifier:kAccountMenuSecondaryActionMenuButtonId];
   _ellipsisButton.menu = ellipsisMenu;
   _ellipsisButton.showsMenuAsPrimaryAction = true;
+  _ellipsisButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ICON_OPTION_MENU);
 }
 
 // Configures and returns a cell.
@@ -341,12 +343,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       base::apple::ObjCCastStrict<NSNumber>(itemIdentifier).integerValue);
   NSString* label = nil;
   NSString* accessibilityIdentifier = nil;
+  NSString* accessibilityLabel = nil;
   switch (rowIdentifier) {
     case RowIdentifierErrorExplanation: {
       SettingsImageDetailTextCell* cell =
           DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
+      cell.accessibilityElementsHidden = YES;
       cell.detailTextLabel.text =
           l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
       cell.image =
@@ -358,6 +362,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     case RowIdentifierErrorButton:
       label = l10n_util::GetNSString(
           self.dataSource.accountErrorUIInfo.buttonLabelID);
+      accessibilityLabel =
+          l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
       accessibilityIdentifier = kAccountMenuErrorActionButtonId;
       break;
     case RowIdentifierAddAccount:
@@ -379,7 +385,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   cell.accessibilityTraits = UIAccessibilityTraitButton;
   cell.isAccessibilityElement = YES;
   cell.textLabel.text = label;
-  cell.accessibilityLabel = label;
+  cell.accessibilityLabel = accessibilityLabel ? accessibilityLabel : label;
   cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   cell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
   cell.userInteractionEnabled = YES;
