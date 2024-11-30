@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Zadajte webovú adresu</translation>
 <translation id="5975083100439434680">Oddialiť</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Teraz môžete rýchlo získať prístup k navrhovaným kartám zo zoznamu aplikácií zariadenia a vo výsledkoch vyhľadávania v zariadení. Môžete to kedykoľvek vypnúť v nastaveniach Chromu.</translation>
 <translation id="6015775454662021376">Ovládajte prístup tohto webu do vášho zariadenia</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6042308850641462728">Viac</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Najprv sa opýtať</translation>
 <translation id="7423538860840206698">Blokovať čítanie schránky</translation>
 <translation id="7425915948813553151">Tmavý motív pre weby</translation>
+<translation id="7488573225650545859">Skryť Zobrazovať karty v zozname aplikácií</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Keď je táto možnosť zapnutá, weby môžu zobrazovať výzvy na prihlásenie. Keď je táto možnosť vypnutá, weby nemôžu zobrazovať výzvy na prihlásenie.</translation>
 <translation id="7553211568594248088">Ukončiť vyhľadávanie v centre</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Tento obsah pochádza z domény <ph name="DOMAIN_NAME" /> a bol doručený Googlom.</translation>
 <translation id="8088603949666785339">Ďalšie možnosti nájdete v banneri <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Zníži výkonnosť, ale optimalizátor V8 bude odolnejší voči útokom</translation>
+<translation id="8112925981674547014">Zobrazovať karty v zozname aplikácií</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome zajtra znova obmedzí súbory cookie}few{Do opätovného blokovania súborov cookie Chromom zostávajú # dni}many{Do opätovného blokovania súborov cookie Chromom zostáva # dňa}other{Do opätovného blokovania súborov cookie Chromom zostáva # dní}}</translation>
 <translation id="8116925261070264013">Vypnuté</translation>
 <translation id="8117244575099414087">Keď je táto možnosť zapnutá, weby môžu používať senzory vášho zariadenia. Keď je táto možnosť vypnutá, weby nemôžu používať senzory.</translation>

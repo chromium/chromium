@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">वेब अ‍ॅड्रेस एंटर करा</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">तुम्ही आता तुमच्या डिव्हाइसच्या अ‍ॅप सूचीमधून आणि डिव्हाइस शोध परिणामांमध्ये सुचवलेले टॅब झटपट अ‍ॅक्सेस करू शकता. Chrome सेटिंग्जमध्ये हे कधीही बंद करा.</translation>
 <translation id="6015775454662021376">या साइटला तुमच्‍या डिव्हाइसचा असलेला अ‍ॅक्सेस नियंत्रित करा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6042308850641462728">अधिक</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">प्रथम विचारा</translation>
 <translation id="7423538860840206698">क्लिपबोर्ड वाचणे ब्लॉक केले</translation>
 <translation id="7425915948813553151">साइटसाठी गडद थीम</translation>
+<translation id="7488573225650545859">तुमच्या अ‍ॅप सूचीमध्ये टॅब पहा हे लपवा</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">सुरू असताना, साइट साइन-इन प्रॉम्प्ट दाखवू शकतात. बंद असताना, साइट साइन-इन प्रॉम्प्ट दाखवू शकत नाहीत.</translation>
 <translation id="7553211568594248088">हबसंबंधित शोधामधून बाहेर पडा</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Google ने वितरित केलेली ही आशय, <ph name="DOMAIN_NAME" /> मधील आहे.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> मध्ये आणखी पर्याय</translation>
 <translation id="8090579562279016251">परफॉर्मन्स कमी करते, पण हल्ल्यांविरुद्ध V8 चा अवरोध वाढवते</translation>
+<translation id="8112925981674547014">तुमच्या अ‍ॅप सूचीमध्ये टॅब पहा</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome उद्या पुन्हा कुकी मर्यादित करेल}other{Chrome # दिवसांनी पुन्हा कुकी मर्यादित करेल}}</translation>
 <translation id="8116925261070264013">म्यूट केले</translation>
 <translation id="8117244575099414087">सुरू असताना, साइट तुमच्या डिव्हाइसची सेन्सर वापरू शकतात. बंद असताना, साइट सेन्सर वापरू शकत नाहीत.</translation>

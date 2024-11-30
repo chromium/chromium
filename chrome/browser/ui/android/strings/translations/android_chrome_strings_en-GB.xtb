@@ -374,7 +374,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2705073298859543115">Create summary</translation>
-<translation id="2708051474374549906">Real-time, proactive protection against dangerous sites, downloads and extensions that’s based on your browsing data getting sent to Google</translation>
+<translation id="2708051474374549906">Real-time, proactive protection against dangerous sites, downloads and extensions that are based on your browsing data getting sent to Google</translation>
 <translation id="2708226184420201102">Open in <ph name="PRODUCT_NAME" /> browser</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
@@ -1317,6 +1317,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6910211073230771657">Deleted</translation>
 <translation id="6918398787259831832">If this issue keeps happening, <ph name="BEGIN_LINK" />get more information<ph name="END_LINK" /> from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tabs}}</translation>
 <translation id="6929224077895306814">All security codes saved on your device and in your Google Account will be deleted</translation>
 <translation id="6937524809504266803">Personalisation and linking</translation>
 <translation id="6937876069006524083">Nickname (optional)</translation>

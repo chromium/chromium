@@ -440,7 +440,6 @@
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6847869444787758381">तपाईंको पासवर्ड ह्याक भएको खण्डमा Chromium ले तपाईंलाई त्यसको जानकारी दिन्छ</translation>
 <translation id="684888714667046800">इन्टरनेटमा कनेक्ट गर्न सकिएन। तपाईंले कुनै फायरवाल प्रयोग गरेका खण्डमा कृपया श्वेतसूचीमा <ph name="PRODUCT_EXE_NAME" /> समावेश गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
-<translation id="685279860330610299">Chromium ले अझ धेरै प्रकारका जानकारी बुझ्न सक्छ र तपाईंका फाराम अझ छिटो अटोफिल गर्न सक्छ। <ph name="BEGIN_LINK" />Chrome अटोफिल<ph name="END_LINK" />का बारेमा थप जान्नुहोस्</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium ले "<ph name="EXTENSION_NAME" />" मा मालवेयर भएको कुरा पत्ता लगाएको छ</translation>
 <translation id="6896758677409633944">कपी गर्नुहोस्</translation>

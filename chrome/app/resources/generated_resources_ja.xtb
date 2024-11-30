@@ -1439,7 +1439,7 @@
 <translation id="1981434377190976112">すべてのウェブサイト上にある自分の全データの読み取り</translation>
 <translation id="1982851102516626421">ログアウトしています</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}、{field_2}}other{{field_1}、{field_2}、{field_3}}}</translation>
-<translation id="1984417487208496350">保護なし（推奨されません）</translation>
+<translation id="1984417487208496350">保護なし（非推奨）</translation>
 <translation id="198507684520034826">ヘルプ</translation>
 <translation id="1986836014090708999">位置情報の詳細設定</translation>
 <translation id="1987317783729300807">アカウント</translation>
@@ -2395,7 +2395,7 @@
 <translation id="2649045351178520408">Base64 エンコード ASCII 形式の証明書チェーン</translation>
 <translation id="265156376773362237">標準プリロード</translation>
 <translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、<ph name="BEGIN_LINK" />Google アカウントに保存<ph name="END_LINK" />してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、<ph name="BEGIN_LINK" />Google アカウントに保存<ph name="END_LINK" />してください。}}</translation>
-<translation id="2652129567809778422">パスワードの選択</translation>
+<translation id="2652129567809778422">パスワードを選択</translation>
 <translation id="2653266418988778031">認証局（CA）の証明書を削除すると、ブラウザはその CA が発行するどの証明書も信頼しなくなります。</translation>
 <translation id="2653275834716714682">テキストの置換</translation>
 <translation id="2653659639078652383">送信</translation>
@@ -8149,7 +8149,7 @@
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> からクライアント証明書をインポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> での RLZ トラッキングを有効にする。</translation>
 <translation id="6806089545527108739">許可しないが後で確認する</translation>
-<translation id="680644983456221885">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能から、リアルタイムで予防的に保護します</translation>
+<translation id="680644983456221885">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能から、リアルタイムで予防的に保護します。</translation>
 <translation id="6806781719264274042">Google アカウントを利用している連絡先のみ。<ph name="LINK_BEGIN" />連絡先を表示<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">続行するには、セキュリティ キーを差し込んでタッチしてください</translation>
 <translation id="6808166974213191158">ChromeOS Flex システム イメージ ライター</translation>
@@ -8624,7 +8624,7 @@
 <translation id="7140785920919278717">アプリケーション インストーラ</translation>
 <translation id="7141105143012495934">アカウントの詳細を取得できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
 <translation id="7141470099673912333">コンテンツ転送</translation>
-<translation id="7141844554192012199">チェックアップ</translation>
+<translation id="7141844554192012199">Checkup</translation>
 <translation id="714301620504747562">ブラウジングと検索が標準のプリロードよりも高速になります</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7143409552554575716">ChromeOS フラグ</translation>
@@ -10485,7 +10485,7 @@
 <translation id="8458627787104127436">新しいウィンドウですべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
 <translation id="8459023460357294721"><ph name="FILE_NAME" /> を開く</translation>
 <translation id="8459333762072051247">ログイン ステータス</translation>
-<translation id="8460448946170646641">プライバシーとセキュリティに関する重要な設定を確認する</translation>
+<translation id="8460448946170646641">プライバシーとセキュリティに関する重要な設定を確認します</translation>
 <translation id="8460490661223303637">メモリを節約するため、Chrome により一部のコンテンツが削除されました</translation>
 <translation id="8460932807646981183">検索エンジンとサイト内検索を管理する</translation>
 <translation id="84613761564611563">ネットワーク設定画面を呼び出しています。しばらくお待ちください...</translation>

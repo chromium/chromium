@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">මකාදැමූ</translation>
 <translation id="6918398787259831832">මෙම ගැටලුව දිගටම සිදු වන්නේ නම්, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> වෙතින් <ph name="BEGIN_LINK" />වැඩිදුර තොරතුරු ලබා ගන්න<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" />, <ph name="SEPARATOR" /> ඔබ මෑතක දී නොපැමිණි නිසා Chrome මෙම අවසර ඉවත් කරන ලදි</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 පටිත්තක්}one{පටිති <ph name="NUMBER_OF_TABS" />ක්}other{පටිති <ph name="NUMBER_OF_TABS" />ක්}}</translation>
 <translation id="6929224077895306814">ඔබේ උපාංගයේ සහ ඔබේ Google ගිණුමේ සුරකින ලද සියලු ආරක්ෂක කේත මකනු ඇත</translation>
 <translation id="6937524809504266803">පුද්ගලායනය සහ සම්බන්‍ධ කිරීම</translation>
 <translation id="6937876069006524083">අපනාමය (වෛකල්පික)</translation>

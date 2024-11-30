@@ -978,6 +978,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5514904542973294328">Opciju je omogućio administrator ovog uređaja</translation>
 <translation id="5515439363601853141">Otključajte za prikaz zaporke</translation>
 <translation id="5517095782334947753">Imate oznake, povijest, zaporke i druge postavke s računa <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5517326820028369152">Donja tablica s nedavnom aktivnošću</translation>
 <translation id="5524843473235508879">Preusmjeravanje je blokirano.</translation>
 <translation id="5526281268548144413">Nije moguće zatvoriti u više prozora</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Prije # min}one{Prije # min}few{Prije # min}other{Prije # min}}</translation>
@@ -1280,6 +1281,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6817747507826986771">Brzo podijelite ovu stranicu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Zatvoreno je ažuriranje Google upravitelja zaporki</translation>
+<translation id="6824933543577433709">Donja tablica s nedavnom aktivnošću je zatvorena</translation>
 <translation id="6828070228333235514">Zaustavi praćenje cijene</translation>
 <translation id="6830728435402077660">Nije sigurno</translation>
 <translation id="6831043979455480757">Prevedi</translation>
@@ -1498,6 +1500,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7691043218961417207">Istražite sadržaj za praćenje</translation>
 <translation id="7697383401610880082">Marker za povlačenje</translation>
 <translation id="7698359219371678927">Izradite e-poruku u aplikaciji <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">Donja tablica s nedavnom aktivnošću otvorena u punoj visini</translation>
 <translation id="7707922173985738739">Upotreba mobilnih podataka</translation>
 <translation id="7709918231054955894">Pristupajte svim svojim karticama</translation>
 <translation id="7733878270780732638">Nema dovoljno prostora na uređaju.</translation>

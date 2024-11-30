@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">स्वच्छतेसंबंधित सेवा</translation>
 <translation id="1475299637784133125">ब्राउझर आवृत्ती शोधत आहात का? भेट द्या</translation>
 <translation id="1476595624592550506">तुमचा पासवर्ड बदला</translation>
+<translation id="1482372785911828880">जास्त बारीक</translation>
 <translation id="1482879811280872320">सायकल चालवणे</translation>
 <translation id="1483493594462132177">पाठवा</translation>
 <translation id="1484449009683144042">ही AI ची लेखनाशी संबंधित प्रायोगिक मदत आहे आणि ती नेहमीच बरोबर असेल असे नाही.
@@ -1314,6 +1315,7 @@
 <translation id="3375754925484257129">Chrome सुरक्षितता तपासणी रन करा</translation>
 <translation id="3377144306166885718">सर्व्हरने TLS ची ऑब्सोलीट आवृत्ती वापरली.</translation>
 <translation id="3377188786107721145">धोरण पार्स एरर</translation>
+<translation id="3377642479079205807">बारीक</translation>
 <translation id="3378612801784846695">विषय हे तुमच्या अलीकडील ब्राउझिंग इतिहासावर आधारित असतात आणि तुमची ओळख संरक्षित करून तुम्हाला पर्सनलाइझ केलेल्या जाहिराती दाखवण्यासाठी ते साइटद्वारे वापरले जातात</translation>
 <translation id="3380365263193509176">अज्ञात एरर</translation>
 <translation id="3380864720620200369">क्लायंट आयडी:</translation>
@@ -2485,6 +2487,7 @@
 <translation id="5481682542063333508">लिहिण्याशी संबंधित मदत देऊ करा</translation>
 <translation id="54817484435770891">वैध पत्ता जोडा</translation>
 <translation id="5483838506518938965">तुम्ही पूर्णपणे तयार आहात</translation>
+<translation id="5485100387355669506">जास्त जाड</translation>
 <translation id="5485973315555778056">क्लाउड मशीन</translation>
 <translation id="5488590678320979185">टीप तयार करा बटण, Google Keep मध्ये नवीन टीप झटपट तयार करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="5490432419156082418">पत्ते आणि बरेच काही</translation>
@@ -3671,6 +3674,7 @@
 <translation id="7599089013883397081">डाउनलोड करणे टाइम आउट झाले</translation>
 <translation id="7608583484192556132">हे सेटिंग, <ph name="BEGIN_LINK_1" />साइटने सुचवलेल्या जाहिराती<ph name="END_LINK_1" />, तुमची <ph name="BEGIN_LINK_2" />कुकी सेटिंग्ज<ph name="END_LINK_2" /> आणि तुम्ही पाहत असलेली साइट ही जाहिराती पर्सनलाइझ करते की नाही, यांसह अनेक गोष्टींवर तुम्ही पाहत असलेली जाहिरात ही पर्सनलाइझ केलेली आहे की नाही हे अवलंबून असू शकते. <ph name="BEGIN_LINK_3" />तुमची जाहिरातीसंबंधित गोपनीयता व्यवस्थापित करणे<ph name="END_LINK_3" /> याबद्दल अधिक जाणून घ्या.</translation>
 <translation id="7610193165460212391">मूल्य <ph name="VALUE" /> श्रेणीच्या बाहेर आहे.</translation>
+<translation id="761261689936461781">जाड</translation>
 <translation id="7613889955535752492">कालबाह्य: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पाहाण्यासाठी आणि व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="7616645509853975347">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुमच्या ब्राउझरवर Chrome एंटरप्राइझ कनेक्टर्स सुरू केली आहेत. या कनेक्टरना तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>

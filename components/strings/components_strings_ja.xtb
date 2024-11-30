@@ -1496,7 +1496,7 @@
 <translation id="3665100783276035932">ほとんどのサイトは適切に機能します</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />詳細<ph name="LINK_END1" /></translation>
 <translation id="3670229581627177274">Bluetooth を ON にする</translation>
-<translation id="3671117652518853176">オフにした場合、セキュリティを確保するため、時々確認が求められることがあります</translation>
+<translation id="3671117652518853176">オフにした場合、セキュリティを確保するために確認を求められることがあります</translation>
 <translation id="3671540257457995106">サイズ変更を許可しますか？</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> でエラーが発生しました: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">ネットワーク機器</translation>
@@ -3726,7 +3726,7 @@
 <translation id="7684683146428206649">金属</translation>
 <translation id="7684817988830401358">[閲覧履歴データを削除] ボタンを使用すると、Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除できます</translation>
 <translation id="7684928361160505327">{0,plural, =1{ポリシーにより <ph name="FILE_NAME" /> がブロックされました}other{ポリシーにより <ph name="FILE_COUNT" /> 個のファイルがブロックされました}}</translation>
-<translation id="7687186412095877299">保存したお支払い方法を使ってお支払いフォームに入力する</translation>
+<translation id="7687186412095877299">保存したお支払い方法を使ってお支払いフォームに自動入力します</translation>
 <translation id="7687305263118037187">再試行のタイムアウト</translation>
 <translation id="7690647519407127574">往復はがき</translation>
 <translation id="7693583928066320343">受信したページ順序</translation>

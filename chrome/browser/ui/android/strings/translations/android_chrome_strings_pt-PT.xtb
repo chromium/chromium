@@ -978,6 +978,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5514904542973294328">Desativada pelo gestor do dispositivo</translation>
 <translation id="5515439363601853141">Desbloqueie para ver a palavra-passe.</translation>
 <translation id="5517095782334947753">Tem marcadores, histórico, palavras-passe e outras definições de <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5517326820028369152">Secção inferior da atividade recente</translation>
 <translation id="5524843473235508879">Redirecionamento bloqueado.</translation>
 <translation id="5526281268548144413">Não é possível fechar os separadores em várias janelas</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Há # min}other{Há # min}}</translation>
@@ -1280,6 +1281,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6817747507826986771">Partilhe esta página rapidamente. Para editar este atalho, toque sem soltar.</translation>
 <translation id="6820686453637990663">Código de segurança</translation>
 <translation id="6820942662346226299">Atualização do Gestor de Palavras-passe da Google fechada</translation>
+<translation id="6824933543577433709">Secção inferior da atividade recente fechada</translation>
 <translation id="6828070228333235514">Parar monitorização do preço</translation>
 <translation id="6830728435402077660">Inseguro</translation>
 <translation id="6831043979455480757">Traduzir</translation>
@@ -1498,6 +1500,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7691043218961417207">Explore conteúdo a seguir</translation>
 <translation id="7697383401610880082">Indicador para arrastar</translation>
 <translation id="7698359219371678927">Criar email no <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">Secção inferior da atividade recente aberta à altura total</translation>
 <translation id="7707922173985738739">Usar dados móveis</translation>
 <translation id="7709918231054955894">Obtenha todos os seus separadores</translation>
 <translation id="7733878270780732638">Espaço insuficiente no dispositivo.</translation>

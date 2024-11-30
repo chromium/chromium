@@ -1315,6 +1315,7 @@
 <translation id="6910211073230771657">తొలగించబడింది</translation>
 <translation id="6918398787259831832">ఈ సమస్య అలాగే కొనసాగుతూ ఉంటే <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> నుండి <ph name="BEGIN_LINK" />మరింత సమాచారాన్ని పొందండి<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> మీరు ఇటీవల వెబ్‌సైట్‌ను చూసిన కారణంగా Chrome ఈ అనుమతులను తీసివేసింది</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ట్యాబ్}other{<ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు}}</translation>
 <translation id="6929224077895306814">మీ పరికరంలో, Google ఖాతాలో సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లన్నీ తొలగించబడతాయి</translation>
 <translation id="6937524809504266803">వ్యక్తిగతీకరణ &amp; లింక్ చేయడం</translation>
 <translation id="6937876069006524083">మారుపేరు (ఆప్షనల్)</translation>

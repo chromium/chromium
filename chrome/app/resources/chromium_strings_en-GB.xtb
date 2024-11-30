@@ -442,7 +442,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6847869444787758381">Chromium lets you know if your passwords are ever compromised</translation>
 <translation id="684888714667046800">Unable to connect to the Internet. If you use a firewall, please ensure that <ph name="PRODUCT_EXE_NAME" /> is in the allowlist.</translation>
-<translation id="685279860330610299">Chromium can understand more types of information and autofill your forms faster. Learn more about <ph name="BEGIN_LINK" />Chrome autofill<ph name="END_LINK" /></translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
 <translation id="6896758677409633944">Copy</translation>

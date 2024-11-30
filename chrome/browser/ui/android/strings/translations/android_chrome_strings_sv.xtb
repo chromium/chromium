@@ -1318,6 +1318,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6910211073230771657">Borttagen</translation>
 <translation id="6918398787259831832">Om problemet kvarstår kan du <ph name="BEGIN_LINK" />läsa mer<ph name="END_LINK" /> på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom du inte har besökt webbplatsen nyligen</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 flik}other{<ph name="NUMBER_OF_TABS" /> flikar}}</translation>
 <translation id="6929224077895306814">Alla säkerhetskoder som sparas på enheten och i Google-kontot raderas</translation>
 <translation id="6937524809504266803">Anpassning och länkning</translation>
 <translation id="6937876069006524083">Namn (valfritt)</translation>

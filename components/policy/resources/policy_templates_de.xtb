@@ -265,13 +265,6 @@ Wenn diese Richtlinie aktiviert ist, ist die Remote Attestation der Identität g
 <translation id="117080706484659953">Lässt die Erkennung des Anwendungsbereichs von Richtlinien unter <ph name="MAC_OS_NAME" /> zu</translation>
 <translation id="1171106901454883937">Melden der Versionsinformationen auf Geräten aktivieren</translation>
 <translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> auf allen Webseiten aktivieren</translation>
-<translation id="1177567780207290133">Mit dieser Richtlinie wird die Anwendung des URL-Filters "SafeSites" konfiguriert. Der Filter greift auf die Google Safe Search API zurück, um URLs als pornografisch oder nicht pornografisch einzustufen.
-
-      Wenn diese Richtlinie
-
-* auf "Websites mit Inhalten nur für Erwachsene nicht filtern" festgelegt oder nicht konfiguriert ist, werden Websites nicht gefiltert.
-
-* auf "Websites auf oberster Ebene mit Inhalten nur für Erwachsene filtern" festgelegt ist, werden als pornografisch eingestufte Websites gefiltert.</translation>
 <translation id="1177624681620856105"> Mit dieser Richtlinie kann festgelegt werden, ob das Kästchen für "Immer öffnen" auf Bestätigungsaufforderungen beim Start externer Protokolle angezeigt werden soll. Hiermit kann der Nutzer angeben, ob ein Link immer mit dem gewählten externen Protokoll geöffnet werden soll.
 
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist und eine Bestätigungsaufforderung für ein externes Protokoll angezeigt wird, kann der Nutzer "Immer zulassen" auswählen und das Protokoll auf dieser Website so in Zukunft ohne die Bestätigung öffnen.
@@ -944,6 +937,9 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> g
 <translation id="165769015320654523">Websites automatisch die Berechtigung erteilen, eine Verbindung zu HID-Geräten mit den angegebenen Anbieter- und Produkt-IDs herzustellen.</translation>
 <translation id="1659406551862245683">Das Standardverhalten der Bildschirmtastatur wird geändert, um die Größe des Layout-Darstellungsbereichs anzupassen</translation>
 <translation id="166427968280387991">Proxyserver</translation>
+<translation id="1665033825018489686">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, sind Gastanmeldungen in <ph name="PRODUCT_NAME" /> möglich. Gastanmeldungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen sich alle Fenster im Inkognitomodus befinden.
+
+Ist die Richtlinie deaktiviert, sind in <ph name="PRODUCT_NAME" /> keine Gastanmeldungen möglich.</translation>
 <translation id="1666001345366986837">Einstellungen für die Funktion „VC‑Hintergrund basierend auf generativer KI“</translation>
 <translation id="1670638264428789878">Gruppen ähnlicher Websites aktivieren</translation>
 <translation id="1671405606278443620">Einstellungen für die KI‑basierte Verlaufssuche</translation>
@@ -1487,6 +1483,15 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
         Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Kiosk-Chrome-Apps innerhalb der Sitzung aktualisiert werden.
         </translation>
 <translation id="2082205219176343977">Konfiguriere die für das Gerät erforderliche Mindestversion von Chrome.</translation>
+<translation id="2083016623552073519">Übersetzung von automatischen Untertiteln aktivieren. Die Untertitel werden zur Übersetzung an Google gesendet.
+
+Wenn diese Richtlinie aktiviert ist, ist die Funktion „Live-Übersetzung“ immer aktiviert.
+
+Ist diese Richtlinie deaktiviert, ist die Funktion „Live-Übersetzung“ immer deaktiviert.
+
+Wird diese Richtlinie als verbindlich konfiguriert, kann sie vom Nutzer nicht geändert oder überschrieben werden.
+
+Ist die Richtlinie nicht konfiguriert, ist die Funktion „Live-Übersetzung“ anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="2083696311760456171">Autofill-Vorschläge nicht zulassen.</translation>
 <translation id="20838788335877967">Erfassen personenbezogener Daten deaktivieren</translation>
 <translation id="208566302163036794">Deaktivierte Funktionen sperren</translation>
@@ -6540,6 +6545,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="588135807064822874">"Zum Suchen antippen" aktivieren</translation>
 <translation id="5882345429632338713">Verzögerung vor dem Starten eines alternativen Browsers (Millisekunden)</translation>
 <translation id="5883015257301027298">Standardeinstellungen für Cookies</translation>
+<translation id="5883631290631802010">Live-Übersetzung aktivieren</translation>
 <translation id="5883754873839596178">Wenn diese Richtlinie konfiguriert ist, legt sie die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver fest. Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird. Der Wert sollte kleiner als 100 und größer als 6 sein. Einige Web-Apps nutzen viele Verbindungen mit hängenden GETs. Daher kann ein Wert unter 32 dazu führen, dass der Browser hängt, wenn zu viele solcher Web-Apps geöffnet sind. Wenn du einen Wert unter dem Standardwert festlegst, geschieht dies auf eigenes Risiko.
 
       Ist diese Richtlinie nicht konfiguriert, so kommt der Standardwert von 32 zum Einsatz.</translation>
@@ -7771,7 +7777,6 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
       Vor Version 75 wird die Angabe mehrerer durch Kommas getrennter Erweiterungs-IDs nicht unterstützt und wird deswegen übersprungen. Der verbleibende Teil der Richtlinie wird trotzdem angewendet.
 
       Hinweis: Diese Richtlinie betrifft auch solche Erweiterungen und Apps, die über die Richtlinie "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" zwangsweise installiert werden.</translation>
-<translation id="6731757988219967594">Websites auf oberster Ebene (aber nicht eingebettete iFrames) mit Inhalten nur für Erwachsene filtern</translation>
 <translation id="6733851879899284032">Legt fest, ob „SharedArrayBuffers“ in einem nicht ursprungsübergreifend isolierten Kontext verwendet werden kann. <ph name="PRODUCT_NAME" /> setzt bei der Verwendung von „SharedArrayBuffers“ aus Gründen der Webkompatibilität ab <ph name="PRODUCT_NAME" /> 91 (25.05.2021) die ursprungsübergreifende Isolierung voraus. Weitere Informationen findest du hier: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
 
       Bei Auswahl von „Enabled“ können Websites „SharedArrayBuffers“ ohne Einschränkungen verwenden.
@@ -8011,6 +8016,7 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardve
 <translation id="6938424179790370595">Wenn du die Richtlinie auf „None“ setzt, ist die Lupe deaktiviert.
 
 Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Lupe erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
+<translation id="6938524853892166974">Live-Übersetzung deaktivieren</translation>
 <translation id="6940243892299228102">Nutzer dürfen keine Desktopvorlagen verwenden</translation>
 <translation id="6943577887654905793">Bevorzugter Mac-/Linux-Name:</translation>
 <translation id="694602410134474029">Legt fest, ob <ph name="PRODUCT_NAME" /> mit Druckertreibern aus einem separaten Dienstprozess interagiert. Aufrufe zum Drucken über die Plattform, um verfügbare Drucker abzufragen, Druckertreiber-Einstellungen abzurufen und Dokumente zum Druck an lokale Drucker zu übermitteln, erfolgen über einen Dienstprozess. Wenn man solche Aufrufe aus dem Browserprozess hinaus verschiebt, verbessert dies die Stabilität und reduziert das Einfrieren der Benutzeroberfläche in der Druckvorschau.

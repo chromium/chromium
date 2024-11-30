@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">মোছা হয়েছে</translation>
 <translation id="6918398787259831832">এই সমস্যা থেকে গেলে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> থেকে <ph name="BEGIN_LINK" />আরও পরামর্শ পান<ph name="END_LINK" />।</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ আপনি সম্প্রতি দেখেননি</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{১টি ট্যাব}one{<ph name="NUMBER_OF_TABS" />টি ট্যাব}other{<ph name="NUMBER_OF_TABS" />টি ট্যাব}}</translation>
 <translation id="6929224077895306814">আপনার ডিভাইস ও Google অ্যাকাউন্টে সেভ করা সব নিরাপত্তা কোড মুছে যাবে</translation>
 <translation id="6937524809504266803">পছন্দমতো সাজিয়ে নেওয়া ও লিঙ্ক করা</translation>
 <translation id="6937876069006524083">ডাকনাম (ঐচ্ছিক)</translation>

@@ -439,7 +439,6 @@
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6847869444787758381">Chromium จะแจ้งให้ทราบหากมีคนล่วงรู้รหัสผ่านของคุณ</translation>
 <translation id="684888714667046800">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ หากคุณใช้ไฟร์วอลล์ โปรดตรวจสอบว่า <ph name="PRODUCT_EXE_NAME" /> อยู่ในรายการที่อนุญาต</translation>
-<translation id="685279860330610299">Chromium สามารถเข้าใจข้อมูลได้หลากหลายประเภทและป้อนข้อความอัตโนมัติในแบบฟอร์มได้เร็วขึ้น ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />การป้อนข้อความอัตโนมัติของ Chrome<ph name="END_LINK" /></translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium พบว่า "<ph name="EXTENSION_NAME" />" มีมัลแวร์</translation>
 <translation id="6896758677409633944">คัดลอก</translation>

@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Унесите веб-адресу</translation>
 <translation id="5975083100439434680">Умањивање</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Сада можете брзо да приступате предложеним картицама са листе апликација на уређају и у резултатима претраге уређаја. Искључите ову функцију у било ком тренутку у Chrome подешавањима.</translation>
 <translation id="6015775454662021376">Контролишите приступ овог сајта уређају</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6042308850641462728">Још</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Прво питај</translation>
 <translation id="7423538860840206698">Читање привремене меморије је блокирано</translation>
 <translation id="7425915948813553151">Тамна тема за сајтове</translation>
+<translation id="7488573225650545859">Сакриј картице приказа на листи апликација</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Када је укључено, сајтови могу да приказују упите за пријављивање. Када је искључено, сајтови не могу да приказују упите за пријављивање.</translation>
 <translation id="7553211568594248088">Изађите из претраге у центру</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Овај садржај је са <ph name="DOMAIN_NAME" />, приказује Google.</translation>
 <translation id="8088603949666785339">Још опција у <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Смањује перформансе, али чини V8 отпорнијим на нападе</translation>
+<translation id="8112925981674547014">Картице приказа на листи апликација</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome ће сутра поново ограничити колачиће}one{# дан док Chrome поново не ограничи колачиће}few{# дана док Chrome поново не ограничи колачиће}other{# дана док Chrome поново не ограничи колачиће}}</translation>
 <translation id="8116925261070264013">Звук је искључен</translation>
 <translation id="8117244575099414087">Када је укључено, сајтови могу да користе сензоре уређаја. Када је искључено, сајтови не могу да користе сензоре.</translation>

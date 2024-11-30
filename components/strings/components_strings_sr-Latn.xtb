@@ -280,6 +280,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1474576429883213321">Usluge čišćenja</translation>
 <translation id="1475299637784133125">Tražite verziju pregledača? Posetite</translation>
 <translation id="1476595624592550506">Promenite lozinku</translation>
+<translation id="1482372785911828880">Vrlo tanka</translation>
 <translation id="1482879811280872320">Vožnja biciklom</translation>
 <translation id="1483493594462132177">Pošalji</translation>
 <translation id="1484449009683144042">Ovo je eksperimentalno sredstvo veštačke inteligencije za pomoć pri pisanju i nije uvek ispravno.
@@ -1314,6 +1315,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3375754925484257129">Pokreni Chrome proveru bezbednosti</translation>
 <translation id="3377144306166885718">Server koristi zastarelu verziju TLS-a.</translation>
 <translation id="3377188786107721145">Greška pri raščlanjivanju smernica</translation>
+<translation id="3377642479079205807">Tanka</translation>
 <translation id="3378612801784846695">Teme su zasnovane na nedavnoj istoriji pregledanja i sajtovi ih koriste za prikazivanje personalizovanih oglasa uz zaštitu vašeg identiteta</translation>
 <translation id="3380365263193509176">Nepoznata greška</translation>
 <translation id="3380864720620200369">ID klijenta:</translation>
@@ -2486,6 +2488,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5481682542063333508">Ponudi pomoć za pisanje</translation>
 <translation id="54817484435770891">Dodajte važeću adresu</translation>
 <translation id="5483838506518938965">Spremni ste</translation>
+<translation id="5485100387355669506">Vrlo debela</translation>
 <translation id="5485973315555778056">Mašina u klaudu</translation>
 <translation id="5488590678320979185">Dugme Napravite belešku, aktivirajte ga da biste brzo napravili novu belešku u Google Keep-u</translation>
 <translation id="5490432419156082418">Adrese i drugo</translation>
@@ -3670,6 +3673,7 @@ Dodatni detalji:
 <translation id="7599089013883397081">Vreme za preuzimanje je isteklo</translation>
 <translation id="7608583484192556132">Da li ćete videti personalizovani oglas može da zavisi od mnogo toga, uključujući ovo podešavanje, <ph name="BEGIN_LINK_1" />oglase koje predlažu sajtovi<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />podešavanja kolačića<ph name="END_LINK_2" /> i da li sajt koji pregledate personalizuje oglase. Saznajte više o <ph name="BEGIN_LINK_3" />upravljanju privatnošću sa oglasima<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Vrednost je izvan opsega <ph name="VALUE" />.</translation>
+<translation id="761261689936461781">Debela</translation>
 <translation id="7613889955535752492">Ističe: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste pregledali lozinke i upravljali njima u podešavanjima Chrome-a</translation>
 <translation id="7616645509853975347">Administrator je uključio Chrome Enterprise Connectors u pregledaču. Ovi priključci imaju pristup nekim vašim podacima.</translation>

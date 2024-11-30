@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">ସଫେଇ ସେବା</translation>
 <translation id="1475299637784133125">ବ୍ରାଉଜର ସଂସ୍କରଣକୁ ଖୋଜୁଛନ୍ତି କି? ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="1476595624592550506">ଆପଣଙ୍କ ପାସ୍‌ୱାର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
+<translation id="1482372785911828880">ଅତିରିକ୍ତ ପତଳା</translation>
 <translation id="1482879811280872320">ସାଇକିଲିଂ</translation>
 <translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
 <translation id="1484449009683144042">ଏହା ଏକ ପରୀକ୍ଷାମୂଳକ AI ଲେଖା ସହାୟତା ଏବଂ ଏହା ସର୍ବଦା ସଠିକ ଭାବେ କାମ କରିବ ନାହିଁ।
@@ -1312,6 +1313,7 @@
 <translation id="3375754925484257129">Chrome ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାନ୍ତୁ</translation>
 <translation id="3377144306166885718">ସର୍ଭରଟି TLSର ଏକ ଅପ୍ରଚଳିତ ସଂସ୍କରଣ ବ୍ୟବହାର କରିଛି।</translation>
 <translation id="3377188786107721145">ନୀତି ବିଶ୍ଳେଷଣ ତ୍ରୁଟି</translation>
+<translation id="3377642479079205807">ପତଳା</translation>
 <translation id="3378612801784846695">ବିଷୟଗୁଡ଼ିକ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ବ୍ରାଉଜିଂ ଇତିହାସ ଉପରେ ଆଧାରିତ ଅଟେ ଏବଂ ଆପଣଙ୍କ ପରିଚୟକୁ ସୁରକ୍ଷିତ ରଖିବା ସହିତ ଆପଣଙ୍କୁ ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ବିଜ୍ଞାପନ ଦେଖାଇବା ପାଇଁ ସେଗୁଡ଼ିକୁ ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଏ</translation>
 <translation id="3380365263193509176">ଅଜଣା ତୃଟି</translation>
 <translation id="3380864720620200369">କ୍ଲାଏଣ୍ଟ ID:</translation>
@@ -2483,6 +2485,7 @@
 <translation id="5481682542063333508">ଲେଖିବାରେ ସହାୟତାର ଅଫର କରନ୍ତୁ</translation>
 <translation id="54817484435770891">ବୈଧ ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5483838506518938965">ଆପଣ ସମ୍ପୂର୍ଣ୍ଣ ଭାବରେ ପ୍ରସ୍ତୁତ ଅଛନ୍ତି</translation>
+<translation id="5485100387355669506">ଅତିରିକ୍ତ ମୋଟା</translation>
 <translation id="5485973315555778056">କ୍ଲାଉଡ ମେସିନ</translation>
 <translation id="5488590678320979185">'ନୋଟ ତିଆରି କରନ୍ତୁ' ବଟନ, Google Keepରେ ଶୀଘ୍ର ଏକ ନୂଆ ନୋଟ ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="5490432419156082418">ଠିକଣାଗୁଡ଼ିକ ଏବଂ ଆହୁରି ଅନେକ କିଛି</translation>
@@ -3666,6 +3669,7 @@
 <translation id="7599089013883397081">ଡାଉନଲୋଡ କରିବା ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
 <translation id="7608583484192556132">ଆପଣ ଦେଖୁଥିବା କୌଣସି ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରାଯାଇଛି ନା ନାହିଁ ତାହା ଏହି ସେଟିଂ, <ph name="BEGIN_LINK_1" />ସାଇଟ-ପ୍ରସ୍ତାବିତ ବିଜ୍ଞାପନ<ph name="END_LINK_1" />, ଆପଣଙ୍କ <ph name="BEGIN_LINK_2" />କୁକୀ ସେଟିଂସ<ph name="END_LINK_2" /> ଏବଂ ଆପଣ ଭ୍ୟୁ କରୁଥିବା ସାଇଟ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରେ ନା ନାହିଁ ସମେତ ଅନେକ ଜିନିଷ ଉପରେ ନିର୍ଭର କରିପାରେ। <ph name="BEGIN_LINK_3" />ଆପଣଙ୍କ ବିଜ୍ଞାପନ ଗୋପନୀୟତାକୁ ପରିଚାଳନା କରିବା<ph name="END_LINK_3" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
 <translation id="7610193165460212391">ମୂଲ୍ୟ <ph name="VALUE" /> ପରିସୀମା ବାହାରେ ଅଛି।</translation>
+<translation id="761261689936461781">ମୋଟା</translation>
 <translation id="7613889955535752492">ସମୟ ଅବଧିର ସମାପ୍ତି: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Chrome ସେଟିଂସରୁ ଆପଣଙ୍କ ପାସାୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିବା ଏବଂ ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="7616645509853975347">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଆପଣଙ୍କ ବ୍ରାଉଜରରେ Chrome Enterprise Connectors ଚାଲୁ କରିଛନ୍ତି। ଏହି କନେକ୍ଟରଗୁଡ଼ିକ ପାଖରେ ଆପଣଙ୍କର କିଛି ଡାଟାକୁ ଆକ୍ସେସ୍ ଅଛି।</translation>

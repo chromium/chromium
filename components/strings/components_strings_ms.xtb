@@ -280,6 +280,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1474576429883213321">Perkhidmatan Pembersihan</translation>
 <translation id="1475299637784133125">Mencari versi penyemak imbas? Lawati</translation>
 <translation id="1476595624592550506">Tukar kata laluan anda</translation>
+<translation id="1482372785911828880">Amat halus</translation>
 <translation id="1482879811280872320">Berbasikal</translation>
 <translation id="1483493594462132177">Hantar</translation>
 <translation id="1484449009683144042">Ciri ini merupakan bantuan penulisan AI percubaan dan tidak sentiasa betul.
@@ -1314,6 +1315,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3375754925484257129">Jalankan semakan keselamatan Chrome</translation>
 <translation id="3377144306166885718">Pelayan menggunakan versi TLS yang sudah lapuk.</translation>
 <translation id="3377188786107721145">Ralat menghuraikan dasar</translation>
+<translation id="3377642479079205807">Halus</translation>
 <translation id="3378612801784846695">Topik adalah berdasarkan sejarah penyemakan imbas anda baru-baru ini dan digunakan oleh laman untuk memaparkan iklan yang diperibadikan kepada anda sambil melindungi identiti anda</translation>
 <translation id="3380365263193509176">Ralat tidak diketahui</translation>
 <translation id="3380864720620200369">ID Pelanggan:</translation>
@@ -2487,6 +2489,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5481682542063333508">Tawaran bantuan menulis</translation>
 <translation id="54817484435770891">Tambahkan alamat yang sah</translation>
 <translation id="5483838506518938965">Anda sudah sedia</translation>
+<translation id="5485100387355669506">Amat tebal</translation>
 <translation id="5485973315555778056">Mesin awan</translation>
 <translation id="5488590678320979185">Butang buat nota, aktifkan untuk membuat nota baharu dalam Google Keep dengan pantas</translation>
 <translation id="5490432419156082418">Alamat dan Pelbagai Lagi</translation>
@@ -3672,6 +3675,7 @@ Butiran tambahan:
 <translation id="7599089013883397081">Muat turun tamat masa</translation>
 <translation id="7608583484192556132">Sama ada iklan yang anda lihat diperibadikan atau tidak boleh bergantung pada banyak perkara termasuk tetapan ini, <ph name="BEGIN_LINK_1" />iklan yang dicadangkan laman<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />tetapan kuki<ph name="END_LINK_2" /> anda dan sama ada laman yang anda lihat memeribadikan iklan atau tidak. Ketahui lebih lanjut tentang <ph name="BEGIN_LINK_3" />pengurusan privasi iklan anda<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Nilai berada di luar julat <ph name="VALUE" /></translation>
+<translation id="761261689936461781">Tebal</translation>
 <translation id="7613889955535752492">Tamat: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk melihat dan mengurus kata laluan anda dalam tetapan Chrome</translation>
 <translation id="7616645509853975347">Pentadbir anda telah menghidupkan Chrome Enterprise Connectors pada penyemak imbas anda. Penyambung ini boleh mengakses sesetengah data anda.</translation>

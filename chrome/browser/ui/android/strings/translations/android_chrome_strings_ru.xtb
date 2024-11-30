@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">Удалено</translation>
 <translation id="6918398787259831832">Если проблема не решится, <ph name="BEGIN_LINK" />посмотрите дополнительную информацию<ph name="END_LINK" />, предоставленную сервисом "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome отозвал эти разрешения у сайта, так как вы давно его не посещали</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 вкладка}one{<ph name="NUMBER_OF_TABS" /> вкладка}few{<ph name="NUMBER_OF_TABS" /> вкладки}many{<ph name="NUMBER_OF_TABS" /> вкладок}other{<ph name="NUMBER_OF_TABS" /> вкладки}}</translation>
 <translation id="6929224077895306814">Все защитные коды, сохраненные на вашем устройстве и в аккаунте Google, будут удалены.</translation>
 <translation id="6937524809504266803">Персонализация и связывание</translation>
 <translation id="6937876069006524083">Название (необязательно)</translation>

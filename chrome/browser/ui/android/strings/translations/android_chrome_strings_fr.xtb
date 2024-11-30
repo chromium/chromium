@@ -116,7 +116,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1436784010935106834">Supprimé</translation>
 <translation id="1437543266176261764">Exécution dans <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organisez vos produits suivis dans les favoris</translation>
-<translation id="1460751212339734034">Gagnez du temps en ayant moins de texte à saisir</translation>
+<translation id="1460751212339734034">Gagnez du temps, tapez moins</translation>
 <translation id="1466383950273130737">Choisissez la langue de Chrome</translation>
 <translation id="1477626028522505441">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de problèmes liés au serveur.</translation>
 <translation id="147982357559798527">Modifié</translation>
@@ -270,7 +270,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2239812875700136898">Contrôlez vos articles à l'aide du bouton Options pour Discover</translation>
 <translation id="2247789808226901522">Carte expirée</translation>
 <translation id="2248941474044011069">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google</translation>
-<translation id="2249635629516220541">Personnaliser les informations utilisées par les sites pour vous montrer des annonces</translation>
+<translation id="2249635629516220541">Personnalisez les informations utilisées par les sites pour vous montrer des annonces</translation>
 <translation id="2253927598983295051">Choisir les informations à partager avec <ph name="APP_NAME" /></translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
@@ -426,7 +426,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2904414404539560095">La liste des appareils avec lesquels vous pouvez partager un onglet est ouverte à pleine hauteur.</translation>
 <translation id="2908243544703713905">Articles non lus prêts</translation>
 <translation id="2909615210195135082">Plate-forme de notifications Google</translation>
-<translation id="2912345083818861431">Utiliser le verrouillage de l'écran pour voir les onglets de navigation privée ouverts</translation>
+<translation id="2912345083818861431">Utilisez le verrouillage de l'écran pour voir les onglets de navigation privée ouverts</translation>
 <translation id="2923908459366352541">Le nom n'est pas valide</translation>
 <translation id="2932150158123903946">Stockage Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Votre clavier ne sera pas modifié</translation>
@@ -1317,6 +1317,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6910211073230771657">Supprimé</translation>
 <translation id="6918398787259831832">Si le problème persiste, <ph name="BEGIN_LINK" />renseignez-vous<ph name="END_LINK" /> auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 onglet}one{<ph name="NUMBER_OF_TABS" /> onglet}other{<ph name="NUMBER_OF_TABS" /> onglets}}</translation>
 <translation id="6929224077895306814">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
 <translation id="6937524809504266803">Personnalisation et association</translation>
 <translation id="6937876069006524083">Pseudo (facultatif)</translation>
@@ -1674,7 +1675,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8453310803815879010">Jouer au jeu du dino</translation>
 <translation id="8455675988389029454">Accédez à vos favoris, à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="84594714173170813">Continuez d'utiliser les données Chrome de votre compte Google</translation>
-<translation id="8460448946170646641">Examiner les paramètres clés de confidentialité et de sécurité</translation>
+<translation id="8460448946170646641">Examinez les paramètres clés de confidentialité et de sécurité</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1847,12 +1848,12 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="926205370408745186">Supprimer votre activité Chrome de Bien-être numérique</translation>
 <translation id="927968626442779827">Utilisez le mode simplifié dans Google Chrome</translation>
 <translation id="928550791203542716">Vous suivez <ph name="SITE_NAME" /></translation>
-<translation id="930124987204876019">Supprimer l'historique, les cookies et les données des sites, vider le cache…</translation>
+<translation id="930124987204876019">Supprimez l'historique, les cookies et les données des sites, vider le cache…</translation>
 <translation id="93533588269984624">Tous les mots de passe seront téléchargés sur votre appareil et supprimés de <ph name="CHROME_CHANNEL" /></translation>
 <translation id="938850635132480979">Erreur <ph name="ERROR_CODE" />.</translation>
 <translation id="939598580284253335">Saisir la phrase secrète</translation>
 <translation id="95817756606698420">Chrome peut utiliser <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour les recherches effectuées en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Supprimer données navigation</translation>
+<translation id="961856697154696964">Supprimer les données de navigation</translation>
 <translation id="966131775676567255">Suppression des données du compte…</translation>
 <translation id="96681097142096641">Afficher la page simplifiée ?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>

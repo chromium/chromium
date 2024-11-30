@@ -482,7 +482,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
 <translation id="316694332262407393">Chrome이 이미 실행 중입니다.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" />의 모바일 사이트를 요청할 수 있습니다.</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">디스커버</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{비밀번호 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{비밀번호 #개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
 <translation id="3187472288455401631">광고 측정</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
@@ -1654,7 +1654,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8398389123831319859">시크릿 모드로 전환하려면 두 번 탭하고 길게 누르세요.</translation>
 <translation id="8402673309244746971">팔로우 중으로 이동</translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>
-<translation id="8413795581997394485">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 사이트를 방문하면 Chrome에서 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠도 전송됩니다.</translation>
+<translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠도 전송됩니다.</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
 <translation id="8419144699778179708">검색창에 입력한 내용을 비롯한 방문 기록 삭제</translation>
 <translation id="8419244640277402268">포함</translation>

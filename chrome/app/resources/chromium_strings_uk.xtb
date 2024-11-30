@@ -440,7 +440,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6831043979455480757">Перекласти</translation>
 <translation id="6847869444787758381">Якщо ваші паролі колись викрадуть, Chromium повідомить вас про це</translation>
 <translation id="684888714667046800">Не вдалося підключитися до Інтернету. Якщо ви використовуєте брандмауер, переконайтеся, що <ph name="PRODUCT_EXE_NAME" /> є в білому списку.</translation>
-<translation id="685279860330610299">Chromium зможе розпізнавати більше типів інформації і швидше заповнювати форми. Докладніше про <ph name="BEGIN_LINK" />автозаповнення в Chrome<ph name="END_LINK" />.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Веб-переглядач Chromium виявив, що розширення "<ph name="EXTENSION_NAME" />" містить зловмисне програмне забезпечення</translation>
 <translation id="6896758677409633944">Копіювати</translation>

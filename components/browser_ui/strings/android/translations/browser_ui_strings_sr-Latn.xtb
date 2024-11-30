@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Unesite veb-adresu</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Sada možete brzo da pristupate predloženim karticama sa liste aplikacija na uređaju i u rezultatima pretrage uređaja. Isključite ovu funkciju u bilo kom trenutku u Chrome podešavanjima.</translation>
 <translation id="6015775454662021376">Kontrolišite pristup ovog sajta uređaju</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Još</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje privremene memorije je blokirano</translation>
 <translation id="7425915948813553151">Tamna tema za sajtove</translation>
+<translation id="7488573225650545859">Sakrij kartice prikaza na listi aplikacija</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kada je uključeno, sajtovi mogu da prikazuju upite za prijavljivanje. Kada je isključeno, sajtovi ne mogu da prikazuju upite za prijavljivanje.</translation>
 <translation id="7553211568594248088">Izađite iz pretrage u centru</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Ovaj sadržaj je sa <ph name="DOMAIN_NAME" />, prikazuje Google.</translation>
 <translation id="8088603949666785339">Još opcija u <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Smanjuje performanse, ali čini V8 otpornijim na napade</translation>
+<translation id="8112925981674547014">Kartice prikaza na listi aplikacija</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome će sutra ponovo ograničiti kolačiće}one{# dan dok Chrome ponovo ne ograniči kolačiće}few{# dana dok Chrome ponovo ne ograniči kolačiće}other{# dana dok Chrome ponovo ne ograniči kolačiće}}</translation>
 <translation id="8116925261070264013">Zvuk je isključen</translation>
 <translation id="8117244575099414087">Kada je uključeno, sajtovi mogu da koriste senzore uređaja. Kada je isključeno, sajtovi ne mogu da koriste senzore.</translation>

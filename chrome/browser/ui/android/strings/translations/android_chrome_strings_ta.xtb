@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">நீக்கப்பட்டது</translation>
 <translation id="6918398787259831832">இந்தச் சிக்கல் தொடர்ந்து ஏற்பட்டால், <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> இடமிருந்து <ph name="BEGIN_LINK" />கூடுதல் தகவல்களைப் பெறுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> நீங்கள் சமீபத்தில் இந்தத் தளத்தைப் பார்வையிடாததால் Chrome இந்த அனுமதிகளை அகற்றியது</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 பக்கம்}other{<ph name="NUMBER_OF_TABS" /> பக்கங்கள்}}</translation>
 <translation id="6929224077895306814">உங்கள் சாதனத்திலும் Google கணக்கிலும் சேமிக்கப்பட்டுள்ள பாதுகாப்புக் குறியீடுகள் அனைத்தும் நீக்கப்படும்</translation>
 <translation id="6937524809504266803">பிரத்தியேகமாக்குதல் &amp; இணைத்தல்</translation>
 <translation id="6937876069006524083">புனைப்பெயர் (கட்டாயமல்ல)</translation>

@@ -1496,7 +1496,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3665100783276035932">La mayoría de los sitios deberían funcionar según lo previsto</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Más información<ph name="LINK_END1" /></translation>
 <translation id="3670229581627177274">Activar Bluetooth</translation>
-<translation id="3671117652518853176">Si desactivas esta opción, es posible que se te pida ocasionalmente que la verifiques por motivos de seguridad</translation>
+<translation id="3671117652518853176">Si desactivas esta opción, es posible que se te pida ocasionalmente que verifiques los datos por motivos de seguridad</translation>
 <translation id="3671540257457995106">¿Permitir cambio de tamaño?</translation>
 <translation id="3672568546897166916">Error en <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Equipamiento de redes</translation>
@@ -2587,7 +2587,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5651323159439184939">Alimentación por tracción</translation>
 <translation id="5654927323611874862">ID del informe sobre fallos subido:</translation>
 <translation id="5654965123204121933">La URL no incluye la cadena de sustitución necesaria <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
-<translation id="5659593005791499971">Correo</translation>
+<translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5660122698869360728">Una nueva carpeta inteligente que te ayuda a guardar todas tus páginas de compras en un mismo lugar, a hacer un seguimiento automático de los precios, a obtener estadísticas sobre ellos y más.</translation>
 <translation id="5663955426505430495">El administrador de este dispositivo ha instalado extensiones que aportan funciones adicionales. Las extensiones tienen acceso a algunos de tus datos.</translation>
 <translation id="5667827081946850877">Audiolibros</translation>

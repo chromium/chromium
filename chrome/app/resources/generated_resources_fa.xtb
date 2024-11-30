@@ -423,7 +423,7 @@
 <translation id="1280332775949918163">پنجره چفت‌شده</translation>
 <translation id="1280965841156951489">ویرایش فایل‌ها</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{فایل باز نمی‌شود}one{فایل باز نمی‌شود}other{فایل‌ها باز نمی‌شود}}</translation>
-<translation id="1282311502488501110">وارد سیستم نشود</translation>
+<translation id="1282311502488501110">وارد سیستم نشدن</translation>
 <translation id="1282436639288565079">جزئیات گروه برگه</translation>
 <translation id="1283126956823499975">هنگام راه‌اندازی دستگاه مشکلی پیش آمد</translation>
 <translation id="1284277788676816155">ذخیره کردن داده مجاز نیست</translation>
@@ -4449,7 +4449,7 @@
 <translation id="4066458014195202324">سایت‌هایی که اجازه دارند ورودی صفحه‌کلید را ضبط و از آن استفاده کنند</translation>
 <translation id="4067839975993712852">علامت‌گذاری برگه کنونی به‌عنوان خوانده‌شده</translation>
 <translation id="4068776064906523561">اثرانگشت‌های ذخیره‌شده</translation>
-<translation id="4070132839822635162">به سیستم وارد نمی‌شوم</translation>
+<translation id="4070132839822635162">وارد سیستم نشدن</translation>
 <translation id="407173827865827707">با کلیک</translation>
 <translation id="4072805772816336153">بعداً دوباره امتحان کنید</translation>
 <translation id="4074164314564067597">صفحه‌کلید</translation>
@@ -5706,7 +5706,7 @@
 <translation id="4997086284911172121">اتصال اینترنت ندارید.</translation>
 <translation id="4998430619171209993">روشن</translation>
 <translation id="4999804342505941663">روشن کردن «مزاحم نشوید»</translation>
-<translation id="5001526427543320409">کوکی‌های شخص ثالث</translation>
+<translation id="5001526427543320409">کوکی‌های طرف سوم</translation>
 <translation id="5003070249435823986">بااستفاده از اشاره به حالت پیمایش وارد شوید، سپس سرتان را به جهت موردنظر برای پیمایش حرکت دهید. برای خروج از حالت پیمایش، دوباره از اشاره استفاده کنید.</translation>
 <translation id="5003993274120026347">جمله بعدی</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
@@ -8288,7 +8288,7 @@
 <translation id="6867086642466184030">برنامه‌های دیگری تنظیم شده‌اند تا همان پیوندها را مثل <ph name="APP_NAME" /> باز کنند. با این کار <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" />، <ph name="APP_NAME_4" />، و <ph name="NUMBER_OF_OTHER_APPS" /> برنامه دیگر غیرفعال خواهند شد تا پیوندهای پشتیبانی‌شده را باز نکنند.</translation>
 <translation id="6867671714894555998">با صفحه‌کلید جدید، کارها را سریع انجام دهید</translation>
 <translation id="6868206169573555318">برای به‌روزرسانی، دوباره راه‌اندازی کنید</translation>
-<translation id="686831807558000905">به سیستم وارد نمی‌شوم</translation>
+<translation id="686831807558000905">وارد سیستم نشدن</translation>
 <translation id="686839242150793617">مجاز برای ورود خودکار به حالت تصویر در تصویر</translation>
 <translation id="6868934826811377550">دیدن جزئیات</translation>
 <translation id="6871644448911473373">‏پاسخگوی OCSP: <ph name="LOCATION" /></translation>

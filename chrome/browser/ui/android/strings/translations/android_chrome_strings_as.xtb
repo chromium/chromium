@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">মচা হ’ল</translation>
 <translation id="6918398787259831832">যদি এই সমস্যাটো হৈ থাকে, তেন্তে <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ পৰা <ph name="BEGIN_LINK" />অধিক তথ্য লাভ কৰক<ph name="END_LINK" />।</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> আপুনি শেহতীয়াকৈ চোৱা নাই বাবে Chromeএ এই অনুমতিসমূহ আঁতৰাইছে</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{১ টা টেব}one{<ph name="NUMBER_OF_TABS" /> টা টেব}other{<ph name="NUMBER_OF_TABS" /> টা টেব}}</translation>
 <translation id="6929224077895306814">আপোনাৰ ডিভাইচত আৰু আপোনাৰ Google একাউণ্টত ছেভ কৰা আটাইবোৰ সুৰক্ষা ক’ড মচি পেলোৱা হ’ব</translation>
 <translation id="6937524809504266803">ব্যক্তিগতকৰণ আৰু লিংক কৰা</translation>
 <translation id="6937876069006524083">উপনাম (ঐচ্ছিক)</translation>

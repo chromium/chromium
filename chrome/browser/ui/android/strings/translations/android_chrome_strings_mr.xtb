@@ -978,6 +978,7 @@
 <translation id="5514904542973294328">या डिव्हाइसच्या ॲडमिनिस्ट्रेटरने बंद केले आहे.</translation>
 <translation id="5515439363601853141">तुमचा पासवर्ड पाहण्यासाठी अनलॉक करा</translation>
 <translation id="5517095782334947753">आपल्याकडे <ph name="FROM_ACCOUNT" /> मधील बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज आहेत.</translation>
+<translation id="5517326820028369152">अलीकडील अ‍ॅक्टिव्हिटीची तळाशी असलेली शीट</translation>
 <translation id="5524843473235508879">रीडिरेक्‍ट ब्लॉक केले.</translation>
 <translation id="5526281268548144413">एकाहून अधिक विंडोवर बंद केले जाऊ शकत नाहीत</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
@@ -1280,6 +1281,7 @@
 <translation id="6817747507826986771">हे पेज झटपट शेअर करा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Google Password Manager अपडेट बंद केले</translation>
+<translation id="6824933543577433709">अलीकडील अ‍ॅक्टिव्हिटीची तळाशी असलेली शीट बंद केली आहे</translation>
 <translation id="6828070228333235514">किमतीचा माग ठेवणे बंद करा</translation>
 <translation id="6830728435402077660">सुरक्षित नाही</translation>
 <translation id="6831043979455480757">भाषांतर करा</translation>
@@ -1317,6 +1319,7 @@
 <translation id="6910211073230771657">हटवला</translation>
 <translation id="6918398787259831832">ही समस्या येत राहिल्यास, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> कडून <ph name="BEGIN_LINK" />अधिक माहिती मिळवा<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> तुम्ही अलीकडे भेट न दिल्यामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{१ टॅब}other{<ph name="NUMBER_OF_TABS" /> टॅब}}</translation>
 <translation id="6929224077895306814">तुमच्या डिव्हाइसवर आणि तुमच्या Google खाते मध्ये सेव्ह केलेले सर्व सुरक्षा कोड हटवले जातील</translation>
 <translation id="6937524809504266803">पर्सनलायझेशन आणि लिंक करणे</translation>
 <translation id="6937876069006524083">टोपणनाव (पर्यायी)</translation>
@@ -1497,6 +1500,7 @@
 <translation id="7691043218961417207">फॉलो करण्यासाठी आशय एक्सप्लोर करा</translation>
 <translation id="7697383401610880082">ड्रॅग हॅंडल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> मध्ये ईमेल तयार करा</translation>
+<translation id="7702420606070050505">अलीकडील अ‍ॅक्टिव्हिटीची तळाशी असलेली शीट पूर्णपणे उघडली आहे</translation>
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
 <translation id="7709918231054955894">तुमचे सर्व टॅब मिळवा</translation>
 <translation id="7733878270780732638">डिव्हाइसवर पुरेशी रिकामी जागा नाही.</translation>

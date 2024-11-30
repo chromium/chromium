@@ -266,13 +266,6 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
 <translation id="117080706484659953">Consenti il rilevamento dell'ambito dei criteri su <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Attiva i report sulle informazioni relative alla versione del dispositivo</translation>
 <translation id="1173493742686115032">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
-<translation id="1177567780207290133">La configurazione del criterio consente di controllare il filtro di URL di SafeSites, che utilizza l'API Google Safe Search per classificare gli URL come pornografici o meno.
-
-      Se il criterio viene impostato su:
-
-      * Non filtrare i siti di contenuti per adulti, o se non viene configurato, i siti non vengono filtrati
-
-      * Filtra i siti di contenuti per adulti di primo livello, i siti pornografici vengono filtrati</translation>
 <translation id="1177624681620856105"> Questo criterio consente di stabilire se mostrare o meno la casella di controllo "Apri sempre" nei messaggi di conferma di avvio di protocolli esterni.
 
       Se questo criterio viene impostato su True o non viene impostato, quando viene mostrato un messaggio di conferma di protocollo esterno, l'utente può selezionare "Consenti sempre" per ignorare i futuri messaggi di conferma per il protocollo su questo sito.
@@ -7898,7 +7891,6 @@ Per <ph name="PRODUCT_OS_NAME" />, questo criterio viene sempre applicato.</tran
       Nelle versioni precedenti alla 75, l'utilizzo di diversi ID estensione separati da virgole non è supportato e verrà ignorato. Si applica il resto del criterio.
 
       Nota: questo criterio riguarda anche le estensioni e le app con installazione forzata tramite <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="6731757988219967594">Filtra i siti di contenuti per adulti di primo livello (ma non gli iframe incorporati)</translation>
 <translation id="6733851879899284032">
       Consente di specificare se è possibile usare SharedArrayBuffers in un contesto senza isolamento multiorigine. <ph name="PRODUCT_NAME" /> richiede l'isolamento multiorigine se viene usato SharedArrayBuffers a partire dalla versione 91 di <ph name="PRODUCT_NAME" /> (dal 25/05/2021) per motivi di compatibilità web. Ulteriori dettagli sono disponibili all'indirizzo: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
 

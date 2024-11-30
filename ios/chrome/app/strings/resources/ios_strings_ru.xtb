@@ -536,7 +536,7 @@
 <translation id="3469117812148449995">Параметры сохранения пароля</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{Для {COUNT} сайта или приложения}one{Для {COUNT} сайта и приложения}few{Для {COUNT} сайтов и приложений}many{Для {COUNT} сайтов и приложений}other{Для {COUNT} сайта и приложения}}</translation>
 <translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
-<translation id="3476450923187944815">Получайте доступ к своим паролям в других приложениях.</translation>
+<translation id="3476450923187944815">Доступ к своим паролям в других приложениях</translation>
 <translation id="3488501490964659223">Вкладки были закрыты, а данные о работе в браузере удалены. Вы вышли из аккаунта.</translation>
 <translation id="3493531032208478708">Подробнее <ph name="BEGIN_LINK" />о рекомендованном контенте<ph name="END_LINK" />…</translation>
 <translation id="3504377992102007712">Настройки</translation>

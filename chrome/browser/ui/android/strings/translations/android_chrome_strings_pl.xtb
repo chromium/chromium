@@ -978,6 +978,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5514904542973294328">Wyłączone przez administratora tego urządzenia</translation>
 <translation id="5515439363601853141">Odblokuj, by wyświetlić hasło</translation>
 <translation id="5517095782334947753">Masz zakładki, historię, hasła i inne ustawienia z konta <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5517326820028369152">Plansza dolna Ostatnia aktywność</translation>
 <translation id="5524843473235508879">Przekierowanie zostało zablokowane.</translation>
 <translation id="5526281268548144413">Nie można zamknąć w kilku oknach</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# min temu}few{# min temu}many{# min temu}other{# min temu}}</translation>
@@ -1280,6 +1281,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6817747507826986771">Szybko udostępnij tę stronę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
 <translation id="6820686453637990663">Kod CVC</translation>
 <translation id="6820942662346226299">Powiadomienie o aktualizacji Menedżera haseł Google zostało zamknięte</translation>
+<translation id="6824933543577433709">Plansza dolna Ostatnia aktywność została zamknięta</translation>
 <translation id="6828070228333235514">Przestań monitorować cenę</translation>
 <translation id="6830728435402077660">Niezabezpieczona</translation>
 <translation id="6831043979455480757">Tłumacz</translation>
@@ -1498,6 +1500,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7691043218961417207">Odkrywaj treści, które warto obserwować</translation>
 <translation id="7697383401610880082">Uchwyt do przeciągania</translation>
 <translation id="7698359219371678927">Utwórz e-maila w aplikacji <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">Plansza dolna Ostatnia aktywność została otwarta na całą wysokość</translation>
 <translation id="7707922173985738739">Użycie mobilnej transmisji danych</translation>
 <translation id="7709918231054955894">Wyświetl wszystkie swoje karty</translation>
 <translation id="7733878270780732638">Za mało miejsca na urządzeniu.</translation>

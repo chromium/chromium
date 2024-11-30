@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Veb-manzilni kiriting</translation>
 <translation id="5975083100439434680">Kichiklashtirish</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Endi qurilmadagi ilovalar roʻyxati va qidiruv natijalari orqali tavsiya etilgan varaqlarga tezkor kirish mumkin. Buni istalgan vaqt Chrome sozlamalari orqali faolsizlantirish mumkin.</translation>
 <translation id="6015775454662021376">Bu saytning qurilmangizni boshqarish ruxsatlarini boshqaring</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6042308850641462728">Yana</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Avval so‘ralsin</translation>
 <translation id="7423538860840206698">Klipborddan o‘qish taqiqlangan</translation>
 <translation id="7425915948813553151">Saytlar uchun tungi mavzu</translation>
+<translation id="7488573225650545859">Ilovalar roʻyxatida varaqlarni ochish panelini berkitish</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Yoqilsa, saytlar kirish soʻrovlarini koʻrsatishi mumkin. Oʻchirilsa, koʻrsata olmaydi.</translation>
 <translation id="7553211568594248088">Qidiruv sahifasini tark etish</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479"><ph name="DOMAIN_NAME" /> sayti kontenti, Google tomonidan taqdim etildi.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />: boshqa amallar</translation>
 <translation id="8090579562279016251">Unumdorlik pasayadi, ammo V8 hujumlarga yaxshiroq qarshilik qiladi</translation>
+<translation id="8112925981674547014">Ilovalar roʻyxatida varaqlarni ochish</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome cookie fayllarni ertaga yana cheklaydi}other{Chrome cookie fayllarni # kundan keyin yana cheklaydi}}</translation>
 <translation id="8116925261070264013">Ovozsiz</translation>
 <translation id="8117244575099414087">Yoqilsa, saytlar qurilmangiz sensoridan foydalana oladi. Oʻchirilsa, ulardan foydalana olmaydi.</translation>

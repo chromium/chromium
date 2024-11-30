@@ -265,13 +265,6 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
 <translation id="117080706484659953">Autorisez la détection du champ d'application des règles sur <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Activer les rapports sur les informations sur la version de l'appareil</translation>
 <translation id="1173493742686115032">Activer <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sur toutes les pages Web</translation>
-<translation id="1177567780207290133">Permet de contrôler l'application du filtre d'URL SafeSites, qui utilise l'API Google Safe Search pour déterminer si une URL est associée ou non à du contenu pornographique.
-
-      Principe de cette règle :
-
-      * Si cette règle est définie sur "Ne pas filtrer les sites de contenus réservés aux adultes" ou qu'elle n'est pas configurée, les sites ne sont pas filtrés.
-
-      * Si cette règle est définie sur "Filtrer les sites de premier niveau présentant des contenus réservés aux adultes", les sites pornographiques sont filtrés.</translation>
 <translation id="1177624681620856105"> Cette règle permet de spécifier si la case "Toujours ouvrir" doit être affichée ou non dans une invite de confirmation du lancement d'un protocole externe.
 
       Si cette règle est définie sur "True", lorsqu'une invite de confirmation de lancement d'un protocole externe s'affiche, l'utilisateur peut sélectionner l'option "Toujours autoriser" pour ignorer par la suite les invites de confirmation concernant son lancement.
@@ -940,6 +933,9 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> peut sélec
 <translation id="165769015320654523">Autoriser automatiquement ces sites à se connecter aux appareils HID correspondant aux ID produit et du fournisseur indiqués.</translation>
 <translation id="1659406551862245683">Le comportement par défaut du redimensionnement du clavier virtuel est modifié pour que la fenêtre d'affichage de mise en page soit redimensionnée</translation>
 <translation id="166427968280387991">Serveur proxy</translation>
+<translation id="1665033825018489686">Si cette règle est activée ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> autorise les connexions en mode Invité. Les connexions en mode Invité sont des profils <ph name="PRODUCT_NAME" /> où toutes les fenêtres s'ouvrent en mode navigation privée.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> n'autorise pas l'utilisation de profils invité.</translation>
 <translation id="1666001345366986837">Paramètres de la fonctionnalité d'arrière-plan de visioconférence par IA générative</translation>
 <translation id="1670638264428789878">Activer la fonctionnalité d'ensembles de sites Web associés</translation>
 <translation id="1671405606278443620">Paramètres de la recherche dans l'historique optimisée par l'IA</translation>
@@ -1487,6 +1483,15 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
         Si cette règle est activée ou si elle n'est pas configurée, la mise à jour des applications Chrome Kiosk en cours de session sera autorisée.
         </translation>
 <translation id="2082205219176343977">Configurer la version Chrome minimale autorisée de l'appareil.</translation>
+<translation id="2083016623552073519">Activer la traduction instantanée de sous-titres. Les sous-titres seront envoyés à Google pour être traduits.
+
+Si cette règle est activée, la traduction instantanée sera toujours activée.
+
+Si cette règle est désactivée, la traduction instantanée sera toujours désactivée.
+
+Si vous définissez cette règle comme obligatoire, les utilisateurs ne pourront ni la modifier, ni l'ignorer.
+
+Si cette règle n'est pas définie, la traduction instantanée sera initialement désactivée, mais les utilisateurs pourront l'activer à tout moment.</translation>
 <translation id="2083696311760456171">Ne pas autoriser la prédiction pour la saisie automatique.</translation>
 <translation id="20838788335877967">Désactiver les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="208566302163036794">Bloquer les fonctionnalités désactivées</translation>
@@ -6553,6 +6558,7 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
 <translation id="588135807064822874">Activer la fonctionnalité Appuyer pour rechercher</translation>
 <translation id="5882345429632338713">Délai avant le lancement du navigateur secondaire (en millisecondes)</translation>
 <translation id="5883015257301027298">Paramètre de cookies par défaut</translation>
+<translation id="5883631290631802010">Activer la traduction instantanée</translation>
 <translation id="5883754873839596178">Cette règle permet de spécifier le nombre maximal de connexions simultanées au serveur proxy. Toutefois, certains serveurs proxy ne peuvent pas gérer de nombreuses connexions simultanées par client. Pour résoudre ce problème, il suffit de diminuer la valeur de cette règle, laquelle doit être supérieure à 6 et inférieure à 100. Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes. Toute diminution de la valeur par défaut est effectuée à vos propres risques.
 
       Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.</translation>
@@ -7783,7 +7789,6 @@ Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</transl
       Avant la version 75, la spécification de plusieurs ID d'extension séparés par une virgule n'est pas possible et est donc ignorée. En revanche, le reste de la règle est appliqué.
 
       Remarque : cette règle concerne également les extensions et les applications à installer d'office via la règle <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="6731757988219967594">Filtrer les sites de premier niveau (mais pas les iFrame intégrés) présentant des contenus réservés aux adultes</translation>
 <translation id="6733851879899284032">
       Indique si SharedArrayBuffer peut être utilisé dans un contexte non isolé multi-origine. Pour des raisons de compatibilité Web, <ph name="PRODUCT_NAME" /> nécessitera un contexte isolé multi-origine lors de l'utilisation de SharedArrayBuffer à partir de <ph name="PRODUCT_NAME" /> 91 (25/05/2021). Pour en savoir plus, consultez https://developer.chrome.com/blog/enabling-shared-array-buffer/.
 
@@ -8023,6 +8028,7 @@ Si la règle est désactivée ou n'est pas configurée, le comportement par déf
 <translation id="6938424179790370595">Définissez cette règle sur "None" pour désactiver la loupe.
 
 Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si vous ne la définissez pas, la loupe est désactivée par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="6938524853892166974">Désactiver la traduction instantanée</translation>
 <translation id="6940243892299228102">Ne pas autoriser les utilisateurs à se servir de modèles de bureau</translation>
 <translation id="6943577887654905793">Nom de préférence Mac/Linux :</translation>
 <translation id="694602410134474029">Détermine si <ph name="PRODUCT_NAME" /> interagit avec les pilotes de l'imprimante via un processus de service distinct. Les appels d'impression de plate-forme pour interroger les imprimantes disponibles, obtenir les paramètres du pilote d'impression et envoyer des documents pour impression sur des imprimantes locales sont effectués via un processus de service. Retirer ces appels du processus du navigateur permet d'améliorer la stabilité et de réduire les blocages de l'UI dans l'aperçu avant impression.

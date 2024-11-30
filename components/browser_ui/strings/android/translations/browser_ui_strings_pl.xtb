@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Podaj adres internetowy</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Teraz możesz szybko uzyskać dostęp do sugerowanych kart poziomu z listy aplikacji na urządzeniu i wyników wyszukiwania na urządzeniu. W dowolnej chwili możesz to wyłączyć w ustawieniach Chrome.</translation>
 <translation id="6015775454662021376">Zarządzaj dostępem tej strony do Twojego urządzenia</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6042308850641462728">Więcej</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
 <translation id="7425915948813553151">Ciemny motyw witryn</translation>
+<translation id="7488573225650545859">Ukrywaj karty Widok na liście aplikacji</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Gdy ta opcja jest włączona, strony internetowe mogą wyświetlać prośby o zalogowanie. Gdy jest wyłączona, nie mogą wyświetlać takich próśb.</translation>
 <translation id="7553211568594248088">Zamknij wyszukiwanie w hubie</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Treść z <ph name="DOMAIN_NAME" /> dostarczana przez Google.</translation>
 <translation id="8088603949666785339">Więcej opcji w banerze <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Zmniejsza wydajność, ale sprawia, że mechanizm V8 jest bardziej odporny na ataki</translation>
+<translation id="8112925981674547014">Karty Widok na liście aplikacji</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome ponownie ograniczy pliki cookie jutro}few{Chrome ponownie ograniczy pliki cookie za # dni}many{Chrome ponownie ograniczy pliki cookie za # dni}other{Chrome ponownie ograniczy pliki cookie za # dnia}}</translation>
 <translation id="8116925261070264013">Wyciszone</translation>
 <translation id="8117244575099414087">Gdy ta opcja jest włączona, strony internetowe mogą używać czujników urządzenia. Gdy jest wyłączona, strony nie mogą używać czujników.</translation>

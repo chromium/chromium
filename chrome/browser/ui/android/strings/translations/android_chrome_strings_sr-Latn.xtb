@@ -978,6 +978,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5514904542973294328">Onemogućio je administrator ovog uređaja</translation>
 <translation id="5515439363601853141">Otključajte da biste pregledali lozinku</translation>
 <translation id="5517095782334947753">Imate obeleživače, lozinke i ostala podešavanja iz <ph name="FROM_ACCOUNT" /> naloga.</translation>
+<translation id="5517326820028369152">Donja tabela sa nedavnim aktivnostima</translation>
 <translation id="5524843473235508879">Preusmeravanje je blokirano.</translation>
 <translation id="5526281268548144413">Ne možete da zatvorite u više prozora</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Pre # min}one{Pre # min}few{Pre # min}other{Pre # min}}</translation>
@@ -1280,6 +1281,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6817747507826986771">Brzo delite ovu stranicu. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Ažuriranje Google menadžera lozinki je zatvoreno</translation>
+<translation id="6824933543577433709">Donja tabela sa nedavnim aktivnostima je zatvorena</translation>
 <translation id="6828070228333235514">Zaustavi praćenje cena</translation>
 <translation id="6830728435402077660">Nije bezbedno</translation>
 <translation id="6831043979455480757">Prevedi</translation>
@@ -1498,6 +1500,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7691043218961417207">Istražite sadržaj za praćenje</translation>
 <translation id="7697383401610880082">Identifikator za prevlačenje</translation>
 <translation id="7698359219371678927">Napišite imejl u aplikaciji <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">Donja tabela sa nedavnim aktivnostima je otvorena na celom ekranu</translation>
 <translation id="7707922173985738739">Koristi mobilne podatke</translation>
 <translation id="7709918231054955894">Preuzmite sve kartice</translation>
 <translation id="7733878270780732638">Nema dovoljno prostora na uređaju.</translation>

@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Introduza o endereço Web</translation>
 <translation id="5975083100439434680">Reduzir</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Agora, pode aceder rapidamente a separadores sugeridos a partir da lista de apps do seu dispositivo e nos resultados da pesquisa do dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="6015775454662021376">Controle o acesso deste site ao seu dispositivo.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>
+<translation id="7488573225650545859">Ocultar Ver separadores na lista de apps</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Quando esta opção está ativada, os sites podem mostrar pedidos de início de sessão. Quando esta opção está desativada, os sites não podem mostrar pedidos de início de sessão.</translation>
 <translation id="7553211568594248088">Sair da pesquisa do hub</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Este conteúdo é proveniente de <ph name="DOMAIN_NAME" />, fornecido pela Google.</translation>
 <translation id="8088603949666785339">Mais opções no <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Reduz o desempenho, mas torna o V8 mais resistente a ataques</translation>
+<translation id="8112925981674547014">Ver separadores na lista de apps</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{O Chrome vai limitar os cookies novamente amanhã}other{# dias até o Chrome limitar os cookies novamente}}</translation>
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="8117244575099414087">Quando esta opção está ativada, os sites podem usar os sensores do dispositivo. Quando esta opção está desativada, os sites não podem usar sensores.</translation>

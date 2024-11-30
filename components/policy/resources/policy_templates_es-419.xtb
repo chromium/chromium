@@ -276,13 +276,6 @@ Si habilitas la política, los usuarios podrán usar el hardware de los disposit
 <translation id="117080706484659953">Permitir la detección del alcance de la política en <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Habilitar los informes de la versión del dispositivo</translation>
 <translation id="1173493742686115032">Habilitar el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
-<translation id="1177567780207290133">Si estableces la política, esta controlará el filtro de URL de SafeSites, el cual utiliza la API de Google Safe Search para clasificar las URL como pornográficas o no.
-
-      Según el comportamiento buscado, establece uno de los siguientes valores para esta política.
-
-* No aplicar filtros de contenido para adultos a los sitios (o no estableces ningún valor): no se filtrarán los sitios
-
-* Aplicar filtros de contenido para adultos a los sitios principales: se filtrarán los sitios pornográficos</translation>
 <translation id="1177624681620856105"> Esta política determina si se muestra la casilla de verificación "Abrir siempre" en mensajes de confirmación de lanzamiento en protocolos externos.
 
       Si se establece esta política como verdadera o no se establece, cuando aparezca un mensaje de confirmación de un protocolo externo, el usuario podrá elegir la opción "Permitir siempre" para omitir todos los mensajes de confirmación futuros en este sitio web para el protocolo.
@@ -990,6 +983,9 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar 
 <translation id="165769015320654523">Otorgar permiso automáticamente a estos sitios para que se conecten a dispositivos HID con los ID de producto y proveedor correspondientes</translation>
 <translation id="1659406551862245683">Se modifica el comportamiento predeterminado de cambio de tamaño del teclado virtual para cambiar el tamaño del diseño del viewport</translation>
 <translation id="166427968280387991">Servidor proxy</translation>
+<translation id="1665033825018489686">Si habilitas esta política o no la configuras, <ph name="PRODUCT_NAME" /> habilitará los accesos de invitado. Los accesos de invitado son perfiles de <ph name="PRODUCT_NAME" /> en donde todas las ventanas están en el modo Incógnito.
+
+Si inhabilitas esta política, <ph name="PRODUCT_NAME" /> no permitirá que se inicien perfiles de invitado.</translation>
 <translation id="1666001345366986837">Configuración de la función Generative AI VC Background</translation>
 <translation id="1670638264428789878">Habilitar Conjuntos de sitios web relacionados</translation>
 <translation id="1671405606278443620">Configuración de AI-powered history search</translation>
@@ -1562,6 +1558,15 @@ Esta política suele estar inhabilitada para ofrecer protección frente al phish
         Si habilitas la política o no la estableces, se podrán actualizar las apps de Chrome para kiosco durante la sesión.
         </translation>
 <translation id="2082205219176343977">Configura la versión mínima permitida de Chrome para el dispositivo.</translation>
+<translation id="2083016623552073519">Habilita la traducción de subtítulos instantáneos. Los subtítulos se enviarán a Google para su traducción.
+
+Si habilitas esta política, la función Traducción instantánea estará siempre activada.
+
+Si la inhabilitas, la Traducción instantánea siempre estará desactivada.
+
+Si la estableces como obligatoria, los usuarios no podrán cambiarla ni anularla.
+
+Si no la estableces, la Traducción instantánea estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="2083696311760456171">No permitir la predicción de la función Autocompletar.</translation>
 <translation id="20838788335877967">Inhabilitar la generación de informes sobre la identificación de usuarios</translation>
 <translation id="208566302163036794">Bloquea las funciones inhabilitadas</translation>
@@ -6807,6 +6812,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="588135807064822874">Habilitar Tocar para buscar</translation>
 <translation id="5882345429632338713">Retraso antes de ejecutar otro navegador (milisegundos)</translation>
 <translation id="5883015257301027298">Configuración de cookies predeterminada</translation>
+<translation id="5883631290631802010">Habilitar la Traducción instantánea</translation>
 <translation id="5883754873839596178">Si estableces la política, se especificará la cantidad máxima de conexiones en simultáneo al servidor proxy. Algunos servidores proxy no pueden soportar una gran cantidad de conexiones en simultáneo por cliente. Para solucionar este problema, establece un valor más bajo para esta política. El valor debe ser menor a 100 y mayor a 6. Algunas apps web son conocidas por utilizar muchas conexiones con solicitudes GET pendientes. Por lo tanto, si estableces un valor menor a 32 es posible que la red del navegador quede pendiente si hay demasiadas apps web con conexiones pendientes abiertas. Usa un valor menor al valor predeterminado bajo tu responsabilidad.
 
       Si no estableces la política, se usará el valor predeterminado de 32.</translation>
@@ -8130,7 +8136,6 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
       Las versiones anteriores a la 75, que usan varios ID de extensiones separados por comas, no son compatibles y se omitirán. Se aplicará el resto de la política.
 
       Nota: Esta política también afecta a las extensiones y apps que se instalan de manera automática usando <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="6731757988219967594">Aplicar filtros de contenido para adultos a los sitios principales (pero no a los iframes incorporados)</translation>
 <translation id="6733851879899284032">
       Especifica si puede utilizarse la política SharedArrayBuffers en un contexto que no está aislado de orígenes cruzados. <ph name="PRODUCT_NAME" /> requerirá el aislamiento de origen cruzado cuando se utilice la política SharedArrayBuffers a partir de <ph name="PRODUCT_NAME" /> 91 (25-05-2021) por motivos de compatibilidad con la Web. Encontrarás información adicional en el siguiente sitio: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
 
@@ -8386,6 +8391,7 @@ el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 <translation id="6938424179790370595">Si estableces la política con el valor "None", se desactivará la lupa.
 
 Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, la lupa estará desactivada al principio, pero los usuarios podrán activarla en cualquier momento.</translation>
+<translation id="6938524853892166974">Inhabilitar la Traducción instantánea</translation>
 <translation id="6940243892299228102">No permitir que los usuarios utilicen plantillas de escritorio</translation>
 <translation id="6943577887654905793">Nombre de preferencia de Mac/Linux:</translation>
 <translation id="694602410134474029">Controla si <ph name="PRODUCT_NAME" /> interactúa con los controladores de las impresoras desde un proceso de servicio independiente. Las llamadas de impresión desde la plataforma para consultar las impresoras disponibles, obtener la configuración de los controladores de impresión y enviar documentos para imprimir en impresoras locales se realizan desde un proceso de servicio. Quitar esas llamadas del proceso del navegador ayuda a mejorar la estabilidad y reducir el comportamiento de IU bloqueada en la vista previa de impresión.

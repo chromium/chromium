@@ -280,6 +280,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1474576429883213321">Tozalash xizmatlari</translation>
 <translation id="1475299637784133125">Brauzer versiyasini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="1476595624592550506">Parolingizni almashtiring</translation>
+<translation id="1482372785911828880">Juda ingichka</translation>
 <translation id="1482879811280872320">Velosiped haydash</translation>
 <translation id="1483493594462132177">Yuborish</translation>
 <translation id="1484449009683144042">Bu tajribaviy AI yordamida yozish funksiyasi va ishlashida xatolar chiqishi mumkin.
@@ -1311,6 +1312,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3375754925484257129">Chrome xavfsizlik tekshiruvini bajarish</translation>
 <translation id="3377144306166885718">Server eskirgan TLS versiyasidan foydalanadi.</translation>
 <translation id="3377188786107721145">Siyosatni tekshirib chiqish vaqtida xatolik yuz berdi</translation>
+<translation id="3377642479079205807">Ingichka</translation>
 <translation id="3378612801784846695">Mavzular oxirgi ochilgan sahifalar tarixi asosida aniqlanadi va saytlar tomonidan shaxsingizni himoyalagan holda moslangan reklama chiqarishda ishlatiladi</translation>
 <translation id="3380365263193509176">Noma’lum xatolik</translation>
 <translation id="3380864720620200369">Mijoz-dastur identifikatori:</translation>
@@ -2481,6 +2483,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5481682542063333508">Matn yozishda yordam taklifi chiqsin</translation>
 <translation id="54817484435770891">To‘g‘ri manzilni kiriting</translation>
 <translation id="5483838506518938965">Hammasi tayyor</translation>
+<translation id="5485100387355669506">Juda qalin</translation>
 <translation id="5485973315555778056">Cloud kompyuteri</translation>
 <translation id="5488590678320979185">Qayd yaratish tugmasi, Google Keep yangi qaydini tez ochish uchun faollashtiring</translation>
 <translation id="5490432419156082418">Mazillar va boshqa ma’lumotlar</translation>
@@ -3664,6 +3667,7 @@ Batafsil axborot:
 <translation id="7599089013883397081">Yuklab olish vaqti tugadi</translation>
 <translation id="7608583484192556132">Chiqadigan reklama shu sozlama, <ph name="BEGIN_LINK_1" />sayt taklif qiladigan reklama<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cookie sozlamalari<ph name="END_LINK_2" /> hamda ochilgan saytda moslangan reklama chiqishi asosida moslashtiriladi. <ph name="BEGIN_LINK_3" />Reklamada maxfiylikni boshqarish<ph name="END_LINK_3" /> haqida batafsil.</translation>
 <translation id="7610193165460212391">Diapazondan tashqaridagi qiymat: <ph name="VALUE" />.</translation>
+<translation id="761261689936461781">Qalin</translation>
 <translation id="7613889955535752492">Muddati: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali parollaringizni boshqarish uchun avval Tab, keyin esa Enter tugmasini bosing</translation>
 <translation id="7616645509853975347">Brauzeringizda administrator tomonidan Chrome korporativ konnektorlari yoqilgan. Bu konnektorlar ayrim axborotlaringizdan foydalana oladi.</translation>

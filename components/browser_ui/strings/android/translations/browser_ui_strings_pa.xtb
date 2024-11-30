@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">ਵੈੱਬ ਪਤਾ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5975083100439434680">ਜ਼ੂਮ ਘਟਾਓ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">ਤੁਸੀਂ ਹੁਣ ਆਪਣੇ ਡੀਵਾਈਸ ਦੀ ਐਪ ਸੂਚੀ ਅਤੇ ਡੀਵਾਈਸ ਖੋਜ ਨਤੀਜਿਆਂ ਵਿੱਚ ਸੁਝਾਈਆਂ ਗਈਆਂ ਟੈਬਾਂ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ। ਇਸਨੂੰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਿਸੇ ਵੀ ਸਮੇਂ ਬੰਦ ਕਰੋ।</translation>
 <translation id="6015775454662021376">ਆਪਣੇ ਡੀਵਾਈਸ ਤੱਕ ਇਸ ਸਾਈਟ ਦੀ ਪਹੁੰਚ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
 <translation id="7423538860840206698">ਕਲਿੱਪਬੋਰਡ ਪੜ੍ਹਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7425915948813553151">ਸਾਈਟਾਂ ਲਈ ਗੂੜ੍ਹਾ ਥੀਮ</translation>
+<translation id="7488573225650545859">ਆਪਣੀ ਐਪ ਸੂਚੀ ਵਿੱਚ ਦੇਖਣ ਸੰਬੰਧੀ ਟੈਬਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਦਿਖਾ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਨਹੀਂ ਦਿਖਾ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="7553211568594248088">ਹੱਬ ਖੋਜ ਤੋਂ ਬਾਹਰ ਨਿਕਲੋ</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">ਇਸ ਸਮੱਗਰੀ <ph name="DOMAIN_NAME" /> ਵੱਲੋਂ ਹੈ, ਜਿਸਨੂੰ Google ਡਿਲੀਵਰ ਕਰਦਾ ਹੈ।</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> ਵਿੱਚ ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="8090579562279016251">ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਘਟਾਉਂਦਾ ਹੈ ਪਰ V8 ਨੂੰ ਅਟੈਕਾਂ ਪ੍ਰਤੀ ਵਧੇਰੇ ਰੋਧਕ ਬਣਾਉਂਦਾ ਹੈ</translation>
+<translation id="8112925981674547014">ਆਪਣੀ ਐਪ ਸੂਚੀ ਵਿੱਚ ਟੈਬਾਂ ਦੇਖੋ</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome ਕੁਕੀਜ਼ ਨੂੰ ਕੱਲ੍ਹ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ}one{Chrome ਕੁਕੀਜ਼ ਨੂੰ # ਦਿਨ ਵਿੱਚ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ}other{Chrome ਕੁਕੀਜ਼ ਨੂੰ # ਦਿਨਾਂ ਵਿੱਚ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ}}</translation>
 <translation id="8116925261070264013">ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8117244575099414087">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>

@@ -276,13 +276,6 @@ Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan hardware di per
 <translation id="117080706484659953">Mengizinkan deteksi cakupan kebijakan di <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Aktifkan pelaporan info versi perangkat</translation>
 <translation id="1173493742686115032">Aktifkan <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> di semua halaman web</translation>
-<translation id="1177567780207290133">Menyetel kebijakan akan mengontrol filter URL SafeSites, yang menggunakan Google Safe Search API untuk mengklasifikasikan URL sebagai pornografi atau bukan.
-
-      Saat kebijakan ini disetel ke:
-
-      * Jangan filter konten khusus dewasa dari situs, atau tidak disetel, situs tidak akan difilter
-
-      * Filter konten khusus dewasa dari situs level teratas, situs pornografi akan difilter</translation>
 <translation id="1177624681620856105"> Kebijakan ini mengontrol apakah kotak centang "Selalu buka" ditampilkan atau tidak pada perintah konfirmasi peluncuran protokol eksternal.
 
       Jika kebijakan ini ditetapkan ke Benar atau tidak ditetapkan, saat konfirmasi protokol eksternal ditampilkan, pengguna dapat memilih "Selalu izinkan" untuk melewati semua perintah konfirmasi pada waktu berikutnya di situs ini.
@@ -8153,7 +8146,6 @@ Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
       Versi lebih lama dari 75 yang menggunakan beberapa ID ekstensi yang dipisahkan koma tidak didukung dan akan dilewati. Kebijakan lainnya akan berlaku.
 
       Catatan: Kebijakan ini juga memengaruhi ekstensi dan aplikasi yang akan diinstal otomatis menggunakan <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="6731757988219967594">Filter konten khusus dewasa dari situs tingkat teratas (namun bukan iframe yang tersemat)</translation>
 <translation id="6733851879899284032">
       Menentukan apakah SharedArrayBuffer dapat digunakan dalam konteks yang tidak diisolasi lintas asal. <ph name="PRODUCT_NAME" /> akan memerlukan isolasi lintas asal saat menggunakan SharedArrayBuffer mulai dari <ph name="PRODUCT_NAME" /> 91 dan selanjutnya (25-05-2021) untuk alasan Kompatibilitas Web. Detail tambahan dapat ditemukan di: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
 

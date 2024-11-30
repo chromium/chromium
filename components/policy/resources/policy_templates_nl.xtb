@@ -265,13 +265,6 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
 <translation id="117080706484659953">Detectie van beleidsbereik toestaan op <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Rapportage voor versie-informatie van apparaat aanzetten</translation>
 <translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> aanzetten op alle webpagina's</translation>
-<translation id="1177567780207290133">Als je dit beleid instelt, wordt de toepassing van het SafeSites URL-filter beheerd. Dit filter gebruikt de Google Safe Search API om URL's al dan niet te classificeren als pornografisch.
-
-      Als dit beleid is ingesteld op:
-
-      * 'Sites niet filteren op content voor volwassenen', worden de sites niet gefilterd
-
-      * 'Sites op hoofdniveau filteren op content voor volwassenen', worden de sites gefilterd die zijn geclassificeerd als pornografisch.</translation>
 <translation id="1177624681620856105"> Met dit beleid wordt bepaald of het selectievakje 'Altijd openen' moet worden getoond in bevestigingsprompts voor externe protocolactivering.
 
       Als dit beleid is ingesteld op True of niet is ingesteld, kan de gebruiker, als er een bevestiging van een extern protocol wordt getoond, 'Altijd toestaan' selecteren om alle toekomstige bevestigingsprompts voor het protocol op deze site over te slaan.
@@ -7747,7 +7740,6 @@ Als je dit beleid instelt op True, wordt WebSQL in contexten van derden opnieuw 
       Versies vóór 75 die gebruikmaken van meerdere, door komma's gescheiden extensie-ID's worden niet ondersteund en worden overgeslagen. De rest van het beleid is van toepassing.
 
       Opmerking: Dit beleid is ook van invloed op extensies en apps die afgedwongen geïnstalleerd worden met <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="6731757988219967594">Sites op hoofdniveau (maar geen ingesloten iframes) filteren op content voor volwassenen</translation>
 <translation id="6733851879899284032">
       Geeft aan of SharedArrayBuffers kan worden gebruikt in een context zonder cross-origin-isolatie. Vanaf <ph name="PRODUCT_NAME" /> 91 (25-05-2021) vereist <ph name="PRODUCT_NAME" /> cross-origin-isolatie bij gebruik van SharedArrayBuffers vanwege redenen met webcompatibiliteit. Je kunt meer informatie bekijken op: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
 

@@ -1317,6 +1317,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6910211073230771657">Жойылды</translation>
 <translation id="6918398787259831832">Бұл мәселе қайталана берсе, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> провайдерінен <ph name="BEGIN_LINK" />қосымша ақпарат алыңыз<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome бұл рұқсаттарды өшірді, себебі сіз соңғы уақытта бұл сайтқа кірмегенсіз.</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 қойынды}other{<ph name="NUMBER_OF_TABS" /> қойынды}}</translation>
 <translation id="6929224077895306814">Құрылғы мен Google аккаунтында сақталған барлық қауіпсіздік коды жойылады.</translation>
 <translation id="6937524809504266803">Жекелендіру және байланыстыру</translation>
 <translation id="6937876069006524083">Лақап ат (міндетті емес)</translation>

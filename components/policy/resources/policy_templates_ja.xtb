@@ -257,13 +257,6 @@
 <translation id="117080706484659953"><ph name="MAC_OS_NAME" /> でポリシー スコープの検出を許可します</translation>
 <translation id="1171106901454883937">デバイスのバージョン情報の報告を有効にする</translation>
 <translation id="1173493742686115032">すべてのウェブページで <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> を有効にする</translation>
-<translation id="1177567780207290133">このポリシーでは、セーフサイトの URL フィルタを制御できます。このフィルタは、Google Safe Search API を使用して URL をポルノとそれ以外に分類します。
-
-      このポリシーには次の値を設定できます。
-
-      * アダルト コンテンツに基づくサイトの除外を行わない、または未設定: サイトの除外は行われません。
-
-      * アダルト コンテンツに基づいて最上位サイトを除外する: ポルノに分類されたサイトは除外されます。</translation>
 <translation id="1177624681620856105"> このポリシーでは、外部プロトコルの呼び出しに関する確認メッセージに [常に開く] チェックボックスを表示するかどうかを管理します。
 
       このポリシーを True に設定するか、未設定の場合、ユーザーは外部プロトコルに関する確認メッセージが表示されたときに [常に許可] を選択して、それ以降このサイトでのプロトコルに関する確認メッセージをスキップできます。
@@ -7467,7 +7460,6 @@ False に設定すると、P2P は使用されません。
       複数の拡張機能 ID をカンマで区切って指定している 75 より前のバージョンについてはサポートされておらず、スキップされます。ポリシーのその他の部分は適用されます。
 
       注: このポリシーは、<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> を使用して強制的にインストールされる拡張機能やアプリにも影響します。</translation>
-<translation id="6731757988219967594">アダルト コンテンツに基づいて最上位サイト（埋め込み iframe 以外）を除外する</translation>
 <translation id="6733851879899284032">
       クロスオリジン分離コンテキスト以外で SharedArrayBuffers を使用できるかどうかを指定します。ウェブの互換性に関する理由から、<ph name="PRODUCT_NAME" /> 91 以降（2021-05-25）では、SharedArrayBuffers を使用する際に <ph name="PRODUCT_NAME" /> でクロスオリジン分離が必要となります。詳しくはこちらをご覧ください。https://developer.chrome.com/blog/enabling-shared-array-buffer/
       有効に設定した場合、サイトで SharedArrayBuffers を制限なく使用できます。

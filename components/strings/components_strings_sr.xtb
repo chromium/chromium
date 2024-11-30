@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">Услуге чишћења</translation>
 <translation id="1475299637784133125">Тражите верзију прегледача? Посетите</translation>
 <translation id="1476595624592550506">Промените лозинку</translation>
+<translation id="1482372785911828880">Врло танка</translation>
 <translation id="1482879811280872320">Вожња бициклом</translation>
 <translation id="1483493594462132177">Пошаљи</translation>
 <translation id="1484449009683144042">Ово је експериментално средство вештачке интелигенције за помоћ при писању и није увек исправно.
@@ -1314,6 +1315,7 @@
 <translation id="3375754925484257129">Покрени Chrome проверу безбедности</translation>
 <translation id="3377144306166885718">Сервер користи застарелу верзију TLS-а.</translation>
 <translation id="3377188786107721145">Грешка при рашчлањивању смерница</translation>
+<translation id="3377642479079205807">Танка</translation>
 <translation id="3378612801784846695">Теме су засноване на недавној историји прегледања и сајтови их користе за приказивање персонализованих огласа уз заштиту вашег идентитета</translation>
 <translation id="3380365263193509176">Непозната грешка</translation>
 <translation id="3380864720620200369">ИД клијента:</translation>
@@ -2486,6 +2488,7 @@
 <translation id="5481682542063333508">Понуди помоћ за писање</translation>
 <translation id="54817484435770891">Додајте важећу адресу</translation>
 <translation id="5483838506518938965">Спремни сте</translation>
+<translation id="5485100387355669506">Врло дебела</translation>
 <translation id="5485973315555778056">Машина у клауду</translation>
 <translation id="5488590678320979185">Дугме Направите белешку, активирајте га да бисте брзо направили нову белешку у Google Keep-у</translation>
 <translation id="5490432419156082418">Адресе и друго</translation>
@@ -3670,6 +3673,7 @@
 <translation id="7599089013883397081">Време за преузимање је истекло</translation>
 <translation id="7608583484192556132">Да ли ћете видети персонализовани оглас може да зависи од много тога, укључујући ово подешавање, <ph name="BEGIN_LINK_1" />огласе које предлажу сајтови<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />подешавања колачића<ph name="END_LINK_2" /> и да ли сајт који прегледате персонализује огласе. Сазнајте више о <ph name="BEGIN_LINK_3" />управљању приватношћу са огласима<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Вредност је изван опсега <ph name="VALUE" />.</translation>
+<translation id="761261689936461781">Дебела</translation>
 <translation id="7613889955535752492">Истиче: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прегледали лозинке и управљали њима у подешавањима Chrome-а</translation>
 <translation id="7616645509853975347">Администратор је укључио Chrome Enterprise Connectors у прегледачу. Ови прикључци имају приступ неким вашим подацима.</translation>

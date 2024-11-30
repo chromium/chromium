@@ -265,13 +265,6 @@ DevTools 생성형 AI 기능에는 다음이 포함됩니다.
 <translation id="117080706484659953"><ph name="MAC_OS_NAME" />에서 정책 범위 감지 허용</translation>
 <translation id="1171106901454883937">기기 버전 정보 보고 사용 설정</translation>
 <translation id="1173493742686115032">모든 웹페이지에서 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> 사용 설정</translation>
-<translation id="1177567780207290133">이 정책을 설정하면 SafeSites URL 필터를 제어할 수 있습니다. 이 필터는 Google Safe Search API를 사용하여 음란물이 포함된 URL을 분류합니다.
-
-      정책 설정과 그 결과는 다음과 같습니다.
-
-      * '사이트에 성인용 콘텐츠 필터링을 적용하지 않음' 또는 설정하지 않음 - 사이트가 필터링되지 않습니다.
-
-      * '최상위 사이트에 성인용 콘텐츠 필터링 적용' - 음란물 사이트가 필터링됩니다.</translation>
 <translation id="1177624681620856105"> 이 정책은 '항상 열기' 체크박스를 외부 프로토콜 시작 확인 메시지에 표시할지 제어합니다.
 
       이 정책이 True로 설정되거나 설정되지 않으면 외부 프로토콜 확인이 표시될 경우 사용자는 '항상 허용'을 선택하여 이 사이트에 있는 프로토콜의 향후 모든 확인 메시지를 건너뛸 수 있습니다.
@@ -7900,7 +7893,6 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
       쉼표로 구분되는 확장 프로그램 ID를 여러 개 사용하는 75 이전 버전은 지원되지 않으며 건너뛰게 됩니다. 정책의 나머지 부분은 적용됩니다.
 
       참고: 이 정책은 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />로 강제 설치되는 확장 프로그램과 앱에도 영향을 미칩니다.</translation>
-<translation id="6731757988219967594">최상위 사이트(삽입된 iframe 제외)에 성인용 콘텐츠 필터링을 적용함</translation>
 <translation id="6733851879899284032">
       SharedArrayBuffers가 교차 출처 분리되지 않은 컨텍스트에서 사용될 수 있는지 지정합니다. <ph name="PRODUCT_NAME" />은 <ph name="PRODUCT_NAME" /> 91(2021년 5월 25일 출시) 이상에서 SharedArrayBuffers를 사용할 때 웹 호환성을 이유로 교차 출처 분리를 요구합니다. 자세한 내용은 다음 페이지에서 확인하세요.: https://developer.chrome.com/blog/enabling-shared-array-buffer/
 

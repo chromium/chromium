@@ -8021,7 +8021,7 @@
     Якщо <ph name="SUPERVISED_USER_NAME" /> ще не дуже добре читає, нехай повторює за вами. Шепочіть фрази не в мікрофон, щоб Асистент запам’ятав голос дитини, а не ваш.</translation>
 <translation id="6690659332373509948">Неможливо проаналізувати файл: <ph name="FILE_NAME" /></translation>
 <translation id="6691541770654083180">Земля</translation>
-<translation id="6691936601825168937">&amp;Переслати</translation>
+<translation id="6691936601825168937">&amp;Уперед</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 сторінка}one{{COUNT} сторінка}few{{COUNT} сторінки}many{{COUNT} сторінок}other{{COUNT} сторінки}}</translation>
 <translation id="6693820805264897502">замінити наявні паролі</translation>
 <translation id="6694462491298752106">Вбудовану сенсорну панель вимкнено</translation>

@@ -272,13 +272,6 @@ Se a política for ativada, os usuários poderão usar o hardware de dispositivo
 <translation id="117080706484659953">Permitir a detecção do escopo da política em <ph name="MAC_OS_NAME" />.</translation>
 <translation id="1171106901454883937">Ativar relatórios com informações sobre a versão do dispositivo</translation>
 <translation id="1173493742686115032">Ativar o <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> em todas as páginas da Web</translation>
-<translation id="1177567780207290133">Se a política for definida, será possível controlar o filtro de URL SafeSites que usa a API Google Safe Search para classificar URLs como sendo pornográficos ou não.
-
-      Quando a política for definida para:
-
-      * não filtrar sites com conteúdo adulto ou não for definida: os sites não serão filtrados;
-
-      * filtrar sites de nível superior com conteúdo adulto: sites pornográficos serão filtrados.</translation>
 <translation id="1177624681620856105"> Esta política controla se a caixa de seleção "Sempre aberto" é exibida ou não em prompts de confirmação para inicialização de protocolo externo.
 
       Se esta política for definida como verdadeira ou não for configurada, quando uma confirmação de protocolo externo for exibida, o usuário poderá selecionar "Sempre permitir" para pular todos os futuros prompts de confirmação para o protocolo nesse site.
@@ -991,6 +984,9 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
 <translation id="165769015320654523">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos HID com determinados IDs de fornecedores e de produtos.</translation>
 <translation id="1659406551862245683">O comportamento padrão de redimensionamento do teclado virtual é modificado para redimensionar a janela de visualização de layout</translation>
 <translation id="166427968280387991">Servidor proxy</translation>
+<translation id="1665033825018489686">Se esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> vai ativar os logins de visitantes. Logins de visitantes são perfis do <ph name="PRODUCT_NAME" /> em que todas as janelas estão no modo de navegação anônima.
+
+Se ela for desativada, o <ph name="PRODUCT_NAME" /> não vai permitir que perfis de visitantes sejam iniciados.</translation>
 <translation id="1666001345366986837">Configurações do recurso de segundo plano de IA generativa para videochamadas</translation>
 <translation id="1670638264428789878">Ativar conjuntos de sites relacionados</translation>
 <translation id="1671405606278443620">Configurações da pesquisa no histórico com tecnologia de IA</translation>
@@ -1564,6 +1560,15 @@ Normalmente, essa política fica desativada como defesa contra phishing.</transl
         Se a política for ativada ou deixada sem definição, a atualização de apps do Chrome para quiosque na sessão será feita.
         </translation>
 <translation id="2082205219176343977">Configurar a versão mínima permitida do Chrome para o dispositivo.</translation>
+<translation id="2083016623552073519">Ative a tradução da Legenda instantânea. As legendas serão enviadas ao Google para tradução.
+
+Se esta política for ativada, a Tradução instantânea ficará sempre ativada.
+
+Se ela for desativada, a Tradução instantânea também ficará desativada.
+
+Se for definida como obrigatória, o usuário não poderá mudar nem substituir essa política.
+
+Se for deixada sem definição, a Tradução instantânea ficará desativada inicialmente, mas poderá ser ativada pelo usuário a qualquer momento.</translation>
 <translation id="2083696311760456171">Não permitir a previsão de preenchimento automático.</translation>
 <translation id="20838788335877967">Desativar relatórios sobre informações de identificação do usuário</translation>
 <translation id="208566302163036794">Bloquear recursos desativados</translation>
@@ -5132,7 +5137,7 @@ No caso de dispositivos não gerenciados, o usuário pode decidir enviar as mét
 <translation id="4694138212536142867">Ativar relatórios sobre o status de hardware do dispositivo</translation>
 <translation id="4697581738794063407">Controlar o recurso de filtro do parâmetro de URL</translation>
 <translation id="4698895924806859508">Não informar eventos de rede</translation>
-<translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
+<translation id="4699172675775169585">Imagens e arquivos em cache</translation>
 <translation id="4699592681017489215">Esta política configura um interruptor local que pode ser usado para desativar verificações de interceptação de DNS. As verificações tentam descobrir se o navegador está por trás de um proxy que redireciona nomes de host desconhecidos.
 
       Essa detecção pode não ser necessária em um ambiente empresarial em que a configuração de rede é conhecida, já que isso causa certo tráfego HTTP e DNS na inicialização e a cada mudança de configuração do DNS.
@@ -6803,6 +6808,7 @@ e serão desativadas por padrão se a política não for definida. Se você defi
 <translation id="588135807064822874">Ativar "Pesquisa por toque"</translation>
 <translation id="5882345429632338713">Atraso para iniciar um navegador alternativo (milésimos de segundo)</translation>
 <translation id="5883015257301027298">Configuração de cookies padrão</translation>
+<translation id="5883631290631802010">Ativar a Tradução instantânea</translation>
 <translation id="5883754873839596178">Se a política for definida, o número máximo de conexões simultâneas ao servidor proxy será especificado. Alguns servidores proxy não podem administrar um grande número de conexões simultâneas por cliente, o que pode ser resolvido com a definição de um número menor para esta política. Defina um valor inferior a 100 e superior a 6. Alguns apps da Web são conhecidos por consumir muitas conexões com GETs irresponsivos, então definir um valor inferior a 32 pode gerar deslocamentos na rede do navegador caso haja muitos apps da Web com conexões deslocadas abertas. A definição de valores inferiores ao padrão fica por sua conta e risco.
 
       Se a política não for definida, o valor padrão de 32 será usado.</translation>
@@ -8120,7 +8126,6 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
       Versões anteriores à 75 que usam vários IDs de extensão separados por vírgulas não são compatíveis e serão ignoradas. O restante da política estará em vigor.
 
       Observação: esta política também afeta extensões e apps de instalação forçada que usam <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
-<translation id="6731757988219967594">Filtrar sites de nível superior (exceto iframes incorporados) com conteúdo adulto</translation>
 <translation id="6733851879899284032">
       Especifica se os objetos SharedArrayBuffers podem ser usados em um contexto sem isolamento entre origens. Da versão 91 (25/05/2021) em diante, o <ph name="PRODUCT_NAME" /> vai exigir o isolamento entre origens ao usar os SharedArrayBuffers do <ph name="PRODUCT_NAME" /> por motivos de compatibilidade na Web. Veja mais detalhes em: https://developer.chrome.com/blog/enabling-shared-array-buffer/ (link em inglês).
 
@@ -8374,6 +8379,7 @@ bloqueio dessas solicitações será aplicado.</translation>
 <translation id="6938424179790370595">Se a política for definida como "Nenhuma", a lupa será desativada.
 
 Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, a lupa será inicialmente desativada, mas os usuários poderão ativá-la quando quiserem.</translation>
+<translation id="6938524853892166974">Desativar a Tradução instantânea</translation>
 <translation id="6940243892299228102">Não permitir que os usuários usem modelos de espaço de trabalho</translation>
 <translation id="6943577887654905793">Nome de preferência Mac/Linux:</translation>
 <translation id="694602410134474029">Controla se o <ph name="PRODUCT_NAME" /> interage com os drivers de impressora de um processo de serviço separado. As chamadas de impressão da plataforma são feitas com base em um processo de serviço. Elas são usadas para consultar as impressoras disponíveis, acessar as configurações do driver de impressão e enviar documentos para impressoras locais. Remover essas chamadas do processo do navegador ajuda a melhorar a estabilidade e reduzir o comportamento congelado da interface na visualização da impressão.

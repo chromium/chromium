@@ -280,6 +280,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1474576429883213321">Upratovacie služby</translation>
 <translation id="1475299637784133125">Hľadáte verziu prehliadača? Prejdite na</translation>
 <translation id="1476595624592550506">Zmeňte heslo</translation>
+<translation id="1482372785911828880">Extra tenký</translation>
 <translation id="1482879811280872320">Bicyklovanie</translation>
 <translation id="1483493594462132177">Odoslať</translation>
 <translation id="1484449009683144042">Toto je experimentálna funkcia na pomoc s písaním, ktorá využíva umelú inteligenciu a nie vždy funguje správne.
@@ -1311,6 +1312,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3375754925484257129">Spustiť kontrolu bezpečnosti Chromu</translation>
 <translation id="3377144306166885718">Daný server používa zastaranú verziu protokolu TLS.</translation>
 <translation id="3377188786107721145">Chyba analýzy pravidla</translation>
+<translation id="3377642479079205807">Tenký</translation>
 <translation id="3378612801784846695">Témy sú založené na vašej nedávnej histórii prehliadania a weby vám na základe nich zobrazujú prispôsobené reklamy, pričom zároveň chránia vašu totožnosť</translation>
 <translation id="3380365263193509176">Neznáma chyba</translation>
 <translation id="3380864720620200369">ID klienta:</translation>
@@ -2482,6 +2484,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5481682542063333508">Ponuka pomoci s písaním</translation>
 <translation id="54817484435770891">Pridanie platnej adresy</translation>
 <translation id="5483838506518938965">Všetko je nastavené</translation>
+<translation id="5485100387355669506">Extra hrubý</translation>
 <translation id="5485973315555778056">Počítač cloudu</translation>
 <translation id="5488590678320979185">Tlačidlo Vytvoriť poznámku, ktorého aktivovaním rýchlo vytvoríte novú poznámku v službe Google Keep</translation>
 <translation id="5490432419156082418">Adresy a ďalšie údaje</translation>
@@ -3666,6 +3669,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7599089013883397081">Vypršal čas stiahnutia</translation>
 <translation id="7608583484192556132">Zobrazenie prispôsobenej reklamy môže závisieť od mnohých faktorov vrátane tohto nastavenia, <ph name="BEGIN_LINK_1" />reklám navrhovaných webmi<ph name="END_LINK_1" />, vašich <ph name="BEGIN_LINK_2" />nastavení súborov cookie<ph name="END_LINK_2" /> a od toho, či web, ktorý prehliadate, prispôsobuje reklamy. Prečítajte si viac o <ph name="BEGIN_LINK_3" />správe ochrany súkromia pri reklamách<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Hodnota (<ph name="VALUE" />) presahuje povolený rozsah.</translation>
+<translation id="761261689936461781">Hrubý</translation>
 <translation id="7613889955535752492">Dátum vypršania platnosti: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter môžete zobraziť a spravovať heslá v nastaveniach Chromu</translation>
 <translation id="7616645509853975347">Správca vypol vo vašom prehliadači Chrome Enterprise Connectors. Tieto konektory majú prístup k niektorým vašim údajom.</translation>

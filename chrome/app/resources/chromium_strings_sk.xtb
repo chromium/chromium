@@ -441,7 +441,6 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6847869444787758381">Ak budú vaše heslá napadnuté, Chromium vám to oznámi</translation>
 <translation id="684888714667046800">Nedá sa pripojiť k internetu. Ak používate firewall, uistite sa, že <ph name="PRODUCT_EXE_NAME" /> je v zozname povolených.</translation>
-<translation id="685279860330610299">Chromium dokáže porozumieť viacerým typom informácií a rýchlejšie automaticky dopĺňať formuláre. Ďalšie informácie o <ph name="BEGIN_LINK" />automatickom dopĺňaní v Chrome<ph name="END_LINK" /></translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Prehliadač Chromium zistil, že <ph name="EXTENSION_NAME" /> obsahuje malvér</translation>
 <translation id="6896758677409633944">Kopírovať</translation>

@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Masukkan alamat web</translation>
 <translation id="5975083100439434680">Zum keluar</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Kini anda boleh mengakses tab yang dicadangkan dengan pantas daripada senarai apl peranti anda dan dalam hasil carian peranti. Matikan ciri ini pada bila-bila masa dalam tetapan Chrome.</translation>
 <translation id="6015775454662021376">Kawal akses tapak ini kepada peranti anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lagi</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Tanya dahulu</translation>
 <translation id="7423538860840206698">Disekat daripada membaca papan keratan</translation>
 <translation id="7425915948813553151">Tema gelap untuk laman</translation>
+<translation id="7488573225650545859">Sembunyikan Lihat tab dalam senarai apl anda</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Apabila dihidupkan, laman dapat memaparkan gesaan log masuk. Apabila dimatikan, laman tidak dapat memaparkan gesaan log masuk.</translation>
 <translation id="7553211568594248088">Keluar daripada carian hab</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Kandungan ini adalah daripada <ph name="DOMAIN_NAME" />, disampaikan oleh Google.</translation>
 <translation id="8088603949666785339">Lagi pilihan dalam <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Mengurangkan prestasi tetapi menjadikan V8 lebih tahan kepada serangan</translation>
+<translation id="8112925981674547014">Lihat tab dalam senarai apl anda</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome akan mengehadkan kuki lagi esok}other{# hari sehingga Chrome mengehadkan kuki lagi}}</translation>
 <translation id="8116925261070264013">Diredam</translation>
 <translation id="8117244575099414087">Apabila dihidupkan, laman dapat menggunakan penderia peranti anda. Apabila dimatikan, laman tidak dapat menggunakan penderia.</translation>

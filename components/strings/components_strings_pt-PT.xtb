@@ -280,6 +280,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1474576429883213321">Serviços de limpeza</translation>
 <translation id="1475299637784133125">Está à procura da versão do navegador? Visite</translation>
 <translation id="1476595624592550506">Altere a palavra-passe</translation>
+<translation id="1482372785911828880">Extra fino</translation>
 <translation id="1482879811280872320">Ciclismo</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484449009683144042">Este é um auxiliar de escrita de IA experimental e nem sempre acerta.
@@ -1314,6 +1315,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3375754925484257129">Executar verificação de segurança do Chrome</translation>
 <translation id="3377144306166885718">O servidor utilizou uma versão obsoleta do TLS.</translation>
 <translation id="3377188786107721145">Erro de análise da política</translation>
+<translation id="3377642479079205807">Fino</translation>
 <translation id="3378612801784846695">Os tópicos baseiam-se no seu histórico de navegação recente e são usados pelos sites para lhe mostrar anúncios personalizados e proteger a sua identidade</translation>
 <translation id="3380365263193509176">Erro desconhecido</translation>
 <translation id="3380864720620200369">ID do Cliente:</translation>
@@ -2486,6 +2488,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5481682542063333508">Oferecer ajuda na escrita</translation>
 <translation id="54817484435770891">Adicionar endereço válido</translation>
 <translation id="5483838506518938965">O processo está concluído</translation>
+<translation id="5485100387355669506">Extra grosso</translation>
 <translation id="5485973315555778056">Computador da nuvem</translation>
 <translation id="5488590678320979185">Botão Criar nota; ative para criar rapidamente uma nova nota no Google Keep</translation>
 <translation id="5490432419156082418">Moradas e Mais</translation>
@@ -3670,6 +3673,7 @@ Detalhes adicionais:
 <translation id="7599089013883397081">A transferência excedeu o tempo limite</translation>
 <translation id="7608583484192556132">A personalização de um anúncio que lhe é mostrado pode depender de vários fatores, incluindo esta definição, os <ph name="BEGIN_LINK_1" />anúncios sugeridos por sites<ph name="END_LINK_1" />, as <ph name="BEGIN_LINK_2" />definições de cookies<ph name="END_LINK_2" /> e se o site que está a ver personaliza anúncios. Saiba mais sobre a <ph name="BEGIN_LINK_3" />gestão da privacidade dos anúncios<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">O valor está fora do intervalo <ph name="VALUE" /> .</translation>
+<translation id="761261689936461781">Grosso</translation>
 <translation id="7613889955535752492">Exp.: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para ver e gerir as suas palavras-passe nas Definições do Chrome.</translation>
 <translation id="7616645509853975347">O seu administrador ativou os Chrome Enterprise Connectors no navegador. Estes conetores têm acesso a alguns dos seus dados.</translation>

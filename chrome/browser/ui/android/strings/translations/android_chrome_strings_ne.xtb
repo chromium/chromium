@@ -1316,6 +1316,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6910211073230771657">मेटाइएको</translation>
 <translation id="6918398787259831832">यो समस्या अझै पनि देखिएको खण्डमा <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> बाट <ph name="BEGIN_LINK" />थप जानकारी प्राप्त गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> तपाईंले हालसालै यो साइट नखोल्नुभएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{एउटा ट्याब}other{<ph name="NUMBER_OF_TABS" /> वटा ट्याब}}</translation>
 <translation id="6929224077895306814">तपाईंको डिभाइस र Google खातामा सेभ गरिएका सबै सेक्युरिटी कोडहरू मेटाइने छन्</translation>
 <translation id="6937524809504266803">पर्सनलाइज र लिंक गर्ने सुविधा</translation>
 <translation id="6937876069006524083">उपनाम (ऐच्छिक)</translation>

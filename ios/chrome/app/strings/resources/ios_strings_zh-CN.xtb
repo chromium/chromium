@@ -34,7 +34,7 @@
 <translation id="1121850836842642159">照片和图片</translation>
 <translation id="1125564390852150847">创建新的标签页。</translation>
 <translation id="1126696498560056882">管理此设备上的账号</translation>
-<translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
+<translation id="1126809382673880764">不会防范危险的网站、下载内容和扩展程序。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
 <translation id="1142371195993008685">关闭“<ph name="FEATURE_NAME" />”的通知</translation>
 <translation id="1147031633655575115">目前的登录者是：<ph name="USER" /></translation>
 <translation id="1149401351239820326">到期月份</translation>
@@ -395,7 +395,7 @@
 您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="269819437389494246">您可以查看自己访问过的网页，也可将它们从历史记录中删除</translation>
 <translation id="2704606927547763573">已复制</translation>
-<translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动保护您免受危险网站、下载内容和扩展程序的侵害</translation>
+<translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动防范危险的网站、下载内容和扩展程序</translation>
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="271033894570825754">新</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
@@ -1223,7 +1223,7 @@
 <translation id="6536759809440150308">打开“<ph name="GROUP_TITLE" />”，分组包含 <ph name="NUMBER_OF_TABS" />，<ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">选项</translation>
-<translation id="6550891580932862748">不会保护您免受危险网站、下载内容和扩展程序的侵害。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
+<translation id="6550891580932862748">不会防范危险的网站、下载内容和扩展程序。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
 <translation id="6559301491397835130">{count,plural, =1{书签已保存到“{title}”，而且只保存在此设备上。}other{这些书签已保存到“{title}”，而且只保存在此设备上。}}</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6571070086367343653">修改信用卡</translation>
