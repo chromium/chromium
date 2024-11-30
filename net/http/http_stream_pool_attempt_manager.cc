@@ -892,6 +892,10 @@ void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
 
 void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     std::optional<size_t> max_attempts) {
+  if (is_failing_) {
+    return;
+  }
+
   if (PendingJobCount() == 0 && preconnects_.empty()) {
     // There are no jobs waiting for streams.
     return;
@@ -913,8 +917,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   CHECK(!preconnects_.empty() || group_->IdleStreamSocketCount() == 0);
 
   // TODO(crbug.com/346835898): Ensure that we don't attempt connections when
-  // failing or creating HttpStream on top of a SPDY session.
-  CHECK(!is_failing_);
+  // creating HttpStream on top of a SPDY session.
   CHECK(!spdy_session_);
 
   std::optional<IPEndPoint> ip_endpoint = GetIPEndPointToAttempt();

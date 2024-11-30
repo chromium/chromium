@@ -6,6 +6,7 @@
 
 #include <list>
 #include <memory>
+#include <queue>
 #include <set>
 #include <string>
 #include <string_view>
@@ -1220,6 +1221,79 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequestCancelledBeforeAttemptSuccess) {
 
   Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+}
+
+// This test simulates a situation where:
+// * AttemptManager has jobs (requests) more than the limit.
+// * An attempt fails with a cert error.
+// * QuicTask fails immediately after the attempt failed.
+// Ensures that we don't attempt any further connections.
+TEST_F(HttpStreamPoolAttemptManagerTest, DoNotAttemptWhileFailing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // Prepare QUIC data.
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  // Create requests and mock connects more than the group limit.
+  std::queue<std::unique_ptr<StreamRequester>> requesters;
+  std::vector<std::unique_ptr<SequencedSocketData>> data_providers;
+  std::queue<std::unique_ptr<MockConnectCompleter>> ssl_completers;
+  std::vector<std::unique_ptr<SSLSocketDataProvider>> ssl_providers;
+  for (size_t i = 0; i < pool().max_stream_sockets_per_group() + 1; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+
+    auto completer = std::make_unique<MockConnectCompleter>();
+    auto ssl = std::make_unique<SSLSocketDataProvider>(completer.get());
+    ssl->cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+    ssl->cert_request_info->host_and_port =
+        HostPortPair::FromString(kDefaultServerName);
+    socket_factory()->AddSSLSocketDataProvider(ssl.get());
+    ssl_completers.push(std::move(completer));
+    ssl_providers.emplace_back(std::move(ssl));
+
+    auto requester = std::make_unique<StreamRequester>();
+    requester->set_destination(kDefaultDestination)
+        .set_quic_version(quic_version());
+    StreamRequester* raw_requester = requester.get();
+    requesters.push(std::move(requester));
+    raw_requester->RequestStream(pool());
+    ASSERT_FALSE(raw_requester->result().has_value());
+  }
+
+  // Fail the first TLS attempt with the client cert needed error. The
+  // corresponding AttemptManager enters failing mode.
+  std::unique_ptr<MockConnectCompleter> first_ssl_completer =
+      std::move(ssl_completers.front());
+  ssl_completers.pop();
+  first_ssl_completer->Complete(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+
+  // Fail the QUIC task. This should not result in attempting TCP-based
+  // protocols since we already had the cert error.
+  quic_completer.Complete(ERR_QUIC_PROTOCOL_ERROR);
+
+  // Confirm all requests fail with the error.
+  while (!requesters.empty()) {
+    std::unique_ptr<StreamRequester> requester = std::move(requesters.front());
+    requesters.pop();
+    requester->WaitForResult();
+    EXPECT_THAT(requester->result(),
+                Optional(IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED)));
+  }
+
+  // Clear `ssl_providers` to avoid dangling pointers to MockConnectCompleters.
+  ssl_providers.clear();
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, OneIPEndPointFailed) {
