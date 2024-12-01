@@ -115,6 +115,6 @@ if (is_mac) {
   proto_library("channel_mac_proto") {
     proto_in_dir = "//"
     sources = [ "data/channel_mac/channel_mac.proto" ]
-    link_deps = [ "//testing/libfuzzer/fuzzers/mach:proto" ]
+    deps = [ "//testing/libfuzzer/fuzzers/mach:proto" ]
   }
 }
