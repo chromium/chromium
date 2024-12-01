@@ -203,9 +203,9 @@ void ManagePasswordsBubbleController::OnMovePasswordLinkClicked() {
 base::span<std::unique_ptr<password_manager::PasswordForm> const>
 ManagePasswordsBubbleController::GetCredentials() const {
   if (!delegate_) {
-    return base::span<std::unique_ptr<password_manager::PasswordForm> const>();
+    return {};
   }
-  return base::make_span(delegate_->GetCurrentForms());
+  return base::span(delegate_->GetCurrentForms());
 }
 
 const password_manager::PasswordForm&

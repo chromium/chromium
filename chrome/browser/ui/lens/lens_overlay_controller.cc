@@ -2736,8 +2736,8 @@ void LensOverlayController::HandleSuggestInputsResponse(
 
 void LensOverlayController::HandleThumbnailCreated(
     const std::string& thumbnail_bytes) {
-  selected_region_thumbnail_uri_ = webui::MakeDataURIForImage(
-      base::as_bytes(base::make_span(thumbnail_bytes)), "jpeg");
+  selected_region_thumbnail_uri_ =
+      webui::MakeDataURIForImage(base::as_byte_span(thumbnail_bytes), "jpeg");
   SetSearchboxThumbnail(selected_region_thumbnail_uri_);
 }
 
