@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <array>
 #include <concepts>
+#include <functional>
 #include <initializer_list>
 #include <iosfwd>
 #include <iterator>
@@ -341,15 +342,6 @@ template <typename T>
 inline constexpr size_t kComputedExtent =
     kComputedExtentImpl<std::remove_cvref_t<T>>;
 
-// Converts an iterator to an integral value.
-//
-// This is necessary when comparing iterators from different spans, since
-// comparing pointers from different allocations is UB.
-template <typename T>
-constexpr uintptr_t AsUintptrT(const T& t) {
-  return reinterpret_cast<uintptr_t>(to_address(t));
-}
-
 template <typename ByteType,
           typename ElementType,
           size_t Extent,
@@ -503,10 +495,21 @@ class GSL_POINTER span {
   constexpr void copy_from(span<const element_type, extent> other)
     requires(!std::is_const_v<element_type>)
   {
-    if (internal::AsUintptrT(begin()) <= internal::AsUintptrT(other.begin())) {
-      std::ranges::copy(other, begin());
+    if (std::is_constant_evaluated()) {
+      // Comparing pointers to different objects at compile time yields
+      // unspecified behavior, which would halt compilation. Instead,
+      // unconditionally use a separate buffer in the constexpr context. This
+      // would be inefficient at runtime, but that's irrelevant.
+      std::vector<element_type> vec(other.begin(), other.end());
+      std::ranges::copy(vec, begin());
     } else {
-      std::ranges::copy_backward(other, end());
+      // Using `<=` to compare pointers to different allocations is UB, but
+      // using `std::less_equal` is well-defined ([comparisons.general]).
+      if (std::less_equal{}(to_address(begin()), to_address(other.begin()))) {
+        std::ranges::copy(other, begin());
+      } else {
+        std::ranges::copy_backward(other, end());
+      }
     }
   }
   template <typename R, size_t N = internal::kComputedExtent<R>>
@@ -530,8 +533,18 @@ class GSL_POINTER span {
       span<const element_type, extent> other)
     requires(!std::is_const_v<element_type>)
   {
-    DCHECK(internal::AsUintptrT(end()) <= internal::AsUintptrT(other.begin()) ||
-           internal::AsUintptrT(begin()) >= internal::AsUintptrT(other.end()));
+    // Comparing pointers to different objects at compile time yields
+    // unspecified behavior, which would halt compilation. Instead implement in
+    // terms of the guaranteed-safe behavior; performance is irrelevant in the
+    // constexpr context.
+    if (std::is_constant_evaluated()) {
+      copy_from(other);
+      return;
+    }
+
+    // See comments in `copy_from()` re: use of templated comparison objects.
+    DCHECK(std::less_equal{}(to_address(end()), to_address(other.begin())) ||
+           std::greater_equal{}(to_address(begin()), to_address(other.end())));
     std::ranges::copy(other, begin());
   }
   template <typename R, size_t N = internal::kComputedExtent<R>>
@@ -958,10 +971,21 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     requires(!std::is_const_v<element_type>)
   {
     CHECK_EQ(size(), other.size());
-    if (internal::AsUintptrT(begin()) <= internal::AsUintptrT(other.begin())) {
-      std::ranges::copy(other, begin());
+    if (std::is_constant_evaluated()) {
+      // Comparing pointers to different objects at compile time yields
+      // unspecified behavior, which would halt compilation. Instead,
+      // unconditionally use a separate buffer in the constexpr context. This
+      // would be inefficient at runtime, but that's irrelevant.
+      std::vector<element_type> vec(other.begin(), other.end());
+      std::ranges::copy(vec, begin());
     } else {
-      std::ranges::copy_backward(other, end());
+      // Using `<=` to compare pointers to different allocations is UB, but
+      // using `std::less_equal` is well-defined ([comparisons.general]).
+      if (std::less_equal{}(to_address(begin()), to_address(other.begin()))) {
+        std::ranges::copy(other, begin());
+      } else {
+        std::ranges::copy_backward(other, end());
+      }
     }
   }
 
@@ -972,9 +996,19 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   constexpr void copy_from_nonoverlapping(span<const element_type> other)
     requires(!std::is_const_v<element_type>)
   {
+    // Comparing pointers to different objects at compile time yields
+    // unspecified behavior, which would halt compilation. Instead implement in
+    // terms of the guaranteed-safe behavior; performance is irrelevant in the
+    // constexpr context.
+    if (std::is_constant_evaluated()) {
+      copy_from(other);
+      return;
+    }
+
     CHECK_EQ(size(), other.size());
-    DCHECK(internal::AsUintptrT(end()) <= internal::AsUintptrT(other.begin()) ||
-           internal::AsUintptrT(begin()) >= internal::AsUintptrT(other.end()));
+    // See comments in `copy_from()` re: use of templated comparison objects.
+    DCHECK(std::less_equal{}(to_address(end()), to_address(other.begin())) ||
+           std::greater_equal{}(to_address(begin()), to_address(other.end())));
     std::ranges::copy(other, begin());
   }
 

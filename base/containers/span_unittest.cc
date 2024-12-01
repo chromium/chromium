@@ -2316,6 +2316,23 @@ TEST(SpanTest, CopyFrom) {
     left.copy_from(left);
     EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));
   }
+
+  // Verify that `copy_from()` works in a constexpr context.
+  static constexpr auto s = span_from_cstring("abc");
+  static constexpr auto fixed_c = [] {
+    char arr[3];
+    span<char, 3> arr_s(arr);
+    arr_s.copy_from(s);
+    return arr_s[1];
+  }();
+  static_assert(fixed_c == 'b');
+  static constexpr auto dynamic_c = [] {
+    char arr[3];
+    span<char, dynamic_extent> arr_s(arr);
+    arr_s.copy_from(s);
+    return arr_s[2];
+  }();
+  static_assert(dynamic_c == 'c');
 }
 
 TEST(SpanTest, CopyFromNonoverlapping) {
@@ -2362,6 +2379,23 @@ TEST(SpanTest, CopyFromNonoverlapping) {
     dynamic_span.first(1u).copy_from_nonoverlapping(span(source).last(1u));
     EXPECT_THAT(vec, ElementsAre(9, 9, 6));
   })
+
+  // Verify that `copy_from_nonoverlapping()` works in a constexpr context.
+  static constexpr auto s = span_from_cstring("abc");
+  static constexpr auto fixed_c = [] {
+    char arr[3];
+    span<char, 3> arr_s(arr);
+    arr_s.copy_from_nonoverlapping(s);
+    return arr_s[1];
+  }();
+  static_assert(fixed_c == 'b');
+  static constexpr auto dynamic_c = [] {
+    char arr[3];
+    span<char, dynamic_extent> arr_s(arr);
+    arr_s.copy_from_nonoverlapping(s);
+    return arr_s[2];
+  }();
+  static_assert(dynamic_c == 'c');
 }
 
 TEST(SpanTest, CopyFromConversion) {
