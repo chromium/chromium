@@ -596,11 +596,6 @@
       status: "stable",
     },
     {
-      // crbug.com/371615505
-      name: "BreakIteratorHyphenMinus",
-      status: "stable",
-    },
-    {
       name: "BrowserVerifiedUserActivationKeyboard",
       base_feature: "none",
       public: true,
