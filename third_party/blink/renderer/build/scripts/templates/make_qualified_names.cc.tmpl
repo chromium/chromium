@@ -64,8 +64,7 @@ void Init() {
 
   // Namespace
   // Use placement new to initialize the globals.
-  AtomicString ns_uri("{{namespace_uri}}");
-  new ((void*)&{{namespace_prefix}}NamespaceURI) AtomicString(ns_uri);
+  new ((void*)&{{namespace_prefix}}NamespaceURI) AtomicString("{{namespace_uri}}");
 
   {% set tagnames = tags|map(attribute='name')|list() %}
   {% set attrnames = attrs|map(attribute='name')|list() %}
@@ -84,7 +83,7 @@ void Init() {
     {% if tags %}
     if (kNames[i].is_tag) {
       void* address = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage) + tag_i;
-      QualifiedName::CreateStatic(address, impl, ns_uri);
+      QualifiedName::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
       ++tag_i;
     }
 
@@ -93,7 +92,7 @@ void Init() {
     {% endif %}
     void* address = reinterpret_cast<QualifiedName*>(&attr_storage) + attr_i;
     {% if use_namespace_for_attrs %}
-    QualifiedName::CreateStatic(address, impl, ns_uri);
+    QualifiedName::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
     {% else %}
     QualifiedName::CreateStatic(address, impl);
     {% endif %}
