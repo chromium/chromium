@@ -2770,7 +2770,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'tB2YuoBZq9AHy6CyefPG8CbXLBKmIT9wtVqkBJCrSSkC',
+        'version': '0FuVT0Pn629DSv1k7pVmp_aF4wTAbkdij3gVPxzoX7YC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
