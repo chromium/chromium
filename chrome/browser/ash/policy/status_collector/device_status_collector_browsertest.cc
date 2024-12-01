@@ -2259,15 +2259,6 @@ TEST_F(DeviceStatusCollectorTest, CrostiniTerminaVmKernelVersionReporting) {
   EXPECT_TRUE(got_session_status_);
   EXPECT_EQ(kTerminaVmKernelVersion,
             session_status_.crostini_status().last_launch_vm_kernel_version());
-
-  // Check that nothing is reported when the feature flag is disabled:
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kCrostiniAdditionalEnterpriseReporting);
-  GetStatus();
-  EXPECT_TRUE(got_session_status_);
-  EXPECT_TRUE(session_status_.crostini_status()
-                  .last_launch_vm_kernel_version()
-                  .empty());
 }
 
 TEST_F(DeviceStatusCollectorTest, CrostiniAppUsageReporting) {
@@ -2289,9 +2280,6 @@ TEST_F(DeviceStatusCollectorTest, CrostiniAppUsageReporting) {
 
   testing_profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
                                            true);
-  scoped_feature_list_.InitWithFeatures(
-      {features::kCrostiniAdditionalEnterpriseReporting}, {});
-
   const std::string desktop_file_id = "vim";
   const std::string package_id =
       "vim;2:8.0.0197-4+deb9u1;amd64;installed:debian-stable";
@@ -2361,9 +2349,6 @@ TEST_F(DeviceStatusCollectorTest,
 
   testing_profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
                                            false);
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kCrostiniAdditionalEnterpriseReporting);
-
   GetStatus();
   EXPECT_TRUE(got_session_status_);
 

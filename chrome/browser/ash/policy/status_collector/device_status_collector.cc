@@ -3049,9 +3049,7 @@ bool DeviceStatusCollector::GetCrostiniUsage(
       last_launch_time_window_start);
   crostini_status->set_last_launch_vm_image_version(termina_version);
 
-  if (profile->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled) &&
-      base::FeatureList::IsEnabled(
-          features::kCrostiniAdditionalEnterpriseReporting)) {
+  if (profile->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled)) {
     const std::string& vm_kernel_version = profile->GetPrefs()->GetString(
         crostini::prefs::kCrostiniLastLaunchTerminaKernelVersion);
     crostini_status->set_last_launch_vm_kernel_version(vm_kernel_version);
