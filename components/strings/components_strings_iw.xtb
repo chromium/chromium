@@ -4149,6 +4149,7 @@ Del</translation>
 <translation id="8449836157089738489">פתיחת הכול בקבוצת כרטיסיות חדשה</translation>
 <translation id="84561192812921051">‏לאדמין יש אפשרות לבצע מרחוק שינויים בפרופיל ובדפדפן, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות. אפשר לנהל את הפעילות במכשיר הזה גם מחוץ ל-Chrome.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">הגיליון התחתון סגור.</translation>
+<translation id="8456775115498700722">‏עכשיו אפשר למלא את הפרטים של כרטיסי <ph name="CARD_ISSUER_NAME" /> שלך באופן אוטומטי כי החשבון שלך ב-<ph name="CARD_ISSUER_NAME" /> מקושר ל-Google Pay.</translation>
 <translation id="8457125768502047971">ללא הגבלת זמן</translation>
 <translation id="8458202188076138974">‏9.5x12 אינץ' (Letter Extra)</translation>
 <translation id="8460854335417802511">להפעלת ההגדרה</translation>
@@ -4305,6 +4306,7 @@ Del</translation>
 <translation id="8757526089434340176">‏יש הטבה של Google Pay</translation>
 <translation id="8759274551635299824">פג תוקפו של הכרטיס</translation>
 <translation id="87601671197631245">באתר הזה נעשה שימוש בתצורת הגנה מיושנת, כך שמידע נשלח אליו עשוי להיחשף (למשל סיסמאות, הודעות או כרטיסי אשראי).</translation>
+<translation id="8763226176721243078">‏אפשר למלא את הפרטים של הכרטיס הזה באופן אוטומטי כי החשבון שלך ב-<ph name="CARD_ISSUER_NAME" /> מקושר ל-Google Pay.</translation>
 <translation id="8763927697961133303">‏התקן USB</translation>
 <translation id="8763986294015493060">סגירת כל החלונות הפרטיים שפתוחים כרגע</translation>
 <translation id="8766943070169463815">גיליון האימות של פרטי הכניסה לתשלום המאובטח פתוח</translation>

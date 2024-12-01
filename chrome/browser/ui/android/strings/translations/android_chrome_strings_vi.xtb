@@ -458,7 +458,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3029704984691124060">Cụm mật khẩu không khớp</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Nhận trợ giúp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
-<translation id="3037517125981011456">Hiển thị lời nhắc đăng nhập vào Chrome</translation>
+<translation id="3037517125981011456">Hiện lời nhắc đăng nhập vào Chrome</translation>
 <translation id="3038272154009688107">Xem tất cả trang web</translation>
 <translation id="3059531648236115056">Thêm nội dung tóm tắt</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
