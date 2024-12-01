@@ -5,10 +5,6 @@
 
 #include "{{this_include_path}}"
 
-#include <memory>
-
-#include <iterator>
-
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -28,10 +24,11 @@ const {{namespace}}QualifiedName& {{tag|symbol}}Tag = reinterpret_cast<{{namespa
 {% endfor %}
 
 
-std::unique_ptr<const {{namespace}}QualifiedName*[]> GetTags() {
-  auto tags = std::make_unique<const {{namespace}}QualifiedName*[]>(kTagsCount);
-  for (size_t i = 0; i < kTagsCount; ++i)
-    tags[i] = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage) + i;
+base::HeapArray<const QualifiedName*> GetTags() {
+  auto tags = base::HeapArray<const QualifiedName*>::Uninit(kTagsCount);
+  for (size_t i = 0; i < kTagsCount; ++i) {
+    tags[i] = reinterpret_cast<QualifiedName*>(&tag_storage) + i;
+  }
   return tags;
 }
 
@@ -45,10 +42,11 @@ const QualifiedName& {{attr|symbol}}Attr = reinterpret_cast<QualifiedName*>(&att
 {% endfor %}
 
 {% if namespace != 'HTML' %}
-std::unique_ptr<const QualifiedName*[]> GetAttrs() {
-  auto attrs = std::make_unique<const QualifiedName*[]>(kAttrsCount);
-  for (size_t i = 0; i < kAttrsCount; ++i)
+base::HeapArray<const QualifiedName*> GetAttrs() {
+  auto attrs = base::HeapArray<const QualifiedName*>::Uninit(kAttrsCount);
+  for (size_t i = 0; i < kAttrsCount; ++i) {
     attrs[i] = reinterpret_cast<QualifiedName*>(&attr_storage) + i;
+  }
   return attrs;
 }
 {% endif %}
