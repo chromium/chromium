@@ -309,12 +309,12 @@ void NotificationProcessor::StartDecodingImages(
 void NotificationProcessor::ImageDecoderDelegate::PerformImageDecode(
     const std::string& data,
     DecodeImageCallback single_image_decoded_closure) {
-  data_decoder::DecodeImage(
-      &data_decoder_, base::as_bytes(base::make_span(data)),
-      data_decoder::mojom::ImageCodec::kDefault,
-      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
-      /*desired_image_frame_size=*/gfx::Size(),
-      std::move(single_image_decoded_closure));
+  data_decoder::DecodeImage(&data_decoder_, base::as_byte_span(data),
+                            data_decoder::mojom::ImageCodec::kDefault,
+                            /*shrink_to_fit=*/true,
+                            data_decoder::kDefaultMaxSizeInBytes,
+                            /*desired_image_frame_size=*/gfx::Size(),
+                            std::move(single_image_decoded_closure));
 }
 
 void NotificationProcessor::OnDecodedBitmapReady(

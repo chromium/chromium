@@ -196,8 +196,7 @@ void DeviceNameManagerImpl::MigrateExistingNicknames() {
       continue;
     }
 
-    auto floss_id =
-        base::JoinString(base::make_span(parts.end() - 6, parts.end()), ":");
+    auto floss_id = base::JoinString(base::span(parts).last<6>(), ":");
 
     // Avoid overwriting an existing entry with a BlueZ nickname. This allows us
     // to guarantee that Floss nicknames are migrated and outdate BlueZ

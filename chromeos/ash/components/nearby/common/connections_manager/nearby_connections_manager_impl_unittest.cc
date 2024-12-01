@@ -70,13 +70,13 @@ void VerifyFileReadWrite(base::File& input_file, base::File& output_file) {
   const std::vector<uint8_t> expected_bytes(std::begin(kPayload),
                                             std::end(kPayload));
   EXPECT_TRUE(output_file.WriteAndCheck(
-      /*offset=*/0, base::make_span(expected_bytes)));
+      /*offset=*/0, base::span(expected_bytes)));
   output_file.Flush();
   output_file.Close();
 
   std::vector<uint8_t> payload_bytes(input_file.GetLength());
   EXPECT_TRUE(input_file.ReadAndCheck(
-      /*offset=*/0, base::make_span(payload_bytes)));
+      /*offset=*/0, base::span(payload_bytes)));
   EXPECT_EQ(expected_bytes, payload_bytes);
   input_file.Close();
 }
@@ -92,7 +92,7 @@ base::FilePath InitializeTemporaryFile(base::File& file) {
                             base::File::Flags::FLAG_READ |
                             base::File::Flags::FLAG_WRITE);
   EXPECT_TRUE(file.WriteAndCheck(
-      /*offset=*/0, base::make_span(kPayload, sizeof(kPayload))));
+      /*offset=*/0, base::span(kPayload)));
   EXPECT_TRUE(file.Flush());
   return path;
 }
@@ -458,7 +458,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
           base::File file = std::move(payload->content->get_file()->file);
           std::vector<uint8_t> payload_bytes(file.GetLength());
           EXPECT_TRUE(file.ReadAndCheck(
-              /*offset=*/0, base::make_span(payload_bytes)));
+              /*offset=*/0, base::span(payload_bytes)));
           EXPECT_EQ(expected_payload, payload_bytes);
 
           std::move(callback).Run(Status::kSuccess);
@@ -1642,7 +1642,7 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingFilePayload) {
     std::vector<uint8_t> payload_bytes(
         payload->content->get_file()->file.GetLength());
     EXPECT_TRUE(payload->content->get_file()->file.ReadAndCheck(
-        /*offset=*/0, base::make_span(payload_bytes)));
+        /*offset=*/0, base::span(payload_bytes)));
     EXPECT_EQ(expected_payload, payload_bytes);
   }
 }
