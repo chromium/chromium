@@ -160,24 +160,27 @@ class MockFedCmModalDialogView : public FedCmModalDialogView {
   MockFedCmModalDialogView(const MockFedCmModalDialogView&) = delete;
   MockFedCmModalDialogView& operator=(const MockFedCmModalDialogView&) = delete;
 
-  MOCK_METHOD(content::WebContents*,
-              ShowPopupWindow,
-              (const GURL& url),
-              (override));
+  content::WebContents* ShowPopupWindow(const GURL& url,
+                                        bool user_close_cancels_flow) override {
+    user_close_cancels_flow_ = user_close_cancels_flow;
+    ++show_popup_window_count_;
+    return nullptr;
+  }
+  bool UserCloseCancelsFlow() override { return user_close_cancels_flow_; }
 
-  void ClosePopupWindow() override {
-    FedCmModalDialogView::Observer* observer = GetObserverForTesting();
-    if (observer) {
-      observer->OnPopupWindowDestroyed();
-    }
+  void SetCustomYPosition(int y) override { ++set_custom_y_position_count_; }
+
+  void SetActiveModeSheetType(AccountSelectionView::SheetType) override {
+    ++set_active_mode_sheet_type_count_;
   }
 
+  MOCK_METHOD(void, ClosePopupWindow, (), (override));
   MOCK_METHOD(void, ResizeAndFocusPopupWindow, (), (override));
-  MOCK_METHOD(void, SetCustomYPosition, (int y), (override));
-  MOCK_METHOD(void,
-              SetActiveModeSheetType,
-              (AccountSelectionView::SheetType),
-              (override));
+
+  bool user_close_cancels_flow_ = false;
+  int show_popup_window_count_ = 0;
+  int set_custom_y_position_count_ = 0;
+  int set_active_mode_sheet_type_count_ = 0;
 };
 
 class FakeTabInterface : public tabs::MockTabInterface {
@@ -220,6 +223,9 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   TestAccountSelectionView* GetTestView() {
     return static_cast<TestAccountSelectionView*>(account_selection_view());
   }
+  MockFedCmModalDialogView* GetPopupWindow() {
+    return static_cast<MockFedCmModalDialogView*>(GetPopupWindowForTesting());
+  }
 
  protected:
   AccountSelectionViewBase* CreateDialogView(
@@ -242,6 +248,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   bool CanFitInWebContents() override { return can_fit_in_web_contents_; }
   void UpdateDialogPosition() override { dialog_position_updated_ = true; }
   std::unique_ptr<views::Widget> CreateDialogWidget() override;
+  std::unique_ptr<FedCmModalDialogView> CreatePopupWindow() override;
 
  private:
   blink::mojom::RpContext rp_context_;
@@ -411,14 +418,13 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   }
 
   void CreateAndShowPopupWindow(TestFedCmAccountSelectionView& controller) {
-    auto idp_signin_popup_window = std::make_unique<MockFedCmModalDialogView>(
-        test_web_contents_.get(), &controller);
-    EXPECT_CALL(*idp_signin_popup_window, ShowPopupWindow).Times(1);
-    controller.SetIdpSigninPopupWindowForTesting(
-        std::move(idp_signin_popup_window));
-
+    int show_count = controller.GetPopupWindow()
+                         ? controller.GetPopupWindow()->show_popup_window_count_
+                         : 0;
     controller.ShowModalDialog(GURL(u"https://example.com"),
                                blink::mojom::RpMode::kPassive);
+    EXPECT_EQ(controller.GetPopupWindow()->show_popup_window_count_,
+              show_count + 1);
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMultiIdp(
@@ -515,6 +521,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     view->TabForegrounded(tab_interface_.get());
   }
 
+  content::WebContents* test_web_contents() { return test_web_contents_.get(); }
+
  protected:
   TestingProfile profile_;
 
@@ -541,6 +549,12 @@ TestFedCmAccountSelectionView::CreateDialogWidget() {
                           views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = GetTestView();
   return test_->CreateTestWidget(std::move(params));
+}
+
+std::unique_ptr<FedCmModalDialogView>
+TestFedCmAccountSelectionView::CreatePopupWindow() {
+  return std::make_unique<MockFedCmModalDialogView>(test_->test_web_contents(),
+                                                    this);
 }
 
 }  // namespace
@@ -1099,7 +1113,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   CreateAndShowPopupWindow(*controller);
 
   // Emulate user closing the pop-up window.
-  controller->OnPopupWindowDestroyed();
+  controller->GetPopupWindowForTesting()->WebContentsDestroyed();
 
   // Widget should be closed.
   EXPECT_FALSE(controller->GetDialogWidget());
@@ -1473,7 +1487,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
 
   // Emulate user closing the pop-up window.
-  controller->OnPopupWindowDestroyed();
+  controller->GetPopupWindowForTesting()->WebContentsDestroyed();
 
   // Modal remains visible.
   EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
@@ -1690,15 +1704,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive);
 
   // Emulate user clicking on a button to sign in with an IDP via active mode.
-  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
-      test_web_contents_.get(), controller.get());
-  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
-  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
   controller->ShowModalDialog(GURL(u"https://example.com"),
                               blink::mojom::RpMode::kActive);
+  EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
 
   // Emulate user closing the pop-up window.
-  controller->OnPopupWindowDestroyed();
+  controller->GetPopupWindowForTesting()->WebContentsDestroyed();
 
   // Widget should be dismissed.
   StubAccountSelectionViewDelegate* delegate =
@@ -1967,12 +1978,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
 
   // Emulate user clicking on a button to sign in with an IDP via active mode.
-  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
-      test_web_contents_.get(), controller.get());
-  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
-  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
   controller->ShowModalDialog(GURL(u"https://example.com"),
                               blink::mojom::RpMode::kActive);
+  EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
 
   EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
 }
@@ -2012,7 +2020,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             controller->GetTestView()->sheet_type_);
 
   CreateAndShowPopupWindow(*controller);
-  controller->popup_window_->ClosePopupWindow();
+  controller->GetPopupWindowForTesting()->WebContentsDestroyed();
   EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
 }
 
@@ -2370,13 +2378,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   auto controller = CreateAndShowLoadingDialog();
 
   // Open loading state pop-up and expect it to call `SetCustomYPosition`.
-  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
-      test_web_contents_.get(), controller.get());
-  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
-  EXPECT_CALL(*popup_window, SetCustomYPosition).Times(1);
-  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
   controller->ShowModalDialog(GURL(u"https://example.com"),
                               blink::mojom::RpMode::kActive);
+  EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
+  EXPECT_EQ(controller->GetPopupWindow()->set_custom_y_position_count_, 1);
 
   // Reset the widget explicitly since no widget was shown. Otherwise, the test
   // will complain that a widget is still open.
@@ -2390,14 +2395,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_, SignInMode::kExplicit);
 
-  // Open use other account pop-up and expect it to call `SetCustomYPosition`.
-  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
-      test_web_contents_.get(), controller.get());
-  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
-  EXPECT_CALL(*popup_window, SetCustomYPosition).Times(0);
-  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
+  // Open use other account pop-up and expect it to not call
+  // `SetCustomYPosition`.
   controller->ShowModalDialog(GURL(u"https://example.com"),
                               blink::mojom::RpMode::kActive);
+  EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
+  EXPECT_EQ(controller->GetPopupWindow()->set_custom_y_position_count_, 0);
 
   // Reset the widget explicitly since no widget was shown. Otherwise, the test
   // will complain that a widget is still open.
@@ -2411,13 +2414,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   auto controller = CreateAndShowLoadingDialog();
 
   // Open loading state pop-up and expect it to call `SetActiveModeSheetType`.
-  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
-      test_web_contents_.get(), controller.get());
-  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
-  EXPECT_CALL(*popup_window, SetActiveModeSheetType).Times(1);
-  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
   controller->ShowModalDialog(GURL(u"https://example.com"),
                               blink::mojom::RpMode::kActive);
+  EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
+  EXPECT_EQ(controller->GetPopupWindow()->set_active_mode_sheet_type_count_, 1);
 
   // Reset the widget explicitly since no widget was shown. Otherwise, the test
   // will complain that a widget is still open.
@@ -2433,13 +2433,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Open use other account pop-up and expect it to call
   // `SetActiveModeSheetType`.
-  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
-      test_web_contents_.get(), controller.get());
-  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
-  EXPECT_CALL(*popup_window, SetActiveModeSheetType).Times(1);
-  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
   controller->ShowModalDialog(GURL(u"https://example.com"),
                               blink::mojom::RpMode::kActive);
+  EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
+  EXPECT_EQ(controller->GetPopupWindow()->set_active_mode_sheet_type_count_, 1);
 
   // Reset the widget explicitly since no widget was shown. Otherwise, the test
   // will complain that a widget is still open.
@@ -2470,7 +2467,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
 
   // Emulate user closing the pop-up window.
-  controller->OnPopupWindowDestroyed();
+  controller->GetPopupWindowForTesting()->WebContentsDestroyed();
 
   // Dialog should reappear once the popup window is destroyed.
   EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());

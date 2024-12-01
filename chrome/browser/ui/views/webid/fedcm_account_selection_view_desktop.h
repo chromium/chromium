@@ -114,17 +114,20 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   content::WebContents* GetRpWebContents() override;
 
   // FedCmModalDialogView::Observer
+  // This method is only called when the user manually closes the popup window.
+  // This is because the only way to programmatically close the popup is via
+  // CloseModalDialog, which resets the observer of popup_window_ which prevents
+  // this method from being called.
   void OnPopupWindowDestroyed() override;
 
-  // Closes the widget and notifies the delegate.
-  void Close();
+  // Programmatically closes the widget. This is never from user action.
+  void Close(bool notify_delegate);
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
 
   void SetInputEventActivationProtectorForTesting(
       std::unique_ptr<views::InputEventActivationProtector>);
-  void SetIdpSigninPopupWindowForTesting(std::unique_ptr<FedCmModalDialogView>);
 
   // AccountSelectionBubbleView::Observer:
   content::WebContents* ShowModalDialog(const GURL& url,
@@ -208,6 +211,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
 
+  FedCmModalDialogView* GetPopupWindowForTesting();
+
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
 
@@ -232,6 +237,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // dialog is bubble or modal.
   // Virtual for testing.
   virtual std::unique_ptr<views::Widget> CreateDialogWidget();
+
+  // Creates a popup window that is used to sign in to the IdP, or other flows.
+  // Virtual for testing.
+  virtual std::unique_ptr<FedCmModalDialogView> CreatePopupWindow();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
@@ -416,9 +425,15 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            blink::mojom::RpMode rp_mode,
                            bool has_modal_support);
 
-  // Synchronously closes dialog_widet_. This method can result in synchronous
+  // Synchronously closes dialog_widget_. This method can result in synchronous
   // destruction of `this`.
-  void CloseWidget(views::Widget::ClosedReason reason);
+  void CloseWidget(bool notify_delegate, views::Widget::ClosedReason reason);
+
+  // Called when the user closes the dialog. This is called by
+  // OnCloseButtonClicked() if the user clicks the close button, and directly
+  // called by views toolkit if the user dismisses with another mechanism such
+  // as pressing "esc".
+  void OnUserClosedDialog(views::Widget::ClosedReason reason);
 
   std::vector<IdentityProviderDataPtr> idp_list_;
 
@@ -435,9 +450,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   State state_{State::MULTI_ACCOUNT_PICKER};
 
   DialogType dialog_type_{DialogType::BUBBLE};
-
-  // Whether to notify the delegate when the widget is closed.
-  bool notify_delegate_of_dismiss_{true};
 
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
 

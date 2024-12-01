@@ -70,17 +70,28 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   // Shows a modal dialog of |url|. The |url| is commonly but not limited to a
   // URL which allows the user to sign in with an identity provider. Virtual for
   // testing purposes.
-  virtual content::WebContents* ShowPopupWindow(const GURL& url);
+  // This class is used in two different ways in the FedCM UI (reflected by
+  // different URLs). At the moment, the only relevant difference between these
+  // two different use cases is whether the user closing the popup cancels out
+  // of the fedcm flow. This is reflected by the `user_close_cancels_flow`
+  // property.
+  virtual content::WebContents* ShowPopupWindow(const GURL& url,
+                                                bool user_close_cancels_flow);
   virtual void ClosePopupWindow();
   virtual void ResizeAndFocusPopupWindow();
   virtual void SetCustomYPosition(int y);
   virtual void SetActiveModeSheetType(
       AccountSelectionView::SheetType sheet_type);
+  virtual bool UserCloseCancelsFlow();
 
   // content::WebContentsObserver
   void WebContentsDestroyed() override;
   void OnWebContentsLostFocus(
       content::RenderWidgetHost* render_widget_host) override;
+
+  // This method prevents re-entrancy into the observer. This is used right
+  // before the observer destroys this instance.
+  void ResetObserver();
 
  protected:
   Observer* GetObserverForTesting();
@@ -111,6 +122,9 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   // there is one lost focus event that is not from the user losing focus while
   // the pop-up is open.
   int num_lost_focus_{0};
+
+  // Whether the user closing the popup should cancel the entire fedcm flow.
+  bool user_close_cancels_flow_ = false;
 
   base::WeakPtrFactory<FedCmModalDialogView> weak_ptr_factory_{this};
 };
