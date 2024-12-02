@@ -59,9 +59,8 @@ class IpProtectionProxyConfigManagerImpl
     disable_proxy_refreshing_for_testing_ = false;
   }
 
-  void SetProxyListForTesting(
-      std::optional<std::vector<net::ProxyChain>> proxy_list,
-      std::optional<GeoHint> geo_hint);
+  void SetProxyListForTesting(std::vector<net::ProxyChain> proxy_list,
+                              std::optional<GeoHint> geo_hint);
 
   void EnableProxyListFetchIntervalFuzzingForTesting(bool enable);
 
