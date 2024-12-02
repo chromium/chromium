@@ -578,7 +578,8 @@ class AccountSelectionMediator {
         mDisclosureFields = idpData.getDisclosureFields();
         mSelectedAccount = null;
 
-        if (accounts.size() == 1 && (isAutoReauthn || !mIdpMetadata.supportsAddAccount())) {
+        if (accounts.size() == 1
+                && (isAutoReauthn || !mIdpMetadata.showUseDifferentAccountButton())) {
             mSelectedAccount = accounts.get(0);
         }
 
@@ -793,10 +794,10 @@ class AccountSelectionMediator {
     }
 
     private void updateSheet(List<Account> accounts, boolean areAccountsClickable) {
-        boolean supportsAddAccount =
+        boolean showUseDifferentAccountButton =
                 mHeaderType == HeaderType.SIGN_IN
                         && areAccountsClickable
-                        && mIdpMetadata.supportsAddAccount();
+                        && mIdpMetadata.showUseDifferentAccountButton();
         boolean isSingleAccountChooser = accounts != null && accounts.size() == 1;
 
         // We add the add account button alongside the accounts if supported in passive mode and in
@@ -804,7 +805,8 @@ class AccountSelectionMediator {
         updateAccounts(
                 accounts,
                 areAccountsClickable,
-                (mRpMode == RpMode.PASSIVE || !isSingleAccountChooser) && supportsAddAccount);
+                (mRpMode == RpMode.PASSIVE || !isSingleAccountChooser)
+                        && showUseDifferentAccountButton);
         // If there is a change in the header, setFocusView() will be called and focus will land on
         // the header when screen reader is on. Since the header is updated before any item is
         // created, the header will always take precedence for focus. Do not reorder this
@@ -833,7 +835,7 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onLoginToIdP;
         }
 
-        if (supportsAddAccount && isSingleAccountChooser && mRpMode == RpMode.ACTIVE) {
+        if (showUseDifferentAccountButton && isSingleAccountChooser && mRpMode == RpMode.ACTIVE) {
             assert !isDataSharingConsentVisible;
             assert mSelectedAccount == null;
             mSelectedAccount = accounts.get(0);
@@ -894,7 +896,7 @@ class AccountSelectionMediator {
         // The add account button is added separately for active mode single account chooser.
         mModel.set(
                 ItemProperties.ADD_ACCOUNT_BUTTON,
-                supportsAddAccount && isSingleAccountChooser && mRpMode == RpMode.ACTIVE
+                showUseDifferentAccountButton && isSingleAccountChooser && mRpMode == RpMode.ACTIVE
                         ? createAddAccountBtnItem()
                         : null);
         mModel.set(

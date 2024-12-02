@@ -52,6 +52,7 @@ import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
@@ -175,7 +176,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                         "",
                         mTestConfigUrl,
                         mTestLoginUrl,
-                        /* supportsAddAccount= */ false);
+                        /* showUseDifferentAccountButton= */ false);
         ClientIdMetadata clientMetadataNoBrandIconUrl =
                 new ClientIdMetadata(
                         mTestUrlTermsOfService, mTestUrlPrivacyPolicy, /* brandIconUrl= */ "");
@@ -707,22 +708,24 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mFilteredOutAccount),
-                mIdpData,
+                mIdpDataWithUseDifferentAccount,
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
 
         // Account chooser is shown.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
 
-        assertEquals(2, mSheetAccountItems.size());
+        assertEquals(3, mSheetAccountItems.size());
         // First account has a click listener.
         assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
         // Second account is filtered out, so does not.
         assertNull(mSheetAccountItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER));
+        // Third is the use other account button.
+        assertNotNull(mSheetAccountItems.get(2).model.get(AddAccountButtonProperties.PROPERTIES));
 
         View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
         RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
-        assertEquals(2, sheetItemListView.getAdapter().getItemCount());
+        assertEquals(3, sheetItemListView.getAdapter().getItemCount());
 
         View anaRow = sheetItemListView.getChildAt(0);
         float delta = 0.00001f;
@@ -738,6 +741,11 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals("nicolas@example.com", textView.getText());
         textView = nicolasRow.findViewById(R.id.description);
         assertEquals("You can’t sign in using this account", textView.getText());
+
+        View addAccountButton = sheetItemListView.getChildAt(2);
+        assertEquals(addAccountButton.getAlpha(), 1.f, delta);
+        textView = addAccountButton.findViewById(R.id.title);
+        assertEquals("Use a different account", textView.getText());
     }
 
     private void pressBack() {

@@ -18,7 +18,9 @@ public class IdentityProviderMetadata {
     private final String mBrandIconUrl;
     private final GURL mConfigUrl;
     private final GURL mLoginUrl;
-    private final boolean mSupportsAddAccount;
+    // Whether use a different account button needs to be shown, whether due to the IDP requesting
+    // it or due to filtered out accounts being shown.
+    private final boolean mShowUseDifferentAccountButton;
 
     @CalledByNative
     public IdentityProviderMetadata(
@@ -27,7 +29,7 @@ public class IdentityProviderMetadata {
             String brandIconUrl,
             GURL configUrl,
             GURL loginUrl,
-            boolean supportsAddAccount) {
+            boolean showUseDifferentAccountButton) {
         // Parameters are longs because ColorUtils.INVALID_COLOR does not fit in an int.
         mBrandTextColor =
                 (brandTextColor == ColorUtils.INVALID_COLOR) ? null : (int) brandTextColor;
@@ -38,7 +40,7 @@ public class IdentityProviderMetadata {
         mBrandIconUrl = brandIconUrl;
         mConfigUrl = configUrl;
         mLoginUrl = loginUrl;
-        mSupportsAddAccount = supportsAddAccount;
+        mShowUseDifferentAccountButton = showUseDifferentAccountButton;
     }
 
     public @Nullable Integer getBrandTextColor() {
@@ -61,7 +63,7 @@ public class IdentityProviderMetadata {
         return mLoginUrl;
     }
 
-    public boolean supportsAddAccount() {
-        return mSupportsAddAccount;
+    public boolean showUseDifferentAccountButton() {
+        return mShowUseDifferentAccountButton;
     }
 }
