@@ -119,11 +119,10 @@ SaveAddressProfileView::SaveAddressProfileView(
       controller_(std::move(controller)) {
   // TODO(crbug.com/40164487): Accept action should consider the selected
   // nickname when saving the address.
-  SetAcceptCallback(
-      base::BindOnce(&SaveAddressBubbleController::OnUserDecision,
-                     base::Unretained(controller_.get()),
-                     AutofillClient::AddressPromptUserDecision::kAccepted,
-                     controller_->GetAutofillProfile()));
+  SetAcceptCallback(base::BindOnce(
+      &SaveAddressBubbleController::OnUserDecision,
+      base::Unretained(controller_.get()),
+      AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt));
   SetCancelCallback(base::BindOnce(&SaveAddressBubbleController::OnUserDecision,
                                    base::Unretained(controller_.get()),
                                    controller_->GetCancelCallbackValue(),
