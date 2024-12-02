@@ -4,4 +4,4 @@
 
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 
-PasswordManagerLifecycleHelper::~PasswordManagerLifecycleHelper() {}
+PasswordManagerLifecycleHelper::~PasswordManagerLifecycleHelper() = default;
