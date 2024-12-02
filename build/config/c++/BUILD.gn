@@ -47,7 +47,9 @@ config("runtime_library") {
   # https://crbug.com/347026228#comment25
   # TODO(thakis): Enable on apple if https://llvm.org/PR96099 gets fixed.
   if (is_asan && !use_fuzzing_engine && !is_apple) {
-    defines += [ "_LIBCPP_INSTRUMENTED_WITH_ASAN" ]
+    defines += [ "_LIBCPP_INSTRUMENTED_WITH_ASAN=1" ]
+  } else {
+    defines += [ "_LIBCPP_INSTRUMENTED_WITH_ASAN=0" ]
   }
 
   defines += [ "CR_LIBCXX_REVISION=$libcxx_revision" ]
