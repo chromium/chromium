@@ -580,6 +580,10 @@ extern std::string GetLensOverlayTranslateEndpointURL();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShowContextualSearchboxGhostLoaderLoadingState();
 
+// The timeout set for autocomplete for lens searchboxes.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern base::TimeDelta GetLensSearchboxAutocompleteTimeout();
+
 // The list of source languages supported by Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayTranslateSourceLanguages();

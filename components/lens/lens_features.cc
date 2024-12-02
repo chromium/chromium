@@ -298,6 +298,10 @@ constexpr base::FeatureParam<bool>
         &kLensOverlayContextualSearchbox,
         "show-contextual-searchbox-ghost-loader-loading-state", true};
 
+constexpr base::FeatureParam<base::TimeDelta> kLensSearchboxAutocompleteTimeout{
+    &kLensOverlayContextualSearchbox, "lens-searchbox-autocomplete-timeout",
+    base::Milliseconds(3000)};
+
 constexpr base::FeatureParam<bool> kShowContextualSearchboxSearchSuggest{
     &kLensOverlayContextualSearchbox,
     "show-contextual-searchbox-search-suggest", false};
@@ -757,6 +761,10 @@ std::string GetLensOverlayTranslateEndpointURL() {
 
 bool ShowContextualSearchboxGhostLoaderLoadingState() {
   return kShowContextualSearchboxGhostLoaderLoadingState.Get();
+}
+
+base::TimeDelta GetLensSearchboxAutocompleteTimeout() {
+  return kLensSearchboxAutocompleteTimeout.Get();
 }
 
 std::string GetLensOverlayTranslateSourceLanguages() {

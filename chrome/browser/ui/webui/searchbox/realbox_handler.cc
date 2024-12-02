@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/lens/lens_features.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -340,8 +341,9 @@ RealboxHandler::RealboxHandler(
         /*view=*/nullptr,
         std::make_unique<RealboxOmniboxClient>(profile_, web_contents_,
                                                lens_searchbox_client),
-        lens_searchbox_client ? base::Milliseconds(3000)
-                              : kAutocompleteDefaultStopTimerDuration);
+        lens_searchbox_client
+            ? lens::features::GetLensSearchboxAutocompleteTimeout()
+            : kAutocompleteDefaultStopTimerDuration);
     controller_ = owned_controller_.get();
   }
 
