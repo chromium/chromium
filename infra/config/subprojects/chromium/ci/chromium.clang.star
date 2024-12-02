@@ -257,6 +257,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "asn",
@@ -306,6 +307,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "dll",
@@ -1683,6 +1685,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "win",
@@ -1730,6 +1733,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
         short_name = "pgo",
