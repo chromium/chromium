@@ -39,7 +39,7 @@ constexpr char kResponseKey[] = "ozone_evdev_input_event_converters";
 
 class InputEventConverterLogSourceTest : public ::testing::Test {
  public:
-  InputEventConverterLogSourceTest() {}
+  InputEventConverterLogSourceTest() = default;
   InputEventConverterLogSourceTest(const InputEventConverterLogSourceTest&) =
       delete;
   InputEventConverterLogSourceTest& operator=(

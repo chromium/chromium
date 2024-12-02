@@ -21,7 +21,7 @@ constexpr char kNetworkServices[] = "network_services";
 
 class ShillLogSourceTest : public ::testing::Test {
  public:
-  ShillLogSourceTest() {}
+  ShillLogSourceTest() = default;
   ~ShillLogSourceTest() override = default;
   ShillLogSourceTest(const ShillLogSourceTest&) = delete;
   ShillLogSourceTest*& operator=(const ShillLogSourceTest&) = delete;

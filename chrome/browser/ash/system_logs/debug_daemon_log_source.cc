@@ -160,7 +160,7 @@ DebugDaemonLogSource::DebugDaemonLogSource(bool scrub)
       num_pending_requests_(0),
       scrub_(scrub) {}
 
-DebugDaemonLogSource::~DebugDaemonLogSource() {}
+DebugDaemonLogSource::~DebugDaemonLogSource() = default;
 
 void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
