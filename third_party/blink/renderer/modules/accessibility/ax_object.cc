@@ -1470,14 +1470,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
       SerializeHTMLAttributesForSnapshot(node_data);
     } else {
       SerializeHTMLNonStandardAttributesForJAWS(node_data);
-      // Serialize <input name> for use by password managers.
-      if (auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
-        if (const AtomicString& input_name = input->GetName()) {
-          TruncateAndAddStringAttribute(
-              node_data, ax::mojom::blink::StringAttribute::kHtmlInputName,
-              input_name);
-        }
-      }
     }
   }
   SerializeOtherScreenReaderAttributes(node_data);
@@ -2545,13 +2537,19 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                   ax::mojom::blink::StringAttribute::kValue,
                                   GetValueForControl());
 
-    if (IsA<HTMLInputElement>(element)) {
+    if (auto* input = DynamicTo<HTMLInputElement>(element)) {
       String type = element->getAttribute(html_names::kTypeAttr);
       if (type.empty()) {
         type = "text";
       }
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kInputType, type);
+      // Serialize <input name> for use by password managers.
+      if (const AtomicString& input_name = input->GetName()) {
+        TruncateAndAddStringAttribute(
+            node_data, ax::mojom::blink::StringAttribute::kHtmlInputName,
+            input_name);
+      }
     }
 
     if (IsAtomicTextField()) {
