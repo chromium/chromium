@@ -233,6 +233,10 @@ class AutofillMetricsBaseTest {
     return form;
   }
 
+  TestAutofillClient& autofill_client() { return *autofill_client_; }
+
+  TestAutofillDriver& autofill_driver() { return *autofill_driver_; }
+
   TestBrowserAutofillManager& autofill_manager() {
     return static_cast<TestBrowserAutofillManager&>(
         autofill_driver_->GetAutofillManager());

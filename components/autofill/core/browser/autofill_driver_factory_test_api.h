@@ -21,6 +21,17 @@ class AutofillDriverFactoryTestApi {
     factory_->SetLifecycleStateAndNotifyObservers(driver, new_state);
   }
 
+  // Simulates a reset of an active or inactive driver and its manager. The
+  // driver transitions back to its original state after the reset, as in
+  // producton code (see `AutofillDriver::LifecycleState`).
+  void Reset(AutofillDriver& driver) {
+    using enum AutofillDriver::LifecycleState;
+    AutofillDriver::LifecycleState original_state = driver.GetLifecycleState();
+    CHECK(original_state == kActive || original_state == kInactive);
+    SetLifecycleStateAndNotifyObservers(driver, kPendingReset);
+    SetLifecycleStateAndNotifyObservers(driver, original_state);
+  }
+
   // Like the normal AddObserver(), but enqueues `observer` at position `index`
   // in the list, so that `observer` is notified before production-code
   // observers.

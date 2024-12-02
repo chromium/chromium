@@ -1046,7 +1046,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     client_ = CreateAutofillClient();
     driver_ = CreateAutofillDriver();
-    manager_ = CreateAutofillManager();
+    driver_->set_autofill_manager(CreateAutofillManager());
 
     // Initialize the TestPersonalDataManager with some default data.
     CreateTestAutofillProfiles();
@@ -1060,7 +1060,6 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    manager_.reset();
     driver_.reset();
     client_.reset();
   }
@@ -1312,7 +1311,10 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   MockAutofillDriver& driver() { return *driver_; }
 
-  TestBrowserAutofillManager& manager() { return *manager_; }
+  TestBrowserAutofillManager& manager() {
+    return static_cast<TestBrowserAutofillManager&>(
+        driver_->GetAutofillManager());
+  }
 
   MockTouchToFillDelegate& touch_to_fill_delegate() {
     return *static_cast<MockTouchToFillDelegate*>(
@@ -1391,7 +1393,6 @@ class BrowserAutofillManagerTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   std::unique_ptr<MockAutofillClient> client_;
   std::unique_ptr<MockAutofillDriver> driver_;
-  std::unique_ptr<TestBrowserAutofillManager> manager_;
 };
 
 class SuggestionMatchingTest : public BrowserAutofillManagerTest,
@@ -1538,7 +1539,7 @@ TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_BlockSuggestionsAfterStrikeLimit) {
   auto simulate_user_ignored_suggestions = [&](const FormData& form,
                                                const FormFieldData& field) {
-    test_api(manager()).Reset();
+    test_api(client().GetAutofillDriverFactory()).Reset(driver());
     manager().AddSeenForm(form, {NAME_FIRST, NAME_LAST});
     OnAskForValuesToFill(form, field);
     // This ensures that the field has `did_trigger_suggestion_` set.
@@ -2852,7 +2853,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
   }
 
   // Flush FormEventLoggers.
-  test_api(manager()).Reset();
+  test_api(client().GetAutofillDriverFactory()).Reset(driver());
 
   // Validate the recorded metrics.
   std::string form_type_str = (form_type == LogAblationFormType::kAddress ||
@@ -3116,7 +3117,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
     FormSubmitted(form);
 
     base::HistogramTester histogram_tester;
-    test_api(manager()).Reset();
+    test_api(client().GetAutofillDriverFactory()).Reset(driver());
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 1);
   }
@@ -3129,7 +3130,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
     FormSubmitted(form);
 
     base::HistogramTester histogram_tester;
-    test_api(manager()).Reset();
+    test_api(client().GetAutofillDriverFactory()).Reset(driver());
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 0);
   }
@@ -4462,7 +4463,7 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
   // Reset the manager (such as during a navigation).
-  test_api(manager()).Reset();
+  test_api(client().GetAutofillDriverFactory()).Reset(driver());
 
   base::HistogramTester histogram_tester;
   test_api(manager()).OnLoadedServerPredictions(
@@ -4855,7 +4856,7 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
                                  base::TimeTicks::Now());
 
   // Simulate a navigation so that the pending form is uploaded.
-  test_api(manager()).Reset();
+  test_api(client().GetAutofillDriverFactory()).Reset(driver());
 }
 
 // Test that unfocusing a filled form sends an upload with types matching the
@@ -7252,7 +7253,7 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
   manager().OnFocusOnNonFormField();
 
   // Simulate a navigation. This is when the vote is sent.
-  test_api(manager()).Reset();
+  test_api(client().GetAutofillDriverFactory()).Reset(driver());
 }
 
 // Ensure that a submission vote blocks sending a blur vote for the same form

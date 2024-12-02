@@ -376,14 +376,16 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(manager(), OnBeforeProcessParsedForms).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnFormProcessed).Times(AtLeast(0));
 
-  // Reset the manager, the observers should stick around.
+  // Reset the manager and transition from kInactive to kActive. The observers
+  // should stick around.
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kInactive, kPendingReset));
-  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kPendingReset);
-  test_api(manager()).Reset();
   EXPECT_CALL(observer,
-              OnAutofillManagerStateChanged(m, kPendingReset, kActive));
-  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kActive);
+              OnAutofillManagerStateChanged(m, kPendingReset, kInactive));
+  test_api(client_.GetAutofillDriverFactory()).Reset(*driver_);
+  EXPECT_CALL(observer, OnAutofillManagerStateChanged(m, kInactive, kActive));
+  test_api(client_.GetAutofillDriverFactory())
+      .SetLifecycleStateAndNotifyObservers(*driver_, kActive);
 
   // If the lifecycle does not change, SetLifecycleStateAndNotifyObservers()
   // does not fire an event.

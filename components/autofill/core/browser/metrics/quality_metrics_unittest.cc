@@ -712,7 +712,8 @@ TEST_F(QualityMetricsTest, NoSubmission) {
   base::HistogramTester histogram_tester;
 
   // Triggers the metrics.
-  test_api(autofill_manager()).Reset();
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
 
   auto Buck = [](FieldType field_type, FieldTypeQualityMetric metric,
                  size_t n) {

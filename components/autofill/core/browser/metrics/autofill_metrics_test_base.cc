@@ -120,7 +120,8 @@ void AutofillMetricsBaseTest::TearDownHelper() {
 }
 
 void AutofillMetricsBaseTest::PurgeUKM() {
-  test_api(autofill_manager()).Reset();
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
   test_ukm_recorder().Purge();
   autofill_driver_->InitializeUKMSources();
 }
