@@ -110,8 +110,7 @@ class LensOmniboxClient final : public OmniboxClient {
       bool destination_url_entered_with_http_scheme,
       const std::u16string& text,
       const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match,
-      IDNA2008DeviationCharacter deviation_char_in_hostname) override;
+      const AutocompleteMatch& alternative_nav_match) override;
   void OnThumbnailOnlyAccept() override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 

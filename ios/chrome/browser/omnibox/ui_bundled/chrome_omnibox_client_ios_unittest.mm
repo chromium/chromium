@@ -132,8 +132,7 @@ void ChromeOmniboxClientIOSTest::UseAutocompleteMatch(
   chrome_omnibox_client_ios_->OnAutocompleteAccept(
       match.destination_url, match.post_content.get(),
       WindowOpenDisposition::CURRENT_TAB, match.transition, match.type,
-      base::TimeTicks(), false, false, input_text, match, match,
-      IDNA2008DeviationCharacter::kNone);
+      base::TimeTicks(), false, false, input_text, match, match);
 }
 
 void ChromeOmniboxClientIOSTest::FinishCurrentNavigationSuccessfully() {

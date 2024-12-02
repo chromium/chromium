@@ -11,11 +11,6 @@ BASE_FEATURE(kUseIDNA2008NonTransitional,
              "UseIDNA2008NonTransitional",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch for crbug.com/1362507.
-BASE_FEATURE(kRecordIDNA2008Metrics,
-             "RecordIDNA2008Metrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for crbug.com/1416006.
 BASE_FEATURE(kStandardCompliantNonSpecialSchemeURLParsing,
              "StandardCompliantNonSpecialSchemeURLParsing",
@@ -45,10 +40,6 @@ bool IsUsingStandardCompliantNonSpecialSchemeURLParsing() {
   }
   return base::FeatureList::IsEnabled(
       kStandardCompliantNonSpecialSchemeURLParsing);
-}
-
-bool IsRecordingIDNA2008Metrics() {
-  return base::FeatureList::IsEnabled(kRecordIDNA2008Metrics);
 }
 
 bool IsDisallowingSpaceCharacterInURLHostParsing() {

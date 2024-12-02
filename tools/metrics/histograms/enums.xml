@@ -10039,8 +10039,10 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_DialogCloseWatcherCloseSignalClosedMultiple"/>
   <int value="4425" label="NoVarySearch"/>
   <int value="4426" label="FedCmUserInfo"/>
-  <int value="4427" label="IDNA2008DeviationCharacterInHostnameOfSubresource"/>
-  <int value="4428" label="IDNA2008DeviationCharacterInHostnameOfIFrame"/>
+  <int value="4427"
+      label="OBSOLETE_IDNA2008DeviationCharacterInHostnameOfSubresource"/>
+  <int value="4428"
+      label="OBSOLETE_IDNA2008DeviationCharacterInHostnameOfIFrame"/>
   <int value="4429" label="WindowOpenPopupOnMobile"/>
   <int value="4430" label="WindowOpenedAsPopupOnMobile"/>
   <int value="4431"

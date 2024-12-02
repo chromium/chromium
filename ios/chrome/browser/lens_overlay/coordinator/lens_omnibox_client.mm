@@ -245,8 +245,7 @@ void LensOmniboxClient::OnAutocompleteAccept(
     bool destination_url_entered_with_http_scheme,
     const std::u16string& text,
     const AutocompleteMatch& match,
-    const AutocompleteMatch& alternative_nav_match,
-    IDNA2008DeviationCharacter deviation_char_in_hostname) {
+    const AutocompleteMatch& alternative_nav_match) {
   [delegate_ omniboxDidAcceptText:match.fill_into_edit
                    destinationURL:destination_url
                     textClobbered:text_clobbered_in_session_];
