@@ -621,19 +621,6 @@ bool OffscreenCanvas::BeginFrame() {
   return PushFrameIfNeeded();
 }
 
-void OffscreenCanvas::SetFilterQualityInResource(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (FilterQuality() == filter_quality)
-    return;
-
-  SetFilterQuality(filter_quality);
-  if (ResourceProvider())
-    ResourceProvider()->SetFilterQuality(filter_quality);
-  if (context_ && (IsWebGL() || IsWebGPU())) {
-    context_->SetFilterQuality(filter_quality);
-  }
-}
-
 bool OffscreenCanvas::PushFrameIfNeeded() {
   if (needs_push_frame_ && context_) {
     return context_->PushFrame();

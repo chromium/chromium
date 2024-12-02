@@ -29,8 +29,6 @@ class CanvasResource;
 class CanvasResourceDispatcherClient {
  public:
   virtual bool BeginFrame() = 0;
-  virtual void SetFilterQualityInResource(
-      cc::PaintFlags::FilterQuality filter_quality) = 0;
 };
 
 class PLATFORM_EXPORT CanvasResourceDispatcher

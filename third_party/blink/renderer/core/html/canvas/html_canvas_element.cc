@@ -958,8 +958,11 @@ bool HTMLCanvasElement::LowLatencyEnabled() const {
 void HTMLCanvasElement::SetFilterQuality(
     cc::PaintFlags::FilterQuality filter_quality) {
   CanvasResourceHost::SetFilterQuality(filter_quality);
-  if (IsOffscreenCanvasRegistered())
-    UpdateOffscreenCanvasFilterQuality(filter_quality);
+  if (surface_layer_bridge_) {
+    if (auto* surface_layer = surface_layer_bridge_->GetCcLayer()) {
+      surface_layer->SetFilterQuality(FilterQuality());
+    }
+  }
 
   if (context_ &&
       (IsWebGL() || IsWebGPU() || IsImageBitmapRenderingContext())) {
@@ -1791,6 +1794,10 @@ void HTMLCanvasElement::OnWebLayerUpdated() {
 }
 
 void HTMLCanvasElement::RegisterContentsLayer(cc::Layer* layer) {
+  // This is called when a new SurfaceLayer (or sometimes SolidColorLayer) is
+  // attached to `surface_layer_bridge_`. Initialize the paint flags for this
+  // layer from the CSS properties of this element.
+  layer->SetFilterQuality(FilterQuality());
   SetNeedsCompositingUpdate();
 }
 
