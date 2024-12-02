@@ -12,7 +12,7 @@ class SkBitmap;
 // A delegate interface for users of BitmapFetcher.
 class BitmapFetcherDelegate {
  public:
-  BitmapFetcherDelegate() {}
+  BitmapFetcherDelegate() = default;
 
   BitmapFetcherDelegate(const BitmapFetcherDelegate&) = delete;
   BitmapFetcherDelegate& operator=(const BitmapFetcherDelegate&) = delete;
@@ -24,7 +24,7 @@ class BitmapFetcherDelegate {
   virtual void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) = 0;
 
  protected:
-  virtual ~BitmapFetcherDelegate() {}
+  virtual ~BitmapFetcherDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_BITMAP_FETCHER_BITMAP_FETCHER_DELEGATE_H_
