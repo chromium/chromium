@@ -21,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
@@ -31,6 +32,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Delegate to manage the reordering logic for the tab strip. */
@@ -52,7 +54,6 @@ public class ReorderDelegate {
     // Tab Strip State.
     private AnimationHost mAnimationHost;
     private ScrollDelegate mScrollDelegate;
-    private ActionConfirmationDelegate mActionConfirmationDelegate;
     private ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
     private View mContainerView;
 
@@ -134,9 +135,8 @@ public class ReorderDelegate {
      *
      * @param animationHost The {@link AnimationHost} for triggering animations.
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} for accessing tab state.
-     * @param scrollDelegate The {@link ScrollDelegate} for updating scroll offset.
-     * @param actionConfirmationDelegate The {@link ActionConfirmationDelegate} for confirming group
-     *     actions, such as delete and ungroup.
+     * @param scrollDelegate The {@link ScrollDelegate} for updating scroll offset. actions, such as
+     *     delete and ungroup.
      * @param groupIdToHideSupplier The {@link ObservableSupplierImpl} for the group ID to hide.
      * @param containerView The tab strip container {@link View}.
      */
@@ -144,13 +144,11 @@ public class ReorderDelegate {
             AnimationHost animationHost,
             TabGroupModelFilter tabGroupModelFilter,
             ScrollDelegate scrollDelegate,
-            ActionConfirmationDelegate actionConfirmationDelegate,
             ObservableSupplierImpl<Integer> groupIdToHideSupplier,
             View containerView) {
         mAnimationHost = animationHost;
         mTabGroupModelFilter = tabGroupModelFilter;
         mScrollDelegate = scrollDelegate;
-        mActionConfirmationDelegate = actionConfirmationDelegate;
         mGroupIdToHideSupplier = groupIdToHideSupplier;
         mContainerView = containerView;
 
@@ -578,28 +576,31 @@ public class ReorderDelegate {
             StripLayoutGroupTitle groupTitle,
             boolean towardEnd) {
         final int tabId = mInteractingTab.getTabId();
-        // TODO(crbug.com/377750438): Skip creating the ActionConfirmationDelegate for Incognito as
-        //  it won't be used here.
-        if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId)
-                && mGroupIdToHideSupplier.get() == Tab.INVALID_TAB_ID
-                && !mTabGroupModelFilter.isIncognitoBranded()) {
-            // When dragging the last tab out of group, the tab group delete dialog will show and we
-            // will hide the indicators for the interacting tab group until the user confirms the
-            // next action. e.g delete tab group when user confirms the delete, or restore
-            // indicators back on strip when user cancel the delete.
-            mActionConfirmationDelegate.handleDeleteGroupAction(
-                    StripLayoutUtils.getRootId(mModel, mInteractingTab),
-                    /* draggingLastTabOffStrip= */ false,
-                    /* tabClosing= */ false,
-                    () -> moveTabOutOfGroupInDirection(tabId, towardEnd));
-            // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
-            if (!mActionConfirmationDelegate.isTabRemoveDialogSkipped()) {
-                stopReorderMode(groupTitles, stripTabs);
-                return;
-            }
-        } else {
-            moveTabOutOfGroupInDirection(tabId, towardEnd);
-        }
+        // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
+        Runnable beforeSyncDialogRunnable = () -> stopReorderMode(groupTitles, stripTabs);
+        Runnable onSuccess =
+                () -> RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
+
+        Tab tab = mModel.getTabById(tabId);
+        // When dragging the last tab out of group, the tab group delete dialog will show and we
+        // will hide the indicators for the interacting tab group until the user confirms the next
+        // action. e.g delete tab group when user confirms the delete, or restore indicators back on
+        // strip when user cancel the delete.
+        StripTabModelActionListener listener =
+                new StripTabModelActionListener(
+                        tab.getRootId(),
+                        ActionType.REORDER,
+                        mGroupIdToHideSupplier,
+                        mContainerView,
+                        beforeSyncDialogRunnable,
+                        onSuccess);
+        mTabGroupModelFilter
+                .getTabUngrouper()
+                .ungroupTabs(
+                        Collections.singletonList(tab),
+                        towardEnd,
+                        /* allowDialog= */ true,
+                        listener);
 
         // Run indicator animations. Find the group title after handling the removal, since the
         // group may have been deleted OR the rootID may have changed.
@@ -680,15 +681,6 @@ public class ReorderDelegate {
         mModel.moveTab(mInteractingTab.getTabId(), destIndex);
         animateViewSliding(stripTabs[curIndex]);
         return true;
-    }
-
-    /**
-     * Wrapper for {@link TabGroupModelFilter#moveTabOutOfGroupInDirection} that also records the
-     * tab-strip specific User Action.
-     */
-    private void moveTabOutOfGroupInDirection(int tabId, boolean towardEnd) {
-        mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
-        RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
     }
 
     /**

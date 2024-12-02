@@ -141,6 +141,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripStackerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripTabDragShadowViewUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripTabHoverCardViewUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripTabModelActionListenerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/TabDragSourceTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/TabGroupContextMenuCoordinatorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/TabUsageTrackerTest.java",

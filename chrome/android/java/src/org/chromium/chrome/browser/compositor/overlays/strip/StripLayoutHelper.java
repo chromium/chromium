@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -102,7 +103,6 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.Observer;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -115,6 +115,7 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -345,7 +346,7 @@ public class StripLayoutHelper
     private final RectF mTouchableRect = new RectF();
 
     // Delegates that manage different functions for the tab strip.
-    private final ActionConfirmationDelegate mActionConfirmationDelegate;
+    private final ActionConfirmationManager mActionConfirmationManager;
     private final StripStacker mStripStacker = new ScrollingStripStacker();
     private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
     private final ReorderDelegate mReorderDelegate = new ReorderDelegate();
@@ -656,9 +657,7 @@ public class StripLayoutHelper
         mTabMenu.setWidth(menuWidth);
         mTabMenu.setModal(true);
 
-        mActionConfirmationDelegate =
-                new ActionConfirmationDelegate(
-                        actionConfirmationManager, mToolbarContainerView, mIncognito);
+        mActionConfirmationManager = actionConfirmationManager;
         mGroupIdToHideSupplier.addObserver((newIdToHide) -> rebuildStripViews());
         mReorderDelegate.addInReorderModeObserver(mInReorderModeObserver);
 
@@ -1017,12 +1016,10 @@ public class StripLayoutHelper
         mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
 
         Profile profile = tabGroupModelFilter.getTabModel().getProfile();
-        mActionConfirmationDelegate.initialize(profile, mGroupIdToHideSupplier);
         mReorderDelegate.initialize(
                 /* animationHost= */ this,
                 mTabGroupModelFilter,
                 mScrollDelegate,
-                mActionConfirmationDelegate,
                 mGroupIdToHideSupplier,
                 mToolbarContainerView);
 
@@ -1968,7 +1965,7 @@ public class StripLayoutHelper
                     TabGroupContextMenuCoordinator.createContextMenuCoordinator(
                             mModel,
                             mTabGroupModelFilter,
-                            mActionConfirmationDelegate.getActionConfirmationManager(),
+                            mActionConfirmationManager,
                             mModalDialogManager,
                             mWindowAndroid,
                             mDataSharingTabManager,
@@ -2517,16 +2514,27 @@ public class StripLayoutHelper
         if (tab == null || tab.isDying() || tab.getTabId() == Tab.INVALID_TAB_ID) return;
         RecordUserAction.record("MobileToolbarCloseTab");
         int tabId = tab.getTabId();
-        int rootId = getTabById(tabId).getRootId();
-        if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId) && !mIncognito) {
-            mActionConfirmationDelegate.handleDeleteGroupAction(
-                    rootId,
-                    /* draggingLastTabOffStrip= */ false,
-                    /* tabClosing= */ true,
-                    () -> handleCloseTab(tab));
-        } else {
-            handleCloseTab(tab);
-        }
+        Tab realTab = getTabById(tabId);
+        int rootId = realTab.getRootId();
+        StripTabModelActionListener listener =
+                new StripTabModelActionListener(
+                        rootId,
+                        ActionType.CLOSE,
+                        mGroupIdToHideSupplier,
+                        mToolbarContainerView,
+                        /* beforeSyncDialogRunnable= */ null,
+                        /* onSuccess= */ null);
+        Callback<TabClosureParams> onPreparedCallback =
+                (tabClosureParams) -> {
+                    assert tabClosureParams.tabs.size() == 1
+                            && tabClosureParams.tabs.get(0) == realTab;
+                    handleCloseTab(tab);
+                };
+        TabClosureParams params = TabClosureParams.closeTab(realTab).allowUndo(true).build();
+        mTabGroupModelFilter
+                .getTabModel()
+                .getTabRemover()
+                .prepareCloseTabs(params, /* allowDialog= */ true, listener, onPreparedCallback);
     }
 
     private StripLayoutView determineClickedView(float x, float y, boolean fromMouse, int buttons) {
@@ -4313,10 +4321,6 @@ public class StripLayoutHelper
         mReorderDelegate.setInReorderMode(inReorderMode);
     }
 
-    void setPrefServiceForTesting(PrefService prefService) {
-        mActionConfirmationDelegate.setPrefServiceForTesting(prefService); // IN-TEST
-    }
-
     ReorderDelegate getReorderDelegateForTesting() {
         return mReorderDelegate;
     }
@@ -4383,7 +4387,7 @@ public class StripLayoutHelper
             // Rebuild tab groups to unhide the interacting tab group as tab is restored back on tab
             // strip.
             if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, selectedTab.getTabId())
-                    && mActionConfirmationDelegate.isTabRemoveDialogSkipped()) {
+                    && mActionConfirmationManager.willSkipUngroupTabAttempt()) {
                 mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
             }
             dragActiveClickedTabOntoStrip(/* x= */ 0.0f, /* startReorder= */ false);
@@ -4475,6 +4479,18 @@ public class StripLayoutHelper
         }
     }
 
+    private boolean isTabInCollaboration(int tabId) {
+        @Nullable
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(
+                        mTabGroupModelFilter.getTabModel().getProfile());
+        @Nullable
+        String collaborationId =
+                TabShareUtils.getCollaborationIdOrNull(
+                        tabId, mTabGroupModelFilter.getTabModel(), tabGroupSyncService);
+        return TabShareUtils.isCollaborationIdValid(collaborationId);
+    }
+
     private void dragActiveClickedTabOutOfStrip(long time) {
         StripLayoutTab draggedTab = getSelectedStripTab();
         assert draggedTab != null;
@@ -4485,16 +4501,25 @@ public class StripLayoutHelper
         // Show group delete dialog when the last tab in group is being dragged off tab strip.
         boolean draggingLastTabInGroup =
                 StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId);
-        if (draggingLastTabInGroup && !mIncognito) {
-            if (!mIncognito) {
-                mActionConfirmationDelegate.handleDeleteGroupAction(
-                        tab.getRootId(),
-                        /* draggingLastTabOffStrip= */ true,
-                        /* tabClosing= */ false,
-                        () -> {
-                            mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, false);
-                        });
-            }
+        boolean willSkipDialog =
+                mActionConfirmationManager.willSkipUngroupTabAttempt()
+                        && !isTabInCollaboration(tabId);
+        if (draggingLastTabInGroup && !mIncognito && !willSkipDialog) {
+            StripTabModelActionListener listener =
+                    new StripTabModelActionListener(
+                            tab.getRootId(),
+                            ActionType.DRAG_OFF_STRIP,
+                            mGroupIdToHideSupplier,
+                            mToolbarContainerView,
+                            /* beforeSyncDialogRunnable= */ null,
+                            /* onSuccess= */ null);
+            mTabGroupModelFilter
+                    .getTabUngrouper()
+                    .ungroupTabs(
+                            Collections.singletonList(tab),
+                            /* trailing= */ false,
+                            /* allowDialog= */ true,
+                            listener);
         }
 
         // Store reorder state, then exit reorder mode.
@@ -4503,7 +4528,7 @@ public class StripLayoutHelper
         finishAnimationsAndPushTabUpdates();
 
         // Skip hiding dragged tab container when tab group delete dialog is showing.
-        if (!draggingLastTabInGroup || mActionConfirmationDelegate.isTabRemoveDialogSkipped()) {
+        if (!draggingLastTabInGroup || willSkipDialog) {
 
             // Immediately hide the dragged tab container, as if it were being translated off like a
             // closed tab.
