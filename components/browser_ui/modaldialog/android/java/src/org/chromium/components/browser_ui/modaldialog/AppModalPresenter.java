@@ -9,7 +9,6 @@ import static java.lang.Boolean.TRUE;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -84,9 +83,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     @Override
     protected void addDialogView(
-            PropertyModel model,
-            @Nullable Callback<ComponentDialog> onDialogCreatedCallback,
-            @Nullable Callback<View> onDialogShownCallback) {
+            PropertyModel model, @Nullable Callback<ComponentDialog> onDialogCreatedCallback) {
         mModel = model;
         int[][] styles = {
             {
@@ -171,9 +168,6 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
         try {
             mDialog.show();
-            if (onDialogShownCallback != null) {
-                onDialogShownCallback.onResult(mDialogView);
-            }
         } catch (WindowManager.BadTokenException badToken) {
             // See https://crbug.com/926688.
             dismissCurrentDialog(DialogDismissalCause.NOT_ATTACHED_TO_WINDOW);

@@ -451,7 +451,7 @@ public class AppModalPresenterUnitTest {
     }
 
     private void addDialogView() {
-        mAppModalPresenter.addDialogView(mModel, null, null);
+        mAppModalPresenter.addDialogView(mModel, null);
         // This method will be invoked when the dialog is added.
         mAppModalPresenter
                 .getWindowInsetsListenerForTesting()
