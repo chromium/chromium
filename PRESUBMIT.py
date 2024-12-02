@@ -6320,7 +6320,9 @@ def CheckForIncludeGuards(input_api, output_api):
         return (file_with_path.endswith('.h')
                 and not file_with_path.endswith('_message_generator.h')
                 and not file_with_path.endswith('com_imported_mstscax.h')
-                and not file_with_path.startswith('base/allocator/partition_allocator')
+                and not file_with_path.startswith(
+                    input_api.os_path.join('base', 'allocator',
+                                           'partition_allocator'))
                 and (not file_with_path.startswith('third_party')
                      or file_with_path.startswith(
                          input_api.os_path.join('third_party', 'blink'))))
