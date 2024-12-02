@@ -601,6 +601,7 @@ void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
 }
 
 void BrowserAccessibilityStateImpl::OnInputEvent(
+    const RenderWidgetHost& widget,
     const blink::WebInputEvent& event) {
   // |this| observer cares about user input events (specifically keyboard,
   // mouse & touch events) to decide if the accessibility APIs can be disabled.

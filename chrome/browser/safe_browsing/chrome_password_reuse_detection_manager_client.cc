@@ -364,6 +364,7 @@ void ChromePasswordReuseDetectionManagerClient::OnPaste() {
 }
 
 void ChromePasswordReuseDetectionManagerClient::OnInputEvent(
+    const content::RenderWidgetHost& widget,
     const blink::WebInputEvent& event) {
   phishy_interaction_tracker_.HandleInputEvent(event);
 #if BUILDFLAG(IS_ANDROID)

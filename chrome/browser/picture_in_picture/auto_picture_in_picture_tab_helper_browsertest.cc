@@ -90,7 +90,11 @@ const base::FilePath::CharType kAutopipToggleRegistrationPage[] =
 
 class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
  public:
-  MOCK_METHOD(void, OnInputEvent, (const blink::WebInputEvent&), (override));
+  MOCK_METHOD(void,
+              OnInputEvent,
+              (const content::RenderWidgetHost& widget,
+               const blink::WebInputEvent&),
+              (override));
 };
 
 class MockAutoBlocker : public permissions::PermissionDecisionAutoBlockerBase {
@@ -512,7 +516,8 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     auto* rwh = web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
     MockInputObserver input_observer;
     rwh->AddInputEventObserver(&input_observer);
-    EXPECT_CALL(input_observer, OnInputEvent(_)).Times(expect_events ? 4 : 0);
+    EXPECT_CALL(input_observer, OnInputEvent(_, _))
+        .Times(expect_events ? 4 : 0);
 
     blink::WebMouseEvent mouse_event(
         blink::WebMouseEvent::Type::kMouseDown, /*position=*/{},

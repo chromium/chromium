@@ -1572,11 +1572,13 @@ class InputMsgWatcher : public RenderWidgetHost::InputEventObserver {
 
  private:
   // Overridden InputEventObserver methods.
-  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent&) override;
 
-  void OnInputEvent(const blink::WebInputEvent&) override;
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent&) override;
 
   raw_ptr<RenderWidgetHost> render_widget_host_;
   blink::WebInputEvent::Type last_sent_event_type_ =
@@ -1613,7 +1615,8 @@ class InputEventAckWaiter : public RenderWidgetHost::InputEventObserver {
   void Reset();
 
   // RenderWidgetHost::InputEventObserver:
-  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent& event) override;
 

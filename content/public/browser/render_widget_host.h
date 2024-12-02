@@ -233,8 +233,10 @@ class CONTENT_EXPORT RenderWidgetHost {
    public:
     virtual ~InputEventObserver() {}
 
-    virtual void OnInputEvent(const blink::WebInputEvent&) {}
-    virtual void OnInputEventAck(blink::mojom::InputEventResultSource source,
+    virtual void OnInputEvent(const RenderWidgetHost&,
+                              const blink::WebInputEvent&) {}
+    virtual void OnInputEventAck(const RenderWidgetHost&,
+                                 blink::mojom::InputEventResultSource source,
                                  blink::mojom::InputEventResultState state,
                                  const blink::WebInputEvent&) {}
 

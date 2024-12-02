@@ -2953,6 +2953,7 @@ InputMsgWatcher::~InputMsgWatcher() {
 }
 
 void InputMsgWatcher::OnInputEventAck(
+    const RenderWidgetHost& widget,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_state,
     const blink::WebInputEvent& event) {
@@ -2964,7 +2965,8 @@ void InputMsgWatcher::OnInputEventAck(
   }
 }
 
-void InputMsgWatcher::OnInputEvent(const blink::WebInputEvent& event) {
+void InputMsgWatcher::OnInputEvent(const RenderWidgetHost& widget,
+                                   const blink::WebInputEvent& event) {
   last_sent_event_type_ = event.GetType();
 }
 
@@ -3033,6 +3035,7 @@ void InputEventAckWaiter::Reset() {
 }
 
 void InputEventAckWaiter::OnInputEventAck(
+    const RenderWidgetHost& widget,
     blink::mojom::InputEventResultSource source,
     blink::mojom::InputEventResultState state,
     const blink::WebInputEvent& event) {

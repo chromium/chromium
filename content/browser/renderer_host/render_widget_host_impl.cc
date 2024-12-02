@@ -2517,7 +2517,7 @@ void RenderWidgetHostImpl::NotifyObserversOfInputEvent(
     const WebInputEvent& event) {
   AddPendingUserActivation(event);
   for (auto& observer : input_event_observers_) {
-    observer.OnInputEvent(event);
+    observer.OnInputEvent(*this, event);
   }
 }
 
@@ -2526,7 +2526,7 @@ void RenderWidgetHostImpl::NotifyObserversOfInputEventAcks(
     blink::mojom::InputEventResultState ack_result,
     const WebInputEvent& event) {
   for (auto& input_event_observer : input_event_observers_) {
-    input_event_observer.OnInputEventAck(ack_source, ack_result, event);
+    input_event_observer.OnInputEventAck(*this, ack_source, ack_result, event);
   }
 }
 
