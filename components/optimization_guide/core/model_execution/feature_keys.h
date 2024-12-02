@@ -42,6 +42,41 @@ enum class ModelBasedCapabilityKey {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
 };
 
+inline std::ostream& operator<<(std::ostream& out,
+                                const ModelBasedCapabilityKey& val) {
+  switch (val) {
+    case ModelBasedCapabilityKey::kCompose:
+      return out << "Compose";
+    case ModelBasedCapabilityKey::kTabOrganization:
+      return out << "TabOrganization";
+    case ModelBasedCapabilityKey::kWallpaperSearch:
+      return out << "WallpaperSearch";
+    case ModelBasedCapabilityKey::kTest:
+      return out << "Test";
+    case ModelBasedCapabilityKey::kTextSafety:
+      return out << "TextSafety";
+    case ModelBasedCapabilityKey::kPromptApi:
+      return out << "PromptApi";
+    case ModelBasedCapabilityKey::kHistorySearch:
+      return out << "HistorySearch";
+    case ModelBasedCapabilityKey::kSummarize:
+      return out << "Summarize";
+    case ModelBasedCapabilityKey::kFormsPredictions:
+      return out << "FormsPredictions";
+    case ModelBasedCapabilityKey::kFormsAnnotations:
+      return out << "FormsAnnotations";
+    case ModelBasedCapabilityKey::kHistoryQueryIntent:
+      return out << "HistoryQueryIntent";
+    case ModelBasedCapabilityKey::kBlingPrototyping:
+      return out << "BlingPrototyping";
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+      return out << "PasswordChangeSubmission";
+    case ModelBasedCapabilityKey::kScamDetection:
+      return out << "ScamDetection";
+  }
+  return out;
+}
+
 inline constexpr std::array<ModelBasedCapabilityKey, 14>
     kAllModelBasedCapabilityKeys = {
         ModelBasedCapabilityKey::kCompose,

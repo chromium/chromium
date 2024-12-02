@@ -21,6 +21,8 @@ source_set("ai") {
     "ai_summarizer.h",
     "ai_utils.h",
     "ai_writer.h",
+    "built_in_ai_logger.cc",
+    "built_in_ai_logger.h",
     "features.cc",
     "features.h",
   ]

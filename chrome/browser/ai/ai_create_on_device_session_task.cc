@@ -8,6 +8,7 @@
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/built_in_ai_logger.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -69,6 +70,8 @@ void CreateOnDeviceSessionTask::Start() {
   bool can_create = service->CanCreateOnDeviceSession(feature_, &reason);
   CHECK(!can_create);
   if (!kWaitableReasons.contains(reason)) {
+    BUILT_IN_AI_LOGGER() << "Cannot create session for feature '" << feature_
+                         << "'. " << "Reason: " << reason;
     Finish(nullptr);
     return;
   }
@@ -84,8 +87,12 @@ void CreateOnDeviceSessionTask::Cancel() {
 void CreateOnDeviceSessionTask::OnDeviceModelAvailabilityChanged(
     optimization_guide::ModelBasedCapabilityKey feature,
     optimization_guide::OnDeviceModelEligibilityReason reason) {
+  bool waitable = kWaitableReasons.contains(reason);
+  BUILT_IN_AI_LOGGER() << "Feature '" << feature << "' "
+                       << "availability changed due to '" << reason << "'. "
+                       << "Waitable: " << (waitable ? "true" : "false");
   CHECK(state_ == State::kPending);
-  if (kWaitableReasons.contains(reason)) {
+  if (waitable) {
     return;
   }
   Finish(StartSession());
