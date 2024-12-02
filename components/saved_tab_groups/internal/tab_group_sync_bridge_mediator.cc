@@ -155,8 +155,8 @@ TabGroupSyncBridgeMediator::GetLocalCacheGuidForSavedBridge() const {
   return saved_bridge_->GetLocalCacheGuid();
 }
 
-std::optional<std::string>
-TabGroupSyncBridgeMediator::GetAccountIdForSavedBridge() const {
+std::optional<GaiaId> TabGroupSyncBridgeMediator::GetAccountIdForSavedBridge()
+    const {
   return saved_bridge_->GetTrackedAccountId();
 }
 

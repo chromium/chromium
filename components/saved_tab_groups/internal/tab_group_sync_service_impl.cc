@@ -702,7 +702,7 @@ bool TabGroupSyncServiceImpl::IsRemoteDevice(
 
 bool TabGroupSyncServiceImpl::WasTabGroupClosedLocally(
     const base::Uuid& sync_tab_group_id) const {
-  std::optional<std::string> account_id =
+  std::optional<GaiaId> account_id =
       sync_bridge_mediator_->GetAccountIdForSavedBridge();
   if (account_id) {
     return syncer::GetAccountKeyedPrefDictEntry(
@@ -1043,7 +1043,7 @@ void TabGroupSyncServiceImpl::RemoveDeletedGroupIdFromPref(
 
 void TabGroupSyncServiceImpl::AddLocallyClosedGroupIdToPref(
     const base::Uuid& sync_id) {
-  std::optional<std::string> account_id =
+  std::optional<GaiaId> account_id =
       sync_bridge_mediator_->GetAccountIdForSavedBridge();
   if (!account_id) {
     // If there's no signed-in account, nothing to do.
@@ -1057,7 +1057,7 @@ void TabGroupSyncServiceImpl::AddLocallyClosedGroupIdToPref(
 
 void TabGroupSyncServiceImpl::RemoveLocallyClosedGroupIdFromPref(
     const base::Uuid& sync_id) {
-  std::optional<std::string> account_id =
+  std::optional<GaiaId> account_id =
       sync_bridge_mediator_->GetAccountIdForSavedBridge();
   if (!account_id) {
     // If there's no signed-in account, nothing to do. Most notably, this

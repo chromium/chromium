@@ -16,6 +16,7 @@
 #include "components/saved_tab_groups/internal/sync_bridge_tab_group_model_wrapper.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class PrefService;
 
@@ -57,7 +58,7 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
   // SavedTabGroupSyncBridge specific getters.
   bool IsSavedBridgeSyncing() const;
   std::optional<std::string> GetLocalCacheGuidForSavedBridge() const;
-  std::optional<std::string> GetAccountIdForSavedBridge() const;
+  std::optional<GaiaId> GetAccountIdForSavedBridge() const;
 
   // SavedTabGroupModelObserver overrides.
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;

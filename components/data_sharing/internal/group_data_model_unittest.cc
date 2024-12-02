@@ -20,6 +20,7 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,11 +116,11 @@ class MockModelObserver : public GroupDataModel::Observer {
               (override));
   MOCK_METHOD(void,
               OnMemberAdded,
-              (const GroupId&, const std::string&, const base::Time&),
+              (const GroupId&, const GaiaId&, const base::Time&),
               (override));
   MOCK_METHOD(void,
               OnMemberRemoved,
-              (const GroupId&, const std::string&, const base::Time&),
+              (const GroupId&, const GaiaId&, const base::Time&),
               (override));
 };
 
@@ -203,7 +204,7 @@ class GroupDataModelTest : public testing::Test {
   }
 
   void MimicMemberAddedServerSide(const GroupId& group_id,
-                                  const std::string& member_gaia_id) {
+                                  const GaiaId& member_gaia_id) {
     sdk_delegate_.AddMember(group_id, member_gaia_id);
 
     syncer::EntityChangeList entity_changes;
@@ -215,7 +216,7 @@ class GroupDataModelTest : public testing::Test {
   }
 
   void MimicMemberRemovedServerSide(const GroupId& group_id,
-                                    const std::string& member_gaia_id) {
+                                    const GaiaId& member_gaia_id) {
     sdk_delegate_.RemoveMember(group_id, member_gaia_id);
 
     syncer::EntityChangeList entity_changes;
@@ -331,7 +332,7 @@ TEST_F(GroupDataModelTest, ShouldUpdateGroup) {
   const GroupId group_id = MimicGroupAddedServerSide("group");
   WaitForGroupAdded(group_id);
 
-  const std::string member_gaia_id = "gaia_id";
+  const GaiaId member_gaia_id("gaia_id");
   MimicMemberAddedServerSide(group_id, member_gaia_id);
   WaitForGroupUpdated(group_id);
 
@@ -375,7 +376,7 @@ TEST_F(GroupDataModelTest, ShouldNotifyAboutGroupChanges) {
   WaitForGroupAdded(group_id);
 
   // Test that OnMemberAdded() is called when a member is added.
-  std::string member_gaia_id = "gaia_id1";
+  const GaiaId member_gaia_id("gaia_id");
   EXPECT_CALL(model_observer(),
               OnMemberAdded(group_id, member_gaia_id, NotNullTime()));
   MimicMemberAddedServerSide(group_id, member_gaia_id);
@@ -452,7 +453,7 @@ TEST_F(GroupDataModelTest, ShouldHandleUpdatesAfterRestart) {
   // CollaborationGroupSyncBridge is still running and will persist changes, but
   // model is shut down so it can't process them.
   ShutdownModel();
-  const std::string member_gaia_id = "gaia_id";
+  const GaiaId member_gaia_id("gaia_id");
   MimicMemberAddedServerSide(group_id, member_gaia_id);
 
   RestartModel();
@@ -490,7 +491,7 @@ TEST_F(GroupDataModelTest, ShouldGetPossiblyRemovedGroupMember) {
   const GroupId group_id = MimicGroupAddedServerSide("group");
   WaitForGroupAdded(group_id);
 
-  const std::string member_gaia_id = "gaia_id";
+  const GaiaId member_gaia_id("gaia_id");
   MimicMemberAddedServerSide(group_id, member_gaia_id);
   WaitForGroupUpdated(group_id);
 
@@ -565,7 +566,7 @@ TEST_F(GroupDataModelTest, ShouldRecordGroupEvents) {
   EXPECT_THAT(model().GetGroupEventsSinceStartup(), IsEmpty());
 
   // Verify that member addition is recorded.
-  const std::string member_gaia_id = "gaia_id";
+  const GaiaId member_gaia_id("gaia_id");
   MimicMemberAddedServerSide(group_id, member_gaia_id);
   WaitForGroupUpdated(group_id);
 

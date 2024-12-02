@@ -167,7 +167,7 @@ std::set<GroupData> DataSharingServiceImpl::ReadAllGroups() {
 std::optional<GroupMemberPartialData>
 DataSharingServiceImpl::GetPossiblyRemovedGroupMember(
     const GroupId& group_id,
-    const std::string& member_gaia_id) {
+    const GaiaId& member_gaia_id) {
   if (!group_data_model_) {
     return std::nullopt;
   }
@@ -414,7 +414,7 @@ void DataSharingServiceImpl::OnGroupDeleted(const GroupId& group_id,
 }
 
 void DataSharingServiceImpl::OnMemberAdded(const GroupId& group_id,
-                                           const std::string& member_gaia_id,
+                                           const GaiaId& member_gaia_id,
                                            const base::Time& event_time) {
   for (auto& observer : observers_) {
     observer.OnGroupMemberAdded(group_id, member_gaia_id, event_time);
@@ -422,7 +422,7 @@ void DataSharingServiceImpl::OnMemberAdded(const GroupId& group_id,
 }
 
 void DataSharingServiceImpl::OnMemberRemoved(const GroupId& group_id,
-                                             const std::string& member_gaia_id,
+                                             const GaiaId& member_gaia_id,
                                              const base::Time& event_time) {
   for (auto& observer : observers_) {
     observer.OnGroupMemberRemoved(group_id, member_gaia_id, event_time);

@@ -81,11 +81,11 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     // Two methods below are called in addition to OnGroupChanged().
     // Called when a new member has been added to the group.
     virtual void OnGroupMemberAdded(const GroupId& group_id,
-                                    const std::string& member_gaia_id,
+                                    const GaiaId& member_gaia_id,
                                     const base::Time& event_time) {}
     // Called when a member has been removed from the group.
     virtual void OnGroupMemberRemoved(const GroupId& group_id,
-                                      const std::string& member_gaia_id,
+                                      const GaiaId& member_gaia_id,
                                       const base::Time& event_time) {}
   };
 
@@ -146,7 +146,7 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // Returns nullopt if no data is found.
   virtual std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
-      const std::string& member_gaia_id) = 0;
+      const GaiaId& member_gaia_id) = 0;
 
   // Refreshes data if necessary. On success passes to the `callback` a set of
   // all groups known to the client (ordered by id).

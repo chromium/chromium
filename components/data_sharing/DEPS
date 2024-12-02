@@ -3,6 +3,7 @@ include_rules = [
   "+components/sync/model",
   "+components/sync/protocol",
   "+components/url_formatter/elide_url.h",
+  "+google_apis/gaia/gaia_id.h",
   "+net/android",
   "+net/traffic_annotation",
 ]

@@ -30,7 +30,7 @@ constexpr char kUser2DisplayName[] = "user1-display-name";
 constexpr char kEmail2[] = "user2@gmail.com";
 constexpr char kAvatarUrl2[] = "https://google.com/avatar2.png";
 
-GroupMember MakeGroupMember(const std::string& gaia_id,
+GroupMember MakeGroupMember(const GaiaId& gaia_id,
                             const std::string& display_name,
                             const std::string& email,
                             MemberRole role,
@@ -45,7 +45,7 @@ GroupMember MakeGroupMember(const std::string& gaia_id,
 }
 
 data_sharing_pb::GroupMember MakeGroupMemberProto(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& display_name,
     const std::string& email,
     data_sharing_pb::MemberRole role,

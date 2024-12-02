@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "url/gurl.h"
 
 namespace data_sharing {
@@ -31,7 +32,7 @@ struct GroupMember {
 
   ~GroupMember();
 
-  std::string gaia_id;
+  GaiaId gaia_id;
   std::string display_name;
   std::string email;
   MemberRole role;
@@ -54,7 +55,7 @@ struct GroupMemberPartialData {
 
   ~GroupMemberPartialData();
 
-  std::string gaia_id;
+  GaiaId gaia_id;
   std::string display_name;
   std::string email;
   GURL avatar_url;
@@ -120,7 +121,7 @@ struct GroupEvent {
   EventType event_type;
   GroupId group_id;
   // Unset for kGroupRemoved events.
-  std::optional<std::string> affected_member_gaia_id;
+  std::optional<GaiaId> affected_member_gaia_id;
   base::Time event_time;
 };
 

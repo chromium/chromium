@@ -18,6 +18,8 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 
+class GaiaId;
+
 namespace data_sharing {
 
 // This class manages GroupData and ensures it is synchronized:
@@ -44,10 +46,10 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
                                 const base::Time& event_time) = 0;
 
     virtual void OnMemberAdded(const GroupId& group_id,
-                               const std::string& member_gaia_id,
+                               const GaiaId& member_gaia_id,
                                const base::Time& event_time) = 0;
     virtual void OnMemberRemoved(const GroupId& group_id,
-                                 const std::string& member_gaia_id,
+                                 const GaiaId& member_gaia_id,
                                  const base::Time& event_time) = 0;
   };
 
@@ -78,7 +80,7 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   // Returns nullopt if no data about the member is found.
   std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
-      const std::string& member_gaia_id) const;
+      const GaiaId& member_gaia_id) const;
   std::vector<GroupEvent> GetGroupEventsSinceStartup() const;
 
   // CollaborationGroupSyncBridge::Observer implementation.
@@ -112,7 +114,7 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
       const GroupId& group_id,
       GroupEvent::EventType event_type,
       base::Time event_time,
-      std::optional<std::string> affected_member_gaia_id = std::nullopt);
+      std::optional<GaiaId> affected_member_gaia_id = std::nullopt);
 
   GroupDataStore group_data_store_;
   bool is_group_data_store_loaded_ = false;

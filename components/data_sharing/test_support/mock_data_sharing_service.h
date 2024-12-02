@@ -37,7 +37,7 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD0(ReadAllGroups, std::set<GroupData>());
   MOCK_METHOD2(GetPossiblyRemovedGroupMember,
                std::optional<GroupMemberPartialData>(const GroupId&,
-                                                     const std::string&));
+                                                     const GaiaId&));
   MOCK_METHOD1(
       ReadAllGroups,
       void(base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>));

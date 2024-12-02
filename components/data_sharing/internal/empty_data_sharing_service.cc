@@ -47,7 +47,7 @@ std::set<GroupData> EmptyDataSharingService::ReadAllGroups() {
 std::optional<GroupMemberPartialData>
 EmptyDataSharingService::GetPossiblyRemovedGroupMember(
     const GroupId& group_id,
-    const std::string& member_gaia_id) {
+    const GaiaId& member_gaia_id) {
   return std::nullopt;
 }
 

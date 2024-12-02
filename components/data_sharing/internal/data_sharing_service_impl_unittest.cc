@@ -24,6 +24,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -260,7 +261,7 @@ TEST_P(DataSharingServiceImplTest, ShouldInviteMember) {
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
 
   const std::string email = "user@gmail.com";
-  const std::string gaia_id = "123456789";
+  const GaiaId gaia_id("123456789");
   not_owned_sdk_delegate_->AddAccount(email, gaia_id);
 
   base::RunLoop run_loop;
@@ -285,7 +286,7 @@ TEST_P(DataSharingServiceImplTest, ShouldRemoveMember) {
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
 
   const std::string email = "user@gmail.com";
-  const std::string gaia_id = "123456789";
+  const GaiaId gaia_id("123456789");
   not_owned_sdk_delegate_->AddAccount(email, gaia_id);
   not_owned_sdk_delegate_->AddMember(group_id, gaia_id);
 
@@ -309,7 +310,7 @@ TEST_P(DataSharingServiceImplTest, ShouldLeaveGroup) {
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
 
   const std::string email = "user@gmail.com";
-  const std::string gaia_id = "123456789";
+  const GaiaId gaia_id("123456789");
   not_owned_sdk_delegate_->SetUserGaiaId(gaia_id);
   not_owned_sdk_delegate_->AddAccount(email, gaia_id);
   not_owned_sdk_delegate_->AddMember(group_id, gaia_id);

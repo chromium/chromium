@@ -73,7 +73,7 @@ class DataSharingServiceImpl : public DataSharingService,
   std::set<GroupData> ReadAllGroups() override;
   std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
-      const std::string& member_gaia_id) override;
+      const GaiaId& member_gaia_id) override;
   void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
       override;
@@ -135,10 +135,10 @@ class DataSharingServiceImpl : public DataSharingService,
   void OnGroupDeleted(const GroupId& group_id,
                       const base::Time& event_time) override;
   void OnMemberAdded(const GroupId& group_id,
-                     const std::string& member_gaia_id,
+                     const GaiaId& member_gaia_id,
                      const base::Time& event_time) override;
   void OnMemberRemoved(const GroupId& group_id,
-                       const std::string& member_gaia_id,
+                       const GaiaId& member_gaia_id,
                        const base::Time& event_time) override;
 
   CollaborationGroupSyncBridge* GetCollaborationGroupSyncBridgeForTesting();
