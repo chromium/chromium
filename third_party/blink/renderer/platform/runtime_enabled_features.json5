@@ -4790,11 +4790,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      name: "WebHIDOnDedicatedWorkers",
-      status: "stable",
-      depends_on: ["WebHID"],
-    },
-    {
       // It is only enabled in extension environment for now.
       name: "WebHIDOnServiceWorkers",
       depends_on: ["WebHID"],
