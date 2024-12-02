@@ -7,8 +7,10 @@
 
 #include <vector>
 
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
-#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -19,31 +21,31 @@ namespace web_app {
 // Configures IWA self hosted server for unit tests.
 class IwaTestServerConfigurator {
  public:
-  IwaTestServerConfigurator();
+  explicit IwaTestServerConfigurator(network::TestURLLoaderFactory& factory);
   ~IwaTestServerConfigurator();
 
-  void AddUpdateManifest(std::string relative_url,
-                         std::string update_manifest_value);
-  void AddSignedWebBundle(std::string relative_url,
-                          web_app::TestSignedWebBundle web_bundle);
+  // Adds a bundle to be served to `factory_` at a well-known url and updates
+  // the manifest served for this bundle's id.
+  void AddBundle(
+      std::unique_ptr<BundledIsolatedWebApp> bundle,
+      std::optional<std::vector<UpdateChannel>> update_channels = std::nullopt);
 
-  // Configures TestURLLoaderFactory and FakeWebContentsManager for unittests.
-  void ConfigureURLLoader(const GURL& base_url,
-                          network::TestURLLoaderFactory& test_factory,
-                          FakeWebContentsManager& fake_web_contents_manager);
+  // Generates a policy entry that can be appended to
+  // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
+  // Delegates to `test::CreateForceInstallIwaPolicyEntry()` with a custom
+  // `update_manifest_url` that `factory_` can process.
+  static base::Value::Dict CreateForceInstallPolicyEntry(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::optional<UpdateChannel>& update_channel = std::nullopt,
+      const std::optional<base::Version>& pinned_version = std::nullopt);
 
  private:
-  struct ServedUpdateManifest {
-    std::string relative_url_;
-    std::string manifest_value_;
-  };
-  std::vector<ServedUpdateManifest> served_update_manifests_;
+  void RegenerateServedUpdateManifest(
+      const web_package::SignedWebBundleId& web_bundle_id);
 
-  struct ServedSignedWebBundle {
-    std::string relative_url_;
-    web_app::TestSignedWebBundle web_bundle_;
-  };
-  std::vector<ServedSignedWebBundle> served_signed_web_bundles_;
+  test::BundleVersionsStorage storage_;
+
+  const raw_ref<network::TestURLLoaderFactory> factory_;
 };
 }  // namespace web_app
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_IWA_TEST_SERVER_CONFIGURATOR_H_

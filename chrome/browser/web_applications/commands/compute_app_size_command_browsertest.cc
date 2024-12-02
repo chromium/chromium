@@ -79,7 +79,10 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForWebAppBrowserTest,
 class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
-  ComputeAppSizeCommandForIsolatedWebAppBrowserTest() {
+  ComputeAppSizeCommandForIsolatedWebAppBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
     update_server_mixin_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle(kPublicKeyPair1));

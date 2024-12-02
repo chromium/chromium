@@ -34,6 +34,9 @@ class IsolatedWebAppExternalInstallOptions final {
   static base::expected<IsolatedWebAppExternalInstallOptions, std::string>
   FromPolicyPrefValue(const base::Value& entry);
 
+  static base::expected<IsolatedWebAppExternalInstallOptions, std::string>
+  FromPolicyPrefValue(const base::Value::Dict& entry);
+
   ~IsolatedWebAppExternalInstallOptions();
 
   IsolatedWebAppExternalInstallOptions(

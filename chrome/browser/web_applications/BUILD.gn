@@ -639,6 +639,8 @@ source_set("web_applications_test_support") {
   testonly = true
 
   sources = [
+    "isolated_web_apps/test/bundle_versions_storage.cc",
+    "isolated_web_apps/test/bundle_versions_storage.h",
     "isolated_web_apps/test/integrity_block_data_matcher.h",
     "isolated_web_apps/test/isolated_web_app_builder.cc",
     "isolated_web_apps/test/isolated_web_app_builder.h",
@@ -652,6 +654,8 @@ source_set("web_applications_test_support") {
     "isolated_web_apps/test/mock_isolated_web_app_install_command_wrapper.h",
     "isolated_web_apps/test/policy_generator.cc",
     "isolated_web_apps/test/policy_generator.h",
+    "isolated_web_apps/test/policy_test_utils.cc",
+    "isolated_web_apps/test/policy_test_utils.h",
     "isolated_web_apps/test/test_iwa_installer_factory.cc",
     "isolated_web_apps/test/test_iwa_installer_factory.h",
     "isolated_web_apps/test/test_signed_web_bundle_builder.cc",

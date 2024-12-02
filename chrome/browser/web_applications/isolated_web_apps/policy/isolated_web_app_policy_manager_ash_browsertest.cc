@@ -116,6 +116,10 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
     }
     scoped_feature_list_.InitWithFeatures(enabled_features,
                                           /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    ash::LoginManagerTest::SetUpOnMainThread();
     AddInitialBundles();
   }
 

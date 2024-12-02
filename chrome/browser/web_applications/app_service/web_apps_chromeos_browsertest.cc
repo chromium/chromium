@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -230,15 +231,11 @@ class WebAppsPreventCloseChromeOsBrowserTest
                 .origin()
                 .GetURL()
                 .spec();
-        profile()->GetPrefs()->SetList(
-            prefs::kIsolatedWebAppInstallForceList,
-            base::Value::List().Append(
-                base::Value::Dict()
-                    .Set(web_app::kPolicyWebBundleIdKey, web_bundle_id.id())
-                    .Set(web_app::kPolicyUpdateManifestUrlKey,
-                         isolated_web_app_update_server_mixin_
-                             .GetUpdateManifestUrl(web_bundle_id)
-                             .spec())));
+
+        web_app::test::AddForceInstalledIwaToPolicy(
+            profile()->GetPrefs(),
+            isolated_web_app_update_server_mixin_.CreateForceInstallPolicyEntry(
+                web_bundle_id));
         break;
     }
     ASSERT_EQ(installed_app_id, observer.Wait());
