@@ -3688,8 +3688,7 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
     // hash. However, in practice, this seems to cause some tests to fail. See
     // https://crbug.com/963889.
     resources.HashFunction = +[](const char* data, size_t size) {
-      return base::legacy::CityHash64(
-          base::as_bytes(base::make_span(data, size)));
+      return base::legacy::CityHash64(base::as_bytes(base::span(data, size)));
     };
   } else {
     resources.HashFunction = nullptr;

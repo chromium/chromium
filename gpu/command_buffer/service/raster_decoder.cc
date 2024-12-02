@@ -3260,7 +3260,7 @@ void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(
                                          entry_id),
           handle, use_gpu ? gr_context() : nullptr,
           use_gpu ? graphite_recorder() : nullptr,
-          base::make_span(data_memory, data_size))) {
+          base::span(data_memory, data_size))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCreateTransferCacheEntryINTERNAL",
                        "Failure to deserialize transfer cache entry.");
     return;

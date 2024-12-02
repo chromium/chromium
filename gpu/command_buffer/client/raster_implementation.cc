@@ -197,7 +197,7 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
     }
 
     bool succeeded =
-        entry.Serialize(base::make_span(static_cast<uint8_t*>(data), size));
+        entry.Serialize(base::span(static_cast<uint8_t*>(data), size));
     DCHECK(succeeded);
     ri_->UnmapAndCreateTransferCacheEntry(entry.UnsafeType(), entry.Id());
     return 0u;
@@ -237,7 +237,7 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
     }
 
     bool succeeded = entry.Serialize(
-        base::make_span(reinterpret_cast<uint8_t*>(memory), bytes_remaining));
+        base::span(reinterpret_cast<uint8_t*>(memory), bytes_remaining));
     DCHECK(succeeded);
     ri_->transfer_cache_.AddTransferCacheEntry(
         entry.UnsafeType(), entry.Id(), buffer->shm_id(),
