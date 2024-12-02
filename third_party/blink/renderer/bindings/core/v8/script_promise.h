@@ -149,6 +149,11 @@ class CORE_EXPORT ThenCallable : public ScriptFunction {
           // return anything (no chaining).
           static_cast<Derived*>(this)->React(script_state,
                                              std::move(blink_value));
+        } else if constexpr (std::is_same_v<IDLAny, ThenReturnType>) {
+          // Promise resolves with a value, and is chaining any. Just pass down
+          // the ScriptValue that is returned.
+          return_value = static_cast<Derived*>(this)->React(
+              script_state, std::move(blink_value));
         } else {
           // Promise resolves with a value, and is chaining.
           return_value = ScriptValue(
