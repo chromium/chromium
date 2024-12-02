@@ -8590,7 +8590,6 @@ crbug.com/376931817 virtual/fsa-incognito/external/wpt/file-system-access/local_
 # Gardener 2024-11-07
 crbug.com/377172757 [ Linux ] external/wpt/event-timing/selection-autoscroll.html [ Pass Timeout ]
 crbug.com/377777852 [ Linux ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/shared-storage-filtering-id-sends-report.https.window.html [ Pass Timeout ]
-crbug.com/377909956 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/interrupt-hidden-smooth-scroll.html [ Failure Pass ]
 crbug.com/377927602 external/wpt/selection/caret/collapse-pre-linestart-2.html [ Failure Pass ]
 crbug.com/377927602 external/wpt/selection/caret/editing-host-has-only-invisible-br.html [ Failure Pass Timeout ]
 crbug.com/377938333 external/wpt/webdriver/tests/bidi/browsing_context/context_created/original_opener.py [ Failure Pass Timeout ]
