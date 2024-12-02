@@ -64,7 +64,7 @@ void UpdateMaxSchedulerIdleTasksCrashKey(
 
 BASE_FEATURE(kScriptedIdleTaskControllerOOMFix,
              "ScriptedIdleTaskControllerOOMFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 IdleTask::~IdleTask() {
   CHECK(!delayed_task_handle_.IsValid());
