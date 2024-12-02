@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/json/json_parser.h"
+
+#include <array>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -669,12 +666,12 @@ TEST(JSONParserTest, Reading) {
 }
 
 TEST(JSONParserTest, InvalidSanity) {
-  const char* const kInvalidJson[] = {
-      "/* test *", "{\"foo\"", "{\"foo\":", "  [", "\"\\u123g\"", "{\n\"eh:\n}",
-      "////",      "*/**/",    "/**/",      "/*/", "//**/",       "\"\\"};
+  constexpr auto kInvalidJson = std::to_array<const char* const>(
+      {"/* test *", "{\"foo\"", "{\"foo\":", "  [", "\"\\u123g\"",
+       "{\n\"eh:\n}", "////", "*/**/", "/**/", "/*/", "//**/", "\"\\"});
 
-  for (size_t i = 0; i < std::size(kInvalidJson); ++i) {
-    std::unique_ptr<JSONValue> result = ParseJSON(kInvalidJson[i]);
+  for (const auto* invalid_json : kInvalidJson) {
+    std::unique_ptr<JSONValue> result = ParseJSON(invalid_json);
     EXPECT_FALSE(result.get());
   }
 }
