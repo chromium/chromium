@@ -79,25 +79,17 @@ The common conversions to spans are:
   class fields.
 
 ### Span construction
-- `base::span()` constructor can make a span, and deduce the type and size,
-  from:
-  - a `T[N]` array
-  - `std::array<T, N>`
-  - `std::vector`
-  - `std::string`
-  - any contiguous range with `begin()` and `end()` methods.
-  - any type with `T* data()` and `size_t size()` methods.
-- `base::make_span<N>()` can make a fixed-size span from any range.
+- `base::span()` makes a span, deducing the type and size, from any contiguous
+  range. It can also take explicit begin/end or data/size pairs.
+- `base::to_fixed_extent<N>()` makes a fixed-size span from a dynamic one.
 - `base::as_bytes()` and `base::as_chars()` convert a span’s inner type to
    `uint8_t` or `char` respectively, making a byte-span or char-span.
 - `base::span_from_ref()` and `base::byte_span_from_ref()` make a span, or
   byte-span, from a single object.
-- `base::as_byte_span()` and `base::as_writable_byte_span()` to make a
-   byte-span (const or mutable) from any container that can convert to a
-   `base::span<T>`, such as `std::string` or `std::vector<Stuff>`.
+- `base::as_byte_span()` and `base::as_writable_byte_span()` make a
+  byte-span from any contiguous range.
 
 #### Padding bytes
-
 Note that if the type contains padding bytes that were not somehow explicitly
 initialized, this can create reads of uninitialized memory. Conversion to a
 byte-span is most commonly used for spans of primitive types, such as going from

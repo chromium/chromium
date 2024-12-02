@@ -170,7 +170,6 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui) {
   source->AddResourcePaths(kResources);
 
   // Add all shared resources from bar_shared
-  source->AddResourcePaths(
-      base::make_span(kBarSharedResources, kBarSharedResourcesSize));
+  source->AddResourcePaths(kBarSharedResources);
 }
 ```
