@@ -80,7 +80,7 @@ class SRIMessageSignatureParserTest : public testing::Test {
 
   void ValidateBasicTestHeader(const mojom::SRIMessageSignaturePtr& sig) {
     EXPECT_EQ("signature", sig->label);
-    EXPECT_EQ("ed25519", sig->alg);
+    EXPECT_EQ(mojom::SRIMessageSignature::Algorithm::kEd25519, sig->alg);
     EXPECT_EQ(std::nullopt, sig->created);
     EXPECT_EQ(std::nullopt, sig->expires);
     EXPECT_EQ(kPublicKey, sig->keyid);
@@ -541,7 +541,7 @@ class SRIMessageSignatureBaseTest : public testing::Test {
     valid_component->params = {Parameters::kStrictStructuredFieldSerialization};
     sig->components.push_back(std::move(valid_component));
 
-    sig->alg = "ed25519";
+    sig->alg = mojom::SRIMessageSignature::Algorithm::kEd25519;
     sig->keyid = kPublicKey;
     sig->tag = "sri";
     return sig;

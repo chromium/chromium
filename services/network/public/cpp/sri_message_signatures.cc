@@ -18,6 +18,13 @@ namespace {
 const size_t kEd25519KeyLength = 32;
 const size_t kEd25519SigLength = 64;
 
+std::string SerializeAlgorithm(mojom::SRIMessageSignature::Algorithm alg) {
+  switch (alg) {
+    case mojom::SRIMessageSignature::Algorithm::kEd25519:
+      return "ed25519";
+  }
+}
+
 std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     const net::structured_headers::ParameterizedItem& component) {
   // We're quite restrictive at the moment: the only component we'll accept is
@@ -139,7 +146,8 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
 
       if (param.first == "alg" && param.second.is_string() &&
           param.second.GetString() == "ed25519") {
-        message_signature->alg = "ed25519";
+        message_signature->alg =
+            mojom::SRIMessageSignature::Algorithm::kEd25519;
       } else if (param.first == "created" && param.second.is_integer() &&
                  param.second.GetInteger() >= 0) {
         message_signature->created = param.second.GetInteger();
@@ -298,7 +306,8 @@ std::optional<std::string> ConstructSignatureBase(
   //    parameters that are not available or not used for this message
   //    signature.
   if (signature->alg.has_value()) {
-    signature_base << ";alg=\"" << signature->alg.value() << "\"";
+    signature_base << ";alg=\"" << SerializeAlgorithm(signature->alg.value())
+                   << "\"";
   }
   if (signature->created.has_value()) {
     signature_base << ";created=" << signature->created.value();

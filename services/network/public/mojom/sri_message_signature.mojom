@@ -37,6 +37,10 @@ struct SRIMessageSignatureComponent {
 // * Signature: https://www.rfc-editor.org/rfc/rfc9421.html#section-4.2
 // * Validation requirements: https://wicg.github.io/signature-based-sri/#verification-requirements-for-sri
 struct SRIMessageSignature {
+  enum Algorithm {
+    kEd25519
+  };
+
   string label;
 
   // The asserted signature, stored as an array<uint8> rather than a string for
@@ -49,7 +53,7 @@ struct SRIMessageSignature {
   // registry:
   //
   // https://www.iana.org/assignments/http-message-signature/http-message-signature.xhtml#signature-metadata-parameters
-  string? alg;
+  Algorithm? alg;
   int64? created;
   int64? expires;
   string? keyid;
