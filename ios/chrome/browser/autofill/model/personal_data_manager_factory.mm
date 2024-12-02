@@ -46,8 +46,8 @@ const std::string GetCountryCodeFromVariations() {
 // static
 PersonalDataManager* PersonalDataManagerFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<PersonalDataManager*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<PersonalDataManager>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -57,9 +57,7 @@ PersonalDataManagerFactory* PersonalDataManagerFactory::GetInstance() {
 }
 
 PersonalDataManagerFactory::PersonalDataManagerFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PersonalDataManager",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PersonalDataManager") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
