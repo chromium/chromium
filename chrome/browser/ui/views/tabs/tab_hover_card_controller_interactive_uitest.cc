@@ -461,6 +461,13 @@ class TabHoverCardFadeFooterInteractiveUiTest
         ->GetPrimaryViewForTesting();
   }
 
+  FadeRecentActivityFooterRow* GetPrimaryRecentActivityRowFromHoverCard(
+      TabHoverCardBubbleView* bubble) {
+    return bubble->GetFooterViewForTesting()
+        ->GetRecentActivityRowForTesting()
+        ->GetPrimaryViewForTesting();
+  }
+
   auto CheckAlertRowLabel(std::u16string expected_text, bool has_position) {
     return Steps(
         WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
@@ -774,6 +781,65 @@ IN_PROC_BROWSER_TEST_F(
       hover_card->title_label_->GetProperty(views::kMarginsKey)->height() +
       hover_card->domain_label_->GetProperty(views::kMarginsKey)->height();
   EXPECT_EQ(hover_card_size.height(), total_children_height);
+}
+
+// Mocks that a tab has recent activity and verifies that the correct string
+// is displayed on the hover card.
+IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
+                       HoverCardFooterShowsRecentActivity) {
+  TabStrip* const tab_strip = GetTabStrip(browser());
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  TabRendererData tab_renderer_data = MakeTabRendererData();
+
+  // Clear alert state. Alerts take precedence over all other footers.
+  tab_renderer_data.alert_state = {};
+
+  // Create a mock PersistentMessage
+  // Show recent activity status with TAB_ADDED event.
+  std::string username = std::string("User");
+  collaboration::messaging::PersistentMessage msg;
+  data_sharing::GroupMember triggering_user;
+  triggering_user.display_name = username;
+  msg.attribution.triggering_user = triggering_user;
+  msg.collaboration_event =
+      collaboration::messaging::CollaborationEvent::TAB_ADDED;
+  tab_renderer_data.recent_activity = msg;
+
+  tab_strip->SetTabData(1, tab_renderer_data);
+  FadeRecentActivityFooterRow* const recent_activity_row =
+      GetPrimaryRecentActivityRowFromHoverCard(SimulateHoverTab(browser(), 1));
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB,
+                base::UTF8ToUTF16(username)),
+            recent_activity_row->footer_label()->GetText());
+  EXPECT_FALSE(recent_activity_row->icon()->GetImageModel().IsEmpty());
+
+  // Hover card footer should update when we hover over another tab that is
+  // not discarded
+  SimulateHoverTab(browser(), 0);
+  EXPECT_TRUE(recent_activity_row->footer_label()->GetText().empty());
+  EXPECT_TRUE(recent_activity_row->icon()->GetImageModel().IsEmpty());
+
+  // Reset tab data by setting intermediate object. Without this, the new
+  // tab_data is ignored because it is the same object.
+  tab_strip->SetTabData(1, MakeTabRendererData());
+
+  // Change username and action to show recent activity with TAB_UPDATED event.
+  std::string username2 = std::string("Another User");
+  triggering_user.display_name = username2;
+  msg.attribution.triggering_user = triggering_user;
+  msg.collaboration_event =
+      collaboration::messaging::CollaborationEvent::TAB_UPDATED;
+  tab_renderer_data.recent_activity = msg;
+
+  tab_strip->SetTabData(1, tab_renderer_data);
+  SimulateHoverTab(browser(), 1);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
+                base::UTF8ToUTF16(username2)),
+            recent_activity_row->footer_label()->GetText());
+  EXPECT_FALSE(recent_activity_row->icon()->GetImageModel().IsEmpty());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

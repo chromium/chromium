@@ -27,6 +27,17 @@ struct PerformanceRowData {
   int64_t memory_usage_in_bytes = 0;
 };
 
+struct RecentActivityRowData {
+  bool should_show_recent_activity = false;
+  std::u16string text;
+  std::optional<ui::ImageModel> avatar = std::nullopt;
+
+  RecentActivityRowData();
+  ~RecentActivityRowData();
+  RecentActivityRowData(const RecentActivityRowData& other);
+  RecentActivityRowData& operator=(const RecentActivityRowData& other);
+};
+
 template <typename T>
 class FooterRow : public FadeWrapper<views::View, T> {
   using FadeWrapper_View_T = FadeWrapper<views::View, T>;
@@ -65,11 +76,18 @@ using FadeWrapper_View_PerformanceRowData =
     FadeWrapper<views::View, PerformanceRowData>;
 DECLARE_TEMPLATE_METADATA(FadeWrapper_View_PerformanceRowData, FadeWrapper);
 
+using FadeWrapper_View_RecentActivityRowData =
+    FadeWrapper<views::View, RecentActivityRowData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_View_RecentActivityRowData, FadeWrapper);
+
 using FooterRow_AlertFooterRowData = FooterRow<AlertFooterRowData>;
 DECLARE_TEMPLATE_METADATA(FooterRow_AlertFooterRowData, FooterRow);
 
 using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
 DECLARE_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow);
+
+using FooterRow_RecentActivityRowData = FooterRow<RecentActivityRowData>;
+DECLARE_TEMPLATE_METADATA(FooterRow_RecentActivityRowData, FooterRow);
 
 class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
   using FooterRowAlertFooterRowData = FooterRow<AlertFooterRowData>;
@@ -97,6 +115,19 @@ class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
   void SetData(const PerformanceRowData& data) override;
 };
 
+class FadeRecentActivityFooterRow : public FooterRow<RecentActivityRowData> {
+  using FooterRowRecentActivityRowData = FooterRow<RecentActivityRowData>;
+  METADATA_HEADER(FadeRecentActivityFooterRow, FooterRowRecentActivityRowData)
+
+ public:
+  explicit FadeRecentActivityFooterRow(bool is_fade_out_view)
+      : FooterRow<RecentActivityRowData>(is_fade_out_view) {}
+  ~FadeRecentActivityFooterRow() override = default;
+
+  // FadeWrapper:
+  void SetData(const RecentActivityRowData& data) override;
+};
+
 class FooterView : public views::View {
   METADATA_HEADER(FooterView, views::View)
 
@@ -106,6 +137,9 @@ class FooterView : public views::View {
   using PerformanceFadeView = FadeView<FadePerformanceFooterRow,
                                        FadePerformanceFooterRow,
                                        PerformanceRowData>;
+  using RecentActivityFadeView = FadeView<FadeRecentActivityFooterRow,
+                                          FadeRecentActivityFooterRow,
+                                          RecentActivityRowData>;
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardFooterElementId);
 
   FooterView();
@@ -113,6 +147,7 @@ class FooterView : public views::View {
 
   void SetAlertData(const AlertFooterRowData& data);
   void SetPerformanceData(const PerformanceRowData& data);
+  void SetRecentActivityData(const RecentActivityRowData& data);
   void SetFade(double percent);
 
   AlertFadeView* GetAlertRowForTesting() { return alert_row_; }
@@ -121,12 +156,17 @@ class FooterView : public views::View {
     return performance_row_;
   }
 
+  RecentActivityFadeView* GetRecentActivityRowForTesting() {
+    return recent_activity_row_;
+  }
+
   views::FlexLayout* flex_layout() { return flex_layout_; }
 
  private:
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
   raw_ptr<AlertFadeView> alert_row_ = nullptr;
   raw_ptr<PerformanceFadeView> performance_row_ = nullptr;
+  raw_ptr<RecentActivityFadeView> recent_activity_row_ = nullptr;
 
   void UpdateVisibility();
 };

@@ -10,6 +10,7 @@
 #include "base/process/kill.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
+#include "components/collaboration/public/messaging/message.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -59,6 +60,8 @@ struct TabRendererData {
   bool should_render_empty_title = false;
   bool should_themify_favicon = false;
   bool is_tab_discarded = false;
+  std::optional<collaboration::messaging::PersistentMessage> recent_activity =
+      std::nullopt;
   bool should_show_discard_status = false;
   // Amount of memory saved through discarding the tab
   int64_t discarded_memory_savings_in_bytes = 0;

@@ -269,6 +269,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/startup:startup_tab",
+      "//components/collaboration/public:public",
       "//components/keyed_service/core",
       "//content/public/browser",
       "//skia",
