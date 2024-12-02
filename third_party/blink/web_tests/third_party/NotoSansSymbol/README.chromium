@@ -1,7 +1,11 @@
-Noto Sans Symbol Font Subset
+Name: Noto Sans Symbol Font Subset
+Short Name: NotoSansSymbol
+URL: https://www.google.com/get/noto/
+Version: 1.050
 License: Apache-2.0
 License File: LICENSE.txt
-Shipped: no
+Security Critical: no
+Package Excluded: yes
 
 1. Source Origin
 https://www.google.com/get/noto/
