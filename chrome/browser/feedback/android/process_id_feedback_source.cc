@@ -46,7 +46,7 @@ ProcessIdFeedbackSource::ProcessIdFeedbackSource(
     const JavaParamRef<jobject>& obj)
     : java_ref_(env, obj) {}
 
-ProcessIdFeedbackSource::~ProcessIdFeedbackSource() {}
+ProcessIdFeedbackSource::~ProcessIdFeedbackSource() = default;
 
 void ProcessIdFeedbackSource::PrepareProcessIds() {
   // Browser child process info needs accessing on IO thread, while renderer
