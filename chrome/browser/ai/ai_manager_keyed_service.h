@@ -121,8 +121,7 @@ class AIManagerKeyedService : public KeyedService,
       AIContextBoundObjectSet& context_bound_object_set,
       base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
       const std::optional<const AILanguageModel::Context>& context =
-          std::nullopt,
-      base::SupportsUserData* context_user_data = nullptr);
+          std::nullopt);
 
   void SendDownloadProgressUpdate(uint64_t downloaded_bytes,
                                   uint64_t total_bytes);
