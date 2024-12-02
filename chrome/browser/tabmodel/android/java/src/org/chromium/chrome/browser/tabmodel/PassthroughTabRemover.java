@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
@@ -34,10 +35,19 @@ public class PassthroughTabRemover implements TabRemover {
             @NonNull TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
+        prepareCloseTabs(tabClosureParams, allowDialog, listener, this::forceCloseTabs);
+    }
+
+    @Override
+    public void prepareCloseTabs(
+            @NonNull TabClosureParams tabClosureParams,
+            boolean allowDialog,
+            @Nullable TabModelActionListener listener,
+            @NonNull Callback<TabClosureParams> onPreparedCallback) {
         if (listener != null) {
             listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         }
-        forceCloseTabs(tabClosureParams);
+        onPreparedCallback.onResult(tabClosureParams);
         if (listener != null) {
             listener.onConfirmationDialogResult(
                     DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);

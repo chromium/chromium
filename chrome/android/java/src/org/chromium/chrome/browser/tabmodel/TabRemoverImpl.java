@@ -56,12 +56,22 @@ public class TabRemoverImpl implements TabRemover {
             @NonNull TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
+        prepareCloseTabs(tabClosureParams, allowDialog, listener, this::forceCloseTabs);
+    }
+
+    @Override
+    public void prepareCloseTabs(
+            @NonNull TabClosureParams tabClosureParams,
+            boolean allowDialog,
+            @Nullable TabModelActionListener listener,
+            @NonNull Callback<TabClosureParams> onPreparedCallback) {
         CloseTabsHandler closeTabsHandler =
                 new CloseTabsHandler(
                         mTabModelRemover.getTabGroupModelFilter(),
                         mTabModelRemover.getActionConfirmationManager(),
                         tabClosureParams,
-                        listener);
+                        listener,
+                        onPreparedCallback);
         mTabModelRemover.doTabRemovalFlow(closeTabsHandler, allowDialog);
     }
 
@@ -85,6 +95,7 @@ public class TabRemoverImpl implements TabRemover {
         private final TabGroupModelFilterInternal mTabGroupModelFilter;
         private final ActionConfirmationManager mActionConfirmationManager;
         private final TabClosureParams mOriginalTabClosureParams;
+        private final Callback<TabClosureParams> mCloseTabsCallback;
         private @Nullable TabModelActionListener mListener;
         private @Nullable List<Tab> mPlaceholderTabs;
         private boolean mPreventUndo;
@@ -93,11 +104,13 @@ public class TabRemoverImpl implements TabRemover {
                 @NonNull TabGroupModelFilterInternal tabGroupModelFilter,
                 @NonNull ActionConfirmationManager actionConfirmationManager,
                 @NonNull TabClosureParams originalTabClosureParams,
-                @Nullable TabModelActionListener listener) {
+                @Nullable TabModelActionListener listener,
+                @NonNull Callback<TabClosureParams> closeTabsCallback) {
             mTabGroupModelFilter = tabGroupModelFilter;
             mActionConfirmationManager = actionConfirmationManager;
             mOriginalTabClosureParams = originalTabClosureParams;
             mListener = listener;
+            mCloseTabsCallback = closeTabsCallback;
         }
 
         @Override
@@ -166,7 +179,7 @@ public class TabRemoverImpl implements TabRemover {
             if (listener != null) {
                 listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
             }
-            PassthroughTabRemover.doCloseTabs(mTabGroupModelFilter, newTabClosureParams);
+            mCloseTabsCallback.onResult(newTabClosureParams);
             if (listener != null) {
                 listener.onConfirmationDialogResult(
                         DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);

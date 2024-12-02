@@ -239,6 +239,15 @@ public class StripLayoutHelperTest {
                     }
 
                     @Override
+                    public void prepareCloseTabs(
+                            @NonNull TabClosureParams tabClosureParams,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener,
+                            @NonNull Callback<TabClosureParams> onPreparedCallback) {
+                        onPreparedCallback.onResult(tabClosureParams);
+                    }
+
+                    @Override
                     public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
                         mModel.closeTabs(tabClosureParams);
                     }
