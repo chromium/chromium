@@ -24,8 +24,8 @@ std::vector<GURL> TestRssUrls() {
 
 class StubRssLinkReader : public mojom::RssLinkReader {
  public:
-  StubRssLinkReader() {}
-  ~StubRssLinkReader() override {}
+  StubRssLinkReader() = default;
+  ~StubRssLinkReader() override = default;
 
   mojo::PendingRemote<mojom::RssLinkReader> BindAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
