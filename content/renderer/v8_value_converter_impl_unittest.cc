@@ -1259,8 +1259,7 @@ TEST_F(V8ValueConverterImplTest, StrategyBypass) {
   std::unique_ptr<base::Value> binary_value(
       converter.FromV8Value(array_buffer, context));
   ASSERT_TRUE(binary_value);
-  base::Value reference_binary_value(
-      base::as_bytes(base::make_span(kExampleData)));
+  base::Value reference_binary_value(base::as_byte_span(kExampleData));
   EXPECT_EQ(reference_binary_value, *binary_value);
 
   v8::Local<v8::ArrayBufferView> array_buffer_view(

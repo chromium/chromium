@@ -143,7 +143,7 @@ GinJavaBridgeValue::GinJavaBridgeValue(const base::Value* value)
 std::unique_ptr<base::Value> GinJavaBridgeValue::SerializeToBinaryValue() {
   const auto* data = static_cast<const uint8_t*>(pickle_.data());
   return base::Value::ToUniquePtrValue(
-      base::Value(base::make_span(data, pickle_.size())));
+      base::Value(base::span(data, pickle_.size())));
 }
 
 }  // namespace content

@@ -3782,8 +3782,7 @@ DevToolsInspectorLogWatcher::DevToolsInspectorLogWatcher(
   host_->AttachClient(this);
 
   host_->DispatchProtocolMessage(
-      this, base::as_bytes(
-                base::make_span(kEnableLogMessage, strlen(kEnableLogMessage))));
+      this, base::byte_span_from_cstring(kEnableLogMessage));
 
   run_loop_enable_log_.Run();
 }
@@ -3832,8 +3831,7 @@ void DevToolsInspectorLogWatcher::AgentHostClosed(DevToolsAgentHost* host) {}
 
 void DevToolsInspectorLogWatcher::FlushAndStopWatching() {
   host_->DispatchProtocolMessage(
-      this, base::as_bytes(base::make_span(kDisableLogMessage,
-                                           strlen(kDisableLogMessage))));
+      this, base::byte_span_from_cstring(kDisableLogMessage));
   run_loop_disable_log_.Run();
 }
 
