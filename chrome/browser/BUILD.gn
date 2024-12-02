@@ -6650,7 +6650,14 @@ static_library("browser") {
   }
 
   if (enterprise_watermark) {
-    deps += [ "//components/enterprise/watermarking/content" ]
+    sources += [
+      "enterprise/watermark/settings.cc",
+      "enterprise/watermark/settings.h",
+    ]
+    deps += [
+      "//components/enterprise/watermarking",
+      "//components/enterprise/watermarking/content",
+    ]
   }
 
   if (enterprise_data_controls) {
