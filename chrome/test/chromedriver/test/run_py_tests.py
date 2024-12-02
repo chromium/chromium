@@ -7602,7 +7602,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     context = response['contexts'][0]['context']
-    conn1.PostCommand({
+    conn1.SendCommand({
       'method': 'script.evaluate',
       'params': {
           'expression': 'window.test_desert = "Kalahari"',
