@@ -65,27 +65,15 @@ struct ToV8Traits<IDLAny> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
       const ScriptValue& script_value) {
-    // It is not correct to take empty |script_value|.
-    // However, some call sites expect to get v8::Undefined
-    // when ToV8 takes empty |script_value|.
-    // TODO(crbug.com/1183637): Enable the following DCHECK.
-    // DCHECK(!script_value.IsEmpty());
+    DCHECK(!script_value.IsEmpty());
     return script_value.V8ValueFor(script_state);
   }
 
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
       const v8::Local<v8::Value>& value) {
-    // TODO(crbug.com/1183637): Remove this if-branch.
-    if (value.IsEmpty())
-      return v8::Undefined(script_state->GetIsolate());
+    DCHECK(!value.IsEmpty());
     return value;
-  }
-
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const bindings::NativeValueTraitsAnyAdapter& adapter) {
-    return adapter;
   }
 };
 
