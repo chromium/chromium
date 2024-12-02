@@ -38,6 +38,7 @@ extern const char kOAuthTokenHeaderPrefix[];
 extern const char kOidcAuthHeaderPrefix[];
 extern const char kOidcAuthTokenHeaderPrefix[];
 extern const char kOidcIdTokenHeaderPrefix[];
+extern const char kOidcEncryptedUserInfoPrefix[];
 
 // String extern constants for the device and app type we report to the server.
 extern const char kValueAppType[];

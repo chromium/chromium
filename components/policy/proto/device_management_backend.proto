@@ -3345,7 +3345,7 @@ message ProfileRegistrationPayload {
   // does not decrypt or access the information directly.
   // Format of the un-encrypted data has the format of `ProfileRegistrationData`
   // proto on DMServer.
-  optional bytes encrypted_user_information = 1;
+  optional string encrypted_user_information = 1;
   // Chrome requires the subject and issuer to check whether a profile exists
   // for this user already.
   optional string subject = 2;

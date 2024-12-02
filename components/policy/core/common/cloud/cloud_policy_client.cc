@@ -577,10 +577,11 @@ void CloudPolicyClient::RegisterWithOidcResponse(
     const std::string& oidc_id_token,
     const std::string& client_id,
     const base::TimeDelta& timeout_duration,
+    bool is_token_encrypted,
     CloudPolicyClient::ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!oidc_id_token.empty());
-  CHECK(!oauth_token.empty());
+  CHECK(!oauth_token.empty() || is_token_encrypted);
 
   SetClientId(client_id);
   auto params = DMServerJobConfiguration::CreateParams::WithClient(
