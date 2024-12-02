@@ -15,6 +15,7 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Grabs feedback about the current system. */
@@ -31,20 +32,17 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
 
     @Override
     public Map<String, String> getFeedback() {
-        Map<String, String> feedback =
-                Map.of(
-                        "CPU Architecture",
-                        SystemInfoFeedbackSourceJni.get().getCpuArchitecture(),
-                        "Available Memory (MB)",
-                        Integer.toString(SystemInfoFeedbackSourceJni.get().getAvailableMemoryMB()),
-                        "Total Memory (MB)",
-                        Integer.toString(SystemInfoFeedbackSourceJni.get().getTotalMemoryMB()),
-                        "GPU Vendor",
-                        SystemInfoFeedbackSourceJni.get().getGpuVendor(),
-                        "GPU Model",
-                        SystemInfoFeedbackSourceJni.get().getGpuModel(),
-                        "UI Locale",
-                        LocaleUtils.getDefaultLocaleString());
+        HashMap<String, String> feedback = new HashMap();
+        feedback.put("CPU Architecture", SystemInfoFeedbackSourceJni.get().getCpuArchitecture());
+        feedback.put(
+                "Available Memory (MB)",
+                Integer.toString(SystemInfoFeedbackSourceJni.get().getAvailableMemoryMB()));
+        feedback.put(
+                "Total Memory (MB)",
+                Integer.toString(SystemInfoFeedbackSourceJni.get().getTotalMemoryMB()));
+        feedback.put("GPU Vendor", SystemInfoFeedbackSourceJni.get().getGpuVendor());
+        feedback.put("GPU Model", SystemInfoFeedbackSourceJni.get().getGpuModel());
+        feedback.put("UI Locale", LocaleUtils.getDefaultLocaleString());
 
         StatFs statFs = getResult();
         if (statFs != null) {
