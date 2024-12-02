@@ -119,10 +119,7 @@ void Fence::reportEventToDestinationEnum(const FenceEvent* event,
   }
   if (event->crossOriginExposed() &&
       !base::FeatureList::IsEnabled(
-          blink::features::
-              kFencedFramesCrossOriginEventReportingUnlabeledTraffic) &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginEventReportingAllTraffic)) {
+          blink::features::kFencedFramesCrossOriginEventReporting)) {
     exception_state.ThrowTypeError(
         "'crossOriginExposed' is not supported with reportEvent().");
     return;
@@ -196,10 +193,7 @@ void Fence::reportEventToDestinationURL(const FenceEvent* event,
   }
   if (event->crossOriginExposed() &&
       !base::FeatureList::IsEnabled(
-          blink::features::
-              kFencedFramesCrossOriginEventReportingUnlabeledTraffic) &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginEventReportingAllTraffic)) {
+          blink::features::kFencedFramesCrossOriginEventReporting)) {
     exception_state.ThrowTypeError(
         "'crossOriginExposed' is not supported with reportEvent().");
     return;

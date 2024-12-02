@@ -106,11 +106,8 @@ RealTimeReportingBindings::~RealTimeReportingBindings() = default;
 
 void RealTimeReportingBindings::AttachToContext(
     v8::Local<v8::Context> context) {
-  // Don't enable real time reporting in Mode A/B traffic.
   if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgeRealTimeReporting) ||
-      base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting)) {
+          blink::features::kFledgeRealTimeReporting)) {
     return;
   }
 

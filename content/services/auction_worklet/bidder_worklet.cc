@@ -280,16 +280,8 @@ size_t GetNumberOfGroupByOriginContextsToKeep() {
   if (base::FeatureList::IsEnabled(
           blink::features::
               kFledgeNumberBidderWorkletGroupByOriginContextsToKeep)) {
-    // Avoid using multiple contexts for the testing population
-    // unless otherwise specified by
-    // kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting.
-    if (blink::features::
-            kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting.Get() ||
-        !base::FeatureList::IsEnabled(
-            features::kCookieDeprecationFacilitatedTesting)) {
-      return blink::features::
-          kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue.Get();
-    }
+    return blink::features::
+        kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue.Get();
   }
   return 1;
 }
@@ -489,10 +481,7 @@ bool BidderWorklet::IsComponentAdKAnon(
 
 // static
 bool BidderWorklet::SupportMultiBid() {
-  // Multi-bid is auto-disabled in mode-A/B trials.
-  return base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid) &&
-         !base::FeatureList::IsEnabled(
-             features::kCookieDeprecationFacilitatedTesting);
+  return base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid);
 }
 
 void BidderWorklet::BeginGenerateBid(
