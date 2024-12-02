@@ -82,7 +82,7 @@ void HandleCapturedBitmap(
   gfx::ImageSkia image;
 
   // Only scale and update if the frame appears to be new.
-  const uint32_t hash = base::FastHash(base::make_span(
+  const uint32_t hash = base::FastHash(base::span(
       static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize()));
   if (!last_hash.has_value() || hash != last_hash.value()) {
     image = ScaleBitmap(bitmap, desktopcapture::kPreviewSize);

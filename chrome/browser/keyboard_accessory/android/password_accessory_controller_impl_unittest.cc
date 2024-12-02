@@ -1113,7 +1113,7 @@ TEST_F(PasswordAccessoryControllerTest, PlusAddressUsedAsUsername) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::make_span(profiles)));
+      .WillRepeatedly(Return(base::span(profiles)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableNonSearchField,
       /*is_field_eligible_for_manual_generation=*/false);
@@ -1158,7 +1158,7 @@ TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::make_span(profiles)));
+      .WillRepeatedly(Return(base::span(profiles)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableNonSearchField,
       /*is_field_eligible_for_manual_generation=*/false);

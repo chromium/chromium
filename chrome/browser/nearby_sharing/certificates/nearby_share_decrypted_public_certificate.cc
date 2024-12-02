@@ -46,9 +46,9 @@ std::optional<std::vector<uint8_t>> DecryptMetadataKey(
   }
 
   std::vector<uint8_t> decrypted_metadata_key;
-  if (!encryptor->Decrypt(base::as_bytes(base::make_span(
-                              encrypted_metadata_key.encrypted_key())),
-                          &decrypted_metadata_key)) {
+  if (!encryptor->Decrypt(
+          base::as_byte_span(encrypted_metadata_key.encrypted_key()),
+          &decrypted_metadata_key)) {
     return std::nullopt;
   }
 
@@ -70,12 +70,11 @@ std::optional<std::vector<uint8_t>> DecryptMetadataPayload(
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(derived_key);
 
-  return aead.Open(
-      encrypted_metadata,
-      /*nonce=*/
-      DeriveNearbyShareKey(base::as_bytes(base::make_span(secret_key->key())),
-                           kNearbyShareNumBytesAesGcmIv),
-      /*additional_data=*/base::span<const uint8_t>());
+  return aead.Open(encrypted_metadata,
+                   /*nonce=*/
+                   DeriveNearbyShareKey(base::as_byte_span(secret_key->key()),
+                                        kNearbyShareNumBytesAesGcmIv),
+                   /*additional_data=*/base::span<const uint8_t>());
 }
 
 // Returns true if the HMAC of |decrypted_metadata_key| is
@@ -234,7 +233,6 @@ bool NearbyShareDecryptedPublicCertificate::VerifySignature(
 std::vector<uint8_t>
 NearbyShareDecryptedPublicCertificate::HashAuthenticationToken(
     base::span<const uint8_t> authentication_token) const {
-  return ComputeAuthenticationTokenHash(
-      authentication_token,
-      base::as_bytes(base::make_span(secret_key_->key())));
+  return ComputeAuthenticationTokenHash(authentication_token,
+                                        base::as_byte_span(secret_key_->key()));
 }

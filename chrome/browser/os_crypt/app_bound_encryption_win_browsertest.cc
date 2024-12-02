@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestWithVariablePolicy,
   ASSERT_GT(app_bound_data->size(), 3u);
   // kAppBoundDataPrefix for App-Bound.
   constexpr uint8_t kV20Header[] = {'v', '2', '0'};
-  EXPECT_THAT(base::make_span(*app_bound_data).first(3u),
+  EXPECT_THAT(base::span(*app_bound_data).first<3>(),
               ::testing::ElementsAreArray(kV20Header));
   ASSERT_NO_FATAL_FAILURE(StoreData(*app_bound_data));
 }
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestWithVariablePolicy,
   ASSERT_GT(data->size(), 3u);
   // kEncryptionVersionPrefix for DPAPI i.e. not App-Bound.
   constexpr uint8_t kV10Header[] = {'v', '1', '0'};
-  EXPECT_THAT(base::make_span(*data).first(3u),
+  EXPECT_THAT(base::span(*data).first<3>(),
               ::testing::ElementsAreArray(kV10Header));
 
   // Also decrypt the data that was previously encrypted in the PRE test, and

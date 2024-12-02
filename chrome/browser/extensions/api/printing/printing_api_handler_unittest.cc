@@ -232,8 +232,7 @@ std::unique_ptr<content::BlobHandle> CreateMemoryBackedBlob(
     const std::string& content_type) {
   base::test::TestFuture<std::unique_ptr<content::BlobHandle>> blob_future;
   browser_context->CreateMemoryBackedBlob(
-      base::as_bytes(base::make_span(content)), content_type,
-      blob_future.GetCallback());
+      base::as_byte_span(content), content_type, blob_future.GetCallback());
   return blob_future.Take();
 }
 

@@ -202,7 +202,7 @@ class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
       std::optional<base::Value> register_key) {
     static constexpr std::string_view kData = "challenge";
     base::Value::List args;
-    args.Append(base::Value(base::as_bytes(base::make_span(kData))));
+    args.Append(base::Value(base::as_byte_span(kData)));
     if (register_key) {
       args.Append(std::move(*register_key));
     }
@@ -285,7 +285,7 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
   base::Value::List CreateArgsInternal(bool register_key) {
     static constexpr std::string_view kData = "challenge";
     base::Value::List args;
-    args.Append(base::Value(base::as_bytes(base::make_span(kData))));
+    args.Append(base::Value(base::as_byte_span(kData)));
     args.Append(register_key);
     return args;
   }
@@ -359,7 +359,7 @@ class EPKChallengeKeyTest
           register_key,
       api::enterprise_platform_keys::Scope scope) {
     api::enterprise_platform_keys::ChallengeKeyOptions options;
-    auto challenge = base::as_bytes(base::make_span("challenge"));
+    auto challenge = base::as_byte_span("challenge");
     options.challenge = std::vector(challenge.begin(), challenge.end());
     if (register_key.has_value()) {
       options.register_key.emplace(std::move(register_key.value()));

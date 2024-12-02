@@ -273,9 +273,8 @@ std::optional<std::vector<uint8_t>> NearbySharePrivateCertificate::Sign(
 
 std::vector<uint8_t> NearbySharePrivateCertificate::HashAuthenticationToken(
     base::span<const uint8_t> authentication_token) const {
-  return ComputeAuthenticationTokenHash(
-      authentication_token,
-      base::as_bytes(base::make_span(secret_key_->key())));
+  return ComputeAuthenticationTokenHash(authentication_token,
+                                        base::as_byte_span(secret_key_->key()));
 }
 
 std::optional<nearby::sharing::proto::PublicCertificate>
@@ -481,10 +480,9 @@ NearbySharePrivateCertificate::EncryptMetadata() const {
   unencrypted_metadata_.SerializeToArray(metadata_array.data(),
                                          metadata_array.size());
 
-  return aead.Seal(
-      metadata_array,
-      /*nonce=*/
-      DeriveNearbyShareKey(base::as_bytes(base::make_span(secret_key_->key())),
-                           kNearbyShareNumBytesAesGcmIv),
-      /*additional_data=*/base::span<const uint8_t>());
+  return aead.Seal(metadata_array,
+                   /*nonce=*/
+                   DeriveNearbyShareKey(base::as_byte_span(secret_key_->key()),
+                                        kNearbyShareNumBytesAesGcmIv),
+                   /*additional_data=*/base::span<const uint8_t>());
 }

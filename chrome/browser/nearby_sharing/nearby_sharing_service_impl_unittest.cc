@@ -1174,7 +1174,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
       return nullptr;
     }
 
-    return sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
+    return sharing::AdvertisementDecoder::FromEndpointInfo(base::span(
         *fake_nearby_connections_manager_->advertising_endpoint_info()));
   }
 
@@ -1468,7 +1468,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                               base::File::Flags::FLAG_READ |
                               base::File::Flags::FLAG_WRITE);
     EXPECT_TRUE(file.WriteAndCheck(
-        /*offset=*/0, base::make_span(content)));
+        /*offset=*/0, base::span(content)));
     EXPECT_TRUE(file.Flush());
     file.Close();
     return path;
@@ -4335,8 +4335,8 @@ TEST_P(NearbySharingServiceImplTest, SendFiles_Success) {
             ASSERT_TRUE(file.IsValid());
 
             std::vector<uint8_t> payload_bytes(test_data.size());
-            EXPECT_TRUE(file.ReadAndCheck(/*offset=*/0,
-                                          base::make_span(payload_bytes)));
+            EXPECT_TRUE(
+                file.ReadAndCheck(/*offset=*/0, base::span(payload_bytes)));
             EXPECT_EQ(test_data, payload_bytes);
             file.Close();
 

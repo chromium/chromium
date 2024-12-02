@@ -113,7 +113,7 @@ quic::WriteResult NetworkServiceQuicPacketWriter::WritePacket(
   // it will enqueue a task.
   WritePacketHelper(
       ConvertToEndpoint(peer_address),
-      base::make_span(reinterpret_cast<const uint8_t*>(buffer), buf_len));
+      base::span(reinterpret_cast<const uint8_t*>(buffer), buf_len));
 
   // Assume we successfully wrote the entire packet. The client will receive
   // any write errors through the delegate they are forced to provide us.

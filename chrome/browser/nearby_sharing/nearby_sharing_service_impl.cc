@@ -215,7 +215,7 @@ std::string GetDeviceId(
   std::optional<std::vector<uint8_t>> mac_address =
       GetBluetoothMacAddressFromCertificate(*certificate);
   if (mac_address) {
-    return base::NumberToString(base::FastHash(base::make_span(*mac_address)));
+    return base::NumberToString(base::FastHash(base::span(*mac_address)));
   }
 
   if (!certificate->id().empty()) {

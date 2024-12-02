@@ -555,8 +555,7 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
   std::string json;
   base::JSONWriter::Write(protocol_request, &json);
 
-  agent_host_->DispatchProtocolMessage(this,
-                                       base::as_bytes(base::make_span(json)));
+  agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json));
 }
 
 void ExtensionDevToolsClientHost::InfoBarDestroyed() {

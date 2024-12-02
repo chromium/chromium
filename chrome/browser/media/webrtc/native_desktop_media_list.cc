@@ -103,7 +103,7 @@ std::optional<size_t> GetFrameHash(webrtc::DesktopFrame* frame) {
     return std::nullopt;
   }
 
-  return base::FastHash(base::make_span(frame->data(), data_size));
+  return base::FastHash(base::span(frame->data(), data_size));
 }
 
 gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,

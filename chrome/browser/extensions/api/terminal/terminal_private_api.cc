@@ -218,8 +218,7 @@ void NotifyProcessOutput(content::BrowserContext* browser_context,
   base::Value::List args;
   args.Append(terminal_id);
   args.Append(output_type);
-  args.Append(base::Value(base::make_span(
-      reinterpret_cast<const uint8_t*>(&output[0]), output.size())));
+  args.Append(base::Value(base::as_byte_span(output)));
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(browser_context);

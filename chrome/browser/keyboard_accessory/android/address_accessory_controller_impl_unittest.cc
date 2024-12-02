@@ -407,7 +407,7 @@ TEST_F(AddressAccessoryControllerTest,
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::make_span(profiles)));
+      .WillRepeatedly(Return(base::span(profiles)));
   controller()->RefreshSuggestions();
 
   // Plus address creation can't be supported while plus address filling is
@@ -438,7 +438,7 @@ TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesSection) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::make_span(profiles)));
+      .WillRepeatedly(Return(base::span(profiles)));
   controller()->RefreshSuggestions();
 
   EXPECT_EQ(controller()->GetSheetData(),
@@ -465,7 +465,7 @@ TEST_F(AddressAccessoryControllerTest,
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::make_span(profiles)));
+      .WillRepeatedly(Return(base::span(profiles)));
   controller()->RefreshSuggestions();
 
   EXPECT_EQ(
