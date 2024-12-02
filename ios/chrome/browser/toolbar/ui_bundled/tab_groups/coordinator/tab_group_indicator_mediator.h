@@ -10,6 +10,10 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_mutator.h"
 
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
+
 namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
@@ -43,6 +47,8 @@ class WebStateList;
     initWithTabGroupSyncService:
         (tab_groups::TabGroupSyncService*)tabGroupSyncService
                 shareKitService:(ShareKitService*)shareKitService
+           collaborationService:
+               (collaboration::CollaborationService*)collaborationService
                        consumer:(id<TabGroupIndicatorConsumer>)consumer
                    webStateList:(WebStateList*)webStateList
                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader

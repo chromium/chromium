@@ -16,8 +16,12 @@
 // Sets whether the group can be shared or not.
 - (void)setShareAvailable:(BOOL)shareAvailable;
 
-// Sets whether the group is shared or not.
+// Sets the group shared state. YES when this group is shared with other users.
 - (void)setShared:(BOOL)shared;
+
+// Sets the face pile view controller to display the share button or the face
+// pile.
+- (void)setFacePileViewController:(UIViewController*)facePileViewController;
 
 @end
 

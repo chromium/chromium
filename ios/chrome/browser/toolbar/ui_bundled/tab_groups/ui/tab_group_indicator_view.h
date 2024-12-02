@@ -15,6 +15,9 @@
 // UIView that contains information about the current tab group.
 @interface TabGroupIndicatorView : UIView <TabGroupIndicatorConsumer>
 
+// The view controller on which the face pile is presented.
+@property(nonatomic, weak) UIViewController* facePileParentViewController;
+
 // Mutator for actions happening in the view.
 @property(nonatomic, weak) id<TabGroupIndicatorMutator> mutator;
 

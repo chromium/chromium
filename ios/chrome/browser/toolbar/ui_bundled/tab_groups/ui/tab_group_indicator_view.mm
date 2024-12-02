@@ -27,8 +27,8 @@
   // Tracks if the view is available.
   BOOL _available;
 
-  // View that contains subviews.
-  UIView* _containerView;
+  // Stack view that contains the group's information.
+  UIStackView* _stackView;
   // Title label.
   UILabel* _titleView;
   // Dot view.
@@ -37,6 +37,9 @@
   UIView* _separatorView;
   // Button used to display the menu.
   UIButton* _menuButton;
+  // The face pile view controller that displays the share button or the face
+  // pile.
+  UIViewController* _facePileViewController;
   // Whether the share option is available.
   BOOL _shareAvailable;
   // Whether the group is shared.
@@ -50,17 +53,19 @@
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitButton;
 
-    _containerView = [self containerView];
     _titleView = [self titleView];
     _coloredDotView = [self coloredDotView];
+
+    _stackView = [self stackView];
     _separatorView = [self setUpSeparatorView];
     _menuButton = [self menuButton];
 
-    [self addSubview:_containerView];
+    [_stackView addArrangedSubview:_titleView];
+    [_stackView addArrangedSubview:_coloredDotView];
+
+    [self addSubview:_stackView];
     [self addSubview:_menuButton];
     [self addSubview:_separatorView];
-    [_containerView addSubview:_coloredDotView];
-    [_containerView addSubview:_titleView];
 
     [self setContraints];
   }
@@ -90,6 +95,32 @@
   [self configureMenuButton];
 }
 
+- (void)setFacePileViewController:(UIViewController*)facePileViewController {
+  // TODO(crbug.com/375590170): Update the UI for the `facePileViewController's
+  // view` empty state.
+  if (!_facePileParentViewController ||
+      _facePileViewController == facePileViewController) {
+    return;
+  }
+
+  if (_facePileViewController) {
+    [_facePileViewController willMoveToParentViewController:nil];
+    [_facePileViewController.view removeFromSuperview];
+    [_facePileViewController removeFromParentViewController];
+  }
+
+  _facePileViewController = facePileViewController;
+  if (_facePileViewController) {
+    [_facePileParentViewController
+        addChildViewController:_facePileViewController];
+    UIView* facePileView = _facePileViewController.view;
+    facePileView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_stackView addArrangedSubview:_facePileViewController.view];
+    [_facePileViewController
+        didMoveToParentViewController:_facePileParentViewController];
+  }
+}
+
 #pragma mark - Private
 
 // Updates the view's visibility.
@@ -102,11 +133,14 @@
   [_toolbarHeightDelegate toolbarsHeightChanged];
 }
 
-// Returns the container view.
-- (UIView*)containerView {
-  UIView* containerView = [[UIView alloc] initWithFrame:CGRectZero];
-  containerView.translatesAutoresizingMaskIntoConstraints = NO;
-  return containerView;
+// Returns the stack view.
+- (UIStackView*)stackView {
+  UIStackView* stackView = [[UIStackView alloc] init];
+  stackView.axis = UILayoutConstraintAxisHorizontal;
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  stackView.alignment = UIStackViewAlignmentCenter;
+  stackView.spacing = kTabGroupIndicatorSeparationMargin;
+  return stackView;
 }
 
 // Returns the title label view.
@@ -247,15 +281,15 @@
 // Sets the constraints of the view.
 - (void)setContraints {
   [NSLayoutConstraint activateConstraints:@[
-    [_containerView.leadingAnchor
+    [_stackView.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
                                     constant:kTabGroupIndicatorVerticalMargin],
-    [_containerView.trailingAnchor
+    [_stackView.trailingAnchor
         constraintLessThanOrEqualToAnchor:self.trailingAnchor
                                  constant:-kTabGroupIndicatorVerticalMargin],
-    [_containerView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [_containerView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-    [_containerView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+    [_stackView.topAnchor constraintEqualToAnchor:self.topAnchor],
+    [_stackView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+    [_stackView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
 
     [_separatorView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
     [_separatorView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
@@ -263,21 +297,9 @@
     [_separatorView.heightAnchor
         constraintEqualToConstant:ui::AlignValueToUpperPixel(
                                       kToolbarSeparatorHeight)],
-
-    [_titleView.leadingAnchor
-        constraintEqualToAnchor:_coloredDotView.trailingAnchor
-                       constant:kTabGroupIndicatorSeparationMargin],
-    [_coloredDotView.centerYAnchor
-        constraintEqualToAnchor:_containerView.centerYAnchor],
-    [_coloredDotView.leadingAnchor
-        constraintEqualToAnchor:_containerView.leadingAnchor],
-    [_titleView.trailingAnchor
-        constraintEqualToAnchor:_containerView.trailingAnchor],
-    [_titleView.topAnchor constraintEqualToAnchor:_containerView.topAnchor],
-    [_titleView.bottomAnchor
-        constraintEqualToAnchor:_containerView.bottomAnchor],
   ]];
-  AddSameConstraints(_menuButton, _containerView);
+
+  AddSameConstraints(_menuButton, _stackView);
 }
 
 #pragma mark - Setters

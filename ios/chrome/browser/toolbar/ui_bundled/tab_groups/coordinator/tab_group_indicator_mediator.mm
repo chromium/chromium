@@ -7,10 +7,13 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
@@ -32,11 +35,17 @@ using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
                             tab_groups::TabGroupSyncService::Observer>;
 
+namespace {
+// The preferred size in points for the avatar icons.
+constexpr CGFloat kFacePileAvatarSize = 20;
+}  // namespace
+
 @interface TabGroupIndicatorMediator () <TabGroupSyncServiceObserverDelegate,
                                          WebStateListObserving>
 @end
 
 @implementation TabGroupIndicatorMediator {
+  raw_ptr<collaboration::CollaborationService> _collaborationService;
   raw_ptr<ShareKitService> _shareKitService;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
   raw_ptr<feature_engagement::Tracker> _tracker;
@@ -55,6 +64,8 @@ using ScopedTabGroupSyncObservation =
     initWithTabGroupSyncService:
         (tab_groups::TabGroupSyncService*)tabGroupSyncService
                 shareKitService:(ShareKitService*)shareKitService
+           collaborationService:
+               (collaboration::CollaborationService*)collaborationService
                        consumer:(id<TabGroupIndicatorConsumer>)consumer
                    webStateList:(WebStateList*)webStateList
                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
@@ -68,6 +79,7 @@ using ScopedTabGroupSyncObservation =
     CHECK(IsTabGroupIndicatorEnabled());
     _URLLoader = URLLoader;
     _shareKitService = shareKitService;
+    _collaborationService = collaborationService;
     _tabGroupSyncService = tabGroupSyncService;
     if (tabGroupSyncService) {
       _syncServiceObserver =
@@ -83,6 +95,7 @@ using ScopedTabGroupSyncObservation =
     _webStateList = webStateList->AsWeakPtr();
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
+
     BOOL shareAvailable = shareKitService && shareKitService->IsSupported();
     [_consumer setShareAvailable:shareAvailable];
   }
@@ -97,6 +110,9 @@ using ScopedTabGroupSyncObservation =
   _webStateListObserver.reset();
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
+  _tabGroupSyncService = nullptr;
+  _collaborationService = nullptr;
+  _shareKitService = nullptr;
 }
 
 #pragma mark - WebStateListObserving
@@ -127,6 +143,7 @@ using ScopedTabGroupSyncObservation =
       [_consumer setTabGroupTitle:nil groupColor:nil];
       [_consumer setShared:NO];
     }
+    [self updateFacePileUI];
   }
 }
 
@@ -243,6 +260,18 @@ using ScopedTabGroupSyncObservation =
 
 - (void)tabGroupSyncServiceInitialized {
   [self presentForegroundIPHIfNeeded];
+  [self updateFacePileUI];
+}
+
+- (void)tabGroupSyncServiceTabGroupMigrated:
+            (const tab_groups::SavedTabGroup&)newGroup
+                                  oldSyncID:(const base::Uuid&)oldSyncId
+                                 fromSource:(tab_groups::TriggerSource)source {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup || newGroup.local_group_id() != tabGroup->tab_group_id()) {
+    return;
+  }
+  [self updateFacePileUI];
 }
 
 #pragma mark - Private
@@ -259,6 +288,35 @@ using ScopedTabGroupSyncObservation =
           feature_engagement::kIPHiOSSharedTabGroupForeground)) {
     [self.delegate showIPHForSharedTabGroupForegrounded];
   }
+}
+
+// Updates the facePile UI and the share state of the consumer.
+- (void)updateFacePileUI {
+  if (!_shareKitService || !_shareKitService->IsSupported() ||
+      !_collaborationService || !_tabGroupSyncService) {
+    return;
+  }
+
+  const TabGroup* tabGroup = [self currentTabGroup];
+
+  NSString* savedCollabID =
+      tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
+  BOOL isShared = savedCollabID != nil;
+  [_consumer setShared:isShared];
+
+  // Prevent the face pile from being set up for tab groups that are not shared.
+  if (!isShared) {
+    [_consumer setFacePileViewController:nil];
+  }
+
+  // Configure the face pile.
+  ShareKitFacePileConfiguration* config =
+      [[ShareKitFacePileConfiguration alloc] init];
+  config.collabID = savedCollabID;
+  config.showsEmptyState = NO;
+  config.avatarSize = kFacePileAvatarSize;
+
+  [_consumer setFacePileViewController:_shareKitService->FacePile(config)];
 }
 
 // Closes all tabs in `tabGroup`. If `deleteGroup` is false, the group is closed
