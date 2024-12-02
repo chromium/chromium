@@ -2013,11 +2013,18 @@ PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
       return originating_object->AbsoluteBoundingBoxRectForScrollIntoView();
     }
     // This is a ::column::scroll-marker
-    const auto* scroller = originating_element->GetLayoutBoxForScrolling();
-    PhysicalRect bounds = column_pseudo->ColumnRect();
-    bounds.offset -= PhysicalOffset::FromVector2dFRound(
-        scroller->GetScrollableArea()->GetScrollOffset());
-    return scroller->LocalToAbsoluteRect(bounds, flag);
+    if (const auto* scroller =
+            originating_element->GetLayoutBoxForScrolling()) {
+      // The originating element (the multicol container) is also the scrollable
+      // container.
+      PhysicalRect bounds = column_pseudo->ColumnRect();
+      bounds.offset -= PhysicalOffset::FromVector2dFRound(
+          scroller->GetScrollableArea()->GetScrollOffset());
+      return scroller->LocalToAbsoluteRect(bounds, flag);
+    }
+    gfx::QuadF quad = originating_object->LocalRectToAbsoluteQuad(
+        column_pseudo->ColumnRect(), flag);
+    return PhysicalRect::EnclosingRect(quad.BoundingBox());
   }
 
   return AbsoluteBoundingBoxRectHandlingEmptyInline(flag);
