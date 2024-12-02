@@ -141,12 +141,6 @@ constexpr std::string_view kTestPINPublicKey =
     "\xa1\x1f\x08\xfe\x55\xca\x1b\x84\xb9\xe5\x1e\xc3\x26\x69\x16\xa0\x6b\x03"
     "\xfa\x42\x08\xa8\xaf\x7d\xd9\x14\xb4\xfc\x1a";
 
-#if BUILDFLAG(IS_MAC)
-base::span<const uint8_t> ToSpan(std::string_view s) {
-  return base::as_bytes(base::make_span(s));
-}
-#endif  // BUILDFLAG(IS_MAC)
-
 std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> GetTestEntity() {
   auto ret = std::make_unique<sync_pb::WebauthnCredentialSpecifics>();
   CHECK(ret->ParseFromArray(kTestProtobuf, sizeof(kTestProtobuf)));
@@ -1185,9 +1179,10 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
   const trusted_vault_pb::SharedMemberKey& shared_member_key =
       icloud_member->memberships().at(0).keys().at(0);
   const std::optional<std::vector<uint8_t>> security_domain_secret =
-      key->private_key().Decrypt(base::span<const uint8_t>(),
-                                 ToSpan("V1 shared_key"),
-                                 ToSpan(shared_member_key.wrapped_key()));
+      key->private_key().Decrypt(
+          base::span<const uint8_t>(),
+          base::byte_span_from_cstring("V1 shared_key"),
+          base::as_byte_span(shared_member_key.wrapped_key()));
   ASSERT_TRUE(security_domain_secret);
   EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
 
@@ -1200,7 +1195,7 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
        &expected_proof_len);
   ASSERT_EQ(expected_proof_len, expected_proof.size());
   EXPECT_EQ(base::span<const uint8_t>(expected_proof),
-            ToSpan(shared_member_key.member_proof()));
+            base::as_byte_span(shared_member_key.member_proof()));
 }
 #endif  // BUILDFLAG(IS_MAC)
 

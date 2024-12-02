@@ -559,8 +559,8 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, DeleteCorruptedBDICT) {
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    bool success = base::WriteFile(
-        bdict_path, base::as_bytes(base::make_span(kCorruptedBDICT)));
+    bool success =
+        base::WriteFile(bdict_path, base::as_byte_span(kCorruptedBDICT));
     EXPECT_TRUE(success);
   }
 

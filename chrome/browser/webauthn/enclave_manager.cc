@@ -2832,8 +2832,8 @@ bool EnclaveManager::ConsiderSecurityDomainState(
       }
     } else {
       FIDO_LOG(ERROR) << "Wrapped PIN from security domain update is invalid: "
-                      << base::HexEncode(base::as_bytes(
-                             base::make_span(metadata.wrapped_pin)));
+                      << base::HexEncode(
+                             base::as_byte_span(metadata.wrapped_pin));
     }
   }
 
@@ -3674,7 +3674,7 @@ void EnclaveManager::WriteState(EnclaveLocalState* new_state) {
   }
 
   const std::array<uint8_t, crypto::kSHA256Length> digest =
-      crypto::SHA256Hash(base::as_bytes(base::make_span(serialized)));
+      crypto::SHA256Hash(base::as_byte_span(serialized));
   serialized.append(std::begin(kHashPrefix), std::end(kHashPrefix));
   serialized.append(digest.begin(), digest.end());
 

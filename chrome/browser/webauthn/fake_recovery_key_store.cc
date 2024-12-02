@@ -265,7 +265,7 @@ bssl::UniquePtr<EVP_PKEY> NewECKey() {
 
 class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
  public:
-  explicit FakeRecoveryKeyStoreImpl()
+  FakeRecoveryKeyStoreImpl()
       : root_key_(GetRSAKey(kRootRSAPrivateKey)),
         sig_key_(GetRSAKey(kSigRSAPrivateKey)),
         endpoint_key_(NewECKey()) {
@@ -325,7 +325,7 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
         /*offsets=*/nullptr);
 
     const auto certs_xml_hash =
-        crypto::SHA256Hash(base::as_bytes(base::make_span(certs_xml_)));
+        crypto::SHA256Hash(base::as_byte_span(certs_xml_));
     RSA* const sig_key = EVP_PKEY_get0_RSA(sig_key_.get());
     unsigned sig_len = RSA_size(sig_key);
     std::vector<uint8_t> sig(sig_len, 0);

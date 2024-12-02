@@ -755,7 +755,7 @@ ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
     metadata_secret = device::fido::mac::GenerateCredentialMetadataSecret();
     profile->GetPrefs()->SetString(
         kWebAuthnTouchIdMetadataSecretPrefName,
-        base::Base64Encode(base::as_bytes(base::make_span(metadata_secret))));
+        base::Base64Encode(base::as_byte_span(metadata_secret)));
   }
 
   return TouchIdAuthenticatorConfig{

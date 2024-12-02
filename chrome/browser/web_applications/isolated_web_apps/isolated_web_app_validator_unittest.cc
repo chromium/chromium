@@ -106,9 +106,9 @@ class IsolatedWebAppValidatorTest : public ::testing::Test {
   }
 
   static inline const web_package::Ed25519PublicKey kPublicKey1 =
-      web_package::Ed25519PublicKey::Create(base::make_span(kPublicKeyBytes1));
+      web_package::Ed25519PublicKey::Create(base::span(kPublicKeyBytes1));
   static inline const web_package::Ed25519PublicKey kPublicKey2 =
-      web_package::Ed25519PublicKey::Create(base::make_span(kPublicKeyBytes2));
+      web_package::Ed25519PublicKey::Create(base::span(kPublicKeyBytes2));
 
   static inline const web_package::SignedWebBundleId kWebBundleId1 =
       web_package::SignedWebBundleId::CreateForPublicKey(kPublicKey1);
