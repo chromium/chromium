@@ -110,12 +110,14 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 using page_load_metrics::PageEndReason;
 using page_load_metrics::PageLoadMetricsTestWaiter;
 using TimingField = page_load_metrics::PageLoadMetricsTestWaiter::TimingField;
+using WebDXFeature = blink::mojom::WebDXFeature;
 using WebFeature = blink::mojom::WebFeature;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
@@ -1812,6 +1814,25 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
                                        WebFeature::kVisitedColumnRuleColor, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       UseCounterWebDXFeaturesInMainFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/page_load_metrics/use_counter_features.html")));
+  waiter->Wait();
+  NavigateToUntrackedUrl();
+
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                       WebDXFeature::kPageVisits, 1);
+
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                       WebDXFeature::kWebAnimations, 1);
+}
+
 class PageLoadMetricsBrowserTestWithAutoupgradesDisabled
     : public PageLoadMetricsBrowserTest {
  public:
@@ -1914,6 +1935,32 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
   histogram_tester_->ExpectBucketCount(
       "Blink.UseCounter.AnimatedCSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
+                       UseCounterWebDXFeaturesMixedContent) {
+  // UseCounterWebDXFeaturesInMainFrame loads the test file on a loopback
+  // address. Loopback is treated as a secure origin in most ways, but it
+  // doesn't count as mixed content when it loads http://
+  // subresources. Therefore, this test loads the test file on a real HTTPS
+  // server.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server.GetURL("/page_load_metrics/use_counter_features.html")));
+  waiter->Wait();
+  NavigateToUntrackedUrl();
+
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                       WebDXFeature::kPageVisits, 1);
+
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                       WebDXFeature::kWebAnimations, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
@@ -2242,6 +2289,50 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   histogram_tester_->ExpectBucketCount(
       "Blink.UseCounter.AnimatedCSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
+}
+
+// Test UseCounter WebDX Features observed in a child frame are recorded,
+// exactly once per feature.
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       UseCounterWebDXFeaturesInIframe) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "/page_load_metrics/use_counter_features_in_iframe.html")));
+  waiter->Wait();
+  NavigateToUntrackedUrl();
+
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                       WebDXFeature::kPageVisits, 1);
+
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                       WebDXFeature::kWebAnimations, 1);
+}
+
+// Test UseCounter WebDX Features observed in multiple child frames are
+// recorded, exactly once per feature.
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       UseCounterWebDXFeaturesInMultipleIframes) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "/page_load_metrics/use_counter_features_in_iframes.html")));
+  waiter->Wait();
+  NavigateToUntrackedUrl();
+
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                       WebDXFeature::kPageVisits, 1);
+
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                       WebDXFeature::kWebAnimations, 1);
 }
 
 // Test UseCounter Features observed for SVG pages.
