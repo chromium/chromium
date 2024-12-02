@@ -797,7 +797,7 @@ connection will fail as it should.
 <a name="TOC-When-is-key-pinning-enabled-"></a>
 ### When is key pinning enabled?
 
-Key pinning is enabled for Chrome-branded, non-mobile builds when the local
+Key pinning is enabled for Chrome-branded non-iOS builds when the local
 clock is within ten weeks of the embedded build timestamp. Key pinning is a
 useful security measure but it tightly couples client and server configurations
 and completely breaks when those configurations are out of sync. In order to
@@ -807,11 +807,10 @@ reasonable timeframe.
 
 Each of the conditions listed above helps ensure those properties:
 Chrome-branded builds are those that Google provides and they all have an
-auto-update mechanism that can be used in an emergency. However, auto-update on
-mobile devices is significantly less effective thus they are excluded. Even in
-cases where auto-update is generally effective, there are still non-trivial
-populations of stragglers for various reasons. The ten-week timeout prevents
-those stragglers from causing problems for regular, non-emergency changes and
+auto-update mechanism that can be used in an emergency. Even in cases where
+auto-update is generally effective, there are still non-trivial populations
+of stragglers for various reasons. The ten-week timeout prevents those
+stragglers from causing problems for regular, non-emergency changes and
 allows stuck users to still, for example, conduct searches and access Chrome's
 homepage to hopefully get unstuck.
 
