@@ -235,8 +235,7 @@ class ScanService : public scanning::mojom::ScanService,
   // Called if there is no response from the scanner after a timeout. Used to
   // ensure the wake lock will be released if there is an error from the
   // scanner or backend.
-  base::CancelableOnceCallback<void(ScanService*, bool,
-                               lorgnette::ScanFailureMode)> timeout_callback_;
+  base::CancelableOnceClosure timeout_callback_;
 
   // Needs to be last member variable.
   base::WeakPtrFactory<ScanService> weak_ptr_factory_{this};

@@ -302,14 +302,13 @@ bool ScanService::SendScanRequest(
   // Save the DPI information for the scan.
   scan_dpi_ = settings->resolution_dpi;
 
-  timeout_callback_.Reset(base::BindOnce(&ScanService::OnScanCompleted));
+  // If this callback is called, `is_multi_page_scan` does not matter.
+  // Always setting it to false here makes it simpler.
+  timeout_callback_.Reset(base::BindOnce(
+      &ScanService::OnScanCompleted, weak_ptr_factory_.GetWeakPtr(),
+      /*is_multi_page_scan=*/false, lorgnette::SCAN_FAILURE_MODE_IO_ERROR));
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      // If this callback is called, `is_multi_page_scan` does not matter.
-      // Always setting it to false here makes it simpler.
-      FROM_HERE, base::BindOnce(timeout_callback_.callback(), this,
-	                        /*is_multi_page_scan=*/false,
-                                lorgnette::SCAN_FAILURE_MODE_IO_ERROR),
-      kTimeout);
+      FROM_HERE, timeout_callback_.callback(), kTimeout);
 
   start_time_ = base::Time::Now();
   lorgnette_scanner_manager_->Scan(
