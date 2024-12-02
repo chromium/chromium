@@ -31,20 +31,31 @@
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 
 #include "base/strings/escape.h"
-#include "mojo/public/cpp/base/big_buffer.h"
-#include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+namespace {
+
+String EscapeForHTML(const String& str) {
+  // base::EscapeForHTML can work on 8-bit Latin-1 strings as well as 16-bit
+  // strings. This could use MarkupFormatter::AppendAttributeValue instead to
+  // avoid unnecessary copying and be more aligned with Blink serialization.
+  return WTF::VisitCharacters(str, [](auto chars) {
+    auto result = base::EscapeForHTML(base::as_string_view(chars));
+    return String(result);
+  });
+}
+
+}  // namespace
+
 void ReplaceNBSPWithSpace(String& str) {
-  static const UChar kNonBreakingSpaceCharacter = 0xA0;
-  static const UChar kSpaceCharacter = ' ';
-  str.Replace(kNonBreakingSpaceCharacter, kSpaceCharacter);
+  str.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);
 }
 
 String ConvertURIListToURL(const String& uri_list) {
@@ -67,18 +78,6 @@ String ConvertURIListToURL(const String& uri_list) {
   return String();
 }
 
-static String EscapeForHTML(const String& str) {
-  // base::EscapeForHTML can work on 8-bit Latin-1 strings as well as 16-bit
-  // strings.
-  if (str.Is8Bit()) {
-    auto result = base::EscapeForHTML(
-        {reinterpret_cast<const char*>(str.Characters8()), str.length()});
-    return String(result);
-  }
-  auto result = base::EscapeForHTML({str.Characters16(), str.length()});
-  return String(result);
-}
-
 String URLToImageMarkup(const KURL& url, const String& title) {
   StringBuilder builder;
   builder.Append("<img src=\"");
@@ -93,10 +92,10 @@ String URLToImageMarkup(const KURL& url, const String& title) {
   return builder.ToString();
 }
 
-String PNGToImageMarkup(const mojo_base::BigBuffer& png_data) {
-  if (!png_data.size())
+String PNGToImageMarkup(base::span<const uint8_t> png_data) {
+  if (png_data.empty()) {
     return String();
-
+  }
   StringBuilder markup;
   markup.Append("<img src=\"data:image/png;base64,");
   markup.Append(Base64Encode(png_data));
