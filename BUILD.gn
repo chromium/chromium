@@ -416,6 +416,7 @@ group("gn_all") {
         "//tools/android/audio_focus_grabber:audio_focus_grabber_apk",
         "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
         "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
+        "//tools/pgo:generate_profile_android_trichrome_chrome_bundle",
         "//ui:ui_junit_tests",
       ]
       deps -= [
@@ -441,17 +442,8 @@ group("gn_all") {
         ]
       }
 
-      if (android_64bit_target_cpu) {
-        deps += [
-          "//tools/pgo:generate_profile_android_trichrome_chrome_64_32_bundle",
-        ]
-      }
-
       if (enable_chrome_android_internal) {
-        deps += [
-          "//clank",
-          "//tools/pgo:generate_profile_android_clank_trichrome_bundle",
-        ]
+        deps += [ "//clank" ]
       }
     }
 
