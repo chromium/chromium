@@ -22,7 +22,7 @@ class StubCrosSettingsProviderTest : public testing::Test {
             base::BindRepeating(&StubCrosSettingsProviderTest::FireObservers,
                                 base::Unretained(this)))) {}
 
-  ~StubCrosSettingsProviderTest() override {}
+  ~StubCrosSettingsProviderTest() override = default;
 
   void SetUp() override {
     // Reset the observer notification count.

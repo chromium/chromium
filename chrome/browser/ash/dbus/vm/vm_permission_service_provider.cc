@@ -72,7 +72,7 @@ VmPermissionServiceProvider::VmInfo::VmInfo(std::string vm_owner_id,
 
 VmPermissionServiceProvider::VmInfo::~VmInfo() = default;
 
-VmPermissionServiceProvider::VmPermissionServiceProvider() {}
+VmPermissionServiceProvider::VmPermissionServiceProvider() = default;
 
 VmPermissionServiceProvider::~VmPermissionServiceProvider() = default;
 

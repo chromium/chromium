@@ -92,7 +92,7 @@ OwnerFlagsStorage::OwnerFlagsStorage(
     : flags_ui::PrefServiceFlagsStorage(prefs),
       owner_settings_service_(owner_settings_service) {}
 
-OwnerFlagsStorage::~OwnerFlagsStorage() {}
+OwnerFlagsStorage::~OwnerFlagsStorage() = default;
 
 bool OwnerFlagsStorage::SetFlags(const std::set<std::string>& flags) {
   // Write the flags configuration to profile preferences, which are used to

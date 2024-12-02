@@ -15,7 +15,7 @@
 
 namespace ash {
 
-KioskInfoService::KioskInfoService() {}
+KioskInfoService::KioskInfoService() = default;
 
 KioskInfoService::~KioskInfoService() = default;
 

@@ -16,7 +16,7 @@
 
 namespace ash {
 
-LibvdaServiceProvider::LibvdaServiceProvider() {}
+LibvdaServiceProvider::LibvdaServiceProvider() = default;
 
 LibvdaServiceProvider::~LibvdaServiceProvider() = default;
 

@@ -89,7 +89,7 @@ void RecordDeviceLocalAccountsMetric(
 
 }  // namespace
 
-DeviceSettingsService::Observer::~Observer() {}
+DeviceSettingsService::Observer::~Observer() = default;
 
 void DeviceSettingsService::Observer::OwnershipStatusChanged() {}
 

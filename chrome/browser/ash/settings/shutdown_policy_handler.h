@@ -24,7 +24,7 @@ class ShutdownPolicyHandler {
     virtual void OnShutdownPolicyChanged(bool reboot_on_shutdown) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   ShutdownPolicyHandler(CrosSettings* cros_settings, Delegate* delegate);

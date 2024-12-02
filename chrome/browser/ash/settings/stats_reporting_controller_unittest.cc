@@ -46,7 +46,7 @@ class StatsReportingControllerTest : public testing::Test {
  protected:
   StatsReportingControllerTest()
       : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
-  ~StatsReportingControllerTest() override {}
+  ~StatsReportingControllerTest() override = default;
 
   void SetUp() override {
     StatsReportingController::Initialize(&local_state_);
