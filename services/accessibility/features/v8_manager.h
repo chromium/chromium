@@ -24,7 +24,7 @@
 #include "services/accessibility/features/bindings_isolate_holder.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-forward.h"
 #include "services/accessibility/public/mojom/automation.mojom-forward.h"
-#include "services/accessibility/public/mojom/file_loader.mojom-forward.h"
+#include "services/accessibility/public/mojom/file_loader.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "v8-persistent-handle.h"
 #include "v8-script.h"
