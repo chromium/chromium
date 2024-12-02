@@ -20,9 +20,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 
@@ -177,8 +175,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   const bool skip_service_worker_;
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
-  GURL stripped_url_;
-  blink::StorageKey storage_key_;
   bool force_update_started_;
   const FrameTreeNodeId frame_tree_node_id_;
 

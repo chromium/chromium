@@ -37,6 +37,8 @@
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "components/offline_pages/core/request_header/offline_page_header.h"
@@ -201,7 +203,8 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
 
   // Look up a registration.
   context_->registry()->FindRegistrationForClientUrl(
-      ServiceWorkerRegistry::Purpose::kNavigation, stripped_url_, storage_key_,
+      ServiceWorkerRegistry::Purpose::kNavigation,
+      service_worker_client_->url(), service_worker_client_->key(),
       base::BindOnce(
           &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
           weak_factory_.GetWeakPtr(), /*is_for_navigation=*/true,
@@ -216,12 +219,11 @@ void ServiceWorkerControlleeRequestHandler::InitializeServiceWorkerClient(
   service_worker_client_->SetControllerRegistration(
       nullptr,
       /*notify_controllerchange=*/false);
-  stripped_url_ = net::SimplifyUrlForRequest(tentative_resource_request.url);
-
-  storage_key_ = storage_key;
+  const GURL stripped_url =
+      net::SimplifyUrlForRequest(tentative_resource_request.url);
 
   service_worker_client_->UpdateUrls(
-      stripped_url_,
+      stripped_url,
       // The storage key only has a top_level_site, not
       // an origin, so we must extract the origin from
       // trusted_params.
@@ -229,7 +231,7 @@ void ServiceWorkerControlleeRequestHandler::InitializeServiceWorkerClient(
           ? tentative_resource_request.trusted_params->isolation_info
                 .top_frame_origin()
           : std::nullopt,
-      storage_key_);
+      storage_key);
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
@@ -563,7 +565,7 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
     int64_t registration_id) {
   DCHECK(force_update_started_);
 
-  if (!context_) {
+  if (!context_ || !service_worker_client_) {
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::DidUpdateRegistration",
@@ -578,8 +580,8 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
     // Update failed. Look up the registration again since the original
     // registration was possibly unregistered in the meantime.
     context_->registry()->FindRegistrationForClientUrl(
-        ServiceWorkerRegistry::Purpose::kNotForNavigation, stripped_url_,
-        storage_key_,
+        ServiceWorkerRegistry::Purpose::kNotForNavigation,
+        service_worker_client_->url(), service_worker_client_->key(),
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
             weak_factory_.GetWeakPtr(),
@@ -613,7 +615,7 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
 void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
     scoped_refptr<ServiceWorkerRegistration> registration,
     scoped_refptr<ServiceWorkerVersion> version) {
-  if (!context_) {
+  if (!context_ || !service_worker_client_) {
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged",
@@ -636,8 +638,8 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
     // continue with the incumbent version.
     // In case unregister job may have run, look up the registration again.
     context_->registry()->FindRegistrationForClientUrl(
-        ServiceWorkerRegistry::Purpose::kNotForNavigation, stripped_url_,
-        storage_key_,
+        ServiceWorkerRegistry::Purpose::kNotForNavigation,
+        service_worker_client_->url(), service_worker_client_->key(),
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
             weak_factory_.GetWeakPtr(),
