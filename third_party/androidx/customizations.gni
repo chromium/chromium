@@ -121,8 +121,11 @@ template("androidx_java_prebuilt") {
     forward_variables_from(invoker, "*")
     target_type = "java_prebuilt"
 
-    # https://crbug.com/1412551
-    requires_android = true
+    # If this target only "supports_android", then it will not be allowed to
+    # depend on a target that "requires_android". https://crbug.com/1412551
+    if (target_name != "androidx_annotation_annotation_jvm_java") {
+      requires_android = true
+    }
   }
 }
 
