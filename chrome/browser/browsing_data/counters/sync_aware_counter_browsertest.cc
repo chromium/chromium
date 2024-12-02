@@ -47,7 +47,7 @@ class SyncAwareCounterTest : public SyncTest {
   SyncAwareCounterTest(const SyncAwareCounterTest&) = delete;
   SyncAwareCounterTest& operator=(const SyncAwareCounterTest&) = delete;
 
-  ~SyncAwareCounterTest() override {}
+  ~SyncAwareCounterTest() override = default;
 
   void SetUpOnMainThread() override {
     fake_web_history_service_ =

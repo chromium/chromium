@@ -54,7 +54,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
   AutofillCounterTest(const AutofillCounterTest&) = delete;
   AutofillCounterTest& operator=(const AutofillCounterTest&) = delete;
 
-  ~AutofillCounterTest() override {}
+  ~AutofillCounterTest() override = default;
 
   void SetUpOnMainThread() override {
     personal_data_manager_ =
