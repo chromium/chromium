@@ -42,7 +42,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -384,7 +383,6 @@ public class SensitiveContentTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "Flakey test. See https://crbug.com/378742136")
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testSwipingBetweenTabsIsSensitive() {
         // Set up.
@@ -396,21 +394,17 @@ public class SensitiveContentTest {
         page = page.openNewTabFast();
         final Tab thirdTab = page.getLoadedTab();
         // Load sensitive content into the third tab.
-        page.loadPageProgrammatically(
-                mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page =
+                page.loadPageProgrammatically(
+                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
         pollUiThread(() -> thirdTab.getTabHasSensitiveContent());
-
-        // Swiping from a sensitive tab to a not sensitive one should mark the content container as
-        // sensitive.
-        performSwipeAndCheckSensitivity(
-                ScrollDirection.RIGHT, /* contentContainerShouldBeSensitive= */ true);
-        // After the swipe ends, the content container should return to not being sensitive.
-        waitForContentSensitivity(contentContainer, View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+        // Open a fourth tab.
+        page.openNewTabFast();
 
         // Swiping from a not sensitive tab to a sensitive one should mark the content container as
         // sensitive.
         performSwipeAndCheckSensitivity(
-                ScrollDirection.LEFT, /* contentContainerShouldBeSensitive= */ true);
+                ScrollDirection.RIGHT, /* contentContainerShouldBeSensitive= */ true);
         // After the swipe ends, the content container should return to not being sensitive.
         waitForContentSensitivity(contentContainer, View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
 
