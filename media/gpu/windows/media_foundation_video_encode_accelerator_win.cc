@@ -128,6 +128,9 @@ constexpr FramerateAndResolution kDefaultMaxFramerateAndResolution = {
     kDefaultFrameRateNumerator / kDefaultFrameRateDenominator,
     gfx::Size(1920, 1080)};
 
+// The default supported min resolution.
+constexpr gfx::Size kDefaultMinResolution(32, 32);
+
 // For H.264, some NVIDIA GPUs may report `MF_VIDEO_MAX_MB_PER_SEC` value equals
 // to `6799902`, resulting chromium think 8K & 30fps is supported, and some
 // Intel GPUs only support level 5.2. Since most devices only support up to 4K,
@@ -149,8 +152,6 @@ constexpr FramerateAndResolution kModern4KMaxFramerateAndResolution = {
     300, gfx::Size(3840, 2160)};
 constexpr FramerateAndResolution kModern8KMaxFramerateAndResolution = {
     128, gfx::Size(7680, 4320)};
-
-constexpr gfx::Size kMinResolution(32, 32);
 
 constexpr CLSID kIntelAV1HybridEncoderCLSID = {
     0x62c053ce,
@@ -770,6 +771,105 @@ std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
   return framerate_and_resolutions;
 }
 
+// Ideally, we should query the API to get the minimum resolution of each codec
+// under each vendor. However, since there is no such API available, based on
+// the actual results, although the minimum resolutions of different codecs for
+// each vendor vary, but the results always remain consistent among different
+// GPU models. Therefore, we can just hardcode these values within the function.
+gfx::Size GetMinResolution(
+    VideoCodec codec,
+    MediaFoundationVideoEncodeAccelerator::DriverVendor vendor) {
+  using DriverVendor = MediaFoundationVideoEncodeAccelerator::DriverVendor;
+  switch (codec) {
+    case VideoCodec::kH264:
+      switch (vendor) {
+        case DriverVendor::kAMD:
+          // Below result based on: AMD Radeon(TM) Graphics (Ryzen 7 Pro 4750U),
+          // AMD Radeon(TM) Graphics (Ryzen 9 9950X), AMD Radeon(TM) RX 6600.
+          return gfx::Size(128, 128);
+        case DriverVendor::kIntel:
+          // Below result based on: Intel UHD Graphics 750, Intel Arc(TM) A380,
+          // Intel Arc(TM) Graphic (Ultra5 125H), Intel(R) Iris(R) Xe MAX
+          // Graphics.
+          return gfx::Size(18, 18);
+        case DriverVendor::kNvidia:
+          // Below result based on: NVIDIA RTX 3050, NVIDIA RTX 3070, NVIDIA RTX
+          // 4080.
+          return gfx::Size(146, 50);
+        case DriverVendor::kQualcomm:
+          // Below result based on: Qualcomm(R) Adreno(TM) 690, Qualcomm(R)
+          // Adreno(TM) X1-85.
+          return gfx::Size(96, 96);
+        case DriverVendor::kOther:
+          return kDefaultMinResolution;
+      }
+    case VideoCodec::kHEVC:
+      switch (vendor) {
+        case DriverVendor::kAMD:
+          // Below result based on: AMD Radeon(TM) Graphics (Ryzen 7 Pro 4750U),
+          // AMD Radeon(TM) Graphics (Ryzen 9 9950X), AMD Radeon(TM) RX 6600.
+          return gfx::Size(130, 128);
+        case DriverVendor::kIntel:
+          // Below result based on: Intel UHD Graphics 750, Intel Arc(TM) A380,
+          // Intel Arc(TM) Graphic (Ultra5 125H), Intel(R) Iris(R) Xe MAX
+          // Graphics.
+          return gfx::Size(66, 114);
+        case DriverVendor::kNvidia:
+          // Below result based on: NVIDIA RTX 3050, NVIDIA RTX 3070, NVIDIA RTX
+          // 4080.
+          return gfx::Size(130, 34);
+        case DriverVendor::kQualcomm:
+          // Below result based on: Qualcomm(R) Adreno(TM) 690, Qualcomm(R)
+          // Adreno(TM) X1-85.
+          return gfx::Size(96, 96);
+        case DriverVendor::kOther:
+          return kDefaultMinResolution;
+      }
+    case VideoCodec::kVP9:
+      switch (vendor) {
+        case DriverVendor::kAMD:
+          // Below result based on: AMD Radeon(TM) Graphics (Ryzen 9 9950X).
+          return gfx::Size(66, 66);
+        case DriverVendor::kIntel:
+          // Below result based on: Intel UHD Graphics 750, Intel Arc(TM) A380,
+          // Intel Arc(TM) Graphic (Ultra5 125H), Intel(R) Iris(R) Xe MAX
+          // Graphics.
+          //
+          // NOTE: Intel UHD Graphics 750, Intel Arc(TM) A380, Intel(R) Iris(R)
+          // Xe MAX Graphics actually only requires >= 66x66, but Intel Arc(TM)
+          // Graphic (Ultra5 125H) requires >= 66x120.
+          return gfx::Size(66, 120);
+        case DriverVendor::kNvidia:
+          // Below result based on: NVIDIA RTX 4080.
+          return gfx::Size(66, 66);
+        // As of the testing date, no Qualcomm hardware supports VP9 encoding.
+        case DriverVendor::kQualcomm:
+        case DriverVendor::kOther:
+          return kDefaultMinResolution;
+      }
+    case VideoCodec::kAV1:
+      switch (vendor) {
+        case DriverVendor::kAMD:
+          // Below result based on: AMD Radeon(TM) Graphics (Ryzen 9 9950X).
+          return gfx::Size(114, 82);
+        case DriverVendor::kIntel:
+          // Below result based on: Intel Arc(TM) A380, Intel Arc(TM) Graphic
+          // (Ultra5 125H).
+          return gfx::Size(114, 82);
+        case DriverVendor::kNvidia:
+          // Below result based on: NVIDIA RTX 4080.
+          return gfx::Size(130, 66);
+        case DriverVendor::kQualcomm:
+          // Below result based on: Qualcomm(R) Adreno(TM) X1-85.
+          return gfx::Size(256, 128);
+        case DriverVendor::kOther:
+          return kDefaultMinResolution;
+      }
+    default:
+      NOTREACHED();
+  }
+}
+
 int GetMaxTemporalLayer(VideoCodec codec,
                         std::vector<ComPtr<IMFActivate>>& activates,
                         const gpu::GpuDriverBugWorkarounds& workarounds) {
@@ -966,6 +1066,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
     std::vector<FramerateAndResolution> max_framerate_and_resolutions = {
         kDefaultMaxFramerateAndResolution};
+    gfx::Size min_resolution = kDefaultMinResolution;
 
     if (base::FeatureList::IsEnabled(
             kExpandMediaFoundationEncodingResolutions)) {
@@ -984,6 +1085,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
       CHECK(encoder);
       max_framerate_and_resolutions =
           GetMaxFramerateAndResolutionsFromMFT(codec, encoder.Get());
+      min_resolution = GetMinResolution(codec, GetDriverVendor(activate));
       activate->ShutdownObject();
     }
 
@@ -991,6 +1093,8 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
       DVLOG(3) << __func__ << ": " << codec << " codec, max resolution width: "
                << max_framerate_and_resolution.resoluion.width() << ", height: "
                << max_framerate_and_resolution.resoluion.height()
+               << ", min resolution width: " << min_resolution.width()
+               << ", height: " << min_resolution.height()
                << ", framerate: " << max_framerate_and_resolution.frame_rate;
 
       SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN,
@@ -999,7 +1103,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
                                    kDefaultFrameRateDenominator,
                                kDefaultFrameRateDenominator, bitrate_mode,
                                {SVCScalabilityMode::kL1T1});
-      profile.min_resolution = kMinResolution;
+      profile.min_resolution = min_resolution;
 
       if (!workarounds_.disable_svc_encoding) {
         if (num_temporal_layers >= 2) {
@@ -1017,7 +1121,6 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
       SupportedProfile portrait_profile(profile);
       portrait_profile.max_resolution.Transpose();
-      portrait_profile.min_resolution.Transpose();
 
       std::vector<VideoCodecProfile> codec_profiles;
       if (codec == VideoCodec::kH264) {
@@ -1586,23 +1689,25 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
 }
 
 bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(gfx::Size size) {
-  if (max_framerate_and_resolutions_.empty()) {
+  if (max_framerate_and_resolutions_.empty() || min_resolution_.IsEmpty()) {
     DCHECK(encoder_);
     max_framerate_and_resolutions_ =
         GetMaxFramerateAndResolutionsFromMFT(codec_, encoder_.Get());
+    min_resolution_ = GetMinResolution(codec_, vendor_);
   }
 
   for (auto& [frame_rate, resolution] : max_framerate_and_resolutions_) {
-    if (size.width() >= kMinResolution.width() &&
-        size.height() >= kMinResolution.height() &&
+    if (size.width() >= min_resolution_.width() &&
+        size.height() >= min_resolution_.height() &&
         size.width() <= resolution.width() &&
         size.height() <= resolution.height() && frame_rate_ <= frame_rate) {
       return true;
     }
 
     size.Transpose();
-    if (size.width() >= kMinResolution.width() &&
-        size.height() >= kMinResolution.height() &&
+    // Portrait profile only transpose max resolution.
+    if (size.height() >= min_resolution_.width() &&
+        size.width() >= min_resolution_.height() &&
         size.width() <= resolution.width() &&
         size.height() <= resolution.height() && frame_rate_ <= frame_rate) {
       return true;
