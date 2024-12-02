@@ -1324,6 +1324,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
@@ -1374,6 +1375,7 @@ ci.builder(
     builderless = False,
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "dbg",
@@ -1422,6 +1424,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "dll",
@@ -1469,6 +1472,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
         short_name = "rel",
@@ -1516,6 +1520,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
@@ -1565,6 +1570,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
@@ -1613,6 +1619,7 @@ ci.builder(
     builderless = False,
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "fuz",
@@ -1662,6 +1669,7 @@ ci.builder(
     ),
     cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
