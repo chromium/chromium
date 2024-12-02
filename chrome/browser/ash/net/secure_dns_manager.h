@@ -23,6 +23,10 @@
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 namespace ash {
 
 // Responds to changes in the SecureDNS preferences from the local state and
@@ -55,7 +59,7 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   void RemoveObserver(Observer* observer);
 
   SecureDnsManager(PrefService* local_state,
-                   PrefService* profile_prefs,
+                   user_manager::User& user,
                    bool is_profile_managed);
   SecureDnsManager(const SecureDnsManager&) = delete;
   SecureDnsManager& operator=(const SecureDnsManager&) = delete;
@@ -155,7 +159,8 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
       network_state_handler_observer_{this};
 
   PrefChangeRegistrar local_state_registrar_, profile_prefs_registrar_;
-  raw_ptr<PrefService> local_state_, profile_prefs_;
+  raw_ptr<PrefService> local_state_;
+  raw_ref<user_manager::User> user_;
 
   // Maps secure DNS provider URL templates to their corresponding standard DNS
   // name servers. Providers that are either disabled or not applicable for the
