@@ -394,7 +394,7 @@ def _crossbench_jetstream2_1(estimated_runtime=180):
                           estimated_runtime=estimated_runtime)
 
 
-def _crossbench_loadline_phone(estimated_runtime=60, arguments=None):
+def _crossbench_loadline_phone(estimated_runtime=7000, arguments=None):
   return CrossbenchConfig('loadline_phone.crossbench',
                           'loadline-phone',
                           estimated_runtime=estimated_runtime,
@@ -420,7 +420,11 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 # TODO(b/338630584): Remove it when other benchmarks can be run on Android.
 _CROSSBENCH_ANDROID = frozenset([
     _crossbench_speedometer3_0(arguments=['--fileserver']),
-    _crossbench_loadline_phone(arguments=['--repeat=1']),
+    _crossbench_loadline_phone(arguments=[
+        '--repeat=1',
+        '--cool-down-threshold=moderate',
+        '--no-splash',
+    ]),
 ])
 
 _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite(
@@ -907,9 +911,6 @@ ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
 ANDROID_PIXEL4_WEBVIEW_PGO = PerfPlatform(
     'android-pixel4_webview-perf-pgo', 'Android R',
     _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
-# TODO(crbug.com/307958700): Switch shard number back to a higher number around
-#                            28 once more devices are procured. Temporarily use
-#                            15 to avoid high contention in the pixel6 pool.
 ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               'Android U',
                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
