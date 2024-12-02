@@ -1252,6 +1252,21 @@
             ]
         }
     ],
+    "AsyncNavigationIntercept": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "enable_features": [
+                        "AsyncNavigationIntercept"
+                    ]
+                }
+            ]
+        }
+    ],
     "AsyncNotiicationmanager": [
         {
             "platforms": [
