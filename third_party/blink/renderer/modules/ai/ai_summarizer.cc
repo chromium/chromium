@@ -76,7 +76,7 @@ ScriptPromise<IDLString> AISummarizer::summarize(
       script_state, signal, resolver, task_runner_,
       AIMetrics::AISessionType::kSummarizer,
       /*complete_callback=*/base::DoNothing());
-  summarizer_remote_->Summarize(input, options->getContextOr(WTF::String("")),
+  summarizer_remote_->Summarize(input, options->getContextOr(g_empty_string),
                                 std::move(pending_remote));
   return promise;
 }
@@ -118,7 +118,7 @@ ReadableStream* AISummarizer::summarizeStreaming(
           script_state, signal, task_runner_,
           AIMetrics::AISessionType::kSummarizer,
           /*complete_callback=*/base::DoNothing());
-  summarizer_remote_->Summarize(input, options->getContextOr(WTF::String("")),
+  summarizer_remote_->Summarize(input, options->getContextOr(g_empty_string),
                                 std::move(pending_remote));
   return readable_stream;
 }

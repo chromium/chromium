@@ -181,7 +181,7 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
 
   // The empty string means the default audio device.
   auto frame_token = window.GetLocalFrameToken();
-  WebAudioSinkDescriptor sink_descriptor(String(""), frame_token);
+  WebAudioSinkDescriptor sink_descriptor(g_empty_string, frame_token);
   // In order to not break echo cancellation of PeerConnection audio, we must
   // not update the echo cancellation reference unless the sink ID is explicitly
   // specified.
@@ -259,7 +259,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
       permission_receiver_(this, &window),
       sink_descriptor_(sink_descriptor),
       v8_sink_id_(
-          MakeGarbageCollected<V8UnionAudioSinkInfoOrString>(String(""))),
+          MakeGarbageCollected<V8UnionAudioSinkInfoOrString>(g_empty_string)),
       media_device_service_(&window),
       media_device_service_receiver_(this, &window) {
   RecordAudioContextOperation(AudioContextOperation::kCreate);
@@ -1166,7 +1166,7 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
     for (auto device : devices) {
       if (device.device_id == "default") {
         // Use the empty string to represent the default audio sink.
-        output_device_ids_.insert(String(""));
+        output_device_ids_.insert(g_empty_string);
       } else {
         output_device_ids_.insert(String::FromUTF8(device.device_id));
       }
@@ -1198,7 +1198,7 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
             " audio device change. ("
             + String(sink_descriptor_.SinkId().Utf8()) + ")"));
       sink_descriptor_ = WebAudioSinkDescriptor(
-          String(""),
+          g_empty_string,
           To<LocalDOMWindow>(GetExecutionContext())->GetLocalFrameToken());
       auto* destination_node = GetRealtimeAudioDestinationNode();
       if (destination_node) {

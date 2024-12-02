@@ -810,7 +810,7 @@ KURL ManifestParser::ParseIconSrc(const JSONObject* icon) {
 
 String ManifestParser::ParseIconType(const JSONObject* icon) {
   std::optional<String> type = ParseString(icon, "type", Trim(true));
-  return type.has_value() ? *type : String("");
+  return type.value_or(g_empty_string);
 }
 
 Vector<gfx::Size> ManifestParser::ParseIconSizes(const JSONObject* icon) {
@@ -1094,13 +1094,13 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
 String ManifestParser::ParseFileFilterName(const JSONObject* file) {
   if (!file->Get("name")) {
     AddErrorInfo("property 'name' missing.");
-    return String("");
+    return g_empty_string;
   }
 
   String value;
   if (!file->GetString("name", &value)) {
     AddErrorInfo("property 'name' ignored, type string expected.");
-    return String("");
+    return g_empty_string;
   }
   return value;
 }

@@ -385,7 +385,7 @@ Error DecodeString(Cursor<CharType>* cursor,
   if (cursor->pos + 1 > end - 1)
     return Error::kSyntaxError;
   if (cursor->pos + 1 == end - 1) {
-    *output = "";
+    *output = g_empty_string;
     return Error::kNoError;
   }
 

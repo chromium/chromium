@@ -7616,7 +7616,7 @@ void Document::UpdateAppTitle() {
   }
 
   // Handle case of meta tag being removed by setting app title to empty string.
-  GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(String(""));
+  GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(g_empty_string);
 }
 
 void Document::ColorSchemeMetaChanged() {

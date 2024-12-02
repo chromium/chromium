@@ -651,7 +651,7 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
       0,                                      // column_offset
       opaque_mode == OpaqueMode::kNotOpaque,  // is_shared_cross_origin
       -1,                                     // script_id
-      V8String(isolate, String("")),          // source_map_url
+      V8String(isolate, g_empty_string),      // source_map_url
       opaque_mode == OpaqueMode::kOpaque,     // is_opaque
       false,                                  // is_wasm
       false,                                  // is_module
