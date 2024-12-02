@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/media/web_app_system_media_controls_manager.h"
-#include "content/browser/media/system_media_controls_notifier.h"
+#include "content/browser/media/system_media_controls/web_app_system_media_controls_manager.h"
 
 #include "base/unguessable_token.h"
 #include "components/system_media_controls/mock_system_media_controls.h"
-#include "content/browser/media/web_app_system_media_controls.h"
+#include "content/browser/media/system_media_controls/system_media_controls_notifier.h"
+#include "content/browser/media/system_media_controls/web_app_system_media_controls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

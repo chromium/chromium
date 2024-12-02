@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MEDIA_WEB_APP_SYSTEM_MEDIA_CONTROLS_H_
-#define CONTENT_BROWSER_MEDIA_WEB_APP_SYSTEM_MEDIA_CONTROLS_H_
+#ifndef CONTENT_BROWSER_MEDIA_SYSTEM_MEDIA_CONTROLS_WEB_APP_SYSTEM_MEDIA_CONTROLS_H_
+#define CONTENT_BROWSER_MEDIA_SYSTEM_MEDIA_CONTROLS_WEB_APP_SYSTEM_MEDIA_CONTROLS_H_
 
 #include <memory>
+
 #include "base/unguessable_token.h"
 #include "content/browser/media/active_media_session_controller.h"
-#include "content/browser/media/system_media_controls_notifier.h"
+#include "content/browser/media/system_media_controls/system_media_controls_notifier.h"
 
 namespace system_media_controls {
 class SystemMediaControls;
@@ -75,4 +76,4 @@ class CONTENT_EXPORT WebAppSystemMediaControls {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEDIA_WEB_APP_SYSTEM_MEDIA_CONTROLS_H_
+#endif  // CONTENT_BROWSER_MEDIA_SYSTEM_MEDIA_CONTROLS_WEB_APP_SYSTEM_MEDIA_CONTROLS_H_

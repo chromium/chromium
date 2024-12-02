@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/media/web_app_system_media_controls_manager.h"
+#include "content/browser/media/system_media_controls/web_app_system_media_controls_manager.h"
 
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
-#include "content/browser/media/system_media_controls_notifier.h"
-#include "content/browser/media/web_app_system_media_controls.h"
+#include "content/browser/media/system_media_controls/system_media_controls_notifier.h"
+#include "content/browser/media/system_media_controls/web_app_system_media_controls.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/web_contents.h"
@@ -171,6 +171,8 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
             system_media_controls::SystemMediaControls::Create(
                 application_host);
 
+    // this callback is only set in testing thus this code is only executed in
+    // tests.
     if (on_system_media_controls_bridge_created_callback_for_testing_) {
       system_media_controls->SetOnBridgeCreatedCallbackForTesting(
           on_system_media_controls_bridge_created_callback_for_testing_);

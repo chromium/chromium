@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/media/system_media_controls_notifier.h"
+#include "content/browser/media/system_media_controls/system_media_controls_notifier.h"
 
 #include <memory>
 #include <utility>
@@ -353,14 +353,16 @@ void SystemMediaControlsNotifier::CheckLockState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool new_state = ui::CheckIdleStateIsLocked();
-  if (screen_locked_ == new_state)
+  if (screen_locked_ == new_state) {
     return;
+  }
 
   screen_locked_ = new_state;
-  if (screen_locked_)
+  if (screen_locked_) {
     OnScreenLocked();
-  else
+  } else {
     OnScreenUnlocked();
+  }
 }
 
 void SystemMediaControlsNotifier::OnScreenLocked() {

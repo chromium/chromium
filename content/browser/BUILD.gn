@@ -1394,8 +1394,8 @@ source_set("browser") {
     "media/session/media_session_service_impl.h",
     "media/session/media_session_uma_helper.cc",
     "media/session/media_session_uma_helper.h",
-    "media/system_media_controls_notifier.cc",
-    "media/system_media_controls_notifier.h",
+    "media/system_media_controls/system_media_controls_notifier.cc",
+    "media/system_media_controls/system_media_controls_notifier.h",
     "media/url_provision_fetcher.cc",
     "media/url_provision_fetcher.h",
     "media/webaudio/audio_context_manager_impl.cc",
@@ -2946,10 +2946,10 @@ source_set("browser") {
 
   if (is_win || is_mac) {
     sources += [
-      "media/web_app_system_media_controls.cc",
-      "media/web_app_system_media_controls.h",
-      "media/web_app_system_media_controls_manager.cc",
-      "media/web_app_system_media_controls_manager.h",
+      "media/system_media_controls/web_app_system_media_controls.cc",
+      "media/system_media_controls/web_app_system_media_controls.h",
+      "media/system_media_controls/web_app_system_media_controls_manager.cc",
+      "media/system_media_controls/web_app_system_media_controls_manager.h",
     ]
   }
 

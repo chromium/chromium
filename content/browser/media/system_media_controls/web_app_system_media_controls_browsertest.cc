@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/media/web_app_system_media_controls.h"
+#include "content/browser/media/system_media_controls/web_app_system_media_controls.h"
 
 #include <optional>
 
@@ -17,7 +17,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 #include "content/browser/media/session/media_session_impl.h"
-#include "content/browser/media/web_app_system_media_controls_manager.h"
+#include "content/browser/media/system_media_controls/web_app_system_media_controls_manager.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
