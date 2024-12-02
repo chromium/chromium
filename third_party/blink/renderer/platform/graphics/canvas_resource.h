@@ -94,8 +94,9 @@ class PLATFORM_EXPORT CanvasResource
   // outstanding references).
   virtual bool IsRecycleable() const = 0;
 
-  // Returns true if the resource can be used with accelerated compositing.
-  virtual bool SupportsAcceleratedCompositing() const = 0;
+  // Returns true if this instance creates TransferableResources for usage with
+  // GPU compositing.
+  virtual bool CreatesAcceleratedTransferableResources() const = 0;
 
   // Transfers ownership of the resource's vix::ReleaseCallback.  This is useful
   // prior to transferring a resource to another thread, to retain the release
@@ -216,9 +217,9 @@ class PLATFORM_EXPORT CanvasResource
       bool needs_verified_synctoken);
 
   // Prepares GPU TransferableResource for resources for which
-  // SupportsAcceleratedCompositing() is true but UsesClientSharedImage()
-  // returns false. Subclasses that match these conditions *must* override this
-  // method.
+  // CreatesAcceleratedTransferableResources() is true but
+  // UsesClientSharedImage() returns false. Subclasses that match these
+  // conditions *must* override this method.
   virtual bool PrepareAcceleratedTransferableResourceWithoutClientSI(
       viz::TransferableResource* out_resource) {
     NOTREACHED();
@@ -267,7 +268,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   ~CanvasResourceSharedBitmap() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const final;
-  bool SupportsAcceleratedCompositing() const final { return false; }
+  bool CreatesAcceleratedTransferableResources() const final { return false; }
   bool UsesClientSharedImage() final { return true; }
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() final {
     return shared_image_;
@@ -324,7 +325,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   ~CanvasResourceSharedImage() override;
 
   bool IsRecycleable() const final { return true; }
-  bool SupportsAcceleratedCompositing() const override { return true; }
+  bool CreatesAcceleratedTransferableResources() const override { return true; }
   bool IsValid() const final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   void Transfer() final;
@@ -468,7 +469,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   ~ExternalCanvasResource() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
-  bool SupportsAcceleratedCompositing() const override { return true; }
+  bool CreatesAcceleratedTransferableResources() const override { return true; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   void NotifyResourceLost() override { resource_is_lost_ = true; }
@@ -523,7 +524,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   ~CanvasResourceSwapChain() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
-  bool SupportsAcceleratedCompositing() const override { return true; }
+  bool CreatesAcceleratedTransferableResources() const override { return true; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   void NotifyResourceLost() override {

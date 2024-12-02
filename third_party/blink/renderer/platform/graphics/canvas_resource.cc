@@ -184,7 +184,8 @@ bool CanvasResource::PrepareTransferableResource(
 
   if (!out_resource)
     return true;
-  if (SupportsAcceleratedCompositing()) {
+
+  if (CreatesAcceleratedTransferableResources()) {
     return UsesClientSharedImage()
                ? PrepareAcceleratedTransferableResourceFromClientSI(
                      out_resource, needs_verified_synctoken)
@@ -217,9 +218,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
     bool needs_verified_synctoken) {
   TRACE_EVENT0("blink",
                "CanvasResource::PrepareAcceleratedTransferableResource");
-  // This method should only be called if this instance actually supports
-  // accelerated compositing and uses ClientSharedImage.
-  CHECK(SupportsAcceleratedCompositing());
+  CHECK(CreatesAcceleratedTransferableResources());
   CHECK(UsesClientSharedImage());
 
   // Gpu compositing is a prerequisite for compositing an accelerated resource
