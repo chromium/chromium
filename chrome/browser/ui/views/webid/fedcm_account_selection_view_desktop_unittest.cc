@@ -2508,3 +2508,62 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtectionNoModalSpinner) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 }
+
+// Tests that the correct loading dialog result metrics are recorded.
+TEST_F(FedCmAccountSelectionViewDesktopTest, LoadingDialogResultMetric) {
+  auto CheckForSampleAndReset(
+      [&](FedCmAccountSelectionView::LoadingDialogResult result) {
+        histogram_tester_->ExpectUniqueSample(
+            "Blink.FedCm.Button.LoadingDialogResult", static_cast<int>(result),
+            1);
+        histogram_tester_ = std::make_unique<base::HistogramTester>();
+      });
+
+  // The LoadingDialogResult metric is recorded in OnDismiss, therefore, we
+  // check for the histogram after the TestFedCmAccountSelectionView goes out
+  // of scope.
+  {
+    // User proceeds with existing accounts.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowLoadingDialog();
+    Show(*controller, accounts_, SignInMode::kExplicit,
+         blink::mojom::RpMode::kActive);
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::LoadingDialogResult::kProceed);
+
+  {
+    // User proceeds with auto re-authn.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowLoadingDialog();
+    accounts_ = {
+        CreateAccount(idp_data_, LoginState::kSignIn, LoginState::kSignIn)};
+    Show(*controller, accounts_, SignInMode::kAuto,
+         blink::mojom::RpMode::kActive);
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::LoadingDialogResult::kProceed);
+
+  {
+    // User proceeds by completing login to IDP flow.
+    CreateAndShowAccountsModalThroughPopupWindow(accounts_, new_accounts_);
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::LoadingDialogResult::kProceedThroughPopup);
+
+  {
+    // User clicks on cancel button.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowLoadingDialog();
+    controller->OnCloseButtonClicked(CreateMouseEvent());
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::LoadingDialogResult::kCancel);
+
+  {
+    // Tab or window is destroyed.
+    CreateAndShowLoadingDialog();
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::LoadingDialogResult::kDestroy);
+}

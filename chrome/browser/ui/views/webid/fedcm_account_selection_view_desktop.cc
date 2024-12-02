@@ -227,6 +227,7 @@ bool FedCmAccountSelectionView::Show(
 
     // Auto re-authn in active mode does not update the loading UI.
     if (dialog_type_ == DialogType::MODAL) {
+      modal_loading_dialog_state_ = LoadingDialogResult::kProceed;
       return false;
     }
     ShowVerifyingSheet(*accounts[0]);
@@ -369,6 +370,13 @@ bool FedCmAccountSelectionView::Show(
     // placeholder assumption is true i.e. the user has closed the tab.
     modal_account_chooser_state_ = AccountChooserResult::kTabClosed;
   }
+
+  if (modal_loading_dialog_state_ &&
+      modal_loading_dialog_state_ !=
+          LoadingDialogResult::kProceedThroughPopup) {
+    modal_loading_dialog_state_ = LoadingDialogResult::kProceed;
+  }
+
   return true;
 }
 
@@ -517,6 +525,13 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   // Else:
   // The dialog is not guaranteed to be shown. The dialog will be hidden if the
   // associated web contents are hidden.
+
+  // This is a placeholder assuming the tab containing the loading dialog
+  // will be closed. This will be updated upon proceeding to the account
+  // chooser, completing the login to IDP flow on a pop-up or clicking on the
+  // cancel button. If none of these happen by time the dialog is closed, it
+  // means our placeholder assumption is true i.e. the user has closed the tab.
+  modal_loading_dialog_state_ = LoadingDialogResult::kDestroy;
   return true;
 }
 
@@ -694,6 +709,10 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
     modal_account_chooser_state_ = AccountChooserResult::kCancelButton;
   }
 
+  if (state_ == State::LOADING) {
+    modal_loading_dialog_state_ = LoadingDialogResult::kCancel;
+  }
+
   OnUserClosedDialog(views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
@@ -818,6 +837,10 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     std::move(show_accounts_callback).Run();
     // `this` might be deleted now, do not access member variables
     // after this point.
+  }
+
+  if (state_ == State::LOADING) {
+    modal_loading_dialog_state_ = LoadingDialogResult::kProceedThroughPopup;
   }
 }
 
@@ -1217,12 +1240,29 @@ void FedCmAccountSelectionView::LogDialogDismissal(
   if (modal_account_chooser_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.AccountChooserResult",
                               *modal_account_chooser_state_);
-    if (tab_->GetContents()) {
-      ukm::SourceId source_id =
-          tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    if (account_selection_view_->web_contents()) {
+      ukm::SourceId source_id = account_selection_view_->web_contents()
+                                    ->GetPrimaryMainFrame()
+                                    ->GetPageUkmSourceId();
       ukm::builders::Blink_FedCm(source_id)
           .SetButton_AccountChooserResult(
               static_cast<int>(*modal_account_chooser_state_))
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
+
+  // If dialog type is modal, a loading dialog must have been opened. Record the
+  // outcome.
+  if (modal_loading_dialog_state_) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.LoadingDialogResult",
+                              *modal_loading_dialog_state_);
+    if (account_selection_view_->web_contents()) {
+      ukm::SourceId source_id = account_selection_view_->web_contents()
+                                    ->GetPrimaryMainFrame()
+                                    ->GetPageUkmSourceId();
+      ukm::builders::Blink_FedCm(source_id)
+          .SetButton_LoadingDialogResult(
+              static_cast<int>(*modal_loading_dialog_state_))
           .Record(ukm::UkmRecorder::Get());
     }
   }
