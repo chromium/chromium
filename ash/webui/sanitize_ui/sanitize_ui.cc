@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
 
 #include "ash/constants/ash_features.h"
@@ -93,8 +88,7 @@ SanitizeDialogUI::SanitizeDialogUI(
   html_source->UseStringsJs();
   html_source->EnableReplaceI18nInJS();
 
-  const auto resources =
-      base::make_span(kAshSanitizeAppResources, kAshSanitizeAppResourcesSize);
+  const auto resources = base::span(kAshSanitizeAppResources);
   html_source->AddResourcePaths(resources);
   html_source->AddResourcePath("", IDR_ASH_SANITIZE_APP_INDEX_HTML);
   html_source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
