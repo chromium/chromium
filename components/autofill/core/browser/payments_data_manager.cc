@@ -499,10 +499,16 @@ const Iban* PaymentsDataManager::GetIbanByInstrumentId(
   return nullptr;
 }
 
-CreditCard* PaymentsDataManager::GetCreditCardByGUID(const std::string& guid) {
+const CreditCard* PaymentsDataManager::GetCreditCardByGUID(
+    const std::string& guid) const {
   const std::vector<CreditCard*>& credit_cards = GetCreditCards();
   auto iter = FindElementByGUID(credit_cards, guid);
   return iter != credit_cards.end() ? *iter : nullptr;
+}
+
+CreditCard* PaymentsDataManager::GetMutableCreditCardByGUID(
+    const std::string& guid) {
+  return const_cast<CreditCard*>(GetCreditCardByGUID(guid));
 }
 
 const CreditCard* PaymentsDataManager::GetCreditCardByNumber(
@@ -1356,7 +1362,9 @@ void PaymentsDataManager::DeleteAllLocalCreditCards() {
 
 void PaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   DCHECK_EQ(CreditCard::RecordType::kLocalCard, credit_card.record_type());
-  CreditCard* existing_credit_card = GetCreditCardByGUID(credit_card.guid());
+  CreditCard* existing_credit_card =
+      GetMutableCreditCardByGUID(credit_card.guid());
+
   if (!existing_credit_card) {
     return;
   }
@@ -1391,7 +1399,7 @@ void PaymentsDataManager::UpdateLocalCvc(const std::string& guid,
     return;
   }
 
-  CreditCard* existing_credit_card = GetCreditCardByGUID(guid);
+  const CreditCard* existing_credit_card = GetCreditCardByGUID(guid);
   if (!existing_credit_card) {
     return;
   }
@@ -1604,7 +1612,8 @@ void PaymentsDataManager::RemoveLocalDataModifiedBetween(base::Time begin,
 }
 
 void PaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
-  CreditCard* credit_card = GetCreditCardByGUID(card.guid());
+  CreditCard* credit_card = GetMutableCreditCardByGUID(card.guid());
+
   // This early return is necessary because this is called at filling time,
   // where a credit card might be filled even though it is not in the CC
   // storage. An example would be filling a scanned credit card.

@@ -136,7 +136,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Returns the credit card with the specified |guid|, or nullptr if there is
   // no credit card with the specified |guid|.
-  virtual CreditCard* GetCreditCardByGUID(const std::string& guid);
+  virtual const CreditCard* GetCreditCardByGUID(const std::string& guid) const;
 
   // Returns the credit card with the specified `number`, or nullptr if there is
   // no credit card with the specified `number`.
@@ -552,6 +552,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void SetPrefService(PrefService* pref_service);
 
   void NotifyObservers();
+
+  CreditCard* GetMutableCreditCardByGUID(const std::string& guid);
 
   // Stores the PaymentsCustomerData obtained from the database.
   std::unique_ptr<PaymentsCustomerData> payments_customer_data_;

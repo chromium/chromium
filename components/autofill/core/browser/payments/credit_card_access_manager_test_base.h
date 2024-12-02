@@ -105,11 +105,17 @@ class CreditCardAccessManagerTestBase : public testing::Test {
 
   void ClearCards();
 
-  void CreateLocalCard(std::string guid, std::string number = std::string());
+  void CreateLocalCard(std::string guid,
+                       std::string number = std::string(),
+                       const char16_t* cvc = kTestCvc16);
 
-  CreditCard* CreateServerCard(std::string guid,
-                               std::string number = std::string(),
-                               std::string server_id = std::string());
+  const CreditCard* CreateServerCard(
+      std::string guid,
+      std::string number = std::string(),
+      std::string server_id = std::string(),
+      const char16_t* cvc = kTestCvc16,
+      CreditCard::RecordType record_type =
+          CreditCard::RecordType::kMaskedServerCard);
 
   CreditCardCvcAuthenticator& GetCvcAuthenticator();
 
