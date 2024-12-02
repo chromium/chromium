@@ -160,7 +160,7 @@ void BlobData::AppendText(const String& text,
     } else {
       Vector<char> buffer;
       NormalizeLineEndingsToNative(utf8_text, buffer);
-      AppendDataInternal(base::make_span(buffer));
+      AppendDataInternal(base::span(buffer));
     }
   } else {
     AppendDataInternal(base::span(utf8_text));

@@ -35,39 +35,43 @@
 
 namespace blink {
 
-static const char kBasicScript[] = "alert('test');";
-static const char kSha256Integrity[] =
+namespace {
+
+constexpr char kBasicScript[] = "alert('test');";
+constexpr char kSha256Integrity[] =
     "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4=";
-static const char kSha256IntegrityLenientSyntax[] =
+constexpr char kSha256IntegrityLenientSyntax[] =
     "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4=";
-static const char kSha256IntegrityWithEmptyOption[] =
+constexpr char kSha256IntegrityWithEmptyOption[] =
     "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4=?";
-static const char kSha256IntegrityWithOption[] =
+constexpr char kSha256IntegrityWithOption[] =
     "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4=?foo=bar";
-static const char kSha256IntegrityWithOptions[] =
+constexpr char kSha256IntegrityWithOptions[] =
     "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4=?foo=bar?baz=foz";
-static const char kSha256IntegrityWithMimeOption[] =
+constexpr char kSha256IntegrityWithMimeOption[] =
     "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4=?ct=application/"
     "javascript";
-static const char kSha384Integrity[] =
+constexpr char kSha384Integrity[] =
     "sha384-nep3XpvhUxpCMOVXIFPecThAqdY_uVeiD4kXSqXpx0YJUWU4fTTaFgciTuZk7fmE";
-static const char kSha512Integrity[] =
+constexpr char kSha512Integrity[] =
     "sha512-TXkJw18PqlVlEUXXjeXbGetop1TKB3wYQIp1_"
     "ihxCOFGUfG9TYOaA1MlkpTAqSV6yaevLO8Tj5pgH1JmZ--ItA==";
-static const char kSha384IntegrityLabeledAs256[] =
+constexpr char kSha384IntegrityLabeledAs256[] =
     "sha256-nep3XpvhUxpCMOVXIFPecThAqdY_uVeiD4kXSqXpx0YJUWU4fTTaFgciTuZk7fmE";
-static const char kSha256AndSha384Integrities[] =
+constexpr char kSha256AndSha384Integrities[] =
     "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4= "
     "sha384-nep3XpvhUxpCMOVXIFPecThAqdY_uVeiD4kXSqXpx0YJUWU4fTTaFgciTuZk7fmE";
-static const char kBadSha256AndGoodSha384Integrities[] =
+constexpr char kBadSha256AndGoodSha384Integrities[] =
     "sha256-deadbeef "
     "sha384-nep3XpvhUxpCMOVXIFPecThAqdY_uVeiD4kXSqXpx0YJUWU4fTTaFgciTuZk7fmE";
-static const char kGoodSha256AndBadSha384Integrities[] =
+constexpr char kGoodSha256AndBadSha384Integrities[] =
     "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4= sha384-deadbeef";
-static const char kBadSha256AndBadSha384Integrities[] =
+constexpr char kBadSha256AndBadSha384Integrities[] =
     "sha256-deadbeef sha384-deadbeef";
-static const char kUnsupportedHashFunctionIntegrity[] =
+constexpr char kUnsupportedHashFunctionIntegrity[] =
     "sha1-JfLW308qMPKfb4DaHpUBEESwuPc=";
+
+}  // namespace
 
 class SubresourceIntegrityTest : public testing::Test {
  public:
@@ -201,7 +205,7 @@ class SubresourceIntegrityTest : public testing::Test {
     SubresourceIntegrity::ParseIntegrityAttribute(String(integrity),
                                                   metadata_set);
     SegmentedBuffer buffer;
-    buffer.Append(base::make_span(kBasicScript, strlen(kBasicScript)));
+    buffer.Append(base::span_from_cstring(kBasicScript));
     IntegrityReport integrity_report;
     EXPECT_EQ(expectation == kIntegritySuccess,
               SubresourceIntegrity::CheckSubresourceIntegrity(

@@ -278,13 +278,13 @@ bool CanConvertToWebRtcVideoFrameBuffer(const media::VideoFrame* frame) {
 // static
 base::span<const media::VideoPixelFormat>
 GetPixelFormatsMappableToWebRtcVideoFrameBuffer() {
-  static constexpr const media::VideoPixelFormat
+  static constexpr media::VideoPixelFormat
       kGetPixelFormatsMappableToWebRtcVideoFrameBuffer[] = {
           media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_I420A,
           media::PIXEL_FORMAT_NV12, media::PIXEL_FORMAT_ARGB,
           media::PIXEL_FORMAT_XRGB, media::PIXEL_FORMAT_ABGR,
           media::PIXEL_FORMAT_XBGR};
-  return base::make_span(kGetPixelFormatsMappableToWebRtcVideoFrameBuffer);
+  return base::span(kGetPixelFormatsMappableToWebRtcVideoFrameBuffer);
 }
 
 rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(

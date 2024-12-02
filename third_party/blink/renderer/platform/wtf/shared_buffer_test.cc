@@ -48,30 +48,34 @@
 namespace blink {
 
 TEST(SegmentedBufferTest, TakeData) {
-  char test_data0[] = "Hello";
-  char test_data1[] = "World";
-  char test_data2[] = "Goodbye";
+  static constexpr char kTestData0[] = "Hello";
+  static constexpr char kTestData1[] = "World";
+  static constexpr char kTestData2[] = "Goodbye";
+
+  const auto span0 = base::span_from_cstring(kTestData0);
+  const auto span1 = base::span_from_cstring(kTestData1);
+  const auto span2 = base::span_from_cstring(kTestData2);
 
   SegmentedBuffer buffer;
-  buffer.Append(test_data0, strlen(test_data0));
-  buffer.Append(test_data1, strlen(test_data1));
-  buffer.Append(test_data2, strlen(test_data2));
+  buffer.Append(span0);
+  buffer.Append(span1);
+  buffer.Append(span2);
   Vector<Vector<char>> data = std::move(buffer).TakeData();
   ASSERT_EQ(3U, data.size());
-  EXPECT_EQ(data[0], base::make_span(test_data0, strlen(test_data0)));
-  EXPECT_EQ(data[1], base::make_span(test_data1, strlen(test_data1)));
-  EXPECT_EQ(data[2], base::make_span(test_data2, strlen(test_data2)));
+  EXPECT_EQ(base::span(data[0]), span0);
+  EXPECT_EQ(base::span(data[1]), span1);
+  EXPECT_EQ(base::span(data[2]), span2);
 }
 
 TEST(SharedBufferTest, getAsBytes) {
-  char test_data0[] = "Hello";
-  char test_data1[] = "World";
-  char test_data2[] = "Goodbye";
+  static constexpr char kTestData0[] = "Hello";
+  static constexpr char kTestData1[] = "World";
+  static constexpr char kTestData2[] = "Goodbye";
 
   scoped_refptr<SharedBuffer> shared_buffer =
-      SharedBuffer::Create(test_data0, strlen(test_data0));
-  shared_buffer->Append(test_data1, strlen(test_data1));
-  shared_buffer->Append(test_data2, strlen(test_data2));
+      SharedBuffer::Create(base::span_from_cstring(kTestData0));
+  shared_buffer->Append(base::span_from_cstring(kTestData1));
+  shared_buffer->Append(base::span_from_cstring(kTestData2));
 
   const size_t size = shared_buffer->size();
   auto data = base::HeapArray<uint8_t>::Uninit(size);
@@ -81,26 +85,27 @@ TEST(SharedBufferTest, getAsBytes) {
 }
 
 TEST(SharedBufferTest, getPartAsBytes) {
-  char test_data0[] = "Hello";
-  char test_data1[] = "World";
-  char test_data2[] = "Goodbye";
+  static constexpr char kTestData0[] = "Hello";
+  static constexpr char kTestData1[] = "World";
+  static constexpr char kTestData2[] = "Goodbye";
 
   scoped_refptr<SharedBuffer> shared_buffer =
-      SharedBuffer::Create(test_data0, strlen(test_data0));
-  shared_buffer->Append(test_data1, strlen(test_data1));
-  shared_buffer->Append(test_data2, strlen(test_data2));
+      SharedBuffer::Create(base::span_from_cstring(kTestData0));
+  shared_buffer->Append(base::span_from_cstring(kTestData1));
+  shared_buffer->Append(base::span_from_cstring(kTestData2));
 
   struct TestData {
     size_t size;
-    const char* expected;
-  } test_data[] = {
-      {17, "HelloWorldGoodbye"}, {7, "HelloWo"}, {3, "Hel"},
+    std::string_view expected;
+  } kTestData[] = {
+      {17, "HelloWorldGoodbye"},
+      {7, "HelloWo"},
+      {3, "Hel"},
   };
-  for (TestData& test : test_data) {
+  for (TestData& test : kTestData) {
     auto data = base::HeapArray<uint8_t>::Uninit(test.size);
     ASSERT_TRUE(shared_buffer->GetBytes(data));
-    EXPECT_EQ(std::string_view(test.expected, test.size),
-              base::as_string_view(data));
+    EXPECT_EQ(test.expected, base::as_string_view(data));
   }
 }
 

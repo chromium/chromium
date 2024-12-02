@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,7 +22,7 @@ namespace WTF {
 
 TEST(Base64Test, Encode) {
   struct {
-    const char* in;
+    std::string_view in;
     Vector<char> expected_out;
   } kTestCases[] = {{"", {}},
                     {"i", {'a', 'Q', '=', '='}},
@@ -29,8 +30,7 @@ TEST(Base64Test, Encode) {
                     {"i\xB7\x1D", {'a', 'b', 'c', 'd'}}};
 
   for (const auto& test : kTestCases) {
-    base::span<const uint8_t> in =
-        base::as_bytes(base::make_span(test.in, strlen(test.in)));
+    auto in = base::as_byte_span(test.in);
 
     Vector<char> out_vec;
     Base64Encode(in, out_vec);

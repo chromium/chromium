@@ -57,8 +57,8 @@ void ReadFileToVector(const base::FilePath& path, Vector<char>* contents) {
 base::MD5Digest ComputeMD5Sum(const blink::ImageFrame& frame_buffer) {
   SkBitmap bitmap = frame_buffer.Bitmap();
   base::MD5Digest digest;
-  base::MD5Sum(base::make_span(static_cast<const uint8_t*>(bitmap.getPixels()),
-                               bitmap.computeByteSize()),
+  base::MD5Sum(base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
+                          bitmap.computeByteSize()),
                &digest);
   return digest;
 }
