@@ -269,7 +269,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             : calculateDaysUntilExpiration(
                                     TimeUtils.currentTimeMillis(), expiration);
             updateThirdPartyCookiesTitleTemporary(days);
-            int resId = R.string.page_info_cookies_send_feedback_description;
+            int resId =
+                    mIsModeBUi
+                            ? R.string.page_info_cookies_tracking_protection_description
+                            : R.string.page_info_cookies_send_feedback_description;
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
                             getString(resId),

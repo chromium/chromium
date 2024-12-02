@@ -983,6 +983,62 @@ public class PageInfoViewTest {
     }
 
     /**
+     * Tests the cookies top level page subtitle description of the PageInfo UI with the Tracking
+     * Protection UI disabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubtitleDescriptionModeBDisabled() throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration(true, 33);
+        // Check that the cookie toggle is displayed and try clicking it.
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(
+                                containsString(
+                                        "Help us improve Chrome by telling us why you allowed")),
+                        isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_CookiesSubpage_SubtitleDescription_ModeBDisabled_ToggleOn");
+    }
+
+    /**
+     * Tests the cookies top level page subtitle description of the PageInfo UI with the Tracking
+     * Protection UI enabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubtitleDescriptionModeBEnabled() throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableModeBUiInCookiesController();
+        enableTrackingProtectionFixedExpiration(true, 33);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(
+                                containsString(
+                                        "You temporarily allowed this site to use third-party")),
+                        isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_CookiesSubpage_SubtitleDescription_ModeBEnabled_ToggleOn");
+    }
+
+    /**
      * Tests the cookies page description of the PageInfo UI with the Tracking Protection UI enabled
      * and cookies blocked in PageInfoCookiesController.
      */
