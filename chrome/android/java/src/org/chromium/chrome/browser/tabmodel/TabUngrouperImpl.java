@@ -87,7 +87,7 @@ public class TabUngrouperImpl implements TabUngrouper {
             boolean isTabGroup,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
-        TabGroupModelFilter filter = mTabModelRemover.getTabGroupModelFilter();
+        TabGroupModelFilterInternal filter = mTabModelRemover.getTabGroupModelFilter();
         List<Tab> tabs = tabsFetcher.apply(filter);
         if (tabs == null || tabs.isEmpty()) return;
 
@@ -103,7 +103,7 @@ public class TabUngrouperImpl implements TabUngrouper {
     }
 
     private static class UngroupTabsHandler implements TabModelRemoverFlowHandler {
-        private final TabGroupModelFilter mTabGroupModelFilter;
+        private final TabGroupModelFilterInternal mTabGroupModelFilter;
         private final ActionConfirmationManager mActionConfirmationManager;
         private final List<Tab> mTabsToUngroup;
         private final boolean mTrailing;
@@ -111,7 +111,7 @@ public class TabUngrouperImpl implements TabUngrouper {
         private @Nullable TabModelActionListener mListener;
 
         UngroupTabsHandler(
-                @NonNull TabGroupModelFilter tabGroupModelFilter,
+                @NonNull TabGroupModelFilterInternal tabGroupModelFilter,
                 @NonNull ActionConfirmationManager actionConfirmationManager,
                 @NonNull List<Tab> tabsToUngroup,
                 boolean trailing,
@@ -178,7 +178,7 @@ public class TabUngrouperImpl implements TabUngrouper {
 
         @Override
         public void performAction() {
-            TabGroupModelFilter filter = mTabGroupModelFilter;
+            TabGroupModelFilterInternal filter = mTabGroupModelFilter;
             TabModel tabModel = filter.getTabModel();
             List<Tab> newTabsToUngroup =
                     TabModelUtils.getTabsById(
