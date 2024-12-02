@@ -9,6 +9,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_error_details.h"
@@ -121,6 +122,15 @@ const QuicSessionAliasKey& HttpStreamPool::QuicTask::GetKey() {
 
 const NetLogWithSource& HttpStreamPool::QuicTask::GetNetLog() {
   return net_log_;
+}
+
+base::Value::Dict HttpStreamPool::QuicTask::GetInfoAsValue() const {
+  base::Value::Dict dict;
+  dict.Set("has_session_attempt", session_attempt_ != nullptr);
+  if (start_result_.has_value()) {
+    dict.Set("start_result", ErrorToString(*start_result_));
+  }
+  return dict;
 }
 
 const HttpStreamKey& HttpStreamPool::QuicTask::stream_key() const {

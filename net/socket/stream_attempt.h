@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -69,6 +70,8 @@ class NET_EXPORT_PRIVATE StreamAttempt {
 
   // Returns the load state of this attempt.
   virtual LoadState GetLoadState() const = 0;
+
+  virtual base::Value::Dict GetInfoAsValue() const = 0;
 
   // If the attempt failed with ERR_SSL_CLIENT_AUTH_CERT_NEEDED, returns the
   // SSLCertRequestInfo received. Otherwise, returns nullptr.

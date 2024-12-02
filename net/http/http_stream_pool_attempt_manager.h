@@ -193,6 +193,9 @@ class HttpStreamPool::AttemptManager
   class InFlightAttempt;
   struct PreconnectEntry;
 
+  static std::string_view TcpBasedAttemptStateToString(
+      TcpBasedAttemptState state);
+
   const HttpStreamKey& stream_key() const;
 
   const SpdySessionKey& spdy_session_key() const;

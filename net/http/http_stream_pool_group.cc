@@ -345,8 +345,10 @@ base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
   base::Value::Dict dict;
   dict.Set("active_socket_count", static_cast<int>(ActiveStreamSocketCount()));
   dict.Set("idle_socket_count", static_cast<int>(IdleStreamSocketCount()));
+  dict.Set("handed_out_socket_count",
+           static_cast<int>(HandedOutStreamSocketCount()));
   if (attempt_manager_) {
-    dict.Merge(attempt_manager_->GetInfoAsValue());
+    dict.Set("attempt_state", attempt_manager_->GetInfoAsValue());
   }
   return dict;
 }

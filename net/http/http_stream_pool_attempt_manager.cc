@@ -163,6 +163,21 @@ struct HttpStreamPool::AttemptManager::PreconnectEntry {
   int result = OK;
 };
 
+// static
+std::string_view HttpStreamPool::AttemptManager::TcpBasedAttemptStateToString(
+    TcpBasedAttemptState state) {
+  switch (state) {
+    case TcpBasedAttemptState::kNotStarted:
+      return "NotStarted";
+    case TcpBasedAttemptState::kAttempting:
+      return "Attempting";
+    case TcpBasedAttemptState::kSucceededAtLeastOnce:
+      return "SucceededAtLeastOnce";
+    case TcpBasedAttemptState::kAllAttemptsFailed:
+      return "AllAttemptsFailed";
+  }
+}
+
 HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
     : group_(group),
       net_log_(NetLogWithSource::Make(
@@ -663,25 +678,68 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
 
 base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
   base::Value::Dict dict;
-  dict.Set("pending_job_count", static_cast<int>(PendingJobCount()));
-  dict.Set("pending_preconnect_count",
+  dict.Set("job_count_all", static_cast<int>(jobs_.size()));
+  dict.Set("job_count_pending", static_cast<int>(PendingJobCount()));
+  dict.Set("job_count_limit_ignoring",
+           static_cast<int>(limit_ignoring_jobs_.size()));
+  dict.Set("preconnect_count_all", static_cast<int>(preconnects_.size()));
+  dict.Set("preconnect_count_pending",
            static_cast<int>(PendingPreconnectCount()));
   dict.Set("in_flight_attempt_count", static_cast<int>(InFlightAttemptCount()));
   dict.Set("slow_attempt_count", static_cast<int>(slow_attempt_count_));
+  dict.Set("is_failing", is_failing_);
   dict.Set("is_stalled", IsStalledByPoolLimit());
+  dict.Set("service_endpoint_request_finished",
+           service_endpoint_request_finished_);
+  dict.Set("tcp_based_attempt_state",
+           TcpBasedAttemptStateToString(tcp_based_attempt_state_));
+  dict.Set("stream_attempt_delay_ms",
+           static_cast<int>(stream_attempt_delay_.InMilliseconds()));
+  dict.Set("should_block_stream_attempt", should_block_stream_attempt_);
 
-  base::Value::List in_flight_attempts;
-  for (const auto& entry : in_flight_attempts_) {
-    base::Value::Dict attempt_dict;
-    attempt_dict.Set("ip_endpoint", entry->attempt()->ip_endpoint().ToString());
-    attempt_dict.Set("is_slow", entry->is_slow());
-    attempt_dict.Set("is_aborted", entry->is_aborted());
-    base::TimeDelta elapsed = base::TimeTicks::Now() - entry->start_time();
-    attempt_dict.Set("elapsed_ms", static_cast<int>(elapsed.InMilliseconds()));
-    in_flight_attempts.Append(std::move(attempt_dict));
-  }
-  if (!in_flight_attempts.empty()) {
+  dict.Set("ssl_config_is_avaliable", ssl_config_.has_value());
+  dict.Set("ssl_config_num_waiting_callbacks",
+           static_cast<int>(ssl_config_waiting_callbacks_.size()));
+
+  if (!in_flight_attempts_.empty()) {
+    base::Value::List in_flight_attempts;
+    for (const auto& entry : in_flight_attempts_) {
+      base::Value::Dict attempt_dict;
+      if (entry->attempt()) {
+        attempt_dict.Set("attempt_state", entry->attempt()->GetInfoAsValue());
+        attempt_dict.Set("ip_endpoint",
+                         entry->attempt()->ip_endpoint().ToString());
+      }
+      attempt_dict.Set("is_slow", entry->is_slow());
+      attempt_dict.Set("is_aborted", entry->is_aborted());
+      base::TimeDelta elapsed = base::TimeTicks::Now() - entry->start_time();
+      attempt_dict.Set("elapsed_ms",
+                       static_cast<int>(elapsed.InMilliseconds()));
+      in_flight_attempts.Append(std::move(attempt_dict));
+    }
     dict.Set("in_flight_attempts", std::move(in_flight_attempts));
+  }
+
+  if (!failed_ip_endpoints_.empty()) {
+    base::Value::List failed_ip_endpoints;
+    for (const auto& ip_endpoint : failed_ip_endpoints_) {
+      failed_ip_endpoints.Append(ip_endpoint.ToString());
+    }
+    dict.Set("ip_endpoints_failed", std::move(failed_ip_endpoints));
+  }
+  if (!slow_ip_endpoints_.empty()) {
+    base::Value::List slow_ip_endpoints;
+    for (const auto& ip_endpoint : slow_ip_endpoints_) {
+      slow_ip_endpoints.Append(ip_endpoint.ToString());
+    }
+    dict.Set("ip_endpoints_slow", std::move(slow_ip_endpoints));
+  }
+
+  if (quic_task_) {
+    dict.Set("quic_task", quic_task_->GetInfoAsValue());
+  }
+  if (quic_task_result_.has_value()) {
+    dict.Set("quic_task_result", ErrorToString(*quic_task_result_));
   }
 
   return dict;

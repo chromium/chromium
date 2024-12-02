@@ -980,6 +980,13 @@ EVENT_TYPE(STREAM_ATTEMPT_BOUND_TO_POOL)
 //   }
 EVENT_TYPE(TCP_STREAM_ATTEMPT_ALIVE)
 
+// Logged when a TcpStreamAttempt connects a socket.
+// The event parameter is:
+//   {
+//     "source_dependency": <Source identifier of the socket>,
+//   }
+EVENT_TYPE(TCP_STREAM_ATTEMPT_CONNECT)
+
 // Marks the creation/destruction of a TlsStreamAttempt.
 // For the BEGIN phase, the following parameter is attached:
 //   {
