@@ -150,7 +150,10 @@ if (!is_android) {
   if (is_linux) {
     in_process_proto_fuzzer("atspi_in_process_fuzzer") {
       sources = [ "atspi_in_process_fuzzer.cc" ]
-      libfuzzer_options = [ "max_len=4096" ]
+      libfuzzer_options = [
+        "max_len=4096",
+        "timeout=90",
+      ]
       proto_source = "atspi_in_process_fuzzer.proto"
       deps = [ "//sql" ]
     }
