@@ -11,8 +11,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -23,9 +24,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Builder to build the auxiliary search opt in module. */
 public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Context mContext;
+    private final Runnable mOpenSettingsRunnable;
+    private static boolean sShownInThisSession;
 
-    public AuxiliarySearchModuleBuilder(@NonNull Context context) {
+    public AuxiliarySearchModuleBuilder(
+            @NonNull Context context, @NonNull Runnable openSettingsRunnable) {
         mContext = context;
+        mOpenSettingsRunnable = openSettingsRunnable;
     }
 
     // ModuleProviderBuilder implementations.
@@ -34,21 +39,28 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder, Modu
     public boolean build(
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull Callback<ModuleProvider> onModuleBuiltCallback) {
-        if (!ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled()) {
+        if (!AuxiliarySearchUtils.canShowCard(sShownInThisSession)) {
             return false;
         }
 
         AuxiliarySearchModuleCoordinator coordinator =
-                new AuxiliarySearchModuleCoordinator(moduleDelegate);
+                new AuxiliarySearchModuleCoordinator(moduleDelegate, mOpenSettingsRunnable);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }
 
     @Override
     public ViewGroup createView(@NonNull ViewGroup parentView) {
-        return (ViewGroup)
-                LayoutInflater.from(mContext)
-                        .inflate(R.layout.auxiliary_search_module_layout, parentView, false);
+        sShownInThisSession = true;
+
+        ViewGroup viewGroup =
+                (ViewGroup)
+                        LayoutInflater.from(mContext)
+                                .inflate(
+                                        R.layout.auxiliary_search_module_layout, parentView, false);
+        AuxiliarySearchUtils.incrementModuleImpressions();
+
+        return viewGroup;
     }
 
     @Override
@@ -61,6 +73,6 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder, Modu
 
     @Override
     public boolean isEligible() {
-        return ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
+        return AuxiliarySearchControllerFactory.getInstance().isEnabled();
     }
 }

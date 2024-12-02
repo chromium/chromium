@@ -954,6 +954,10 @@ public abstract class ChromeFeatureList {
             sAndroidAppIntegrationWithFaviconSkipDeviceCheck =
                     newBooleanCachedFieldTrialParameter(
                             ANDROID_APP_INTEGRATION_WITH_FAVICON, "skip_device_check", false);
+    public static final BooleanCachedFieldTrialParameter
+            sAndroidAppIntegrationWithFaviconForceCardShow =
+                    newBooleanCachedFieldTrialParameter(
+                            ANDROID_APP_INTEGRATION_WITH_FAVICON, "force_card_shown", false);
     public static final IntCachedFieldTrialParameter
             sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs =
                     newIntCachedFieldTrialParameter(
@@ -1264,6 +1268,7 @@ public abstract class ChromeFeatureList {
             List.of(
                     sAndroidAppIntegrationV2ContentTtlHours,
                     sAndroidAppIntegrationWithFaviconSkipDeviceCheck,
+                    sAndroidAppIntegrationWithFaviconForceCardShow,
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs,
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,

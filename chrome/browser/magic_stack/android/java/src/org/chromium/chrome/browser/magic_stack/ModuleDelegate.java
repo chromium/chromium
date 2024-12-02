@@ -81,9 +81,8 @@ public interface ModuleDelegate {
      * Called when the user clicks a module.
      *
      * @param moduleType The type of the module clicked.
-     * @param modulePosition The position of the module clicked.
      */
-    void onModuleClicked(@ModuleType int moduleType, int modulePosition);
+    void onModuleClicked(@ModuleType int moduleType);
 
     /** Gets the instance of the module {@link ModuleProvider} of the given type. */
     ModuleProvider getModuleProvider(@ModuleType int moduleType);

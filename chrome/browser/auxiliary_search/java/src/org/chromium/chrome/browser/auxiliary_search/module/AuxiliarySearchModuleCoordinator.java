@@ -19,10 +19,12 @@ public class AuxiliarySearchModuleCoordinator implements ModuleProvider {
 
     /**
      * @param moduleDelegate The instance of {@link ModuleDelegate}, which is the magic stack.
+     * @param openSettingsRunnable The runnable to open the Tabs settings.
      */
-    public AuxiliarySearchModuleCoordinator(@NonNull ModuleDelegate moduleDelegate) {
+    public AuxiliarySearchModuleCoordinator(
+            @NonNull ModuleDelegate moduleDelegate, @NonNull Runnable openSettingsRunnable) {
         PropertyModel model = new PropertyModel(AuxiliarySearchModuleProperties.ALL_KEYS);
-        mMediator = new AuxiliarySearchModuleMediator(model, moduleDelegate);
+        mMediator = new AuxiliarySearchModuleMediator(model, moduleDelegate, openSettingsRunnable);
     }
 
     // ModuleProvider implementations.

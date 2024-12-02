@@ -2677,9 +2677,18 @@ const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_UseLargeFavicon[] = {
         {"use_large_favicon", "true"}};
 const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown[] = {
+        {"force_card_shown", "true"},
+        {"use_large_favicon", "true"}};
+const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck[] = {
         {"skip_device_check", "true"},
         {"use_large_favicon", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown
+        [] = {{"force_card_shown", "true"},
+              {"skip_device_check", "true"},
+              {"use_large_favicon", "true"}};
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_DelayTime200Ms[] = {
         {"schedule_delay_time_ms", "200"}};
@@ -2688,23 +2697,32 @@ const FeatureEntry::FeatureParam
         {"schedule_delay_time_ms", "200"},
         {"use_large_favicon", "true"}};
 
-const FeatureEntry::FeatureVariation
-    kAndroidAppIntegrationWithFaviconVariations[] = {
-        {"Use large favicon (No delay)",
-         kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
-         std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon), nullptr},
-        {"Skip device check + Use large favicon (No delay)",
-         kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck,
-         std::size(
-             kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck),
-         nullptr},
-        {"200ms delay", kAndroidAppIntegrationWithFavicon_DelayTime200Ms,
-         std::size(kAndroidAppIntegrationWithFavicon_DelayTime200Ms), nullptr},
-        {"200ms delay with large favicon",
-         kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon,
-         std::size(
-             kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon),
-         nullptr}};
+const FeatureEntry::FeatureVariation kAndroidAppIntegrationWithFaviconVariations[] =
+    {{"Use large favicon (No delay)",
+      kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
+      std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon), nullptr},
+     {"Use large favicon (No delay) + force card shown",
+      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown,
+      std::size(
+          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown),
+      nullptr},
+     {"Skip device check + Use large favicon (No delay)",
+      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck,
+      std::size(
+          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck),
+      nullptr},
+     {"Skip device check + Use large favicon (No delay) + force card shown",
+      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown,
+      std::size(
+          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown),
+      nullptr},
+     {"200ms delay", kAndroidAppIntegrationWithFavicon_DelayTime200Ms,
+      std::size(kAndroidAppIntegrationWithFavicon_DelayTime200Ms), nullptr},
+     {"200ms delay with large favicon",
+      kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon,
+      std::size(
+          kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon),
+      nullptr}};
 
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
     {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},

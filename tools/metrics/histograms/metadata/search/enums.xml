@@ -126,6 +126,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Dismissed"/>
 </enum>
 
+<enum name="ClickInfo">
+  <summary>
+    The type of the button that users clicked on the auxiliary search module
+    card.
+  </summary>
+  <int value="0" label="Got it"/>
+  <int value="1" label="No thanks"/>
+  <int value="2" label="Go to settings"/>
+  <int value="3" label="Turn on"/>
+</enum>
+
 <enum name="ContextualSearchCardTag">
   <int value="0" label="None"/>
   <int value="1" label="CT_OTHER"/>

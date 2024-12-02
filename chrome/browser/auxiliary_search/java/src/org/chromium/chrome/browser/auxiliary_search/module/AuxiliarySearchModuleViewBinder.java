@@ -13,9 +13,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class AuxiliarySearchModuleViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         AuxiliarySearchModuleView moduleView = (AuxiliarySearchModuleView) view;
-        if (AuxiliarySearchModuleProperties.MODULE_BUTTON_ON_CLICK_LISTENER == propertyKey) {
-            moduleView.setModuleButtonOnClickListener(
-                    model.get(AuxiliarySearchModuleProperties.MODULE_BUTTON_ON_CLICK_LISTENER));
+        if (AuxiliarySearchModuleProperties.MODULE_FIRST_BUTTON_ON_CLICK_LISTENER == propertyKey) {
+            moduleView.setFirstButtonOnClickListener(
+                    model.get(
+                            AuxiliarySearchModuleProperties.MODULE_FIRST_BUTTON_ON_CLICK_LISTENER));
+        } else if (AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_ON_CLICK_LISTENER
+                == propertyKey) {
+            moduleView.setSecondButtonOnClickListener(
+                    model.get(
+                            AuxiliarySearchModuleProperties
+                                    .MODULE_SECOND_BUTTON_ON_CLICK_LISTENER));
         } else {
             assert false : "Unhandled property detected in AuxiliarySearchModuleViewBinder!";
         }

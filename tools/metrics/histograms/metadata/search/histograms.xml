@@ -136,6 +136,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.Module.ClickInfo" enum="ClickInfo"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the type of the button that the user clicked on the auxiliary search
+    module which is shown on the magic stack. The histogram is logged when the
+    user clicks a button on the module. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.AuxiliarySearch.QueryTime.Favicons" units="ms"
     expires_after="2025-09-15">
   <owner>hanxi@chromium.org</owner>

@@ -11,8 +11,13 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the auxiliary search module. */
 interface AuxiliarySearchModuleProperties {
-    WritableObjectPropertyKey<OnClickListener> MODULE_BUTTON_ON_CLICK_LISTENER =
+    WritableObjectPropertyKey<OnClickListener> MODULE_FIRST_BUTTON_ON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<OnClickListener> MODULE_SECOND_BUTTON_ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    PropertyKey[] ALL_KEYS = new PropertyKey[] {MODULE_BUTTON_ON_CLICK_LISTENER};
+    PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                MODULE_FIRST_BUTTON_ON_CLICK_LISTENER, MODULE_SECOND_BUTTON_ON_CLICK_LISTENER
+            };
 }

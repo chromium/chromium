@@ -180,6 +180,7 @@ import org.chromium.chrome.browser.reengagement.ReengagementNotificationControll
 import org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackBuilder;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
@@ -227,6 +228,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -2368,7 +2370,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         if (ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled()) {
             AuxiliarySearchModuleBuilder auxiliarySearchModuleBuilder =
-                    new AuxiliarySearchModuleBuilder(this);
+                    new AuxiliarySearchModuleBuilder(
+                            this,
+                            () -> {
+                                SettingsNavigationFactory.createSettingsNavigation()
+                                        .startSettings(this, TabsSettings.class);
+                            });
             moduleRegistry.registerModule(
                     ModuleType.AUXILIARY_SEARCH, auxiliarySearchModuleBuilder);
         }
