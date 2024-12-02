@@ -254,6 +254,8 @@ if (is_android || is_chromeos) {
 static_library("test_support") {
   testonly = true
   sources = [
+    "ax_enum_test_util.cc",
+    "ax_enum_test_util.h",
     "platform/ax_platform_for_test.cc",
     "platform/ax_platform_for_test.h",
     "platform/ax_platform_node_test_helper.cc",
@@ -337,6 +339,7 @@ test("accessibility_unittests") {
     "platform/inspect/ax_property_node_unittest.cc",
     "platform/inspect/ax_script_instruction_unittest.cc",
     "run_all_unittests.cc",
+    "test_ax_tree_update_unittest.cc",
   ]
 
   deps = [
