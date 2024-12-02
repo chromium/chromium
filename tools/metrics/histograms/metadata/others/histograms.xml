@@ -1360,6 +1360,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.UsedPremadeContextForSellerWorklet"
+    enum="Boolean" expires_after="2025-05-10">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the browser can use a prepared context when calling scoreAd().
+    Recorded when checking if a premade context can be used prior to calling
+    scoreAd().
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram
     name="Ads.InterestGroup.Auction.{WorkletType}.RequestWorkletServiceOutcome"
     enum="RequestWorkletServiceOutcome" expires_after="2025-05-18">

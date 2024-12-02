@@ -592,6 +592,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kFledgeBidderContextsMultiplier);
 
+// Prepare seller contexts, including running top level scripts, before
+// we're ready to score a worklet's first ad.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgePrepareSellerContextsInAdvance);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeMaxSellerContextsPerThreadInAdvance);
+
 // Feature params for feature kFledgeRealTimeReporting.
 // Epsilon of FLEDGE real time reporting's Rappor noise algorithm.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,

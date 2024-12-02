@@ -986,19 +986,37 @@ class SellerWorkletTwoThreadsTest : public SellerWorkletTest {
 
 class SellerWorkletMultiThreadingTest
     : public SellerWorkletTest,
-      public testing::WithParamInterface<size_t> {
+      public testing::WithParamInterface<std::tuple<size_t, bool>> {
+ public:
+  explicit SellerWorkletMultiThreadingTest() {
+    if (PrepareContexts()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          blink::features::kFledgePrepareSellerContextsInAdvance,
+          {{"MaxSellerContextsPerThread", "4"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kFledgePrepareSellerContextsInAdvance);
+    }
+  }
+
+  bool PrepareContexts() { return std::get<1>(GetParam()); }
+
+  size_t NumThreads() override { return std::get<0>(GetParam()); }
+
  private:
-  size_t NumThreads() override { return GetParam(); }
+  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SellerWorkletMultiThreadingTest,
-                         testing::Values(1, 2),
-                         [](const auto& info) {
-                           return base::StrCat({info.param == 2
-                                                    ? "TwoThreads"
-                                                    : "SingleThread"});
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SellerWorkletMultiThreadingTest,
+    testing::Combine(testing::Values(1, 2), testing::Bool()),
+    [](const auto& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) == 2 ? "TwoThreads" : "SingleThread",
+           std::get<1>(info.param) ? "WithPreparedContexts"
+                                   : "WithoutPreparedContexts"});
+    });
 
 // Test the case the SellerWorklet pipe is closed before any of its methods are
 // invoked. Nothing should happen.
@@ -2344,11 +2362,15 @@ TEST_P(SellerWorkletMultiThreadingTest, ScoreAdParallelBeforeLoadComplete) {
 // Test the case of a bunch of ScoreAd() calls in parallel, all started after
 // the worklet script has loaded.
 TEST_P(SellerWorkletMultiThreadingTest, ScoreAdParallelAfterLoadComplete) {
+  base::HistogramTester histogram_tester;
   // Seller script that uses the last character of `renderURL` as the score.
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript("parseInt(browserSignals.renderURL.slice(-1))"));
   auto seller_worklet = CreateWorklet();
+
+  // Let the script load.
+  task_environment_.RunUntilIdle();
 
   const size_t kNumWorklets = 10;
   size_t num_completed_worklets = 0;
@@ -2377,6 +2399,12 @@ TEST_P(SellerWorkletMultiThreadingTest, ScoreAdParallelAfterLoadComplete) {
                              }));
   }
   run_loop.Run();
+
+  // MaxSellerContextsPerThread doesn't come into effect because the scoring
+  // tasks are processed as they come.
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.UsedPremadeContextForSellerWorklet",
+      PrepareContexts(), kNumWorklets);
 }
 
 // Test the case of a bunch of ScoreAd() calls in parallel, all started before
@@ -2411,6 +2439,8 @@ TEST_P(SellerWorkletMultiThreadingTest,
        ScoreAdParallelTrustedScoringSignalsNotBatched) {
   base::Time start_time = base::Time::Now();
 
+  base::HistogramTester histogram_tester;
+
   // Seller script that gets the score from the `trustedScoringSignals` value of
   // the passed in `renderURL`.
   AddJavascriptResponse(
@@ -2420,6 +2450,9 @@ TEST_P(SellerWorkletMultiThreadingTest,
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
   auto seller_worklet = CreateWorklet();
+
+  // Let the script load.
+  task_environment_.RunUntilIdle();
 
   // Start scoring a bunch of worklets. Don't provide JSON responses, to make
   // sure they all reside in the worklet's task list at once.
@@ -2474,6 +2507,20 @@ TEST_P(SellerWorkletMultiThreadingTest,
   // wall clock time doesn't impact the current time, only delayed tasks and
   // timers do.
   EXPECT_EQ(base::Time::Now(), start_time);
+
+  if (PrepareContexts()) {
+    // MaxSellerContextsPerThread is 4.
+    histogram_tester.ExpectBucketCount(
+        "Ads.InterestGroup.Auction.UsedPremadeContextForSellerWorklet", 1,
+        4 * NumThreads());
+    histogram_tester.ExpectBucketCount(
+        "Ads.InterestGroup.Auction.UsedPremadeContextForSellerWorklet", 0,
+        10 - (4 * NumThreads()));
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.UsedPremadeContextForSellerWorklet", 0,
+        kNumWorklets);
+  }
 }
 
 // Test the case of a bunch of ScoreAd() calls in parallel, in the case trusted
@@ -5471,29 +5518,28 @@ TEST_F(SellerWorkletTwoThreadsTest, BasicDevToolsDebug) {
     }
   })";
 
-  // Note that ScoreAds are processed in the opposite order they were queued.
+  // ScoreAd assigns threads in the order.
   // Thus `debug0` should correspond to the first `RunScoreAdOnWorkletAsync`
   // call, and `debug1` should correspond to the second call.
   debug0.RunCommandAndWaitForResult(
       TestDevToolsAgentClient::Channel::kIO, 5, "Debugger.evaluateOnCallFrame",
-      base::StringPrintf(kCommandTemplate, callframe_id0->c_str(), "100.6"));
+      base::StringPrintf(kCommandTemplate, callframe_id0->c_str(), "100.5"));
   debug1.RunCommandAndWaitForResult(
       TestDevToolsAgentClient::Channel::kIO, 5, "Debugger.evaluateOnCallFrame",
-      base::StringPrintf(kCommandTemplate, callframe_id1->c_str(), "100.5"));
-
+      base::StringPrintf(kCommandTemplate, callframe_id1->c_str(), "100.6"));
   // Let the thread associated with `debug0` resume.
-  EXPECT_FALSE(run_loop1.AnyQuitCalled());
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
   debug0.RunCommandAndWaitForResult(
       TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
       R"({"id":6,"method":"Debugger.resume","params":{}})");
-  run_loop1.Run();
+  run_loop0.Run();
 
   // Let the thread associated with `debug1` resume.
-  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  EXPECT_FALSE(run_loop1.AnyQuitCalled());
   debug1.RunCommandAndWaitForResult(
       TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
       R"({"id":6,"method":"Debugger.resume","params":{}})");
-  run_loop0.Run();
+  run_loop1.Run();
 }
 
 TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {

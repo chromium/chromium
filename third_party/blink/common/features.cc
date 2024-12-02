@@ -1032,6 +1032,15 @@ BASE_FEATURE_PARAM(int,
                    "BidderContextsMultiplier",
                    1);
 
+BASE_FEATURE(kFledgePrepareSellerContextsInAdvance,
+             "FledgePrepareSellerContextsInAdvance",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kFledgeMaxSellerContextsPerThreadInAdvance,
+                   &kFledgePrepareSellerContextsInAdvance,
+                   "MaxSellerContextsPerThread",
+                   10);
+
 BASE_FEATURE_PARAM(int,
                    kFledgeRealTimeReportingNumBuckets,
                    &kFledgeRealTimeReporting,
