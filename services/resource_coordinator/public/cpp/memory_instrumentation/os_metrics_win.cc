@@ -40,22 +40,32 @@ std::string MakeDebugID(const GUID& guid, DWORD age) {
 }  // namespace
 
 // static
-bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
+bool OSMetrics::FillOSMemoryDump(base::ProcessId pid,
                                  mojom::RawOSMemDump* dump) {
-  auto info = GetMemoryInfo(handle);
-  if (!info.has_value()) {
+  base::Process process;
+  if (pid == base::kNullProcessId) {
+    process = base::Process::Current();
+  } else {
+    process = base::Process::Open(pid);
+  }
+  if (!process.IsValid()) {
     return false;
   }
-
-  dump->platform_private_footprint->private_bytes = info->private_bytes;
-  dump->resident_set_kb =
-      base::saturated_cast<uint32_t>(info->resident_set_bytes / 1024);
-  return true;
+  PROCESS_MEMORY_COUNTERS_EX pmc;
+  if (::GetProcessMemoryInfo(process.Handle(),
+                             reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmc),
+                             sizeof(pmc))) {
+    dump->platform_private_footprint->private_bytes = pmc.PrivateUsage;
+    dump->resident_set_kb =
+        base::saturated_cast<uint32_t>(pmc.WorkingSetSize / 1024);
+    return true;
+  }
+  return false;
 }
 
 // static
 std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
-    base::ProcessHandle handle) {
+    base::ProcessId pid) {
   std::vector<mojom::VmRegionPtr> maps;
   std::vector<HMODULE> modules;
   if (!base::win::GetLoadedModulesSnapshot(::GetCurrentProcess(), &modules))

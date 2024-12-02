@@ -155,10 +155,9 @@ bool ContainerAppKiller::IsRecentlyKilled(const std::string& process_name,
 
 uint64_t ContainerAppKiller::GetMemoryFootprintKB(base::ProcessId pid) {
   auto process_metrics = base::ProcessMetrics::CreateProcessMetrics(pid);
-  auto info = process_metrics->GetMemoryInfo();
-  return info.has_value()
-             ? (info->vm_swap_bytes + info->resident_set_bytes) / 1024
-             : 0;
+  return (process_metrics->GetVmSwapBytes() +
+          process_metrics->GetResidentSetSize()) /
+         1024;
 }
 
 bool ContainerAppKiller::KillArcProcess(base::ProcessId nspid) {

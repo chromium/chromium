@@ -160,23 +160,6 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return WrapUnique(new ProcessMetrics(process));
 }
 
-base::expected<ProcessMemoryInfo, ProcessUsageError>
-ProcessMetrics::GetMemoryInfo() const {
-  if (!process_.is_valid()) {
-    return base::unexpected(ProcessUsageError::kProcessNotFound);
-  }
-  PROCESS_MEMORY_COUNTERS_EX pmc;
-  if (!::GetProcessMemoryInfo(process_.get(),
-                              reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmc),
-                              sizeof(pmc))) {
-    return base::unexpected(ProcessUsageError::kSystemError);
-  }
-  ProcessMemoryInfo counters;
-  counters.private_bytes = pmc.PrivateUsage;
-  counters.resident_set_bytes = pmc.WorkingSetSize;
-  return counters;
-}
-
 base::expected<TimeDelta, ProcessCPUUsageError>
 ProcessMetrics::GetCumulativeCPUUsage() {
 #if defined(ARCH_CPU_ARM64)

@@ -5082,12 +5082,14 @@ uint64_t RenderProcessHostImpl::GetPrivateMemoryFootprint() {
   dump->platform_private_footprint =
       memory_instrumentation::mojom::PlatformPrivateFootprint::New();
 #if BUILDFLAG(IS_APPLE)
-  bool success = memory_instrumentation::OSMetrics::FillOSMemoryDump(
-      GetProcess().Handle(), ChildProcessTaskPortProvider::GetInstance(),
-      dump.get());
+  bool success =
+      memory_instrumentation::OSMetrics::FillOSMemoryDumpFromTaskPort(
+          ChildProcessTaskPortProvider::GetInstance()->TaskForHandle(
+              GetProcess().Handle()),
+          dump.get());
 #else
   bool success = memory_instrumentation::OSMetrics::FillOSMemoryDump(
-      GetProcess().Handle(), dump.get());
+      GetProcess().Pid(), dump.get());
 #endif
 
   // Failed to get private memory for the process, e.g. the process has died.

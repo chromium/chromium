@@ -48,24 +48,6 @@ ProcessMetrics::GetCumulativeCPUUsage() {
   return base::ok(TimeDelta::FromZxDuration(stats.cpu_time));
 }
 
-base::expected<ProcessMemoryInfo, ProcessUsageError>
-ProcessMetrics::GetMemoryInfo() const {
-  zx_info_task_stats_t info;
-  zx_status_t status = zx::unowned_process(process_)->get_info(
-      ZX_INFO_TASK_STATS, &info, sizeof(info), nullptr, nullptr);
-  if (status != ZX_OK) {
-    return base::unexpected(ProcessUsageError::kSystemError);
-  }
-
-  ProcessMemoryInfo memory_info;
-  memory_info.resident_set_bytes =
-      info.mem_private_bytes + info.mem_shared_bytes;
-  memory_info.rss_anon_bytes = info.mem_private_bytes;
-  // Fuchsia has no swap.
-  memory_info.vm_swap_bytes = 0;
-  return memory_info;
-}
-
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   // TODO(crbug.com/42050627).
   return false;

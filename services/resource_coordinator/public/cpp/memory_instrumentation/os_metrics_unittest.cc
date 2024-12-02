@@ -137,10 +137,10 @@ void CreateTempFileWithContents(const char* contents, base::ScopedFILE* file) {
         // BUILDFLAG(IS_ANDROID)
 
 TEST(OSMetricsTest, GivesNonZeroResults) {
-  base::ProcessHandle handle = base::kNullProcessHandle;
+  base::ProcessId pid = base::kNullProcessId;
   mojom::RawOSMemDump dump;
   dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
-  EXPECT_TRUE(OSMetrics::FillOSMemoryDump(handle, &dump));
+  EXPECT_TRUE(OSMetrics::FillOSMemoryDump(pid, &dump));
   EXPECT_TRUE(dump.platform_private_footprint);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_FUCHSIA)
@@ -162,14 +162,14 @@ TEST(OSMetricsTest, ParseProcSmaps) {
   base::ScopedFILE empty_file(OpenFile(base::FilePath("/dev/null"), "r"));
   ASSERT_TRUE(empty_file.get());
   OSMetrics::SetProcSmapsForTesting(empty_file.get());
-  auto no_maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
+  auto no_maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
   ASSERT_TRUE(no_maps.empty());
 
   // Parse the 1st smaps file.
   base::ScopedFILE temp_file1;
   CreateTempFileWithContents(kTestSmaps1, &temp_file1);
   OSMetrics::SetProcSmapsForTesting(temp_file1.get());
-  auto maps_1 = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
+  auto maps_1 = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
   ASSERT_EQ(2UL, maps_1.size());
 
   EXPECT_EQ(0x00400000UL, maps_1[0]->start_address);
@@ -200,7 +200,7 @@ TEST(OSMetricsTest, ParseProcSmaps) {
   base::ScopedFILE temp_file2;
   CreateTempFileWithContents(kTestSmaps2, &temp_file2);
   OSMetrics::SetProcSmapsForTesting(temp_file2.get());
-  auto maps_2 = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
+  auto maps_2 = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
   ASSERT_EQ(1UL, maps_2.size());
   EXPECT_EQ(0x7fe7ce79c000UL, maps_2[0]->start_address);
   EXPECT_EQ(0x7fe7ce7a8000UL - 0x7fe7ce79c000UL, maps_2[0]->size_in_bytes);
@@ -266,7 +266,7 @@ TEST(OSMetricsTest, GetMappedAndResidentPages) {
 void DummyFunction() {}
 
 TEST(OSMetricsTest, TestWinModuleReading) {
-  auto maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
+  auto maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
 
   wchar_t module_name[MAX_PATH];
   DWORD result = GetModuleFileName(nullptr, module_name, MAX_PATH);
@@ -350,9 +350,9 @@ void CheckMachORegions(const std::vector<mojom::VmRegionPtr>& maps) {
 
 // Test failing on Mac ASan 64: https://crbug.com/852690
 TEST(OSMetricsTest, DISABLED_TestMachOReading) {
-  auto maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
+  auto maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
   CheckMachORegions(maps);
-  maps = OSMetrics::GetProcessModules(base::kNullProcessHandle);
+  maps = OSMetrics::GetProcessModules(base::kNullProcessId);
   CheckMachORegions(maps);
 }
 #endif  // BUILDFLAG(IS_MAC)
