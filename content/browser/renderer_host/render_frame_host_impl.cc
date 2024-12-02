@@ -1038,14 +1038,11 @@ bool ValidateUnfencedTopNavigation(
   render_frame_host->GetSiteInstance()->GetProcess()->FilterURL(
       /*empty_allowed=*/false, &url);
 
-  // It should only be possible to send this IPC with this flag from an
-  // opaque-ads fenced frame. Opaque-ads fenced frames should always
-  // have the sandbox flag `allow-top-navigation-by-user-activation`.
-  if ((render_frame_host->frame_tree_node()->GetDeprecatedFencedFrameMode() !=
-       blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds) ||
+  if (!render_frame_host->IsNestedWithinFencedFrame() ||
       render_frame_host->IsSandboxed(
           network::mojom::WebSandboxFlags::kTopNavigationByUserActivation)) {
-    // If we get the IPC elsewhere, assume the renderer is compromised.
+    // If either of these conditions are true, then assume a compromised
+    // renderer.
     bad_message::ReceivedBadMessage(
         initiator_process_id,
         bad_message::RFHI_UNFENCED_TOP_IPC_OUTSIDE_FENCED_FRAME);

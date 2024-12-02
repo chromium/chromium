@@ -5269,15 +5269,13 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 // 2. creates an opaque mode urn iframe nested in the fenced frame.
 // 3. do an `_unfencedTop` navigation from the urn iframe.
 //
-// The `_unfencedTop` navigation should succeed. This verifies the fenced frame
-// properties from the urn iframe are used for checks in
-// `ValidateUnfencedTopNavigation`. Otherwise, if the fenced frame properties
-// from the top-level fenced frame are used, a mojo bad message should be
-// received.
-//
-// Note: Outside tests, one common scenairo that results in the same setup is
-// creating a shared storage urn iframe nested inside a default fenced frame.
-//
+// The `_unfencedTop` navigation should succeed. Note: previously this test
+// existed to confirm that the URN iframe's fenced frame properties were used in
+// the `_unfencedTop` navigation. However, now that we've allowed default mode
+// fenced frames to use the `_unfencedTop` navigation target, this test doesn't
+// have the same failure mode as before. However, it's still useful to verify
+// that the `_unfencedTop` navigation works in a nested URN iframe.
+
 // TODO(crbug.com/40060657): Once navigation support for urn::uuid in iframes is
 // deprecated, this test should be removed.
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
