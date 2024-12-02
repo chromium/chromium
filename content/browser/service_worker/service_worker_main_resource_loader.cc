@@ -24,7 +24,6 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/response_head_update_params.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -136,6 +135,8 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
       frame_tree_node_id_(frame_tree_node_id),
       is_browser_startup_completed_(
           GetContentClient()->browser()->IsBrowserStartupComplete()),
+      frame_tree_node_type_(
+          service_worker_client_->GetFrameTreeNodeTypeStringBeforeCommit()),
       find_registration_start_time_(std::move(find_registration_start_time)),
       fetch_event_client_id_(std::move(fetch_event_client_id)) {
   TRACE_EVENT_WITH_FLOW0(
@@ -159,16 +160,6 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
           "ServiceWorkerIsStopped.WaitingForWarmUp",
           core->IsWaitingForWarmUp(active_worker->key()));
     }
-  }
-
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
-  if (!frame_tree_node) {
-    frame_tree_node_type_ = FrameTreeNodeType::kUnknown;
-  } else {
-    frame_tree_node_type_ = frame_tree_node->IsOutermostMainFrame()
-                                ? FrameTreeNodeType::kOutermostMainFrame
-                                : FrameTreeNodeType::kNotOutermostMainFrame;
   }
 
   response_head_->load_timing.request_start = base::TimeTicks::Now();
@@ -1228,14 +1219,7 @@ ServiceWorkerMainResourceLoader::GetInitialServiceWorkerStatusString() {
 }
 
 std::string ServiceWorkerMainResourceLoader::GetFrameTreeNodeTypeString() {
-  switch (frame_tree_node_type_) {
-    case FrameTreeNodeType::kOutermostMainFrame:
-      return "OutermostMainFrame";
-    case FrameTreeNodeType::kNotOutermostMainFrame:
-      return "NotOutermostMainFrame";
-    case FrameTreeNodeType::kUnknown:
-      return "Unknown";
-  }
+  return frame_tree_node_type_;
 }
 
 void ServiceWorkerMainResourceLoader::RecordFindRegistrationTiming(

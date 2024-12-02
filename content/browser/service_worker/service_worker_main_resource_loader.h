@@ -286,13 +286,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   std::optional<network::mojom::ServiceWorkerStatus>
       initial_service_worker_status_;
   const bool is_browser_startup_completed_;
-  enum class FrameTreeNodeType {
-    kOutermostMainFrame = 0,
-    kNotOutermostMainFrame = 1,
-    kUnknown = 2,
-    kMaxValue = kUnknown,
-  };
-  FrameTreeNodeType frame_tree_node_type_ = FrameTreeNodeType::kUnknown;
+  const std::string frame_tree_node_type_;
   bool is_detached_ = false;
 
   scoped_refptr<network::SharedURLLoaderFactory>
