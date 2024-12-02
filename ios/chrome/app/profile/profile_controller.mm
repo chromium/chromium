@@ -80,7 +80,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/components/cookie_util/cookie_util.h"
@@ -191,9 +190,6 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
 @end
 
 @implementation ProfileController {
-  // Used to force the device orientation in portrait mode on iPhone.
-  std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
-
   // The ExtensionSearchEngineDataUpdater that ensure the changes to the
   // default search engine are propagated to the extensions.
   std::unique_ptr<ExtensionSearchEngineDataUpdater> _searchEngineDataUpdater;
@@ -202,7 +198,7 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
   // Spotlight index for the given profile.
   SpotlightManager* _spotlightManager;
 
-  // ProfileManager used to load the profile and its attributes.
+  // ProfileManager used to load the profile and its attributes.
   raw_ptr<ProfileManagerIOS> _profileManager;
 
   // Flag recording whether the cookies are currently being saved or not.
@@ -213,7 +209,6 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
                  metricsMediator:(MetricsMediator*)metricsMediator {
   if ((self = [super init])) {
     _state = [[ProfileState alloc] initWithAppState:appState];
-    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
     _metricsMediator = metricsMediator;
     [_state addObserver:self];
   }
@@ -330,9 +325,6 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
       break;
 
     case ProfileInitStage::kNormalUI:
-      // Stop forcing the portrait orientation once the normal UI is presented
-      // then transition to the final stage as the profile is fully initialised.
-      _scopedForceOrientation.reset();
       [profileState queueTransitionToNextInitStage];
       break;
 

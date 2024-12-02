@@ -984,7 +984,15 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
 
       case ProfileInitStage::kPrepareUI:
       case ProfileInitStage::kUIReady:
+        // Nothing to do.
+        break;
+
       case ProfileInitStage::kFirstRun:
+        // Stop forcing the orientation at the application level (if it was) as
+        // the ProfileAgent are now responsible for forcing the orientation.
+        _scopedForceOrientation.reset();
+        break;
+
       case ProfileInitStage::kChoiceScreen:
       case ProfileInitStage::kNormalUI:
       case ProfileInitStage::kFinal:
@@ -1020,7 +1028,22 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
   _appState = appState;
   [appState addObserver:self];
 
-  _scopedForceOrientation = ForcePortraitOrientationOnIphone(_appState);
+  // If this is the first run, force the portrait orientation on iPhone at
+  // the application level (until at least one ProfileController reaches
+  // the kFirstRun stage).
+  //
+  // This is because the FRE is designed to only be displayed in portrait
+  // orientation on iPhone but the FRE happen as part of the profile init
+  // and waiting until then to force the orientation introduces unpleasant
+  // animation.
+  //
+  // There may be some unpleasant animation if other screen want to force
+  // the orientation (such as the search engine choice screen) as it may
+  // not be possible to determine here whether they will be run (e.g. if
+  // the depend on the state of a profile).
+  if (_isFirstRun) {
+    _scopedForceOrientation = ForcePortraitOrientationOnIphone(_appState);
+  }
 
   // Create app state agents.
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
@@ -1693,11 +1716,6 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
              attributesStorage:storage
                     localState:localState];
   }
-
-  // Stop forcing the orientation at the application level. ProfileController
-  // take care of forcing the orientation of the application until done with
-  // the early UI initialisation.
-  _scopedForceOrientation.reset();
 }
 
 // Attach a profile to `sceneState`.

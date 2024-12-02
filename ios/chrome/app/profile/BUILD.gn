@@ -80,7 +80,6 @@ source_set("profile_controller") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/translate/model",
-    "//ios/chrome/browser/ui/device_orientation",
     "//ios/chrome/browser/web_state_list/model:session_metrics",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
     "//ios/components/cookie_util",
@@ -204,6 +203,7 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/ui/device_orientation",
   ]
 }
 
@@ -215,6 +215,7 @@ source_set("search_engine_choice_profile_agent") {
   deps = [
     "//base",
     "//components/search_engines",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/search_engine_choice/model",
@@ -225,6 +226,7 @@ source_set("search_engine_choice_profile_agent") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/ui/device_orientation",
   ]
 }
 
