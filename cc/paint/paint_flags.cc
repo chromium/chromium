@@ -188,10 +188,9 @@ SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
           return SkSamplingOptions(SkFilterMode::kLinear,
                                    SkMipmapMode::kNearest);
         case PaintFlags::ScalingOperation::kUnknown:
+        case PaintFlags::ScalingOperation::kUpscale:
           return SkSamplingOptions(SkFilterMode::kLinear,
                                    SkMipmapMode::kLinear);
-        case PaintFlags::ScalingOperation::kUpscale:
-          return SkSamplingOptions(SkCubicResampler::Mitchell());
       }
     case PaintFlags::FilterQuality::kLow:
       return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone);
