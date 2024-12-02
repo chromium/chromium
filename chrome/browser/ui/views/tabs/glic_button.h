@@ -11,6 +11,8 @@
 
 class TabStripController;
 
+namespace glic {
+
 // GlicButton should leverage the look and feel of the existing
 // TabSearchButton for sizing and appropriate theming.
 //
@@ -32,5 +34,7 @@ class GlicButton : public TabStripControlButton {
   // Tab strip that contains this button.
   raw_ptr<TabStripController> tab_strip_controller_;
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_BUTTON_H_

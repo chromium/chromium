@@ -6,6 +6,7 @@
 
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 
+namespace glic {
 GlicWindowManager* GlicWindowManager::GetInstance() {
   return base::Singleton<GlicWindowManager>::get();
 }
@@ -35,3 +36,5 @@ void GlicWindowManager::CloseGlicWindow() {
 GlicWindowManager::GlicWindowManager() = default;
 
 GlicWindowManager::~GlicWindowManager() = default;
+
+}  // namespace glic

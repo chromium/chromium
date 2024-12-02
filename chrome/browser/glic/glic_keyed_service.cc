@@ -17,6 +17,8 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
+namespace glic {
+
 GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
@@ -122,3 +124,5 @@ content::WebContents* GlicKeyedService::GetWebContentsForContext() {
   }
   return nullptr;
 }
+
+}  // namespace glic

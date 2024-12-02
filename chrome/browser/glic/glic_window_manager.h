@@ -13,6 +13,8 @@
 class GlicWindowController;
 class Profile;
 
+namespace glic {
+
 // GlicWindowManager is a singleton that guarantees that only one panel will be
 // present per Chrome instance regardless of the number of windows, tabs,
 // profiles, etc. In addition to guaranteeing one panel at a time, it is able to
@@ -40,5 +42,6 @@ class GlicWindowManager {
 
   base::WeakPtr<GlicWindowController> glic_window_controller_;
 };
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_WINDOW_MANAGER_H_
