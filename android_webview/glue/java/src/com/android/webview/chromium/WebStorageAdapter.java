@@ -133,7 +133,7 @@ final class WebStorageAdapter extends WebStorage {
                                 TraceEvent.scoped(
                                         "WebView.APICall.Framework.WEB_STORAGE_DELETE_ORIGIN")) {
                             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_STORAGE_DELETE_ORIGIN);
-                            mQuotaManagerBridge.deleteOriginFramework(origin);
+                            mQuotaManagerBridge.deleteOrigin(origin);
                         }
                     });
             return;
@@ -141,7 +141,7 @@ final class WebStorageAdapter extends WebStorage {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.WEB_STORAGE_DELETE_ORIGIN")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_STORAGE_DELETE_ORIGIN);
-            mQuotaManagerBridge.deleteOriginFramework(origin);
+            mQuotaManagerBridge.deleteOrigin(origin);
         }
     }
 
@@ -155,7 +155,7 @@ final class WebStorageAdapter extends WebStorage {
                                         "WebView.APICall.Framework.WEB_STORAGE_DELETE_ALL_DATA")) {
                             WebViewChromium.recordWebViewApiCall(
                                     ApiCall.WEB_STORAGE_DELETE_ALL_DATA);
-                            mQuotaManagerBridge.deleteAllDataFramework();
+                            mQuotaManagerBridge.deleteAllData();
                         }
                     });
             return;
@@ -163,7 +163,7 @@ final class WebStorageAdapter extends WebStorage {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.WEB_STORAGE_DELETE_ALL_DATA")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_STORAGE_DELETE_ALL_DATA);
-            mQuotaManagerBridge.deleteAllDataFramework();
+            mQuotaManagerBridge.deleteAllData();
         }
     }
 

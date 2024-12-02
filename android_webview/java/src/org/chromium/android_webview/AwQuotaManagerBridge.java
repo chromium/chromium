@@ -5,8 +5,6 @@
 package org.chromium.android_webview;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -15,7 +13,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.url.GURL;
 
 /**
  * Bridge between android.webview.WebStorage and native QuotaManager. This object is owned by Java
@@ -58,89 +55,21 @@ public class AwQuotaManagerBridge {
      */
 
     /**
-     * Implements WebStorage.deleteAllData(). Clear the storage of all four offline APIs.
+     * Implements WebStorage.deleteAllData(). Clear the storage of all five offline APIs.
      *
-     * <p>This implementation is used by the Android Framework API {@link
-     * android.webkit.WebStorage#deleteAllData()}.
+     * TODO(boliu): Actually clear Web Storage.
      */
-    public void deleteAllDataFramework() {
-        ThreadUtils.assertOnUiThread();
-        AwQuotaManagerBridgeJni.get().deleteAllDataFramework(mNativeAwQuotaManagerBridge);
-    }
-
-    /**
-     * Implements WebStorage.deleteOrigin(). Clear the storage of APIs 2-4 for the given origin.
-     *
-     * <p>This implementation is used by the Android Framework API {@link
-     * android.webkit.WebStorage#deleteOrigin(String)}.
-     *
-     * @param origin The origin to perform deletion for.
-     */
-    public void deleteOriginFramework(String origin) {
-        ThreadUtils.assertOnUiThread();
-        AwQuotaManagerBridgeJni.get().deleteOriginFramework(mNativeAwQuotaManagerBridge, origin);
-    }
-
-    /**
-     * Delete all local storage held by WebView.
-     *
-     * @param resultCallback Callback executed when the deletion completes.
-     */
-    public void deleteBrowsingData(@NonNull Callback<Boolean> resultCallback) {
+    public void deleteAllData() {
         ThreadUtils.assertOnUiThread();
         AwQuotaManagerBridgeJni.get()
-                .deleteBrowsingData(mNativeAwQuotaManagerBridge, resultCallback);
+                .deleteAllData(mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this);
     }
 
-    /**
-     * Delete all data for the eTLD+1 of the passed-in hostname.
-     *
-     * <p>Any subdomain in the {@code domain} parameter will be ignored.
-     *
-     * @param urlOrDomain Host to delete data for.
-     * @param resultCallback Callback executed when the deletion completes.
-     * @return The actual hostname used for deletion. This may differ from the {@code domain}
-     *     parameter if the former contained a subdomain.
-     */
-    @NonNull
-    public String deleteBrowsingDataForSite(
-            @NonNull String urlOrDomain, @NonNull Callback<Boolean> resultCallback) {
+    /** Implements WebStorage.deleteOrigin(). Clear the storage of APIs 2-5 for the given origin. */
+    public void deleteOrigin(String origin) {
         ThreadUtils.assertOnUiThread();
-        // Attempt to parse the hostname as part of a HTTP url.
-        String domain = getDomainName(urlOrDomain);
-        if (domain == null) {
-            throw new IllegalArgumentException("Invalid domain name: " + urlOrDomain);
-        }
-        return AwQuotaManagerBridgeJni.get()
-                .deleteBrowsingDataForSite(mNativeAwQuotaManagerBridge, domain, resultCallback);
-    }
-
-    /**
-     * Attempt to extract the domain name from the passed-in URL or domain name.
-     *
-     * <p>This method will attempt to parse the value as a URL directly, or as a domain name by
-     * prefixing it with 'http://'.
-     *
-     * <p>It will return {@code null} if unable to parse the value as a URL using either of those
-     * methods.
-     *
-     * @param urlOrDomain Input value to extract domain name from
-     * @return domain name from the input value, or {@code null} if unable to extract a domain name.
-     */
-    @Nullable
-    @VisibleForTesting
-    public static String getDomainName(@NonNull String urlOrDomain) {
-        // Attempt to just parse the passed-in value as a URL directly.
-        GURL parsed = new GURL(urlOrDomain);
-        if (parsed.isValid() && !parsed.getHost().isEmpty()) {
-            return parsed.getHost();
-        }
-
-        parsed = new GURL("http://" + urlOrDomain);
-        if (parsed.isValid() && !parsed.getHost().isEmpty()) {
-            return parsed.getHost();
-        }
-        return null;
+        AwQuotaManagerBridgeJni.get()
+                .deleteOrigin(mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this, origin);
     }
 
     /**
@@ -193,15 +122,10 @@ public class AwQuotaManagerBridge {
     interface Natives {
         void init(long nativeAwQuotaManagerBridge, AwQuotaManagerBridge caller);
 
-        void deleteAllDataFramework(long nativeAwQuotaManagerBridge);
+        void deleteAllData(long nativeAwQuotaManagerBridge, AwQuotaManagerBridge caller);
 
-        void deleteOriginFramework(long nativeAwQuotaManagerBridge, String origin);
-
-        void deleteBrowsingData(long nativeAwQuotaManagerBridge, Callback<Boolean> callback);
-
-        @NonNull
-        String deleteBrowsingDataForSite(
-                long nativeAwQuotaManagerBridge, String domain, Callback<Boolean> callback);
+        void deleteOrigin(
+                long nativeAwQuotaManagerBridge, AwQuotaManagerBridge caller, String origin);
 
         void getOrigins(
                 long nativeAwQuotaManagerBridge,
