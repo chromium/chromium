@@ -926,6 +926,19 @@ the generic promo launch. -->
   <int value="3" label="Incognito Mode, Other Search engine"/>
 </enum>
 
+<!-- LINT.IfChange(IOSSegmentedDefaultBrowserPromoAction) -->
+
+<enum name="IOSSegmentedDefaultBrowserPromoAction">
+  <int value="0" label="Static Promo Appeared"/>
+  <int value="1" label="Static Promo Accepted"/>
+  <int value="2" label="Static Promo Dismissed"/>
+  <int value="3" label="Animated Promo Appeared"/>
+  <int value="4" label="Animated Promo Accepted"/>
+  <int value="5" label="Animated Promo Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h:SegmentedDefaultBrowserPromoAction) -->
+
 <enum name="IOSSessionMigration">
   <int value="0" label="No Migration"/>
   <int value="1" label="Migration Failed"/>

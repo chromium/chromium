@@ -4531,6 +4531,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.SetUpList.DefaultBrowserPromo.Action"
+    enum="IOSSegmentedDefaultBrowserPromoAction" expires_after="2025-05-26">
+  <owner>bmcclure@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    This histogram records which action a user takes on the Static and Animated
+    versions of the Set Up List Default Browser Promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SetUpList.Displayed" enum="Boolean"
     expires_after="2025-04-20">
   <owner>scottyoder@google.com</owner>

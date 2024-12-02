@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_mediator.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -136,24 +137,35 @@ using base::UserMetricsAction;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  base::UmaHistogramEnumeration(
+      kSetUpListDefaultBrowserPromoAction,
+      SegmentedDefaultBrowserPromoAction::kAnimatedPromoAccept);
   [_mediator didTapPrimaryActionButton];
   _markItemComplete = YES;
-
   [self.delegate setUpListDefaultBrowserPromoDidFinish:YES];
 }
 
 - (void)confirmationAlertSecondaryAction {
+  base::UmaHistogramEnumeration(
+      kSetUpListDefaultBrowserPromoAction,
+      SegmentedDefaultBrowserPromoAction::kAnimatedPromoDismiss);
   _markItemComplete = YES;
   [self.delegate setUpListDefaultBrowserPromoDidFinish:NO];
 }
 
 - (void)confirmationAlertTertiaryAction {
+  base::UmaHistogramEnumeration(
+      kSetUpListDefaultBrowserPromoAction,
+      SegmentedDefaultBrowserPromoAction::kAnimatedPromoDismiss);
   [self.delegate setUpListDefaultBrowserPromoDidFinish:NO];
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  base::UmaHistogramEnumeration(
+      kSetUpListDefaultBrowserPromoAction,
+      SegmentedDefaultBrowserPromoAction::kStaticPromoAccept);
   RecordDefaultBrowserPromoLastAction(
       IOSDefaultBrowserPromoAction::kActionButton);
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Accepted"));
@@ -167,6 +179,9 @@ using base::UserMetricsAction;
 }
 
 - (void)didTapSecondaryActionButton {
+  base::UmaHistogramEnumeration(
+      kSetUpListDefaultBrowserPromoAction,
+      SegmentedDefaultBrowserPromoAction::kStaticPromoDismiss);
   RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Dismiss"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
@@ -208,6 +223,9 @@ using base::UserMetricsAction;
   _transparentView = nil;
 
   if ([self shouldAnimate]) {
+    base::UmaHistogramEnumeration(
+        kSetUpListDefaultBrowserPromoAction,
+        SegmentedDefaultBrowserPromoAction::kAnimatedPromoAppear);
     DefaultBrowserInstructionsViewController* animatedViewController = [self
         createAnimatedViewControllerWithTitle:[_mediator retrievePromoTitle]];
 
@@ -216,6 +234,9 @@ using base::UserMetricsAction;
 
     _viewController = animatedViewController;
   } else {
+    base::UmaHistogramEnumeration(
+        kSetUpListDefaultBrowserPromoAction,
+        SegmentedDefaultBrowserPromoAction::kStaticPromoAppear);
     DefaultBrowserScreenViewController* staticViewController =
         [[DefaultBrowserScreenViewController alloc] init];
     staticViewController.delegate = self;

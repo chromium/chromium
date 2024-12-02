@@ -23,3 +23,6 @@ constexpr NSString* const kAllSetID = @"set_up_list::kAllSetID";
 constexpr NSString* const kSetUpListContainerID = @"kSetUpListContainerID";
 
 }  // namespace set_up_list
+
+const char kSetUpListDefaultBrowserPromoAction[] =
+    "IOS.SetUpList.DefaultBrowserPromo.Action";

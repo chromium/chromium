@@ -74,7 +74,6 @@
 }
 
 - (void)didTapPrimaryActionButton {
-  // TODO(crbug.com/377327840): Log metrics for user interactions
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
