@@ -1955,7 +1955,7 @@ TEST_F(AcceleratorConfigurationProviderTest,
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
-                          AcceleratorAction::kToggleAppList, accelerator,
+                          AcceleratorAction::kToggleAppList, accelerator2,
                           &result);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::AcceleratorConfigResult::kMaximumAcceleratorsReached,
@@ -2033,7 +2033,7 @@ TEST_F(AcceleratorConfigurationProviderTest,
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .AddAccelerator(mojom::AcceleratorSource::kAsh,
-                          AcceleratorAction::kToggleAppList, accelerator,
+                          AcceleratorAction::kToggleAppList, accelerator2,
                           &result);
 
   base::RunLoop().RunUntilIdle();
