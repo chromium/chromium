@@ -1131,7 +1131,7 @@ class ControlledFrameServiceWorkerTest
   }
 
  protected:
-  ControlledFrameServiceWorkerTest() {}
+  ControlledFrameServiceWorkerTest() = default;
 
   ~ControlledFrameServiceWorkerTest() override = default;
 
