@@ -6,6 +6,7 @@ package org.chromium.ui.widget;
 
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
@@ -30,12 +31,14 @@ import java.util.PriorityQueue;
 public class ToastManager {
     private static final int DURATION_SHORT_MS = 2000;
     private static final int DURATION_LONG_MS = 3500;
-
+    private static final long DURATION_BETWEEN_TOASTS_MS = 500;
     private static ToastManager sInstance;
 
     // A queue for toasts waiting to be shown.
     private final PriorityQueue<Toast> mToastQueue =
             new PriorityQueue<>((toast1, toast2) -> toast1.getPriority() - toast2.getPriority());
+
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     // Handles toast events per SDK version.
     private interface ToastEvent {
@@ -56,9 +59,9 @@ public class ToastManager {
 
     private ToastManager() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            mToastEvent = new ToastEventPreR(this::showNextToast);
+            mToastEvent = new ToastEventPreR(this::toastHidden);
         } else {
-            mToastEvent = new ToastEventR(this::showNextToast);
+            mToastEvent = new ToastEventR(this::toastHidden);
         }
     }
 
@@ -116,6 +119,10 @@ public class ToastManager {
             }
         }
         return false;
+    }
+
+    private void toastHidden() {
+        mHandler.postDelayed(() -> showNextToast(), DURATION_BETWEEN_TOASTS_MS);
     }
 
     private void showNextToast() {
