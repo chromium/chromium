@@ -59,9 +59,7 @@ class WebSocketConnection(object):
       raise WebSocketTimeoutException()
     except InternalWebSocketConnectionClosedException:
       raise WebSocketConnectionClosedException()
-    # ConnectionAbortedError occurs on Windows if the connection was closed by
-    # the remote end.
-    except ConnectionAbortedError:
+    except ConnectionError:
       raise WebSocketConnectionClosedException()
     return cmd_params['id']
 
