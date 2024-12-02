@@ -4087,6 +4087,7 @@ if (!is_android) {
         "../browser/extensions/background_color_provider_browsertest.cc",
         "../browser/extensions/background_header_browsertest.cc",
         "../browser/extensions/background_page_apitest.cc",
+        "../browser/extensions/background_script_executor_browsertest.cc",
         "../browser/extensions/background_scripts_apitest.cc",
         "../browser/extensions/background_xhr_browsertest.cc",
         "../browser/extensions/cache_wasm_extension_browsertest.cc",
