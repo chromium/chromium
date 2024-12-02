@@ -65,11 +65,10 @@ void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
     // Decrement the form interaction and user edits counters for this page if
     // needed.
     if (frame_node->HadFormInteraction()) {
-      data.UpdateCurrentFrameCountForFormInteraction(false, page_node,
-                                                     frame_node);
+      data.UpdateCurrentFrameCountForFormInteraction(false);
     }
     if (frame_node->HadUserEdits()) {
-      data.UpdateCurrentFrameCountForUserEdits(false, page_node, frame_node);
+      data.UpdateCurrentFrameCountForUserEdits(false);
     }
   }
 
@@ -77,13 +76,13 @@ void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   // released locks or stopped using WebRTC before it is notified of the frame
   // being deleted.
   if (frame_node->IsHoldingWebLock()) {
-    data.UpdateFrameCountForWebLockUsage(false, page_node);
+    data.UpdateFrameCountForWebLockUsage(false);
   }
   if (frame_node->IsHoldingIndexedDBLock()) {
-    data.UpdateFrameCountForIndexedDBLockUsage(false, page_node);
+    data.UpdateFrameCountForIndexedDBLockUsage(false);
   }
   if (frame_node->UsesWebRTC()) {
-    data.UpdateFrameCountForWebRTCUsage(false, page_node);
+    data.UpdateFrameCountForWebRTCUsage(false);
   }
 }
 
@@ -103,21 +102,19 @@ void PageAggregator::OnCurrentFrameChanged(
   if (previous_frame_node) {
     const bool is_current = false;
     if (previous_frame_node->HadFormInteraction()) {
-      data.UpdateCurrentFrameCountForFormInteraction(is_current, page_node,
-                                                     nullptr);
+      data.UpdateCurrentFrameCountForFormInteraction(is_current);
     }
     if (previous_frame_node->HadUserEdits()) {
-      data.UpdateCurrentFrameCountForUserEdits(is_current, page_node, nullptr);
+      data.UpdateCurrentFrameCountForUserEdits(is_current);
     }
   }
   if (current_frame_node) {
     const bool is_current = true;
     if (current_frame_node->HadFormInteraction()) {
-      data.UpdateCurrentFrameCountForFormInteraction(is_current, page_node,
-                                                     nullptr);
+      data.UpdateCurrentFrameCountForFormInteraction(is_current);
     }
     if (current_frame_node->HadUserEdits()) {
-      data.UpdateCurrentFrameCountForUserEdits(is_current, page_node, nullptr);
+      data.UpdateCurrentFrameCountForUserEdits(is_current);
     }
   }
 }
@@ -126,8 +123,7 @@ void PageAggregator::OnFrameIsHoldingWebLockChanged(
     const FrameNode* frame_node) {
   auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
   Data& data = GetOrCreateData(page_node);
-  data.UpdateFrameCountForWebLockUsage(frame_node->IsHoldingWebLock(),
-                                       page_node);
+  data.UpdateFrameCountForWebLockUsage(frame_node->IsHoldingWebLock());
 }
 
 void PageAggregator::OnFrameIsHoldingIndexedDBLockChanged(
@@ -135,13 +131,13 @@ void PageAggregator::OnFrameIsHoldingIndexedDBLockChanged(
   auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
   Data& data = GetOrCreateData(page_node);
   data.UpdateFrameCountForIndexedDBLockUsage(
-      frame_node->IsHoldingIndexedDBLock(), page_node);
+      frame_node->IsHoldingIndexedDBLock());
 }
 
 void PageAggregator::OnFrameUsesWebRTCChanged(const FrameNode* frame_node) {
   auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
   Data& data = GetOrCreateData(page_node);
-  data.UpdateFrameCountForWebRTCUsage(frame_node->UsesWebRTC(), page_node);
+  data.UpdateFrameCountForWebRTCUsage(frame_node->UsesWebRTC());
 }
 
 void PageAggregator::OnHadFormInteractionChanged(const FrameNode* frame_node) {
@@ -149,7 +145,7 @@ void PageAggregator::OnHadFormInteractionChanged(const FrameNode* frame_node) {
     auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
     Data& data = GetOrCreateData(page_node);
     data.UpdateCurrentFrameCountForFormInteraction(
-        frame_node->HadFormInteraction(), page_node, nullptr);
+        frame_node->HadFormInteraction());
   }
 }
 
@@ -157,8 +153,7 @@ void PageAggregator::OnHadUserEditsChanged(const FrameNode* frame_node) {
   if (frame_node->IsCurrent()) {
     auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
     Data& data = GetOrCreateData(page_node);
-    data.UpdateCurrentFrameCountForUserEdits(frame_node->HadUserEdits(),
-                                             page_node, nullptr);
+    data.UpdateCurrentFrameCountForUserEdits(frame_node->HadUserEdits());
   }
 }
 
