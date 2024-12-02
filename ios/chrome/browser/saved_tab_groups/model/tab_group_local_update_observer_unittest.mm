@@ -794,9 +794,10 @@ TEST_F(TabGroupLocalUpdateObserverTest, UpdateActiveTab) {
   const TabGroup* group = builder.GetTabGroupForIdentifier('0');
   web::WebState* web_state_a = builder.GetWebStateForIdentifier('a');
 
-  EXPECT_CALL(*mock_service_,
-              OnTabSelected(group->tab_group_id(),
-                            web_state_a->GetUniqueIdentifier().identifier()));
+  EXPECT_CALL(
+      *mock_service_,
+      OnTabSelected(Eq(group->tab_group_id()),
+                    Eq(web_state_a->GetUniqueIdentifier().identifier())));
   web_state_list->ActivateWebStateAt(0);
 }
 

@@ -224,9 +224,15 @@ void FakeTabGroupSyncService::MoveTab(const LocalTabGroupID& group_id,
   NotifyObserversOfTabGroupUpdated(group);
 }
 
-void FakeTabGroupSyncService::OnTabSelected(const LocalTabGroupID& group_id,
-                                            const LocalTabID& tab_id) {
+void FakeTabGroupSyncService::OnTabSelected(
+    const std::optional<LocalTabGroupID>& group_id,
+    const LocalTabID& tab_id) {
   // No op.
+}
+
+std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+FakeTabGroupSyncService::GetCurrentlySelectedTabID() {
+  return {std::nullopt, std::nullopt};
 }
 
 void FakeTabGroupSyncService::MakeTabGroupShared(

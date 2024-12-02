@@ -121,7 +121,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     public void onTabSelected(LocalTabGroupId groupId, int tabId) {
         if (mNativePtr == 0) return;
         assert groupId != null;
-        TabGroupSyncServiceImplJni.get().onTabSelected(mNativePtr, this, groupId, tabId);
+        TabGroupSyncServiceImplJni.get().setTabSelected(mNativePtr, this, groupId, tabId);
     }
 
     @Override
@@ -314,7 +314,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 int tabId,
                 int newIndexInGroup);
 
-        void onTabSelected(
+        void setTabSelected(
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
                 LocalTabGroupId groupId,

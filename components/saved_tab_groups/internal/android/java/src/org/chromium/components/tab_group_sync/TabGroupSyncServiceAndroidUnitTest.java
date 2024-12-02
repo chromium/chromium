@@ -243,4 +243,9 @@ public class TabGroupSyncServiceAndroidUnitTest {
             LocalTabGroupId localTabGroupId, String syncTabId, int localTabId) {
         mService.updateLocalTabId(localTabGroupId, syncTabId, localTabId);
     }
+
+    @CalledByNative
+    public void testOnTabSelected(LocalTabGroupId localTabGroupId, int localTabId) {
+        mService.onTabSelected(localTabGroupId, localTabId);
+    }
 }

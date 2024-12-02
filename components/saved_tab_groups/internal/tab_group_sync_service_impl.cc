@@ -469,24 +469,47 @@ void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
   LogEvent(TabGroupEvent::kTabGroupTabsReordered, group_id, std::nullopt);
 }
 
-void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
-                                            const LocalTabID& tab_id) {
-  VLOG(2) << __func__;
-  const SavedTabGroup* group = model_->Get(group_id);
+void TabGroupSyncServiceImpl::OnTabSelected(
+    const std::optional<LocalTabGroupID>& group_id,
+    const LocalTabID& tab_id) {
+  if (!group_id) {
+    currently_selected_tab_id_ = {std::nullopt, std::nullopt};
+    NotifyTabSelected();
+    return;
+  }
+
+  const SavedTabGroup* group = model_->Get(*group_id);
   if (!group) {
-    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
+    currently_selected_tab_id_ = {std::nullopt, std::nullopt};
+    NotifyTabSelected();
     return;
   }
 
   const SavedTabGroupTab* tab = group->GetTab(tab_id);
   if (!tab) {
-    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
+    currently_selected_tab_id_ = {std::nullopt, std::nullopt};
+    NotifyTabSelected();
     return;
   }
 
-  UpdateAttributions(group_id);
-  model_->UpdateLastUserInteractionTimeLocally(group_id);
-  LogEvent(TabGroupEvent::kTabSelected, group_id, tab_id);
+  UpdateAttributions(*group_id);
+  model_->UpdateLastUserInteractionTimeLocally(*group_id);
+  LogEvent(TabGroupEvent::kTabSelected, *group_id, tab_id);
+
+  currently_selected_tab_id_ = {group->saved_guid(), tab->saved_tab_guid()};
+  NotifyTabSelected();
+}
+
+std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+TabGroupSyncServiceImpl::GetCurrentlySelectedTabID() {
+  return currently_selected_tab_id_;
+}
+
+void TabGroupSyncServiceImpl::NotifyTabSelected() {
+  for (auto& observer : observers_) {
+    observer.OnTabSelected(currently_selected_tab_id_.first,
+                           currently_selected_tab_id_.second);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

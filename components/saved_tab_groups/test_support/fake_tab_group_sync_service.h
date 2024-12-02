@@ -47,8 +47,10 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   void MoveTab(const LocalTabGroupID& group_id,
                const LocalTabID& tab_id,
                int new_group_index) override;
-  void OnTabSelected(const LocalTabGroupID& group_id,
+  void OnTabSelected(const std::optional<LocalTabGroupID>& group_id,
                      const LocalTabID& tab_id) override;
+  std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+  GetCurrentlySelectedTabID() override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SaveGroup(SavedTabGroup group) override;
   void UnsaveGroup(const LocalTabGroupID& local_id) override;

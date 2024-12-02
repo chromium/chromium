@@ -78,6 +78,13 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     virtual void OnTabGroupRemoved(const base::Uuid& sync_id,
                                    TriggerSource source) {}
 
+    // The tab corresponding to `tab_id` became the active tab. For tabs not in
+    // tab groups, both `sync_tab_group_id` and `sync_tab_id` will be passed as
+    // std::nullopt.
+    virtual void OnTabSelected(
+        const std::optional<base::Uuid>& sync_tab_group_id,
+        const std::optional<base::Uuid>& sync_tab_id) {}
+
     // The existing SavedTabGroup has been replaced by a new one. This happens
     // when the originating SavedTabGroup was transitioned to a shared one. The
     // old group is not accessible from the service anymore. This method is
@@ -164,9 +171,18 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
       const LocalTabID& tab_id,
       const SavedTabGroupTabBuilder& tab_builder) = 0;
 
-  // For metrics only.
-  virtual void OnTabSelected(const LocalTabGroupID& group_id,
+  // Invoked to keep track of the currently selected tab info which is used by
+  // messaging backend.
+  // TODO(crbug.com/362092886): Currently this is not invoked on desktop and
+  // also not invoked for non-grouped tabs. This needs to be fixed.
+  virtual void OnTabSelected(const std::optional<LocalTabGroupID>& group_id,
                              const LocalTabID& tab_id) = 0;
+
+  // Invoked to find the tab ID of the currently selected tab. Returns a pair of
+  // tab group ID and tab ID, both of which can be std::nullopt in case the
+  // currently selected tab is outside the tab group.
+  virtual std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+  GetCurrentlySelectedTabID() = 0;
 
   // SaveGroup / UnsaveGroup are temporary solutions used during desktop's
   // migration. Other clients should use AddGroup / RemoveGroup.

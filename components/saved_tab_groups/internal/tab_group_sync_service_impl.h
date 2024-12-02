@@ -87,8 +87,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void MoveTab(const LocalTabGroupID& group_id,
                const LocalTabID& tab_id,
                int new_group_index) override;
-  void OnTabSelected(const LocalTabGroupID& group_id,
+  void OnTabSelected(const std::optional<LocalTabGroupID>& group_id,
                      const LocalTabID& tab_id) override;
+  std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+  GetCurrentlySelectedTabID() override;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SaveGroup(SavedTabGroup group) override;
   void UnsaveGroup(const LocalTabGroupID& local_id) override;
@@ -258,6 +261,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // groups.
   void UpdateTransitionedSavedTabGroupsList();
 
+  void NotifyTabSelected();
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
@@ -296,6 +301,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // invoked for the shared tab group.
   std::vector<std::tuple<std::string, base::Uuid, TriggerSource>>
       shared_tab_groups_waiting_for_collaboration_;
+
+  // Currently selected tab group and tab ID.
+  std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+      currently_selected_tab_id_;
 
   // Obsevers of the model.
   base::ObserverList<TabGroupSyncService::Observer> observers_;

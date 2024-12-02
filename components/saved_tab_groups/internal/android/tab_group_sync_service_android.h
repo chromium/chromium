@@ -95,10 +95,10 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                jint j_tab_id,
                int j_new_index_in_group);
 
-  void OnTabSelected(JNIEnv* env,
-                     const JavaParamRef<jobject>& j_caller,
-                     const JavaParamRef<jobject>& j_group_id,
-                     jint j_tab_id);
+  void SetTabSelected(JNIEnv* env,
+                      const JavaParamRef<jobject>& j_caller,
+                      const JavaParamRef<jobject>& j_group_id,
+                      jint j_tab_id);
 
   // Accessor methods.
   ScopedJavaLocalRef<jobjectArray> GetAllGroupIds(
