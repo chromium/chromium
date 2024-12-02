@@ -463,7 +463,7 @@ class TestRunner(object):
 
   def wipe_derived_data(self):
     """Removes the contents of Xcode's DerivedData directory."""
-    if os.path.exists(DERIVED_DATA):
+    if os.path.exists(DERIVED_DATA) and not xcode_util.is_local_run():
       shutil.rmtree(DERIVED_DATA)
       os.mkdir(DERIVED_DATA)
 

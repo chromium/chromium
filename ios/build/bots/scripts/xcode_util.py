@@ -526,6 +526,43 @@ def using_xcode_16_or_higher():
       '16.0') <= distutils.version.LooseVersion(version()[0])
 
 
+def is_local_run():
+  """Use the existence of the LUCI_CONTEXT environment variable to determine
+  whether we are running on a bot or running locally.
+
+  Returns:
+    (bool) True if running locally, false if on a bot."""
+  return not os.environ.get('LUCI_CONTEXT')
+
+
+def validate_local_xcode_install(xcode_build_version, ios_version):
+  """Confirm that the locally installed Xcode version and iOS simulator
+  runtime matches the arguments passed to the test runner.
+
+  Args:
+    xcode_build_version: (str) Xcode version passed as an argument to the test
+      runner, e.g. "16a242d"
+    ios_version: (str) iOS version passed as an argument to the test
+      runner, e.g. "18.0"
+
+  Raises:
+    test_runner_errors.LocalRunXcodeError when the requested Xcode version is
+      not installed locally
+    test_runner_errors.LocalRunRuntimeError when the requested iOS version is
+     not installed locally
+  """
+  _, local_version = version()
+  if xcode_build_version.lower() != local_version.lower():
+    raise test_runner_errors.LocalRunXcodeError(xcode_build_version,
+                                                local_version)
+
+  runtime_build = get_latest_runtime_build_cipd(xcode_build_version,
+                                                ios_version)
+  local_runtime = iossim_util.get_simulator_runtime_info_by_build(runtime_build)
+  if not local_runtime:
+    raise test_runner_errors.LocalRunRuntimeError(ios_version, runtime_build)
+
+
 def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
                   runtime_cache_prefix, ios_version):
   """Installs the requested Xcode build version.
@@ -535,6 +572,10 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
         First bool: True if installation was successful. False otherwise.
         Second bool: True if Xcode is legacy package. False if it's new.
     """
+  if is_local_run():
+    validate_local_xcode_install(xcode_build_version, ios_version)
+    return (True, False)
+
   try:
     if not mac_toolchain_cmd:
       raise test_runner_errors.MacToolchainNotFoundError(mac_toolchain_cmd)
