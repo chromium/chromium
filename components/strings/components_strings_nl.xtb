@@ -280,6 +280,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1474576429883213321">Schoonmaakdiensten</translation>
 <translation id="1475299637784133125">Zoek je de browserversie? Ga naar</translation>
 <translation id="1476595624592550506">Je wachtwoord wijzigen</translation>
+<translation id="1482372785911828880">Extra dun</translation>
 <translation id="1482879811280872320">Fietsen</translation>
 <translation id="1483493594462132177">Verzenden</translation>
 <translation id="1484449009683144042">Dit is een experimenteel AI-schrijfhulpmiddel dat niet altijd goed werkt.
@@ -1311,6 +1312,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3375754925484257129">Chrome-veiligheidscheck uitvoeren</translation>
 <translation id="3377144306166885718">De server gebruikte een verouderde versie van TLS.</translation>
 <translation id="3377188786107721145">Fout bij het parseren van beleid</translation>
+<translation id="3377642479079205807">Dun</translation>
 <translation id="3378612801784846695">Onderwerpen zijn gebaseerd op je recente browsegeschiedenis en worden door sites gebruikt om je gepersonaliseerde advertenties te tonen terwijl je identiteit wordt beschermd</translation>
 <translation id="3380365263193509176">Onbekende fout</translation>
 <translation id="3380864720620200369">Klant-ID:</translation>
@@ -2480,6 +2482,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5481682542063333508">Hulp bij het schrijven aanbieden</translation>
 <translation id="54817484435770891">Voeg een geldig adres toe</translation>
 <translation id="5483838506518938965">Je bent helemaal klaar</translation>
+<translation id="5485100387355669506">Extra dik</translation>
 <translation id="5485973315555778056">Cloud-apparaat</translation>
 <translation id="5488590678320979185">Knop Notitie maken. Activeer deze om snel een nieuwe notitie te maken in Google Keep.</translation>
 <translation id="5490432419156082418">Adressen en meer</translation>
@@ -3664,6 +3667,7 @@ Aanvullende informatie:
 <translation id="7599089013883397081">Time-out bij downloaden</translation>
 <translation id="7608583484192556132">Of een getoonde advertentie wordt gepersonaliseerd, is afhankelijk van verschillende factoren, waaronder deze instelling, <ph name="BEGIN_LINK_1" />door sites voorgestelde advertenties<ph name="END_LINK_1" />, je <ph name="BEGIN_LINK_2" />cookie-instellingen<ph name="END_LINK_2" /> en of de site die je bekijkt advertenties personaliseert. Meer informatie over hoe je <ph name="BEGIN_LINK_3" />je advertentieprivacy beheert<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Waarde <ph name="VALUE" /> is buiten bereik.</translation>
+<translation id="761261689936461781">Dik</translation>
 <translation id="7613889955535752492">Vervaldatum: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om je wachtwoorden te beheren in de Chrome-instellingen.</translation>
 <translation id="7616645509853975347">Je beheerder heeft Chrome Enterprise Connectors voor je browser ingesteld. Deze connectors hebben toegang tot sommige van je gegevens.</translation>

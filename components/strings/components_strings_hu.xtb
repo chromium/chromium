@@ -4142,6 +4142,7 @@ További részletek:
 <translation id="8449836157089738489">Az összes megnyitása új lapcsoportban</translation>
 <translation id="84561192812921051">A rendszergazda távolról módosításokat végezhet az Ön profiljában és böngészőjében, jelentésekkel elemezheti a böngészőadatait, és egyéb szükséges feladatokat is elvégezhet. Az is lehetséges, hogy az eszközön végzett tevékenységeket a Chrome-on kívülről felügyelik.  <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Az alsó lap be van zárva.</translation>
+<translation id="8456775115498700722">Mostantól automatikusan kitöltheti <ph name="CARD_ISSUER_NAME" />-kártyái adatait, mert <ph name="CARD_ISSUER_NAME" />-fiókja össze van kapcsolva a Google Pay szolgáltatással.</translation>
 <translation id="8457125768502047971">Határozatlan</translation>
 <translation id="8458202188076138974">„Letter Extra” méret</translation>
 <translation id="8460854335417802511">Bekapcsolás</translation>
@@ -4299,6 +4300,7 @@ További részletek:
 <translation id="8757526089434340176">Van ajánlat a Google Paytől</translation>
 <translation id="8759274551635299824">A kártya lejárt</translation>
 <translation id="87601671197631245">Ez a webhely elavult biztonsági konfigurációt használ, ezért előfordulhat, hogy mások látják az Ön adatait (például jelszavait, üzeneteit vagy hitelkártyaszámait), amikor elküldi őket a webhelynek.</translation>
+<translation id="8763226176721243078">Ennek a kártyának az adatait automatikusan kitöltheti, mert <ph name="CARD_ISSUER_NAME" />-fiókja össze van kapcsolva a Google Pay szolgáltatással.</translation>
 <translation id="8763927697961133303">USB-eszköz</translation>
 <translation id="8763986294015493060">Az összes jelenleg megnyitott inkognitó ablak bezárása</translation>
 <translation id="8766943070169463815">Biztonságos fizetés hitelesítési adatainak hitelesítési űrlapja megnyitva.</translation>

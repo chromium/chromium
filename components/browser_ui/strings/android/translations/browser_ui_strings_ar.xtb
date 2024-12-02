@@ -335,6 +335,7 @@
 <translation id="5968921426641056619">أدخِل عنوان الويب.</translation>
 <translation id="5975083100439434680">تصغير</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">‏يمكنك الآن الوصول بسرعة إلى علامات التبويب المقترَحة من قائمة التطبيقات ونتائج البحث على جهازك. يُمكنك إيقاف هذا الإعداد في أي وقت من إعدادات Chrome.</translation>
 <translation id="6015775454662021376">يمكنك التحكّم بإمكانية وصول هذا الموقع إلى جهازك.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
@@ -378,7 +379,7 @@
 <translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
 <translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6561560012278703671">استخدام طريقة أقل بروزًا لإرسال الإشعارات (منع رسائل الإشعارات من إزعاجك)</translation>
-<translation id="6593061639179217415">موقع إلكتروني متوافق مع أجهزة الكمبيوتر المكتبي</translation>
+<translation id="6593061639179217415">موقع مصمَّم للكمبيوتر</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{تم السماح باستخدام ملفات تعريف الارتباط لموقع إلكتروني واحد (<ph name="RWS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="RWS_OWNER" />"}zero{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="RWS_OWNER" />"}two{تم السماح باستخدام ملفات تعريف الارتباط لموقعَين إلكترونيَّين (<ph name="RWS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="RWS_OWNER" />"}few{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> مواقع إلكترونية ضمن مجموعة "<ph name="RWS_OWNER" />"}many{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقعًا إلكترونيًّا ضمن مجموعة "<ph name="RWS_OWNER" />"}other{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="RWS_OWNER" />"}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> غيغابايت</translation>
 <translation id="6612358246767739896">المحتوى المحمي</translation>
@@ -436,6 +437,7 @@
 <translation id="7423098979219808738">السؤال أولاً</translation>
 <translation id="7423538860840206698">تم الحظر من قراءة الحافظة</translation>
 <translation id="7425915948813553151">المظهر الداكن للمواقع الإلكترونية</translation>
+<translation id="7488573225650545859">إخفاء "عرض علامات التبويب في قائمة التطبيقات"</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية عرض طلبات تسجيل الدخول. وعند إيقافه، لا يمكن للمواقع الإلكترونية عرض تلك الطلبات.</translation>
 <translation id="7553211568594248088">الخروج من البحث في المركز</translation>
@@ -475,6 +477,7 @@
 <translation id="8087000398470557479">‏هذا المحتوى من <ph name="DOMAIN_NAME" />، وتم عرضه من قبل Google.</translation>
 <translation id="8088603949666785339">مزيد من الخيارات في "<ph name="BANNER_TITLE" />"</translation>
 <translation id="8090579562279016251">‏يقلِّل هذا الخيار من مستوى الأداء ويعزِّز من مقاومة مُحسِّن V8 للهجمات.</translation>
+<translation id="8112925981674547014">عرض علامات التبويب في قائمة التطبيقات</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{‏سيُعيد متصفِّح Chrome حظر ملفات تعريف الارتباط غدًا}zero{‏يتبقّى # يوم على إعادة حظر ملفات تعريف الارتباط في متصفِّح Chrome}two{‏يتبقّى يومان على إعادة حظر ملفات تعريف الارتباط في متصفِّح Chrome}few{‏تتبقّى # أيام على إعادة حظر ملفات تعريف الارتباط في متصفِّح Chrome}many{‏يتبقّى # يومًا على إعادة حظر ملفات تعريف الارتباط في متصفِّح Chrome}other{‏يتبقّى # يوم على إعادة حظر ملفات تعريف الارتباط في متصفِّح Chrome}}</translation>
 <translation id="8116925261070264013">المواقع الإلكترونية التي تم كتم الصوت فيها</translation>
 <translation id="8117244575099414087">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية استخدام أدوات الاستشعار في جهازك. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام تلك الأدوات.</translation>

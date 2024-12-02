@@ -262,6 +262,7 @@
 <translation id="4510853178268397146">এই এক্সটেনশ্বনে গোপনীয়তাৰ ব্যৱস্থাসমূহ প্ৰকাশ কৰা নাই, যেনে ই কেনেকৈ ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰে। Chromiumএ আপুনি এইটো আঁতৰোৱাটো চুপাৰিছ কৰে।</translation>
 <translation id="452711251841752011">Chromiumলৈ স্বাগতম; নতুন ব্ৰাউজাৰৰ ৱিণ্ড’ খোলা হৈছে</translation>
 <translation id="4531137820806573936">আপোনাৰ চৌপাশৰ ঠাইসমূহ মেপ কৰিবলৈ আৰু আপোনাৰ হাত ট্ৰেক কৰিবলৈ Chromiumক অনুমতিৰ প্ৰয়োজন</translation>
+<translation id="4534145890176164066">Chromiumএ ফৰ্মসমূহ ভালদৰে বুজি পায় আৰু আপোনাৰ বাবে সেয়া দ্ৰুততাৰে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে</translation>
 <translation id="4536805923587466102">আপুনি আন এটা Chromium প্ৰ’ফাইলত ইতিমধ্যে <ph name="USER_EMAIL_ADDRESS" /> হিচাপে ছাইন ইন কৰিছে</translation>
 <translation id="4544142686420020088">Chromium আপডে'ট হোৱা নাই, কিবা ভুল হৈছে। <ph name="BEGIN_LINK" />Chromiumৰ আপডে'ট সম্পর্কীয় সমস্যাবোৰ আৰু বিফল হোৱা আপডে'টসমূহ সমাধান কৰক।<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">আপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা উন্নত কৰিবলৈ আৰু কামবোৰ দ্ৰুত কৰি ৰাখিবলৈ Chromiumএ এই টেবটো নিষ্ক্ৰিয় কৰিব পাৰে।</translation>
@@ -480,6 +481,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="7349591376906416160">আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে Chromiumক <ph name="TARGET_URL_HOSTNAME" /> এক্সেছ কৰিবলৈ <ph name="ALTERNATIVE_BROWSER_NAME" /> খুলিবলৈ কনফিগাৰ কৰিছে।</translation>
 <translation id="7355355292030546812">ফাইলটোৱে <ph name="USER_EMAIL" />কে ধৰি আপোনাৰ ব্যক্তিগত আৰু সামাজিক নেটৱৰ্কৰ একাউণ্টসমূহৰ ক্ষতি কৰিব পাৰে বাবে Chromiumএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
 <translation id="7384121030444253939">এই এক্সটেনশ্বনটো আৰু সমৰ্থিত নহয়। Chromiumএ তাৰ পৰিৱৰ্তে আপুনি এইটো আঁতৰোৱাটো চুপাৰিছ কৰে।</translation>
+<translation id="7389750180956889333">Chromiumএ ফৰ্মসমূহ ভালদৰে বুজি পায় আৰু আপোনাৰ বাবে সেয়া দ্ৰুততাৰে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে। <ph name="BEGIN_LINK" />Chromeৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা<ph name="END_LINK" />ৰ বিষয়ে অধিক জানক</translation>
 <translation id="7398989605938454041">Chromiumৰ প্ৰ’ফাইলৰ জৰিয়তে আপুনি নিজৰ আটাইবোৰ Chromiumৰ বস্তু পৃথক কৰিব পাৰে। এইটোৱে কৰ্মস্থান আৰু মনোৰঞ্জনৰ মাজত বিভাজন কৰাটো অধিক সহজ কৰি তোলে।</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">পাঠৰ প্ৰতিলিপি কৰা হ’ল</translation>

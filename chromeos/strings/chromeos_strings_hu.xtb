@@ -1365,6 +1365,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7425037327577270384">Segítség az íráshoz</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Nem lehet letiltani vagy eltávolítani ezt az APN-t. Győződjön meg arról, hogy az engedélyezett <ph name="ATTACH" /> APN-ek le vannak tiltva vagy el vannak távolítva.</translation>
+<translation id="7453118953486228603">Kattintson a kijelölt szöveg összegzéséhez</translation>
 <translation id="7458970041932198923">Az avatarok megtekintéséhez és beállításához csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="7469648432129124067">Portál észlelve</translation>
 <translation id="7481312909269577407">Előre</translation>
@@ -1723,6 +1724,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="9133772297793293778">Nyomja meg a billentyűzeten a kívánt módosítót (1–4) és egy másik billentyűt. A szerkesztési módból az alt + esc billentyűkombináció lenyomásával léphet ki.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Bal oldali Shift</translation>
+<translation id="9147928237330776930">Túl kevés szó van kijelölve az összegzéshez</translation>
 <translation id="9149391708638971077">Memóriateszt futtatása</translation>
 <translation id="9159524746324788320">hamburgerek</translation>
 <translation id="9161276708550942948">szóköz</translation>

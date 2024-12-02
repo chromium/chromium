@@ -646,12 +646,14 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8825634023950448068">Adatai védelme érdekében a négy hétnél régebbi érdeklődési köreit automatikusan töröljük. Böngészési tevékenysége alapján az érdeklődési körök újra megjelenhetnek a listákon. Ha pedig a Chrome téved, vagy ha Ön nem szeretne bizonyos típusú hirdetéseket látni, eltávolíthat érdeklődési köröket.</translation>
 <translation id="8834965163890861871">A Google Chrome szerkeszteni próbálja a jelszavakat. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="8843389967774722327">A Chrome rendszeresen bővül új funkciókkal, amelyek segítenek Önnek elintézni a dolgait</translation>
+<translation id="8843516219908676469">A funkció segítségével a Chrome pontosabban megérti az űrlapokat, és gyorsabban tudja kitölteni őket.</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{A Chrome az eltávolítását javasolja}other{A Chrome az eltávolításukat javasolja}}</translation>
 <translation id="8862326446509486874">Nincsenek meg a megfelelő jogai a rendszerszintű telepítéshez. Indítsa újra a telepítőt rendszergazdaként.</translation>
 <translation id="8908277254462331033">Biztonsági funkciók megtekintése</translation>
 <translation id="8914504000324227558">A Chrome újraindítása</translation>
 <translation id="8922193594870374009">Ha innen: <ph name="ORIGIN" /> szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>
 <translation id="8948460679427074738">Ez a bővítmény nem tett közzé adatvédelmi gyakorlatokat például arra vonatkozóan, hogy hogyan gyűjti és használja fel az adatokat. A Chrome az eltávolítását javasolja.</translation>
+<translation id="8983860655274963234">A funkció segítségével a Chrome pontosabban megérti az űrlapokat, és gyorsabban tudja kitölteni őket. További információ a <ph name="BEGIN_LINK" />Chrome automatikus kitöltés funkciójáról<ph name="END_LINK" />.</translation>
 <translation id="8986207147630327271">Munkaprofilt ad hozzá ehhez a böngészőhöz, és csak a munkaprofil felett adja át az irányítást a rendszergazdának.</translation>
 <translation id="8989968390305463310">Böngészési előzményei határozzák meg az Ön számára megjelenő hirdetéseket és az alább látható módon felmért érdeklődési köröket. Adatai védelme érdekében a Chrome havi rendszerességgel automatikusan törli az Ön érdeklődési köreit. Az érdeklődési körök frissülhetnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="8999117580775242387">Ha a HTTPS nem áll rendelkezésre, a Chrome nem biztonságos kapcsolatot fog használni anélkül, hogy figyelmeztetné Önt</translation>

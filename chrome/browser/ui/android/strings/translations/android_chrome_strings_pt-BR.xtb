@@ -1004,7 +1004,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5620928963363755975">Procure seus arquivos e páginas em Downloads, usando o botão Mais opções</translation>
 <translation id="562289928968387744">Gerenciar reações</translation>
 <translation id="5626134646977739690">Nome:</translation>
-<translation id="5628604359369369630">Não lidas. Disponíveis off-line</translation>
+<translation id="5628604359369369630">Não lidas - Disponíveis off-line</translation>
 <translation id="5641456720590409793">O <ph name="BEGIN_LINK1" />histórico de pesquisa<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outras formas de atividade<ph name="END_LINK2" /> podem ser salvos na sua Conta do Google.</translation>
 <translation id="5648166631817621825">Últimos sete dias</translation>
 <translation id="5655963694829536461">Pesquisar seus downloads</translation>
@@ -1467,7 +1467,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7577900504646297215">Gerenciar interesses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> arquivo baixado}one{<ph name="FILES_DOWNLOADED_MANY" /> arquivo baixado}other{<ph name="FILES_DOWNLOADED_MANY" /> arquivos baixados}}</translation>
 <translation id="7581273696622423628">Responder à pesquisa</translation>
-<translation id="7583262514280211622">Você encontrará sua lista de leituras aqui</translation>
+<translation id="7583262514280211622">Você vai encontrar sua lista de leituras aqui</translation>
 <translation id="758603037873046260">Faça login para salvar esta página</translation>
 <translation id="7588219262685291874">Ativar o tema escuro quando a Economia de bateria do seu dispositivo estiver ativada</translation>
 <translation id="7592322927044331376">Primeiro, exporte e exclua as senhas do Chrome</translation>

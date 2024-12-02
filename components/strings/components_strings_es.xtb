@@ -280,6 +280,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1474576429883213321">Servicios de limpieza</translation>
 <translation id="1475299637784133125">¿Buscas la versión del navegador? Visita</translation>
 <translation id="1476595624592550506">Cambia la contraseña</translation>
+<translation id="1482372785911828880">Extrafino</translation>
 <translation id="1482879811280872320">Ciclismo</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484449009683144042">Se trata de una ayuda experimental de escritura con IA y no siempre acierta.
@@ -1314,6 +1315,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3375754925484257129">Realizar comprobación de seguridad de Chrome</translation>
 <translation id="3377144306166885718">El servidor utiliza una versión de TLS obsoleta.</translation>
 <translation id="3377188786107721145">Error al analizar la política</translation>
+<translation id="3377642479079205807">Fino</translation>
 <translation id="3378612801784846695">Los temas se basan en tu historial de navegación reciente, y los sitios web los usan para mostrarte anuncios personalizados mientras protegen tu identidad</translation>
 <translation id="3380365263193509176">Error desconocido</translation>
 <translation id="3380864720620200369">ID de cliente:</translation>
@@ -2486,6 +2488,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5481682542063333508">Ofrecer ayuda para escribir</translation>
 <translation id="54817484435770891">Añadir dirección válida</translation>
 <translation id="5483838506518938965">Ya has terminado</translation>
+<translation id="5485100387355669506">Extragrueso</translation>
 <translation id="5485973315555778056">Máquina de la nube</translation>
 <translation id="5488590678320979185">Botón Crear nota: actívalo para crear una nueva nota en Google Keep rápidamente</translation>
 <translation id="5490432419156082418">Direcciones y más</translation>
@@ -3671,6 +3674,7 @@ Más información:
 <translation id="7599089013883397081">Tiempo de espera de descarga agotado</translation>
 <translation id="7608583484192556132">La personalización de los anuncios que ves depende de muchos factores, como esta opción, los <ph name="BEGIN_LINK_1" />anuncios sugeridos por sitios<ph name="END_LINK_1" />, tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y si el sitio que estás viendo personaliza los anuncios. Consulta más información sobre cómo <ph name="BEGIN_LINK_3" />gestionar la privacidad en la publicidad<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">El valor <ph name="VALUE" /> se encuentra fuera del intervalo.</translation>
+<translation id="761261689936461781">Grueso</translation>
 <translation id="7613889955535752492">Caducidad: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para ver y gestionar tus contraseñas desde la configuración de Chrome</translation>
 <translation id="7616645509853975347">Tu administrador ha activado Chrome Enterprise Connectors en tu navegador. Estos conectores tienen acceso a algunos de tus datos.</translation>

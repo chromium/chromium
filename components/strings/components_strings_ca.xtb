@@ -280,6 +280,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1474576429883213321">Serveis de neteja</translation>
 <translation id="1475299637784133125">Busques la versió del navegador? Ves a</translation>
 <translation id="1476595624592550506">Canvia la contrasenya</translation>
+<translation id="1482372785911828880">Molt fi</translation>
 <translation id="1482879811280872320">Ciclisme</translation>
 <translation id="1483493594462132177">Envia</translation>
 <translation id="1484449009683144042">Es tracta d'una eina d'escriptura experimental basada en la IA i no sempre l'encertarà.
@@ -1314,6 +1315,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3375754925484257129">Executa la comprovació de seguretat de Chrome</translation>
 <translation id="3377144306166885718">El servidor ha utilitzat una versió obsoleta de TLS.</translation>
 <translation id="3377188786107721145">Hi ha hagut un error en analitzar la política</translation>
+<translation id="3377642479079205807">Fi</translation>
 <translation id="3378612801784846695">Els temes es basen en el teu historial de navegació recent i els utilitzen els llocs web per mostrar-te anuncis personalitzats i per protegir la teva identitat</translation>
 <translation id="3380365263193509176">Error desconegut</translation>
 <translation id="3380864720620200369">Identificador de client:</translation>
@@ -2486,6 +2488,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5481682542063333508">Ofereix ajuda per escriure</translation>
 <translation id="54817484435770891">Afegeix una adreça vàlida</translation>
 <translation id="5483838506518938965">Ja esteu a punt</translation>
+<translation id="5485100387355669506">Molt gruixut</translation>
 <translation id="5485973315555778056">Màquina al núvol</translation>
 <translation id="5488590678320979185">Botó Crea una nota: activa'l per crear una nota nova ràpidament a Google Keep</translation>
 <translation id="5490432419156082418">Adreces i més</translation>
@@ -3671,6 +3674,7 @@ Detalls addicionals:
 <translation id="7599089013883397081">S'ha esgotat el temps d'espera per a la baixada</translation>
 <translation id="7608583484192556132">El fet que els anuncis que veus es personalitzin o no pot dependre de molts factors, com ara d'aquesta opció de configuració, dels <ph name="BEGIN_LINK_1" />anuncis suggerits per llocs web<ph name="END_LINK_1" />, de la <ph name="BEGIN_LINK_2" />configuració de galetes<ph name="END_LINK_2" /> i de si el lloc web que estàs visitant personalitza els anuncis. Obtén més informació sobre com pots <ph name="BEGIN_LINK_3" />gestionar la privadesa d'anuncis<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">El valor es troba fora de l'interval <ph name="VALUE" /> .</translation>
+<translation id="761261689936461781">Gruixut</translation>
 <translation id="7613889955535752492">Data de caducitat: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per veure i gestionar les contrasenyes a la configuració de Chrome</translation>
 <translation id="7616645509853975347">L'administrador ha activat Chrome Enterprise Connectors al navegador. Aquests connectors tenen accés a algunes de les teves dades.</translation>

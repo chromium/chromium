@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">清掃サービス</translation>
 <translation id="1475299637784133125">ブラウザのバージョン情報をお探しですか？次にアクセスしてください</translation>
 <translation id="1476595624592550506">パスワードを変更してください</translation>
+<translation id="1482372785911828880">極細</translation>
 <translation id="1482879811280872320">自転車</translation>
 <translation id="1483493594462132177">送信</translation>
 <translation id="1484449009683144042">これは試験運用版の AI による文章作成サポートで、常に正しいとは限りません。
@@ -1314,6 +1315,7 @@
 <translation id="3375754925484257129">Chrome の安全チェックを実行</translation>
 <translation id="3377144306166885718">このサーバーは TLS の廃止されたバージョンを使用しています。</translation>
 <translation id="3377188786107721145">ポリシー解析エラーです</translation>
+<translation id="3377642479079205807">細い</translation>
 <translation id="3378612801784846695">トピックは最近の閲覧履歴に基づいて判断され、サイトでユーザーの個人情報を保護しながら、パーソナライズド広告を表示する際に使用されます</translation>
 <translation id="3380365263193509176">不明なエラー</translation>
 <translation id="3380864720620200369">クライアント ID:</translation>
@@ -2486,6 +2488,7 @@
 <translation id="5481682542063333508">文書作成をサポートする</translation>
 <translation id="54817484435770891">有効なアドレスを追加</translation>
 <translation id="5483838506518938965">以上で完了です</translation>
+<translation id="5485100387355669506">極太</translation>
 <translation id="5485973315555778056">クラウドマシン</translation>
 <translation id="5488590678320979185">[メモを作成] ボタンです。実行すると、Google Keep で新しいメモをすばやく作成できます</translation>
 <translation id="5490432419156082418">住所やその他の情報</translation>
@@ -3672,6 +3675,7 @@
 <translation id="7599089013883397081">ダウンロードがタイムアウトしました</translation>
 <translation id="7608583484192556132">表示される広告がパーソナライズされるかどうかは、この設定、<ph name="BEGIN_LINK_1" />サイトによる広告の提案<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie の設定<ph name="END_LINK_2" />、アクセスしたサイトが広告をパーソナライズしているかどうかなど、さまざまな要素によって決まります。<ph name="BEGIN_LINK_3" />広告のプライバシー管理について<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">値（<ph name="VALUE" />）が範囲外です。</translation>
+<translation id="761261689936461781">太い</translation>
 <translation id="7613889955535752492">有効期限: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定でパスワードを表示、管理します</translation>
 <translation id="7616645509853975347">管理者により、お使いのブラウザで Chrome Enterprise Connectors が有効化されています。これらのコネクタには、一部のユーザーデータへのアクセスが許可されます。</translation>

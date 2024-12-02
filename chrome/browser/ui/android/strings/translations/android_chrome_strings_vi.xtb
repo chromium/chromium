@@ -978,6 +978,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5514904542973294328">Bị quản trị viên của thiết bị này vô hiệu hóa</translation>
 <translation id="5515439363601853141">Mở khóa để xem mật khẩu của bạn</translation>
 <translation id="5517095782334947753">Bạn có dữ liệu về dấu trang, nhật ký hoạt động, mật khẩu và các chế độ cài đặt khác từ tài khoản <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5517326820028369152">Bảng hoạt động gần đây ở dưới cùng</translation>
 <translation id="5524843473235508879">Đã chặn chuyển hướng.</translation>
 <translation id="5526281268548144413">Không đóng được trên nhiều cửa sổ</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# phút trước}other{# phút trước}}</translation>
@@ -1280,6 +1281,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6817747507826986771">Chia sẻ nhanh trang này. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Đã đóng yêu cầu cập nhật của Trình quản lý mật khẩu của Google</translation>
+<translation id="6824933543577433709">Bảng hoạt động gần đây ở dưới cùng đã đóng</translation>
 <translation id="6828070228333235514">Dừng theo dõi giá</translation>
 <translation id="6830728435402077660">Không bảo mật</translation>
 <translation id="6831043979455480757">Dịch</translation>
@@ -1498,6 +1500,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7691043218961417207">Khám phá nội dung mà bạn có thể theo dõi</translation>
 <translation id="7697383401610880082">Nút kéo</translation>
 <translation id="7698359219371678927">Tạo email trong <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">Bảng hoạt động gần đây ở dưới cùng đã mở trên toàn màn hình</translation>
 <translation id="7707922173985738739">Sử dụng dữ liệu di động</translation>
 <translation id="7709918231054955894">Xem tất cả thẻ của bạn</translation>
 <translation id="7733878270780732638">Không đủ dung lượng trên thiết bị.</translation>

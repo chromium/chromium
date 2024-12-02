@@ -335,6 +335,7 @@
 <translation id="5968921426641056619">צריך להזין כתובת אינטרנט</translation>
 <translation id="5975083100439434680">התרחקות</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">‏עכשיו אפשר לגשת במהירות לכרטיסיות המוצעות מרשימת האפליקציות במכשיר ומתוצאות החיפוש במכשיר. אפשר להשבית את האפשרות הזו בכל שלב בהגדרות של Chrome.</translation>
 <translation id="6015775454662021376">שליטה על הגישה של האתר הזה למכשיר שלך</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6042308850641462728">עוד</translation>
@@ -436,6 +437,7 @@
 <translation id="7423098979219808738">תופיע בקשת אישור</translation>
 <translation id="7423538860840206698">הגישה לקריאה מלוח העריכה נחסמה</translation>
 <translation id="7425915948813553151">עיצוב כהה באתרים</translation>
+<translation id="7488573225650545859">הסתרת הכרטיסיות "צפייה" ברשימת האפליקציות</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">כשהאפשרות מופעלת, אתרים יכולים להציג בקשות כניסה. כשהאפשרות מושבתת, אתרים לא יכולים להציג בקשות כניסה.</translation>
 <translation id="7553211568594248088">יציאה מהחיפוש ברכזת</translation>
@@ -475,6 +477,7 @@
 <translation id="8087000398470557479">‏התוכן הזה הוא מ-<ph name="DOMAIN_NAME" />, ומוגש על-ידי Google.</translation>
 <translation id="8088603949666785339">אפשרויות נוספות ב<ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">‏ירידה ברמת הביצועים בתמורה להגברת העמידות של V8 בפני מתקפות</translation>
+<translation id="8112925981674547014">הצגת הכרטיסיות ברשימת האפליקציות</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{‏קובצי Cookie יוגבלו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי Cookie יוגבלו שוב ב-Chrome}two{‏יש עוד יומיים עד שקובצי Cookie יוגבלו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי Cookie יוגבלו שוב ב-Chrome}}</translation>
 <translation id="8116925261070264013">מושתקים</translation>
 <translation id="8117244575099414087">כשהאפשרות מופעלת, אתרים יכולים להשתמש בחיישני המכשיר. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בחיישנים.</translation>

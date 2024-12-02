@@ -4149,6 +4149,7 @@ Papildoma išsami informacija:
 <translation id="8449836157089738489">Atidaryti viską naujoje skirtukų grupėje</translation>
 <translation id="84561192812921051">Administratorius gali nuotoliniu būdu atlikti profilio ir naršyklės pakeitimų, analizuoti informaciją apie naršyklę pateikdamas ataskaitas ir atlikti kitas reikiamas užduotis. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chrome“.  <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Apatinis lapas uždarytas.</translation>
+<translation id="8456775115498700722">Dabar galite automatiškai užpildyti „<ph name="CARD_ISSUER_NAME" />“ korteles, nes „<ph name="CARD_ISSUER_NAME" />“ paskyra susieta su „Google Pay“.</translation>
 <translation id="8457125768502047971">Neribota</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Įjungti</translation>
@@ -4306,6 +4307,7 @@ Papildoma išsami informacija:
 <translation id="8757526089434340176">Pasiekiamas „Google Pay“ pasiūlymas</translation>
 <translation id="8759274551635299824">Ši kortelė nebegalioja</translation>
 <translation id="87601671197631245">Šioje svetainėje naudojama pasenusi saugos konfigūracija, todėl gali būti atskleista į šią svetainę siunčiama informacija (pvz., slaptažodžiai, pranešimai ar kredito kortelių duomenys).</translation>
+<translation id="8763226176721243078">Galite automatiškai užpildyti šią kortelę, nes jūsų „<ph name="CARD_ISSUER_NAME" />“ paskyra yra susieta su „Google Pay“.</translation>
 <translation id="8763927697961133303">USB įrenginys</translation>
 <translation id="8763986294015493060">Uždaryti visus šiuo metu atidarytus inkognito langus</translation>
 <translation id="8766943070169463815">Saugaus mokėjimo prisijungimo duomenų autentifikavimo lapas atidarytas</translation>

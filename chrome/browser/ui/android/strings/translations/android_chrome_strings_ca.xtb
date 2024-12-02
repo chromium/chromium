@@ -978,6 +978,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5514904542973294328">Opció desactivada per l'administrador d'aquest dispositiu</translation>
 <translation id="5515439363601853141">Desbloqueja la pantalla per veure la contrasenya</translation>
 <translation id="5517095782334947753">Tens les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració de l'adreça <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5517326820028369152">Full inferior de l'activitat recent</translation>
 <translation id="5524843473235508879">S'ha bloquejat la redirecció.</translation>
 <translation id="5526281268548144413">No es pot tancar en diverses finestres</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Fa # min}other{Fa # min}}</translation>
@@ -1280,6 +1281,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6817747507826986771">Comparteix ràpidament aquesta pàgina. Mantingues premuda aquesta drecera per editar-la.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">S'ha tancat l'actualització del gestor de contrasenyes de Google</translation>
+<translation id="6824933543577433709">Full inferior de l'activitat recent tancat</translation>
 <translation id="6828070228333235514">Atura el seguiment del preu</translation>
 <translation id="6830728435402077660">No segura</translation>
 <translation id="6831043979455480757">Tradueix</translation>
@@ -1498,6 +1500,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7691043218961417207">Explora contingut i segueix-lo</translation>
 <translation id="7697383401610880082">Ansa per arrossegar</translation>
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">Full inferior de l'activitat recent obert a alçada completa</translation>
 <translation id="7707922173985738739">Utilitza dades mòbils</translation>
 <translation id="7709918231054955894">Obtén totes les teves pestanyes</translation>
 <translation id="7733878270780732638">No hi ha prou espai al dispositiu.</translation>

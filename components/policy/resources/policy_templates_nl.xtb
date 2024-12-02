@@ -8397,6 +8397,15 @@ Belangrijke opmerking: De planningen die door dit beleid zijn ingesteld, worden 
        Chrome Remote Desktop-host is geïnstalleerd.</translation>
 <translation id="7202925763179776247">Downloadbeperkingen toestaan</translation>
 <translation id="7203243973351251622">Recorder (ondersteund vanaf versie 130)</translation>
+<translation id="7205989349935313324">Met Lensoverlay kunnen gebruikers Google-zoekopdrachten uitvoeren door interactie met een screenshot van de huidige pagina dat over de daadwerkelijke webcontent wordt weergegeven. Daarnaast kunnen gebruikers Google-zoekopdrachten uitvoeren die contextafhankelijk zijn van de huidige pagina. Om contextuele antwoorden te geven, stuurt Lensoverlay paginacontent naar Google om de query van de gebruiker te beantwoorden met de context van de pagina waarop de gebruiker zich bevindt.
+
+Er is geen gebruikersinstelling om deze functie te beheren. De functie wordt over het algemeen beschikbaar gemaakt voor alle gebruikers die Google als standaard zoekmachine hebben, tenzij uitgezet op basis van dit beleid.
+
+0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = De functie uitzetten.</translation>
 <translation id="7207095846245296855">Google SafeSearch afdwingen</translation>
 <translation id="7211368186050418507">Tijdzone nooit automatisch detecteren</translation>
 <translation id="721617466745658461">Gebruikers toestaan het binaire bestand voor de <ph name="LACROS_NAME" />-browser te selecteren</translation>

@@ -458,7 +458,7 @@
 <translation id="3029704984691124060">密码不匹配</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />获取帮助<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
-<translation id="3037517125981011456">显示意在引导用户登录 Chrome 的提示</translation>
+<translation id="3037517125981011456">显示让用户登录 Chrome 的提示</translation>
 <translation id="3038272154009688107">查看所有网站</translation>
 <translation id="3059531648236115056">添加摘要</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>

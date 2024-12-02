@@ -978,6 +978,7 @@
 <translation id="5514904542973294328">ปิดใช้โดยผู้ดูแลระบบของอุปกรณ์นี้</translation>
 <translation id="5515439363601853141">ปลดล็อกเพื่อดูรหัสผ่าน</translation>
 <translation id="5517095782334947753">คุณมีบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จาก <ph name="FROM_ACCOUNT" /></translation>
+<translation id="5517326820028369152">Bottom Sheet กิจกรรมล่าสุด</translation>
 <translation id="5524843473235508879">การเปลี่ยนเส้นทางถูกบล็อก</translation>
 <translation id="5526281268548144413">ปิดในหลายหน้าต่างไม่ได้</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
@@ -1280,6 +1281,7 @@
 <translation id="6817747507826986771">แชร์หน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">การอัปเดตเครื่องมือจัดการรหัสผ่านบน Google ปิดอยู่</translation>
+<translation id="6824933543577433709">ปิด Bottom Sheet กิจกรรมล่าสุดแล้ว</translation>
 <translation id="6828070228333235514">หยุดติดตามราคา</translation>
 <translation id="6830728435402077660">ไม่ปลอดภัย</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
@@ -1498,6 +1500,7 @@
 <translation id="7691043218961417207">สำรวจเนื้อหาที่น่าติดตาม</translation>
 <translation id="7697383401610880082">แฮนเดิลการลาก</translation>
 <translation id="7698359219371678927">สร้างอีเมลใน <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">Bottom Sheet กิจกรรมล่าสุดเปิดอยู่แบบเต็มความสูง</translation>
 <translation id="7707922173985738739">ใช้เน็ตมือถือ</translation>
 <translation id="7709918231054955894">ดูแท็บทั้งหมด</translation>
 <translation id="7733878270780732638">มีพื้นที่ในอุปกรณ์ไม่เพียงพอ</translation>

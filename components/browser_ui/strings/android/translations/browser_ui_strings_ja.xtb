@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">ウェブアドレスを入力</translation>
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />～<ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">デバイスのアプリリストと検索結果から、おすすめのタブにすばやくアクセスできるようになりました。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="6015775454662021376">このサイトによるデバイスへのアクセスを管理します</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6042308850641462728">もっと見る</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">最初に確認する</translation>
 <translation id="7423538860840206698">クリップボードの読み取りがブロックされています</translation>
 <translation id="7425915948813553151">サイトのダークモード</translation>
+<translation id="7488573225650545859">[アプリリストにタブを表示] を非表示にする</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">オンにすると、サイトはログイン メッセージを表示できます。オフにすると、サイトはログイン メッセージを表示できません。</translation>
 <translation id="7553211568594248088">ハブ検索を終了</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479"><ph name="DOMAIN_NAME" /> のコンテンツを Google から配信しています。</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> のその他のオプション</translation>
 <translation id="8090579562279016251">パフォーマンスは低下しますが、攻撃に対する V8 の耐性が強化されます</translation>
+<translation id="8112925981674547014">アプリリストにタブを表示</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{明日、Chrome で Cookie を再び制限します}other{# 日後に、Chrome で Cookie を再び制限します}}</translation>
 <translation id="8116925261070264013">ミュート中</translation>
 <translation id="8117244575099414087">オンにすると、サイトはデバイスのセンサーを使用できます。オフにすると、サイトはセンサーを使用できません。</translation>

@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">ລະບຸທີ່ຢູ່ເວັບ</translation>
 <translation id="5975083100439434680">ຊູມອອກ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">ຕອນນີ້ທ່ານສາມາດເຂົ້າເຖິງແຖບທີ່ແນະນຳໄດ້ຢ່າງວ່ອງໄວຈາກຂໍ້ມູນແອັບຂອງອຸປະກອນຂອງທ່ານ ແລະ ໃນຜົນການຊອກຫາຢູ່ອຸປະກອນ. ໂດຍປິດຕົວເລືອກນີ້ໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ Chrome.</translation>
 <translation id="6015775454662021376">ຄວບຄຸມສິດເຂົ້າເຖິງອຸປະກອນຂອງທ່ານຂອງເວັບໄຊນີ້</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">ຖາມ​ກ່ອນ</translation>
 <translation id="7423538860840206698">ບລັອກບໍ່ໃຫ້ອ່ານຄລິບບອດແລ້ວ</translation>
 <translation id="7425915948813553151">ຮູບແບບສີສັນມືດສຳລັບເວັບໄຊ</translation>
+<translation id="7488573225650545859">ເຊື່ອງແຖບມຸມມອງໃນລາຍຊື່ແອັບຂອງທ່ານ</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">ເມື່ອເປີດ, ເວັບໄຊສາມາດສະແດງການແຈ້ງເຕືອນການເຂົ້າສູ່ລະບົບໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດສະແດງການແຈ້ງເຕືອນການເຂົ້າສູ່ລະບົບໄດ້.</translation>
 <translation id="7553211568594248088">ອອກຈາກສູນກາງການຊອກຫາ</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">ເນື້ອຫານີ້ມາຈາກ <ph name="DOMAIN_NAME" />, ນຳສົ່ງໂດຍ Google.</translation>
 <translation id="8088603949666785339">ຕົວເລືອກເພີ່ມເຕີມໃນ <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">ຫຼຸດປະສິດທິພາບ ແຕ່ເຮັດໃຫ້ V8 ທົນທານຕໍ່ການໂຈມຕີໄດ້ຫຼາຍຂຶ້ນ</translation>
+<translation id="8112925981674547014">ແຖບມຸມມອງໃນລາຍຊື່ແອັບຂອງທ່ານ</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome ຈະຈຳກັດຄຸກກີ້ອີກເທື່ອໜຶ່ງໃນມື້ອື່ນ}other{ອີກ # ມື້ຈົນກວ່າ Chrome ຈະຈຳກັດຄຸກກີ້ອີກເທື່ອໜຶ່ງ}}</translation>
 <translation id="8116925261070264013">ປິດສຽງແລ້ວ</translation>
 <translation id="8117244575099414087">ເມື່ອເປີດ, ເວັບໄຊສາມາດໃຊ້ເຊັນເຊີຂອງອຸປະກອນຂອງທ່ານໄດ້. ເມື່ອເປີດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ເຊັນເຊີໄດ້.</translation>

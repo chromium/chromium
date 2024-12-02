@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">خدمات تنظيف</translation>
 <translation id="1475299637784133125">هل تبحث عن إصدار المتصفِّح؟ انتقِل إلى</translation>
 <translation id="1476595624592550506">عليك تغيير كلمة مرورك</translation>
+<translation id="1482372785911828880">رقيق للغاية</translation>
 <translation id="1482879811280872320">ركوب دراجات</translation>
 <translation id="1483493594462132177">إرسال</translation>
 <translation id="1484449009683144042">‏هذه أداة تجريبية للمساعدة في الكتابة باستخدام الذكاء الاصطناعي (AI) وقد توفّر اقتراحات غير دقيقة في بعض الأحيان.
@@ -764,7 +765,7 @@
 <translation id="2349957959687031096">زر فتح علامة تبويب في وضع التصفّح المتخفي: انقر على هذا الزر للتصفّح بخصوصية تامة.</translation>
 <translation id="2350796302381711542">هل تريد السماح لـ <ph name="HANDLER_HOSTNAME" /> بفتح كل روابط <ph name="PROTOCOL" /> بدلاً من <ph name="REPLACED_HANDLER_TITLE" />؟</translation>
 <translation id="2353297238722298836">تم السماح باستخدام الكاميرا والميكروفون</translation>
-<translation id="2354001756790975382">الإشارات الأخرى</translation>
+<translation id="2354001756790975382">الإشارات المرجعية الأخرى</translation>
 <translation id="2355395290879513365">قد يتمكن المهاجمون من رؤية الصور التي تتطلع عليها على هذا الموقع وخداعك من خلال تعديلها.</translation>
 <translation id="2356070529366658676">طلب</translation>
 <translation id="2356926036049612643">‏مُحسِّن V8</translation>
@@ -1315,6 +1316,7 @@
 <translation id="3375754925484257129">‏تفعيل ميزة "التحقّق من الأمان" في Chrome</translation>
 <translation id="3377144306166885718">‏يستخدم الخادم إصدارًا قديمًا لطبقة النقل الآمنة (TLS).</translation>
 <translation id="3377188786107721145">خطأ في تحليل السياسة</translation>
+<translation id="3377642479079205807">رقيق</translation>
 <translation id="3378612801784846695">يتم تحديد المواضيع استنادًا إلى سجلّ التصفُّح الأخير، وتستخدمها المواقع الإلكترونية لعرض إعلانات مخصّصة لك مع حماية هويتك</translation>
 <translation id="3380365263193509176">خطأ غير معروف</translation>
 <translation id="3380864720620200369">معرِّف العميل:</translation>
@@ -1497,7 +1499,7 @@
 <translation id="3665100783276035932">من المفترض أن تعمل معظم المواقع الإلكترونية على النحو المتوقَّع</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />مزيد من المعلومات<ph name="LINK_END1" /></translation>
 <translation id="3670229581627177274">تفعيل البلوتوث</translation>
-<translation id="3671117652518853176">عند إيقاف هذا الإعداد، قد يُطلب منك إجراء عملية التحقُّق من حين لآخر لأغراض تتعلّق بالأمان.</translation>
+<translation id="3671117652518853176">عند إيقاف هذا الإعداد، قد يُطلب منك إجراء عملية التحقُّق من حين لآخر لأغراض تتعلّق بالأمان</translation>
 <translation id="3671540257457995106">هل تريد السماح بتغيير الحجم؟</translation>
 <translation id="3672568546897166916">حدث خطأ في <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">معدّات اتصال بالشبكات</translation>
@@ -2488,6 +2490,7 @@
 <translation id="5481682542063333508">عرض مساعدة في الكتابة</translation>
 <translation id="54817484435770891">إضافة عنوان صالح</translation>
 <translation id="5483838506518938965">اكتملت المهمة</translation>
+<translation id="5485100387355669506">سميك للغاية</translation>
 <translation id="5485973315555778056">جهاز على السحابة الإلكترونية</translation>
 <translation id="5488590678320979185">‏زر إنشاء ملاحظة: انقر على هذا الزر لإنشاء ملاحظة جديدة في Google Keep بسرعة.</translation>
 <translation id="5490432419156082418">العناوين والمزيد</translation>
@@ -2728,7 +2731,7 @@
 <translation id="5930147475897662863">يجب تفعيل هذا الإعداد لاستخدام ميزة "مساعدة في الكتابة".</translation>
 <translation id="593102073240001326">محتوى إرشادي وأفكار يمكنك تطبيقها بنفسك ومحتوى من إنشاء خبراء</translation>
 <translation id="5932224571077948991">يعرض الموقع الإلكتروني إعلانات مضلِّلة أو غير مرغوب فيها</translation>
-<translation id="5937560539988385583">تمت ترجمة الصفحة.</translation>
+<translation id="5937560539988385583">تمت ترجمة الصفحة</translation>
 <translation id="5938153366081463283">إضافة بطاقة افتراضية</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5944297261866530437">نسيج (شديد اللمعان)</translation>
@@ -3673,6 +3676,7 @@
 <translation id="7599089013883397081">انتهت مهلة التنزيل</translation>
 <translation id="7608583484192556132">إنّ ظهور إعلانات مخصّصة يعتمد على عدة عوامل، منها هذا الإعداد و<ph name="BEGIN_LINK_1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="END_LINK_1" /> و<ph name="BEGIN_LINK_2" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK_2" /> وما إذا كان الموقع الإلكتروني الذي تتصفّحه يخصِّص الإعلانات. تعرَّف على مزيد من المعلومات حول <ph name="BEGIN_LINK_3" />إدارة الخصوصية في عرض الإعلانات<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">القيمة خارج النطاق <ph name="VALUE" />.</translation>
+<translation id="761261689936461781">سميك</translation>
 <translation id="7613889955535752492">تاريخ انتهاء الصلاحية: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628">‏<ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لعرض كلمات المرور في إعدادات Chrome وإدارتها.</translation>
 <translation id="7616645509853975347">‏لقد فعّل مشرفك "وصلات Chrome Enterprise" على متصفّحك. لدى هذه الوصلات إذن بالوصول إلى بعض بياناتك.</translation>
@@ -4342,7 +4346,7 @@
 <translation id="8833007469711500369">غسالات ومجففات</translation>
 <translation id="8834962751196791179">‏يظهر لك هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS ولأنّك تستخدم "وضع التصفّح المتخفي". <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">برامج تلفزيونية في الخيال العلمي والفانتازيا</translation>
-<translation id="883848425547221593">إشارات أخرى</translation>
+<translation id="883848425547221593">إشارات مرجعية أخرى</translation>
 <translation id="8842351563145134519">تم فتح قائمة طرق الدفع في النصف السفلي من الشاشة والتي يمكن ملء بياناتها باللمس.</translation>
 <translation id="884264119367021077">عنوان الشحن</translation>
 <translation id="8849231003559822746">130 × 180 ملم</translation>

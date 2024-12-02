@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Webadres opgeven</translation>
 <translation id="5975083100439434680">Uitzoomen</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Je kunt nu snel toegang krijgen tot voorgestelde tabbladen in de app-lijst van je apparaat en in de zoekresultaten van je apparaat. Je kunt dit op elk moment uitzetten in de instellingen van Google Wallet.</translation>
 <translation id="6015775454662021376">De toegang van deze site tot je apparaat beheren</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6042308850641462728">Meer</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>
 <translation id="7425915948813553151">Donker thema voor sites</translation>
+<translation id="7488573225650545859">Tabbladen bekijken verbergen in je app-lijst</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Als deze optie aanstaat, kunnen sites inlogprompts tonen. Staat de optie uit, dan kunnen sites geen inlogprompts tonen.</translation>
 <translation id="7553211568594248088">Hub-zoekfunctie sluiten</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Deze content is afkomstig van <ph name="DOMAIN_NAME" />, geleverd door Google.</translation>
 <translation id="8088603949666785339">Meer opties in de <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Vermindert de prestaties maar maakt V8 beter bestand tegen aanvallen</translation>
+<translation id="8112925981674547014">Tabbladen bekijken in je app-lijst</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome beperkt morgen weer cookies}other{# dagen tot Chrome weer cookies beperkt}}</translation>
 <translation id="8116925261070264013">Geluid uit</translation>
 <translation id="8117244575099414087">Als deze optie aanstaat, kunnen sites de sensoren van je apparaat gebruiken. Staat de optie uit, dan kunnen sites geen sensoren gebruiken.</translation>

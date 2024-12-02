@@ -978,6 +978,7 @@
 <translation id="5514904542973294328">האפשרות הזו הושבתה על-ידי מנהל המערכת של המכשיר</translation>
 <translation id="5515439363601853141">ביטול הנעילה יציג את הסיסמה</translation>
 <translation id="5517095782334947753">יש לך סימניות, היסטוריה, סיסמאות והגדרות נוספות מ-<ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5517326820028369152">גיליון תחתון של פעילות שביצעת לאחרונה</translation>
 <translation id="5524843473235508879">הפניה לכתובת אתר אחרת נחסמה.</translation>
 <translation id="5526281268548144413">אי אפשר לסגור בכמה חלונות</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{לפני דקה}one{# min ago}two{לפני # דקות}other{לפני # דקות}}</translation>
@@ -1280,6 +1281,7 @@
 <translation id="6817747507826986771">שיתוף הדף הזה במהירות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">‏העדכון של מנהל הסיסמאות של Google נסגר</translation>
+<translation id="6824933543577433709">הגיליון התחתון של הפעילות האחרונה סגור</translation>
 <translation id="6828070228333235514">הפסקת המעקב אחר מחירים</translation>
 <translation id="6830728435402077660">לא מאובטח</translation>
 <translation id="6831043979455480757">תרגום</translation>
@@ -1498,6 +1500,7 @@
 <translation id="7691043218961417207">אפשרויות לתוכן למעקב</translation>
 <translation id="7697383401610880082">נקודת אחיזה לגרירה</translation>
 <translation id="7698359219371678927">יצירת הודעת אימייל ב-<ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">הגיליון התחתון של הפעילות האחרונה נפתח בגובה מלא</translation>
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
 <translation id="7709918231054955894">הצגת כל הכרטיסיות</translation>
 <translation id="7733878270780732638">אין מספיק נפח אחסון פנוי במכשיר.</translation>

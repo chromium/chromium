@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Nhập địa chỉ web</translation>
 <translation id="5975083100439434680">Thu nhỏ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Giờ đây, bạn có thể nhanh chóng truy cập vào các thẻ được đề xuất trên danh sách ứng dụng của thiết bị và trong kết quả tìm kiếm trên thiết bị. Bạn có thể tắt tính năng này bất cứ lúc nào trong phần cài đặt của Chrome.</translation>
 <translation id="6015775454662021376">Kiểm soát quyền truy cập của trang web này vào thiết bị của bạn</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7423538860840206698">Đã chặn quyền đọc bảng nhớ tạm</translation>
 <translation id="7425915948813553151">Giao diện tối cho các trang web</translation>
+<translation id="7488573225650545859">Ẩn mục Xem các thẻ trong danh sách ứng dụng</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Khi bạn bật tuỳ chọn này, các trang web có thể hiển thị lời nhắc đăng nhập. Khi bạn tắt tuỳ chọn này, các trang web không thể hiển thị lời nhắc đăng nhập.</translation>
 <translation id="7553211568594248088">Thoát khỏi chế độ tìm kiếm trong trung tâm</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Nội dung này đến từ <ph name="DOMAIN_NAME" />, do Google phân phối.</translation>
 <translation id="8088603949666785339">Xem thêm lựa chọn khác trong <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Làm giảm hiệu suất nhưng giúp V8 tăng khả năng chống lại các cuộc tấn công</translation>
+<translation id="8112925981674547014">Xem các thẻ trong danh sách ứng dụng</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome sẽ hạn chế cookie trở lại vào ngày mai}other{Chrome sẽ hạn chế cookie trở lại sau # ngày nữa}}</translation>
 <translation id="8116925261070264013">Đã ẩn</translation>
 <translation id="8117244575099414087">Khi bạn bật tuỳ chọn này, các trang web có thể sử dụng cảm biến trên thiết bị của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng cảm biến.</translation>

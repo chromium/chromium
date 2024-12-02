@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Introduce una dirección web</translation>
 <translation id="5975083100439434680">Reducir</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Ahora puedes acceder rápidamente a las pestañas sugeridas desde la lista de aplicaciones de tu dispositivo y en los resultados de búsqueda del dispositivo. Puedes desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="6015775454662021376">Controla el acceso de este sitio web a tu dispositivo</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Preguntar antes</translation>
 <translation id="7423538860840206698">Se ha bloqueado la lectura del portapapeles</translation>
 <translation id="7425915948813553151">Tema oscuro para sitios</translation>
+<translation id="7488573225650545859">Ocultar Ver pestañas en tu lista de aplicaciones</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Cuando esta opción está activada, los sitios pueden mostrar solicitudes de inicio de sesión. Si está desactivada, los sitios no pueden mostrar solicitudes de inicio de sesión.</translation>
 <translation id="7553211568594248088">Salir de la búsqueda del Hub</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Este contenido procede de <ph name="DOMAIN_NAME" />, publicado por Google.</translation>
 <translation id="8088603949666785339">Más opciones en el <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Reduce el rendimiento, pero hace que V8 sea más resistente a los ataques</translation>
+<translation id="8112925981674547014">Ver pestañas en tu lista de aplicaciones</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome volverá a limitar las cookies mañana}other{Chrome volverá a limitar las cookies dentro de # días}}</translation>
 <translation id="8116925261070264013">Silenciado</translation>
 <translation id="8117244575099414087">Cuando esta opción está activada, los sitios pueden usar los sensores de tu dispositivo. Si está desactivada, los sitios no pueden usar los sensores.</translation>

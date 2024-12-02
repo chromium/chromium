@@ -1365,6 +1365,7 @@
 <translation id="7425037327577270384">ช่วยฉันเขียน</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ปิดใช้หรือนํา APN นี้ออกไม่ได้ ตรวจสอบว่า APN แบบ <ph name="ATTACH" /> ที่เปิดใช้อยู่ถูกปิดใช้หรือนำออกแล้ว</translation>
+<translation id="7453118953486228603">คลิกเพื่อสรุปข้อความที่เลือก</translation>
 <translation id="7458970041932198923">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าเว็บซ้ำเพื่อดูและตั้งค่ารูปโปรไฟล์</translation>
 <translation id="7469648432129124067">ตรวจพบพอร์ทัล</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
@@ -1723,6 +1724,7 @@
 <translation id="9133772297793293778">กดแป้นกดร่วม 1-4 รายการและคีย์อื่นๆ อีก 1 รายการบนแป้นพิมพ์ หากต้องการออกจากโหมดแก้ไข ให้กด alt + esc</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Shift ซ้าย</translation>
+<translation id="9147928237330776930">มีคำน้อยเกินกว่าที่จะสรุป</translation>
 <translation id="9149391708638971077">ทดสอบหน่วยความจำ</translation>
 <translation id="9159524746324788320">แฮมเบอร์เกอร์</translation>
 <translation id="9161276708550942948">วรรค</translation>

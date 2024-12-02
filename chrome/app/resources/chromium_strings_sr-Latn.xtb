@@ -262,6 +262,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="4510853178268397146">Ovaj dodatak nije objavio prakse privatnosti, na primer, kako prikuplja i koristi podatke. Chromium preporučuje da ga uklonite.</translation>
 <translation id="452711251841752011">Dobro došli u Chromium; otvoren je novi prozor pregledača</translation>
 <translation id="4531137820806573936">Chromium-u treba dozvola za mapiranje okruženja i praćenje ruku</translation>
+<translation id="4534145890176164066">Chromium bolje razume obrasce i može brže automatski da ih popunjava za vas</translation>
 <translation id="4536805923587466102">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom Chromium profilu</translation>
 <translation id="4544142686420020088">Chromium se nije ažurirao. Došlo je do greške. <ph name="BEGIN_LINK" />Otklonite probleme sa ažuriranjem Chromium-a i neuspela ažuriranja.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium može da deaktivira ovu karticu da bi poboljšao doživljaj pregledanja i sprečio usporavanje.</translation>
@@ -480,6 +481,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7349591376906416160">Administrator sistema je konfigurisao Chromium da otvara pregledač <ph name="ALTERNATIVE_BROWSER_NAME" /> da bi pristupao <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Chromium je blokirao ovo preuzimanje jer ovaj fajl može da naškodi ličnim nalozima i nalozima na društvenim mrežama, uključujući <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Ovaj dodatak više nije podržan. Chromium preporučuje da ga uklonite.</translation>
+<translation id="7389750180956889333">Chromium bolje razume obrasce i može brže automatski da ih popunjava za vas. Saznajte više o <ph name="BEGIN_LINK" />Chrome automatskom popunjavanju<ph name="END_LINK" /></translation>
 <translation id="7398989605938454041">Pomoću Chromium profila možete da razdvojite sve Chromium sadržaje. Na taj način ćete lakše moći da razdvojite posao i zabavu.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Programerska verzija Chromium-a</translation>
 <translation id="7450541714075000668">Tekst je kopiran</translation>

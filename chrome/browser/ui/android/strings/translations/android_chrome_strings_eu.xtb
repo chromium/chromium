@@ -402,7 +402,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2838367486340230368">Pribatutasun-gidaren azalpena altuera erdian irekita dago</translation>
 <translation id="2839327205551510876">Utzi diozu <ph name="SITE_NAME" /> webguneari jarraitzeari</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Ezkutuko moduko <ph name="TAB_COUNT_ONE" /> fitxa itxiko da}other{Ezkutuko moduko <ph name="TAB_COUNT_MANY" /> fitxa itxiko dira}}</translation>
-<translation id="2841216154655874070">{NUM_DAYS,plural, =1{Duela 1 egun egiaztatu zuen}other{Duela # egun egiaztatu zuen}}</translation>
+<translation id="2841216154655874070">{NUM_DAYS,plural, =1{Duela egun bat egiaztatu zuen}other{Duela # egun egiaztatu zuen}}</translation>
 <translation id="2842985007712546952">Karpeta nagusia</translation>
 <translation id="2854916915045135148">Ezkutuko modura aldatzeko, eduki sakatuta hau</translation>
 <translation id="2855243985454069333">Sinkronizatuta dauden gailu guztietako historia ezabatzen du</translation>
@@ -902,7 +902,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5114895953710637392">Aplikazioaren iragazki-orria itxita dago.</translation>
 <translation id="5115811374190515607">hona: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Chrome erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean</translation>
-<translation id="5122378528687922675">Laguntza behar baduzu, eskatu gurasoari (<ph name="PARENT_NAME_1" /> edo <ph name="PARENT_NAME_2" />)</translation>
+<translation id="5122378528687922675">Laguntza behar baduzu, eskatu zure gurasoari (<ph name="PARENT_NAME_1" /> edo <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Ezkutuko moduko fitxa</translation>
 <translation id="5139940364318403933">Lortu Google Drive erabiltzeko argibideak</translation>
 <translation id="5142281402488957685">Istorio berririk dagoen ikusi nahi baduzu, tiratu beherantz freskatzeko</translation>
@@ -1553,7 +1553,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7963646190083259054">Saltzailea:</translation>
 <translation id="7965838025086216108">Gordetako pasahitzak edozein gailutan erabil ditzakezu. <ph name="ACCOUNT" /> kontuan saioa hasita zeneukala gorde dituzunak Google-ren Pasahitz-kudeatzailea zerbitzuan gordetzen dira.</translation>
 <translation id="7968014550143838305">Gehitu da irakurketa-zerrendan</translation>
-<translation id="7971136598759319605">Aktibo duela 1 egun</translation>
+<translation id="7971136598759319605">Aktibo duela egun bat</translation>
 <translation id="7975379999046275268">Aurreikusi orria <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Datuen isilpekotasunaren urratze batean arriskuan jarri den pasahitz bat badarabilzu, horren berri emango dizu.</translation>
 <translation id="7986497153528221272">Pasahitzak ikusteko, ezarri lehendabizi pantailaren blokeoa gailuan</translation>
@@ -1595,7 +1595,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8107530384992929318">Itxi ordenatzeko aukerak</translation>
 <translation id="8110024788458304985">Lagundu Chrome-ren eginbideak eta errendimendua hobetzen</translation>
 <translation id="8110087112193408731">Chrome-ko jarduerak Ongizate digitala programan agertzea nahi duzu?</translation>
-<translation id="8118117428362942925">Laguntza behar baduzu, eskatu gurasoari (<ph name="PARENT_NAME" />)</translation>
+<translation id="8118117428362942925">Laguntza behar baduzu, eskatu zure gurasoari (<ph name="PARENT_NAME" />)</translation>
 <translation id="8122623268651408616">Berrienetik hasita ordenatzen</translation>
 <translation id="8127542551745560481">Editatu orri nagusia</translation>
 <translation id="8130309322784422030">Baliteke saioa hasteko gordeta daukazun informazioa zaharkituta egotea</translation>
@@ -1835,7 +1835,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Sinkronizatutako gailu guztietan ikusi ahalko duzu historia, egiten ari zinenari berrekiteko</translation>
 <translation id="9191906083913361689">Elementu hauek laster-marketan, irakurketa-zerrendan edo pasahitz-kudeatzailean ere ikusi eta kudea ditzakezu</translation>
-<translation id="9199368092038462496">{NUM_MINS,plural, =1{Duela 1 minutu egiaztatu du}other{Duela # minutu egiaztatu du}}</translation>
+<translation id="9199368092038462496">{NUM_MINS,plural, =1{Duela minutu bat egiaztatu du}other{Duela # minutu egiaztatu du}}</translation>
 <translation id="9204021776105550328">Ezabatzen</translation>
 <translation id="9204836675896933765">1 fitxategi gelditzen da</translation>
 <translation id="9205933215779845960">Ezin da aurkitu orria. Egiaztatu zuzen idatzi duzula edo bila ezazu <ph name="SEARCH_ENGINE" /> bidez.</translation>

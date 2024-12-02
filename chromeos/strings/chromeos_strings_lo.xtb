@@ -1366,6 +1366,7 @@
 <translation id="7425037327577270384">ຊ່ວຍຂ້ອຍຂຽນ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ບໍ່ສາມາດປິດການນຳໃຊ້ ຫຼື ລຶບ APN ນີ້ອອກໄດ້. ກະລຸນາກວດສອບວ່າ APN ແບບ <ph name="ATTACH" /> ທີ່ເປີດການນຳໃຊ້ນັ້ນຖືກປິດການນຳໃຊ້ ຫຼື ລຶບອອກແລ້ວ.</translation>
+<translation id="7453118953486228603">ຄລິກເພື່ອສະຫຼຸບຂໍ້ຄວາມທີ່ເລືອກໄວ້</translation>
 <translation id="7458970041932198923">ກະລຸນາເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍ ແລະ ໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເບິ່ງ ແລະ ຕັ້ງຄ່າຮູບແທນຕົວ.</translation>
 <translation id="7469648432129124067">ກວດພົບໜ້າເວັບ</translation>
 <translation id="7481312909269577407">ສົ່ງຕໍ່</translation>
@@ -1724,6 +1725,7 @@
 <translation id="9133772297793293778">ກົດຕົວຂະຫຍາຍ 1-4 ລາຍການ ແລະ ກະແຈອື່ນໆອີກ 1 ລາຍການຢູ່ແປ້ນພິມຂອງທ່ານ. ເພື່ອອອກຈາກໂໝດແກ້ໄຂ, ໃຫ້ກົດ alt + esc.</translation>
 <translation id="9137526406337347448">ການບໍລິການ Google</translation>
 <translation id="9138630967333032450">Shift ຊ້າຍ</translation>
+<translation id="9147928237330776930">ມີຄໍາສັບໜ້ອຍເກີນໄປທີ່ຈະສະຫຼຸບ</translation>
 <translation id="9149391708638971077">ດຳເນີນການທົດສອບຄວາມຈຳ</translation>
 <translation id="9159524746324788320">ແຮັມເບີເກີ</translation>
 <translation id="9161276708550942948">ຍະຫວ່າງ</translation>

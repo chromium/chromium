@@ -978,6 +978,7 @@
 <translation id="5514904542973294328">გათიშულია ამ მოწყობილობის ადმინისტრატორის მიერ</translation>
 <translation id="5515439363601853141">განბლოკეთ თქვენი პაროლის სანახავად</translation>
 <translation id="5517095782334947753">თქვენ <ph name="FROM_ACCOUNT" />-დან მიღებული სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები გაქვთ.</translation>
+<translation id="5517326820028369152">ბოლო აქტივობების ქვედა ფურცელი</translation>
 <translation id="5524843473235508879">გადამისამართება დაიბლოკა.</translation>
 <translation id="5526281268548144413">სხვადასხვა ფანჯრებში დახურვა შეუძლებელია</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# წუთის წინ}other{# წუთის წინ}}</translation>
@@ -1280,6 +1281,7 @@
 <translation id="6817747507826986771">სწრაფად გააზიარეთ ეს გვერდი. ამ მალსახმობის რედაქტირებისთვის შეეხეთ ხანგრძლივად.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Google პაროლების მმართველის განახლება დაიხურა</translation>
+<translation id="6824933543577433709">ბოლო აქტივობების ქვედა ფურცელი დაიხურა</translation>
 <translation id="6828070228333235514">თვალის მიდევნების შეწყვეტა</translation>
 <translation id="6830728435402077660">დაუცველი</translation>
 <translation id="6831043979455480757">თარგმნა</translation>
@@ -1498,6 +1500,7 @@
 <translation id="7691043218961417207">გაეცანით კონტენტს, რომელსაც შეგიძლიათ თვალი მიადევნოთ</translation>
 <translation id="7697383401610880082">სახელური ჩავლებისთვის</translation>
 <translation id="7698359219371678927">ელფოსტის <ph name="APP_NAME" />-ში შექმნა</translation>
+<translation id="7702420606070050505">ბოლო აქტივობების ქვედა ფურცელი გაიხსნა სრულ სიმაღლეზე</translation>
 <translation id="7707922173985738739">მობილური ინტერნეტის გამოყენება</translation>
 <translation id="7709918231054955894">მიიღეთ თქვენი ყველა ჩანართი</translation>
 <translation id="7733878270780732638">მოწყობილობაზე არ არის საკმარისი სივრცე</translation>

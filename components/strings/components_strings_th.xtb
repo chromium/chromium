@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">บริการทำความสะอาด</translation>
 <translation id="1475299637784133125">หากต้องการดูเวอร์ชันของเบราว์เซอร์ โปรดไปที่</translation>
 <translation id="1476595624592550506">เปลี่ยนรหัสผ่าน</translation>
+<translation id="1482372785911828880">บางมาก</translation>
 <translation id="1482879811280872320">การปั่นจักรยาน</translation>
 <translation id="1483493594462132177">ส่ง</translation>
 <translation id="1484449009683144042">ฟีเจอร์ช่วยเหลือในการเขียนของ AI เวอร์ชันทดลองและอาจไม่ถูกต้องเสมอไป
@@ -1314,6 +1315,7 @@
 <translation id="3375754925484257129">เรียกใช้การตรวจสอบความปลอดภัยของ Chrome</translation>
 <translation id="3377144306166885718">เซิร์ฟเวอร์ใช้ TLS เวอร์ชันที่ล้าสมัย</translation>
 <translation id="3377188786107721145">ข้อผิดพลาดในการแยกวิเคราะห์นโยบาย</translation>
+<translation id="3377642479079205807">บาง</translation>
 <translation id="3378612801784846695">หัวข้อจะอิงตามประวัติการท่องเว็บล่าสุด และเว็บไซต์จะใช้ข้อมูลดังกล่าวเพื่อแสดงโฆษณาที่ปรับตามโปรไฟล์ของผู้ใช้ให้แก่คุณทั้งยังปกป้องตัวตนของคุณไปพร้อมกันด้วย</translation>
 <translation id="3380365263193509176">ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="3380864720620200369">รหัสลูกค้า:</translation>
@@ -2485,6 +2487,7 @@
 <translation id="5481682542063333508">เสนอความช่วยเหลือในการเขียน</translation>
 <translation id="54817484435770891">เพิ่มที่อยู่ที่ถูกต้อง</translation>
 <translation id="5483838506518938965">คุณพร้อมแล้ว</translation>
+<translation id="5485100387355669506">หนามาก</translation>
 <translation id="5485973315555778056">เครื่องที่ใช้ระบบคลาวด์</translation>
 <translation id="5488590678320979185">ปุ่มสร้างโน้ต เปิดใช้งานเพื่อสร้างโน้ตใหม่ใน Google Keep อย่างรวดเร็ว</translation>
 <translation id="5490432419156082418">ที่อยู่และอื่นๆ</translation>
@@ -3670,6 +3673,7 @@
 <translation id="7599089013883397081">การดาวน์โหลดหมดเวลาแล้ว</translation>
 <translation id="7608583484192556132">โฆษณาที่คุณเห็นจะได้รับการปรับตามโปรไฟล์ของคุณหรือไม่นั้นขึ้นอยู่กับหลายอย่าง ซึ่งรวมถึงการตั้งค่านี้ <ph name="BEGIN_LINK_1" />โฆษณาที่เว็บไซต์แนะนำ<ph name="END_LINK_1" /> <ph name="BEGIN_LINK_2" />การตั้งค่าคุกกี้<ph name="END_LINK_2" /> และการปรับโฆษณาตามโปรไฟล์ผู้ใช้ของเว็บไซต์ที่คุณดู ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK_3" />การจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณา<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">ค่าอยู่นอกช่วง <ph name="VALUE" /></translation>
+<translation id="761261689936461781">หนา</translation>
 <translation id="7613889955535752492">หมดอายุ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อดูและจัดการรหัสผ่านในการตั้งค่า Chrome</translation>
 <translation id="7616645509853975347">ผู้ดูแลระบบได้เปิดใช้เครื่องมือเชื่อมต่อ Chrome Enterprise ในเบราว์เซอร์ เครื่องมือเชื่อมต่อเหล่านี้เข้าถึงข้อมูลบางอย่างของคุณได้</translation>
@@ -4143,6 +4147,7 @@
 <translation id="8449836157089738489">เปิดทั้งหมดในกลุ่มแท็บใหม่</translation>
 <translation id="84561192812921051">ผู้ดูแลระบบสามารถเปลี่ยนแปลงโปรไฟล์และเบราว์เซอร์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน รวมถึงดำเนินการอื่นๆ ที่จำเป็นได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome ได้ด้วย  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Bottom Sheet ปิดอยู่</translation>
+<translation id="8456775115498700722">ตอนนี้คุณสามารถป้อนข้อมูลบัตร <ph name="CARD_ISSUER_NAME" /> โดยอัตโนมัติได้เนื่องจากบัญชี <ph name="CARD_ISSUER_NAME" /> ของคุณลิงก์กับ Google Pay แล้ว</translation>
 <translation id="8457125768502047971">ไม่จำกัด</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">เปิด</translation>
@@ -4300,6 +4305,7 @@
 <translation id="8757526089434340176">มีข้อเสนอจาก Google Pay</translation>
 <translation id="8759274551635299824">บัตรนี้หมดอายุแล้ว</translation>
 <translation id="87601671197631245">เว็บไซต์นี้ใช้การกำหนดค่าความปลอดภัยที่ล้าสมัย ซึ่งอาจเปิดเผยข้อมูลของคุณ (เช่น รหัสผ่าน ข้อความ หรือบัตรเครดิต) เมื่อมีการส่งไปยังเว็บไซต์นี้</translation>
+<translation id="8763226176721243078">คุณป้อนข้อมูลบัตรนี้โดยอัตโนมัติได้เนื่องจากบัญชี <ph name="CARD_ISSUER_NAME" /> ของคุณลิงก์กับ Google Pay</translation>
 <translation id="8763927697961133303">อุปกรณ์ USB</translation>
 <translation id="8763986294015493060">ปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมดที่เปิดอยู่</translation>
 <translation id="8766943070169463815">ชีตการตรวจสอบสิทธิ์ข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัยเปิดขึ้น</translation>

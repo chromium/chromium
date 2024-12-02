@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">ບໍລິການອະນາໄມ</translation>
 <translation id="1475299637784133125">ກຳລັງຊອກຫາເວີຊັນໂປຣແກຣມທ່ອງເວັບບໍ? ເຂົ້າເບິ່ງ</translation>
 <translation id="1476595624592550506">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
+<translation id="1482372785911828880">ບາງພິເສດ</translation>
 <translation id="1482879811280872320">ຖີບລົດ</translation>
 <translation id="1483493594462132177">ສົ່ງ</translation>
 <translation id="1484449009683144042">ນີ້ແມ່ນຕົວຊ່ວຍເຫຼືອການຂຽນຂອງ AI ເວີຊັນທົດລອງ ແລະ ອາດເຮັດວຽກໄດ້ບໍ່ຖືກຕ້ອງສະເໝີໄປ.
@@ -1314,6 +1315,7 @@
 <translation id="3375754925484257129">ເປີດໃຊ້ການກວດສອບຄວາມປອດໄພ Chrome</translation>
 <translation id="3377144306166885718">ເຊີບເວີໃຊ້ TLS ເວີຊັນເກົ່າ.</translation>
 <translation id="3377188786107721145">ຄວາມ​ຜິດ​ພາດກະຈາຍນະ​ໂຍ​ບາຍ</translation>
+<translation id="3377642479079205807">ບາງ</translation>
 <translation id="3378612801784846695">ຫົວຂໍ້ຈະອີງຕາມປະຫວັດການທ່ອງເວັບຫຼ້າສຸດຂອງທ່ານ ແລະ ເວັບໄຊຈະໃຊ້ຂໍ້ມູນດັ່ງກ່າວເພື່ອສະແດງໂຄສະນາທີ່ປັບແຕ່ງສ່ວນຕົວໃຫ້ທ່ານ ພ້ອມທັງປົກປ້ອງຕົວຕົນຂອງທ່ານໄປພ້ອມກັນນຳ</translation>
 <translation id="3380365263193509176">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="3380864720620200369">ID ລູກຂ່າຍ:</translation>
@@ -2486,6 +2488,7 @@
 <translation id="5481682542063333508">ສະເໜີຄວາມຊ່ວຍເຫຼືອໃນການຂຽນ</translation>
 <translation id="54817484435770891">ເພີ່ມທີ່ຢູ່ທີ່ຖືກຕ້ອງ</translation>
 <translation id="5483838506518938965">ທ່ານຮຽບຮ້ອຍໝົດແລ້ວ</translation>
+<translation id="5485100387355669506">ໜາພິເສດ</translation>
 <translation id="5485973315555778056">ເຄື່ອງຈັກຄລາວ</translation>
 <translation id="5488590678320979185">ປຸ່ມສ້າງບັນທຶກ, ເປີດນຳໃຊ້ເພື່ອສ້າງບັນທຶກໃໝ່ໃນ Google Keep ຢ່າງວ່ອງໄວ</translation>
 <translation id="5490432419156082418">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>
@@ -3670,6 +3673,7 @@
 <translation id="7599089013883397081">ການດາວໂຫຼດໝົດເວລາແລ້ວ</translation>
 <translation id="7608583484192556132">ໂຄສະນາທີ່ທ່ານເຫັນຈະໄດ້ຮັບການປັບແຕ່ງສ່ວນຕົວຫຼືບໍ່ນັ້ນຂຶ້ນຢູ່ກັບຫຼາຍໆຢ່າງ ເຊິ່ງຮວມທັງການຕັ້ງຄ່ານີ້, <ph name="BEGIN_LINK_1" />ໂຄສະນາທີ່ເວັບໄຊແນະນຳ<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />ການຕັ້ງຄ່າຄຸກກີ້<ph name="END_LINK_2" /> ຂອງທ່ານ ແລະ ເວັບໄຊທີ່ທ່ານກຳລັງເບິ່ງປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວຫຼືບໍ່. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK_3" />ການຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາຂອງທ່ານ<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">ຄ່າຢູ່ນອກເຂດ <ph name="VALUE" /> .</translation>
+<translation id="761261689936461781">ໜາ</translation>
 <translation id="7613889955535752492">ໝົດອາຍຸ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນກົດ Enter ເພື່ອເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="7616645509853975347">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ເປີດ Chrome Enterprise Connectors ໃນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານແລ້ວ. ເຄື່ອງມືເຊື່ອມຕໍ່ເຫຼົ່ານີ້ມີສິດເຂົ້າເຖິງບາງຂໍ້ມູນຂອງທ່ານໄດ້.</translation>
@@ -4143,6 +4147,7 @@
 <translation id="8449836157089738489">ເປີດທັງໝົດໃນກຸ່ມແຖບໃໝ່</translation>
 <translation id="84561192812921051">ຜູ້ເບິ່ງແຍງຂອງທ່ານສາມາດປ່ຽນແປງໂປຣໄຟລ໌ ແລະ ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກ, ວິເຄາະຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບຜ່ານການລາຍງານ ແລະ ເຮັດໜ້າວຽກທີ່ຈຳເປັນອື່ນໆໄດ້. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chrome ໄດ້ນຳ.  <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">ຊີດລຸ່ມສຸດປິດຢູ່.</translation>
+<translation id="8456775115498700722">ຕອນນີ້ທ່ານສາມາດຕື່ມຂໍ້ມູນບັດ <ph name="CARD_ISSUER_NAME" /> ຂອງທ່ານໂດຍອັດຕະໂນມັດເນື່ອງຈາກບັນຊີ <ph name="CARD_ISSUER_NAME" /> ຂອງທ່ານຖືກລິ້ງກັບ Google Pay ແລ້ວ.</translation>
 <translation id="8457125768502047971">ບໍ່ມີກຳນົດ</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">ເປີດໃຊ້ມັນ</translation>
@@ -4299,6 +4304,7 @@
 <translation id="8757526089434340176">ມີຂໍ້ສະເໜີ Google Pay</translation>
 <translation id="8759274551635299824">ບັດນີ້ໝົດອາຍຸແລ້ວ</translation>
 <translation id="87601671197631245">ເວັບໄຊນີ້ໃຊ້ການຕັ້ງຄ່າຄວາມປອດໄພທີ່ເກົ່າແລ້ວ, ເຊິ່ງອາດຈະເຮັດໃຫ້ຂໍ້ມູນຂອງທ່ານມີຄວາມສ່ຽງ (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ຂໍ້ຄວາມ ຫຼື ບັດເຄຣດິດ) ເມື່ອມັນຖືກສົ່ງໃຫ້ເວັບໄຊນີ້.</translation>
+<translation id="8763226176721243078">ທ່ານສາມາດຕື່ມຂໍ້ມູນບັດນີ້ໂດຍອັດຕະໂນມັດເນື່ອງຈາກບັນຊີ <ph name="CARD_ISSUER_NAME" /> ຂອງທ່ານຖືກລິ້ງກັບ Google Pay ແລ້ວ.</translation>
 <translation id="8763927697961133303">ອຸປະກອນ USB</translation>
 <translation id="8763986294015493060">ປິດໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດທີ່ກຳລັງເປີດຢູ່ຕອນນີ້</translation>
 <translation id="8766943070169463815">ເປີດຊີດການພິສູດຢືນຢັນຂໍ້ມູນການເຂົ້າສູ່ລະບົບການຈ່າຍເງິນແບບປອດໄພແລ້ວ</translation>

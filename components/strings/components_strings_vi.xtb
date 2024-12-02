@@ -280,6 +280,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1474576429883213321">Dịch vụ dọn dẹp vệ sinh</translation>
 <translation id="1475299637784133125">Bạn đang tìm phiên bản trình duyệt? Hãy truy cập</translation>
 <translation id="1476595624592550506">Thay đổi mật khẩu của bạn</translation>
+<translation id="1482372785911828880">Nét cực mảnh</translation>
 <translation id="1482879811280872320">Đi xe đạp</translation>
 <translation id="1483493594462132177">Gửi</translation>
 <translation id="1484449009683144042">Công cụ hỗ trợ viết dựa trên AI này đang trong giai đoạn thử nghiệm và không phải lúc nào cũng chính xác.
@@ -1314,6 +1315,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3375754925484257129">Chạy quy trình kiểm tra an toàn trên Chrome</translation>
 <translation id="3377144306166885718">Máy chủ sử dụng phiên bản TLS lỗi thời.</translation>
 <translation id="3377188786107721145">Lỗi phân tích cú pháp chính sách</translation>
+<translation id="3377642479079205807">Nét mảnh</translation>
 <translation id="3378612801784846695">Chủ đề được tổng hợp dựa trên nhật ký duyệt web gần đây và được các trang web dùng để hiện quảng cáo được cá nhân hoá cho bạn đồng thời bảo vệ danh tính của bạn</translation>
 <translation id="3380365263193509176">Lỗi không xác định</translation>
 <translation id="3380864720620200369">ID ứng dụng khách:</translation>
@@ -2486,6 +2488,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5481682542063333508">Đề xuất hỗ trợ viết</translation>
 <translation id="54817484435770891">Thêm địa chỉ hợp lệ</translation>
 <translation id="5483838506518938965">Bạn đã hoàn tất</translation>
+<translation id="5485100387355669506">Nét cực đậm</translation>
 <translation id="5485973315555778056">Thiết bị trên đám mây</translation>
 <translation id="5488590678320979185">Nút Tạo ghi chú, hãy nhấn nút này để nhanh chóng tạo một ghi chú mới trong Google Keep</translation>
 <translation id="5490432419156082418">Địa chỉ và các lựa chọn khác</translation>
@@ -3671,6 +3674,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7599089013883397081">Đã hết thời gian tải xuống</translation>
 <translation id="7608583484192556132">Việc một quảng cáo bạn thấy có được cá nhân hoá hay không có thể phụ thuộc vào nhiều yếu tố, chẳng hạn như chế độ cài đặt này, <ph name="BEGIN_LINK_1" />quảng cáo do trang web gợi ý<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />chế độ cài đặt cookie<ph name="END_LINK_2" /> mà bạn chọn và trang web bạn đang xem có hay không cá nhân hoá quảng cáo. Tìm hiểu thêm về việc <ph name="BEGIN_LINK_3" />quản lý quyền riêng tư trong quảng cáo<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Giá trị nằm ngoài phạm vi <ph name="VALUE" />.</translation>
+<translation id="761261689936461781">Nét đậm</translation>
 <translation id="7613889955535752492">Hết hạn: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để xem và quản lý các mật khẩu của bạn trong phần cài đặt của Chrome</translation>
 <translation id="7616645509853975347">Quản trị viên đã bật Chrome Enterprise Connectors trên trình duyệt bạn dùng. Các trình kết nối này có quyền truy cập vào một số dữ liệu của bạn.</translation>
@@ -4144,6 +4148,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8449836157089738489">Mở tất cả trong nhóm thẻ mới</translation>
 <translation id="84561192812921051">Quản trị viên có thể thay đổi hồ sơ và trình duyệt của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chrome.  <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Bảng dưới cùng đã đóng.</translation>
+<translation id="8456775115498700722">Giờ đây, bạn có thể tự động điền thẻ <ph name="CARD_ISSUER_NAME" /> vì tài khoản <ph name="CARD_ISSUER_NAME" /> của bạn liên kết với Google Pay.</translation>
 <translation id="8457125768502047971">Vô thời hạn</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Bật</translation>
@@ -4301,6 +4306,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8757526089434340176">Ưu đãi hiện có của Google Pay</translation>
 <translation id="8759274551635299824">Thẻ này đã hết hạn</translation>
 <translation id="87601671197631245">Trang web này dùng cấu hình bảo mật lỗi thời nên có thể làm lộ thông tin của bạn (chẳng hạn như mật khẩu, thư hoặc thẻ tín dụng) trong quá trình gửi các thông tin này đến trang web này.</translation>
+<translation id="8763226176721243078">Bạn có thể tự động điền thẻ này vì tài khoản <ph name="CARD_ISSUER_NAME" /> của bạn liên kết với Google Pay.</translation>
 <translation id="8763927697961133303">Thiết bị USB</translation>
 <translation id="8763986294015493060">Đóng tất cả cửa sổ ẩn danh đang mở</translation>
 <translation id="8766943070169463815">Đã mở bảng xác thực thông tin thanh toán an toàn</translation>

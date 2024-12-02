@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Introdueix l'adreça web</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Ara pots accedir ràpidament a les pestanyes suggerides des de la llista d'aplicacions i des dels resultats de la cerca del dispositiu. Pots desactivar aquesta funció en qualsevol moment a la configuració de Chrome.</translation>
 <translation id="6015775454662021376">Controla l'accés al teu dispositiu d'aquest lloc web</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Pregunta abans</translation>
 <translation id="7423538860840206698">L'accés de lectura al porta-retalls està bloquejat</translation>
 <translation id="7425915948813553151">Tema fosc per als llocs web</translation>
+<translation id="7488573225650545859">Amaga l'opció Mostra les pestanyes de la llista d'aplicacions</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Quan aquesta opció està activada, els llocs web poden mostrar sol·licituds d'inici de sessió. Quan aquesta opció està desactivada, els llocs web no poden mostrar sol·licituds d'inici de sessió.</translation>
 <translation id="7553211568594248088">Sortir de la cerca del hub</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Aquest contingut és del domini <ph name="DOMAIN_NAME" />, oferit per Google.</translation>
 <translation id="8088603949666785339">Més opcions a <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Redueix el rendiment, però fa que V8 sigui més resistent als atacs</translation>
+<translation id="8112925981674547014">Mostra les pestanyes de la llista d'aplicacions</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome tornarà a limitar les galetes demà}other{# dies perquè Chrome torni a limitar les galetes}}</translation>
 <translation id="8116925261070264013">Silenciats</translation>
 <translation id="8117244575099414087">Quan aquesta opció està activada, els llocs web poden utilitzar els sensors del dispositiu. Quan aquesta opció està desactivada, els llocs web no poden utilitzar els sensors.</translation>

@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">خدمات تمیزکاری</translation>
 <translation id="1475299637784133125">به‌دنبال نسخه مرورگر هستید؟ از این پیوند استفاده کنید:</translation>
 <translation id="1476595624592550506">گذرواژه‌تان را تغییر دهید</translation>
+<translation id="1482372785911828880">فوق‌العاده باریک</translation>
 <translation id="1482879811280872320">دوچرخه‌سواری</translation>
 <translation id="1483493594462132177">ارسال</translation>
 <translation id="1484449009683144042">دستیار نوشتن یکی از ویژگی‌های آزمایشی هوش مصنوعی است و ممکن است اشتباه بکند.
@@ -1314,6 +1315,7 @@
 <translation id="3375754925484257129">‏اجرای «بررسی ایمنی» در Chrome</translation>
 <translation id="3377144306166885718">سرور از نسخه منسوخ «امنیت لایه انتقال» استفاده می‌کرد.</translation>
 <translation id="3377188786107721145">خطای تجزیه خط‌مشی</translation>
+<translation id="3377642479079205807">باریک</translation>
 <translation id="3378612801784846695">موضوع‌ها براساس سابقه مرور اخیر شما است و سایت‌ها برای نشان دادن آگهی‌های شخصی‌سازی‌شده (و درعین‌حال محافظت از هویت شما) از آن‌ها استفاده می‌کنند</translation>
 <translation id="3380365263193509176">خطای ناشناس</translation>
 <translation id="3380864720620200369">شناسه سرویس‌گیرنده:</translation>
@@ -2486,6 +2488,7 @@
 <translation id="5481682542063333508">ارائه کمک در نوشتن</translation>
 <translation id="54817484435770891">نشانی معتبری اضافه کنید</translation>
 <translation id="5483838506518938965">شما آماده‌اید!</translation>
+<translation id="5485100387355669506">فوق‌العاده ضخیم</translation>
 <translation id="5485973315555778056">ماشین ابری</translation>
 <translation id="5488590678320979185">‏دکمه ایجاد یادداشت؛ برای ایجاد سریع یادداشت جدید در Google Keep، آن را فعال کنید</translation>
 <translation id="5490432419156082418">نشانی‌ها و موارد دیگر</translation>
@@ -3671,6 +3674,7 @@
 <translation id="7599089013883397081">مهلت زمانی بارگیری تمام شد</translation>
 <translation id="7608583484192556132">اینکه آیا آگهی‌ای که می‌بینید شخصی‌سازی شده است یا نه به عوامل زیادی بستگی دارد، ازجمله این تنظیم، <ph name="BEGIN_LINK_1" />آگهی‌های پیشنهادی سایت<ph name="END_LINK_1" />، <ph name="BEGIN_LINK_2" />تنظیمات کوکی<ph name="END_LINK_2" /> شما، و اینکه سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه. درباره <ph name="BEGIN_LINK_3" />مدیریت حریم خصوصی آگهی<ph name="END_LINK_3" /> بیشتر بدانید.</translation>
 <translation id="7610193165460212391">مقدار خارج از محدوده <ph name="VALUE" /> است.</translation>
+<translation id="761261689936461781">ضخیم</translation>
 <translation id="7613889955535752492">انقضا: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628">‏<ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای مشاهده و مدیریت کردن گذرواژه‌ها در تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
 <translation id="7616645509853975347">‏سرپرستتان «رابط‌های Chrome Enterprise» را در مرورگرتان روشن کرده است. این رابط‌ها به برخی از داده‌هایتان دسترسی دارند.</translation>

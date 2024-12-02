@@ -4147,6 +4147,7 @@ Dodatni detalji:
 <translation id="8449836157089738489">Otvori sve u novoj grupi kartica</translation>
 <translation id="84561192812921051">Administrator može daljinski da unosi promene u profil i pregledač, da analizira informacije o pregledaču pomoću izveštavanja i obavlja druge neophodne zadatke. Aktivnostima na ovom uređaju može da se upravlja i van Chrome-a.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Donja tabela je zatvorena.</translation>
+<translation id="8456775115498700722">Sada možete automatski da popunjavate <ph name="CARD_ISSUER_NAME" /> kartice jer je <ph name="CARD_ISSUER_NAME" /> nalog povezan sa Google Pay-om.</translation>
 <translation id="8457125768502047971">Neograničeno</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Uključi</translation>
@@ -4304,6 +4305,7 @@ Dodatni detalji:
 <translation id="8757526089434340176">Dostupna je Google Pay ponuda</translation>
 <translation id="8759274551635299824">Ova kartica je istekla</translation>
 <translation id="87601671197631245">Ovaj sajt koristi zastarelu bezbednosnu konfiguraciju koja može da otkrije vaše informacije (na primer, lozinke, poruke ili kreditne kartice) kada se šalju tom sajtu.</translation>
+<translation id="8763226176721243078">Možete da popunite ovu karticu automatski jer je <ph name="CARD_ISSUER_NAME" /> nalog povezan sa Google Pay-om.</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8763986294015493060">Zatvorite sve prozore bez arhiviranja koji su trenutno otvoreni</translation>
 <translation id="8766943070169463815">Tabela za potvrdu akreditiva za bezbedno plaćanje je otvorena</translation>

@@ -8491,6 +8491,15 @@ Nota importante: Si las programaciones configuradas mediante esta política entr
       esté instalado el host de Escritorio Remoto de Chrome.</translation>
 <translation id="7202925763179776247">Permitir restricciones de descarga</translation>
 <translation id="7203243973351251622">Grabadora (compatible desde la versión 130)</translation>
+<translation id="7205989349935313324">Superposición de Lens permite a los usuarios hacer búsquedas de Google interactuando con una captura de pantalla de la página actual superpuesta al contenido web. También les permite hacer búsquedas en Google que tengan en cuenta el contexto de la página actual. Para proporcionar respuestas contextuales, Superposición de Lens envía el contenido de la página a Google para responder a la consulta del usuario con el contexto de la página en la que se encuentra.
+
+No hay ninguna configuración de usuario para controlar esta función, que generalmente está disponible para todos los usuarios que tienen Google como buscador predeterminado a menos que esta política la inhabilite.
+
+Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+1 = Habilitar la función para los usuarios, pero no enviar datos a Google para entrenar o mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.</translation>
 <translation id="7207095846245296855">Forzar Google Búsqueda Segura</translation>
 <translation id="7211368186050418507">No detectar nunca la zona horaria automáticamente</translation>
 <translation id="721617466745658461">Permitir que los usuarios seleccionen el binario del navegador <ph name="LACROS_NAME" /></translation>

@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">שירותי ניקיון</translation>
 <translation id="1475299637784133125">רוצה לאתר את גרסת הדפדפן? יש לעבור לכתובת</translation>
 <translation id="1476595624592550506">עליך לשנות את הסיסמה</translation>
+<translation id="1482372785911828880">דקה במיוחד</translation>
 <translation id="1482879811280872320">רכיבה על אופניים</translation>
 <translation id="1483493594462132177">שליחה</translation>
 <translation id="1484449009683144042">‏זהו כלי עזר ניסיוני לכתיבה שמבוסס על AI ויכול להיות שהעזרה ממנו לא תתאים לך.
@@ -1314,6 +1315,7 @@
 <translation id="3375754925484257129">‏הרצה של בדיקת אבטחה ב-Chrome</translation>
 <translation id="3377144306166885718">‏בשרת נעשה שימוש בגרסה מיושנת של TLS.</translation>
 <translation id="3377188786107721145">שגיאה בניתוח המדיניות</translation>
+<translation id="3377642479079205807">דקה</translation>
 <translation id="3378612801784846695">הנושאים מבוססים על היסטוריית הגלישה שלך מהזמן האחרון, ואתרים נעזרים בנושאים האלה כדי להציג לך מודעות בהתאמה אישית תוך כדי הגנה על הפרטים המזהים שלך</translation>
 <translation id="3380365263193509176">שגיאה לא ידועה</translation>
 <translation id="3380864720620200369">מספר לקוח:</translation>
@@ -2490,6 +2492,7 @@ Del</translation>
 <translation id="5481682542063333508">הצעה לעזרה בכתיבה</translation>
 <translation id="54817484435770891">הוספה של כתובת חוקית</translation>
 <translation id="5483838506518938965">הכל מוכן</translation>
+<translation id="5485100387355669506">עבה במיוחד</translation>
 <translation id="5485973315555778056">מכונה בענן</translation>
 <translation id="5488590678320979185">‏הלחצן ליצירת פתק, מפעילים אותו כדי ליצור במהירות פתק חדש ב-Google Keep</translation>
 <translation id="5490432419156082418">כתובות ועוד</translation>
@@ -3676,6 +3679,7 @@ Del</translation>
 <translation id="7599089013883397081">פג הזמן הקצוב להורדה</translation>
 <translation id="7608583484192556132">‏יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, ל<ph name="BEGIN_LINK_1" />מודעות שאתרים מציעים<ph name="END_LINK_1" />, ל<ph name="BEGIN_LINK_2" />הגדרות קובצי ה-Cookie<ph name="END_LINK_2" />, למצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת) ולגורמים נוספים. <ph name="BEGIN_LINK_3" />מידע נוסף על קביעת ההגדרות לפרטיות בפרסום<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">הערך מחוץ לטווח <ph name="VALUE" />.</translation>
+<translation id="761261689936461781">עבה</translation>
 <translation id="7613889955535752492">תפוגה: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628">‏<ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי להציג ולנהל סיסמאות בהגדרות Chrome</translation>
 <translation id="7616645509853975347">‏מנהל המערכת הפעיל את Chrome Enterprise Connectors בדפדפן שלך. למחברים האלה יש גישה אל חלק מהנתונים שלך.</translation>

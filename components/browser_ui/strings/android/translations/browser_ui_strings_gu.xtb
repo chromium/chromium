@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">વેબ ઍડ્રેસ દાખલ કરો</translation>
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">તમે હવે તમારા ડિવાઇસની ઍપની સૂચિમાંથી અને ડિવાઇસના શોધ પરિણામોમાં સૂચવેલા ટૅબ ઝડપથી ઍક્સેસ કરી શકો છો. Chrome સેટિંગમાં આ ગમે ત્યારે બંધ કરો.</translation>
 <translation id="6015775454662021376">આ સાઇટના તમારા ડિવાઇસના ઍક્સેસનું નિયંત્રણ કરો</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6042308850641462728">વધુ</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">પ્રથમ પૂછો</translation>
 <translation id="7423538860840206698">ક્લિપબોર્ડ વાંચવાનું બ્લૉક કરેલ છે</translation>
 <translation id="7425915948813553151">સાઇટ માટે ઘેરી થીમ</translation>
+<translation id="7488573225650545859">તમારી ઍપની સૂચિમાં ટૅબ છુપાવો કે જુઓ</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">ચાલુ હોય ત્યારે, સાઇટ સાઇન-ઇન કરવાના પ્રૉમ્પ્ટ બતાવી શકે છે. બંધ હોય ત્યારે, સાઇટ સાઇન ઇન કરવાના પ્રૉમ્પ્ટ બતાવી શકતી નથી.</translation>
 <translation id="7553211568594248088">હબ શોધની બહાર નીકળો</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">આ કન્ટેન્ટ <ph name="DOMAIN_NAME" /> માંથી, Google દ્વારા વિતરિત કરેલ છે.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />માં વધુ વિકલ્પો</translation>
 <translation id="8090579562279016251">પર્ફોર્મન્સ ઘટાડે છે પરંતુ V8ને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે</translation>
+<translation id="8112925981674547014">તમારી ઍપની સૂચિમાં ટૅબ જુઓ</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{ફરીથી આવતીકાલે Chrome કુકીને મર્યાદિત કરશે}one{ફરીથી # દિવસ સુધી Chrome કુકીને મર્યાદિત કરશે}other{ફરીથી # દિવસ સુધી Chrome કુકીને મર્યાદિત કરશે}}</translation>
 <translation id="8116925261070264013">મ્યૂટ કરેલ</translation>
 <translation id="8117244575099414087">ચાલુ હોય ત્યારે, સાઇટ તમારા ડિવાઇસના સેન્સરનો ઉપયોગ કરી શકે છે. બંધ હોય ત્યારે, સાઇટ સેન્સરનો ઉપયોગ કરી શકતી નથી.</translation>

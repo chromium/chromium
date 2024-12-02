@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">Услуги по уборке</translation>
 <translation id="1475299637784133125">Ищете версию браузера? Перейдите на страницу</translation>
 <translation id="1476595624592550506">Смените пароль</translation>
+<translation id="1482372785911828880">Очень тонкая</translation>
 <translation id="1482879811280872320">Езда на велосипеде</translation>
 <translation id="1483493594462132177">Отправить</translation>
 <translation id="1484449009683144042">Это экспериментальная ИИ-функция для создания текстов, и она не всегда дает правильный результат.
@@ -1313,6 +1314,7 @@
 <translation id="3375754925484257129">Запустить проверку безопасности</translation>
 <translation id="3377144306166885718">Этот сервер использует устаревшую версию протокола TLS.</translation>
 <translation id="3377188786107721145">Не удалось выполнить анализ политики</translation>
+<translation id="3377642479079205807">Тонкая</translation>
 <translation id="3378612801784846695">Темы подбираются на основе недавней истории браузера и используются сайтами для показа персонализированной рекламы. При этом ваши личные данные остаются защищены.</translation>
 <translation id="3380365263193509176">Неизвестная ошибка</translation>
 <translation id="3380864720620200369">Идентификатор клиента:</translation>
@@ -2485,6 +2487,7 @@
 <translation id="5481682542063333508">Предлагать помощь с написанием</translation>
 <translation id="54817484435770891">Введите действительный адрес</translation>
 <translation id="5483838506518938965">Готово!</translation>
+<translation id="5485100387355669506">Очень толстая</translation>
 <translation id="5485973315555778056">Устройство облака</translation>
 <translation id="5488590678320979185">Кнопка "Создать заметку". Нажмите ее, чтобы быстро создать заметку в Google Keep.</translation>
 <translation id="5490432419156082418">Адреса и другие данные</translation>
@@ -3670,6 +3673,7 @@
 <translation id="7599089013883397081">Превышено время ожидания</translation>
 <translation id="7608583484192556132">Персонализация объявлений зависит от множества факторов, включая этот параметр, <ph name="BEGIN_LINK_1" />рекламу, предлагаемую сайтами<ph name="END_LINK_1" />, ваши <ph name="BEGIN_LINK_2" />настройки файлов cookie<ph name="END_LINK_2" />, а также параметры сайта, который вы просматриваете. Подробнее о том, <ph name="BEGIN_LINK_3" />как управлять конфиденциальностью в рекламе<ph name="END_LINK_3" />…</translation>
 <translation id="7610193165460212391">Значение <ph name="VALUE" /> лежит за пределами разрешенного диапазона.</translation>
+<translation id="761261689936461781">Толстая</translation>
 <translation id="7613889955535752492">Срок действия: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы перейти к управлению паролями в настройках Chrome.</translation>
 <translation id="7616645509853975347">Администратор включил в браузере коннекторы Chrome Enterprise Connectors. У них есть доступ к некоторым вашим данным.</translation>

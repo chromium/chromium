@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">ป้อนที่อยู่เว็บ</translation>
 <translation id="5975083100439434680">ย่อ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">ตอนนี้คุณเข้าถึงแท็บที่แนะนำได้อย่างรวดเร็วจากรายการแอปของอุปกรณ รวมถึงผลการค้นหาในอุปกรณ์ ปิดได้ทุกเมื่อในการตั้งค่า Chrome</translation>
 <translation id="6015775454662021376">ควบคุมสิทธิ์ของเว็บไซต์นี้ในการเข้าถึงอุปกรณ์ของคุณ</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">ถามก่อน</translation>
 <translation id="7423538860840206698">บล็อกไม่ให้อ่านคลิปบอร์ด</translation>
 <translation id="7425915948813553151">ธีมมืดสำหรับเว็บไซต์</translation>
+<translation id="7488573225650545859">ซ่อน "แท็บดู" ในรายการแอป</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">เมื่อเปิด เว็บไซต์จะแสดงข้อความแจ้งให้ลงชื่อเข้าใช้ได้ เมื่อปิด เว็บไซต์จะแสดงข้อความแจ้งให้ลงชื่อเข้าใช้ไม่ได้</translation>
 <translation id="7553211568594248088">ออกจากการค้นหาในฮับ</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">เนื้อหานี้มาจาก <ph name="DOMAIN_NAME" /> และนำส่งโดย Google</translation>
 <translation id="8088603949666785339">ตัวเลือกเพิ่มเติมใน <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">ลดประสิทธิภาพแต่ทำให้ V8 ต้านทานการโจมตีได้มากขึ้น</translation>
+<translation id="8112925981674547014">"แท็บดู" ในรายการแอป</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome จะจำกัดคุกกี้อีกครั้งในวันพรุ่งนี้}other{Chrome จะจำกัดคุกกี้อีกครั้งในอีก # วัน}}</translation>
 <translation id="8116925261070264013">ปิดเสียง</translation>
 <translation id="8117244575099414087">เมื่อเปิด เว็บไซต์จะใช้เซ็นเซอร์ของอุปกรณ์ได้ เมื่อปิด เว็บไซต์จะใช้เซ็นเซอร์ไม่ได้</translation>

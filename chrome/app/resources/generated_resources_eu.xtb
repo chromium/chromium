@@ -9883,7 +9883,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8025291188699172126">Eguneratzeei buruz</translation>
 <translation id="8026471514777758216">Gailu guztiak</translation>
 <translation id="8026784703228858744">Gorde laster-markak eta beste gauza asko sinkronizazioa erabilita</translation>
-<translation id="8027325966409484573">{NUM_DAYS,plural, =0{Duela 0 egun bisitatu zenuen}=1{Duela 1 egun bisitatu zenuen}other{Duela # egun bisitatu zenuen}}</translation>
+<translation id="8027325966409484573">{NUM_DAYS,plural, =0{Duela 0 egun bisitatu zenuen}=1{Duela egun bat bisitatu zenuen}other{Duela # egun bisitatu zenuen}}</translation>
 <translation id="8028060951694135607">Microsoft-en gakoak berreskuratzeko zerbitzua</translation>
 <translation id="8028138772801251745">AA bidezko betetze automatikoa</translation>
 <translation id="8028803902702117856"><ph name="SIZE" /> deskargatzen. Fitxategiaren izena: <ph name="FILE_NAME" /></translation>

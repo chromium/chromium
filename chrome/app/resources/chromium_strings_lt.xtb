@@ -262,6 +262,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="4510853178268397146">Šis plėtinys nepaskelbė privatumo praktikos, pvz., kaip renka ir naudoja duomenis. „Chromium“ rekomenduoja jį pašalinti.</translation>
 <translation id="452711251841752011">Sveiki, tai – „Chromium“; atidarytas naujas naršyklės langas</translation>
 <translation id="4531137820806573936">„Chromium“ reikia leidimo susieti jūsų aplinką ir stebėti jūsų rankas</translation>
+<translation id="4534145890176164066">„Chromium“ geriau supranta formas ir gali greičiau jas automatiškai užpildyti</translation>
 <translation id="4536805923587466102">Jau esate prisijungę kaip <ph name="USER_EMAIL_ADDRESS" /> kitame „Chromium“ profilyje</translation>
 <translation id="4544142686420020088">Nepavyko atnaujinti „Chromium“, įvyko klaida. <ph name="BEGIN_LINK" />Pašalinkite „Chromium“ naujinimo problemas ir naujinių klaidas.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">„Chromium“ gali padaryti šį skirtuką neaktyvų, kad pagerintų naršymo patirtį ir viskas veiktų sparčiai.</translation>
@@ -480,6 +481,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7349591376906416160">Sistemos administratorius sukonfigūravo „Chromium“ atidaryti naršyklę „<ph name="ALTERNATIVE_BROWSER_NAME" />“, norint pasiekti <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">„Chromium“ užblokavo šį atsisiuntimą, nes failas gali pakenkti asmeninėms ir socialinių tinklų paskyroms, įskaitant <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Šis plėtinys nebepalaikomas. „Chromium“ rekomenduoja jį pašalinti.</translation>
+<translation id="7389750180956889333">„Chromium“ geriau supranta formas ir gali greičiau jas automatiškai užpildyti. Sužinokite daugiau apie <ph name="BEGIN_LINK" />„Chrome“ automatinį pildymą<ph name="END_LINK" /></translation>
 <translation id="7398989605938454041">Naudodami „Chromium“ profilius galite atskirti visus savo „Chromium“ duomenis. Galėsite lengviau atskirti darbą ir pramogas.</translation>
 <translation id="7449453770951226939">„<ph name="PAGE_TITLE" />“ – „Chromium Dev“</translation>
 <translation id="7450541714075000668">Tekstas nukopijuotas</translation>

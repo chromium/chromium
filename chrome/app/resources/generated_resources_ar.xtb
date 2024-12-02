@@ -3133,6 +3133,7 @@
 <translation id="3166443275568926403">حالة البطارية والأداء</translation>
 <translation id="3167446923957429259">تحريك الفم لليسار</translation>
 <translation id="3167562202484086668">حذف كل بيانات "<ph name="BRAND" />"</translation>
+<translation id="3169901410527787002">قراءة إدخالات لوحة المفاتيح في شريط العناوين دائمًا</translation>
 <translation id="3169930038976362151">اختَر المظهر الذي يناسب احتياجاتك. لتغيير المظهر والخلفية وشاشة الاستراحة وغيرها، كل ما عليك فعله هو النقر مع الاستمرار على سطح المكتب.</translation>
 <translation id="3170072451822350649">يمكنك أيضًا تخطي تسجيل الدخول و<ph name="LINK_START" />التصفح كضيف<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">القسم العلوي</translation>
@@ -3591,7 +3592,7 @@
 <translation id="3503995387997205657">يمكنك استعادة التطبيقات السابقة.</translation>
 <translation id="3505100368357440862">اقتراحات التسوّق</translation>
 <translation id="3505602163050943406">‏عند استخدام بعض الميزات، يمكنها إرسال أجزاء من الصفحات المفتوحة والصفحات الأخيرة ذات الصلة، وعناوين URL الخاصة بها إلى Google.</translation>
-<translation id="3507132249039706973">ميزة الحماية العادية مفعّلة.</translation>
+<translation id="3507132249039706973">ميزة الحماية العادية مفعّلة</translation>
 <translation id="3507888235492474624">إعادة فحص أجهزة البلوتوث</translation>
 <translation id="3508492320654304609">تعذّر حذف بيانات تسجيل الدخول</translation>
 <translation id="3508920295779105875">اختيار مجلد آخر ...</translation>
@@ -8280,7 +8281,7 @@
 <translation id="6863496016067551393">المواقع الإلكترونية التي تسمح باستخدام كل الإضافات</translation>
 <translation id="686366188661646310">هل تريد حذف كلمة المرور؟</translation>
 <translation id="6863925886424789941">الكولوسيوم</translation>
-<translation id="6865313869410766144">الملء التلقائي لبيانات النموذج</translation>
+<translation id="6865313869410766144">بيانات الملء التلقائي للنماذج</translation>
 <translation id="6865708901122695652">‏سجلّات أحداث WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">صوت هادئ</translation>
 <translation id="686664946474413495">درجة حرارة الألوان</translation>
@@ -10667,7 +10668,7 @@
 <translation id="8566916288687510520">تم تلقّي كلمة مرور جديدة.</translation>
 <translation id="8569673829373920831">مزيد من المعلومات حول <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">لم يتم العثور على أي وجهات</translation>
-<translation id="8571213806525832805">الأسابيع الـ4 الأخيرة</translation>
+<translation id="8571213806525832805">آخر 4 أسابيع</translation>
 <translation id="8571687764447439720">‏إضافة تذكرة Kerberos</translation>
 <translation id="8572052284359771939">‏يُرسِل هذا الوضع إلى "التصفّح الآمن من Google" عناوين URL التي تزورها وعيّنة صغيرة من محتوى الصفحات وعمليات التنزيل ونشاط الإضافات ومعلومات النظام للتأكّد من أنّها ليست ضارة.</translation>
 <translation id="8573111744706778015">‏اكتب uo7 لإظهار ươ</translation>

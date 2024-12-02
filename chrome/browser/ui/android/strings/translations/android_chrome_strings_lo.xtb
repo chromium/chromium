@@ -978,6 +978,7 @@
 <translation id="5514904542973294328">ປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງອຸປະກອນນີ້</translation>
 <translation id="5515439363601853141">ປົດລັອກເພື່ອເບິ່ງລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="5517095782334947753">ທ່ານມີບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຈາກ <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5517326820028369152">ຊີດລຸ່ມສຸດທີ່ສະແດງການເຄື່ອນໄຫວຫຼ້າສຸດ</translation>
 <translation id="5524843473235508879">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ.</translation>
 <translation id="5526281268548144413">ບໍ່ສາມາດປິດຂ້າມຫຼາຍໜ້າຈໍໄດ້</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# ນທ ກ່ອນ}other{# ນທ ກ່ອນ}}</translation>
@@ -1280,6 +1281,7 @@
 <translation id="6817747507826986771">ແບ່ງປັນໜ້ານີ້ແບບໄວໆ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ແຕະຄ້າງໄວ້.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">ການອັບເດດຕົວຈັດການລະຫັດຜ່ານ Google ປິດຢູ່</translation>
+<translation id="6824933543577433709">ປິດຊີດລຸ່ມສຸດທີ່ສະແດງການເຄື່ອນໄຫວຫຼ້າສຸດແລ້ວ</translation>
 <translation id="6828070228333235514">ຢຸດການຕິດຕາມລາຄາ</translation>
 <translation id="6830728435402077660">ບໍ່ປອດໄພ</translation>
 <translation id="6831043979455480757">ແປພາສາ</translation>
@@ -1498,6 +1500,7 @@
 <translation id="7691043218961417207">ສຳຫຼວດເນື້ອຫາເພື່ອຕິດຕາມ</translation>
 <translation id="7697383401610880082">ບ່ອນຈັບລາກ</translation>
 <translation id="7698359219371678927">ສ້າງອີເມວໃນ <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">ເປີດຊີດລຸ່ມສຸດທີ່ສະແດງການເຄື່ອນໄຫວຫຼ້າສຸດແບບເຕັມໜ້າແລ້ວ</translation>
 <translation id="7707922173985738739">ໃຊ້ຂໍ້ມູນມືຖື</translation>
 <translation id="7709918231054955894">ໃຊ້ແຖບທັງໝົດຂອງທ່ານ</translation>
 <translation id="7733878270780732638">ບໍ່ມີພື້ນທີ່ພຽງພໍຢູ່ອຸປະກອນ.</translation>
