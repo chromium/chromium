@@ -121,10 +121,8 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   bool IsAutofillPaymentMethodsEnabled() const final;
   bool IsAutocompleteEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
-  void DidFillOrPreviewForm(
-      autofill::mojom::ActionPersistence action_persistence,
-      autofill::AutofillTriggerSource trigger_source,
-      bool is_refill) final;
+  void DidFillForm(autofill::AutofillTriggerSource trigger_source,
+                   bool is_refill) final;
   bool IsContextSecure() const final;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
   autofill::autofill_metrics::FormInteractionsUkmLogger&

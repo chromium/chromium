@@ -613,7 +613,6 @@ class BrowserAutofillManager : public AutofillManager {
   // Appends TriggerFillFieldLogEvent and FillFieldLogEvents to the relevant
   // fields in the form_structure if there was a filling operation.
   void AppendFillLogEvents(
-      mojom::ActionPersistence action_persistence,
       const FormData& form,
       FormStructure& form_structure,
       AutofillField& trigger_autofill_field,
@@ -644,7 +643,7 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillField& trigger_autofill_field,
       base::span<const FormFieldData*> safe_filled_fields,
       base::span<const AutofillField*> safe_filled_autofill_fields,
-      const AutofillProfile* filled_profile,
+      const AutofillProfile& filled_profile,
       AutofillTriggerSource trigger_source,
       bool is_refill);
 
@@ -653,7 +652,7 @@ class BrowserAutofillManager : public AutofillManager {
   void MaybeShowPlusAddressEmailOverrideNotification(
       base::span<const AutofillField*> safe_filled_autofill_fields,
       base::span<const FormFieldData*> safe_filled_fields,
-      const AutofillProfile* filled_profile,
+      const AutofillProfile& filled_profile,
       const FormStructure& form_structure);
 
   // Delegates to perform external processing (display, selection) on

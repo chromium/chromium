@@ -331,9 +331,8 @@ class TestAutofillClientTemplate : public T {
 
   bool IsPasswordManagerEnabled() const override { return true; }
 
-  void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                            AutofillTriggerSource trigger_source,
-                            bool is_refill) override {}
+  void DidFillForm(AutofillTriggerSource trigger_source,
+                   bool is_refill) override {}
 
   bool IsContextSecure() const override {
     return last_committed_primary_main_frame_url_.SchemeIs("https");

@@ -99,9 +99,8 @@ class WebViewAutofillClientIOS : public AutofillClient {
   bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;
-  void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                            AutofillTriggerSource trigger_source,
-                            bool is_refill) override;
+  void DidFillForm(AutofillTriggerSource trigger_source,
+                   bool is_refill) override;
   bool IsContextSecure() const override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()

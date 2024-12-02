@@ -805,13 +805,10 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() const {
       password_manager::PasswordManagerSetting::kOfferToSavePasswords);
 }
 
-void ChromeAutofillClient::DidFillOrPreviewForm(
-    mojom::ActionPersistence action_persistence,
-    AutofillTriggerSource trigger_source,
-    bool is_refill) {
+void ChromeAutofillClient::DidFillForm(AutofillTriggerSource trigger_source,
+                                       bool is_refill) {
 #if BUILDFLAG(IS_ANDROID)
-  if (action_persistence == mojom::ActionPersistence::kFill &&
-      trigger_source == AutofillTriggerSource::kTouchToFillCreditCard &&
+  if (trigger_source == AutofillTriggerSource::kTouchToFillCreditCard &&
       !is_refill) {
     // TODO(crbug.com/40900538): Test that the message was announced.
     autofill::AnnounceTextForA11y(

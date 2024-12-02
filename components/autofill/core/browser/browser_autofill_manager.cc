@@ -2198,21 +2198,18 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
         profile_or_credit_card,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
-  AppendFillLogEvents(action_persistence, form, form_structure,
-                      trigger_autofill_field, safe_field_ids, skip_reasons,
-                      profile_or_credit_card, is_refill);
-
-  client().DidFillOrPreviewForm(action_persistence, trigger_source, is_refill);
   NotifyObservers(&Observer::OnFillOrPreviewDataModelForm,
                   form_structure.global_id(), action_persistence,
                   safe_filled_fields, profile_or_credit_card);
-
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     return;
   }
-
   CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
 
+  AppendFillLogEvents(form, form_structure, trigger_autofill_field,
+                      safe_field_ids, skip_reasons, profile_or_credit_card,
+                      is_refill);
+  client().DidFillForm(trigger_source, is_refill);
   if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
     LogAndRecordCreditCardFill(
         form_structure, trigger_autofill_field, safe_filled_fields,
@@ -2221,21 +2218,17 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
         trigger_source, is_refill);
     return;
   }
-
-  const AutofillProfile* filled_profile = CHECK_DEREF(
-      absl::get_if<const AutofillProfile*>(&profile_or_credit_card));
-
+  const AutofillProfile& filled_profile = CHECK_DEREF(CHECK_DEREF(
+      absl::get_if<const AutofillProfile*>(&profile_or_credit_card)));
   LogAndRecordProfileFill(form_structure, trigger_autofill_field,
                           safe_filled_fields, safe_filled_autofill_fields,
                           filled_profile, trigger_source, is_refill);
-
   MaybeShowPlusAddressEmailOverrideNotification(safe_filled_autofill_fields,
                                                 safe_filled_fields,
                                                 filled_profile, form_structure);
 }
 
 void BrowserAutofillManager::AppendFillLogEvents(
-    mojom::ActionPersistence action_persistence,
     const FormData& form,
     FormStructure& form_structure,
     AutofillField& trigger_autofill_field,
@@ -2245,26 +2238,23 @@ void BrowserAutofillManager::AppendFillLogEvents(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     bool is_refill) {
-  std::optional<FillEventId> fill_event_id;
-  if (action_persistence == mojom::ActionPersistence::kFill) {
-    std::string country_code;
-    if (const AutofillProfile** address =
-            absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
-      country_code =
-          base::UTF16ToUTF8((*address)->GetRawInfo(ADDRESS_HOME_COUNTRY));
-    }
-    TriggerFillFieldLogEvent trigger_fill_field_log_event =
-        TriggerFillFieldLogEvent{
-            .data_type = absl::holds_alternative<const CreditCard*>(
-                             profile_or_credit_card)
-                             ? FillDataType::kCreditCard
-                             : FillDataType::kAutofillProfile,
-            .associated_country_code = country_code,
-            .timestamp = base::Time::Now()};
-    trigger_autofill_field.AppendLogEventIfNotRepeated(
-        trigger_fill_field_log_event);
-    fill_event_id = trigger_fill_field_log_event.fill_event_id;
+  std::string country_code;
+  if (const AutofillProfile** address =
+          absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
+    country_code =
+        base::UTF16ToUTF8((*address)->GetRawInfo(ADDRESS_HOME_COUNTRY));
   }
+  TriggerFillFieldLogEvent trigger_fill_field_log_event =
+      TriggerFillFieldLogEvent{
+          .data_type =
+              absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
+                  ? FillDataType::kCreditCard
+                  : FillDataType::kAutofillProfile,
+          .associated_country_code = country_code,
+          .timestamp = base::Time::Now()};
+  trigger_autofill_field.AppendLogEventIfNotRepeated(
+      trigger_fill_field_log_event);
+  FillEventId fill_event_id = trigger_fill_field_log_event.fill_event_id;
 
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
     AutofillField& field = CHECK_DEREF(form_structure.field(i));
@@ -2273,10 +2263,10 @@ void BrowserAutofillManager::AppendFillLogEvents(
     const FieldFillingSkipReason skip_reason =
         skip_reasons[field_id].empty() ? FieldFillingSkipReason::kNotSkipped
                                        : *skip_reasons[field_id].begin();
-    if (fill_event_id && !IsCheckable(field.check_status())) {
+    if (!IsCheckable(field.check_status())) {
       if (skip_reason == FieldFillingSkipReason::kNotSkipped) {
         field.AppendLogEventIfNotRepeated(FillFieldLogEvent{
-            .fill_event_id = *fill_event_id,
+            .fill_event_id = fill_event_id,
             .had_value_before_filling = ToOptionalBoolean(has_value_before),
             .autofill_skipped_status = skip_reason,
             .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
@@ -2289,7 +2279,7 @@ void BrowserAutofillManager::AppendFillLogEvents(
         });
       } else {
         field.AppendLogEventIfNotRepeated(FillFieldLogEvent{
-            .fill_event_id = *fill_event_id,
+            .fill_event_id = fill_event_id,
             .had_value_before_filling = ToOptionalBoolean(has_value_before),
             .autofill_skipped_status = skip_reason,
             .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
@@ -2338,7 +2328,7 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
     AutofillField& trigger_autofill_field,
     base::span<const FormFieldData*> safe_filled_fields,
     base::span<const AutofillField*> safe_filled_autofill_fields,
-    const AutofillProfile* filled_profile,
+    const AutofillProfile& filled_profile,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
   if (!trigger_autofill_field.ShouldSuppressSuggestionsAndFillingByDefault()) {
@@ -2346,24 +2336,26 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
       metrics_->address_form_event_logger.OnDidRefill(form_structure);
     } else {
       metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
-          *filled_profile, form_structure, trigger_autofill_field,
+          filled_profile, form_structure, trigger_autofill_field,
           trigger_source);
     }
   }
   if (!is_refill) {
     client().GetPersonalDataManager().address_data_manager().RecordUseOf(
-        *filled_profile);
+        filled_profile);
   }
 }
 
 void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
     base::span<const AutofillField*> safe_filled_autofill_fields,
     base::span<const FormFieldData*> safe_filled_fields,
-    const AutofillProfile* filled_profile,
+    const AutofillProfile& filled_profile,
     const FormStructure& form_structure) {
+  // `filled_profile` might have had its email overridden, which is what makes
+  // it different from `original_profile`.
   const AutofillProfile* original_profile =
       client().GetPersonalDataManager().address_data_manager().GetProfileByGUID(
-          filled_profile->guid());
+          filled_profile.guid());
   if (!original_profile) {
     return;
   }
@@ -2396,7 +2388,7 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
   // Note that the filled `profile` could have been updated with a plus
   // address email override.
   const std::u16string potential_email_override =
-      filled_profile->GetRawInfo(EMAIL_ADDRESS);
+      filled_profile.GetRawInfo(EMAIL_ADDRESS);
   // If the user has selected a plus address email override, show a
   // notification.
   if (client().GetPlusAddressDelegate() &&

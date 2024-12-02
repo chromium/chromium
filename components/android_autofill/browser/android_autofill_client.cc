@@ -230,8 +230,7 @@ bool AndroidAutofillClient::IsPasswordManagerEnabled() const {
   NOTREACHED();
 }
 
-void AndroidAutofillClient::DidFillOrPreviewForm(
-    autofill::mojom::ActionPersistence action_persistence,
+void AndroidAutofillClient::DidFillForm(
     autofill::AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
