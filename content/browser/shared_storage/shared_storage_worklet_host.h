@@ -81,6 +81,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       const url::Origin& data_origin,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
+      blink::mojom::SharedStorageWorkletCreationMethod creation_method,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -150,6 +151,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   const GURL& script_source_url() const {
     return script_source_url_;
+  }
+
+  blink::mojom::SharedStorageWorkletCreationMethod creation_method() const {
+    return creation_method_;
   }
 
  protected:
@@ -293,6 +298,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Pointer to the `BrowserContext`, saved to be able to call
   // `IsSharedStorageAllowed()`, and to get the global URLLoaderFactory.
   raw_ptr<BrowserContext> browser_context_;
+
+  // Method used to create the worklet (i.e. addModule or createWorklet).
+  blink::mojom::SharedStorageWorkletCreationMethod creation_method_;
 
   // The shared storage worklet's origin and site for data access and permission
   // checks.

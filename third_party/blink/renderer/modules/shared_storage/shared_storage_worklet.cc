@@ -224,6 +224,9 @@ void SharedStorageWorklet::AddModuleHelper(
       ->GetSharedStorageDocumentService()
       ->CreateWorklet(
           script_source_url, shared_storage_security_origin, credentials_mode,
+          resolve_to_worklet
+              ? mojom::blink::SharedStorageWorkletCreationMethod::kCreateWorklet
+              : mojom::blink::SharedStorageWorkletCreationMethod::kAddModule,
           origin_trial_features ? *origin_trial_features
                                 : Vector<mojom::blink::OriginTrialFeature>(),
           worklet_host_.BindNewEndpointAndPassReceiver(

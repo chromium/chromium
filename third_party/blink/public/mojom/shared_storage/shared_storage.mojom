@@ -27,6 +27,11 @@ enum SharedStorageGetStatus {
   kError,
 };
 
+enum SharedStorageWorkletCreationMethod {
+  kAddModule,
+  kCreateWorklet,
+};
+
 // Bundles information passed to the worklet via the `privateAggregationConfig`
 // parameter on `sharedStorage.run()` or `sharedStorage.selectURL()`.
 struct PrivateAggregationConfig {
@@ -107,6 +112,7 @@ interface SharedStorageDocumentService {
   CreateWorklet(url.mojom.Url script_source_url,
                 url.mojom.Origin data_origin,
                 network.mojom.CredentialsMode credentials_mode,
+                SharedStorageWorkletCreationMethod creation_method,
                 array<OriginTrialFeature> origin_trial_features,
                 pending_associated_receiver<SharedStorageWorkletHost> worklet_host)
       => (bool success,

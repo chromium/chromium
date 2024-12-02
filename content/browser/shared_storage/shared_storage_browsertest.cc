@@ -275,6 +275,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
       const url::Origin& data_origin,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
+      blink::mojom::SharedStorageWorkletCreationMethod creation_method,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -287,6 +288,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
                                  data_origin,
                                  script_source_url,
                                  credentials_mode,
+                                 creation_method,
                                  origin_trial_features,
                                  std::move(worklet_host),
                                  std::move(callback)),
@@ -782,6 +784,7 @@ class TestSharedStorageRuntimeManager : public SharedStorageRuntimeManager {
       const url::Origin& data_origin,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
+      blink::mojom::SharedStorageWorkletCreationMethod creation_method,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -790,8 +793,9 @@ class TestSharedStorageRuntimeManager : public SharedStorageRuntimeManager {
           callback) override {
     return std::make_unique<TestSharedStorageWorkletHost>(
         document_service, frame_origin, data_origin, script_source_url,
-        credentials_mode, origin_trial_features, std::move(worklet_host),
-        std::move(callback), should_defer_worklet_messages_);
+        credentials_mode, creation_method, origin_trial_features,
+        std::move(worklet_host), std::move(callback),
+        should_defer_worklet_messages_);
   }
 
   // Precondition: there's only one eligible worklet host.
@@ -1053,10 +1057,13 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
     EXPECT_EQ(0u, test_runtime_manager().GetKeepAliveWorkletHostsCount());
 
+    auto* worklet_host = test_runtime_manager().GetAttachedWorkletHostForFrame(
+        execution_target.render_frame_host());
+    EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kAddModule,
+              worklet_host->creation_method());
+
     // There is 1 more "worklet operation": `run()`.
-    test_runtime_manager()
-        .GetAttachedWorkletHostForFrame(execution_target.render_frame_host())
-        ->SetExpectedWorkletResponsesCount(1);
+    worklet_host->SetExpectedWorkletResponsesCount(1);
 
     EXPECT_TRUE(ExecJs(
         execution_target,
@@ -1088,9 +1095,8 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
     }
 
     if (wait_for_operation_finish) {
-      test_runtime_manager()
-          .GetAttachedWorkletHostForFrame(execution_target.render_frame_host())
-          ->WaitForWorkletResponses();
+      CHECK(worklet_host);
+      worklet_host->WaitForWorkletResponses();
     }
   }
 
@@ -4906,6 +4912,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       test_runtime_manager().GetAttachedWorkletHost();
   EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             worklet_host->GetProcessHost());
+
+  EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
+            worklet_host->creation_method());
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -5047,6 +5056,9 @@ IN_PROC_BROWSER_TEST_P(
        worklet_host->GetProcessHost());
 
   EXPECT_FALSE(use_new_process);
+
+  EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
+            worklet_host->creation_method());
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -5075,6 +5087,9 @@ IN_PROC_BROWSER_TEST_P(
        worklet_host->GetProcessHost());
 
   EXPECT_FALSE(use_new_process);
+
+  EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
+            worklet_host->creation_method());
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -5107,6 +5122,9 @@ IN_PROC_BROWSER_TEST_P(
        worklet_host->GetProcessHost());
 
   EXPECT_EQ(expected_use_new_process, actual_use_new_process);
+
+  EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
+            worklet_host->creation_method());
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -5141,6 +5159,9 @@ IN_PROC_BROWSER_TEST_P(
        worklet_host->GetProcessHost());
 
   EXPECT_EQ(expected_use_new_process, actual_use_new_process);
+
+  EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
+            worklet_host->creation_method());
 }
 
 // Start a worklet under b.test using the script origin as the data
@@ -5551,6 +5572,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   EXPECT_EQ(worklet_host->GetProcessHost(),
             iframe_node->current_frame_host()->GetProcess());
+
+  EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kAddModule,
+            worklet_host->creation_method());
 }
 
 // Start a worklet with b.test script but a.test data, and then start a worklet
