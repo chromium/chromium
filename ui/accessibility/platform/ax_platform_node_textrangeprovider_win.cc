@@ -865,6 +865,9 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnit(
     TextUnit unit,
     int count,
     int* units_moved) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
+  UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(units_moved);
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENDPOINTBYUNIT);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENDPOINTBYUNIT);
   WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
@@ -879,7 +882,6 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitImpl(
     int* units_moved) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
-  UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(units_moved);
 
   // Per MSDN, MoveEndpointByUnit with zero count has no effect.
   if (count == 0) {
