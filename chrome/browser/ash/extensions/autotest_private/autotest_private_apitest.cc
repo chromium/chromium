@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiOverviewTest, PrimarySnapped) {
 
 class AutotestPrivateWithPolicyApiTest : public AutotestPrivateApiTest {
  public:
-  AutotestPrivateWithPolicyApiTest() {}
+  AutotestPrivateWithPolicyApiTest() = default;
 
   AutotestPrivateWithPolicyApiTest(const AutotestPrivateWithPolicyApiTest&) =
       delete;

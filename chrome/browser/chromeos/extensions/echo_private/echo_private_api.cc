@@ -49,10 +49,10 @@
 namespace echo_api = extensions::api::echo_private;
 
 EchoPrivateGetRegistrationCodeFunction::
-    EchoPrivateGetRegistrationCodeFunction() {}
+    EchoPrivateGetRegistrationCodeFunction() = default;
 
 EchoPrivateGetRegistrationCodeFunction::
-    ~EchoPrivateGetRegistrationCodeFunction() {}
+    ~EchoPrivateGetRegistrationCodeFunction() = default;
 
 ExtensionFunction::ResponseAction
 EchoPrivateGetRegistrationCodeFunction::Run() {
@@ -102,9 +102,9 @@ void EchoPrivateGetRegistrationCodeFunction::RespondWithResult(
   Respond(WithArguments(result));
 }
 
-EchoPrivateSetOfferInfoFunction::EchoPrivateSetOfferInfoFunction() {}
+EchoPrivateSetOfferInfoFunction::EchoPrivateSetOfferInfoFunction() = default;
 
-EchoPrivateSetOfferInfoFunction::~EchoPrivateSetOfferInfoFunction() {}
+EchoPrivateSetOfferInfoFunction::~EchoPrivateSetOfferInfoFunction() = default;
 
 ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
   std::optional<echo_api::SetOfferInfo::Params> params =
@@ -121,9 +121,9 @@ ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-EchoPrivateGetOfferInfoFunction::EchoPrivateGetOfferInfoFunction() {}
+EchoPrivateGetOfferInfoFunction::EchoPrivateGetOfferInfoFunction() = default;
 
-EchoPrivateGetOfferInfoFunction::~EchoPrivateGetOfferInfoFunction() {}
+EchoPrivateGetOfferInfoFunction::~EchoPrivateGetOfferInfoFunction() = default;
 
 ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
   std::optional<echo_api::GetOfferInfo::Params> params =

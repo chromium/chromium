@@ -32,7 +32,7 @@ namespace extensions {
 
 class LoginStateApiUnittest : public ExtensionApiUnittest {
  public:
-  LoginStateApiUnittest() {}
+  LoginStateApiUnittest() = default;
 
   LoginStateApiUnittest(const LoginStateApiUnittest&) = delete;
   LoginStateApiUnittest& operator=(const LoginStateApiUnittest&) = delete;
@@ -75,7 +75,7 @@ TEST_F(LoginStateApiUnittest, GetProfileType_SigninProfile) {
 
 class LoginStateApiAshUnittest : public LoginStateApiUnittest {
  public:
-  LoginStateApiAshUnittest() {}
+  LoginStateApiAshUnittest() = default;
 
   LoginStateApiAshUnittest(const LoginStateApiAshUnittest&) = delete;
   LoginStateApiAshUnittest& operator=(const LoginStateApiAshUnittest&) = delete;

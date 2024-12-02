@@ -73,8 +73,8 @@ class AccessibilityFeaturesApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<TestConfig> {
  public:
-  AccessibilityFeaturesApiTest() {}
-  virtual ~AccessibilityFeaturesApiTest() {}
+  AccessibilityFeaturesApiTest() = default;
+  virtual ~AccessibilityFeaturesApiTest() = default;
 
  protected:
   // Returns pref service to be used to initialize and later verify

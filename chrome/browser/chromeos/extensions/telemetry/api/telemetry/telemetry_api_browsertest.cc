@@ -43,7 +43,7 @@ using testing::UnorderedElementsAreArray;
 class TelemetryExtensionTelemetryApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
-  TelemetryExtensionTelemetryApiBrowserTest() {}
+  TelemetryExtensionTelemetryApiBrowserTest() = default;
   ~TelemetryExtensionTelemetryApiBrowserTest() override = default;
 
   TelemetryExtensionTelemetryApiBrowserTest(

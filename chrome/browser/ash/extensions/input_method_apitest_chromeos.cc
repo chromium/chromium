@@ -52,13 +52,13 @@ const InputMethodDescriptor CreateInputMethodDescriptor(
 
 class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {
  public:
-  ExtensionInputMethodApiTest() {}
+  ExtensionInputMethodApiTest() = default;
 
   ExtensionInputMethodApiTest(const ExtensionInputMethodApiTest&) = delete;
   ExtensionInputMethodApiTest& operator=(const ExtensionInputMethodApiTest&) =
       delete;
 
-  ~ExtensionInputMethodApiTest() override {}
+  ~ExtensionInputMethodApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionApiTest::SetUpCommandLine(command_line);

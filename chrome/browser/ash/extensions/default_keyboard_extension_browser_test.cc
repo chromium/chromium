@@ -55,7 +55,7 @@ DefaultKeyboardExtensionBrowserTestConfig::
       url_(kVirtualKeyboardURL) {}
 
 DefaultKeyboardExtensionBrowserTestConfig::
-    ~DefaultKeyboardExtensionBrowserTestConfig() {}
+    ~DefaultKeyboardExtensionBrowserTestConfig() = default;
 
 void DefaultKeyboardExtensionBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {

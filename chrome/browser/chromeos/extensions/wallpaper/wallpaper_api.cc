@@ -82,7 +82,7 @@ crosapi::mojom::Wallpaper* GetWallpaperApi() {
 
 class WallpaperFetcher {
  public:
-  WallpaperFetcher() {}
+  WallpaperFetcher() = default;
 
   static const char kCancelWallpaperMessage[];
 
@@ -166,9 +166,9 @@ base::LazyInstance<WallpaperFetcher>::DestructorAtExit g_wallpaper_fetcher =
 
 }  // namespace
 
-WallpaperSetWallpaperFunction::WallpaperSetWallpaperFunction() {}
+WallpaperSetWallpaperFunction::WallpaperSetWallpaperFunction() = default;
 
-WallpaperSetWallpaperFunction::~WallpaperSetWallpaperFunction() {}
+WallpaperSetWallpaperFunction::~WallpaperSetWallpaperFunction() = default;
 
 ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

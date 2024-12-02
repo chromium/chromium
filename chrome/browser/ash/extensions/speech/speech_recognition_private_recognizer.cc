@@ -35,7 +35,8 @@ SpeechRecognitionPrivateRecognizer::SpeechRecognitionPrivateRecognizer(
   DCHECK(delegate);
 }
 
-SpeechRecognitionPrivateRecognizer::~SpeechRecognitionPrivateRecognizer() {}
+SpeechRecognitionPrivateRecognizer::~SpeechRecognitionPrivateRecognizer() =
+    default;
 
 void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
     const std::u16string& text,

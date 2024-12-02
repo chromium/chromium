@@ -52,7 +52,7 @@ class NotificationButtonClicker : public RequestManager::Observer {
   NotificationButtonClicker& operator=(const NotificationButtonClicker&) =
       delete;
 
-  ~NotificationButtonClicker() override {}
+  ~NotificationButtonClicker() override = default;
 
   // RequestManager::Observer overrides.
   void OnRequestCreated(int request_id, RequestType type) override {}
@@ -134,7 +134,7 @@ class AbortOnUnresponsivePerformer : public Observer {
 
 class FileSystemProviderApiTest : public ExtensionApiTest {
  public:
-  FileSystemProviderApiTest() {}
+  FileSystemProviderApiTest() = default;
 
   FileSystemProviderApiTest(const FileSystemProviderApiTest&) = delete;
   FileSystemProviderApiTest& operator=(const FileSystemProviderApiTest&) =

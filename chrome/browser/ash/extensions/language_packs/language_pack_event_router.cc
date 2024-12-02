@@ -27,7 +27,7 @@ LanguagePackEventRouter::LanguagePackEventRouter(
   obs_.Observe(language_packs::LanguagePackManager::GetInstance());
 }
 
-LanguagePackEventRouter::~LanguagePackEventRouter() {}
+LanguagePackEventRouter::~LanguagePackEventRouter() = default;
 
 void LanguagePackEventRouter::OnPackStateChanged(
     const language_packs::PackResult& pack_result) {

@@ -33,7 +33,7 @@ namespace crosapi = ::crosapi::mojom;
 
 // TelemetryApiFunctionBase ----------------------------------------------------
 
-TelemetryApiFunctionBase::TelemetryApiFunctionBase() {}
+TelemetryApiFunctionBase::TelemetryApiFunctionBase() = default;
 
 TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 

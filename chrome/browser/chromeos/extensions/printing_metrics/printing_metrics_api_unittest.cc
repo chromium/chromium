@@ -74,7 +74,7 @@ void ReturnTwoPrintJobs(ash::PrintJobDatabase::GetPrintJobsCallback callback) {
 
 class PrintingMetricsApiUnittest : public ExtensionApiUnittest {
  public:
-  PrintingMetricsApiUnittest() {}
+  PrintingMetricsApiUnittest() = default;
 
   PrintingMetricsApiUnittest(const PrintingMetricsApiUnittest&) = delete;
   PrintingMetricsApiUnittest& operator=(const PrintingMetricsApiUnittest&) =
