@@ -28,4 +28,7 @@ specific_include_rules = {
     "web_url_loader_unittest.cc": [
         "+net/test/cert_test_util.h"
     ],
+    "dedicated_or_shared_worker_fetch_context_impl.cc": [
+        "+third_party/blink/renderer/platform/accept_languages_watcher.h",
+    ],
 }
