@@ -505,10 +505,10 @@ class WPTAdapter:
                 'run_info': {
                     'virtual_suite': subsuite_name,
                 },
-                'include': tests,
+                'include': sorted(tests),
             }
             subsuite_json[subsuite_name] = subsuite
-        return include_tests, subsuite_json
+        return sorted(include_tests), subsuite_json
 
     def _set_up_runner_tests(self, runner_options, tmp_dir):
         if not self.using_upstream_wpt:
