@@ -127,6 +127,17 @@ std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
       std::make_move_iterator(grouped.end()));
 }
 
+bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
+  // The maximum byte length of the WebauthnCredentialSpecifics `user_id` field.
+  static constexpr size_t kUserIdMaxLength = 64u;
+
+  return passkey.sync_id().size() == kSyncIdLength &&
+         passkey.credential_id().size() == kCredentialIdLength &&
+         !passkey.rp_id().empty() &&
+         passkey.user_id().length() <= kUserIdMaxLength &&
+         (passkey.has_private_key() || passkey.has_encrypted());
+}
+
 std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
 GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
                                  const PasskeyModel::UserEntity& user_entity,

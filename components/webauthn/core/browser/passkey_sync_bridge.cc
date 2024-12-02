@@ -36,15 +36,6 @@
 namespace webauthn {
 namespace {
 
-// The byte length of the WebauthnCredentialSpecifics `sync_id` field.
-constexpr size_t kSyncIdLength = 16u;
-
-// The byte length of the WebauthnCredentialSpecifics `credential_id` field.
-constexpr size_t kCredentialIdLength = 16u;
-
-// The maximum byte length of the WebauthnCredentialSpecifics `user_id` field.
-constexpr size_t kUserIdMaxLength = 64u;
-
 std::unique_ptr<syncer::EntityData> CreateEntityData(
     const sync_pb::WebauthnCredentialSpecifics& specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
@@ -53,15 +44,6 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
       base::HexEncode(base::as_bytes(base::make_span(specifics.sync_id())));
   *entity_data->specifics.mutable_webauthn_credential() = specifics;
   return entity_data;
-}
-
-bool WebauthnCredentialSpecificsValid(
-    const sync_pb::WebauthnCredentialSpecifics& specifics) {
-  return specifics.sync_id().size() == kSyncIdLength &&
-         specifics.credential_id().size() == kCredentialIdLength &&
-         !specifics.rp_id().empty() &&
-         specifics.user_id().length() <= kUserIdMaxLength &&
-         (specifics.has_private_key() || specifics.has_encrypted());
 }
 
 std::optional<std::string> FindHeadOfShadowChain(
@@ -226,7 +208,7 @@ std::unique_ptr<syncer::DataBatch> PasskeySyncBridge::GetAllDataForDebugging() {
 
 bool PasskeySyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
-  return WebauthnCredentialSpecificsValid(
+  return passkey_model_utils::IsPasskeyValid(
       entity_data.specifics.webauthn_credential());
 }
 
@@ -468,7 +450,7 @@ void PasskeySyncBridge::CreatePasskey(
   // passkey.
   CHECK(IsReady());
 
-  CHECK(WebauthnCredentialSpecificsValid(passkey));
+  CHECK(passkey_model_utils::IsPasskeyValid(passkey));
 
   std::string sync_id = passkey.sync_id();
   CHECK(!base::Contains(data_, sync_id));
@@ -486,7 +468,7 @@ std::string PasskeySyncBridge::AddNewPasskeyForTesting(
 
 void PasskeySyncBridge::AddPasskeyInternal(
     sync_pb::WebauthnCredentialSpecifics specifics) {
-  CHECK(WebauthnCredentialSpecificsValid(specifics));
+  CHECK(passkey_model_utils::IsPasskeyValid(specifics));
   CHECK(IsReady());
   CHECK(store_);
 
