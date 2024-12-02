@@ -93,7 +93,7 @@ class ResetDataInstallableManager : public InstallableManager {
  public:
   explicit ResetDataInstallableManager(content::WebContents* web_contents)
       : InstallableManager(web_contents) {}
-  ~ResetDataInstallableManager() override {}
+  ~ResetDataInstallableManager() override = default;
 
   void SetQuitClosure(base::RepeatingClosure quit_closure) {
     quit_closure_ = quit_closure;
