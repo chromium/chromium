@@ -56,7 +56,10 @@ class RichControlsContainerView : public views::FlexLayoutView {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  views::Label* title() { return title_; }
+  // TODO(crbug.com/40281048): Remove; at least color, and possibly both of
+  // these, should instead be computed automatically from a single context value
+  // on the button.
+  void SetTitleTextStyleAndColor(int style, ui::ColorId color_id);
 
   const std::u16string& GetTitleForTesting();
   const ui::ImageModel GetIconForTesting();

@@ -118,7 +118,8 @@ PermissionToggleRowView::PermissionToggleRowView(
     // When permission is blocked on the system level, all control elements are
     // disabled. The permission row's title should match color with disabled
     // control elements.
-    row_view_->title()->SetEnabledColorId(
+    row_view_->SetTitleTextStyleAndColor(
+        views::style::STYLE_BODY_3_MEDIUM,
         kColorPageInfoPermissionBlockedOnSystemLevelDisabled);
   }
 
