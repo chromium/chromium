@@ -59,7 +59,7 @@ class TestTemplateUrlFetcher : public TemplateURLFetcher {
   TestTemplateUrlFetcher(const TestTemplateUrlFetcher&) = delete;
   TestTemplateUrlFetcher& operator=(const TestTemplateUrlFetcher&) = delete;
 
-  ~TestTemplateUrlFetcher() override {}
+  ~TestTemplateUrlFetcher() override = default;
 
  protected:
   void RequestCompleted(RequestDelegate* request) override {

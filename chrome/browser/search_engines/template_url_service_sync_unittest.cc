@@ -152,7 +152,7 @@ std::optional<syncer::ModelError> TestChangeProcessor::ProcessSyncChanges(
 
 class TestTemplateURLServiceClient : public TemplateURLServiceClient {
  public:
-  ~TestTemplateURLServiceClient() override {}
+  ~TestTemplateURLServiceClient() override = default;
 
   void Shutdown() override {}
   void SetOwner(TemplateURLService* owner) override {}
