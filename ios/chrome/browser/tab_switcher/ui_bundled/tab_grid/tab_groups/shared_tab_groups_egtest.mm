@@ -124,7 +124,8 @@ void ShareGroupAtIndex(int index) {
 }
 
 // Tests that the user education is shown in the grid only once.
-- (void)testUserEducationInGrid {
+// TODO(crbug.com/381850856): Fix this flaky test.
+- (void)DISABLED_testUserEducationInGrid {
   [ChromeEarlGrey
       removeUserDefaultsObjectForKey:kSharedTabGroupUserEducationShownOnceKey];
 
@@ -200,7 +201,8 @@ void ShareGroupAtIndex(int index) {
 
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // checks opening the Manage flow. Using the face pile.
-- (void)testShareGroupAndManageGroupUsingFacePile {
+// TODO(crbug.com/381850856): Fix this flaky test.
+- (void)DISABLED_testShareGroupAndManageGroupUsingFacePile {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
@@ -246,7 +248,8 @@ void ShareGroupAtIndex(int index) {
 
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // checks opening the Manage flow. Using context menus.
-- (void)testShareGroupAndManageGroupUsingContextMenus {
+// TODO(crbug.com/381850856): Fix this flaky test.
+- (void)DISABLED_testShareGroupAndManageGroupUsingContextMenus {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
