@@ -84,7 +84,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
     tab_group_sync_service_ =
         std::make_unique<tab_groups::FakeTabGroupSyncService>();
     share_kit_service_ =
-        std::make_unique<TestShareKitService>(nullptr, nullptr);
+        std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
     collaboration_service_ =
         std::make_unique<collaboration::MockCollaborationService>();
 
