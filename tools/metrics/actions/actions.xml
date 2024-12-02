@@ -37079,6 +37079,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Abort_Signin_UINotAvailable">
+  <owner>jlebel@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the sign-in process is aborted as the user started it when the
+    UI was not available to present the sign-in screen. Logged only on iOS.
+    Needed in crash report for debugging, which is why it’s not marked as
+    `not_user_triggered`.
+  </description>
+</action>
+
 <action name="Signin_AccountMenu_AddAccount">
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

@@ -60,6 +60,10 @@ using signin_metrics::PromoAction;
       RecordAction(UserMetricsAction("Signin_Interrupt_Signin"));
       break;
     }
+    case SigninCoordinatorUINotAvailable: {
+      RecordAction(UserMetricsAction("Signin_Abort_Signin_UINotAvailable"));
+      break;
+    }
   }
 }
 

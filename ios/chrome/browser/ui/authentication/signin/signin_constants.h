@@ -22,6 +22,11 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // Sign-in did not complete because it is disabled. This can happen if
   // enterprise policies are updated after sign-in is started.
   SigninCoordinatorResultDisabled,
+  // Sign-in cannot start as the UI is not available. In this case, no
+  // SigninCoordinator object is created.
+  // Only triggered by `SceneController` when processing a ShowSigninCommand
+  // and when the UI is not ready to present any signin coordinator.
+  SigninCoordinatorUINotAvailable,
 };
 
 // User's signed-in state as defined by AuthenticationService.

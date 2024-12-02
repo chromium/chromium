@@ -149,6 +149,8 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
           _accessPoint);
       break;
     }
+    case SigninCoordinatorUINotAvailable:
+      NOTREACHED();
   }
   _cookieTimeoutClosure.Cancel();
   self.accountManagerService = nullptr;
