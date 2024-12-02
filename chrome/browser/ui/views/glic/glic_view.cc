@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/glic/glic_view.h"
 
 #include "base/command_line.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/web_contents.h"
@@ -48,6 +49,10 @@ class WindowEventObserver : public ui::EventObserver {
 namespace glic {
 
 GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kGlicView);
+  keep_alive_ = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::GLIC_VIEW, KeepAliveRestartOption::ENABLED);
   auto web_view = std::make_unique<views::WebView>(profile);
   web_view_ = web_view.get();
   web_view->SetSize(initial_size);
