@@ -242,6 +242,7 @@
   [self logEnabledHistogramOnce];
   if (IsIOSSoftLockEnabled()) {
     [self setUpPrefObservers];
+    [self logIncognitoLockStateHistogramOnce];
   }
 }
 
@@ -281,6 +282,31 @@
         self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
     base::UmaHistogramBoolean("IOS.Incognito.BiometricAuthEnabled",
                               settingEnabled);
+  });
+}
+
+// Log Incognito lock setting state histogram to determine the feature usage.
+// This is done once per app launch.
+// Since this agent is created per-scene, guard it with dispatch_once.
+- (void)logIncognitoLockStateHistogramOnce {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    DCHECK(self.localState)
+        << "Local state is not yet available when trying to log "
+           "IOS.IncognitoLockSettingStartupState This code is called too soon.";
+    if ([self isReauthFeatureEnabled]) {
+      base::UmaHistogramEnumeration(
+          kIncognitoLockSettingStartupStateHistogram,
+          IncognitoLockSettingStartupState::kHideWithReauth);
+    } else if ([self isSoftLockFeatureEnabled]) {
+      base::UmaHistogramEnumeration(
+          kIncognitoLockSettingStartupStateHistogram,
+          IncognitoLockSettingStartupState::kHideWithSoftLock);
+    } else {
+      base::UmaHistogramEnumeration(
+          kIncognitoLockSettingStartupStateHistogram,
+          IncognitoLockSettingStartupState::kDoNotHide);
+    }
   });
 }
 

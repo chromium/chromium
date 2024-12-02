@@ -24,7 +24,9 @@ enum class IncognitoLockState {
 const char kIncognitoLockSettingInteractionHistogram[] =
     "IOS.IncognitoLockSettingInteraction";
 
-// Enum for the IOS.IncognitoLockSettingInteraction histogram.
+// Enum for the IOS.IncognitoLockSettingInteraction histogram. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 // LINT.IfChange(IncognitoLockSettingInteraction)
 enum class IncognitoLockSettingInteraction {
   // User selected Don't hide option in settings.
@@ -41,7 +43,9 @@ enum class IncognitoLockSettingInteraction {
 const char kIncognitoLockOverlayInteractionHistogram[] =
     "IOS.IncognitoLockOverlayInteraction";
 
-// Enum for the IOS.IncognitoLockOverlayInteraction histogram.
+// Enum for the IOS.IncognitoLockOverlayInteraction histogram.These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 // LINT.IfChange(IncognitoLockOverlayInteraction)
 enum class IncognitoLockOverlayInteraction {
   // User clicked unlock with reauth method button on the overlay.
@@ -59,7 +63,9 @@ enum class IncognitoLockOverlayInteraction {
 // Histogram name for Incognito lock overlay interactions.
 const char kIncognitoLockImpressionHistogram[] = "IOS.IncognitoLockImpression";
 
-// Enum for the IOS.IncognitoLockImpression histogram.
+// Enum for the IOS.IncognitoLockImpression histogram. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 // LINT.IfChange(IncognitoLockImpression)
 enum class IncognitoLockImpression {
   // User saw Incognito soft lock on a single tab.
@@ -73,5 +79,24 @@ enum class IncognitoLockImpression {
   kMaxValue = kReauthLockTabGrid,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IncognitoLockImpressionType)
+
+// Histogram name for Incognito lock setting state on startup.
+const char kIncognitoLockSettingStartupStateHistogram[] =
+    "IOS.IncognitoLockSettingStartupState";
+
+// Enum that captures the type Incognito lock state on startup. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+// LINT.IfChange(IncognitoLockSettingStartupState)
+enum class IncognitoLockSettingStartupState {
+  // Lock setting is set to do not hide.
+  kDoNotHide = 0,
+  // Lock setting is set to hide with reauthentication method.
+  kHideWithReauth,
+  // Lock setting is set to hide with soft lock.
+  kHideWithSoftLock,
+  kMaxValue = kHideWithSoftLock,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IncognitoLockSettingStartupState)
 
 #endif  // IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_CONSTANTS_H_
