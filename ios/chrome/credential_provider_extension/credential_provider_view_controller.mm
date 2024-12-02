@@ -1049,8 +1049,17 @@ UIColor* BackgroundColor() {
   // passkey request.
   _userVerificationRequired = NO;
 
-  NSString* userEmail =
-      purpose == PasskeyWelcomeScreenPurpose::kEnroll ? [self userEmail] : nil;
+  NSString* userEmail;
+  if (purpose == PasskeyWelcomeScreenPurpose::kEnroll) {
+    userEmail = [self userEmail];
+    if (!userEmail) {
+      // TODO(crbug.com/381284523): When on M135, show generic alert screen
+      // instead.
+      [self showSignedOutUserAlert];
+      return;
+    }
+  }
+
   PasskeyWelcomeScreenViewController* welcomeScreen =
       [[PasskeyWelcomeScreenViewController alloc]
                    initForPurpose:purpose
