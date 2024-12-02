@@ -141,11 +141,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     command: ChromiumBidi.Command,
   ): Promise<ChromiumBidi.ResultData> {
     switch (command.method) {
-      case 'session.end':
-        // TODO: Implement.
-        break;
-
-      // Bluetooth domain
+      // Bluetooth module
       // keep-sorted start block=yes
       case 'bluetooth.handleRequestDevicePrompt':
         return await this.#bluetoothProcessor.handleRequestDevicePrompt(
@@ -167,7 +163,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
-      // Browser domain
+      // Browser module
       // keep-sorted start block=yes
       case 'browser.close':
         return this.#browserProcessor.close();
@@ -187,7 +183,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
-      // Browsing Context domain
+      // Browsing Context module
       // keep-sorted start block=yes
       case 'browsingContext.activate':
         return await this.#browsingContextProcessor.activate(
@@ -239,7 +235,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
-      // CDP domain
+      // CDP module
       // keep-sorted start block=yes
       case 'cdp.getSession':
         return this.#cdpProcessor.getSession(
@@ -255,7 +251,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
-      // Input domain
+      // Input module
       // keep-sorted start block=yes
       case 'input.performActions':
         return await this.#inputProcessor.performActions(
@@ -271,7 +267,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
-      // Network domain
+      // Network module
       // keep-sorted start block=yes
       case 'network.addIntercept':
         return await this.#networkProcessor.addIntercept(
@@ -307,7 +303,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
-      // Permissions domain
+      // Permissions module
       // keep-sorted start block=yes
       case 'permissions.setPermission':
         return await this.#permissionsProcessor.setPermissions(
@@ -315,7 +311,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
-      // Script domain
+      // Script module
       // keep-sorted start block=yes
       case 'script.addPreloadScript':
         return await this.#scriptProcessor.addPreloadScript(
@@ -349,8 +345,12 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
-      // Session domain
+      // Session module
       // keep-sorted start block=yes
+      case 'session.end':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'session.new':
         return await this.#sessionProcessor.new(command.params);
       case 'session.status':
@@ -367,7 +367,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
-      // Storage domain
+      // Storage module
       // keep-sorted start block=yes
       case 'storage.deleteCookies':
         return await this.#storageProcessor.deleteCookies(
@@ -382,12 +382,26 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetCookieParams(command.params),
         );
       // keep-sorted end
+
+      // WebExtension module
+      // keep-sorted start block=yes
+      case 'webExtension.install':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
+      case 'webExtension.uninstall':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
+      // keep-sorted end
     }
 
     // Intentionally kept outside the switch statement to ensure that
     // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
     // command is added.
-    throw new UnknownCommandException(`Unknown command '${command.method}'.`);
+    throw new UnknownCommandException(
+      `Unknown command '${(command as {method?: string})?.method}'.`,
+    );
   }
 
   // Workaround for as zod.union always take the first schema

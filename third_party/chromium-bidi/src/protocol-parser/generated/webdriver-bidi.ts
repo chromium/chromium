@@ -2912,7 +2912,7 @@ export namespace Input {
   );
 }
 export const WebExtensionsCommandSchema = z.lazy(() =>
-  WebExtension.InstallSchema.and(WebExtension.UninstallSchema),
+  z.union([WebExtension.InstallSchema, WebExtension.UninstallSchema]),
 );
 export const WebExtensionsResultSchema = z.lazy(
   () => WebExtension.InstallResultSchema,

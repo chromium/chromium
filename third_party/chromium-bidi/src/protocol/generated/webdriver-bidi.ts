@@ -2287,8 +2287,9 @@ export namespace Input {
     files: [...string[]];
   };
 }
-export type WebExtensionsCommand = WebExtension.Install &
-  WebExtension.Uninstall;
+export type WebExtensionsCommand =
+  | WebExtension.Install
+  | WebExtension.Uninstall;
 export type WebExtensionsResult = WebExtension.InstallResult;
 export namespace WebExtension {
   export type Extension = string;
