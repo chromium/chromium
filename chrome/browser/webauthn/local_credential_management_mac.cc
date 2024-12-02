@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/webauthn/local_credential_management_mac.h"
-#include "chrome/browser/webauthn/local_credential_management.h"
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
+#include "chrome/browser/webauthn/local_credential_management.h"
 #include "device/fido/mac/credential_store.h"
 
 LocalCredentialManagementMac::LocalCredentialManagementMac(

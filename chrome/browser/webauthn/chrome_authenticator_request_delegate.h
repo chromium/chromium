@@ -9,29 +9,33 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
+#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 
 class AuthenticatorRequestDialogController;
 class GPMEnclaveController;
 class PrefService;
-class Profile;
 
 namespace base {
 class SequencedTaskRunner;
@@ -58,105 +62,6 @@ enum class FidoRequestType : uint8_t;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
-
-// ChromeWebAuthenticationDelegate is the //chrome layer implementation of
-// content::WebAuthenticationDelegate.
-class ChromeWebAuthenticationDelegate final
-    : public content::WebAuthenticationDelegate {
- public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class SignalUnknownCredentialResult {
-    kPasskeyNotFound = 0,
-    kPasskeyRemoved = 1,
-    kMaxValue = kPasskeyRemoved,
-  };
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class SignalAllAcceptedCredentialsResult {
-    kNoPasskeyRemoved = 0,
-    kPasskeyRemoved = 1,
-    kMaxValue = kPasskeyRemoved,
-  };
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class SignalCurrentUserDetailsResult {
-    kQuotaExceeded = 0,
-    kPasskeyUpdated = 1,
-    kPasskeyNotUpdated = 2,
-    kMaxValue = kPasskeyNotUpdated,
-  };
-
-#if BUILDFLAG(IS_MAC)
-  // Returns a configuration struct for instantiating the macOS WebAuthn
-  // platform authenticator for the given Profile.
-  static TouchIdAuthenticatorConfig TouchIdAuthenticatorConfigForProfile(
-      Profile* profile);
-#endif  // BUILDFLAG(IS_MAC)
-
-  ChromeWebAuthenticationDelegate();
-
-  ~ChromeWebAuthenticationDelegate() override;
-
-  // content::WebAuthenticationDelegate:
-  bool OverrideCallerOriginAndRelyingPartyIdValidation(
-      content::BrowserContext* browser_context,
-      const url::Origin& caller_origin,
-      const std::string& relying_party_id) override;
-  bool OriginMayUseRemoteDesktopClientOverride(
-      content::BrowserContext* browser_context,
-      const url::Origin& caller_origin) override;
-  std::optional<std::string> MaybeGetRelyingPartyIdOverride(
-      const std::string& claimed_relying_party_id,
-      const url::Origin& caller_origin) override;
-  bool ShouldPermitIndividualAttestation(
-      content::BrowserContext* browser_context,
-      const url::Origin& caller_origin,
-      const std::string& relying_party_id) override;
-  bool SupportsResidentKeys(
-      content::RenderFrameHost* render_frame_host) override;
-  bool IsFocused(content::WebContents* web_contents) override;
-  void IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-      content::RenderFrameHost* render_frame_host,
-      base::OnceCallback<void(std::optional<bool>)> callback) override;
-  content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
-      content::BrowserContext* browser_context,
-      const url::Origin& caller_origin) override;
-  void DeletePasskey(content::WebContents* web_contents,
-                     const std::vector<uint8_t>& passkey_credential_id,
-                     const std::string& relying_party_id) override;
-  void DeleteUnacceptedPasskeys(content::WebContents* web_contents,
-                                const std::string& relying_party_id,
-                                const std::vector<uint8_t>& user_id,
-                                const std::vector<std::vector<uint8_t>>&
-                                    all_accepted_credentials_ids) override;
-  void UpdateUserPasskeys(content::WebContents* web_contents,
-                          const url::Origin& origin,
-                          const std::string& relying_party_id,
-                          std::vector<uint8_t>& user_id,
-                          const std::string& name,
-                          const std::string& display_name) override;
-  void BrowserProvidedPasskeysAvailable(
-      content::BrowserContext* browser_context,
-      base::OnceCallback<void(bool)> callback) override;
-
-#if BUILDFLAG(IS_MAC)
-  std::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
-      content::BrowserContext* browser_context) override;
-#endif  // BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_CHROMEOS)
-  ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
-      content::RenderFrameHost* render_frame_host) override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
- private:
-  // Caches the result from looking up whether a TPM is available for Enclave
-  // requests.
-  std::optional<bool> tpm_available_;
-  base::WeakPtrFactory<ChromeWebAuthenticationDelegate> weak_ptr_factory_{this};
-};
 
 class ChromeAuthenticatorRequestDelegate
     : public content::AuthenticatorRequestClientDelegate,
