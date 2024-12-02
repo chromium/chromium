@@ -112,7 +112,7 @@ def parse_args():
                         help='Whether to keep temp files')
     parser.add_argument('--android-browser',
                         help='The type of android browser to test, e.g. '
-                        'android-trichrome-bundle.')
+                        'android-trichrome-chrome-google-bundle.')
     parser.add_argument(
         '--android-device-path',
         help='The device path to pull profiles from. By '

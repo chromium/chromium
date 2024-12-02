@@ -64,15 +64,15 @@ if (android_64bit_target_cpu) {
 
 if (enable_chrome_android_internal) {
   generate_profile_test("generate_profile_android_clank_trichrome_bundle") {
-    browser_name = "android-trichrome-bundle"
-    suffix = "_android_clank_trichrome_bundle"
+    browser_name = "android-trichrome-chrome-google-bundle"
+    suffix = "_android_trichrome_chrome_google_bundle"
   }
 
   if (android_64bit_target_cpu) {
     generate_profile_test(
         "generate_profile_android_clank_trichrome_chrome_google_64_32_bundle") {
       browser_name = "android-trichrome-chrome-google-64-32-bundle"
-      suffix = "_android_clank_trichrome_chrome_google_64_32_bundle"
+      suffix = "_android_trichrome_chrome_google_64_32_bundle"
     }
   }
 }
