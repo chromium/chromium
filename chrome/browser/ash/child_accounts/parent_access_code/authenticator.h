@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
-#include "crypto/hmac.h"
 
 namespace ash {
 namespace parent_access {
@@ -137,9 +136,6 @@ class Authenticator {
 
   // Configuration used to generate and validate parent access code.
   const AccessCodeConfig config_;
-
-  // Keyed-hash message authentication generator.
-  crypto::HMAC hmac_{crypto::HMAC::SHA1};
 };
 
 }  // namespace parent_access
