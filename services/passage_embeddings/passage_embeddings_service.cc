@@ -6,7 +6,10 @@
 
 #include "base/files/file.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "services/passage_embeddings/passage_embedder.h"
+#endif
 
 namespace passage_embeddings {
 
