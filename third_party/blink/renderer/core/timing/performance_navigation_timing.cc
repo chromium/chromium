@@ -7,7 +7,6 @@
 #include "third_party/blink/public/mojom/confidence_level.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_entropy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_timing_confidence_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -33,23 +32,6 @@ using network::mojom::blink::NavigationDeliveryType;
 
 namespace {
 
-V8NavigationEntropy::Enum GetSystemEntropy(DocumentLoader* loader) {
-  if (loader) {
-    switch (loader->GetTiming().SystemEntropyAtNavigationStart()) {
-      case mojom::blink::SystemEntropy::kHigh:
-        CHECK(loader->GetFrame()->IsOutermostMainFrame());
-        return V8NavigationEntropy::Enum::kHigh;
-      case mojom::blink::SystemEntropy::kNormal:
-        CHECK(loader->GetFrame()->IsOutermostMainFrame());
-        return V8NavigationEntropy::Enum::kNormal;
-      case mojom::blink::SystemEntropy::kEmpty:
-        CHECK(!loader->GetFrame()->IsOutermostMainFrame());
-        return V8NavigationEntropy::Enum::k;
-    }
-  }
-  NOTREACHED();
-}
-
 V8PerformanceTimingConfidenceValue::Enum GetNavigationConfidenceString(
     mojom::blink::ConfidenceLevel confidence) {
   return confidence == mojom::blink::ConfidenceLevel::kHigh
@@ -70,7 +52,11 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
                                 &window),
       ExecutionContextClient(&window),
       document_timing_values_(
-          window.document()->GetTiming().GetDocumentTimingValues()) {}
+          window.document()->GetTiming().GetDocumentTimingValues()),
+      document_load_timing_values_(window.document()
+                                       ->Loader()
+                                       ->GetTiming()
+                                       .GetDocumentLoadTimingValues()) {}
 
 PerformanceNavigationTiming::~PerformanceNavigationTiming() = default;
 
@@ -84,17 +70,9 @@ PerformanceEntryType PerformanceNavigationTiming::EntryTypeEnum() const {
 
 void PerformanceNavigationTiming::Trace(Visitor* visitor) const {
   visitor->Trace(document_timing_values_);
+  visitor->Trace(document_load_timing_values_);
   ExecutionContextClient::Trace(visitor);
   PerformanceResourceTiming::Trace(visitor);
-}
-
-DocumentLoadTiming* PerformanceNavigationTiming::GetDocumentLoadTiming() const {
-  DocumentLoader* loader = GetDocumentLoader();
-  if (!loader) {
-    return nullptr;
-  }
-
-  return &loader->GetTiming();
 }
 
 void PerformanceNavigationTiming::OnBodyLoadFinished(
@@ -103,9 +81,27 @@ void PerformanceNavigationTiming::OnBodyLoadFinished(
   UpdateBodySizes(encoded_body_size, decoded_body_size);
 }
 
-bool PerformanceNavigationTiming::AllowRedirectDetails() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  return timing && !timing->HasCrossOriginRedirect();
+V8NavigationEntropy::Enum PerformanceNavigationTiming::GetSystemEntropy()
+    const {
+  DocumentLoader* loader = GetDocumentLoader();
+  switch (document_load_timing_values_->system_entropy_at_navigation_start) {
+    case mojom::blink::SystemEntropy::kHigh:
+      if (loader) {
+        CHECK(loader->GetFrame()->IsOutermostMainFrame());
+      }
+      return V8NavigationEntropy::Enum::kHigh;
+    case mojom::blink::SystemEntropy::kNormal:
+      if (loader) {
+        CHECK(loader->GetFrame()->IsOutermostMainFrame());
+      }
+      return V8NavigationEntropy::Enum::kNormal;
+    case mojom::blink::SystemEntropy::kEmpty:
+      if (loader) {
+        CHECK(!loader->GetFrame()->IsOutermostMainFrame());
+      }
+      return V8NavigationEntropy::Enum::k;
+  }
+  NOTREACHED();
 }
 
 DocumentLoader* PerformanceNavigationTiming::GetDocumentLoader() const {
@@ -131,26 +127,23 @@ PerformanceNavigationTiming::GetNavigationTimingType(WebNavigationType type) {
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventStart() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!AllowRedirectDetails() || !timing ||
-      !timing->CanRequestFromPreviousDocument()) {
+  if (document_load_timing_values_->has_cross_origin_redirect ||
+      !document_load_timing_values_->can_request_from_previous_document) {
     return 0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->UnloadEventStart(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_load_timing_values_->unload_event_start,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventEnd() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-
-  if (!AllowRedirectDetails() || !timing ||
-      !timing->CanRequestFromPreviousDocument()) {
+  if (document_load_timing_values_->has_cross_origin_redirect ||
+      !document_load_timing_values_->can_request_from_previous_document) {
     return 0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->UnloadEventEnd(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_load_timing_values_->unload_event_end,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domInteractive() const {
@@ -180,23 +173,15 @@ DOMHighResTimeStamp PerformanceNavigationTiming::domComplete() const {
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::loadEventStart() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing) {
-    return 0.0;
-  }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->LoadEventStart(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_load_timing_values_->load_event_start,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::loadEventEnd() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing) {
-    return 0.0;
-  }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->LoadEventEnd(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_load_timing_values_->load_event_end,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 V8NavigationTimingType PerformanceNavigationTiming::type() const {
@@ -224,51 +209,41 @@ AtomicString PerformanceNavigationTiming::deliveryType() const {
 }
 
 uint16_t PerformanceNavigationTiming::redirectCount() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!AllowRedirectDetails() || !timing) {
+  if (document_load_timing_values_->has_cross_origin_redirect) {
     return 0;
   }
-  return timing->RedirectCount();
+
+  return document_load_timing_values_->redirect_count;
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::redirectStart() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!AllowRedirectDetails() || !timing) {
+  if (document_load_timing_values_->has_cross_origin_redirect) {
     return 0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->RedirectStart(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_load_timing_values_->redirect_start,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::redirectEnd() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!AllowRedirectDetails() || !timing) {
+  if (document_load_timing_values_->has_cross_origin_redirect) {
     return 0;
   }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->RedirectEnd(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_load_timing_values_->redirect_end,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::fetchStart() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing) {
-    return 0.0;
-  }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->FetchStart(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_load_timing_values_->fetch_start,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::responseEnd() const {
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing) {
-    return 0.0;
-  }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->ResponseEnd(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_load_timing_values_->response_end,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 // Overriding PerformanceEntry's attributes.
@@ -292,13 +267,8 @@ PerformanceTimingConfidence* PerformanceNavigationTiming::confidence() const {
         WebFeature::kPerformanceNavigationTimingConfidence);
   }
 
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing) {
-    return nullptr;
-  }
-
   std::optional<RandomizedConfidenceValue> confidence =
-      timing->RandomizedConfidence();
+      document_load_timing_values_->randomized_confidence;
   if (!confidence) {
     return nullptr;
   }
@@ -315,20 +285,16 @@ V8NavigationEntropy PerformanceNavigationTiming::systemEntropy() const {
                              WebFeature::kPerformanceNavigateSystemEntropy);
   }
 
-  return V8NavigationEntropy(GetSystemEntropy(GetDocumentLoader()));
+  return V8NavigationEntropy(GetSystemEntropy());
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart(
     ScriptState* script_state) const {
   ExecutionContext::From(script_state)
       ->CountUse(WebFeature::kCriticalCHRestartNavigationTiming);
-  DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing) {
-    return 0.0;
-  }
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->CriticalCHRestart(), AllowNegativeValues(),
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), document_load_timing_values_->critical_ch_restart,
+      AllowNegativeValues(), CrossOriginIsolatedCapability());
 }
 
 NotRestoredReasons* PerformanceNavigationTiming::BuildNotRestoredReasons(
@@ -413,9 +379,8 @@ void PerformanceNavigationTiming::BuildJSONValue(
 
   if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    builder.AddString(
-        "systemEntropy",
-        V8NavigationEntropy(GetSystemEntropy(GetDocumentLoader())).AsString());
+    builder.AddString("systemEntropy",
+                      V8NavigationEntropy(GetSystemEntropy()).AsString());
   }
 
   if (RuntimeEnabledFeatures::PerformanceNavigationTimingConfidenceEnabled(
