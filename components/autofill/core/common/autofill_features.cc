@@ -443,13 +443,6 @@ BASE_FEATURE(kAutofillParseEmailLabelAndPlaceholder,
              "AutofillParseEmailLabelAndPlaceholder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If the feature is enabled, paint checks over individual `PopupCellView`s (to
-// verify that a user's cursor has been outside the cell before accepting it)
-// are disabled.
-BASE_FEATURE(kAutofillPopupDisablePaintChecks,
-             "AutofillPopupDisablePaintChecks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If the feature is enabled, before triggering suggestion acceptance, the row
 // view checks that a substantial portion of its content was visible for some
 // minimum required period.
