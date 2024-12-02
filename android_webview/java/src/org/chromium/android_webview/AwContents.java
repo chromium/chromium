@@ -4361,7 +4361,7 @@ public class AwContents implements SmartClipProvider {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
                     && AwFeatureMap.isEnabled(VizFeatures.WEBVIEW_FRAME_RATE_HINTS)) {
-                float frame_rate = View.REQUESTED_FRAME_RATE_CATEGORY_NO_PREFERENCE;
+                float frame_rate = View.REQUESTED_FRAME_RATE_CATEGORY_DEFAULT;
                 if (mPreferredFrameIntervalNanos > 0) {
                     frame_rate = (float) 1e9 / mPreferredFrameIntervalNanos;
                 }
