@@ -1524,12 +1524,7 @@ void ChromeAuthenticatorRequestDelegate::OnReadyForUI() {
   if (!pending_transport_availability_info_) {
     return;
   }
-
-  auto pending_transport_availability_info =
-      std::move(pending_transport_availability_info_);
-  pending_transport_availability_info_.reset();
-
-  ShowUI(std::move(*pending_transport_availability_info));
+  ShowUI(std::move(*pending_transport_availability_info_.release()));
 }
 
 bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
