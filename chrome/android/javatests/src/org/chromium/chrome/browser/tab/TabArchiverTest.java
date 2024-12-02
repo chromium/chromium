@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tab.TabArchiver.Clock;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
@@ -105,7 +106,12 @@ public class TabArchiverTest {
                                                 .getProfileProviderSupplier()
                                                 .get()
                                                 .getOriginalProfile()));
-        mArchivedTabModel = mArchivedTabModelOrchestrator.getTabModelSelector().getModel(false);
+        TabGroupModelFilter archivedTabGroupModelFilter =
+                mArchivedTabModelOrchestrator
+                        .getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter();
+        mArchivedTabModel = archivedTabGroupModelFilter.getTabModel();
         mArchivedTabCreator = mArchivedTabModelOrchestrator.getArchivedTabCreatorForTesting();
 
         mRegularTabModel = sActivityTestRule.getActivity().getCurrentTabModel();
@@ -128,7 +134,7 @@ public class TabArchiverTest {
                 runOnUiThreadBlocking(
                         () ->
                                 new TabArchiver(
-                                        mArchivedTabModel,
+                                        archivedTabGroupModelFilter,
                                         mArchivedTabCreator,
                                         mTabWindowManager,
                                         mTabArchiveSettings,

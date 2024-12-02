@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -42,7 +43,7 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     private final CallbackController mCallbackController = new CallbackController();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final TabModel mArchivedTabModel;
+    private final TabGroupModelFilter mArchivedTabGroupModelFilter;
     private final TabCreator mArchivedTabCreator;
     private final TabWindowManager mTabWindowManager;
     private final TabArchiveSettings mTabArchiveSettings;
@@ -52,19 +53,19 @@ public class TabArchiver implements TabWindowManager.Observer {
     private int mSelectorsQueuedForDeclutter;
 
     /**
-     * @param archivedTabModel The archived {@link TabModel}.
+     * @param archivedTabGroupModelFilter The archived {@link TabGroupModelFilter}.
      * @param archivedTabCreator The {@link TabCreator} for the archived TabModel.
      * @param tabWindowManager The {@link TabWindowManager} used for accessing TabModelSelectors.
      * @param tabArchiveSettings The settings for tab archiving/deletion.
      * @param clock A clock object to get the current time..
      */
     public TabArchiver(
-            TabModel archivedTabModel,
+            TabGroupModelFilter archivedTabGroupModelFilter,
             TabCreator archivedTabCreator,
             TabWindowManager tabWindowManager,
             TabArchiveSettings tabArchiveSettings,
             Clock clock) {
-        mArchivedTabModel = archivedTabModel;
+        mArchivedTabGroupModelFilter = archivedTabGroupModelFilter;
         mArchivedTabCreator = archivedTabCreator;
         mTabWindowManager = tabWindowManager;
         mTabArchiveSettings = tabArchiveSettings;
@@ -130,8 +131,8 @@ public class TabArchiver implements TabWindowManager.Observer {
         if (!mTabArchiveSettings.isAutoDeleteEnabled()) return;
 
         List<Tab> tabs = new ArrayList<>();
-        for (int i = 0; i < mArchivedTabModel.getCount(); i++) {
-            tabs.add(mArchivedTabModel.getTabAt(i));
+        for (int i = 0; i < mArchivedTabGroupModelFilter.getTabModel().getCount(); i++) {
+            tabs.add(mArchivedTabGroupModelFilter.getTabModel().getTabAt(i));
         }
 
         for (Tab tab : tabs) {
@@ -142,7 +143,8 @@ public class TabArchiver implements TabWindowManager.Observer {
                             int tabAgeDays =
                                     timestampMillisToDays(
                                             archivePersistedTabData.getArchivedTimeMs());
-                            mArchivedTabModel
+                            mArchivedTabGroupModelFilter
+                                    .getTabModel()
                                     .getTabRemover()
                                     .closeTabs(
                                             TabClosureParams.closeTab(tab).allowUndo(false).build(),
@@ -163,7 +165,7 @@ public class TabArchiver implements TabWindowManager.Observer {
         ThreadUtils.assertOnUiThread();
         unarchiveAndRestoreTabs(
                 regularTabCreator,
-                TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
+                TabModelUtils.convertTabListToListOfTabs(mArchivedTabGroupModelFilter),
                 /* updateTimestamp= */ false);
         RecordUserAction.record("Tabs.ArchivedTabRescued");
     }
@@ -241,7 +243,8 @@ public class TabArchiver implements TabWindowManager.Observer {
         }
 
         int tabCount = tabs.size();
-        mArchivedTabModel
+        mArchivedTabGroupModelFilter
+                .getTabModel()
                 .getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeTabs(tabs).allowUndo(false).build(),
@@ -276,7 +279,10 @@ public class TabArchiver implements TabWindowManager.Observer {
                                 // run into a case where the tab metadata file wasn't updated after
                                 // an archive or restore pass. Remove the tab from the regular tab
                                 // model since the tab was already archived.
-                                Tab archivedTab = mArchivedTabModel.getTabById(tab.getId());
+                                Tab archivedTab =
+                                        mArchivedTabGroupModelFilter
+                                                .getTabModel()
+                                                .getTabById(tab.getId());
                                 if (archivedTab != null) {
                                     tabsToClose.add(tab);
                                 } else if (activeTabId != tab.getId()
@@ -363,8 +369,8 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     @VisibleForTesting
     void ensureArchivedTabsHaveCorrectFields() {
-        for (int i = 0; i < mArchivedTabModel.getCount(); i++) {
-            Tab archivedTab = mArchivedTabModel.getTabAt(i);
+        for (int i = 0; i < mArchivedTabGroupModelFilter.getTabModel().getCount(); i++) {
+            Tab archivedTab = mArchivedTabGroupModelFilter.getTabModel().getTabAt(i);
             // Archived tabs shouldn't have a root id or parent id. It's possible that there's
             // stale data around for clients that have archived tabs prior to crrev.com/c/5750590
             // landing. Fix those fields so that they're corrected in the tab state file.
