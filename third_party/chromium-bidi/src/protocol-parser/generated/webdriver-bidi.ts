@@ -68,6 +68,7 @@ export const CommandDataSchema = z.lazy(() =>
     ScriptCommandSchema,
     SessionCommandSchema,
     StorageCommandSchema,
+    WebExtensionsCommandSchema,
   ]),
 );
 export const ResultDataSchema = z.lazy(() =>
@@ -78,6 +79,7 @@ export const ResultDataSchema = z.lazy(() =>
     ScriptResultSchema,
     SessionResultSchema,
     StorageResultSchema,
+    WebExtensionsResultSchema,
   ]),
 );
 export const EmptyParamsSchema = z.lazy(() => ExtensibleSchema);

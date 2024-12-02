@@ -46,14 +46,16 @@ export type CommandData =
   | NetworkCommand
   | ScriptCommand
   | SessionCommand
-  | StorageCommand;
+  | StorageCommand
+  | WebExtensionsCommand;
 export type ResultData =
   | BrowsingContextResult
   | EmptyResult
   | NetworkResult
   | ScriptResult
   | SessionResult
-  | StorageResult;
+  | StorageResult
+  | WebExtensionsResult;
 export type EmptyParams = Extensible;
 export type Message = CommandResponse | ErrorResponse | Event;
 export type ErrorResponse = {
