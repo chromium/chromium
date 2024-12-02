@@ -851,20 +851,6 @@ BASE_FEATURE(kShowHiddenNetworkToggle,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kMoveWebApp,
-             "MoveWebApp",
-             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPrefix(
-    &kMoveWebApp,
-    "uninstallStartUrlPrefix",
-    "");
-const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPattern(
-    &kMoveWebApp,
-    "uninstallStartUrlPattern",
-    "");
-const base::FeatureParam<std::string>
-    kMoveWebAppInstallStartUrl(&kMoveWebApp, "installStartUrl", "");
-
 // Enables the use of system notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for
 // Chrome OS.
