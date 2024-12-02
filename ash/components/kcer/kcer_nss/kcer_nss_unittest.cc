@@ -26,9 +26,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/hash.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_test_nss_db.h"
-#include "crypto/secure_hash.h"
 #include "net/test/cert_builder.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -669,10 +669,7 @@ TEST_F(KcerNssTest, SignRsa) {
   {
     // A caller would need to hash the data themself before calling
     // `SignRsaPkcs1Digest`, do that here.
-    auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-    hasher->Update(data_to_sign->data(), data_to_sign->size());
-    std::vector<uint8_t> hash(hasher->GetHashLength());
-    hasher->Finish(hash.data(), hash.size());
+    auto hash = crypto::hash::Sha256(*data_to_sign);
     DigestWithPrefix digest_with_prefix(PrependSHA256DigestInfo(hash));
 
     // Generate the signature.
@@ -1394,10 +1391,7 @@ TEST_P(KcerNssAllKeyTypesTest, KeyLifecycle) {
     DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
     // A caller would need to hash the data themself before calling
     // `SignRsaPkcs1Digest`, do that here.
-    auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-    hasher->Update(data_to_sign->data(), data_to_sign->size());
-    std::vector<uint8_t> hash(hasher->GetHashLength());
-    hasher->Finish(hash.data(), hash.size());
+    auto hash = crypto::hash::Sha256(*data_to_sign);
     DigestWithPrefix digest_with_prefix(PrependSHA256DigestInfo(hash));
 
     // Generate the signature.

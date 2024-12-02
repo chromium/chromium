@@ -25,7 +25,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1219,10 +1219,7 @@ void KcerFuzzer::RunSignRsaPkcs1DigestAndVerifySignature() {
 
   DataToSign data_to_sign(GetBytes(/*min=*/0));
 
-  auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  hasher->Update(data_to_sign->data(), data_to_sign->size());
-  std::vector<uint8_t> hash(hasher->GetHashLength());
-  hasher->Finish(hash.data(), hash.size());
+  auto hash = crypto::hash::Sha256(*data_to_sign);
   DigestWithPrefix digest_with_prefix(PrependSHA256DigestInfo(hash));
 
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
