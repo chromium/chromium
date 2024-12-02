@@ -40,13 +40,6 @@ BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, no prefix matching is applied to filter credit card number
-// suggestions.
-// TODO(crbug.com/338932642): Clean up.
-BASE_FEATURE(kAutofillDontPrefixMatchCreditCardNumbersOrCvcs,
-             "AutofillDontPrefixMatchCreditCardNumbersOrCvcs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
              "AutofillDisableFilling",

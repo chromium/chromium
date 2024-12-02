@@ -128,45 +128,20 @@ bool ShouldSplitCardNameAndLastFourDigits() {
 }
 
 // Returns whether the `suggestion_canon` is a valid match given
-// `field_contents_canon`. To be used for payments suggestions.
+// `field_contents_canon`.
 bool IsValidPaymentsSuggestionForFieldContents(
     std::u16string suggestion_canon,
     std::u16string field_contents_canon,
-    FieldType trigger_field_type,
-    bool is_masked_server_card,
-    bool field_is_autofilled) {
-  // If `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` is enabled, we do not
-  // apply prefix matching to credit card numbers or CVCs.
+    FieldType trigger_field_type) {
+  // We do not apply prefix matching to credit card numbers or CVCs to avoid
+  // leaking information to the renderer - see crbug.com/338932642.
   static constexpr FieldTypeSet kFieldTypesWithoutPrefixMatching = {
       CREDIT_CARD_NUMBER, CREDIT_CARD_VERIFICATION_CODE,
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
-  if (kFieldTypesWithoutPrefixMatching.contains(trigger_field_type) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillDontPrefixMatchCreditCardNumbersOrCvcs)) {
+  if (kFieldTypesWithoutPrefixMatching.contains(trigger_field_type)) {
     return true;
   }
-
-  if (trigger_field_type != CREDIT_CARD_NUMBER) {
-    return suggestion_canon.starts_with(field_contents_canon);
-  }
-
-  // If `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` is disabled, we
-  // suggest a card iff
-  // - the number matches any part of the card, or
-  // - it's a masked card and there are 6 or fewer typed so far.
-  // - it's a masked card, field is autofilled, and the last 4 digits of the
-  //   field match the last 4 digits of the card.
-  if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
-    return true;
-  }
-  if (!is_masked_server_card) {
-    return false;
-  }
-  return field_contents_canon.size() < 6 ||
-         (field_is_autofilled &&
-          suggestion_canon.find(field_contents_canon.substr(
-              field_contents_canon.size() - 4, field_contents_canon.size())) !=
-              std::u16string::npos);
+  return suggestion_canon.starts_with(field_contents_canon);
 }
 
 bool IsCreditCardExpiryData(FieldType trigger_field_type) {
@@ -795,10 +770,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
     if (prefix_match &&
         !IsValidPaymentsSuggestionForFieldContents(
             /*suggestion_canon=*/base::i18n::ToLower(suggested_value),
-            field_contents, trigger_field_type,
-            credit_card->record_type() ==
-                CreditCard::RecordType::kMaskedServerCard,
-            trigger_field.is_autofilled())) {
+            field_contents, trigger_field_type)) {
       continue;
     }
     if (include_virtual_cards &&

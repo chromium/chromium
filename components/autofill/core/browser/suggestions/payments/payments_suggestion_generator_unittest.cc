@@ -802,12 +802,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 }
 
 // Tests that credit card suggestions are not subject to prefix matching for the
-// credit card number if `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` is
-// enabled.
-TEST_F(PaymentsSuggestionGeneratorTest,
-       NoPrefixMatchingForCreditCardsIfFeatureIsTurnedOn) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillDontPrefixMatchCreditCardNumbersOrCvcs);
+// credit card number.
+TEST_F(PaymentsSuggestionGeneratorTest, NoPrefixMatchingForCreditCards) {
   CreditCard card1 = test::GetCreditCard();
   card1.set_record_type(CreditCard::RecordType::kLocalCard);
   payments_data().AddCreditCard(card1);
@@ -835,11 +831,9 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 }
 
 // Tests that credit card suggestions are not subject to prefix matching for the
-// CVC if `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` is enabled.
+// CVC.
 TEST_F(PaymentsSuggestionGeneratorTest,
        NoPrefixMatchingForCvcsIfFeatureIsTurnedOn) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillDontPrefixMatchCreditCardNumbersOrCvcs);
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, /*name_on_card=*/"Cardholder name",
                           /*card_number=*/"1111222233334444",
@@ -866,15 +860,11 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 }
 
 // Tests that all the credit card suggestions are shown when a credit card field
-// was autofilled and focused. Given that `kAutofillEnablePaymentsFieldSwapping`
-// and `kAutofillDontPrefixMatchCreditCardNumbersOrCvcs` are enabled.
+// was autofilled and focused if `kAutofillEnablePaymentsFieldSwapping` is
+// enabled.
 TEST_F(PaymentsSuggestionGeneratorTest, PaymentsFieldSwapping) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /* enabled_features=*/
-      {features::kAutofillEnablePaymentsFieldSwapping,
-       features::kAutofillDontPrefixMatchCreditCardNumbersOrCvcs},
-      /* disabled_features=*/{});
+  base::test::ScopedFeatureList features{
+      features::kAutofillEnablePaymentsFieldSwapping};
   CreditCard credit_card1;
   test::SetCreditCardInfo(&credit_card1, /*name_on_card=*/"Cardholder name",
                           /*card_number=*/"1111222233334444",
