@@ -90,7 +90,6 @@ inline constexpr char kChromeUIDefaultHost[] = "version";
 inline constexpr char kChromeUIDelayedHangUIHost[] = "delayeduithreadhang";
 inline constexpr char kChromeUIDeviceLogHost[] = "device-log";
 inline constexpr char kChromeUIDeviceLogUrl[] = "chrome://device-log";
-inline constexpr char16_t kChromeUIDeviceLogUrl16[] = u"chrome://device-log";
 inline constexpr char kChromeUIDevToolsBlankPath[] = "blank";
 inline constexpr char kChromeUIDevToolsBundledPath[] = "bundled";
 inline constexpr char kChromeUIDevToolsCustomPath[] = "custom";
