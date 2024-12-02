@@ -36,8 +36,8 @@ static int ComputeNumberOfTracks(const CSSValueList* value_list) {
     }
     if (auto* repeat_value =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(*value)) {
-      number_of_tracks +=
-          repeat_value->Repetitions() * ComputeNumberOfTracks(repeat_value);
+      number_of_tracks += *repeat_value->GetRepetitionsIfKnown() *
+                          ComputeNumberOfTracks(repeat_value);
       continue;
     }
     ++number_of_tracks;
