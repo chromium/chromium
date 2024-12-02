@@ -8,12 +8,18 @@
 #import <utility>
 
 #import "base/critical_closure.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/functional/concurrent_closures.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/notreached.h"
+#import "base/ranges/algorithm.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
@@ -55,6 +61,7 @@
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
@@ -65,6 +72,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -143,6 +152,39 @@ void FlushCookieStoreOnIOThread(
       std::move(closure));
 }
 
+// Purges data for discarded sessions `session_ids` relative to profile's
+// storage paths (regulard and off-the-record).
+void PurgeDataForSessions(std::set<std::string> session_ids,
+                          std::array<base::FilePath, 2> storage_paths) {
+  const std::array<base::FilePath::StringPieceType, 3> directories = {
+      kLegacySessionsDirname,
+      kSessionRestorationDirname,
+      FILE_PATH_LITERAL("Snapshots"),
+  };
+
+  for (const base::FilePath& storage_path : storage_paths) {
+    for (const std::string_view directory : directories) {
+      const base::FilePath sub_directory = storage_path.Append(directory);
+      for (const std::string& session : session_ids) {
+        const base::FilePath path = sub_directory.Append(session);
+        std::ignore = base::DeletePathRecursively(path);
+      }
+    }
+  }
+}
+
+// Removes `session_ids` from the set of sessions to discard from `attrs`.
+ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
+    const std::set<std::string>& session_ids,
+    ProfileAttributesIOS attrs) {
+  std::set<std::string> discarded_sessions;
+  base::ranges::set_difference(
+      attrs.GetDiscardedSessions(), session_ids,
+      std::inserter(discarded_sessions, discarded_sessions.end()));
+  attrs.SetDiscardedSessions(discarded_sessions);
+  return attrs;
+}
+
 }  // namespace
 
 @interface ProfileController () <ProfileStateObserver, SceneStateObserver>
@@ -159,6 +201,9 @@ void FlushCookieStoreOnIOThread(
   // Responsible for indexing chrome links (such as bookmarks, ...) in system
   // Spotlight index for the given profile.
   SpotlightManager* _spotlightManager;
+
+  // ProfileManager used to load the profile and its attributes.
+  raw_ptr<ProfileManagerIOS> _profileManager;
 
   // Flag recording whether the cookies are currently being saved or not.
   BOOL _savingCookies;
@@ -179,16 +224,19 @@ void FlushCookieStoreOnIOThread(
             usingManager:(ProfileManagerIOS*)manager {
   CHECK_EQ(_state.initStage, ProfileInitStage::kStart);
 
+  // Store the pointer to the profile manager.
+  _profileManager = manager;
+
   // Transition to the next init stage before loading the profile as the
   // load may be synchronous (if the profile has already been loaded for
   // background operation).
   [_state queueTransitionToNextInitStage];
 
   __weak ProfileController* weakSelf = self;
-  manager->CreateProfileAsync(profileName,
-                              base::BindOnce(^(ProfileIOS* profile) {
-                                [weakSelf profileLoaded:profile];
-                              }));
+  _profileManager->CreateProfileAsync(profileName,
+                                      base::BindOnce(^(ProfileIOS* profile) {
+                                        [weakSelf profileLoaded:profile];
+                                      }));
 }
 
 - (void)shutdown {
@@ -222,6 +270,7 @@ void FlushCookieStoreOnIOThread(
 
     case ProfileInitStage::kLoadProfile:
     case ProfileInitStage::kMigrateStorage:
+    case ProfileInitStage::kPurgeDiscardedSessionsData:
     case ProfileInitStage::kProfileLoaded:
     case ProfileInitStage::kPrepareUI:
       // Nothing to do.
@@ -253,6 +302,10 @@ void FlushCookieStoreOnIOThread(
 
     case ProfileInitStage::kMigrateStorage:
       [self migrateSessionStorageIfNeeded];
+      break;
+
+    case ProfileInitStage::kPurgeDiscardedSessionsData:
+      [self purgeDiscardedSessionsData];
       break;
 
     case ProfileInitStage::kProfileLoaded:
@@ -457,6 +510,55 @@ void FlushCookieStoreOnIOThread(
       base::BindOnce(^{
         [weakSelf.state queueTransitionToNextInitStage];
       }));
+}
+
+- (void)purgeDiscardedSessionsData {
+  DCHECK(_state.profile);
+  DCHECK(_profileManager);
+  ProfileIOS* profile = _state.profile;
+
+  std::set<std::string> sessionIDs =
+      _profileManager->GetProfileAttributesStorage()
+          ->GetAttributesForProfileWithName(profile->GetProfileName())
+          .GetDiscardedSessions();
+
+  if (sessionIDs.empty()) {
+    // No data to purge since there is no discarded sessions, advance stage.
+    [self dataPurgedForDiscardedSessions:sessionIDs];
+    return;
+  }
+
+  std::array<base::FilePath, 2> storagePaths = {
+      profile->GetStatePath(),
+      profile->GetOffTheRecordStatePath(),
+  };
+
+  __weak ProfileController* weakSelf = self;
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&PurgeDataForSessions, sessionIDs, storagePaths),
+      base::BindOnce(^{
+        [weakSelf dataPurgedForDiscardedSessions:sessionIDs];
+      }));
+}
+
+- (void)dataPurgedForDiscardedSessions:(const std::set<std::string>&)sessions {
+  DCHECK(_state.profile);
+  DCHECK(_profileManager);
+  ProfileIOS* profile = _state.profile;
+
+  if (!sessions.empty()) {
+    _profileManager->GetProfileAttributesStorage()
+        ->UpdateAttributesForProfileWithName(
+            profile->GetProfileName(),
+            base::BindOnce(&RemoveSessionsFromSessionsToDiscard, sessions));
+  }
+
+  // The profile manager is no longer used, clear the pointer so that it
+  // does not dangle.
+  _profileManager = nullptr;
+
+  [_state queueTransitionToNextInitStage];
 }
 
 - (void)startUpBrowserBackgroundInitialization {

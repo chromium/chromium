@@ -107,6 +107,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -165,9 +166,6 @@ BASE_FEATURE(kFastApplicationWillTerminate,
 
 // Constants for deferring memory debugging tools startup.
 NSString* const kMemoryDebuggingToolsStartup = @"MemoryDebuggingToolsStartup";
-
-// Constant for deferring the cleanup of discarded sessions on disk.
-NSString* const kCleanupDiscardedSessions = @"CleanupDiscardedSessions";
 
 // Constants for deferring saving field trial values
 NSString* const kSaveFieldTrialValues = @"SaveFieldTrialValues";
@@ -230,6 +228,50 @@ void BeginMemoryExperimentationAfterDelay() {
                  dispatch_get_main_queue(), ^{
                    ios::provider::BeginMemoryExperimentation();
                  });
+}
+
+// Inserts `session_ids` into the set of discarded sessions for `attrs`.
+ProfileAttributesIOS InsertDiscardedSessions(
+    const std::set<std::string>& session_ids,
+    ProfileAttributesIOS attrs) {
+  auto discarded_sessions = attrs.GetDiscardedSessions();
+  discarded_sessions.insert(session_ids.begin(), session_ids.end());
+  attrs.SetDiscardedSessions(discarded_sessions);
+  return attrs;
+}
+
+// Mark all `sessions` as discarded sessions for all profiles.
+void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
+  ProfileAttributesStorageIOS* storage = GetApplicationContext()
+                                             ->GetProfileManager()
+                                             ->GetProfileAttributesStorage();
+
+  // Prior to M-133, the list of sessions to discard was stored in a plist.
+  // If the file still exists, then copy the session identifiers, and then
+  // delete the file.
+  std::set<std::string> sessionIDs =
+      sessions_storage_util::GetDiscardedSessions();
+
+  // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
+  // support devices that do not support multi-window (and which use a constant
+  // identifier). For devices that do not support multi-window the session is
+  // saved at a constant path, so it is harmless to delete files at a path
+  // derived from -persistentIdentifier (since there won't be files deleted).
+  // For devices that do support multi-window, there is data to delete once the
+  // session is garbage collected.
+  //
+  // Thus it is always correct to use -persistentIdentifier here.
+  for (UISceneSession* session in sessions) {
+    sessionIDs.insert(base::SysNSStringToUTF8(session.persistentIdentifier));
+  }
+
+  const size_t profiles_count = storage->GetNumberOfProfiles();
+  for (size_t index = 0; index < profiles_count; ++index) {
+    storage->UpdateAttributesForProfileAtIndex(
+        index, base::BindOnce(&InsertDiscardedSessions, sessionIDs));
+  }
+
+  sessions_storage_util::ResetDiscardedSessions();
 }
 
 }  // namespace
@@ -321,8 +363,6 @@ void BeginMemoryExperimentationAfterDelay() {
 // Handles collecting metrics on user triggered screenshots
 @property(nonatomic, strong)
     ScreenshotMetricsRecorder* screenshotMetricsRecorder;
-// Cleanup discarded sessions on disk.
-- (void)cleanupDiscardedSessions;
 // Pings distribution services.
 - (void)pingDistributionServices;
 // Sends any feedback that happens to still be on local storage.
@@ -343,8 +383,6 @@ void BeginMemoryExperimentationAfterDelay() {
 - (void)scheduleStartupAttemptReset;
 // Asynchronously schedules the upload of crash reports.
 - (void)scheduleCrashReportUpload;
-// Asynchronously schedules the cleanup of discarded session files on disk.
-- (void)scheduleDiscardedSessionsCleanup;
 // Schedules various tasks to be performed after the application becomes active.
 - (void)scheduleLowPriorityStartupTasks;
 // Schedules the deletion of user downloaded files that might be leftover
@@ -583,9 +621,6 @@ void BeginMemoryExperimentationAfterDelay() {
   [self schedulePrefObserverInitialization];
   [self scheduleCrashReportUpload];
 
-  // Remove all discarded sessions from disk.
-  [self scheduleDiscardedSessionsCleanup];
-
   ios::provider::InstallOverrides();
 
   [self scheduleLowPriorityStartupTasks];
@@ -802,20 +837,8 @@ void BeginMemoryExperimentationAfterDelay() {
   applicationContext->GetSystemIdentityManager()
       ->ApplicationDidDiscardSceneSessions(sceneSessions);
 
-  // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
-  // support devices that do not support multi-window (and which use a constant
-  // identifier). For devices that do not support multi-window the session is
-  // saved at a constant path, so it is harmless to delete files at a path
-  // derived from -persistentIdentifier (since there won't be files deleted).
-  // For devices that do support multi-window, there is data to delete once the
-  // session is garbage collected.
-  //
-  // Thus it is always correct to use -persistentIdentifier here.
-  std::set<std::string> sessionIDs;
-  for (UISceneSession* session in sceneSessions) {
-    sessionIDs.insert(base::SysNSStringToUTF8(session.persistentIdentifier));
-  }
-  sessions_storage_util::MarkSessionsForRemoval(std::move(sessionIDs));
+  MarkSessionsAsDiscardedForAllProfiles(sceneSessions);
+
   crash_keys::SetConnectedScenesCount(_appState.connectedScenes.count);
 }
 
@@ -920,6 +943,7 @@ void BeginMemoryExperimentationAfterDelay() {
 
       case ProfileInitStage::kLoadProfile:
       case ProfileInitStage::kMigrateStorage:
+      case ProfileInitStage::kPurgeDiscardedSessionsData:
       case ProfileInitStage::kProfileLoaded:
       case ProfileInitStage::kPrepareUI:
         // Nothing to do.
@@ -950,6 +974,7 @@ void BeginMemoryExperimentationAfterDelay() {
 
       case ProfileInitStage::kLoadProfile:
       case ProfileInitStage::kMigrateStorage:
+      case ProfileInitStage::kPurgeDiscardedSessionsData:
         // Nothing to do.
         break;
 
@@ -1235,14 +1260,6 @@ void BeginMemoryExperimentationAfterDelay() {
                                         }];
 }
 
-- (void)scheduleDiscardedSessionsCleanup {
-  __weak MainController* weakSelf = self;
-  [_appState.deferredRunner enqueueBlockNamed:kCleanupDiscardedSessions
-                                        block:^{
-                                          [weakSelf cleanupDiscardedSessions];
-                                        }];
-}
-
 - (void)scheduleMemoryDebuggingTools {
   if (experimental_flags::IsMemoryDebuggingEnabled()) {
     __weak MainController* weakSelf = self;
@@ -1447,67 +1464,6 @@ void BeginMemoryExperimentationAfterDelay() {
 }
 
 #pragma mark - Helper methods.
-
-- (void)cleanupDiscardedSessions {
-  const std::set<std::string> discardedSessionIDs =
-      sessions_storage_util::GetDiscardedSessions();
-  if (discardedSessionIDs.empty()) {
-    return;
-  }
-
-  const std::set<std::string> connectedSessionIDs = [self connectedSessionIDs];
-
-  std::set<std::string> identifiers;
-  std::set<std::string> postponedRemovals;
-  for (const std::string& sessionID : discardedSessionIDs) {
-    // TODO(crbug.com/350946190): it looks like it is possible for the OS to
-    // inform the application that a scene is discarded even though the scene
-    // is still connected. If this happens, postpone the removal until the
-    // next execution of the application.
-    if (connectedSessionIDs.contains(sessionID)) {
-      postponedRemovals.insert(sessionID);
-    } else {
-      // Need to remove storage for both regular and inactive Browser. Removing
-      // data does nothing if there are no data to delete, so there is no need
-      // to check whether inactive tabs are enabled here.
-      identifiers.insert(session_util::GetSessionIdentifier(sessionID, false));
-      identifiers.insert(session_util::GetSessionIdentifier(sessionID, true));
-    }
-  }
-
-  // If all sessions to discard are still mapped, postpone everything.
-  if (identifiers.empty()) {
-    return;
-  }
-
-  // Will execute the closure passed to `Done()` when all the callbacks have
-  // completed.
-  base::ConcurrentClosures concurrent;
-
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    SessionRestorationServiceFactory::GetForProfile(profile)
-        ->DeleteDataForDiscardedSessions(identifiers,
-                                         concurrent.CreateClosure());
-
-    if (profile->HasOffTheRecordProfile()) {
-      ProfileIOS* otrBrowserState = profile->GetOffTheRecordProfile();
-      SessionRestorationServiceFactory::GetForProfile(otrBrowserState)
-          ->DeleteDataForDiscardedSessions(identifiers,
-                                           concurrent.CreateClosure());
-    }
-  }
-
-  base::OnceClosure closure =
-      base::BindOnce(&sessions_storage_util::ResetDiscardedSessions);
-  if (!postponedRemovals.empty()) {
-    closure = std::move(closure).Then(
-        base::BindOnce(&sessions_storage_util::MarkSessionsForRemoval,
-                       std::move(postponedRemovals)));
-  }
-
-  std::move(concurrent).Done(std::move(closure));
-}
 
 - (void)pingDistributionServices {
   const base::Time installDate =
