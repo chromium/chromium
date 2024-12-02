@@ -240,7 +240,6 @@ SyncerError Syncer::BuildAndPostCommits(const DataTypeSet& request_types,
   VLOG(1) << "Committing from types "
           << DataTypeSetToDebugString(request_types);
 
-  base::TimeTicks commit_cycle_start_time = base::TimeTicks::Now();
   CommitProcessor commit_processor(
       request_types,
       cycle->context()->data_type_registry()->commit_contributor_map());
@@ -259,11 +258,12 @@ SyncerError Syncer::BuildAndPostCommits(const DataTypeSet& request_types,
       break;
     }
 
+    base::TimeTicks commit_start_time = base::TimeTicks::Now();
     SyncerError error = commit->PostAndProcessResponse(
         nudge_tracker, cycle, cycle->mutable_status_controller(),
         cycle->context()->extensions_activity());
     LogCommitResult(error, commit->GetContributingDataTypes(),
-                    commit_cycle_start_time);
+                    commit_start_time);
     if (error.type() != SyncerError::Type::kSuccess) {
       return error;
     }
