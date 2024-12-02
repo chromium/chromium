@@ -1096,15 +1096,13 @@ void AuthenticatorResidentCredentialConfirmationSheetView::OnAccept() {
 
 AuthenticatorSelectAccountSheetModel::AuthenticatorSelectAccountSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
-    UserVerificationMode mode,
-    SelectionType type)
+    UserVerificationMode mode)
     : AuthenticatorSheetModelBase(
           dialog_model,
           mode == kPreUserVerification
               ? OtherMechanismButtonVisibility::kVisible
               : OtherMechanismButtonVisibility::kHidden),
-      user_verification_mode_(mode),
-      selection_type_(type) {
+      user_verification_mode_(mode) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
 }
@@ -1112,62 +1110,42 @@ AuthenticatorSelectAccountSheetModel::AuthenticatorSelectAccountSheetModel(
 AuthenticatorSelectAccountSheetModel::~AuthenticatorSelectAccountSheetModel() =
     default;
 
-AuthenticatorSelectAccountSheetModel::SelectionType
-AuthenticatorSelectAccountSheetModel::selection_type() const {
-  return selection_type_;
-}
-
-const device::DiscoverableCredentialMetadata&
-AuthenticatorSelectAccountSheetModel::SingleCredential() const {
-  DCHECK_EQ(selection_type_, kSingleAccount);
-  DCHECK_EQ(dialog_model()->creds.size(), 1u);
-  return dialog_model()->creds.at(0);
-}
-
 void AuthenticatorSelectAccountSheetModel::SetCurrentSelection(int selected) {
-  DCHECK_EQ(selection_type_, kMultipleAccounts);
   DCHECK_LE(0, selected);
   DCHECK_LT(static_cast<size_t>(selected), dialog_model()->creds.size());
   selected_ = selected;
 }
 
 void AuthenticatorSelectAccountSheetModel::OnAccept() {
-  const size_t index = selection_type_ == kMultipleAccounts ? selected_ : 0;
   switch (user_verification_mode_) {
     case kPreUserVerification:
-      dialog_model()->OnAccountPreselectedIndex(index);
+      dialog_model()->OnAccountPreselectedIndex(selected_);
       break;
     case kPostUserVerification:
-      dialog_model()->OnAccountSelected(index);
+      dialog_model()->OnAccountSelected(selected_);
       break;
   }
 }
 
 std::u16string AuthenticatorSelectAccountSheetModel::GetStepTitle() const {
-  switch (selection_type_) {
-    case kSingleAccount:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_USE_PASSKEY_TITLE,
-          GetRelyingPartyIdString(dialog_model()));
-    case kMultipleAccounts:
-      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CHOOSE_PASSKEY_TITLE);
+  if (dialog_model()->creds.size() > 1) {
+    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CHOOSE_PASSKEY_TITLE);
   }
+  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_USE_PASSKEY_TITLE,
+                                    GetRelyingPartyIdString(dialog_model()));
 }
 
 std::u16string AuthenticatorSelectAccountSheetModel::GetStepDescription()
     const {
-  switch (selection_type_) {
-    case kSingleAccount:
-      return u"";
-    case kMultipleAccounts:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_CHOOSE_PASSKEY_BODY,
-          GetRelyingPartyIdString(dialog_model()));
+  if (dialog_model()->creds.size() > 1) {
+    return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_CHOOSE_PASSKEY_BODY,
+                                      GetRelyingPartyIdString(dialog_model()));
   }
+  return u"";
 }
 
 bool AuthenticatorSelectAccountSheetModel::IsAcceptButtonVisible() const {
-  return selection_type_ == kSingleAccount;
+  return dialog_model()->creds.size() == 1;
 }
 
 std::u16string AuthenticatorSelectAccountSheetModel::GetAcceptButtonLabel()

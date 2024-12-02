@@ -13,9 +13,11 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -39,11 +41,13 @@ AccountHoverListModel::AccountHoverListModel(
   for (const device::DiscoverableCredentialMetadata& cred :
        dialog_model->creds) {
     items_.emplace_back(
-        NameTokenForDisplay(cred.user.name.value_or("")), u"",
+        NameTokenForDisplay(cred.user.name.value_or("")),
+        AuthenticatorRequestDialogModel::GetMechanismDescription(
+            cred.source, dialog_model->priority_phone_name),
         ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
                                        dialog_model->ui_disabled_
-                                           ? kColorWebAuthnIconColorDisabled
-                                           : kColorWebAuthnIconColor,
+                                           ? ui::kColorIconDisabled
+                                           : ui::kColorIcon,
                                        kIconSize),
         !dialog_model->ui_disabled_);
   }
