@@ -734,7 +734,7 @@ BASE_FEATURE(kVaapiOnNvidiaGPUs,
 // Enable VA-API hardware low power encoder for all codecs on intel Gen9x gpu.
 BASE_FEATURE(kVaapiLowPowerEncoderGen9x,
              "VaapiLowPowerEncoderGen9x",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Reject creation of encode/decode VAContexts when the requested resolution is
 // outside the enumerated minimum and maximum. TODO(b/171041334): Remove and
