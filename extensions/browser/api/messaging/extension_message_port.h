@@ -19,6 +19,7 @@
 #include "base/uuid.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/messaging/message_port.h"
+#include "extensions/browser/message_tracker.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_id.h"
@@ -148,6 +149,9 @@ class ExtensionMessagePort : public MessagePort {
 
   void OnConnectResponse(const PortContext& port_context, bool success);
   void Prune(const PortContext& port_context);
+
+  void ReportOpenChannelResult(
+      MessageTracker::OpenChannelMessagePipelineResult emit_value);
 
   ExtensionId extension_id_;
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;

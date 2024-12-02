@@ -50,18 +50,6 @@ std::string PortIdToString(const extensions::PortId& port_id) {
                        base::NumberToString(port_id.GetChannelId().second)});
 }
 
-void ReportOpenChannelResult(
-    content::BrowserContext* browser_context,
-    const std::set<base::UnguessableToken>& metric_tracking_ids,
-    MessageTracker::OpenChannelMessagePipelineResult emit_value) {
-  auto* message_tracker = MessageTracker::Get(browser_context);
-  // MessageTracker ensures the metrics can only emit once (e.g. if
-  // OnConnectResponse() is called after this)
-  for (const auto& tracking_id : metric_tracking_ids) {
-    message_tracker->StopTrackingMessagingStage(tracking_id, emit_value);
-  }
-}
-
 using PassKey = base::PassKey<ExtensionMessagePort>;
 
 const char kReceivingEndDoesntExistError[] =
@@ -298,11 +286,8 @@ void ExtensionMessagePort::Prune(const PortContext& port_context) {
   // was still not created then OnConnectResponse() didn't emit metrics. Let's
   // catch this and report we weren't able to find any receivers.
   if (pending_contexts_to_respond_.empty() && !port_was_created_) {
-    ReportOpenChannelResult(browser_context_,
-                            pending_open_channel_tracking_ids_,
-                            MessageTracker::OpenChannelMessagePipelineResult::
+    ReportOpenChannelResult(MessageTracker::OpenChannelMessagePipelineResult::
                                 kOpenChannelDispatchNoReceivers);
-    pending_open_channel_tracking_ids_.clear();
   }
 
   for (auto& frame : frames_) {
@@ -327,6 +312,18 @@ void ExtensionMessagePort::Prune(const PortContext& port_context) {
       return;
     }
   }
+}
+
+void ExtensionMessagePort::ReportOpenChannelResult(
+    MessageTracker::OpenChannelMessagePipelineResult emit_value) {
+  auto* message_tracker = MessageTracker::Get(browser_context_);
+  // MessageTracker ensures the metrics can only emit once (e.g. if
+  // OnConnectResponse() is called after this)
+  for (const auto& tracking_id : pending_open_channel_tracking_ids_) {
+    message_tracker->StopTrackingMessagingStage(tracking_id, emit_value);
+  }
+
+  pending_open_channel_tracking_ids_.clear();
 }
 
 void ExtensionMessagePort::RemoveCommonFrames(const MessagePort& port) {
@@ -509,12 +506,10 @@ void ExtensionMessagePort::OnConnectResponse(const PortContext& port_context,
   // emit.
   if (port_was_created_ || pending_contexts_to_respond_.empty()) {
     ReportOpenChannelResult(
-        browser_context_, pending_open_channel_tracking_ids_,
         port_was_created_
             ? MessageTracker::OpenChannelMessagePipelineResult::kOpened
             : MessageTracker::OpenChannelMessagePipelineResult::
                   kOpenChannelDispatchNoReceivers);
-    pending_open_channel_tracking_ids_.clear();
   }
   // We'll continue tracking the messaging pipeline in MessageService where
   // we'll track each dispatched message for this (now open) channel.
