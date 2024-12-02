@@ -1077,7 +1077,7 @@
     "platforms": ["Linux"],
     "bases": [ "external/wpt/css/css-transforms" ],
     "args": ["--enable-features=BackfaceVisibilityInterop"],
-    "expires": "Nov 15, 2024"
+    "expires": "Nov 15, 2025"
   },
   {
     "prefix": "blur-on-remove",
