@@ -3594,6 +3594,8 @@ test("base_unittests") {
     sources += [ "libcpp_hardening_test.cc" ]
   }
 
+  fuzztests = [ "JSONReaderTest.CanParseAnythingWithoutCrashing" ]
+
   defines = []
   frameworks = []
 
