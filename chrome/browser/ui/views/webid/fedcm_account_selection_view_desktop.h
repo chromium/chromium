@@ -271,8 +271,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            AccountChooserResultMetric);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
-                           LoadingDialogResultMetric);
-  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            RequestPermissionFalseAndNewIdpDataDisclosureText);
 
   enum class State {
@@ -345,7 +343,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     kMaxValue = kAccountsNotReceivedAndPopupNotClosedByIdp
   };
 
-  // This enum describes the outcome of the account chooser and is used for
+  // This enum describes the outcome an account chooser and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
   // AccountChooserResult in
@@ -364,19 +362,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     kTapScrim,
 
     kMaxValue = kTapScrim
-  };
-
-  // This enum describes the outcome of the loading dialog and is used for
-  // histograms. Do not remove or modify existing values, but you may add new
-  // values at the end. This enum should be kept in sync with
-  // FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
-  enum class LoadingDialogResult {
-    kProceed,
-    kCancel,
-    kProceedThroughPopup,
-    kDestroy,
-
-    kMaxValue = kDestroy
   };
 
   // Called when the tab's WebContents is discarded.
@@ -516,10 +501,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // The current state of the modal account chooser, if initiated by user. This
   // is nullopt when no modal account chooser has been opened.
   std::optional<AccountChooserResult> modal_account_chooser_state_;
-
-  // The current state of the modal loading dialog. This is nullopt when no
-  // modal loading dialog has been opened.
-  std::optional<LoadingDialogResult> modal_loading_dialog_state_;
 
   // Whether the widget is occluded by PIP (and therefore we should ignore
   // inputs).

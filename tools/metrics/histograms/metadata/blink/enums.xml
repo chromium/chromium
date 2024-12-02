@@ -321,14 +321,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Ready to be deleted"/>
 </enum>
 
-<enum name="FedCmLoadingDialogResult">
-  <int value="0" label="Proceeds with existing accounts"/>
-  <int value="1" label="Cancel button clicked"/>
-  <int value="2"
-      label="Proceeds by completing login to IDP flow in pop-up or CCT"/>
-  <int value="3" label="Tab or window is destroyed"/>
-</enum>
-
 <enum name="FedCmMismatchDialogResult">
   <int value="0" label="Continue button clicked"/>
   <int value="1" label="Dismissed by user through clicking close icon"/>

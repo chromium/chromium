@@ -3752,16 +3752,6 @@ be describing additional metrics about the same event.
       shown again and leaving would not record a second sample.
     </summary>
   </metric>
-  <metric name="Button.LoadingDialogResult" enum="FedCmLoadingDialogResult">
-    <summary>
-      Records the outcome of the loading dialog in button flow. Button flows
-      always start with a loading dialog. Recorded once per button flow dialog
-      destroyed. For example, when the dialog gets updated into an account
-      chooser, the user can then select an account and subsequently cause the
-      dialog to be destroyed once they are signed in. Upon destroyal, this
-      metric is recorded.
-    </summary>
-  </metric>
   <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
     <summary>
       Records the type of frame that invokes disconnect(). Records once for each
