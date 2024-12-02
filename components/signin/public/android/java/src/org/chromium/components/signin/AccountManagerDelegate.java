@@ -57,19 +57,17 @@ public interface AccountManagerDelegate {
      * @return The access token data fetched from the authenticator.
      * @throws AuthException Indicates a failure in fetching the auth token perhaps due to a
      *     transient error or when user intervention is required (like confirming the credentials)
-     *     which is expressed as an {@link Intent} to the handler. TODO(crbug.com/40745233): Rename
-     *     this method to getAccessToken.
+     *     which is expressed as an {@link Intent} to the handler.
      */
     @WorkerThread
-    AccessTokenData getAuthToken(Account account, String authTokenScope) throws AuthException;
+    AccessTokenData getAccessToken(Account account, String authTokenScope) throws AuthException;
 
     /**
      * @param authToken The auth token to invalidate.
      * @throws AuthException Indicates a failure clearing the auth token; can be transient.
-     *     TODO(crbug.com/40745233): Rename this method to invalidateAccessToken.
      */
     @WorkerThread
-    void invalidateAuthToken(String authToken) throws AuthException;
+    void invalidateAccessToken(String authToken) throws AuthException;
 
     /** Check whether the given account has a specific feature. */
     @WorkerThread

@@ -57,9 +57,9 @@ public class AccountManagerFacadeTest {
         }
 
         @Override
-        public AccessTokenData getAuthToken(Account account, String scope) throws AuthException {
+        public AccessTokenData getAccessToken(Account account, String scope) throws AuthException {
             maybeBlockOnLatch(mGetAuthTokenLatch);
-            return super.getAuthToken(account, scope);
+            return super.getAccessToken(account, scope);
         }
 
         void blockGetAuthToken() {
@@ -216,7 +216,8 @@ public class AccountManagerFacadeTest {
 
         delegate.addAccount(ACCOUNT);
         AccessTokenData expectedToken =
-                delegate.getAuthToken(CoreAccountInfo.getAndroidAccountFrom(ACCOUNT), TOKEN_SCOPE);
+                delegate.getAccessToken(
+                        CoreAccountInfo.getAndroidAccountFrom(ACCOUNT), TOKEN_SCOPE);
 
         CustomGetAccessTokenCallback callback = new CustomGetAccessTokenCallback();
         ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback));
