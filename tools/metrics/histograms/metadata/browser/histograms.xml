@@ -1232,7 +1232,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowserRenderProcessHost.NoSparePresentReason"
+<histogram name="BrowserRenderProcessHost.NoSparePresentReason2"
     enum="NoSpareRendererReason" expires_after="2025-03-09">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>

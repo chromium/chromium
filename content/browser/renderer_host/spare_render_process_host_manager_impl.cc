@@ -43,7 +43,7 @@ content::NoSpareRendererReason MapToNoSpareRendererReason(
     case content::SpareRendererDispatchResult::kTimeout:
       return content::NoSpareRendererReason::kTimeout;
     case content::SpareRendererDispatchResult::kOverridden:
-      return content::NoSpareRendererReason::kNotYetCreated;
+      return content::NoSpareRendererReason::kNotYetCreatedAfterWarmup;
     case content::SpareRendererDispatchResult::kDestroyedNotEnabled:
       return content::NoSpareRendererReason::kNotEnabled;
     case content::SpareRendererDispatchResult::kDestroyedProcessLimit:
@@ -246,6 +246,8 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
 
   bool had_spare_renderer = !!spare_rph;
   CleanupSpares(SpareRendererDispatchResult::kOverridden);
+  CHECK(no_spare_renderer_reason_ ==
+        NoSpareRendererReason::kNotYetCreatedAfterWarmup);
   UMA_HISTOGRAM_BOOLEAN(
       "BrowserRenderProcessHost.SpareProcessEvictedOtherSpare",
       had_spare_renderer);
@@ -439,7 +441,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       "BrowserRenderProcessHost.SpareProcessMaybeTakeAction", action);
   if (action == SpareProcessMaybeTakeAction::kNoSparePresent) {
     base::UmaHistogramEnumeration(
-        "BrowserRenderProcessHost.NoSparePresentReason",
+        "BrowserRenderProcessHost.NoSparePresentReason2",
         no_spare_renderer_reason_);
   }
   if (spare_renderer_maybe_take_timer_) {
@@ -472,12 +474,14 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
     // If the spare shouldn't be kept around, then discard it as soon as we
     // find that the current spare was mismatched.
     CleanupSpares(SpareRendererDispatchResult::kDestroyedNotEnabled);
+    CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kNotEnabled);
   } else if (RenderProcessHost::IsProcessLimitReached()) {
     // Drop all spares if we are at a process limit and the spare wasn't taken.
     // This helps avoid process reuse.
     // TODO(pmonette): Only cleanup n spares, where n is the count of processes
     // that is over the limit.
     CleanupSpares(SpareRendererDispatchResult::kDestroyedProcessLimit);
+    CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kProcessLimit);
   }
 
   return returned_process;
@@ -513,6 +517,7 @@ void SpareRenderProcessHostManagerImpl::PrepareForFutureRequests(
     // Discard the ignored (probably non-matching) spares so as not to waste
     // resources.
     CleanupSpares(SpareRendererDispatchResult::kDestroyedNotEnabled);
+    CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kNotEnabled);
   }
 }
 
@@ -652,6 +657,7 @@ void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
   }
 
   CleanupSpares(SpareRendererDispatchResult::kMemoryPressure);
+  CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kMemoryPressure);
   // `reset()` will start the timer.
   check_memory_pressure_timer_.Reset();
 }
