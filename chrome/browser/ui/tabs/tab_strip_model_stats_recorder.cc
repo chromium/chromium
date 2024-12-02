@@ -45,7 +45,7 @@ class TabStripModelStatsRecorder::TabInfo
   }
 
  private:
-  TabState current_state_ = TabState::INITIAL;
+  TabState current_state_ = TabState::kInitial;
 
   static const char kKey[];
 };
@@ -58,21 +58,21 @@ void TabStripModelStatsRecorder::TabInfo::UpdateState(TabState new_state) {
   if (new_state == current_state_)
     return;
 
-  // Avoid state transition from CLOSED.
+  // Avoid state transition from kClosed.
   // When tab is closed, we receive TabStripModelObserver::TabClosingAt and then
   // TabStripModelStatsRecorder::ActiveTabChanged.
-  // Here we ignore CLOSED -> INACTIVE state transition from last
+  // Here we ignore kClosed -> kInactive state transition from last
   // ActiveTabChanged.
-  if (current_state_ == TabState::CLOSED)
+  if (current_state_ == TabState::kClosed) {
     return;
+  }
 
   switch (current_state_) {
-    case TabState::INITIAL:
-    case TabState::ACTIVE:
-    case TabState::INACTIVE:
+    case TabState::kInitial:
+    case TabState::kActive:
+    case TabState::kInactive:
       break;
-    case TabState::CLOSED:
-    case TabState::MAX:
+    case TabState::kClosed:
       NOTREACHED();
   }
 
@@ -80,7 +80,7 @@ void TabStripModelStatsRecorder::TabInfo::UpdateState(TabState new_state) {
 }
 
 void TabStripModelStatsRecorder::OnTabClosing(content::WebContents* contents) {
-  TabInfo::Get(contents)->UpdateState(TabState::CLOSED);
+  TabInfo::Get(contents)->UpdateState(TabState::kClosed);
 
   // Avoid having stale pointer in active_tab_history_
   std::replace(active_tab_history_.begin(), active_tab_history_.end(), contents,
@@ -97,11 +97,11 @@ void TabStripModelStatsRecorder::OnActiveTabChanged(
   }
 
   if (old_contents)
-    TabInfo::Get(old_contents)->UpdateState(TabState::INACTIVE);
+    TabInfo::Get(old_contents)->UpdateState(TabState::kInactive);
 
   DCHECK(new_contents);
   TabInfo* tab_info = TabInfo::Get(new_contents);
-  tab_info->UpdateState(TabState::ACTIVE);
+  tab_info->UpdateState(TabState::kActive);
 
   // A UMA Histogram must be bounded by some number.
   // We chose 64 as our bound as 99.5% of the users open <64 tabs.
