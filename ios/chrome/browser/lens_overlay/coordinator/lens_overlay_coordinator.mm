@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/model/snapshot_cover_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_presenter.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_network_issue_alert_presenter.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_results_page_presenter.h"
@@ -60,7 +61,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
@@ -73,9 +73,6 @@ namespace {
 
 // The expected number of animations happening at the same time when exiting.
 const int kExpectedExitAnimationCount = 2;
-
-// The duration of the dismiss animation when exiting the selection UI.
-const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
 }  // namespace
 
@@ -123,8 +120,6 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
   /// Indicates the Lens Overlay is in the exit flow.
   BOOL _isExiting;
-  /// Forces the device orientation in portrait mode.
-  std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
 
   /// Command handler for loadQueryCommands.
   id<LoadQueryCommands> _loadQueryHandler;
@@ -150,6 +145,9 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
   /// Presenter for the results page.
   LensOverlayResultsPagePresenter* _resultsPagePresenter;
+
+  /// Presenter for the lens container.
+  LensOverlayContainerPresenter* _containerPresenter;
 }
 
 #pragma mark - public
@@ -219,10 +217,6 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   }
   _containerViewController = [[LensOverlayContainerViewController alloc]
       initWithLensOverlayCommandsHandler:self];
-  _containerViewController.modalPresentationStyle =
-      UIModalPresentationOverCurrentContext;
-  _containerViewController.modalTransitionStyle =
-      UIModalTransitionStyleCrossDissolve;
 }
 
 - (void)createMediator {
@@ -345,32 +339,23 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
     return;
   }
 
-  [self lockOrientationInPortrait:YES];
   [_selectionViewController setTopIconsHidden:self.shouldShowConsentFlow];
 
   [_metricsRecorder setLensOverlayInForeground:YES];
 
-  __weak __typeof(self) weakSelf = self;
-
   [self showRestorationWindowIfNeeded];
-  [self.baseViewController
-      presentViewController:_containerViewController
-                   animated:animated
-                 completion:^{
-                   [weakSelf onContainerViewControllerPresented];
-                 }];
-}
 
-- (void)lockOrientationInPortrait:(BOOL)portraitLock {
-  AppState* appState = self.browser->GetSceneState().profileState.appState;
-  if (portraitLock) {
-    if (!appState) {
-      return;
-    }
-    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
-  } else {
-    _scopedForceOrientation.reset();
-  }
+  _containerPresenter = [[LensOverlayContainerPresenter alloc]
+      initWithBaseViewController:self.baseViewController
+         containerViewController:_containerViewController];
+
+  __weak __typeof(self) weakSelf = self;
+  [_containerPresenter
+      presentContainerAnimated:animated
+                    sceneState:self.browser->GetSceneState()
+                    completion:^{
+                      [weakSelf onContainerViewControllerPresented];
+                    }];
 }
 
 - (void)onContainerViewControllerPresented {
@@ -413,11 +398,8 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   [_metricsRecorder setLensOverlayInForeground:NO];
   _associatedTabHelper->UpdateSnapshotStorage();
   [self dismissRestorationWindow];
-  [self lockOrientationInPortrait:NO];
 
-  [_containerViewController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:nil];
+  [_containerPresenter dismissContainerAnimated:animated completion:nil];
 }
 
 - (void)destroyLensUI:(BOOL)animated
@@ -468,21 +450,12 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
 - (void)exitWithoutAnimation {
   __weak __typeof(self) weakSelf = self;
-  void (^completion)() = ^{
-    [weakSelf exitFullscreenAnimated:NO];
-    [weakSelf destroyViewControllersAndMediators];
-  };
-
-  UIViewController* presentingViewController =
-      _containerViewController.presentingViewController;
-
-  if (!presentingViewController) {
-    completion();
-    return;
-  }
-
-  [presentingViewController dismissViewControllerAnimated:NO
-                                               completion:completion];
+  [_containerPresenter
+      dismissContainerAnimated:NO
+                    completion:^{
+                      [weakSelf exitFullscreenAnimated:NO];
+                      [weakSelf destroyViewControllersAndMediators];
+                    }];
 }
 
 - (void)executeExitAnimationFlowWithCompletion:(void (^)())completion {
@@ -521,38 +494,20 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
 - (void)animateSelectionUIExitWithCompletion:(void (^)())completion {
   __weak __typeof(self) weakSelf = self;
+  __weak LensOverlayContainerPresenter* weakContainerPresenter =
+      _containerPresenter;
   [_selectionViewController resetSelectionAreaToInitialPosition:^{
     [weakSelf exitFullscreenAnimated:YES];
-    [UIView animateWithDuration:kSelectionViewDismissAnimationDuration
-        animations:^{
-          __typeof(self) strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
-          strongSelf->_selectionViewController.view.alpha = 0;
-        }
-        completion:^(BOOL status) {
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, base::BindOnce(completion));
-        }];
+    if (!weakContainerPresenter) {
+      completion();
+      return;
+    }
+    [weakContainerPresenter fadeSelectionUIWithCompletion:completion];
   }];
 }
 
 - (void)dismissLensOverlayWithCompletion:(void (^)())completion {
-  UIViewController* presentingViewController =
-      _containerViewController.presentingViewController;
-  if (!presentingViewController) {
-    completion();
-    return;
-  }
-
-  [presentingViewController
-      dismissViewControllerAnimated:NO
-                         completion:^{
-                           base::SequencedTaskRunner::GetCurrentDefault()
-                               ->PostTask(FROM_HERE,
-                                          base::BindOnce(completion));
-                         }];
+  [_containerPresenter dismissContainerAnimated:NO completion:completion];
 }
 
 #pragma mark - LensOverlayNetworkIssueDelegate
@@ -843,8 +798,9 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   _isExiting = NO;
   _associatedTabHelper = nil;
   _metricsRecorder = nil;
+  _containerPresenter = nil;
+  _resultsPagePresenter = nil;
   _lensOverlayConsentPresenter = nil;
-  _scopedForceOrientation.reset();
   _networkIssueAlertPresenter = nil;
 }
 
@@ -908,7 +864,7 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 }
 
 - (BOOL)isLensOverlayVisible {
-  return _containerViewController.presentingViewController != nil;
+  return _containerPresenter.isLensOverlayVisible;
 }
 
 // Blocks user interaction with the Lens UI.
