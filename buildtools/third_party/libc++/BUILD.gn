@@ -116,7 +116,6 @@ target(_libcxx_target_type, "libc++") {
     "//third_party/libc++/src/src/ios.cpp",
     "//third_party/libc++/src/src/ios.instantiations.cpp",
     "//third_party/libc++/src/src/iostream.cpp",
-    "//third_party/libc++/src/src/legacy_pointer_safety.cpp",
     "//third_party/libc++/src/src/locale.cpp",
     "//third_party/libc++/src/src/memory.cpp",
     "//third_party/libc++/src/src/mutex.cpp",
