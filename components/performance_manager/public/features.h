@@ -36,6 +36,11 @@ BASE_DECLARE_FEATURE(kUnthrottledTabProcessReporting);
 // directly from Performance Manager rather than via TabLoader.
 BASE_DECLARE_FEATURE(kBackgroundTabLoadingFromPerformanceManager);
 
+// Minimum site engagement score for a tab to be restored, if it doesn't
+// communicate in the background. If 0, engagement score doesn't prevent any tab
+// from being loaded.
+BASE_DECLARE_FEATURE_PARAM(size_t, kBackgroundTabLoadingMinSiteEngagement);
+
 // Make the Battery Saver Modes available to users. If this is enabled, it
 // doesn't mean the mode is enabled, just that the user has the option of
 // toggling it.

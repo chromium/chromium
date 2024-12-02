@@ -6,13 +6,17 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/persistence/test_site_data_reader.h"
@@ -111,6 +115,17 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
   void AllTabsLoadedCallback() { ++num_all_tabs_loaded_calls_; }
 
  protected:
+  using PageNodeToLoadData = BackgroundTabLoadingPolicy::PageNodeToLoadData;
+
+  PageNodeToLoadData CreatePageNodeToLoadData(
+      const PageNode* page_node,
+      bool updates_title_or_favicon_in_bg = false,
+      std::optional<size_t> site_engagement = std::nullopt) {
+    PageNodeToLoadData data(page_node, site_engagement);
+    data.updates_title_or_favicon_in_bg = updates_title_or_favicon_in_bg;
+    return data;
+  }
+
   MockBackgroundTabLoadingPolicy* policy() { return policy_; }
   MockPageLoader* loader() { return mock_loader_; }
   SystemNodeImpl* system_node() { return system_node_.get()->get(); }
@@ -267,19 +282,20 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_MaxTabsToRestore) {
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
       page_nodes;
-  std::vector<PageNode*> raw_page_nodes;
+  std::vector<PageNodeToLoadData> page_node_datas;
 
   for (uint32_t i = 0; i < policy()->kMaxTabsToLoad + 1; i++) {
     page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
-    raw_page_nodes.push_back(page_nodes.back().get());
+    page_node_datas.push_back(
+        CreatePageNodeToLoadData(page_nodes.back().get()));
   }
 
   // Test the maximum number of tabs to load threshold.
   for (uint32_t i = 0; i < policy()->kMaxTabsToLoad; i++) {
-    EXPECT_TRUE(policy()->ShouldLoad(raw_page_nodes[i]));
+    EXPECT_TRUE(policy()->ShouldLoad(page_node_datas[i]));
     policy()->tab_loads_started_++;
   }
-  EXPECT_FALSE(policy()->ShouldLoad(raw_page_nodes[policy()->kMaxTabsToLoad]));
+  EXPECT_FALSE(policy()->ShouldLoad(page_node_datas[policy()->kMaxTabsToLoad]));
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_MinTabsToRestore) {
@@ -287,11 +303,12 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_MinTabsToRestore) {
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
       page_nodes;
-  std::vector<PageNode*> raw_page_nodes;
+  std::vector<PageNodeToLoadData> page_node_datas;
 
   for (uint32_t i = 0; i < policy()->kMinTabsToLoad + 1; i++) {
     page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
-    raw_page_nodes.push_back(page_nodes.back().get());
+    page_node_datas.push_back(
+        CreatePageNodeToLoadData(page_nodes.back().get()));
   }
 
   // When free memory limit is reached.
@@ -300,20 +317,17 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_MinTabsToRestore) {
 
   // Test that the minimum number of tabs to load is respected.
   for (uint32_t i = 0; i < policy()->kMinTabsToLoad; i++) {
-    EXPECT_TRUE(policy()->ShouldLoad(raw_page_nodes[i]));
+    EXPECT_TRUE(policy()->ShouldLoad(page_node_datas[i]));
     policy()->tab_loads_started_++;
   }
-  EXPECT_FALSE(policy()->ShouldLoad(raw_page_nodes[policy()->kMinTabsToLoad]));
+  EXPECT_FALSE(policy()->ShouldLoad(page_node_datas[policy()->kMinTabsToLoad]));
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_FreeMemory) {
   // Create a PageNode to restore.
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
-      page_node;
-  PageNode* raw_page_node;
-
-  page_node = CreateNode<performance_manager::PageNodeImpl>();
-  raw_page_node = page_node.get();
+      page_node = CreateNode<performance_manager::PageNodeImpl>();
+  PageNodeToLoadData page_node_data = CreatePageNodeToLoadData(page_node.get());
 
   // Simulate that kMinTabsToLoad have loaded.
   policy()->tab_loads_started_ = policy()->kMinTabsToLoad;
@@ -321,30 +335,42 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_FreeMemory) {
   // Test the free memory constraint.
   const size_t kFreeMemoryLimit = policy()->kDesiredAmountOfFreeMemoryMb;
   policy()->SetFreeMemoryForTesting(kFreeMemoryLimit);
-  EXPECT_TRUE(policy()->ShouldLoad(raw_page_node));
+  EXPECT_TRUE(policy()->ShouldLoad(page_node_data));
   policy()->SetFreeMemoryForTesting(kFreeMemoryLimit - 1);
-  EXPECT_FALSE(policy()->ShouldLoad(raw_page_node));
+  EXPECT_FALSE(policy()->ShouldLoad(page_node_data));
   policy()->SetFreeMemoryForTesting(kFreeMemoryLimit + 1);
-  EXPECT_TRUE(policy()->ShouldLoad(raw_page_node));
+  EXPECT_TRUE(policy()->ShouldLoad(page_node_data));
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
   // Create an old tab.
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
-      page_node;
-  PageNode* raw_page_node;
-
-  page_node = CreateNode<performance_manager::PageNodeImpl>(
-      nullptr, std::string(), GURL(), performance_manager::PagePropertyFlags{},
-      base::TimeTicks::Now() -
-          (base::Seconds(1) + policy()->kMaxTimeSinceLastUseToLoad));
-  raw_page_node = page_node.get();
+      page_node = CreateNode<performance_manager::PageNodeImpl>(
+          nullptr, std::string(), GURL(),
+          performance_manager::PagePropertyFlags{},
+          base::TimeTicks::Now() -
+              (base::Seconds(1) + policy()->kMaxTimeSinceLastUseToLoad));
+  PageNodeToLoadData page_node_data = CreatePageNodeToLoadData(page_node.get());
 
   // Simulate that kMinTabsToLoad have loaded.
   policy()->tab_loads_started_ = policy()->kMinTabsToLoad;
 
   // Test the max time since last use threshold.
-  EXPECT_FALSE(policy()->ShouldLoad(raw_page_node));
+  EXPECT_FALSE(policy()->ShouldLoad(page_node_data));
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_SiteEngagement) {
+  for (size_t site_engagement : {0, 100}) {
+    performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
+        page_node = CreateNode<performance_manager::PageNodeImpl>();
+    PageNodeToLoadData data = CreatePageNodeToLoadData(
+        page_node.get(), /*updates_title_or_favicon_in_bg=*/false,
+        site_engagement);
+    // With the default value of kBackgroundTabLoadingMinSiteEngagement, site
+    // engagement should always be ignored.
+    EXPECT_TRUE(policy()->ShouldLoad(data))
+        << "site_engagement " << site_engagement;
+  }
 }
 
 // Regression test for https://crrev.com/c/3909768: Deleting a PageNode with the
@@ -548,6 +574,88 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
   // Simulate load finish of a PageNode and expect the policy to not start
   // another load.
   page_node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+}
+
+class BackgroundTabLoadingPolicySiteEngagementTest
+    : public BackgroundTabLoadingPolicyTest,
+      public ::testing::WithParamInterface<std::optional<size_t>> {
+ public:
+  static constexpr size_t kMinSiteEngagement = 5;
+
+  BackgroundTabLoadingPolicySiteEngagementTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kBackgroundTabLoadingFromPerformanceManager,
+        {{"min_site_engagement", base::NumberToString(kMinSiteEngagement)}});
+  }
+
+ protected:
+  std::optional<size_t> site_engagement_to_test_ = GetParam();
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackgroundTabLoadingPolicySiteEngagementTest,
+    ::testing::Values(
+        std::nullopt,  // Site engagement should be ignored.
+        0ul,
+        BackgroundTabLoadingPolicySiteEngagementTest::kMinSiteEngagement - 1,
+        BackgroundTabLoadingPolicySiteEngagementTest::kMinSiteEngagement,
+        BackgroundTabLoadingPolicySiteEngagementTest::kMinSiteEngagement + 1));
+
+TEST_P(BackgroundTabLoadingPolicySiteEngagementTest,
+       ShouldLoad_NoBackgroundCommunication) {
+  performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
+      page_node = CreateNode<performance_manager::PageNodeImpl>();
+  PageNodeToLoadData data = CreatePageNodeToLoadData(
+      page_node.get(), /*updates_title_or_favicon_in_bg=*/false,
+      site_engagement_to_test_);
+
+  // kMinTabsToLoad should be respected.
+  policy()->tab_loads_started_ = BackgroundTabLoadingPolicy::kMinTabsToLoad - 1;
+  EXPECT_TRUE(policy()->ShouldLoad(data));
+
+  // Once the minimum tabs are loading, only tabs with high site engagement
+  // should load.
+  policy()->tab_loads_started_ = BackgroundTabLoadingPolicy::kMinTabsToLoad;
+  if (site_engagement_to_test_.has_value()) {
+    EXPECT_EQ(policy()->ShouldLoad(data),
+              site_engagement_to_test_.value() >= kMinSiteEngagement);
+  } else {
+    EXPECT_TRUE(policy()->ShouldLoad(data));
+  }
+}
+
+TEST_P(BackgroundTabLoadingPolicySiteEngagementTest,
+       ShouldLoad_NotificationPermission) {
+  performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
+      page_node = CreateNode<performance_manager::PageNodeImpl>();
+  page_node->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::GRANTED);
+  PageNodeToLoadData data = CreatePageNodeToLoadData(
+      page_node.get(), /*updates_title_or_favicon_in_bg=*/false,
+      site_engagement_to_test_);
+
+  // After the minimum tabs are loading, the notification permission should
+  // cause tabs with low site engagement to load.
+  policy()->tab_loads_started_ = BackgroundTabLoadingPolicy::kMinTabsToLoad;
+  EXPECT_TRUE(policy()->ShouldLoad(data));
+}
+
+TEST_P(BackgroundTabLoadingPolicySiteEngagementTest,
+       ShouldLoad_UpdatesTitleOrFaviconInBackground) {
+  performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
+      page_node = CreateNode<performance_manager::PageNodeImpl>();
+  PageNodeToLoadData data = CreatePageNodeToLoadData(
+      page_node.get(), /*updates_title_or_favicon_in_bg=*/true,
+      site_engagement_to_test_);
+
+  // After the minimum tabs are loading, the background update should cause
+  // tabs with low site engagement to load.
+  policy()->tab_loads_started_ = BackgroundTabLoadingPolicy::kMinTabsToLoad;
+  EXPECT_TRUE(policy()->ShouldLoad(data));
 }
 
 }  // namespace policies
