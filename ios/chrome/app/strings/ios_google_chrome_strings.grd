@@ -987,7 +987,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Keep up with content and helpful Chrome tips.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_TIPS_TITLE" desc="Title for the Set Up List (a variation that mentions Tips) - a list of tasks the user might want to complete when first using Chromium.">
-        Chrome tips
+        Chrome Tips
       </message>
       <message name="IDS_IOS_SET_UP_LIST_TITLE" desc="Title for the Set Up List - a list of tasks the user might want to complete when first using Chrome.">
         Get the most out of Chrome
