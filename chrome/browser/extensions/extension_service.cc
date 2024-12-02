@@ -2064,8 +2064,8 @@ bool ExtensionService::OnExternalExtensionFileFound(
         case 1:  // existing version is newer, uh-oh
           LOG(WARNING) << "Found external version of extension "
                        << info.extension_id
-                       << "that is older than current version. Current version "
-                       << "is: " << existing->VersionString() << ". New "
+                       << " that is older than current version. Current version"
+                       << " is: " << existing->VersionString() << ". New "
                        << "version is: " << info.version.GetString()
                        << ". Keeping current version.";
           return false;
