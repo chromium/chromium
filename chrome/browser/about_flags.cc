@@ -878,6 +878,18 @@ const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
      switches::kDisableGpuRasterization, ""},
 };
 
+const FeatureEntry::FeatureParam kEnableLazyLoadImageForAllInvisiblePage[] = {
+    {"enabled_page_type", "all_invisible_page"}};
+const FeatureEntry::FeatureParam kEnableLazyLoadImageForPrerenderPage[] = {
+    {"enabled_page_type", "prerender_page"}};
+
+const FeatureEntry::FeatureVariation
+    kSearchSuggsetionPrerenderTypeVariations[] = {
+        {"for all invisible page", kEnableLazyLoadImageForAllInvisiblePage,
+         std::size(kEnableLazyLoadImageForAllInvisiblePage), nullptr},
+        {"for prerendering page", kEnableLazyLoadImageForPrerenderPage,
+         std::size(kEnableLazyLoadImageForPrerenderPage), nullptr}};
+
 const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceAutomatic, switches::kTopChromeTouchUi,
@@ -4491,6 +4503,13 @@ const FeatureEntry kFeatureEntries[] = {
      // On Android, this is always enabled.
      kOsAura, FEATURE_VALUE_TYPE(features::kOverlayScrollbar)},
 #endif  // USE_AURA
+    {"enable-lazy-load-image-for-invisible-pages",
+     flag_descriptions::kEnableLazyLoadImageForInvisiblePageName,
+     flag_descriptions::kEnableLazyLoadImageForInvisiblePageDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         blink::features::kEnableLazyLoadImageForInvisiblePage,
+         kSearchSuggsetionPrerenderTypeVariations,
+         "EnableLazyLoadImageForInvisiblePage")},
     {"enable-quic", flag_descriptions::kQuicName,
      flag_descriptions::kQuicDescription, kOsAll,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableQuic, switches::kDisableQuic)},

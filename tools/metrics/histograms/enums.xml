@@ -20814,6 +20814,7 @@ from previous Chrome versions.
   <int value="198386935" label="OmitCorsClientCert:enabled"/>
   <int value="198719062" label="WebAssemblyLazyCompilation:disabled"/>
   <int value="198762155" label="SharingPeerConnectionSender:enabled"/>
+  <int value="199225530" label="EnableLazyLoadImageForInvisiblePage:disabled"/>
   <int value="199237368" label="RenameJourneys:disabled"/>
   <int value="200347243" label="WebVRExperimentalRendering:disabled"/>
   <int value="201203491"
@@ -23710,6 +23711,7 @@ from previous Chrome versions.
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>
   <int value="1355923367" label="CrOSContainer:disabled"/>
   <int value="1356161410" label="VizHitTestSurfaceLayer:enabled"/>
+  <int value="1357749568" label="EnableLazyLoadImageForInvisiblePage:enabled"/>
   <int value="1359703966" label="Prerender2InNewTab:disabled"/>
   <int value="1359972809" label="enable-gesture-deletion"/>
   <int value="1360774969"

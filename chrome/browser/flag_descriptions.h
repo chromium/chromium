@@ -236,6 +236,9 @@ extern const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[];
 extern const char kEnableBookmarksSelectedTypeOnSigninForTestingName[];
 extern const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[];
 
+extern const char kEnableLazyLoadImageForInvisiblePageName[];
+extern const char kEnableLazyLoadImageForInvisiblePageDescription[];
+
 extern const char kFontationsFontBackendName[];
 extern const char kFontationsFontBackendDescription[];
 

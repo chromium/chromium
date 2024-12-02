@@ -3327,6 +3327,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-lazy-load-image-for-invisible-pages",
+    "owners": [
+      "lingqi@chromium.org",
+      "//content/browser/preloading/prerender/OWNERS"
+    ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "enable-lens-image-translate",
     "owners": ["nguyenbryan@google.com", "stanfield@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 120

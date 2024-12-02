@@ -1685,6 +1685,11 @@ const char kMirrorBackForwardGesturesInRTLDescription[] =
     "directions are flipped so that the left edge is considered forward and "
     "right is considered back.";
 
+const char kEnableLazyLoadImageForInvisiblePageName[] =
+    "Enable lazy load image for invisible page";
+const char kEnableLazyLoadImageForInvisiblePageDescription[] =
+    "Respect the loading = lazy attribute for images even on invisible pages.";
+
 const char kEnableLensStandaloneFlagId[] = "enable-lens-standalone";
 const char kEnableLensStandaloneName[] = "Enable Lens features in Chrome.";
 const char kEnableLensStandaloneDescription[] =
