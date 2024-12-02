@@ -113,6 +113,7 @@ export const ErrorCodeSchema = z.lazy(() =>
     'invalid argument',
     'invalid selector',
     'invalid session id',
+    'invalid web extension',
     'move target out of bounds',
     'no such alert',
     'no such element',
@@ -125,6 +126,7 @@ export const ErrorCodeSchema = z.lazy(() =>
     'no such script',
     'no such storage partition',
     'no such user context',
+    'no such web extension',
     'session not created',
     'unable to capture screen',
     'unable to close browser',
@@ -2904,6 +2906,85 @@ export namespace Input {
       context: BrowsingContext.BrowsingContextSchema,
       element: Script.SharedReferenceSchema,
       files: z.array(z.string()),
+    }),
+  );
+}
+export const WebExtensionsCommandSchema = z.lazy(() =>
+  WebExtension.InstallSchema.and(WebExtension.UninstallSchema),
+);
+export const WebExtensionsResultSchema = z.lazy(
+  () => WebExtension.InstallResultSchema,
+);
+export namespace WebExtension {
+  export const ExtensionSchema = z.lazy(() => z.string());
+}
+export namespace WebExtension {
+  export const InstallParametersSchema = z.lazy(() =>
+    z.object({
+      extensionData: WebExtension.ExtensionDataSchema,
+    }),
+  );
+}
+export namespace WebExtension {
+  export const InstallSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('webExtension.install'),
+      params: WebExtension.InstallParametersSchema,
+    }),
+  );
+}
+export namespace WebExtension {
+  export const ExtensionDataSchema = z.lazy(() =>
+    z.union([
+      WebExtension.ExtensionArchivePathSchema,
+      WebExtension.ExtensionBase64EncodedSchema,
+      WebExtension.ExtensionPathSchema,
+    ]),
+  );
+}
+export namespace WebExtension {
+  export const ExtensionPathSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('path'),
+      path: z.string(),
+    }),
+  );
+}
+export namespace WebExtension {
+  export const ExtensionArchivePathSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('archivePath'),
+      path: z.string(),
+    }),
+  );
+}
+export namespace WebExtension {
+  export const ExtensionBase64EncodedSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('base64'),
+      value: z.string(),
+    }),
+  );
+}
+export namespace WebExtension {
+  export const InstallResultSchema = z.lazy(() =>
+    z.object({
+      extension: WebExtension.ExtensionSchema,
+    }),
+  );
+}
+export namespace WebExtension {
+  export const UninstallSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('webExtension.uninstall'),
+      params: WebExtension.UninstallParametersSchema,
+    }),
+  );
+}
+export namespace WebExtension {
+  export const UninstallParametersSchema = z.lazy(() =>
+    z.object({
+      extension: WebExtension.ExtensionSchema,
     }),
   );
 }

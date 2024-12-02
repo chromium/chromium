@@ -81,6 +81,7 @@ export const enum ErrorCode {
   InvalidArgument = 'invalid argument',
   InvalidSelector = 'invalid selector',
   InvalidSessionId = 'invalid session id',
+  InvalidWebExtension = 'invalid web extension',
   MoveTargetOutOfBounds = 'move target out of bounds',
   NoSuchAlert = 'no such alert',
   NoSuchElement = 'no such element',
@@ -93,6 +94,7 @@ export const enum ErrorCode {
   NoSuchScript = 'no such script',
   NoSuchStoragePartition = 'no such storage partition',
   NoSuchUserContext = 'no such user context',
+  NoSuchWebExtension = 'no such web extension',
   SessionNotCreated = 'session not created',
   UnableToCaptureScreen = 'unable to capture screen',
   UnableToCloseBrowser = 'unable to close browser',
@@ -2281,5 +2283,62 @@ export namespace Input {
     context: BrowsingContext.BrowsingContext;
     element: Script.SharedReference;
     files: [...string[]];
+  };
+}
+export type WebExtensionsCommand = WebExtension.Install &
+  WebExtension.Uninstall;
+export type WebExtensionsResult = WebExtension.InstallResult;
+export namespace WebExtension {
+  export type Extension = string;
+}
+export namespace WebExtension {
+  export type InstallParameters = {
+    extensionData: WebExtension.ExtensionData;
+  };
+}
+export namespace WebExtension {
+  export type Install = {
+    method: 'webExtension.install';
+    params: WebExtension.InstallParameters;
+  };
+}
+export namespace WebExtension {
+  export type ExtensionData =
+    | WebExtension.ExtensionArchivePath
+    | WebExtension.ExtensionBase64Encoded
+    | WebExtension.ExtensionPath;
+}
+export namespace WebExtension {
+  export type ExtensionPath = {
+    type: 'path';
+    path: string;
+  };
+}
+export namespace WebExtension {
+  export type ExtensionArchivePath = {
+    type: 'archivePath';
+    path: string;
+  };
+}
+export namespace WebExtension {
+  export type ExtensionBase64Encoded = {
+    type: 'base64';
+    value: string;
+  };
+}
+export namespace WebExtension {
+  export type InstallResult = {
+    extension: WebExtension.Extension;
+  };
+}
+export namespace WebExtension {
+  export type Uninstall = {
+    method: 'webExtension.uninstall';
+    params: WebExtension.UninstallParameters;
+  };
+}
+export namespace WebExtension {
+  export type UninstallParameters = {
+    extension: WebExtension.Extension;
   };
 }

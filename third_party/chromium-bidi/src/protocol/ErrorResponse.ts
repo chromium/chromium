@@ -180,3 +180,15 @@ export class UnderspecifiedStoragePartitionException extends Exception {
     super(ErrorCode.UnderspecifiedStoragePartition, message, stacktrace);
   }
 }
+
+export class InvalidWebExtensionException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.InvalidWebExtension, message, stacktrace);
+  }
+}
+
+export class NoSuchWebExtensionException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchWebExtension, message, stacktrace);
+  }
+}

@@ -27,6 +27,7 @@ describe('Exception', () => {
     [ErrorCode.InvalidArgument]: undefined,
     [ErrorCode.InvalidSelector]: undefined,
     [ErrorCode.InvalidSessionId]: undefined,
+    [ErrorCode.InvalidWebExtension]: undefined,
     [ErrorCode.MoveTargetOutOfBounds]: undefined,
     [ErrorCode.NoSuchAlert]: undefined,
     [ErrorCode.NoSuchElement]: undefined,
@@ -39,6 +40,7 @@ describe('Exception', () => {
     [ErrorCode.NoSuchScript]: undefined,
     [ErrorCode.NoSuchStoragePartition]: undefined,
     [ErrorCode.NoSuchUserContext]: undefined,
+    [ErrorCode.NoSuchWebExtension]: undefined,
     [ErrorCode.SessionNotCreated]: undefined,
     [ErrorCode.UnableToCaptureScreen]: undefined,
     [ErrorCode.UnableToCloseBrowser]: undefined,
@@ -48,7 +50,6 @@ describe('Exception', () => {
     [ErrorCode.UnknownCommand]: undefined,
     [ErrorCode.UnknownError]: undefined,
     [ErrorCode.UnsupportedOperation]: undefined,
-
     // keep-sorted end
   };
 
