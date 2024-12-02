@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
@@ -385,8 +386,10 @@ StringKeyframeVector ProcessKeyframesRule(
         if (value.IsInheritedValue() && parent_style->Animations()) {
           timing_function = parent_style->Animations()->TimingFunctionList()[0];
         } else if (auto* value_list = DynamicTo<CSSValueList>(value)) {
-          timing_function =
-              CSSToStyleMap::MapAnimationTimingFunction(value_list->Item(0));
+          MediaValues* media_values =
+              MediaValues::CreateDynamicIfFrameExists(document.GetFrame());
+          timing_function = CSSToStyleMap::MapAnimationTimingFunction(
+              *media_values, value_list->Item(0));
         } else {
           DCHECK(value.IsCSSWideKeyword());
           timing_function = CSSTimingData::InitialTimingFunction();

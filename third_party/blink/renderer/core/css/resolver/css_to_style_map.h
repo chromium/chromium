@@ -35,6 +35,7 @@
 namespace blink {
 
 class FillLayer;
+class CSSLengthResolver;
 class CSSValue;
 class StyleResolverState;
 class NinePieceImage;
@@ -99,6 +100,7 @@ class CSSToStyleMap {
       StyleResolverState&,
       const CSSValue&);
   static scoped_refptr<TimingFunction> MapAnimationTimingFunction(
+      const CSSLengthResolver&,
       const CSSValue&);
   static scoped_refptr<TimingFunction> MapAnimationTimingFunction(
       StyleResolverState&,

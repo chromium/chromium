@@ -93,10 +93,10 @@ String CSSStepsTimingFunctionValue::CustomCSSText() const {
   // If the step position is jump-end or end, serialize as steps(<integer>).
   // Otherwise, serialize as steps(<integer>, <step-position>).
   if (step_position_string.empty()) {
-    return "steps(" + String::Number(steps_) + ')';
+    return "steps(" + steps_->CssText() + ')';
   }
 
-  return "steps(" + String::Number(steps_) + ", " + step_position_string + ')';
+  return "steps(" + steps_->CssText() + ", " + step_position_string + ')';
 }
 
 bool CSSStepsTimingFunctionValue::Equals(

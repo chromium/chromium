@@ -367,7 +367,7 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
 
     guard.Release();
     result = MakeGarbageCollected<cssvalue::CSSStepsTimingFunctionValue>(
-        steps->GetIntValue(), position);
+        steps, position);
   }
   stream.ConsumeWhitespace();
   return result;
