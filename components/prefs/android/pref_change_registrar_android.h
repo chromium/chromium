@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_PREFERENCES_PREF_CHANGE_REGISTRAR_ANDROID_H_
-#define CHROME_BROWSER_ANDROID_PREFERENCES_PREF_CHANGE_REGISTRAR_ANDROID_H_
+#ifndef COMPONENTS_PREFS_ANDROID_PREF_CHANGE_REGISTRAR_ANDROID_H_
+#define COMPONENTS_PREFS_ANDROID_PREF_CHANGE_REGISTRAR_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +12,7 @@
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 
-class Profile;
+class PrefService;
 
 // This class contains a PrefChangeRegistrar that observes PrefService changes
 // for Android.
@@ -20,7 +20,7 @@ class PrefChangeRegistrarAndroid {
  public:
   PrefChangeRegistrarAndroid(JNIEnv* env,
                              const JavaParamRef<jobject>& obj,
-                             Profile* profile);
+                             PrefService* prefs);
   void Destroy(JNIEnv*, const JavaParamRef<jobject>&);
 
   PrefChangeRegistrarAndroid(const PrefChangeRegistrarAndroid&) = delete;
@@ -42,4 +42,4 @@ class PrefChangeRegistrarAndroid {
   ScopedJavaGlobalRef<jobject> pref_change_registrar_jobject_;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_PREFERENCES_PREF_CHANGE_REGISTRAR_ANDROID_H_
+#endif  // COMPONENTS_PREFS_ANDROID_PREF_CHANGE_REGISTRAR_ANDROID_H_

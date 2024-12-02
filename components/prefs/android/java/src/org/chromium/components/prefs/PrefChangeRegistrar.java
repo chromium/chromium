@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.preferences;
+package org.chromium.components.prefs;
 
 import android.util.ArrayMap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
-
-import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Map;
 
@@ -26,15 +24,15 @@ public class PrefChangeRegistrar {
         void onPreferenceChange();
     }
 
-    /** Mapping preference key and corresponding observer. **/
+    /** Mapping preference key and corresponding observer. */
     private final Map<String, PrefObserver> mObservers = new ArrayMap<>();
 
-    /** Native pointer for PrefChangeRegistrarAndroid. **/
+    /** Native pointer for PrefChangeRegistrarAndroid. */
     private long mNativeRegistrar;
 
     /** Initialize native PrefChangeRegistrar. */
-    public PrefChangeRegistrar(Profile profile) {
-        mNativeRegistrar = PrefChangeRegistrarJni.get().init(PrefChangeRegistrar.this, profile);
+    public PrefChangeRegistrar(PrefService prefs) {
+        mNativeRegistrar = PrefChangeRegistrarJni.get().init(PrefChangeRegistrar.this, prefs);
     }
 
     /**
@@ -79,7 +77,7 @@ public class PrefChangeRegistrar {
 
     @NativeMethods
     public interface Natives {
-        long init(PrefChangeRegistrar caller, @JniType("Profile*") Profile profile);
+        long init(PrefChangeRegistrar caller, @JniType("PrefService*") PrefService prefService);
 
         void add(
                 long nativePrefChangeRegistrarAndroid,

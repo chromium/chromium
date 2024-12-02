@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/preferences/pref_change_registrar_android.h"
+#include "components/prefs/android/pref_change_registrar_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/profiles/profile.h"
+#include "components/prefs/android/pref_service_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/preferences/pref_service_jni_headers/PrefChangeRegistrar_jni.h"
+#include "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -19,8 +19,8 @@ using base::android::ConvertUTF8ToJavaString;
 PrefChangeRegistrarAndroid::PrefChangeRegistrarAndroid(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    Profile* profile) {
-  pref_change_registrar_.Init(profile->GetOriginalProfile()->GetPrefs());
+    PrefService* prefs) {
+  pref_change_registrar_.Init(prefs);
   pref_change_registrar_jobject_.Reset(env, obj);
 }
 
@@ -60,7 +60,7 @@ void PrefChangeRegistrarAndroid::OnPreferenceChange(std::string preference) {
 
 jlong JNI_PrefChangeRegistrar_Init(JNIEnv* env,
                                    const JavaParamRef<jobject>& obj,
-                                   Profile* profile) {
+                                   PrefService* prefs) {
   return reinterpret_cast<intptr_t>(
-      new PrefChangeRegistrarAndroid(env, obj, profile));
+      new PrefChangeRegistrarAndroid(env, obj, prefs));
 }

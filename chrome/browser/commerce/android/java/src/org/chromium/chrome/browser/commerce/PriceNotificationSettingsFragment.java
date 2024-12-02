@@ -20,13 +20,14 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -74,7 +75,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
             String email = info.getEmail();
             mEmailNotificationsSwitch.setSummary(
                     getString(R.string.price_notifications_settings_email_description, email));
-            mPrefChangeRegistrar = new PrefChangeRegistrar(getProfile());
+            mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
             mPrefChangeRegistrar.addObserver(
                     Pref.PRICE_EMAIL_NOTIFICATIONS_ENABLED, this::updateEmailNotificationSwitch);
             updateEmailNotificationSwitch();
