@@ -27,7 +27,6 @@ void ScrollMarkerGroupPseudoElement::Trace(Visitor* v) const {
 
 void ScrollMarkerGroupPseudoElement::AddToFocusGroup(
     ScrollMarkerPseudoElement& scroll_marker) {
-  scroll_marker.SetScrollMarkerGroup(this);
   focus_group_.push_back(scroll_marker);
 }
 

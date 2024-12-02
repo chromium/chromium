@@ -27,6 +27,9 @@ class ColumnPseudoElement : public PseudoElement {
   // The column rectangle, relatively to the multicol container.
   const PhysicalRect& ColumnRect() const { return column_rect_; }
 
+  void AttachLayoutTree(AttachContext&) final;
+  void DetachLayoutTree(bool performing_reattach) final;
+
  private:
   // Used for linear time tree traversals.
   wtf_size_t index_;

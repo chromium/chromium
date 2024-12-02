@@ -1641,6 +1641,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool RecalcSelfOrAncestorHasDirAuto();
   std::optional<TextDirection> ResolveAutoDirectionality() const;
 
+  void AttachPseudoElement(PseudoId, AttachContext&);
+  void DetachPseudoElement(PseudoId, bool performing_reattach);
+
  private:
   friend class AXObject;
   struct AffectedByPseudoStateChange;
@@ -1741,6 +1744,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void MarkNonSlottedHostChildrenForStyleRecalc();
 
   void RebuildPseudoElementLayoutTree(PseudoId, WhitespaceAttacher&);
+  void RebuildColumnLayoutTrees(WhitespaceAttacher&);
   void RebuildFirstLetterLayoutTree();
   void RebuildShadowRootLayoutTree(WhitespaceAttacher&);
   inline void CheckForEmptyStyleChange(const Node* node_before_change,
@@ -1779,10 +1783,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       PseudoId,
       const StyleRecalcContext&,
       const AtomicString& view_transition_name = g_null_atom);
-  void AttachPseudoElement(PseudoId, AttachContext&);
-  void DetachPseudoElement(PseudoId, bool performing_reattach);
 
   void AttachPrecedingPseudoElements(AttachContext& context) {
+    AttachPseudoElement(kPseudoIdScrollMarker, context);
     AttachPseudoElement(kPseudoIdMarker, context);
     AttachPseudoElement(kPseudoIdCheckMark, context);
     AttachPseudoElement(kPseudoIdBefore, context);
@@ -1796,7 +1799,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     AttachPseudoElement(kPseudoIdFirstLetter, context);
   }
 
+  void AttachColumnPseudoElements(AttachContext& context);
+
   void DetachPrecedingPseudoElements(bool performing_reattach) {
+    DetachPseudoElement(kPseudoIdScrollMarker, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollMarkerGroupBefore, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollUpButton, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollDownButton, performing_reattach);
@@ -1814,6 +1820,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     DetachPseudoElement(kPseudoIdBackdrop, performing_reattach);
     DetachPseudoElement(kPseudoIdFirstLetter, performing_reattach);
   }
+
+  void DetachColumnPseudoElements(bool performing_reattach);
 
   void RecomputeDirectionFromParent();
 

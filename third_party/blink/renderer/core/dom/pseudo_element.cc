@@ -447,12 +447,8 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     case kPseudoIdBefore:
     case kPseudoIdAfter:
     case kPseudoIdSelectArrow:
+    case kPseudoIdScrollMarker:
       break;
-    case kPseudoIdScrollMarker: {
-      To<ScrollMarkerGroupPseudoElement>(context.parent->GetNode())
-          ->AddToFocusGroup(*To<ScrollMarkerPseudoElement>(this));
-      break;
-    }
     default: {
       context.counters_context.LeaveObject(*layout_object);
       return;

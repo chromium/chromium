@@ -135,6 +135,7 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/beforeunload_event_listener.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -2208,10 +2209,21 @@ static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
                                       kPseudoIdScrollUpButton,
                                       kPseudoIdScrollDownButton,
                                       kPseudoIdScrollLeftButton,
-                                      kPseudoIdScrollRightButton};
+                                      kPseudoIdScrollRightButton,
+                                      kPseudoIdScrollMarker};
   for (auto pseudo_id : pseudo_ids) {
-    if (auto* pseudo_element = element.GetPseudoElement(pseudo_id))
+    if (const PseudoElement* pseudo_element =
+            element.GetPseudoElement(pseudo_id)) {
       AssertNodeClean(*pseudo_element);
+      AssertLayoutTreeUpdatedForPseudoElements(*pseudo_element);
+    }
+  }
+  if (const ColumnPseudoElementsVector* columns =
+          element.GetColumnPseudoElements()) {
+    for (const ColumnPseudoElement* column : *columns) {
+      AssertNodeClean(*column);
+      AssertLayoutTreeUpdatedForPseudoElements(*column);
+    }
   }
 }
 

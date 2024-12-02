@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -61,6 +62,9 @@ void ScrollMarkerPseudoElement::SetScrollMarkerGroup(
     scroll_marker_group_->RemoveFromFocusGroup(*this);
   }
   scroll_marker_group_ = scroll_marker_group;
+  if (scroll_marker_group) {
+    scroll_marker_group->AddToFocusGroup(*this);
+  }
 }
 
 void ScrollMarkerPseudoElement::SetSelected(bool value) {
@@ -71,12 +75,35 @@ void ScrollMarkerPseudoElement::SetSelected(bool value) {
   PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
 }
 
-void ScrollMarkerPseudoElement::DetachLayoutTree(bool performing_reattach) {
-  if (scroll_marker_group_) {
-    scroll_marker_group_->RemoveFromFocusGroup(*this);
-    scroll_marker_group_ = nullptr;
+void ScrollMarkerPseudoElement::AttachLayoutTree(AttachContext& context) {
+  CHECK(context.parent);
+  CHECK(context.parent->GetNode());
+
+  if (auto* group = DynamicTo<ScrollMarkerGroupPseudoElement>(
+          context.parent->GetNode())) {
+    SetScrollMarkerGroup(group);
+    PseudoElement::AttachLayoutTree(context);
+    return;
   }
-  PseudoElement::DetachLayoutTree(performing_reattach);
+
+  // The layout box for these pseudo elements are attached to the
+  // ::scroll-marker-group box during layout above. Make sure we walk any
+  // ::scroll-marker child and clear dirty bits for the RebuildLayoutTree()
+  // pass.
+  ContainerNode::AttachLayoutTree(context);
+  if (scroll_marker_group_) {
+    if (LayoutObject* group_box = scroll_marker_group_->GetLayoutObject()) {
+      // Mark the ::scroll-marker-group box for layout to make sure it's
+      // repopulated with re-attached ::scroll-marker boxes.
+      group_box->SetNeedsLayoutAndFullPaintInvalidation(
+          layout_invalidation_reason::kScrollMarkersChanged);
+    }
+  }
+}
+
+void ScrollMarkerPseudoElement::Dispose() {
+  SetScrollMarkerGroup(nullptr);
+  PseudoElement::Dispose();
 }
 
 void ScrollMarkerPseudoElement::Trace(Visitor* v) const {

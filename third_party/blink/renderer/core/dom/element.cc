@@ -3291,6 +3291,22 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   }
 }
 
+void Element::AttachColumnPseudoElements(AttachContext& context) {
+  if (const ColumnPseudoElementsVector* columns = GetColumnPseudoElements()) {
+    for (ColumnPseudoElement* column : *columns) {
+      column->AttachLayoutTree(context);
+    }
+  }
+}
+
+void Element::DetachColumnPseudoElements(bool performing_reattach) {
+  if (const ColumnPseudoElementsVector* columns = GetColumnPseudoElements()) {
+    for (ColumnPseudoElement* column : *columns) {
+      column->DetachLayoutTree(performing_reattach);
+    }
+  }
+}
+
 void Element::AttachLayoutTree(AttachContext& context) {
   DCHECK(GetDocument().InStyleRecalc() ||
          GetDocument().GetStyleEngine().InScrollMarkersAttachment());
@@ -3385,6 +3401,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
     context.counters_context.EnterObject(*layout_object);
   }
 
+  AttachColumnPseudoElements(children_context);
   AttachPrecedingPseudoElements(children_context);
 
   if (ShadowRoot* shadow_root = GetShadowRoot()) {
@@ -3447,6 +3464,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     data->RemoveAnchorPositionScrollData();
   }
 
+  DetachColumnPseudoElements(performing_reattach);
   DetachPrecedingPseudoElements(performing_reattach);
 
   auto* context = GetDisplayLockContext();
@@ -4439,6 +4457,8 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
                                    local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
     RebuildFirstLetterLayoutTree();
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollMarker, *child_attacher);
+    RebuildColumnLayoutTrees(*child_attacher);
     ClearChildNeedsReattachLayoutTree();
   }
   DCHECK(!NeedsStyleRecalc());
@@ -4461,6 +4481,15 @@ void Element::RebuildPseudoElementLayoutTree(
     WhitespaceAttacher& whitespace_attacher) {
   if (PseudoElement* element = GetPseudoElement(pseudo_id)) {
     RebuildLayoutTreeForChild(element, whitespace_attacher);
+  }
+}
+
+void Element::RebuildColumnLayoutTrees(
+    WhitespaceAttacher& whitespace_attacher) {
+  if (const ColumnPseudoElementsVector* columns = GetColumnPseudoElements()) {
+    for (ColumnPseudoElement* column : *columns) {
+      RebuildLayoutTreeForChild(column, whitespace_attacher);
+    }
   }
 }
 

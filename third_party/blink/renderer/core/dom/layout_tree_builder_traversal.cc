@@ -78,8 +78,10 @@ ContainerNode* LayoutTreeBuilderTraversal::LayoutParent(const Node& node) {
   // from all call sites of this function, or move the check here.
   ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(node);
 
-  while (parent && HasDisplayContentsStyle(*parent))
+  while (parent && (HasDisplayContentsStyle(*parent) ||
+                    parent->IsColumnPseudoElement())) {
     parent = LayoutTreeBuilderTraversal::Parent(*parent);
+  }
 
   return parent;
 }
