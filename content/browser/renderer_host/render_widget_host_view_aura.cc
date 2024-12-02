@@ -2317,6 +2317,13 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
         "StylusHandwritingControllerWin instance is nullptr");
     return;
   }
+
+  if (!last_stylus_handwriting_properties_.has_value()) {
+    mojo::ReportBadMessage(
+        "OnStartStylusWriting(): unexpected state. "
+        "Last stylus handwriting properties are empty");
+    return;
+  }
   // Call Windows Text Services Framework Shell Handwriting API.
   // Will call ITfHandwriting::RequestHandwritingForPointer to
   // display ink, then ITfHandwritingRequest::SetInputEvaluation to confirm
@@ -2334,7 +2341,6 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
   // on content eligible for handwriting with the RECT provided by
   // GetPointerTargetInfo, then focus will fallback to the eligible element
   // that was initially tapped.
-  // TODO(crbug.com/355578906): Propagate valid pointer and stroke ids.
   // TODO(crbug.com/355578906): Pass and save the identifier of the currently
   // focused RWHA in case the views focus is changed while we waiting for the
   // callback response from the renderer process. This will be used to discard
@@ -2342,7 +2348,8 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
   handwriting_controller->OnStartStylusWriting(
       base::BindRepeating(&RenderWidgetHostViewAura::OnFocusHandwritingTarget,
                           weak_ptr_factory_.GetWeakPtr()),
-      /*pointer_id=*/0, /*stroke_id=*/0, *this);
+      last_stylus_handwriting_properties_.value(), *this);
+  last_stylus_handwriting_properties_.reset();
 }
 
 void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(

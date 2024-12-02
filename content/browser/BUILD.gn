@@ -2909,6 +2909,8 @@ source_set("browser") {
       "renderer_host/dwrite_font_file_util_win.h",
       "renderer_host/dwrite_font_proxy_impl_win.cc",
       "renderer_host/dwrite_font_proxy_impl_win.h",
+      "renderer_host/input/stylus_handwriting_callback_sink_win.cc",
+      "renderer_host/input/stylus_handwriting_callback_sink_win.h",
       "renderer_host/input/stylus_handwriting_controller_win.cc",
       "renderer_host/input/stylus_handwriting_controller_win.h",
       "renderer_host/legacy_render_widget_host_win.cc",

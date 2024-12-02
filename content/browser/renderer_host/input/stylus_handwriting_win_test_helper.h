@@ -51,7 +51,7 @@ class MockTfImpl;
 //
 // 2. StylusHandwritingWin test that needs to conditionally exercise when the
 //    `ITfHandwriting::SetHandwritingState` API succeeds or fails, but a generic
-//     QueryInterface implementation is fine.
+//     QueryInterface and AdviseSink implementations are fine.
 //
 //   class SomeTest : public SomeTestBase
 //                  , public testing::WithParamInterface<HRESULT>  {
@@ -59,6 +59,7 @@ class MockTfImpl;
 //       SomeTestBase::SetUp();
 //       helper_.SetUpMockTfImpl();
 //       helper_.DefaultMockQueryInterfaceMethod();
+//       helper_.DefaultMockAdviseSinkMethod();
 //       ON_CALL(*helper_.mock_tf_impl(), SetHandwritingState(_))
 //           .WillByDefault(Return(GetParam()));
 //       helper_.SetUpStylusHandwritingControllerWin();
@@ -77,6 +78,7 @@ class StylusHandwritingWinTestHelper {
   MockTfImpl* mock_tf_impl() { return mock_tf_impl_.Get(); }
   ITfThreadMgr* GetThreadManager();
   ITfHandwriting* GetTfHandwriting();
+  ITfSource* GetTfSource();
 
   // Initializes MockTfImpl and StylusHandwritingControllerWin for a generic
   // StylusHandwritingWin test, where special considerations are not needed for
@@ -99,11 +101,15 @@ class StylusHandwritingWinTestHelper {
   // Must be called on the Main thread.
   void SetUpStylusHandwritingControllerWin();
 
-  // Configures default QueryInterface matching for ITfHandwriting.
+  // Configures default QueryInterface matching for ITfHandwriting and
+  // ITfSource.
   void DefaultMockQueryInterfaceMethod();
 
   // Configures a default implementation of ITfHandwriting::SetHandwritingState.
   void DefaultMockSetHandwritingStateMethod();
+
+  // Configures a default implementation of ITfSource::AdviseSink.
+  void DefaultMockAdviseSinkMethod();
 
  private:
   Microsoft::WRL::ComPtr<MockTfImpl> mock_tf_impl_;

@@ -1,0 +1,56 @@
+<html>
+<style>
+.padded {
+  margin-bottom: 30px;
+}
+
+input {
+  height: 150px;
+}
+
+#ineligibleTextField {
+  touch-action: pan-x;
+}
+</style>
+
+<body>
+<div>Dummy padding text</div>
+<input id='ineligibleTextField' class='padded' value="Some text."/>
+</div>
+
+<div>Dummy padding text</div>
+<input id='emptyTextField' class='padded' type="text" value=""/>
+</body>
+
+<script>
+function focus_ineligible_text_field() {
+  document.getElementById('ineligibleTextField').focus();
+}
+
+function focus_empty_text_field() {
+  document.getElementById('emptyTextField').focus();
+}
+
+function get_point_inside(element) {
+  var rect = element.getBoundingClientRect();
+  var point = {
+    x: rect.left + 8,
+    y: rect.top + 8
+  };
+  return JSON.stringify(point);
+}
+
+function get_point_inside_empty_text_field() {
+  return get_point_inside(document.getElementById('emptyTextField'));
+}
+
+function get_point_inside_ineligible_text_field() {
+  return get_point_inside(document.getElementById('ineligibleTextField'));
+}
+
+function disable_handwriting_for_empty_textfield() {
+  document.getElementById('emptyTextField').style.setProperty(
+    'touch-action', 'pan-x');
+}
+</script>
+</html>

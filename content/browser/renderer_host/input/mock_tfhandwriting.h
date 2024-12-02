@@ -14,6 +14,8 @@
 
 namespace content {
 
+class MockTfHandwritingRequest;
+
 // Assign Com pointer to the variable pointed by the k-th (0-based) argument if
 // the result param value is S_OK. Returns the result param value.
 ACTION_TEMPLATE(SetComPointeeAndReturnResult,
@@ -28,13 +30,32 @@ ACTION_TEMPLATE(SetComPointeeAndReturnResult,
   return S_OK;
 }
 
+ACTION_TEMPLATE(SetValueParamAndReturnResult,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_2_VALUE_PARAMS(value, result)) {
+  if (result != S_OK) {
+    return result;
+  }
+
+  *std::get<k>(args) = value;
+  return S_OK;
+}
+
+ACTION_P(RequestHandwritingForPointerDefault, p) {
+  p->AddRef();
+  *arg3 = p;                     // request
+  *arg2 = *arg3 ? TRUE : FALSE;  // requestAccepted
+  return S_OK;
+}
+
 // Mock various ITf interfaces used for testing SHell Handwriting API.
 class MockTfImpl
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           ITfThreadMgr,
           ITfSource,
-          ::ITfHandwriting> {
+          ::ITfHandwriting,
+          ::ITfHandwritingSink> {
  public:
   MockTfImpl();
   MockTfImpl(const MockTfImpl&) = delete;
@@ -125,6 +146,73 @@ class MockTfImpl
   MOCK_METHOD(HRESULT,
               GetHandwritingDistanceThreshold,
               (SIZE * distance_buffer_pixels),
+              (final, Calltype(STDMETHODCALLTYPE)));
+
+  // ::ITfHandwritingSink:
+  MOCK_METHOD(HRESULT,
+              DetermineProximateHandwritingTarget,
+              (::ITfDetermineProximateHandwritingTargetArgs *
+               determineProximateHandwritingTargetArgs),
+              (final, Calltype(STDMETHODCALLTYPE)));
+  MOCK_METHOD(HRESULT,
+              FocusHandwritingTarget,
+              (::ITfFocusHandwritingTargetArgs * focusHandwritingTargetArgs),
+              (final, Calltype(STDMETHODCALLTYPE)));
+};
+
+class MockTfHandwritingRequest
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          ::ITfHandwritingRequest> {
+ public:
+  MockTfHandwritingRequest();
+  MockTfHandwritingRequest(const MockTfHandwritingRequest&) = delete;
+  MockTfHandwritingRequest& operator=(const MockTfHandwritingRequest&) = delete;
+  ~MockTfHandwritingRequest() override;
+
+  // IUnknown:
+  MOCK_METHOD(HRESULT,
+              QueryInterface,
+              (REFIID interface_id,
+               _Outptr_result_nullonfailure_ void** result),
+              (final, Calltype(STDMETHODCALLTYPE)));
+
+  // ::ITfHandwritingRequest:
+  MOCK_METHOD(HRESULT,
+              SetInputEvaluation,
+              (::TfInputEvaluation inputEvaluation),
+              (final, Calltype(STDMETHODCALLTYPE)));
+};
+
+class MockTfFocusHandwritingTargetArgsImpl
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          ::ITfFocusHandwritingTargetArgs> {
+ public:
+  MockTfFocusHandwritingTargetArgsImpl();
+  MockTfFocusHandwritingTargetArgsImpl(
+      const MockTfFocusHandwritingTargetArgsImpl&) = delete;
+  MockTfFocusHandwritingTargetArgsImpl& operator=(
+      const MockTfFocusHandwritingTargetArgsImpl&) = delete;
+  ~MockTfFocusHandwritingTargetArgsImpl() override;
+
+  // IUnknown:
+  MOCK_METHOD(HRESULT,
+              QueryInterface,
+              (REFIID interface_id,
+               _Outptr_result_nullonfailure_ void** result),
+              (final, Calltype(STDMETHODCALLTYPE)));
+
+  // ITfFocusHandwritingTargetArgs:
+  MOCK_METHOD(HRESULT,
+              GetPointerTargetInfo,
+              (/*[out]*/ HWND * targetWindow,
+               /*[out]*/ RECT* targetScreenArea,
+               /*[out]*/ SIZE* distanceThreshold),
+              (final, Calltype(STDMETHODCALLTYPE)));
+  MOCK_METHOD(HRESULT,
+              SetResponse,
+              (::TfHandwritingFocusTargetResponse response),
               (final, Calltype(STDMETHODCALLTYPE)));
 };
 
