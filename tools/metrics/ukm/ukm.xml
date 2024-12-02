@@ -3812,6 +3812,13 @@ be describing additional metrics about the same event.
       Records a 1 each time a mismatch dialog is shown.
     </summary>
   </metric>
+  <metric name="MultipleRequestsFromDifferentIdPs" enum="Boolean">
+    <summary>
+      Records whether an API call is rejected due to there's an existing
+      in-flight API call initiated by other IdPs. Recorded once per promise
+      rejection because of an existing API call.
+    </summary>
+  </metric>
   <metric name="MultipleRequestsRpMode" enum="FedCmMultipleRequestsRpMode">
     <summary>
       Records the RpMode of two consecutive requests. Recorded every time when a

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -60,6 +61,7 @@ namespace {
 
 constexpr char kIdpUrl[] = "https://idp.example/";
 constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
+constexpr char kProviderUrlTwoFull[] = "https://idp-2.example/fedcm.json";
 constexpr char kTopFrameUrl[] = "https://top-frame.example/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
@@ -276,9 +278,10 @@ class FederatedAuthRequestImplMultipleFramesTest
 
   void DoRequestToken(
       mojo::Remote<blink::mojom::FederatedAuthRequest>& request_remote,
-      RequestTokenCallback callback) {
+      RequestTokenCallback callback,
+      const char* provider = kProviderUrlFull) {
     auto config_ptr = blink::mojom::IdentityProviderConfig::New();
-    config_ptr->config_url = GURL(kProviderUrlFull);
+    config_ptr->config_url = GURL(provider);
     config_ptr->client_id = kClientId;
     auto federated = blink::mojom::IdentityProviderRequestOptions::New();
     federated->config = std::move(config_ptr);
@@ -330,6 +333,8 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, TestHarness) {
 // Test that FedCM request fails on iframe if there is an in-progress FedCM
 // request for a different frame on the page.
 TEST_F(FederatedAuthRequestImplMultipleFramesTest, IframeTooManyRequests) {
+  base::HistogramTester histogram_tester;
+
   mojo::Remote<blink::mojom::FederatedAuthRequest> main_frame_request_remote;
   TestDialogController::State main_frame_dialog_state;
   CreateFederatedAuthRequestImpl(
@@ -353,6 +358,40 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, IframeTooManyRequests) {
   EXPECT_EQ(RequestTokenStatus::kErrorTooManyRequests,
             iframe_callback_helper.status());
   EXPECT_FALSE(iframe_dialog_state.did_show_accounts_dialog);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.FedCm.MultipleRequestsFromDifferentIdPs", 0, 1);
+}
+
+// Test that when requests from different IdPs get rejected, a proper histogram
+// can be recorded.
+TEST_F(FederatedAuthRequestImplMultipleFramesTest,
+       IframeTooManyRequestsDifferentIdP) {
+  base::HistogramTester histogram_tester;
+
+  mojo::Remote<blink::mojom::FederatedAuthRequest> main_frame_request_remote;
+  TestDialogController::State main_frame_dialog_state;
+  CreateFederatedAuthRequestImpl(
+      *main_rfh(), main_frame_request_remote,
+      TestDialogController::AccountsDialogAction::kNone,
+      &main_frame_dialog_state);
+  DoRequestToken(main_frame_request_remote, RequestTokenCallback());
+  EXPECT_TRUE(main_frame_dialog_state.did_show_accounts_dialog);
+
+  RenderFrameHost* iframe_rfh = content::RenderFrameHostTester::For(main_rfh())
+                                    ->AppendChild(/*frame_name=*/"");
+  mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
+  TestDialogController::State iframe_dialog_state;
+  CreateFederatedAuthRequestImpl(
+      *iframe_rfh, iframe_request_remote,
+      TestDialogController::AccountsDialogAction::kSelectAccount,
+      &iframe_dialog_state);
+
+  // Initiates a new API call with a different IdP.
+  DoRequestToken(iframe_request_remote, RequestTokenCallback(),
+                 kProviderUrlTwoFull);
+  EXPECT_FALSE(iframe_dialog_state.did_show_accounts_dialog);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.FedCm.MultipleRequestsFromDifferentIdPs", 1, 1);
 }
 
 // Test that only top frame URL is available for display when FedCM is called

@@ -469,6 +469,10 @@ class CONTENT_EXPORT FedCmMetrics {
   void RecordNumMatchingAccounts(size_t accounts_remaining,
                                  const std::string& filter_type);
 
+  // Records whether a FedCM API call gets rejected because other IdPs have
+  // already initiated an API call.
+  void RecordMultipleRequestsFromDifferentIdPs(bool has_collision);
+
   int session_id() { return session_id_; }
 
  private:

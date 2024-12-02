@@ -740,6 +740,21 @@ void FedCmMetrics::RecordNumMatchingAccounts(size_t accounts_remaining,
   fedcm_builder.Record(ukm::UkmRecorder::Get());
 }
 
+void FedCmMetrics::RecordMultipleRequestsFromDifferentIdPs(
+    bool from_different_idps) {
+  DCHECK_GT(session_id_, 0);
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetMultipleRequestsFromDifferentIdPs(from_different_idps);
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  base::UmaHistogramBoolean("Blink.FedCm.MultipleRequestsFromDifferentIdPs",
+                            from_different_idps);
+}
+
 ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
   auto it = provider_source_ids_.find(provider);
   if (it != provider_source_ids_.end()) {
