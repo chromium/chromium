@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 
 @interface HistorySyncPopupCoordinator () <
     HistorySyncCoordinatorDelegate,
@@ -68,18 +70,9 @@
   _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   // Check if History Sync Opt-In should be skipped.
-  HistorySyncSkipReason skipReason = [HistorySyncCoordinator
-      getHistorySyncOptInSkipReason:syncService
-              authenticationService:_authenticationService
-                        prefService:profile->GetPrefs()
-              isHistorySyncOptional:_isOptional];
-  if (skipReason != HistorySyncSkipReason::kNone) {
-    [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason
-                                            accessPoint:_accessPoint];
-    [self.delegate historySyncPopupCoordinator:self
-                           didFinishWithResult:SigninCoordinatorResultDisabled];
-    return;
-  }
+  CHECK_EQ(history_sync::GetSkipReason(syncService, _authenticationService,
+                                       profile->GetPrefs(), _isOptional),
+           history_sync::HistorySyncSkipReason::kNone);
 
   _navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil

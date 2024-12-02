@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -12,7 +13,9 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_coordinator.h"
@@ -50,6 +53,8 @@ enum class SignInHistorySyncStep {
   SignInHistorySyncStep _currentStep;
   // Promo button used to trigger the sign-in.
   signin_metrics::PromoAction _promoAction;
+  raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<syncer::SyncService> _syncService;
 }
 
 - (instancetype)
@@ -73,6 +78,9 @@ enum class SignInHistorySyncStep {
 
 - (void)start {
   [super start];
+  ProfileIOS* profile = self.browser->GetProfile();
+  _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
+  _syncService = SyncServiceFactory::GetForProfile(profile);
   [self presentNextStepWithPreviousResult:SigninCoordinatorResultSuccess];
 }
 
@@ -81,6 +89,9 @@ enum class SignInHistorySyncStep {
     [self interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
                    completion:nil];
   }
+
+  _syncService = nullptr;
+  _authenticationService = nullptr;
   [super stop];
 }
 
@@ -130,9 +141,6 @@ enum class SignInHistorySyncStep {
   }
   if (_currentStep != SignInHistorySyncStep::kCompleted) {
     _childCoordinator = [self createPresentStepChildCoordinator];
-    // TODO(crbug.com/40929259): Turn into CHECK.
-    DUMP_WILL_BE_CHECK(_childCoordinator)
-        << base::SysNSStringToUTF8([self description]);
     [_childCoordinator start];
     return;
   }
@@ -189,16 +197,25 @@ enum class SignInHistorySyncStep {
       return coordinator;
     }
     case SignInHistorySyncStep::kHistorySync: {
-      HistorySyncPopupCoordinator* coordinator =
-          [[HistorySyncPopupCoordinator alloc]
-              initWithBaseViewController:self.baseViewController
-                                 browser:self.browser
-                           showUserEmail:NO
-                       signOutIfDeclined:NO
-                              isOptional:YES
-                             accessPoint:self.accessPoint];
-      coordinator.delegate = self;
-      return coordinator;
+      if (history_sync::GetSkipReason(_syncService, _authenticationService,
+                                      self.browser->GetProfile()->GetPrefs(),
+                                      YES) !=
+          history_sync::HistorySyncSkipReason::kNone) {
+        [self
+            presentNextStepWithPreviousResult:SigninCoordinatorResultDisabled];
+        return nil;
+      } else {
+        HistorySyncPopupCoordinator* coordinator =
+            [[HistorySyncPopupCoordinator alloc]
+                initWithBaseViewController:self.baseViewController
+                                   browser:self.browser
+                             showUserEmail:NO
+                         signOutIfDeclined:NO
+                                isOptional:YES
+                               accessPoint:self.accessPoint];
+        coordinator.delegate = self;
+        return coordinator;
+      }
     }
     case SignInHistorySyncStep::kStart:
     case SignInHistorySyncStep::kCompleted:

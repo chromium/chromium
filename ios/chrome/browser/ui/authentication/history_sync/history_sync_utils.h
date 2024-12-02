@@ -5,13 +5,36 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_UTILS_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_UTILS_H_
 
+class AuthenticationService;
 class PrefService;
-
+namespace syncer {
+class SyncService;
+}
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
 namespace history_sync {
+
+// The reasons why the History Sync Opt-In screen should be skipped instead of
+// being shown to the user. `kNone` indicates that the screen should not be
+// skipped.
+enum class HistorySyncSkipReason {
+  kNone,
+  kNotSignedIn,
+  kSyncForbiddenByPolicies,
+  kAlreadyOptedIn,
+  kDeclinedTooOften,
+};
+
+// Checks if the History Sync Opt-In screen should be skipped, and returns the
+// corresponding reason. history_sync::HistorySyncSkipReason::kNone means that
+// the screen should not be skipped.
+HistorySyncSkipReason GetSkipReason(
+    syncer::SyncService* syncService,
+    AuthenticationService* authenticationService,
+    PrefService* prefService,
+    bool isOptional);
 
 // Registers prefs used to skip too frequent History Sync Opt-In prompt.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
