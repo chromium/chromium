@@ -221,8 +221,14 @@ class WebAppRegistrarTest_TabStrip : public WebAppRegistrarTest {
 TEST_F(WebAppRegistrarTest, EmptyRegistrar) {
   StartWebAppProvider();
   EXPECT_TRUE(registrar().is_empty());
+  EXPECT_TRUE(registrar().IsNotInRegistrar(webapps::AppId()));
+  EXPECT_EQ(std::nullopt, registrar().GetInstallState(webapps::AppId()));
+  EXPECT_FALSE(registrar().IsInstallState(
+      webapps::AppId(),
+      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
   EXPECT_EQ(nullptr, registrar().GetAppById(webapps::AppId()));
-  EXPECT_FALSE(registrar().GetAppById(webapps::AppId()));
   EXPECT_EQ(std::string(), registrar().GetAppShortName(webapps::AppId()));
   EXPECT_EQ(GURL(), registrar().GetAppStartUrl(webapps::AppId()));
 }
@@ -265,10 +271,10 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
 
   StartWebAppProvider();
 
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_FALSE(registrar().IsNotInRegistrar(app_id));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+            registrar().GetInstallState(app_id));
+
   const WebApp* app = registrar().GetAppById(app_id);
 
   EXPECT_EQ(app_id, app->app_id());
@@ -280,36 +286,30 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
 
   EXPECT_FALSE(registrar().is_empty());
 
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_FALSE(registrar().IsNotInRegistrar(app_id));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+            registrar().GetInstallState(app_id2));
   const WebApp* app2 = registrar().GetAppById(app_id2);
   EXPECT_EQ(app_id2, app2->app_id());
   EXPECT_FALSE(registrar().is_empty());
   EXPECT_EQ(CountApps(registrar().GetApps()), 2);
 
   Uninstall(app_id);
-  EXPECT_FALSE(registrar().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id));
+  EXPECT_EQ(std::nullopt, registrar().GetInstallState(app_id));
   EXPECT_EQ(nullptr, registrar().GetAppById(app_id));
   EXPECT_FALSE(registrar().is_empty());
 
   // Check that app2 is still registered.
   app2 = registrar().GetAppById(app_id2);
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_FALSE(registrar().IsNotInRegistrar(app_id2));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+            registrar().GetInstallState(app_id2));
   EXPECT_EQ(app_id2, app2->app_id());
 
   Uninstall(app_id2);
-  EXPECT_FALSE(registrar().IsInstallState(
-      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id2));
+  EXPECT_EQ(std::nullopt, registrar().GetInstallState(app_id2));
   EXPECT_EQ(nullptr, registrar().GetAppById(app_id2));
   EXPECT_TRUE(registrar().is_empty());
   EXPECT_EQ(CountApps(registrar().GetApps()), 0);
@@ -498,24 +498,16 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
 
   {
     EXPECT_FALSE(registrar().IsNotInRegistrar(app_id));
-    // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
-    // correctness.
-    EXPECT_FALSE(registrar().IsInstallState(
-        app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+    EXPECT_EQ(proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+              registrar().GetInstallState(app_id));
 
     EXPECT_TRUE(registrar().IsNotInRegistrar("unknown"));
-    EXPECT_FALSE(registrar().IsInstallState(
-        "unknown", {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+    EXPECT_EQ(std::nullopt, registrar().GetInstallState("unknown"));
     base::test::TestFuture<void> future;
     fake_provider().scheduler().InstallAppLocally(app_id, future.GetCallback());
     ASSERT_TRUE(future.Wait());
-    // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
-    // correctness.
-    EXPECT_TRUE(registrar().IsInstallState(
-        app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+    EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              registrar().GetInstallState(app_id));
   }
 
   {
@@ -1373,26 +1365,6 @@ TEST_F(WebAppRegistrarTest, TestIsDefaultManagementInstalled) {
   // Uninstalling the previously default installed app.
   Uninstall(app_id1);
   EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id1));
-}
-
-TEST_F(WebAppRegistrarTest, DefaultNotInstalledWithOsIntegration) {
-  std::unique_ptr<WebApp> default_app = test::CreateWebApp(
-      GURL("https://example.com/path"), WebAppManagement::kDefault);
-  default_app->SetDisplayMode(DisplayMode::kStandalone);
-  default_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-
-  const webapps::AppId app_id = default_app->app_id();
-  const GURL external_app_url("https://example.com/path/default");
-
-  Registry registry;
-  registry.emplace(app_id, std::move(default_app));
-  PopulateRegistry(registry);
-  StartWebAppProvider();
-
-  // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
-  // correctness.
-  EXPECT_FALSE(registrar().IsInstallState(
-      app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

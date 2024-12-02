@@ -437,10 +437,7 @@ TEST_F(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
     EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
         profile(), app_id, app_name));
   }
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
 
   // This should have no affect.
   SynchronizeOsOptions options;

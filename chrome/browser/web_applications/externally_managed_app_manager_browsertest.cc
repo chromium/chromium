@@ -153,6 +153,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
       embedded_test_server()->GetURL("/banners/manifest_test_page.html");
   GURL install_url =
       embedded_test_server()->GetURL("/server-redirect?" + start_url.spec());
+  // TODO(crbug.com/381408483): Review usage of ExternalInstallOptions in tests.
   ExternalInstallOptions install_options(
       install_url, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -164,12 +165,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   ASSERT_TRUE(app_id.has_value());
   EXPECT_EQ("Manifest test app", registrar().GetAppShortName(app_id.value()));
   // Same AppID should be in the registrar using start_url from the manifest.
-  // TODO(crbug.com/340952100): Change this to `GetInstallState` and
-  // `kInstalledWithOsIntegration` after this install isn't forced to skip OS
-  // integration in the finalizer.
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id.value(), {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                       proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            registrar().GetInstallState(app_id.value()));
   // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
   // for correctness.
   std::optional<webapps::AppId> opt_app_id =
@@ -198,21 +195,12 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   ASSERT_TRUE(app_id.has_value());
   EXPECT_EQ("Web app banner test page",
             registrar().GetAppShortName(app_id.value()));
-  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
-  // for correctness.
   std::optional<webapps::AppId> opt_app_id =
       registrar().FindBestAppWithUrlInScope(
           final_url, {
                          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                      });
   ASSERT_TRUE(opt_app_id.has_value());
-  // TODO(crbug.com/340952100): Investigate the redundancy as
-  // registrar().FindBestAppWithUrlInScope() finds the `opt_app_id` based on the
-  // same `InstallState` fields being passed here.
-  EXPECT_TRUE(registrar().IsInstallState(
-      opt_app_id.value(), {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                           proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(*opt_app_id, app_id);
   EXPECT_EQ(registrar().GetAppStartUrl(*opt_app_id), final_url);
 }
@@ -322,15 +310,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   const webapps::AppId new_app_id = GenerateAppId(std::nullopt, start_url);
 
   EXPECT_NE(new_app_id, placeholder_app_id);
-  EXPECT_FALSE(registrar().IsInstallState(
-      placeholder_app_id,
-      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-  EXPECT_TRUE(registrar().IsInstallState(
-      new_app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(placeholder_app_id));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            registrar().GetInstallState(new_app_id));
   EXPECT_FALSE(
       registrar().IsPlaceholderApp(new_app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(0, registrar().CountUserInstalledApps());
@@ -378,15 +360,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   const webapps::AppId new_app_id = GenerateAppId("some_id", start_url);
 
   EXPECT_NE(new_app_id, placeholder_app_id);
-  EXPECT_FALSE(registrar().IsInstallState(
-      placeholder_app_id,
-      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-  EXPECT_TRUE(registrar().IsInstallState(
-      new_app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(placeholder_app_id));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            registrar().GetInstallState(new_app_id));
   EXPECT_FALSE(
       registrar().IsPlaceholderApp(new_app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(0, registrar().CountUserInstalledApps());

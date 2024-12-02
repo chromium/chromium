@@ -475,8 +475,8 @@ void WebAppPolicyManager::ApplyForceOSUnregistrationPolicySettings(
 
     const webapps::AppId& app_id =
         web_app::GenerateAppIdFromManifestId(manifest_id);
-    if (!provider_->registrar_unsafe().IsInstallState(
-            app_id, {proto::INSTALLED_WITH_OS_INTEGRATION})) {
+    if (provider_->registrar_unsafe().GetInstallState(app_id) !=
+        proto::INSTALLED_WITH_OS_INTEGRATION) {
       continue;
     }
 
