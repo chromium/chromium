@@ -1470,6 +1470,14 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
       SerializeHTMLAttributesForSnapshot(node_data);
     } else {
       SerializeHTMLNonStandardAttributesForJAWS(node_data);
+      // Serialize <input name> for use by password managers.
+      if (auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
+        if (const AtomicString& input_name = input->GetName()) {
+          TruncateAndAddStringAttribute(
+              node_data, ax::mojom::blink::StringAttribute::kHtmlInputName,
+              input_name);
+        }
+      }
     }
   }
   SerializeOtherScreenReaderAttributes(node_data);
@@ -1736,6 +1744,18 @@ void AXObject::SerializeHTMLNonStandardAttributesForJAWS(
           std::make_pair(attr_name.LocalName().Utf8(), value));
     }
   }
+
+  // formcontrolname: a nonstandard attribute used by Angular and consumed by
+  // some password managers (see https://crbug.com/378908266).
+  DEFINE_STATIC_LOCAL(QualifiedName, formcontrolname_attr,
+                      (AtomicString("formcontrolname")));
+  const AtomicString& formcontrolname_value =
+      GetElement()->FastGetAttribute(formcontrolname_attr);
+  if (formcontrolname_value) {
+    node_data->html_attributes.push_back(std::make_pair(
+        formcontrolname_attr.LocalName().Utf8(), formcontrolname_value.Utf8()));
+  }
+
 #endif
 }
 
