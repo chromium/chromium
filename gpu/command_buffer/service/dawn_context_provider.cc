@@ -431,8 +431,12 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   void OnError(wgpu::ErrorType error_type, wgpu::StringView message);
 
-  void LogInitFailure(std::string_view reason) {
+  void LogInitFailure(std::string_view reason, bool generate_crash_report) {
     LOG(ERROR) << reason;
+
+    if (!generate_crash_report) {
+      return;
+    }
 
     SCOPED_CRASH_KEY_STRING256("dawn-shared-context", "init-failure", reason);
     base::debug::DumpWithoutCrashing();
@@ -561,13 +565,17 @@ bool DawnSharedContext::Initialize(
   }
 
   if (adapters.empty()) {
-    LogInitFailure("No adapters found.");
+    // On Android, it's expected that some devices might not support Dawn atm.
+    // So don't generate report for it.
+    LogInitFailure("No adapters found.",
+                   /*generate_crash_report=*/!BUILDFLAG(IS_ANDROID));
     return false;
   }
   adapter_ = wgpu::Adapter(adapters[0].Get());
 
   if (!validate_adapter_fn(backend_type, adapter_)) {
-    LogInitFailure("Validate adapter failed.");
+    LogInitFailure("Validate adapter failed.",
+                   /*generate_crash_report=*/!BUILDFLAG(IS_ANDROID));
     return false;
   }
 
@@ -607,7 +615,8 @@ bool DawnSharedContext::Initialize(
   // Use best limits for the device.
   wgpu::SupportedLimits supportedLimits = {};
   if (adapter_.GetLimits(&supportedLimits) != wgpu::Status::Success) {
-    LogInitFailure("Failed to call adapter.GetLimits().");
+    LogInitFailure("Failed to call adapter.GetLimits().",
+                   /*generate_crash_report=*/true);
     return false;
   }
 
@@ -647,7 +656,7 @@ bool DawnSharedContext::Initialize(
   }
 
   if (!device_) {
-    LogInitFailure("Failed to create device.");
+    LogInitFailure("Failed to create device.", /*generate_crash_report=*/true);
     return false;
   }
 
