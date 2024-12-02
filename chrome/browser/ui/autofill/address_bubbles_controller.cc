@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/autofill/add_new_address_bubble_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -90,6 +92,20 @@ AutofillBubbleBase* ShowAddNewAddressBubble(
       ->ShowAddNewAddressProfileBubble(web_contents, std::move(controller),
                                        shown_by_user_gesture);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+AutofillBubbleBase* ShowSignInPromo(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(content::WebContents*)> move_address_callback) {
+  // TODO(crbug.com/381390420): Expose the `AutofillBubbleHandler` in
+  // `BrowserWindowInterface` and use that instead.
+  return chrome::FindBrowserWithTab(web_contents)
+      ->window()
+      ->GetAutofillBubbleHandler()
+      ->ShowAddressSignInPromo(web_contents, std::move(move_address_callback));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 }  // namespace
 
 AddressBubblesController::AddressBubblesController(
@@ -176,6 +192,7 @@ void AddressBubblesController::OnUserDecision(
   }
   if (address_profile_save_prompt_callback_) {
     std::move(address_profile_save_prompt_callback_).Run(decision, profile);
+    MaybeShowSignInPromo(profile);
   }
 
 // TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING flag.
@@ -190,6 +207,7 @@ void AddressBubblesController::OnUserDecision(
 
 void AddressBubblesController::OnBubbleClosed() {
   set_bubble_view(nullptr);
+  is_showing_sign_in_promo_ = false;
   UpdatePageActionIcon();
 }
 
@@ -203,7 +221,8 @@ void AddressBubblesController::OnIconClicked() {
 }
 
 bool AddressBubblesController::IsBubbleActive() const {
-  return !address_profile_save_prompt_callback_.is_null();
+  return !address_profile_save_prompt_callback_.is_null() ||
+         is_showing_sign_in_promo_;
 }
 
 std::u16string AddressBubblesController::GetPageActionIconTootip() const {
@@ -286,6 +305,52 @@ void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
       BrowserView::GetBrowserViewForBrowser(browser)
           ->toolbar_button_provider());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+void AddressBubblesController::MaybeShowSignInPromo(
+    base::optional_ref<const AutofillProfile> autofill_profile) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Do nothing if there is no autofill profile or the sign in promo should not
+  // be shown.
+  if (!autofill_profile.has_value() ||
+      !signin::ShouldShowAddressSignInPromo(
+          *Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+          autofill_profile.value())) {
+    return;
+  }
+
+  // Prepare the move callback that is executed upon sign in.
+  auto move_address_callback = base::BindOnce(
+      [](const std::string& guid, content::WebContents* web_contents) {
+        AddressDataManager& address_data_manager =
+            PersonalDataManagerFactory::GetForBrowserContext(
+                web_contents->GetBrowserContext())
+                ->address_data_manager();
+        const AutofillProfile* autofill_profile =
+            address_data_manager.GetProfileByGUID(guid);
+
+        // Do nothing if the address was not found, e.g. if it was deleted
+        // during the sign in process.
+        if (!autofill_profile) {
+          return;
+        }
+
+        // At this point, the address should be local.
+        CHECK(!autofill_profile->IsAccountProfile());
+        address_data_manager.MigrateProfileToAccount(*autofill_profile);
+      },
+      autofill_profile.value().guid());
+
+  // Close the current save bubble.
+  HideBubble();
+
+  // Open the bubble with the sign in promo.
+  set_bubble_view(
+      ShowSignInPromo(web_contents(), std::move(move_address_callback)));
+  CHECK(bubble_view());
+  is_showing_sign_in_promo_ = true;
+  UpdatePageActionIcon();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AddressBubblesController);

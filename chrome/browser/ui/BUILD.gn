@@ -5254,6 +5254,13 @@ static_library("ui") {
       deps += [ "//components/compose/core/browser" ]
     }
 
+    if (enable_dice_support) {
+      sources += [
+        "views/autofill/address_sign_in_promo_view.cc",
+        "views/autofill/address_sign_in_promo_view.h",
+      ]
+    }
+
     if (enable_glic) {
       sources += [
         "views/glic/glic_view.cc",
