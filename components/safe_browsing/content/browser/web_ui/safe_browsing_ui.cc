@@ -1140,8 +1140,7 @@ base::Value::Dict SerializeVisualFeatures(
   const VisualFeatures::BlurredImage& image = visual_features.image();
   image_dict.Set("width", image.width());
   image_dict.Set("height", image.height());
-  image_dict.Set("data", base::Base64Encode(
-                             base::as_bytes(base::make_span(image.data()))));
+  image_dict.Set("data", base::Base64Encode(base::as_byte_span(image.data())));
 
   base::Value::Dict visual_dict;
   visual_dict.Set("blurred_image", std::move(image_dict));

@@ -352,7 +352,7 @@ base::expected<SkBitmap, Error> GenerateBitmap(base::span<const uint8_t> data,
 
   {
     gfx::Size data_size = {qr_code.qr_size, qr_code.qr_size};
-    return RenderBitmap(base::make_span(qr_code.data), data_size, module_style,
+    return RenderBitmap(base::span(qr_code.data), data_size, module_style,
                         locator_style, center_image, quiet_zone);
   }
 }

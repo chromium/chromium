@@ -90,8 +90,8 @@ leveldb::Slice MakeSlice(base::span<const uint8_t> data) {
 
 DomStorageDatabase::KeyValuePair MakeKeyValuePair(const leveldb::Slice& key,
                                                   const leveldb::Slice& value) {
-  auto key_span = base::make_span(key);
-  auto value_span = base::make_span(value);
+  base::span key_span(key);
+  base::span value_span(value);
   return DomStorageDatabase::KeyValuePair(
       DomStorageDatabase::Key(key_span.begin(), key_span.end()),
       DomStorageDatabase::Value(value_span.begin(), value_span.end()));

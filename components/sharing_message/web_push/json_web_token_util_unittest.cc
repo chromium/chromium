@@ -79,7 +79,7 @@ TEST(JSONWebTokenUtilTest, VerifiesCreateJSONWebToken) {
   ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256,
                                   der_signature, public_key_info));
 
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
+  verifier.VerifyUpdate(base::as_byte_span(data));
   ASSERT_TRUE(verifier.VerifyFinal());
 
   std::string::size_type data_dot_position = data.find(".");

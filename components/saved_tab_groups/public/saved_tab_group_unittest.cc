@@ -26,8 +26,7 @@ base::Uuid MakeUniqueGUID() {
   static uint64_t unique_value = 0;
   unique_value++;
   uint64_t kBytes[] = {0, unique_value};
-  return base::Uuid::FormatRandomDataAsV4ForTesting(
-      as_bytes(base::make_span(kBytes)));
+  return base::Uuid::FormatRandomDataAsV4ForTesting(base::as_byte_span(kBytes));
 }
 
 LocalTabID MakeUniqueTabID() {

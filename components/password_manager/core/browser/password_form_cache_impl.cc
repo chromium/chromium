@@ -102,7 +102,7 @@ bool PasswordFormCacheImpl::IsEmpty() const {
 
 base::span<const std::unique_ptr<PasswordFormManager>>
 PasswordFormCacheImpl::GetFormManagers() const {
-  return base::make_span(form_managers_);
+  return base::span(form_managers_);
 }
 
 void PasswordFormCacheImpl::SetObserver(

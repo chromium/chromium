@@ -182,7 +182,7 @@ void TokenBindingHelper::SignAssertionToken(
   }
 
   unexportable_key_service_->SignSlowlyAsync(
-      *binding_key, base::as_bytes(base::make_span(*header_and_payload)),
+      *binding_key, base::as_byte_span(*header_and_payload),
       kTokenBindingPriority,
       base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm)
           .Then(base::BindOnce(&RunCallbackAndRecordMetrics,

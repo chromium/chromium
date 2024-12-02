@@ -393,7 +393,7 @@ PasswordFormMetricsRecorder* PasswordFormManager::GetMetricsRecorder() {
 
 base::span<const InteractionsStats> PasswordFormManager::GetInteractionsStats()
     const {
-  return base::make_span(form_fetcher_->GetInteractionsStats());
+  return base::span(form_fetcher_->GetInteractionsStats());
 }
 
 base::span<const PasswordForm> PasswordFormManager::GetInsecureCredentials()

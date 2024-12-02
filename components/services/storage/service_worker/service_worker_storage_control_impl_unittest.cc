@@ -690,7 +690,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
     if (result < 0)
       return result;
 
-    mojo_base::BigBuffer buffer(base::as_bytes(base::make_span(data)));
+    mojo_base::BigBuffer buffer(base::as_byte_span(data));
     result = WriteResponseData(writer.get(), std::move(buffer));
     return result;
   }
@@ -1188,7 +1188,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, WriteAndReadResource) {
 
   // Write content.
   {
-    mojo_base::BigBuffer data(base::as_bytes(base::make_span(kData)));
+    mojo_base::BigBuffer data(base::as_byte_span(kData));
     int bytes_size = data.size();
 
     int result = WriteResponseData(writer.get(), std::move(data));
@@ -1215,7 +1215,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, WriteAndReadResource) {
     EXPECT_EQ(data_result.data, kData);
   }
 
-  const auto kMetadata = base::as_bytes(base::make_span("metadata"));
+  const auto kMetadata = base::as_byte_span("metadata");
   int metadata_size = kMetadata.size();
 
   // Write metadata.

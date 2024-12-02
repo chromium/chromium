@@ -37,7 +37,7 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
 }
 
 std::vector<uint8_t> SliceToVector(const leveldb::Slice& s) {
-  auto span = base::make_span(s);
+  base::span span(s);
   return std::vector<uint8_t>(span.begin(), span.end());
 }
 

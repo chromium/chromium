@@ -98,8 +98,9 @@ class HashPrefixMap::BufferedFileWriter {
     if (has_error_ || data.empty())
       return;
 
-    if (!file_.WriteAtCurrentPosAndCheck(base::as_bytes(base::make_span(data))))
+    if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(data))) {
       has_error_ = true;
+    }
   }
 
   const std::string extension_;

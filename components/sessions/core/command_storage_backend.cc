@@ -136,7 +136,7 @@ class SessionFileReader {
         crypto_key_(crypto_key) {
     if (!crypto_key.empty()) {
       aead_ = std::make_unique<crypto::Aead>(crypto::Aead::AES_256_GCM);
-      aead_->Init(base::make_span(crypto_key_));
+      aead_->Init(base::span(crypto_key_));
     }
     file_ = std::make_unique<base::File>(
         path, base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -526,7 +526,7 @@ void CommandStorageBackend::AppendCommands(
     if (encrypt) {
       aead_ = std::make_unique<crypto::Aead>(crypto::Aead::AES_256_GCM);
       crypto_key_ = crypto_key;
-      aead_->Init(base::make_span(crypto_key_));
+      aead_->Init(base::span(crypto_key_));
     } else {
       aead_.reset();
     }
