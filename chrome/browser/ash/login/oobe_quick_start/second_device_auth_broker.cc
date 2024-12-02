@@ -326,7 +326,7 @@ std::string CreateStartSessionRequestData(
   // bytes.
   chrome_os_device_info.Set(
       kDeviceAttestationCertificateKey,
-      base::Base64Encode(base::as_bytes(base::make_span((*certificate)))));
+      base::Base64Encode(base::as_byte_span(*certificate)));
   chrome_os_device_info.Set(
       kClientIdKey,
       google_apis::GetOAuth2ClientID(google_apis::OAuth2Client::CLIENT_MAIN));

@@ -56,7 +56,7 @@ void ValidateSigningKey(enterprise_connectors::SigningKeyPair* key_pair,
 
   // Signing should work.
   auto signed_data = key_pair->key()->SignSlowly(
-      base::as_bytes(base::make_span("data to sign")));
+      base::byte_span_with_nul_from_cstring("data to sign"));
   ASSERT_TRUE(signed_data.has_value());
   EXPECT_TRUE(signed_data->size() > 0u);
 }

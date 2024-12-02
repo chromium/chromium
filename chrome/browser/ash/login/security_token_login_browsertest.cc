@@ -132,7 +132,7 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
     certificate_provider_service->RequestSignatureBySpki(
         TestCertificateProviderExtension::GetCertificateSpki(),
         SSL_SIGN_RSA_PKCS1_SHA256,
-        base::as_bytes(base::make_span(kChallengeData)),
+        base::byte_span_with_nul_from_cstring(kChallengeData),
         challenge_response_account_id_,
         base::BindOnce(&ChallengeResponseFakeUserDataAuthClient::
                            ContinueAuthenticateFactorWithSignature,

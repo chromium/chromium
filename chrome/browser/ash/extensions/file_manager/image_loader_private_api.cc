@@ -73,7 +73,7 @@ std::string ConvertAndEncode(const SkBitmap& bitmap) {
   }
   sk_sp<SkData> png_data = stream.detachAsData();
   return MakeThumbnailDataUrlOnThreadPool(
-      kMimeTypeImagePng, base::make_span(png_data->bytes(), png_data->size()));
+      kMimeTypeImagePng, base::span(png_data->bytes(), png_data->size()));
 }
 
 // The maximum size of the input PDF file for which thumbnails are generated.

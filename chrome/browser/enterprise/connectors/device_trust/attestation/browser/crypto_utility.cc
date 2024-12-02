@@ -90,12 +90,12 @@ bool VerifySignatureUsingHexKey(const std::string& public_key_modulus_hex,
 
   crypto::SignatureVerifier verifier;
   if (!verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-                           base::as_bytes(base::make_span(signature)),
-                           base::as_bytes(base::make_span(public_key_info)))) {
+                           base::as_byte_span(signature),
+                           base::as_byte_span(public_key_info))) {
     return false;
   }
 
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
+  verifier.VerifyUpdate(base::as_byte_span(data));
   return verifier.VerifyFinal();
 }
 

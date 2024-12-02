@@ -725,7 +725,7 @@ void MediaGalleriesGetMetadataFunction::OnSafeMediaMetadataParserDone(
 
   metadata::AttachedImage* first_image = &attached_images->front();
   browser_context()->CreateMemoryBackedBlob(
-      base::as_bytes(base::make_span(first_image->data)), first_image->type,
+      base::as_byte_span(first_image->data), first_image->type,
       base::BindOnce(&MediaGalleriesGetMetadataFunction::ConstructNextBlob,
                      this, std::move(result_dictionary),
                      std::move(attached_images),
@@ -756,7 +756,7 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
   if (blobs.size() < attached_images->size()) {
     metadata::AttachedImage* next_image = &(*attached_images)[blobs.size()];
     browser_context()->CreateMemoryBackedBlob(
-        base::as_bytes(base::make_span(next_image->data)), next_image->type,
+        base::as_byte_span(next_image->data), next_image->type,
         base::BindOnce(&MediaGalleriesGetMetadataFunction::ConstructNextBlob,
                        this, std::move(result_dictionary),
                        std::move(attached_images), std::move(blobs)));

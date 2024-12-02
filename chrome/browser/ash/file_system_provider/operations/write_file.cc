@@ -55,7 +55,7 @@ bool WriteFile::Execute(int request_id) {
   base::Value::Dict options_as_value = options.ToValue();
   options_as_value.Set(
       "data",
-      base::Value(base::as_bytes(base::make_span(buffer_->data(), length_))));
+      base::Value(base::as_bytes(base::span(buffer_->data(), length_))));
 
   base::Value::List event_args;
   event_args.Append(std::move(options_as_value));

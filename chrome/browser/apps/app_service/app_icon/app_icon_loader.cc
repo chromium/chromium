@@ -609,7 +609,7 @@ void AppIconLoader::LoadIconFromCompressedData(
   icon_scale_for_compressed_response_ = icon_scale_;
 
   base::span<const uint8_t> data_span =
-      base::as_bytes(base::make_span(compressed_icon_data));
+      base::as_byte_span(compressed_icon_data);
 
   apps::CompressedDataToImageSkia(
       data_span, icon_scale_,
