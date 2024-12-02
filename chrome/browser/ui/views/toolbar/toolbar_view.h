@@ -50,7 +50,6 @@ class ChromeLabsButton;
 class HomeButton;
 class IntentChipButton;
 class ExtensionsToolbarCoordinator;
-class ManagementToolbarButton;
 class MediaToolbarButtonView;
 class ReloadButton;
 class PinnedToolbarActionsContainer;
@@ -189,10 +188,6 @@ class ToolbarView : public views::AccessiblePaneView,
 
   views::View* new_tab_button_for_testing() { return new_tab_button_; }
 
-  ManagementToolbarButton* management_toolbar_button() const {
-    return management_toolbar_button_;
-  }
-
   // LocationBarView::Delegate:
   content::WebContents* GetWebContents() override;
   LocationBarModel* GetLocationBarModel() override;
@@ -309,7 +304,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<PinnedToolbarActionsContainer> pinned_toolbar_actions_container_ =
       nullptr;
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
-  raw_ptr<ManagementToolbarButton> management_toolbar_button_ = nullptr;
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
   raw_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>
       send_tab_to_self_button_ = nullptr;

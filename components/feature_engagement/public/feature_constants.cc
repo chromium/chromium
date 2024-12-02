@@ -807,14 +807,6 @@ BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunch,
 BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
              "IPH_DesktopPWAsLinkCapturingLaunchAppInTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This can be enabled by default, as the kManagementToolbarButton
-// flag is needed for the IPH linked to this feature to work, and
-// use-cases to show the IPH are guarded by that flag. This feature is
-// also available when either EnterpriseLogoUrl or EnterpriseCustomLabel is set.
-BASE_FEATURE(kIPHToolbarManagementButtonFeature,
-             "IPH_ToolbarManagementButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_LINUX)
 

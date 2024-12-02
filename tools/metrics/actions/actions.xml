@@ -20135,6 +20135,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManagementBubble_OpenedFromManagementToolbarButton">
+  <obsolete>Deprecated as of 9/2024.</obsolete>
   <owner>ydago@chromium.org</owner>
   <description>
     The management bubble was opened by clicking on the management toolbar
