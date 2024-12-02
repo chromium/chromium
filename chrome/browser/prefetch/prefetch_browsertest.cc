@@ -56,7 +56,7 @@ class MockNetworkChangeNotifier4G : public NetworkChangeNotifier {
 
 class PrefetchBrowserTest : public InProcessBrowserTest {
  public:
-  PrefetchBrowserTest() {}
+  PrefetchBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");

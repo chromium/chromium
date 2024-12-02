@@ -186,7 +186,7 @@ DestructionWaiter::DestructionWaiter(
   }
 }
 
-DestructionWaiter::~DestructionWaiter() {}
+DestructionWaiter::~DestructionWaiter() = default;
 
 bool DestructionWaiter::WaitForDestroy() {
   if (!saw_correct_status_) {
@@ -204,7 +204,7 @@ DestructionWaiter::DestructionMarker::DestructionMarker(
     DestructionWaiter* waiter)
     : waiter_(waiter) {}
 
-DestructionWaiter::DestructionMarker::~DestructionMarker() {}
+DestructionWaiter::DestructionMarker::~DestructionMarker() = default;
 
 void DestructionWaiter::DestructionMarker::OnPrefetchStop(
     NoStatePrefetchContents* contents) {
@@ -304,7 +304,8 @@ FirstContentfulPaintManagerWaiter* FirstContentfulPaintManagerWaiter::Create(
 FirstContentfulPaintManagerWaiter::FirstContentfulPaintManagerWaiter()
     : saw_fcp_(false) {}
 
-FirstContentfulPaintManagerWaiter::~FirstContentfulPaintManagerWaiter() {}
+FirstContentfulPaintManagerWaiter::~FirstContentfulPaintManagerWaiter() =
+    default;
 
 void FirstContentfulPaintManagerWaiter::OnFirstContentfulPaint() {
   saw_fcp_ = true;
@@ -320,7 +321,8 @@ void FirstContentfulPaintManagerWaiter::Wait() {
   waiter_.reset();
 }
 
-TestNoStatePrefetchContentsFactory::TestNoStatePrefetchContentsFactory() {}
+TestNoStatePrefetchContentsFactory::TestNoStatePrefetchContentsFactory() =
+    default;
 
 TestNoStatePrefetchContentsFactory::~TestNoStatePrefetchContentsFactory() {
   EXPECT_TRUE(expected_contents_queue_.empty());
@@ -361,7 +363,8 @@ TestNoStatePrefetchContentsFactory::CreateNoStatePrefetchContents(
   return contents;
 }
 
-TestNoStatePrefetchContentsFactory::ExpectedContents::ExpectedContents() {}
+TestNoStatePrefetchContentsFactory::ExpectedContents::ExpectedContents() =
+    default;
 
 TestNoStatePrefetchContentsFactory::ExpectedContents::ExpectedContents(
     const ExpectedContents& other) = default;
@@ -375,7 +378,8 @@ TestNoStatePrefetchContentsFactory::ExpectedContents::ExpectedContents(
     bool ignore)
     : ignore(ignore) {}
 
-TestNoStatePrefetchContentsFactory::ExpectedContents::~ExpectedContents() {}
+TestNoStatePrefetchContentsFactory::ExpectedContents::~ExpectedContents() =
+    default;
 
 PrerenderInProcessBrowserTest::PrerenderInProcessBrowserTest()
     : external_protocol_handler_delegate_(
@@ -386,7 +390,7 @@ PrerenderInProcessBrowserTest::PrerenderInProcessBrowserTest()
       explicitly_set_browser_(nullptr),
       autostart_test_server_(true) {}
 
-PrerenderInProcessBrowserTest::~PrerenderInProcessBrowserTest() {}
+PrerenderInProcessBrowserTest::~PrerenderInProcessBrowserTest() = default;
 
 void PrerenderInProcessBrowserTest::TearDownInProcessBrowserTestFixture() {
   safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
