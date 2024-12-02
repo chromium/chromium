@@ -3076,7 +3076,6 @@ static_library("browser") {
       "preloading/android/preloading_data_bridge.cc",
       "privacy/secure_dns_bridge.cc",
       "privacy_sandbox/android/privacy_sandbox_bridge.cc",
-      "privacy_sandbox/android/privacy_sandbox_survey_bridge.cc",
       "privacy_sandbox/privacy_sandbox_activity_types_factory.cc",
       "privacy_sandbox/privacy_sandbox_activity_types_factory.h",
       "privacy_sandbox/privacy_sandbox_activity_types_service.cc",
