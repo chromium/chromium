@@ -292,10 +292,10 @@ AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction::Run() {
 }
 
 AccessibilityPrivateGetBatteryDescriptionFunction::
-    AccessibilityPrivateGetBatteryDescriptionFunction() {}
+    AccessibilityPrivateGetBatteryDescriptionFunction() = default;
 
 AccessibilityPrivateGetBatteryDescriptionFunction::
-    ~AccessibilityPrivateGetBatteryDescriptionFunction() {}
+    ~AccessibilityPrivateGetBatteryDescriptionFunction() = default;
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateGetBatteryDescriptionFunction::Run() {

@@ -34,7 +34,7 @@
 
 class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
  public:
-  AccessibilityLabelsBrowserTest() {}
+  AccessibilityLabelsBrowserTest() = default;
 
   AccessibilityLabelsBrowserTest(const AccessibilityLabelsBrowserTest&) =
       delete;

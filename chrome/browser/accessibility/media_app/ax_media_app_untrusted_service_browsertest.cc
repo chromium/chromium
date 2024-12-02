@@ -98,7 +98,7 @@ constexpr std::string_view kLoadingMessage =
 
 class AXMediaAppUntrustedServiceTest : public InProcessBrowserTest {
  public:
-  AXMediaAppUntrustedServiceTest() {}
+  AXMediaAppUntrustedServiceTest() = default;
   AXMediaAppUntrustedServiceTest(const AXMediaAppUntrustedServiceTest&) =
       delete;
   AXMediaAppUntrustedServiceTest& operator=(
