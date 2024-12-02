@@ -284,13 +284,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="ErrorUrlPopup"/>
 </enum>
 
-<enum name="FedCmDisclosureDialogResult">
-  <int value="0" label="Account row clicked"/>
-  <int value="1" label="Cancel button clicked"/>
-  <int value="2" label="Back button clicked"/>
-  <int value="3" label="Tab or window is closed or refreshed"/>
-</enum>
-
 <enum name="FedCmIdpSigninMatchStatus">
   <int value="0"
       label="Match. Browser has signed-in IDP status, accounts endpoint

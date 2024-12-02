@@ -273,8 +273,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            LoadingDialogResultMetric);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
-                           DisclosureDialogResultMetric);
-  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            RequestPermissionFalseAndNewIdpDataDisclosureText);
 
   enum class State {
@@ -376,19 +374,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     kProceed,
     kCancel,
     kProceedThroughPopup,
-    kDestroy,
-
-    kMaxValue = kDestroy
-  };
-
-  // This enum describes the outcome of the disclosure dialog and is used for
-  // histograms. Do not remove or modify existing values, but you may add new
-  // values at the end. This enum should be kept in sync with
-  // FedCmDisclosureDialogResult in tools/metrics/histograms/enums.xml.
-  enum class DisclosureDialogResult {
-    kContinue,
-    kCancel,
-    kBack,
     kDestroy,
 
     kMaxValue = kDestroy
@@ -535,10 +520,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // The current state of the modal loading dialog. This is nullopt when no
   // modal loading dialog has been opened.
   std::optional<LoadingDialogResult> modal_loading_dialog_state_;
-
-  // The current state of the modal disclosure dialog. This is nullopt when no
-  // modal disclosure dialog has been opened.
-  std::optional<DisclosureDialogResult> modal_disclosure_dialog_state_;
 
   // Whether the widget is occluded by PIP (and therefore we should ignore
   // inputs).

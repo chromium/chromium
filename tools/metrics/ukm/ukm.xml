@@ -3745,21 +3745,11 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Button.AccountChooserResult" enum="FedCmAccountChooserResult">
     <summary>
-      Records the outcome of the last account chooser the user sees in a button
+      Records the outcome of the first account chooser the user sees in a button
       flow. Recorded at most once per button flow. For example, if the user
-      selects an account on the account chooser and then clicks on the back
-      button in the next dialog where an account chooser is shown again, leaving
-      would only record one sample.
-    </summary>
-  </metric>
-  <metric name="Button.DisclosureDialogResult"
-      enum="FedCmDisclosureDialogResult">
-    <summary>
-      Records the outcome of the last disclosure dialog the user sees in a
-      button flow. Recorded at most once per button flow. For example, if the
-      user clicks on the back button in the disclosure dialog and then clicks on
-      an account where the disclosure dialog is shown again, leaving would only
-      record one sample.
+      selects an account on the account chooser, one sample is recorded. If the
+      user clicks on the back button in the next dialog, an account chooser is
+      shown again and leaving would not record a second sample.
     </summary>
   </metric>
   <metric name="Button.LoadingDialogResult" enum="FedCmLoadingDialogResult">
