@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1319,8 +1320,9 @@ TEST_F(MultiStoreFormFetcherTest, BlockedEntryInTheProfileStore) {
 
 TEST_F(MultiStoreFormFetcherTest, MovingToAccountStoreIsBlocked) {
   Fetch();
-  const GaiaIdHash kUser = GaiaIdHash::FromGaiaId("user");
-  const GaiaIdHash kAnotherUser = GaiaIdHash::FromGaiaId("another_user");
+  const GaiaIdHash kUser = GaiaIdHash::FromGaiaId(GaiaId("user"));
+  const GaiaIdHash kAnotherUser =
+      GaiaIdHash::FromGaiaId(GaiaId("another_user"));
 
   // Form that's blocked for |kUser| for "username1".
   PasswordForm blocked_form =

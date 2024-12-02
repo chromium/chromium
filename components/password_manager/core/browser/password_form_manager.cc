@@ -56,6 +56,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -422,7 +423,7 @@ bool PasswordFormManager::IsMovableToAccountStore() const {
 
   signin::IdentityManager* identity_manager = client_->GetIdentityManager();
   DCHECK(identity_manager);
-  const std::string gaia_id =
+  const GaiaId gaia_id =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
   DCHECK(!gaia_id.empty()) << "Cannot move without signed in user";
@@ -460,7 +461,7 @@ bool PasswordFormManager::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
     const {
   signin::IdentityManager* identity_manager = client_->GetIdentityManager();
   DCHECK(identity_manager);
-  const std::string gaia_id =
+  const GaiaId gaia_id =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
 
@@ -619,7 +620,7 @@ void PasswordFormManager::BlockMovingCredentialsToAccountStore() {
   if (!IsMovableToAccountStore()) {
     return;
   }
-  const std::string gaia_id =
+  const GaiaId gaia_id =
       client_->GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;

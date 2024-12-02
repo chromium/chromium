@@ -12,6 +12,7 @@ namespace syncer {
 class SyncService;
 }
 
+class GaiaId;
 class PrefService;
 
 namespace password_manager::features_util {
@@ -189,7 +190,7 @@ void SetDefaultPasswordStore(PrefService* pref_service,
 // |pref_service| must not be null.
 void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
-    const std::vector<std::string>& gaia_ids);
+    const std::vector<GaiaId>& gaia_ids);
 
 // Whether the user toggle for account storage is shown in settings.
 bool ShouldShowAccountStorageSettingToggle(

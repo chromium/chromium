@@ -26,6 +26,7 @@
 #include "components/sync/test/mock_data_type_local_data_batch_uploader.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
@@ -93,7 +94,7 @@ TEST_F(PasswordDataTypeControllerTest, OverrideFullSyncModeIfUPMLocalOn) {
   EXPECT_CALL(*transport_only_delegate(), OnSyncStarting);
 
   syncer::ConfigureContext context;
-  context.authenticated_account_id = CoreAccountId::FromGaiaId("gaia");
+  context.authenticated_account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
   context.cache_guid = "cache_guid";
   context.sync_mode = syncer::SyncMode::kFull;
   context.reason = syncer::CONFIGURE_REASON_RECONFIGURATION;
@@ -109,7 +110,7 @@ TEST_F(PasswordDataTypeControllerTest,
   EXPECT_CALL(*transport_only_delegate(), OnSyncStarting).Times(0);
 
   syncer::ConfigureContext context;
-  context.authenticated_account_id = CoreAccountId::FromGaiaId("gaia");
+  context.authenticated_account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
   context.cache_guid = "cache_guid";
   context.sync_mode = syncer::SyncMode::kFull;
   context.reason = syncer::CONFIGURE_REASON_RECONFIGURATION;
