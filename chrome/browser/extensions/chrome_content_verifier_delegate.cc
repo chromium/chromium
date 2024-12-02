@@ -184,8 +184,7 @@ ChromeContentVerifierDelegate::GetVerifierSourceType(
 }
 
 ContentVerifierKey ChromeContentVerifierDelegate::GetPublicKey() {
-  return ContentVerifierKey(kWebstoreSignaturesPublicKey,
-                            kWebstoreSignaturesPublicKeySize);
+  return kWebstoreSignaturesPublicKey;
 }
 
 GURL ChromeContentVerifierDelegate::GetSignatureFetchUrl(

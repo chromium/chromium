@@ -202,15 +202,9 @@ bool TestContentVerifyJobObserver::ObserverClient::WaitForExpectedJobs() {
 }
 
 // MockContentVerifierDelegate ------------------------------------------------
-MockContentVerifierDelegate::MockContentVerifierDelegate() {
-  // SAFETY: Pointer arithmetic is safe because the passed values are global
-  // constants. base::ToVector(...) cannot be used because
-  // kWebstoreSignaturesPublicKey is defined in another TU and therefore this TU
-  // does not know the array size.
-  verifier_key_ = UNSAFE_BUFFERS(std::vector<uint8_t>(
-      kWebstoreSignaturesPublicKey,
-      kWebstoreSignaturesPublicKey + kWebstoreSignaturesPublicKeySize));
-}
+MockContentVerifierDelegate::MockContentVerifierDelegate()
+    : verifier_key_(kWebstoreSignaturesPublicKey.begin(),
+                    kWebstoreSignaturesPublicKey.end()) {}
 
 MockContentVerifierDelegate::~MockContentVerifierDelegate() = default;
 
