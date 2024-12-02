@@ -5,34 +5,24 @@
 #import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 
 #import "base/containers/contains.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/scoped_observation.h"
-#import "base/test/test_file_util.h"
 #import "base/threading/thread_restrictions.h"
 #import "base/uuid.h"
-#import "components/variations/scoped_variations_ids_provider.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
-#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/profile/model/test_with_profile.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
-#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
-#import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
-#import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 namespace {
 
 // Profile names.
-const char kProfileName1[] = "Profile1";
-const char kProfileName2[] = "Profile2";
+const char kProfileName1[] = "be7293b8-6309-436a-a5ab-37742a6e1a3a";
+const char kProfileName2[] = "8f5d037a-44ff-4e80-bfa3-9bd507a258e2";
 
 // A scoped ProfileManagerObserverIOS which records which events have been
 // received.
@@ -111,81 +101,12 @@ base::OnceCallback<void(T)> CaptureParam(T* output) {
 
 }  // namespace
 
-class ProfileManagerIOSImplTest : public PlatformTest {
+class ProfileManagerIOSImplTest : public TestWithProfile {
  public:
-  ProfileManagerIOSImplTest()
-      : profile_manager_(GetApplicationContext()->GetLocalState(),
-                         base::CreateUniqueTempDirectoryScopedToTest()) {
-    TestingApplicationContext* application_context =
-        TestingApplicationContext::GetGlobal();
-
-    // IOSChromeIOThread needs to be created before the IO thread is started.
-    // Thus DELAY_IO_THREAD_START is set in WebTaskEnvironment's options. The
-    // thread is then started after the creation of IOSChromeIOThread.
-    chrome_io_ = std::make_unique<IOSChromeIOThread>(
-        application_context->GetLocalState(), application_context->GetNetLog());
-
-    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-        application_context->GetSystemIdentityManager(), &profile_manager_);
-
-    // Register the objects with the TestingApplicationContext.
-    application_context->SetIOSChromeIOThread(chrome_io_.get());
-    application_context->SetProfileManagerAndAccountProfileMapper(
-        &profile_manager_, account_profile_mapper_.get());
-
-    // Initialize the prediction model store (required by some KeyedServices).
-    optimization_guide::IOSChromePredictionModelStore::GetInstance()
-        ->Initialize(base::CreateUniqueTempDirectoryScopedToTest());
-
-    // Start the IO thread.
-    web_task_environment_.StartIOThread();
-
-    // Post a task to initialize the IOSChromeIOThread object on the IO thread.
-    web::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&IOSChromeIOThread::InitOnIO,
-                                  base::Unretained(chrome_io_.get())));
-
-    // Init the BrowserPolicyConnect as this is required to create an instance
-    // of ProfileIOSImpl.
-    application_context->GetBrowserPolicyConnector()->Init(
-        application_context->GetLocalState(),
-        application_context->GetSharedURLLoaderFactory());
-
-    // IOSChromeIOThread requires the SystemURLRequestContextGetter() to be
-    // created before the object is shutdown, so force its creation here.
-    std::ignore = chrome_io_->system_url_request_context_getter();
-  }
-
-  ~ProfileManagerIOSImplTest() override {
-    TestingApplicationContext* application_context =
-        TestingApplicationContext::GetGlobal();
-
-    // Cleanup the prediction model store (since it is a singleton).
-    optimization_guide::IOSChromePredictionModelStore::GetInstance()
-        ->ResetForTesting();
-
-    // The profiles must be unloaded before the AccountProfileMapper gets
-    // unregistered from the ApplicationContext, because keyed services may
-    // depend on the AccountProfileMapper.
-    profile_manager_.UnloadAllProfiles();
-
-    application_context->GetBrowserPolicyConnector()->Shutdown();
-    application_context->GetIOSChromeIOThread()->NetworkTearDown();
-    application_context->SetProfileManagerAndAccountProfileMapper(nullptr,
-                                                                  nullptr);
-    application_context->SetIOSChromeIOThread(nullptr);
-  }
-
-  ProfileManagerIOSImpl& profile_manager() { return profile_manager_; }
-
-  ProfileAttributesStorageIOS& attributes_storage() {
-    return *profile_manager_.GetProfileAttributesStorage();
-  }
-
   // Returns the name of the loaded Profiles.
   std::set<std::string> GetLoadedProfileNames() {
     std::set<std::string> profile_names;
-    for (ProfileIOS* profile : profile_manager_.GetLoadedProfiles()) {
+    for (ProfileIOS* profile : profile_manager().GetLoadedProfiles()) {
       CHECK(profile);
 
       const std::string& profile_name = profile->GetProfileName();
@@ -195,18 +116,6 @@ class ProfileManagerIOSImplTest : public PlatformTest {
     }
     return profile_names;
   }
-
- private:
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<IOSChromeIOThread> chrome_io_;
-  web::WebTaskEnvironment web_task_environment_{
-      web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED};
-  ProfileManagerIOSImpl profile_manager_;
-  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
-
-  // Some KeyedService requires a VariationsIdsProvider to be installed.
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
-      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 // Tests that LoadProfileAsync(...) correctly loads a known Profile, and that
