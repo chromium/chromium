@@ -109,7 +109,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   //
   // When enable_security_constraints is false, the alignment is 16 which is
   // the maximum alignment requirement of particular types of pixmaps (see
-  // image_transfer_data_cache.cc).
+  // image_transfer_cache_entry.cc).
   static constexpr size_t BufferAlignment(bool enable_security_constraints) {
     return enable_security_constraints ? kDefaultAlignment : kMaxAlignment;
   }
