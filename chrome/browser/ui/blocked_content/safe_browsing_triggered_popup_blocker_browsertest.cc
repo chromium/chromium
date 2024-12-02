@@ -103,7 +103,7 @@ class SafeBrowsingTriggeredPopupBlockerBrowserTest
   SafeBrowsingTriggeredPopupBlockerBrowserTest& operator=(
       const SafeBrowsingTriggeredPopupBlockerBrowserTest&) = delete;
 
-  ~SafeBrowsingTriggeredPopupBlockerBrowserTest() override {}
+  ~SafeBrowsingTriggeredPopupBlockerBrowserTest() override = default;
 
   void SetUp() override {
     FinalizeFeatures();
@@ -199,7 +199,7 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
   SafeBrowsingTriggeredInterceptingBrowserTest& operator=(
       const SafeBrowsingTriggeredInterceptingBrowserTest&) = delete;
 
-  ~SafeBrowsingTriggeredInterceptingBrowserTest() override {}
+  ~SafeBrowsingTriggeredInterceptingBrowserTest() override = default;
 
   // SafeBrowsingTriggeredPopupBlockerBrowserTest:
   void SetUp() override {
