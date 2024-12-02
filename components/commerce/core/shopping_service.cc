@@ -771,8 +771,8 @@ void ShoppingService::GetProductSpecificationsForUrls(
                 }
 
                 UMA_HISTOGRAM_PERCENTAGE(
-                    "Commerce.Compare.Table.PercentageValidProducts",
-                    (float)cluster_ids.size() / (float)data.size());
+                    "Commerce.Compare.Table.PercentageValidProducts2",
+                    ((float)cluster_ids.size() / (float)data.size()) * 100.0f);
 
                 if (!service || cluster_ids.empty()) {
                   std::move(callback).Run(std::move(cluster_ids), std::nullopt);

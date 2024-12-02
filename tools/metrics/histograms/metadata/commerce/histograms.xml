@@ -193,7 +193,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
-<histogram name="Commerce.Compare.Table.PercentageValidProducts" units="%"
+<histogram name="Commerce.Compare.Table.PercentageValidProducts2" units="%"
     expires_after="2025-05-11">
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
