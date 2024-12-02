@@ -554,15 +554,11 @@ bool DawnSharedContext::Initialize(
   std::vector<dawn::native::Adapter> adapters =
       instance_->EnumerateAdapters(&adapter_options);
 
-#if !BUILDFLAG(IS_WIN)
-  // Not fallback to compatibility mode due to rendering issue with d3d11
-  // feature level 11.0
   if (adapters.empty()) {
     LOG(ERROR) << "No adapters found for non compatibility mode.";
     adapter_options.compatibilityMode = true;
     adapters = instance_->EnumerateAdapters(&adapter_options);
   }
-#endif
 
   if (adapters.empty()) {
     LogInitFailure("No adapters found.");
