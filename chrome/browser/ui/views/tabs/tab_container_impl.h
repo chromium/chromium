@@ -371,12 +371,6 @@ class TabContainerImpl : public TabContainer,
   // Valid for the lifetime of a link drag over us.
   std::unique_ptr<DropArrow> drop_arrow_;
 
-  // Size we last laid out at.
-  gfx::Size last_layout_size_;
-
-  // The width available for tabs at the time of last layout.
-  int last_available_width_ = 0;
-
   // If this value is defined, it is used as the width to lay out tabs
   // (instead of GetAvailableWidthForTabStrip()). It is defined when closing
   // tabs with the mouse, and is used to control which tab will end up under the

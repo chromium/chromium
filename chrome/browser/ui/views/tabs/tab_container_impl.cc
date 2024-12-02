@@ -616,7 +616,8 @@ void TabContainerImpl::OnTabSlotAnimationProgressed(TabSlotView* view) {
 }
 
 void TabContainerImpl::InvalidateIdealBounds() {
-  last_layout_size_ = gfx::Size();
+  // Invalidation of ideal bounds is handled dynamically by the parent
+  // container or other mechanisms.
 }
 
 void TabContainerImpl::AnimateToIdealBounds() {
@@ -659,9 +660,6 @@ void TabContainerImpl::CancelAnimation() {
 }
 
 void TabContainerImpl::CompleteAnimationAndLayout() {
-  last_available_width_ = GetAvailableWidthForTabContainer();
-  last_layout_size_ = size();
-
   CancelAnimation();
 
   UpdateIdealBounds();
@@ -792,21 +790,16 @@ gfx::Rect TabContainerImpl::GetIdealBounds(tab_groups::TabGroupId group) const {
 }
 
 void TabContainerImpl::Layout(PassKey) {
-  if (controller_->IsAnimatingInTabStrip()) {
-    // Hide tabs that have animated at least partially out of the clip region.
-    SetTabSlotVisibility();
-    return;
+  UpdateIdealBounds();
+
+  // If the tab strip is not currently animating, directly snap all tabs and
+  // group headers to their ideal bounds. This avoids unnecessary animations
+  // and ensures a steady state for the layout.
+  if (!controller_->IsAnimatingInTabStrip()) {
+    SnapToIdealBounds();
   }
 
-  // Only do a layout if our size or the available width changed.
-  const int available_width = GetAvailableWidthForTabContainer();
-  if (last_layout_size_ == size() && last_available_width_ == available_width) {
-    return;
-  }
-  if (IsDragSessionActive()) {
-    return;
-  }
-  CompleteAnimationAndLayout();
+  SetTabSlotVisibility();
 }
 
 void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
@@ -1182,11 +1175,6 @@ void TabContainerImpl::UpdateIdealBounds() {
     return;
   }
 
-  // Update |last_available_width_| in case there is a different amount of
-  // available width than there was in the last layout (e.g. if the tabstrip
-  // is currently hidden).
-  last_available_width_ = GetAvailableWidthForTabContainer();
-
   layout_helper_->UpdateIdealBounds(CalculateAvailableWidthForTabs());
 }
 
@@ -1209,7 +1197,13 @@ void TabContainerImpl::SnapToIdealBounds() {
 
   overall_bounds_view_->SetBoundsRect(gfx::Rect(GetIdealTrailingX(), 0));
 
-  PreferredSizeChanged();
+  // If a drag session is active, inform the parent container that the
+  // preferred size of the tab strip might have changed due to the drag
+  // operation. This ensures proper resizing and alignment of the tab strip
+  // during drag interactions.
+  if (drag_context_->IsDragSessionActive()) {
+    PreferredSizeChanged();
+  }
 }
 
 int TabContainerImpl::CalculateAvailableWidthForTabs() const {
