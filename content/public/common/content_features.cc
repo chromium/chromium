@@ -1125,7 +1125,9 @@ BASE_FEATURE(kFontDataService,
 const base::FeatureParam<FontDataServiceTypefaceType>::Option
     font_data_service_typeface[] = {
         {FontDataServiceTypefaceType::kDwrite, "DWrite"},
-        {FontDataServiceTypefaceType::kInternal, "Internal"}};
+        {FontDataServiceTypefaceType::kInternal, "Internal"},
+        {FontDataServiceTypefaceType::kControlWithoutSpareRenderer,
+         "ControlWithoutSpareRenderer"}};
 const base::FeatureParam<FontDataServiceTypefaceType>
     kFontDataServiceTypefaceType{&kFontDataService, "typeface",
                                  FontDataServiceTypefaceType::kDwrite,

@@ -245,6 +245,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontDataService);
 enum class FontDataServiceTypefaceType {
   kDwrite,
   kInternal,
+  kControlWithoutSpareRenderer,
 };
 extern const base::FeatureParam<FontDataServiceTypefaceType>
     kFontDataServiceTypefaceType;
