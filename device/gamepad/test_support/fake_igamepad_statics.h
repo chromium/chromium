@@ -91,6 +91,8 @@ class FakeIGamepadStatics final
   size_t GetGamepadAddedEventHandlerCount() const;
   size_t GetGamepadRemovedEventHandlerCount() const;
 
+  void Reset();
+
  private:
   typedef base::flat_map<
       int64_t /* event_registration_token */,
