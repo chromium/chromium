@@ -2939,6 +2939,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_INCOGNITO_STACK" desc="Content description for the Incognito stack selection 'button'.">
         Incognito tabs
       </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button in the Tab Switcher Toolbar.">
+        Manage open tabs
+      </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB" desc="Content description for the tab title.">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab
       </message>
