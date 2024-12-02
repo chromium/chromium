@@ -127,12 +127,11 @@ bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {
     return true;
   }
 
-  if (job_) {
-    CHECK(job_.value()->dns_task_results_manager());
+  if (job_ && job_.value()->dns_task_results_manager()) {
     return job_.value()->dns_task_results_manager()->IsMetadataReady();
   }
 
-  NOTREACHED();
+  return true;
 }
 
 ResolveErrorInfo

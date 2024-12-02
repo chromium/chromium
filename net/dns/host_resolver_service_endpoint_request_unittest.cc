@@ -349,7 +349,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, TimedOut) {
 }
 
 // Tests that a request returns valid endpoints and DNS aliases after DnsTasks
-// are aborted.
+// are aborted. Also checks EndpointsCryptoReady() returns true.
 TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTask) {
   UseIpv4DelayedDnsRules("4slow_ok");
 
@@ -365,6 +365,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTask) {
       /*enabled=*/false, /*additional_dns_types_enabled=*/false);
   ASSERT_TRUE(requester.request()->GetEndpointResults().empty());
   ASSERT_TRUE(requester.request()->GetDnsAliasResults().empty());
+  ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, Ok) {

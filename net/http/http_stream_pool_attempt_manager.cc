@@ -329,6 +329,15 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
   dns_resolution_end_time_ = base::TimeTicks::Now();
   resolve_error_info_ = service_endpoint_request_->GetResolveErrorInfo();
 
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED,
+      [&] {
+        base::Value::Dict dict;
+        dict.Set("net_error", rv);
+        dict.Set("resolve_error", resolve_error_info_.error);
+        return dict;
+      });
+
   if (rv != OK) {
     error_to_notify_ = rv;
     // If service endpoint resolution failed, record an empty endpoint and the
@@ -614,6 +623,10 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
         if (rv != 0) {
           dict.Set("net_error", rv);
         }
+        if (net_error_details_.quic_connection_error != quic::QUIC_NO_ERROR) {
+          dict.Set("quic_error", quic::QuicErrorCodeToString(
+                                     net_error_details_.quic_connection_error));
+        }
         return dict;
       });
 
@@ -637,7 +650,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
     return;
   }
 
-  if (rv != OK || should_block_stream_attempt_) {
+  if (has_jobs && (rv != OK || should_block_stream_attempt_)) {
     should_block_stream_attempt_ = false;
     stream_attempt_delay_timer_.Stop();
     MaybeAttemptConnection();
@@ -1740,13 +1753,13 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams() {
   return dict;
 }
 
-void HttpStreamPool::AttemptManager::MaybeComplete() {
-  if (!jobs_.empty() || !notified_jobs_.empty() || !preconnects_.empty() ||
-      !in_flight_attempts_.empty()) {
-    return;
-  }
+bool HttpStreamPool::AttemptManager::CanComplete() const {
+  return jobs_.empty() && notified_jobs_.empty() && preconnects_.empty() &&
+         in_flight_attempts_.empty() && !quic_task_;
+}
 
-  if (quic_task_) {
+void HttpStreamPool::AttemptManager::MaybeComplete() {
+  if (!CanComplete()) {
     return;
   }
 

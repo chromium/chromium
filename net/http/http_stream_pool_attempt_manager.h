@@ -372,6 +372,8 @@ class HttpStreamPool::AttemptManager
 
   base::Value::Dict GetStatesAsNetLogParams();
 
+  bool CanComplete() const;
+
   void MaybeComplete();
 
   const raw_ptr<Group> group_;

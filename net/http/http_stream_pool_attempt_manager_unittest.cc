@@ -4032,6 +4032,50 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailAfterTls) {
       alternative_service, NetworkAnonymizationKey()));
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailNoRemainingJobs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  SequencedSocketData tls_data;
+  socket_factory()->AddSocketDataProvider(&tls_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  // Release the stream and close the socket.
+  requester.ResetRequest();
+  requester.ReleaseStream().reset();
+  pool()
+      .GetGroupForTesting(requester.GetStreamKey())
+      ->CloseIdleStreams("for testing");
+
+  // The group should be alive since the QUIC attempt is ongoing.
+  EXPECT_TRUE(pool().GetGroupForTesting(requester.GetStreamKey()));
+
+  // Complete the QUIC attempt with an error. The group should be destroyed.
+  quic_completer.Complete(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN);
+  FastForwardUntilNoTasksRemain();
+  EXPECT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailNonBrokenErrors) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
