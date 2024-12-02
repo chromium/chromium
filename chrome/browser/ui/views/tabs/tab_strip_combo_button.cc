@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
@@ -57,7 +58,7 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
   std::unique_ptr<TabSearchContainer> tab_search_container =
       std::make_unique<TabSearchContainer>(
           tab_strip->controller(), browser->GetTabStripModel(), true, this,
-          browser, browser->GetFeatures().tab_declutter_controller());
+          browser, browser->GetFeatures().tab_declutter_controller(), this);
   tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kCenter);
 

@@ -61,11 +61,11 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
     container_before_tab_strip_ = std::make_unique<TabSearchContainer>(
         tab_strip_controller_.get(), tab_strip_model_.get(), true,
         locked_expansion_view_.get(), browser_window_interface_.get(),
-        tab_declutter_controller_.get());
+        tab_declutter_controller_.get(), /*anchor_view=*/nullptr);
     container_after_tab_strip_ = std::make_unique<TabSearchContainer>(
         tab_strip_controller_.get(), tab_strip_model_.get(), false,
         locked_expansion_view_.get(), browser_window_interface_.get(),
-        tab_declutter_controller_.get());
+        tab_declutter_controller_.get(), /*anchor_view=*/nullptr);
   }
 
  protected:

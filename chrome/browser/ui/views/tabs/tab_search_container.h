@@ -112,12 +112,15 @@ class TabSearchContainer : public views::View,
     base::OnceCallback<void()> on_animation_ended_;
   };
 
+  // If `anchor_view` is nullptr, use `this` as the `anchor_view` for the bubble
+  // host.
   TabSearchContainer(TabStripController* tab_strip_controller,
                      TabStripModel* tab_strip_model,
                      bool tab_search_before_chips,
                      View* locked_expansion_view,
                      BrowserWindowInterface* browser_window_interface,
-                     tabs::TabDeclutterController* tab_declutter_controller);
+                     tabs::TabDeclutterController* tab_declutter_controller,
+                     views::View* anchor_view);
   TabSearchContainer(const TabSearchContainer&) = delete;
   TabSearchContainer& operator=(const TabSearchContainer&) = delete;
   ~TabSearchContainer() override;

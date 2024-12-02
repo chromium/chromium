@@ -32,7 +32,8 @@ class TabSearchBubbleHost : public views::WidgetObserver,
                             public WebUIBubbleManagerObserver {
  public:
   TabSearchBubbleHost(views::Button* button,
-                      BrowserWindowInterface* browser_window_interface);
+                      BrowserWindowInterface* browser_window_interface,
+                      views::View* anchor_view);
   TabSearchBubbleHost(const TabSearchBubbleHost&) = delete;
   TabSearchBubbleHost& operator=(const TabSearchBubbleHost&) = delete;
   ~TabSearchBubbleHost() override;

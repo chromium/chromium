@@ -23,7 +23,8 @@ class TabSearchButton : public TabStripControlButton {
   TabSearchButton(TabStripController* tab_strip_controller,
                   BrowserWindowInterface* browser_window_interface,
                   Edge fixed_flat_edge,
-                  Edge animated_flat_edge);
+                  Edge animated_flat_edge,
+                  views::View* anchor_view);
   TabSearchButton(const TabSearchButton&) = delete;
   TabSearchButton& operator=(const TabSearchButton&) = delete;
   ~TabSearchButton() override;

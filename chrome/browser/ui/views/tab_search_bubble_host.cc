@@ -62,11 +62,12 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 
 TabSearchBubbleHost::TabSearchBubbleHost(
     views::Button* button,
-    BrowserWindowInterface* browser_window_interface)
+    BrowserWindowInterface* browser_window_interface,
+    views::View* anchor_view)
     : button_(button),
       profile_(browser_window_interface->GetProfile()),
       webui_bubble_manager_(WebUIBubbleManager::Create<TabSearchUI>(
-          button,
+          anchor_view,
           browser_window_interface,
           GURL(chrome::kChromeUITabSearchURL),
           IDS_ACCNAME_TAB_SEARCH)),
