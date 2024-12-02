@@ -33,7 +33,11 @@ struct ChromeWidgets: WidgetBundle {
       ShortcutsWidget()
     #endif
     SearchPasswordsWidget()
-    DinoGameWidget()
+    #if IOS_ENABLE_WIDGETS_FOR_MIM
+      DinoGameWidgetConfigurable()
+    #else
+      DinoGameWidget()
+    #endif
     #if IOS_ENABLE_LOCKSCREEN_WIDGET
       #if IOS_AVAILABLE_LOCKSCREEN_WIDGET
         LockscreenLauncherSearchWidget()
