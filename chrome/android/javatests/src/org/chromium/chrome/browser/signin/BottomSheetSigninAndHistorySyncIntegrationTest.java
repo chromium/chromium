@@ -84,8 +84,7 @@ import org.chromium.ui.test.util.ViewUtils;
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
     ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
 })
-// TODO(crbug.com/372685598): Rename this to BottomSheetSigninAndHistorySyncIntegrationTest.
-public class SigninAndHistorySyncIntegrationTest {
+public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule(order = 0)
