@@ -1521,6 +1521,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
       ASSERT_TRUE(expected_state);
       ASSERT_EQ(*expected_state, CaptureCurrentState());
     }
+
+    CloseAllBrowsers();
   }
 
   // Histogram tester for the action (navigation) that is performed in the test.
