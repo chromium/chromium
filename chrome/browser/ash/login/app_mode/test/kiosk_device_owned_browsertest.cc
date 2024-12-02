@@ -2,26 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
-#include "ash/public/cpp/shelf_config.h"
-#include "ash/public/cpp/shelf_test_api.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/test/bind.h"
+#include "base/scoped_observation.h"
 #include "base/test/gtest_tags.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
+#include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -30,7 +26,6 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -42,9 +37,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
+#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -56,16 +52,15 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/events/test/event_generator.h"
-#include "ui/gfx/geometry/point.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -246,51 +241,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   EXPECT_TRUE(config.voice_input);
 }
 
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
-  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());
-
-  // The shelf should be hidden at the beginning.
-  EXPECT_FALSE(ShelfTestApi().IsVisible());
-
-  // Simulate the swipe-up gesture.
-  Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
-  ASSERT_TRUE(app_profile);
-
-  extensions::AppWindowRegistry* app_window_registry =
-      extensions::AppWindowRegistry::Get(app_profile);
-  extensions::AppWindow* app_window =
-      apps::AppWindowWaiter(app_window_registry, test_app_id()).Wait();
-  ASSERT_TRUE(app_window);
-
-  gfx::NativeWindow window = app_window->GetNativeWindow()->GetRootWindow();
-  const gfx::Rect display_bounds = window->bounds();
-  const gfx::Point start_point = gfx::Point(
-      display_bounds.width() / 4,
-      display_bounds.bottom() - ShelfConfig::Get()->shelf_size() / 2);
-  gfx::Point end_point(start_point.x(), start_point.y() - 80);
-  ui::test::EventGenerator event_generator(window);
-  event_generator.GestureScrollSequence(start_point, end_point,
-                                        base::Milliseconds(500), 4);
-
-  // The shelf should be still hidden after the gesture.
-  EXPECT_FALSE(ShelfTestApi().IsVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, NotSignedInWithGAIAAccount) {
-  // Tests that the kiosk session is not considered to be logged in with a GAIA
-  // account.
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  WaitForAppLaunchSuccess();
-  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
-
-  Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
-  ASSERT_TRUE(app_profile);
-  EXPECT_FALSE(IdentityManagerFactory::GetForProfile(app_profile)
-                   ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-}
-
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
                        LaunchAppNetworkDownConfigureNotAllowed) {
   auto auto_reset =
@@ -318,17 +268,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, GetVolumeList) {
   extensions::ResultCatcher catcher;
   StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, OpenA11ySettings) {
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
-                              /*terminate_app=*/false,
-                              /*keep_app_open=*/true);
-
-  Browser* settings_browser =
-      OpenA11ySettingsBrowser(KioskController::Get().GetKioskSystemSession());
-  ASSERT_TRUE(settings_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {

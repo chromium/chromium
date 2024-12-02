@@ -6,6 +6,24 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "kiosk_browsertest.cc" ]
+  deps = [
+    ":test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/login/app_mode/test:test_support",
+    "//chrome/browser/chromeos/app_mode",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/events:test_support",
+  ]
+}
+
 static_library("test_support") {
   testonly = true
 
@@ -14,6 +32,8 @@ static_library("test_support") {
     "kiosk_mixin.h",
     "kiosk_session_initialized_waiter.cc",
     "kiosk_session_initialized_waiter.h",
+    "kiosk_test_utils.cc",
+    "kiosk_test_utils.h",
     "network_state_mixin.cc",
     "network_state_mixin.h",
     "scoped_device_settings.cc",
@@ -21,6 +41,7 @@ static_library("test_support") {
   ]
 
   deps = [
+    "//apps:test_support",
     "//chrome/browser",
     "//chrome/browser/app_mode/test:test_support",
     "//chrome/browser/ash/app_mode:test_support",
@@ -28,6 +49,7 @@ static_library("test_support") {
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/app_mode",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/network:test_support",
   ]
