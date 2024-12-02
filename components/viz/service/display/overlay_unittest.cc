@@ -4047,7 +4047,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
                                  std::log((config.max_num_frames_avg - 1.0f) /
                                           config.max_num_frames_avg)));
 
-  OverlayCandidateTemporalTracker tracker;
+  OverlayCandidateTemporalTracker tracker(config);
   int fake_display_area = 256 * 256;
   // We test internal hysteresis state by running this test twice.
   for (int j = 0; j < 2; j++) {
@@ -4057,37 +4057,37 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
-    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
+    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter));
     auto opaque_power_gain_60_full = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
-    EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 1.0f, kDamageEpsilon);
+    EXPECT_NEAR(tracker.MeanFrameRatioRate(), 1.0f, kDamageEpsilon);
     EXPECT_GT(opaque_power_gain_60_full, 0);
 
     // Test our hysteresis categorization of power by ensuring a single frame
     // drop does not change the end power categorization.
     wait_1_frame();
     wait_1_frame();
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
     auto opaque_power_gain_60_stutter = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
     // A single frame drop even at 60fps should not change our power
     // categorization.
     EXPECT_EQ(opaque_power_gain_60_full, opaque_power_gain_60_stutter);
 
     wait_inactive_frames();
-    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter));
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
     auto opaque_power_gain_60_inactive = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
     // Simple test to make sure that power categorization is not completely
     // invalidated when candidate becomes inactive.
     EXPECT_GT(opaque_power_gain_60_inactive, 0);
@@ -4097,27 +4097,27 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
       wait_1_frame();
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     // Insert single stutter frame here to avoid hysteresis boundary.
     wait_1_frame();
     wait_1_frame();
     wait_1_frame();
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     auto opaque_power_gain_30_full = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
-    EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 0.5f, kDamageEpsilon);
+    EXPECT_NEAR(tracker.MeanFrameRatioRate(), 0.5f, kDamageEpsilon);
     EXPECT_GT(opaque_power_gain_30_full, 0);
     EXPECT_GT(opaque_power_gain_60_full, opaque_power_gain_30_full);
 
@@ -4126,22 +4126,22 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     wait_1_frame();
     wait_1_frame();
     wait_1_frame();
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
-    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
+    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter));
     auto opaque_power_gain_30_stutter = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
     EXPECT_EQ(opaque_power_gain_30_stutter, opaque_power_gain_30_full);
 
     wait_inactive_frames();
-    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter));
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
     auto opaque_power_gain_30_inactive = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
     // Simple test to make sure that power categorization is not completely
     // invalidated when candidate becomes inactive.
     EXPECT_GT(opaque_power_gain_30_inactive, 0);
@@ -4151,11 +4151,11 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kAboveHighDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     auto opaque_power_gain_high_damage = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
     EXPECT_GT(opaque_power_gain_high_damage, 0);
     EXPECT_GE(opaque_power_gain_60_full, opaque_power_gain_high_damage);
@@ -4163,11 +4163,11 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kBelowLowDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     auto opaque_power_gain_low_damage = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
     EXPECT_LT(opaque_power_gain_low_damage, 0);
 
     // Test our mean damage ratio computations for our tracker.
@@ -4179,12 +4179,12 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
       float dynamic_damage_ratio = static_cast<float>(i) / avg_range_tracker;
       expected_mean += dynamic_damage_ratio;
       tracker.AddRecord(frame_counter, dynamic_damage_ratio,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     expected_mean = expected_mean / avg_range_tracker;
 
-    EXPECT_FLOAT_EQ(expected_mean, tracker.MeanFrameRatioRate(config));
+    EXPECT_FLOAT_EQ(expected_mean, tracker.MeanFrameRatioRate());
   }
 
   EXPECT_FALSE(tracker.IsAbsent());
@@ -4193,7 +4193,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   EXPECT_TRUE(tracker.IsAbsent());
 
   wait_1_frame();
-  tracker.AddRecord(frame_counter, 0.0f, id_generator.GenerateNextId(), config);
+  tracker.AddRecord(frame_counter, 0.0f, id_generator.GenerateNextId());
   EXPECT_FALSE(tracker.IsAbsent());
 
   // Tracker forced updates were added to support quads that change content but
@@ -4206,18 +4206,17 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   for (int i = 0; i < config.max_num_frames_avg; i++) {
     wait_1_frame();
     tracker.AddRecord(frame_counter, kDamageRatio, kFakeConstantResourceId,
-                      config, true);
+                      true);
   }
-  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate(config));
+  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate());
 
   // Now test the false case for the force update param.
   for (int i = 0; i < config.max_num_frames_avg; i++) {
     wait_1_frame();
-    tracker.AddRecord(frame_counter, 0.9f, kFakeConstantResourceId, config,
-                      false);
+    tracker.AddRecord(frame_counter, 0.9f, kFakeConstantResourceId, false);
   }
   // The damage should remain unchanged.
-  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate(config));
+  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate());
 }
 
 TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {

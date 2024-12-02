@@ -17,8 +17,6 @@ namespace viz {
 // purpose is to temporally stabilize the result.
 class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
  public:
-  OverlayCandidateTemporalTracker();
-
   // The |Config| contains values that are derived as part of a heuristic. This
   // |Config| allows for the potential of platform specific variations or
   // experiments.
@@ -35,18 +33,20 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
     int max_num_frames_avg = 10;
   };
 
+  explicit OverlayCandidateTemporalTracker(const Config& config)
+      : config_(config) {}
+
   // This function returns an opaque but comparable value representing the
   // power improvement by promoting the tracked candidate to an overlay.
   // Negative values indicate that the model suggests a power degradation if the
   // candidate is promoted to overlay.
   int GetModeledPowerGain(uint64_t curr_frame,
-                          const OverlayCandidateTemporalTracker::Config& config,
                           int display_area,
                           bool is_fullscreen) const;
 
   // This function returns true when the time since the |resource_id| changed
   // exceeds a specific threshold.
-  bool IsActivelyChanging(uint64_t curr_frame, const Config& config) const;
+  bool IsActivelyChanging(uint64_t curr_frame) const;
 
   void Reset();
 
@@ -60,7 +60,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   void AddRecord(uint64_t curr_frame,
                  float damage_area_ratio,
                  ResourceId resource_id,
-                 const Config& config,
                  bool force_resource_update = false);
 
   // This function returns true when this tracker's 'AddRecord' was not called
@@ -70,15 +69,17 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
 
   // The functions and data below are used internally but also can be used for
   // diagnosis and testing.
-  float MeanFrameRatioRate(const Config& config) const;
+  float MeanFrameRatioRate() const { return damage_record_avg_; }
   float GetDamageRatioRate() const { return ratio_rate_category_; }
   uint64_t LastChangeFrameCount(uint64_t curr_frame) const;
 
  private:
-  void CategorizeDamageRatioRate(uint64_t curr_frame, const Config& config);
+  void CategorizeDamageRatioRate(uint64_t curr_frame);
   ResourceId prev_resource_id_ = kInvalidResourceId;
 
   float ratio_rate_category_ = 0.0f;
+
+  const Config config_;
 
   // The state of this absent bool is as follows:
   // In the normal flow 'IsAbsent()' is tested which sets |absent| = true. Then
