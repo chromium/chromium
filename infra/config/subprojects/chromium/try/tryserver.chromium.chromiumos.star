@@ -299,6 +299,9 @@ try_.builder(
     mirrors = [
         "ci/chromeos-jacuzzi-rel",
     ],
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
     gn_args = "ci/chromeos-jacuzzi-rel",
     contact_team_email = "chromeos-chrome-build@google.com",
     execution_timeout = 8 * time.hour,
@@ -313,6 +316,9 @@ try_.builder(
     mirrors = [
         "ci/chromeos-octopus-rel",
     ],
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
     gn_args = "ci/chromeos-octopus-rel",
     contact_team_email = "chromeos-chrome-build@google.com",
     execution_timeout = 8 * time.hour,

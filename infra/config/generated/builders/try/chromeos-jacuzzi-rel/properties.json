@@ -48,7 +48,8 @@
           "builder": "chromeos-jacuzzi-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "retry_failed_shards": false
     }
   },
   "$build/reclient": {

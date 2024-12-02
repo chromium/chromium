@@ -48,7 +48,8 @@
           "builder": "chromeos-octopus-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "retry_failed_shards": false
     }
   },
   "$build/reclient": {
