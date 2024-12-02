@@ -1354,7 +1354,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.GenerateCertificate.Algorithm"
+<histogram name="WebRTC.PeerConnection.GenerateCertificate.Algorithms"
     enum="GenerateCertificateAlgorithms" expires_after="2025-06-01">
   <owner>hta@chromium.org</owner>
   <owner>philipp.hancke@googlemail.com</owner>
