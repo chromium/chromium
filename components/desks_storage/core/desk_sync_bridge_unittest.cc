@@ -995,33 +995,6 @@ TEST_F(DeskSyncBridgeTest, EnsureAshBrowserWindowsSavedProperly) {
               SavedDeskBrowserBuilder()
                   .SetUrls({GURL(base::StringPrintf(kTestUrlFormat, 1)),
                             GURL(base::StringPrintf(kTestUrlFormat, 2))})
-                  .SetIsLacros(false)
-                  .SetGenericBuilder(SavedDeskGenericAppBuilder().SetWindowId(
-                      kBrowserWindowId))
-                  .Build())
-          .Build();
-
-  EXPECT_THAT(
-      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
-      EqualsSpecifics(CreateBrowserTemplateExpectedValue(
-          kDefaultTemplateIndex, desk_template->created_time())));
-}
-
-TEST_F(DeskSyncBridgeTest, EnsureLacrosBrowserWindowsCanBeSavedProperly) {
-  CreateBridge();
-
-  // Uses a different method to instantiate the template that doesn't rely
-  // on the assumption that the template is instantiated from a proto, but
-  // rather is captured and saved for the first time.
-  std::unique_ptr<DeskTemplate> desk_template =
-      SavedDeskBuilder()
-          .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
-          .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(
-              SavedDeskBrowserBuilder()
-                  .SetUrls({GURL(base::StringPrintf(kTestUrlFormat, 1)),
-                            GURL(base::StringPrintf(kTestUrlFormat, 2))})
-                  .SetIsLacros(true)
                   .SetGenericBuilder(SavedDeskGenericAppBuilder().SetWindowId(
                       kBrowserWindowId))
                   .Build())
@@ -1043,30 +1016,6 @@ TEST_F(DeskSyncBridgeTest, EnsurePwaInAshChromeCanBeSavedProperly) {
           .AddAppWindow(
               SavedDeskBrowserBuilder()
                   .SetUrls({GURL(base::StringPrintf(kTestUrlFormat, 1))})
-                  .SetIsLacros(false)
-                  .SetIsApp(true)
-                  .SetGenericBuilder(
-                      SavedDeskGenericAppBuilder().SetWindowId(kPwaWindowId))
-                  .Build())
-          .Build();
-
-  EXPECT_THAT(
-      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
-      EqualsSpecifics(CreatePwaTemplateExpectedValue(
-          kDefaultTemplateIndex, desk_template->created_time())));
-}
-
-TEST_F(DeskSyncBridgeTest, EnsurePwaInLacrosChromeCanBeSavedProperly) {
-  CreateBridge();
-
-  std::unique_ptr<DeskTemplate> desk_template =
-      SavedDeskBuilder()
-          .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
-          .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(
-              SavedDeskBrowserBuilder()
-                  .SetUrls({GURL(base::StringPrintf(kTestUrlFormat, 1))})
-                  .SetIsLacros(true)
                   .SetIsApp(true)
                   .SetGenericBuilder(
                       SavedDeskGenericAppBuilder().SetWindowId(kPwaWindowId))

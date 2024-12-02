@@ -248,11 +248,6 @@ SavedDeskBrowserBuilder& SavedDeskBrowserBuilder::SetUrls(
   return *this;
 }
 
-SavedDeskBrowserBuilder& SavedDeskBrowserBuilder::SetIsLacros(bool is_lacros) {
-  is_lacros_ = is_lacros;
-  return *this;
-}
-
 SavedDeskBrowserBuilder& SavedDeskBrowserBuilder::SetLacrosProfileId(
     uint64_t lacros_profile_id) {
   lacros_profile_id_ = lacros_profile_id;

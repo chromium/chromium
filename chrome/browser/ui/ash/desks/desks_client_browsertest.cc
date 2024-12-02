@@ -2902,7 +2902,6 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
           .AddAppWindow(
               desks_storage::SavedDeskBrowserBuilder()
                   .SetIsApp(true)
-                  .SetIsLacros(false)
                   .SetUrls({GURL(kExampleUrl1)})
                   .SetGenericBuilder(desks_storage::SavedDeskGenericAppBuilder()
                                          .SetWindowId(kTestWindowId)
@@ -3058,7 +3057,6 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   // We should be in overview mode.
   ASSERT_TRUE(ash::Shell::Get()->overview_controller()->overview_session());
 }
-// TODO(crbug.com/40228006): Add some tests to launch LaCros browser.
 
 using SnapGroupDesksClientTest = DesksClientTest;
 
