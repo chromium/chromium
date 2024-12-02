@@ -229,22 +229,6 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 
-  std::optional<gfx::Rect> anchor;
-  if (button_->GetWidget()->IsFullscreen() && !button_->IsDrawn()) {
-    // Use a screen-coordinate anchor rect when the tabstrip's search button is
-    // not drawn, and potentially positioned offscreen, in fullscreen mode.
-    // Place the anchor similar to where the button would be in non-fullscreen
-    // mode.
-    const gfx::Rect bounds = button_->GetWidget()->GetWorkAreaBoundsInScreen();
-    const int offset = GetLayoutConstant(TAB_STRIP_PADDING);
-
-    const int x = tabs::GetTabSearchTrailingTabstrip(profile_)
-                      ? bounds.right() - offset
-                      : bounds.x() + offset;
-
-    anchor.emplace(gfx::Rect(x, bounds.y() + offset, 0, 0));
-  }
-
   bubble_created_time_ = base::TimeTicks::Now();
   webui_bubble_manager_->set_widget_initialization_callback(base::BindOnce(
       [](base::TimeTicks bubble_init_start_time) {
@@ -253,7 +237,8 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
             base::TimeTicks::Now() - bubble_init_start_time);
       },
       *bubble_created_time_));
-  webui_bubble_manager_->ShowBubble(anchor,
+
+  webui_bubble_manager_->ShowBubble(std::nullopt,
                                     tabs::GetTabSearchTrailingTabstrip(profile_)
                                         ? views::BubbleBorder::TOP_RIGHT
                                         : views::BubbleBorder::TOP_LEFT,
