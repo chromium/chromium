@@ -1202,7 +1202,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TcpFailAfterNeedsClientAuth) {
             HostPortPair::FromSchemeHostPort(kDestination));
 }
 
-TEST_F(HttpStreamPoolAttemptManagerTest, RequestCancelledBeforeAttemptSuccess) {
+TEST_F(HttpStreamPoolAttemptManagerTest, RequestCanceledBeforeAttemptSuccess) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   StreamRequester requester;
@@ -1221,6 +1221,29 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequestCancelledBeforeAttemptSuccess) {
 
   Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+}
+
+// Tests that canceling a limit ignoring request doesn't result in hitting a
+// CHECK. Ensures that a group is destroyed after the attempt failed.
+TEST_F(HttpStreamPoolAttemptManagerTest, LimitIgnoringRequestCanceled) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_load_flags(LOAD_IGNORE_LIMITS).RequestStream(pool());
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, ERR_FAILED));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  endpoint_request->add_endpoint(
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  requester.ResetRequest();
+  requester.ReleaseStream().reset();
+  FastForwardUntilNoTasksRemain();
+
+  EXPECT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
 }
 
 // This test simulates a situation where:

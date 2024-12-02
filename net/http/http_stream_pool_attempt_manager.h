@@ -325,6 +325,11 @@ class HttpStreamPool::AttemptManager
   // of the entry is moved to `notified_jobs_`.
   Job* ExtractFirstJobToNotify();
 
+  // Remove the pointeee of `job_pointer` from `jobs_`. May cancel in-flight
+  // attempts when there are no limit ignoring jobs after removing the job and
+  // in-flight attempts count is larger than the limit.
+  raw_ptr<Job> RemoveJobFromQueue(JobQueue::Pointer job_pointer);
+
   void OnInFlightAttemptComplete(InFlightAttempt* raw_attempt, int rv);
   void OnInFlightAttemptTcpHandshakeComplete(InFlightAttempt* raw_attempt,
                                              int rv);

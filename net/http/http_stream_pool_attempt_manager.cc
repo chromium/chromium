@@ -445,7 +445,7 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
     for (JobQueue::Pointer pointer = jobs_.FirstMax(); !pointer.is_null();
          pointer = jobs_.GetNextTowardsLastMin(pointer)) {
       if (pointer.value() == job) {
-        jobs_.Erase(pointer);
+        RemoveJobFromQueue(pointer);
         break;
       }
     }
@@ -1389,11 +1389,17 @@ HttpStreamPool::Job* HttpStreamPool::AttemptManager::ExtractFirstJobToNotify() {
   if (jobs_.empty()) {
     return nullptr;
   }
-  raw_ptr<Job> job = jobs_.Erase(jobs_.FirstMax());
+  raw_ptr<Job> job = RemoveJobFromQueue(jobs_.FirstMax());
   Job* job_raw_ptr = job.get();
+  notified_jobs_.emplace(std::move(job));
+  return job_raw_ptr;
+}
 
+raw_ptr<HttpStreamPool::Job> HttpStreamPool::AttemptManager::RemoveJobFromQueue(
+    JobQueue::Pointer job_pointer) {
   // If the extracted job is the last job that ignores the limit, cancel
   // in-flight attempts until the active stream count goes down to the limit.
+  raw_ptr<Job> job = jobs_.Erase(job_pointer);
   limit_ignoring_jobs_.erase(job);
   if (ShouldRespectLimits()) {
     while (group_->ActiveStreamSocketCount() >
@@ -1407,9 +1413,7 @@ HttpStreamPool::Job* HttpStreamPool::AttemptManager::ExtractFirstJobToNotify() {
       attempt.reset();
     }
   }
-
-  notified_jobs_.emplace(std::move(job));
-  return job_raw_ptr;
+  return job;
 }
 
 void HttpStreamPool::AttemptManager::SetJobPriority(Job* job,
