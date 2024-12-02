@@ -606,8 +606,10 @@ uint32_t PrerenderInProcessBrowserTest::GetRequestCount(const GURL& url) {
 void PrerenderInProcessBrowserTest::WaitForRequestCount(
     const GURL& url,
     uint32_t expected_count) {
-  if (GetRequestCount(url) == expected_count)
+  EXPECT_LE(GetRequestCount(url), expected_count);
+  if (GetRequestCount(url) >= expected_count) {
     return;
+  }
 
   base::RunLoop run_loop;
   {

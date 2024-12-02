@@ -6284,12 +6284,16 @@ data/cache_storage/storage_key/0430f1a484a0ea6d8de562488c5fbeec0111d16f/ba31f73b
 data/cache_storage/storage_key/0430f1a484a0ea6d8de562488c5fbeec0111d16f/index.txt
 data/cacheable-isolated.jpg
 data/cacheable-isolated.jpg.mock-http-headers
+data/cacheable.html
+data/cacheable.html.mock-http-headers
 data/cacheable.js
 data/cacheable.js.mock-http-headers
 data/cacheable.svg
 data/cacheable.svg.mock-http-headers
 data/cacheable2.js
 data/cacheable2.js.mock-http-headers
+data/cacheable_long.html
+data/cacheable_long.html.mock-http-headers
 data/changing_color.html
 data/click-nocontent-link.html
 data/click-noreferrer-links.html

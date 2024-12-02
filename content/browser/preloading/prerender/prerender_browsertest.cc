@@ -2449,11 +2449,11 @@ class PrerenderAndPrefetchBrowserTest
         disabled_features.push_back(features::kPrefetchReusable);
         break;
       case PrefetchReusableForTests::kEnabled:
-        // Set the limit to the size of `/find_in_long_page.html` - 1, to check
+        // Set the limit to the size of `/cacheable_long.html` - 1, to check
         // that exceeding the limit by 1 byte disallows reuse.
         enabled_features.push_back(
             {features::kPrefetchReusable,
-             {{features::kPrefetchReusableBodySizeLimit.name, "112262"}}});
+             {{features::kPrefetchReusableBodySizeLimit.name, "102118"}}});
         break;
     }
 
@@ -2473,10 +2473,9 @@ class PrerenderAndPrefetchBrowserTest
 IN_PROC_BROWSER_TEST_P(PrerenderAndPrefetchBrowserTest,
                        SpeculationRulesPrefetchThenPrerender) {
   const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl =
-      std::get<1>(GetParam()) == BodySize::kSmall
-          ? GetUrl("/simple_page.html?prerender")
-          : GetUrl("/find_in_long_page.html?prerender");
+  const GURL kPrerenderingUrl = std::get<1>(GetParam()) == BodySize::kSmall
+                                    ? GetUrl("/cacheable.html?prerender")
+                                    : GetUrl("/cacheable_long.html?prerender");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -2558,13 +2557,13 @@ IN_PROC_BROWSER_TEST_P(PrerenderAndPrefetchBrowserTest,
 
   switch (std::get<1>(GetParam())) {
     case BodySize::kSmall:
-      EXPECT_EQ(GetBodyTextContent(), "Basic html test.");
+      EXPECT_EQ(GetBodyTextContent(), "This page is cacheable");
       break;
 
     case BodySize::kLarge:
       //  `document.body.textContent.trim().length` for
       //  `/find_in_long_page.html`
-      EXPECT_EQ(GetBodyTextContent().size(), 102076u);
+      EXPECT_EQ(GetBodyTextContent().size(), 102119u);
       break;
   }
 }

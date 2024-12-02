@@ -191,8 +191,9 @@ std::unique_ptr<HttpResponse> HandleEchoTitle(const HttpRequest& request) {
 // /echoall?QUERY
 // Responds with the list of QUERY and the request headers.
 //
-// Alternative form:
-// /echoall/nocache?QUERY prevents caching of the response.
+// Alternative forms:
+// - /echoall/nocache?QUERY prevents caching of the response.
+// - /echoall/cache?QUERY caches the response using a max-age.
 std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
   auto http_response = std::make_unique<BasicHttpResponse>();
 
@@ -224,6 +225,8 @@ std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
   if (request.GetURL().path_piece().ends_with("/nocache")) {
     http_response->AddCustomHeader("Cache-Control",
                                    "no-cache, no-store, must-revalidate");
+  } else if (request.GetURL().path_piece().ends_with("/cache")) {
+    http_response->AddCustomHeader("Cache-Control", "max-age=3600");
   }
 
   return http_response;

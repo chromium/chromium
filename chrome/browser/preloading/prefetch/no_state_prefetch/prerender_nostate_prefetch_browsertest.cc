@@ -607,9 +607,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchBigger) {
 
   WaitForRequestCount(src_server()->GetURL(kPrefetchPageBigger), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchJpeg), 1);
-  // The |kPrefetchPng| is requested twice because the |kPrefetchPngRedirect|
-  // redirects to it.
-  WaitForRequestCount(src_server()->GetURL(kPrefetchPng), 2);
+  // The |kPrefetchPng| is requested only once, even though
+  // |kPrefetchPngRedirect| redirects to it, because it is cacheable.
+  WaitForRequestCount(src_server()->GetURL(kPrefetchPng), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchPng2), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchPngRedirect), 1);
 }
@@ -978,7 +978,7 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserTestHttpCacheDefaultAndDoubleKeyed,
                        PrefetchCookieCrossDomainSameSiteStrict) {
   UseHttpsSrcServer();
   GURL cross_domain_url =
-      src_server()->GetURL(test_utils::kSecondaryDomain, "/echoall");
+      src_server()->GetURL(test_utils::kSecondaryDomain, "/echoall/cache");
 
   EXPECT_TRUE(SetCookie(current_browser()->profile(), cross_domain_url,
                         "cookie_A=A; SameSite=Strict;"));
@@ -1028,7 +1028,7 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserTestHttpCacheDefaultAndDoubleKeyed,
 IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserTestHttpCacheDefaultAndDoubleKeyed,
                        PrefetchCookieSameDomainSameSiteStrict) {
   UseHttpsSrcServer();
-  GURL same_domain_url = src_server()->GetURL("/echoall");
+  GURL same_domain_url = src_server()->GetURL("/echoall/cache");
 
   EXPECT_TRUE(SetCookie(current_browser()->profile(), same_domain_url,
                         "cookie_A=A; SameSite=Strict;"));
