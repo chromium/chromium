@@ -559,7 +559,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   const cc::PaintFlags::FilterQuality filter_quality = FilterQuality();
   if (use_shared_image) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        resource_info, filter_quality,
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), filter_quality,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(),
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
