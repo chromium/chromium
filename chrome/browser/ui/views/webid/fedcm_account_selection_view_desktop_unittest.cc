@@ -217,7 +217,6 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   blink::mojom::RpContext GetRpContext() { return rp_context_; }
   size_t num_dialogs_{0u};
 
-  MOCK_METHOD(void, CloseWidgetNoNotify, (), (override));
   bool can_fit_in_web_contents_{true};
   bool dialog_position_updated_{false};
   TestAccountSelectionView* GetTestView() {
@@ -1951,11 +1950,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowLoadingDialog();
 
-  EXPECT_CALL(*controller, CloseWidgetNoNotify).Times(0);
   accounts_ = {
       CreateAccount(idp_data_, LoginState::kSignIn, LoginState::kSignIn)};
   Show(*controller, accounts_, SignInMode::kAuto,
        blink::mojom::RpMode::kActive);
+  // Did not recreate the dialog.
+  EXPECT_EQ(1u, controller->num_dialogs_);
 
   // Verifying UI is not shown.
   EXPECT_EQ(TestAccountSelectionView::SheetType::kLoading,
@@ -2234,11 +2234,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
 
-  EXPECT_CALL(*controller, CloseWidgetNoNotify).Times(0);
   controller->ShowErrorDialog(
       kTopFrameEtldPlusOne, kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
       blink::mojom::RpMode::kActive, content::IdentityProviderMetadata(),
       /*error=*/std::nullopt);
+
+  // Did not recreate the dialog.
+  EXPECT_EQ(1u, controller->num_dialogs_);
 }
 
 // Tests that for active modes, going from a loading dialog to an accounts
@@ -2249,9 +2251,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowLoadingDialog();
 
-  EXPECT_CALL(*controller, CloseWidgetNoNotify).Times(0);
   Show(*controller, accounts_, SignInMode::kExplicit,
        blink::mojom::RpMode::kActive);
+  // Did not recreate the dialog.
+  EXPECT_EQ(1u, controller->num_dialogs_);
 }
 
 // Tests that resizing web contents would update the dialog visibility depending

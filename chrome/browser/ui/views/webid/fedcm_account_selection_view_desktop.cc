@@ -203,7 +203,7 @@ bool FedCmAccountSelectionView::Show(
   // and other parts of the header.
   if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    CloseWidgetNoNotify();
+    Close(/*notify_delegate=*/false);
   }
 
   bool create_view = !account_selection_view_;
@@ -404,7 +404,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   // title and other parts of the header.
   if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    CloseWidgetNoNotify();
+    Close(/*notify_delegate=*/false);
   }
 
   bool create_view = !account_selection_view_;
@@ -459,7 +459,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
   // and other parts of the header.
   if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    CloseWidgetNoNotify();
+    Close(/*notify_delegate=*/false);
   }
 
   bool create_view = !account_selection_view_;
@@ -1086,16 +1086,6 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateDialogView(
                                           tab_->GetContents(), GetAnchorView(),
                                           GetURLLoaderFactory(), this);
   }
-}
-
-void FedCmAccountSelectionView::CloseWidgetNoNotify() {
-  if (!account_selection_view_) {
-    return;
-  }
-
-  // Never notify the delegate when this method is called.
-  CloseWidget(/*notify_delegate=*/false,
-              views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
 bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {

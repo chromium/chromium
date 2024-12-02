@@ -399,10 +399,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Returns the SheetType to be used for metrics reporting.
   AccountSelectionView::SheetType GetSheetType();
 
-  // Closes widget if it exists and never notifies.
-  // Virtual for testing purposes.
-  virtual void CloseWidgetNoNotify();
-
   // Returns whether an IDP sign-in pop-up window is currently open.
   bool IsIdpSigninPopupOpen();
 
