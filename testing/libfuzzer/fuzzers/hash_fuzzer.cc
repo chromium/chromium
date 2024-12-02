@@ -15,7 +15,7 @@
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::PersistentHash(base::make_span(data, size));
-  base::FastHash(base::make_span(data, size));
+  base::PersistentHash(base::span(data, size));
+  base::FastHash(base::span(data, size));
   return 0;
 }
