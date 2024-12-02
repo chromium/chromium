@@ -241,11 +241,13 @@
     {
       name: "DeferredFetch",
       permissions_policy_name: "deferred-fetch",
+      feature_default: "EnableForSelf",
       depends_on: ["FetchLaterAPI"],
     },
     {
       name: "DeferredFetchMinimal",
       permissions_policy_name: "deferred-fetch-minimal",
+      feature_default: "EnableForAll",
       depends_on: ["FetchLaterAPI"],
     },
     {
