@@ -695,6 +695,8 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/delegates/interpreter_utils.cc",
     "src/tensorflow/lite/delegates/interpreter_utils.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
+    "src/tensorflow/lite/delegates/serialization.cc",
+    "src/tensorflow/lite/delegates/serialization.h",
     "src/tensorflow/lite/delegates/utils.cc",
     "src/tensorflow/lite/delegates/utils.h",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
@@ -768,8 +770,6 @@ tflite_static_library("tflite") {
       "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.cc",
       "src/tensorflow/lite/delegates/nnapi/quant_lstm_sup.cc",
       "src/tensorflow/lite/delegates/nnapi/quant_lstm_sup.h",
-      "src/tensorflow/lite/delegates/serialization.cc",
-      "src/tensorflow/lite/delegates/serialization.h",
       "src/tensorflow/lite/nnapi/nnapi_implementation.cc",
     ]
   } else {
