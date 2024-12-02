@@ -206,7 +206,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   PageLoadMetricsBrowserTest& operator=(const PageLoadMetricsBrowserTest&) =
       delete;
 
-  ~PageLoadMetricsBrowserTest() override {}
+  ~PageLoadMetricsBrowserTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -2446,7 +2446,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, LoadingMetrics) {
 class SessionRestorePageLoadMetricsBrowserTest
     : public PageLoadMetricsBrowserTest {
  public:
-  SessionRestorePageLoadMetricsBrowserTest() {}
+  SessionRestorePageLoadMetricsBrowserTest() = default;
 
   SessionRestorePageLoadMetricsBrowserTest(
       const SessionRestorePageLoadMetricsBrowserTest&) = delete;

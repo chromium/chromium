@@ -50,7 +50,7 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
   SecurityStyleTestObserver& operator=(const SecurityStyleTestObserver&) =
       delete;
 
-  ~SecurityStyleTestObserver() override {}
+  ~SecurityStyleTestObserver() override = default;
 
   void DidChangeVisibleSecurityState() override { run_loop_.Quit(); }
 
@@ -62,14 +62,14 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
 
 class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  SecurityStatePageLoadMetricsBrowserTest() {}
+  SecurityStatePageLoadMetricsBrowserTest() = default;
 
   SecurityStatePageLoadMetricsBrowserTest(
       const SecurityStatePageLoadMetricsBrowserTest&) = delete;
   SecurityStatePageLoadMetricsBrowserTest& operator=(
       const SecurityStatePageLoadMetricsBrowserTest&) = delete;
 
-  ~SecurityStatePageLoadMetricsBrowserTest() override {}
+  ~SecurityStatePageLoadMetricsBrowserTest() override = default;
 
   void PreRunTestOnMainThread() override {
     InProcessBrowserTest::PreRunTestOnMainThread();

@@ -112,9 +112,9 @@ const std::map<uint16_t, internal::PortType>& GetLocalhostPortCategories() {
 }  // namespace
 
 LocalNetworkRequestsPageLoadMetricsObserver::
-    LocalNetworkRequestsPageLoadMetricsObserver() {}
+    LocalNetworkRequestsPageLoadMetricsObserver() = default;
 LocalNetworkRequestsPageLoadMetricsObserver::
-    ~LocalNetworkRequestsPageLoadMetricsObserver() {}
+    ~LocalNetworkRequestsPageLoadMetricsObserver() = default;
 
 const char* LocalNetworkRequestsPageLoadMetricsObserver::GetObserverName()
     const {

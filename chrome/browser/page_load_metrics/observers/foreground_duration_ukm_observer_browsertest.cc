@@ -36,7 +36,7 @@ class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
   ForegroundDurationUKMObserverBrowserTest& operator=(
       const ForegroundDurationUKMObserverBrowserTest&) = delete;
 
-  ~ForegroundDurationUKMObserverBrowserTest() override {}
+  ~ForegroundDurationUKMObserverBrowserTest() override = default;
 
   content::test::PrerenderTestHelper& prerender_helper() {
     return prerender_helper_;

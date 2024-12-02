@@ -38,7 +38,7 @@ class AmpPageLoadMetricsBrowserTest : public InProcessBrowserTest,
   AmpPageLoadMetricsBrowserTest& operator=(
       const AmpPageLoadMetricsBrowserTest&) = delete;
 
-  ~AmpPageLoadMetricsBrowserTest() override {}
+  ~AmpPageLoadMetricsBrowserTest() override = default;
 
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());

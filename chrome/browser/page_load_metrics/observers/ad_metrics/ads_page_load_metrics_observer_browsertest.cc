@@ -112,7 +112,7 @@ class AdsPageLoadMetricsObserverBrowserTest
   AdsPageLoadMetricsObserverBrowserTest& operator=(
       const AdsPageLoadMetricsObserverBrowserTest&) = delete;
 
-  ~AdsPageLoadMetricsObserverBrowserTest() override {}
+  ~AdsPageLoadMetricsObserverBrowserTest() override = default;
 
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
   CreatePageLoadMetricsTestWaiter() {
@@ -1520,7 +1520,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
     }
   }
 
-  ~AdsPageLoadMetricsObserverResourceBrowserTest() override {}
+  ~AdsPageLoadMetricsObserverResourceBrowserTest() override = default;
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory(

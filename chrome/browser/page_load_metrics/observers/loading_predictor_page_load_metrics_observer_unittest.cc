@@ -30,7 +30,7 @@ class MockResourcePrefetchPredictor : public ResourcePrefetchPredictor {
   MOCK_CONST_METHOD1(IsUrlPrefetchable, bool(const GURL& main_frame_url));
   MOCK_CONST_METHOD1(IsUrlPreconnectable, bool(const GURL& main_frame_url));
 
-  ~MockResourcePrefetchPredictor() override {}
+  ~MockResourcePrefetchPredictor() override = default;
 };
 
 class LoadingPredictorPageLoadMetricsObserverTest

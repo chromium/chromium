@@ -152,7 +152,8 @@ enum class ServiceWorkerResourceLoadStatus {
 
 }  // namespace
 
-ServiceWorkerPageLoadMetricsObserver::ServiceWorkerPageLoadMetricsObserver() {}
+ServiceWorkerPageLoadMetricsObserver::ServiceWorkerPageLoadMetricsObserver() =
+    default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ServiceWorkerPageLoadMetricsObserver::OnFencedFramesStart(

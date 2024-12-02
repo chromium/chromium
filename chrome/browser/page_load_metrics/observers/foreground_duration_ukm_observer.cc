@@ -16,7 +16,7 @@
 ForegroundDurationUKMObserver::ForegroundDurationUKMObserver()
     : last_page_input_timing_(page_load_metrics::mojom::InputTiming::New()) {}
 
-ForegroundDurationUKMObserver::~ForegroundDurationUKMObserver() {}
+ForegroundDurationUKMObserver::~ForegroundDurationUKMObserver() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ForegroundDurationUKMObserver::OnStart(
