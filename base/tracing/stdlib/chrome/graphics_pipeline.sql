@@ -29,7 +29,7 @@ CREATE PERFETTO TABLE chrome_graphics_pipeline_surface_frame_steps(
   -- Utid of the thread where this slice exists.
   utid LONG,
   -- Start time of the parent Chrome scheduler task (if any) of this step.
-  task_start_time_ts INT)
+  task_start_time_ts TIMESTAMP)
 AS
 SELECT
   id,
@@ -65,7 +65,7 @@ CREATE PERFETTO TABLE chrome_graphics_pipeline_display_frame_steps(
   -- Utid of the thread where this slice exists.
   utid LONG,
   -- Start time of the parent Chrome scheduler task (if any) of this step.
-  task_start_time_ts INT)
+  task_start_time_ts TIMESTAMP)
 AS
 SELECT
   id,
