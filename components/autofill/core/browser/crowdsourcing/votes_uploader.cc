@@ -62,11 +62,30 @@ std::map<std::string, std::string> FormFillingStatsToSurveyStringData(
 
 }  // namespace
 
+struct VotesUploader::QueuedVote {
+  FormSignature form_signature;
+  base::OnceClosure callback;
+};
+
 VotesUploader::VotesUploader(BrowserAutofillManager* owner) : owner_(*owner) {}
 VotesUploader::~VotesUploader() = default;
 
 AutofillClient& VotesUploader::client() {
   return owner_->client();
+}
+
+void VotesUploader::WipePendingVotesForForm(FormSignature form_signature) {
+  std::erase_if(queued_vote_uploads_, [form_signature](const QueuedVote& vote) {
+    return vote.form_signature == form_signature;
+  });
+}
+
+void VotesUploader::FlushPendingVotes() {
+  std::list<QueuedVote> queued_vote_uploads =
+      std::exchange(queued_vote_uploads_, {});
+  for (QueuedVote& vote : queued_vote_uploads) {
+    std::move(vote.callback).Run();
+  }
 }
 
 bool VotesUploader::MaybeStartVoteUploadProcess(
@@ -133,8 +152,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // override it with better data.
   if (!observed_submission) {
     call_after_determine_field_types = base::BindOnce(
-        &VotesUploader::StoreUploadVotesAndLogQualityCallback,
-        weak_ptr_factory_.GetWeakPtr(), raw_form->form_signature(),
+        &VotesUploader::QueueVote, weak_ptr_factory_.GetWeakPtr(),
+        raw_form->form_signature(),
         std::move(call_after_determine_field_types));
   }
 
@@ -160,11 +179,10 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   return true;
 }
 
-void VotesUploader::StoreUploadVotesAndLogQualityCallback(
-    FormSignature form_signature,
-    base::OnceClosure callback) {
+void VotesUploader::QueueVote(FormSignature form_signature,
+                              base::OnceClosure callback) {
   // Remove entries with the same FormSignature to replace them.
-  WipeLogQualityAndVotesUploadCallback(form_signature);
+  WipePendingVotesForForm(form_signature);
 
   // Entries in queued_vote_uploads_ are submitted after navigations or form
   // submissions. To reduce the risk of collecting too much data that is not
@@ -173,7 +191,7 @@ void VotesUploader::StoreUploadVotesAndLogQualityCallback(
   constexpr int kMaxEntriesInQueue = 10;
   while (queued_vote_uploads_.size() >= kMaxEntriesInQueue) {
     base::OnceCallback oldest_callback =
-        std::move(queued_vote_uploads_.back().second);
+        std::move(queued_vote_uploads_.back().callback);
     queued_vote_uploads_.pop_back();
     std::move(oldest_callback).Run();
   }
@@ -181,33 +199,17 @@ void VotesUploader::StoreUploadVotesAndLogQualityCallback(
   queued_vote_uploads_.emplace_front(form_signature, std::move(callback));
 }
 
-void VotesUploader::WipeLogQualityAndVotesUploadCallback(
-    FormSignature form_signature) {
-  std::erase_if(queued_vote_uploads_, [form_signature](const auto& entry) {
-    return entry.first == form_signature;
-  });
-}
-
-void VotesUploader::FlushPendingLogQualityAndVotesUploadCallbacks() {
-  std::list<std::pair<FormSignature, base::OnceClosure>> queued_vote_uploads =
-      std::exchange(queued_vote_uploads_, {});
-  for (auto& i : queued_vote_uploads) {
-    std::move(i.second).Run();
-  }
-}
-
 // We explicitly pass in all the time stamps of interest, as the cached ones
 // might get reset before this method executes.
-void VotesUploader::UploadVotesAndLogQuality(
-    std::unique_ptr<FormStructure> submitted_form,
-    base::TimeTicks interaction_time,
-    base::TimeTicks submission_time,
-    bool observed_submission,
-    ukm::SourceId source_id) {
+void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
+                               base::TimeTicks interaction_time,
+                               base::TimeTicks submission_time,
+                               bool observed_submission,
+                               ukm::SourceId source_id) {
   // If the form is submitted, we don't need to send pending votes from blur
   // (un-focus) events.
   if (observed_submission) {
-    WipeLogQualityAndVotesUploadCallback(submitted_form->form_signature());
+    WipePendingVotesForForm(submitted_form->form_signature());
   }
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFields() ||
@@ -221,7 +223,7 @@ void VotesUploader::UploadVotesAndLogQuality(
     if (observed_submission) {
       // Ensure that callbacks for blur votes get sent as well here because
       // we are not sure whether a full navigation with a Reset() call follows.
-      FlushPendingLogQualityAndVotesUploadCallbacks();
+      FlushPendingVotes();
     }
   }
   if (!submitted_form->ShouldBeUploaded()) {
@@ -302,8 +304,8 @@ void VotesUploader::OnSubmissionFieldTypesDetermined(
         FillingProduct::kCreditCard,
         FormFillingStatsToSurveyStringData(credit_card_filling_stats));
   }
-  UploadVotesAndLogQuality(std::move(submitted_form), interaction_time,
-                           submission_time, observed_submission, source_id);
+  UploadVote(std::move(submitted_form), interaction_time, submission_time,
+             observed_submission, source_id);
 }
 
 }  // namespace autofill

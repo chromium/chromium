@@ -43,15 +43,14 @@ class TestVotesUploader : public VotesUploader {
       base::TimeTicks initial_interaction_timestamp,
       ukm::SourceId ukm_source_id) override;
 
-  void StoreUploadVotesAndLogQualityCallback(
-      FormSignature form_signature,
-      base::OnceClosure callback) override;
+  void QueueVote(FormSignature form_signature,
+                 base::OnceClosure callback) override;
 
-  void UploadVotesAndLogQuality(std::unique_ptr<FormStructure> submitted_form,
-                                base::TimeTicks interaction_time,
-                                base::TimeTicks submission_time,
-                                bool observed_submission,
-                                const ukm::SourceId source_id) override;
+  void UploadVote(std::unique_ptr<FormStructure> submitted_form,
+                  base::TimeTicks interaction_time,
+                  base::TimeTicks submission_time,
+                  bool observed_submission,
+                  const ukm::SourceId source_id) override;
 
   const std::string& submitted_form_signature() {
     return submitted_form_signature_;
