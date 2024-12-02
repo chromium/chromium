@@ -3302,6 +3302,7 @@ component("ash") {
     "//components/variations",
     "//components/version_info",
     "//components/version_info:channel",
+    "//google_apis",
     "//google_apis/calendar",
     "//google_apis/common",
     "//google_apis/people",

@@ -29,8 +29,7 @@ SystemInfo::Builder& SystemInfo::Builder::SetBoardName(
   return *this;
 }
 
-SystemInfo::Builder& SystemInfo::Builder::SetGaiaId(
-    const std::string& gaia_id) {
+SystemInfo::Builder& SystemInfo::Builder::SetGaiaId(const GaiaId& gaia_id) {
   gaia_id_ = gaia_id;
   return *this;
 }
@@ -59,7 +58,7 @@ SystemInfo::~SystemInfo() = default;
 
 SystemInfo::SystemInfo(const std::string& device_name,
                        const std::string& board_name,
-                       const std::string& gaia_id,
+                       const GaiaId& gaia_id,
                        const std::string& device_type,
                        const std::string& os_version,
                        const std::string& channel)

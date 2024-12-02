@@ -49,7 +49,7 @@ class AmbientClientImpl : public ash::AmbientClient {
  private:
   void OnGetAccessToken(GetAccessTokenCallback callback,
                         base::UnguessableToken fetcher_id,
-                        const std::string& gaia_id,
+                        const GaiaId& gaia_id,
                         GoogleServiceAuthError error,
                         signin::AccessTokenInfo access_token_info);
 

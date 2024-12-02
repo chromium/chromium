@@ -516,7 +516,7 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
     bool show_pair_personal_portraits,
     const gfx::Size& screen_size,
     OnScreenUpdateInfoFetchedCallback callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
     LOG(ERROR) << "Failed to fetch access token for ScreenUpdate";
@@ -571,7 +571,7 @@ void AmbientBackendControllerImpl::OnScreenUpdateInfoFetched(
 
 void AmbientBackendControllerImpl::StartToGetSettings(
     GetSettingsCallback callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
     std::move(callback).Run(/*topic_source=*/std::nullopt);
@@ -616,7 +616,7 @@ void AmbientBackendControllerImpl::OnGetSettings(
 void AmbientBackendControllerImpl::StartToUpdateSettings(
     const AmbientSettings& settings,
     UpdateSettingsCallback callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
     std::move(callback).Run(/*success=*/false, settings);
@@ -666,7 +666,7 @@ void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
     int num_albums,
     const std::string& resume_token,
     OnPersonalAlbumsFetchedCallback callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
     DVLOG(2) << "Failed to fetch access token";

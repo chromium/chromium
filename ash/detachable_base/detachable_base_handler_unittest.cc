@@ -19,6 +19,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -34,7 +35,7 @@ UserInfo CreateUser(const std::string& email,
                     const std::string& gaia_id,
                     UserType user_type) {
   UserInfo user;
-  user.account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+  user.account_id = AccountId::FromUserEmailGaiaId(email, GaiaId(gaia_id));
   user.is_ephemeral = user_type == UserType::kEphemeral;
   return user;
 }
