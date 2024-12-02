@@ -23,10 +23,9 @@ Vector<uint8_t> CreateTestSerializedDataWithMarker(uint32_t marker) {
   Vector<uint8_t> serialized_data;
   serialized_data.ReserveInitialCapacity(sizeof(CachedMetadataHeader) +
                                          sizeof(kTestData));
-  serialized_data.AppendSpan(base::as_bytes(base::span_from_ref(marker)));
-  serialized_data.AppendSpan(
-      base::as_bytes(base::span_from_ref(kTestDataTypeId)));
-  serialized_data.AppendSpan(base::as_bytes(base::span_from_ref(kTestTag)));
+  serialized_data.AppendSpan(base::byte_span_from_ref(marker));
+  serialized_data.AppendSpan(base::byte_span_from_ref(kTestDataTypeId));
+  serialized_data.AppendSpan(base::byte_span_from_ref(kTestTag));
   serialized_data.AppendSpan(base::span(kTestData));
   return serialized_data;
 }

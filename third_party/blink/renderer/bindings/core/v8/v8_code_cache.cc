@@ -619,7 +619,7 @@ void V8CodeCache::SetCacheTimeStamp(CodeCacheHost* code_cache_host,
                                      CachedMetadataHandler::kClearLocally);
   cache_handler->SetCachedMetadata(code_cache_host,
                                    TagForTimeStamp(cache_handler),
-                                   base::as_bytes(base::span_from_ref(now_ms)));
+                                   base::byte_span_from_ref(now_ms));
 }
 
 uint64_t V8CodeCache::GetTimestamp() {

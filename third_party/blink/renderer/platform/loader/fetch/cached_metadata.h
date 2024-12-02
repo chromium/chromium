@@ -78,11 +78,11 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
                                   estimated_body_size);
     uint32_t marker = CachedMetadataHandler::kSingleEntryWithTag;
     CHECK_EQ(vector.size(), offsetof(CachedMetadataHeader, marker));
-    vector.AppendSpan(base::as_bytes(base::span_from_ref(marker)));
+    vector.AppendSpan(base::byte_span_from_ref(marker));
     CHECK_EQ(vector.size(), offsetof(CachedMetadataHeader, type));
-    vector.AppendSpan(base::as_bytes(base::span_from_ref(data_type_id)));
+    vector.AppendSpan(base::byte_span_from_ref(data_type_id));
     CHECK_EQ(vector.size(), offsetof(CachedMetadataHeader, tag));
-    vector.AppendSpan(base::as_bytes(base::span_from_ref(tag)));
+    vector.AppendSpan(base::byte_span_from_ref(tag));
     CHECK_EQ(vector.size(), sizeof(CachedMetadataHeader));
     return vector;
   }

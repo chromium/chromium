@@ -949,7 +949,7 @@ mojo_base::BigBuffer CreateDummyTimeStampData() {
   uint64_t now_ms = 11111;
   cache_handler->SetCachedMetadata(
       /*code_cache_host=*/nullptr, data_type_id,
-      base::as_bytes(base::span_from_ref(now_ms)));
+      base::byte_span_from_ref(now_ms));
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(data_type_id);
   mojo_base::BigBuffer cached_metadata_buffer =
