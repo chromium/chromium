@@ -299,17 +299,6 @@ class NET_EXPORT CookieInclusionStatus {
   // Makes a status that says include and should not warn.
   CookieInclusionStatus();
 
-  // Make a status that contains the given exclusion reason.
-  explicit CookieInclusionStatus(ExclusionReason reason);
-  // Makes a status that contains the given exclusion reason and warning.
-  // TODO(shuuran): only called in tests, use `MakeFromReasonsForTesting`
-  // instead.
-  CookieInclusionStatus(ExclusionReason reason, WarningReason warning);
-  // Makes a status that contains the given warning.
-  // TODO(shuuran): only called in tests, use `MakeFromReasonsForTesting`
-  // instead.
-  explicit CookieInclusionStatus(WarningReason warning);
-
   // Copyable.
   CookieInclusionStatus(const CookieInclusionStatus& other);
   CookieInclusionStatus& operator=(const CookieInclusionStatus& other);

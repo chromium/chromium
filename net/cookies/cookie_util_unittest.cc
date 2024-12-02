@@ -1814,8 +1814,9 @@ INSTANTIATE_TEST_SUITE_P(/* no label */,
                                             ::testing::Bool()));
 
 TEST(CookieUtilTest, IsCookieAccessResultInclude) {
-  EXPECT_FALSE(cookie_util::IsCookieAccessResultInclude(CookieAccessResult(
-      CookieInclusionStatus(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR))));
+  EXPECT_FALSE(cookie_util::IsCookieAccessResultInclude(
+      CookieAccessResult(CookieInclusionStatus::MakeFromReasonsForTesting(
+          /*exclusions=*/{CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR}))));
 
   EXPECT_TRUE(cookie_util::IsCookieAccessResultInclude(CookieAccessResult()));
 }

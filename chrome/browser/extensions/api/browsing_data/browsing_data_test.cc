@@ -107,8 +107,10 @@ bool SetGaiaCookieForProfile(Profile* profile) {
       *cookie, google_url, net::CookieOptions::MakeAllInclusive(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           set_cookie_future.GetCallback(),
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR))));
+          net::CookieAccessResult(
+              net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                  /*exclusions=*/{
+                      net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR}))));
   return set_cookie_future.Get().status.IsInclude();
 }
 #endif

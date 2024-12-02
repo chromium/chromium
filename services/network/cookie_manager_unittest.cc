@@ -186,8 +186,6 @@ class SynchronousCookieManager {
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     if (modify_http_only)
       options.set_include_httponly();
-    net::CookieInclusionStatus result_out(
-        net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
     base::test::TestFuture<net::CookieAccessResult> future;
     cookie_service_->SetCanonicalCookie(cookie, source_url, options,
                                         future.GetCallback());

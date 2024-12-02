@@ -643,8 +643,9 @@ IN_PROC_BROWSER_TEST_F(
       content::CookieAccessDetails::Type::kRead, "Cookie", "1",
       net::CookieAccessResult(
           net::CookieEffectiveSameSite::NO_RESTRICTION,
-          net::CookieInclusionStatus(
-              net::CookieInclusionStatus::WARN_PORT_MISMATCH),
+          net::CookieInclusionStatus::MakeFromReasonsForTesting(
+              /*exclusions=*/{},
+              /*warnings=*/{net::CookieInclusionStatus::WARN_PORT_MISMATCH}),
           net::CookieAccessSemantics::NONLEGACY, true)};
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
               testing::ElementsAre(

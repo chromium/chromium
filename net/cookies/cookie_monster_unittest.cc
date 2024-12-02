@@ -5588,9 +5588,9 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
       // Cookie set from a secure URL with SameSite=None but not specifying
       // Secure is rejected.
       {true, "A=B; SameSite=None",
-       CookieInclusionStatus(
-           CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE,
-           CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE)},
+       CookieInclusionStatus::MakeFromReasonsForTesting(
+           {CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE},
+           {CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE})},
       // Cookie set from an insecure URL which defaults into LAX_MODE is not
       // rejected.
       {false, "A=B",  // recently-set session cookie.
