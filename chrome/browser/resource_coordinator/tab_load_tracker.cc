@@ -243,8 +243,8 @@ void TabLoadTracker::TransitionState(TabMap::iterator it,
     observer.OnLoadingStateChange(web_contents, previous_state, loading_state);
 }
 
-TabLoadTracker::Observer::Observer() {}
+TabLoadTracker::Observer::Observer() = default;
 
-TabLoadTracker::Observer::~Observer() {}
+TabLoadTracker::Observer::~Observer() = default;
 
 }  // namespace resource_coordinator

@@ -43,7 +43,7 @@ class TestDelegate : public SessionRestorePolicy::Delegate {
   TestDelegate(const TestDelegate&) = delete;
   TestDelegate& operator=(const TestDelegate&) = delete;
 
-  ~TestDelegate() override {}
+  ~TestDelegate() override = default;
 
   size_t GetNumberOfCores() const override { return number_of_cores_; }
   size_t GetFreeMemoryMiB() const override { return free_memory_mb_; }
@@ -112,7 +112,7 @@ class TestSessionRestorePolicy : public SessionRestorePolicy {
   TestSessionRestorePolicy(const TestSessionRestorePolicy&) = delete;
   TestSessionRestorePolicy& operator=(const TestSessionRestorePolicy&) = delete;
 
-  ~TestSessionRestorePolicy() override {}
+  ~TestSessionRestorePolicy() override = default;
 
   using RescoreTabCallback =
       base::RepeatingCallback<bool(content::WebContents*, TabData*)>;
@@ -148,7 +148,7 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
   SessionRestorePolicyTest(const SessionRestorePolicyTest&) = delete;
   SessionRestorePolicyTest& operator=(const SessionRestorePolicyTest&) = delete;
 
-  ~SessionRestorePolicyTest() override {}
+  ~SessionRestorePolicyTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
