@@ -244,16 +244,6 @@ const base::FeatureParam<double>
         &kFledgeBidderWorkletThreadPool,
         "bidder_worklet_thread_pool_size_logarithmic_scaling_factor", 2};
 
-// This is a kill switch for focusing the RenderWidgetHostViewAndroid on
-// ActionDown on every touch sequence if not focused already, please see
-// b/340824076. We are adding this to confirm the hypothesis that root view,
-// RWHVA, is always focused.
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kFocusRenderWidgetHostViewAndroidOnActionDown,
-             "FocusRenderWidgetHostViewAndroidOnActionDown",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.

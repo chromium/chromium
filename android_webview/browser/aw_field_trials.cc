@@ -224,6 +224,13 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation);
 
+  // Disabling this feature for WebView, since it can switch focus when scrolled
+  // in cases with multiple views which can trigger HTML focus changes that
+  // aren't intended. See crbug.com/378779896, crbug.com/373672168 for more
+  // details.
+  aw_feature_overrides.DisableFeature(
+      ::features::kFocusRenderWidgetHostViewAndroidOnActionDown);
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDebugBsa)) {
     // Feature parameters can only be set via a field trial.
     const char kTrialName[] = "StudyDebugBsa";

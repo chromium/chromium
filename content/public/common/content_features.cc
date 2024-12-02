@@ -510,6 +510,17 @@ BASE_FEATURE(kFencedFramesEnforceFocus,
              "FencedFramesEnforceFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This is a kill switch for focusing the RenderWidgetHostViewAndroid on
+// ActionDown on every touch sequence if not focused already, please see
+// crbug.com/381820236. The root view, RWHVA, is always focused in Chrome,
+// however this might not be true on WebView, see crbug.com/378779896 for more
+// details.
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kFocusRenderWidgetHostViewAndroidOnActionDown,
+             "FocusRenderWidgetHostViewAndroidOnActionDown",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Whether a memory pressure signal in a renderer should be forwarded to Blink
 // isolates. Forwarding the signal triggers a GC (critical) or starts
 // incremental marking (moderate), see `v8::Heap::CheckMemoryPressure`.
