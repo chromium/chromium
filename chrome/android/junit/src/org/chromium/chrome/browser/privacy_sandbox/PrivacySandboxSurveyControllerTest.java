@@ -108,6 +108,20 @@ public class PrivacySandboxSurveyControllerTest {
     }
 
     @Test
+    public void surveyControllerDoesNotInitializesForOtrProfiles() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        Assert.assertNull(controller);
+    }
+
+    @Test
     @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)
     public void surveyControllerDoesNotInitalizeWhenFeatureDisabled() {
         setTestSurveyConfigForTrigger(SENTIMENT_SURVEY_TRIGGER_ID, new String[0], new String[0]);

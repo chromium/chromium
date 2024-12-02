@@ -89,6 +89,9 @@ public class PrivacySandboxSurveyController {
             recordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus.FEATURE_DISABLED);
             return null;
         }
+        if (profile.isOffTheRecord()) {
+            return null;
+        }
         return new PrivacySandboxSurveyController(
                 tabModelSelector,
                 lifecycleDispatcher,
