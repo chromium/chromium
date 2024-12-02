@@ -327,6 +327,16 @@ void InputManager::OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
       ->OnInvalidInputEventSource(frame_sink_id);
 }
 
+std::optional<bool> InputManager::IsDelegatedInkHovering(
+    const FrameSinkId& frame_sink_id) {
+  auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
+  if (!IsFrameMetadataAvailable(support)) {
+    return std::nullopt;
+  }
+  return support->GetLastActivatedFrameMetadata()
+      ->delegated_ink_metadata->is_hovering();
+}
+
 void InputManager::SetupRenderInputRouterDelegateConnection(
     uint32_t grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>

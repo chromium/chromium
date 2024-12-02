@@ -25,9 +25,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
   virtual ~RenderInputRouterDelegate() = default;
 
   virtual RenderWidgetHostViewInput* GetPointerLockView() = 0;
-  // TODO(b/331419617): Use a new FrameMetadataBase class instead of
-  // RenderFrameMetadata.
-  virtual const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() = 0;
+
+  virtual std::optional<bool> IsDelegatedInkHovering() = 0;
 
   virtual std::unique_ptr<RenderInputRouterIterator>
   GetEmbeddedRenderInputRouters() = 0;

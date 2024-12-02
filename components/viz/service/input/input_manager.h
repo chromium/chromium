@@ -113,6 +113,8 @@ class VIZ_SERVICE_EXPORT InputManager
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
                                  uint32_t grouping_id) override;
+  std::optional<bool> IsDelegatedInkHovering(
+      const FrameSinkId& frame_sink_id) override;
 
   void SetupRenderInputRouterDelegateConnection(
       uint32_t grouping_id,

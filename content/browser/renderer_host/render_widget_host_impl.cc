@@ -2508,9 +2508,17 @@ void RenderWidgetHostImpl::ResetDelegatedInkPointPrediction(
   }
 }
 
-const cc::RenderFrameMetadata&
-RenderWidgetHostImpl::GetLastRenderFrameMetadata() {
-  return render_frame_metadata_provider()->LastRenderFrameMetadata();
+std::optional<bool> RenderWidgetHostImpl::IsDelegatedInkHovering() {
+  const std::optional<cc::DelegatedInkBrowserMetadata>& metadata =
+      render_frame_metadata_provider()
+          ->LastRenderFrameMetadata()
+          .delegated_ink_metadata;
+
+  if (!metadata) {
+    return std::nullopt;
+  }
+
+  return metadata.value().delegated_ink_is_hovering;
 }
 
 void RenderWidgetHostImpl::NotifyObserversOfInputEvent(

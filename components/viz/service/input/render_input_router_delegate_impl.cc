@@ -51,10 +51,8 @@ RenderInputRouterDelegateImpl::GetPointerLockView() {
   NOTREACHED();
 }
 
-const cc::RenderFrameMetadata&
-RenderInputRouterDelegateImpl::GetLastRenderFrameMetadata() {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTREACHED();
+std::optional<bool> RenderInputRouterDelegateImpl::IsDelegatedInkHovering() {
+  return delegate_->IsDelegatedInkHovering(frame_sink_id_);
 }
 
 std::unique_ptr<input::RenderInputRouterIterator>
