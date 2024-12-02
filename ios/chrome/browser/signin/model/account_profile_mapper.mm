@@ -272,15 +272,20 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
   for (const std::string& gaia_id : personal_gaia_ids) {
     DetachGaiaIdFromProfile(storage, previous_personal_profile_name, gaia_id);
   }
-  // Delete the old managed profile.
+  // Delete the old managed profile (if it exists).
   if (abandoned_managed_profile_name) {
-    // The old managed profile mustn't be loaded, since it's going to be deleted
-    // and there's no good way to unload it.
+    // The old managed profile should still be "new", i.e. not actually created
+    // on disk, so that no actual user data gets deleted here.
+    CHECK(storage
+              ->GetAttributesForProfileWithName(*abandoned_managed_profile_name)
+              .IsNewProfile());
+    // Also, the old managed profile mustn't be loaded, since it's going to be
+    // deleted and there's no good way to unload it.
     CHECK(
         !profile_manager_->GetProfileWithName(*abandoned_managed_profile_name));
-    // TODO(crbug.com/331783685): Also mark the profile for deletion from disk,
-    // once an API for that exists (though in practice, the abandoned profile
-    // shouldn't exist on disk yet anyway).
+
+    // Since the profile doesn't exist on disk, just removing the entry in the
+    // attributes storage is sufficient.
     storage->RemoveProfile(*abandoned_managed_profile_name);
   }
 
