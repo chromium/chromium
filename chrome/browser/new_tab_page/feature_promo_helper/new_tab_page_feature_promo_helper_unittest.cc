@@ -19,7 +19,7 @@
 
 class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
  protected:
-  NewTabPageFeaturePromoHelperTest() {}
+  NewTabPageFeaturePromoHelperTest() = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

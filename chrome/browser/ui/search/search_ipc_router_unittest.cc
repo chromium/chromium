@@ -54,7 +54,7 @@ namespace {
 
 class MockSearchIPCRouterDelegate : public SearchIPCRouter::Delegate {
  public:
-  virtual ~MockSearchIPCRouterDelegate() {}
+  virtual ~MockSearchIPCRouterDelegate() = default;
 
   MOCK_METHOD(void, FocusOmnibox, (bool focus));
   MOCK_METHOD(void, OnDeleteMostVisitedItem, (const GURL& url));
@@ -65,7 +65,7 @@ class MockSearchIPCRouterDelegate : public SearchIPCRouter::Delegate {
 
 class MockSearchIPCRouterPolicy : public SearchIPCRouter::Policy {
  public:
-  ~MockSearchIPCRouterPolicy() override {}
+  ~MockSearchIPCRouterPolicy() override = default;
 
   MOCK_METHOD(bool, ShouldProcessFocusOmnibox, (bool));
   MOCK_METHOD(bool, ShouldProcessDeleteMostVisitedItem, ());
@@ -97,7 +97,7 @@ class MockEmbeddedSearchClientFactory
 
 class SearchIPCRouterTest : public BrowserWithTestWindowTest {
  public:
-  SearchIPCRouterTest() {}
+  SearchIPCRouterTest() = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

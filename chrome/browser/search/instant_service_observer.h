@@ -24,7 +24,7 @@ class InstantServiceObserver {
   virtual void MostVisitedInfoChanged(const InstantMostVisitedInfo&);
 
  protected:
-  virtual ~InstantServiceObserver() {}
+  virtual ~InstantServiceObserver() = default;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_INSTANT_SERVICE_OBSERVER_H_
