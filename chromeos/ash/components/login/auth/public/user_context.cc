@@ -191,7 +191,7 @@ const AccountId& UserContext::GetAccountId() const {
   return account_id_;
 }
 
-const std::string& UserContext::GetGaiaID() const {
+GaiaId UserContext::GetGaiaID() const {
   return account_id_.GetGaiaId();
 }
 

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cryptohome {
@@ -15,7 +16,7 @@ TEST_F(CryptohomeUtilTest, GetCryptohomeId) {
   AccountId account_id1 = AccountId::FromUserEmail("user1@test.com");
   // GOOGLE type
   AccountId account_id2 =
-      AccountId::FromUserEmailGaiaId("user2@test.com", "1234567890-1");
+      AccountId::FromUserEmailGaiaId("user2@test.com", GaiaId("1234567890-1"));
   // ACTIVE_DIRECTORY type
   AccountId account_id3 =
       AccountId::AdFromUserEmailObjGuid("user3@test.com", "obj-guid");

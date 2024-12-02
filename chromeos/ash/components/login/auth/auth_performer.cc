@@ -47,6 +47,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -526,7 +527,7 @@ void AuthPerformer::GetRecoveryRequest(
       user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
   request.set_purpose(user_data_auth::PURPOSE_AUTHENTICATE_AUTH_FACTOR);
 
-  const std::string& gaia_id = context->GetGaiaID();
+  const GaiaId& gaia_id = context->GetGaiaID();
   CHECK(!gaia_id.empty()) << "Recovery is only supported for gaia users";
   CHECK(!access_token.empty());
   const std::string& reauth_proof_token = context->GetReauthProofToken();
@@ -536,7 +537,7 @@ void AuthPerformer::GetRecoveryRequest(
       request.mutable_prepare_input()->mutable_cryptohome_recovery_input();
   recovery_input->set_requestor_user_id_type(
       user_data_auth::CryptohomeRecoveryPrepareInput::GAIA_ID);
-  recovery_input->set_requestor_user_id(gaia_id);
+  recovery_input->set_requestor_user_id(gaia_id.ToString());
   recovery_input->set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
   recovery_input->set_gaia_access_token(access_token);
   recovery_input->set_gaia_reauth_proof_token(reauth_proof_token);

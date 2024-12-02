@@ -10,6 +10,7 @@ include_rules = [
   "+components/device_event_log",
   "+components/user_manager",
   "+components/version_info",
+  "+google_apis/gaia/gaia_id.h",
   "+third_party/cros_system_api",
 
   # Abseil is allowed by default, but some features are banned. See

@@ -18,6 +18,7 @@
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/test_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "net/http/http_status_code.h"
@@ -289,7 +290,7 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
                                         google_apis::ApiErrorCode>>
       future;
 
-  const std::string gaia_id = "123";
+  const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
       std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
                                           future.GetCallback());
@@ -387,7 +388,7 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
                                         google_apis::ApiErrorCode>>
       future;
 
-  const std::string gaia_id = "123";
+  const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
       std::make_unique<GetSessionRequest>(request_sender(), false, gaia_id,
                                           future.GetCallback());
@@ -453,7 +454,7 @@ TEST_F(GetSessionRequestTest, CreateSessionWithDefaultInputAndSucceed) {
                                         google_apis::ApiErrorCode>>
       future;
 
-  const std::string gaia_id = "123";
+  const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
       std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
                                           future.GetCallback());
@@ -511,7 +512,7 @@ TEST_F(GetSessionRequestTest, CreateSessionWithEmptyInputAndSucceed) {
                                         google_apis::ApiErrorCode>>
       future;
 
-  const std::string gaia_id = "123";
+  const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
       std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
                                           future.GetCallback());
@@ -535,7 +536,7 @@ TEST_F(GetSessionRequestTest, CreateSessionWithFailedResponse) {
                                         google_apis::ApiErrorCode>>
       future;
 
-  const std::string gaia_id = "123";
+  const GaiaId gaia_id("123");
   std::unique_ptr<GetSessionRequest> request =
       std::make_unique<GetSessionRequest>(request_sender(), true, gaia_id,
                                           future.GetCallback());

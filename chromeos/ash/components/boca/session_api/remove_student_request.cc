@@ -7,6 +7,7 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace {
 
@@ -19,7 +20,7 @@ bool ParseResponse(std::string json) {
 namespace ash::boca {
 
 RemoveStudentRequest::RemoveStudentRequest(google_apis::RequestSender* sender,
-                                           std::string gaia_id,
+                                           GaiaId gaia_id,
                                            std::string session_id,
                                            RemoveStudentCallback callback)
     : UrlFetchRequestBase(sender,

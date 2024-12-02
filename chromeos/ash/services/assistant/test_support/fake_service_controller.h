@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/settings_controller.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -70,7 +71,7 @@ class FakeServiceController : public libassistant::mojom::ServiceController,
   std::string access_token();
   // Return the user-id that was passed to |SetAuthenticationTokens|, or
   // |kNoValue| if an empty vector was passed in.
-  std::string gaia_id();
+  GaiaId gaia_id();
 
   // True if ResetAllDataAndStop() was called.
   bool has_data_been_reset() const { return has_data_been_reset_; }

@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/assistant/service_context.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash::assistant {
 
@@ -56,7 +57,7 @@ class FakeServiceContext : public ServiceContext {
   raw_ptr<AssistantStateBase> assistant_state_ = nullptr;
   raw_ptr<chromeos::PowerManagerClient, DanglingUntriaged>
       power_manager_client_ = nullptr;
-  std::string gaia_id_ = kGaiaId;
+  GaiaId gaia_id_ = kGaiaId;
   raw_ptr<AssistantAlarmTimerController> assistant_alarm_timer_controller_ =
       nullptr;
   raw_ptr<AssistantNotificationController> assistant_notification_controller_ =

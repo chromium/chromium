@@ -292,7 +292,8 @@ void SerializeAuthInput(const AuthFactorRef& ref,
       } else {
         const auto& recovery_creation = auth_input.GetRecoveryCreationInput();
         proto_input->set_mediator_pub_key(recovery_creation.pub_key);
-        proto_input->set_user_gaia_id(recovery_creation.user_gaia_id);
+        proto_input->set_user_gaia_id(
+            recovery_creation.user_gaia_id.ToString());
         proto_input->set_device_user_id(recovery_creation.device_user_id);
         proto_input->set_ensure_fresh_recovery_id(
             recovery_creation.ensure_fresh_recovery_id);

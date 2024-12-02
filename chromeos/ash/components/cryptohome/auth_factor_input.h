@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cryptohome {
@@ -29,14 +30,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
 
   struct RecoveryCreation {
     RecoveryCreation(const std::string& pub_key,
-                     const std::string& user_gaia_id,
+                     const GaiaId& user_gaia_id,
                      const std::string& device_user_id,
                      bool ensure_fresh_recovery_id);
     RecoveryCreation(const RecoveryCreation& other);
     RecoveryCreation& operator=(const RecoveryCreation&);
     ~RecoveryCreation();
     std::string pub_key;
-    std::string user_gaia_id;
+    GaiaId user_gaia_id;
     std::string device_user_id;
     bool ensure_fresh_recovery_id;
   };

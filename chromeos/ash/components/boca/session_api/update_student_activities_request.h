@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "google_apis/common/base_requests.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace google_apis {
 class RequestSender;
@@ -26,7 +27,7 @@ class UpdateStudentActivitiesRequest : public google_apis::UrlFetchRequestBase {
  public:
   UpdateStudentActivitiesRequest(google_apis::RequestSender* sender,
                                  std::string session_id,
-                                 std::string gaia_id,
+                                 GaiaId gaia_id,
                                  std::string device_id,
                                  UpdateStudentActivitiesCallback callback);
   UpdateStudentActivitiesRequest(const UpdateStudentActivitiesRequest&) =
@@ -36,7 +37,7 @@ class UpdateStudentActivitiesRequest : public google_apis::UrlFetchRequestBase {
   ~UpdateStudentActivitiesRequest() override;
 
   std::string session_id() const { return session_id_; }
-  std::string gaia_id() const { return gaia_id_; }
+  GaiaId gaia_id() const { return gaia_id_; }
   std::string device_id() const { return device_id_; }
   std::string active_tab_title() const { return active_tab_title_; }
 
@@ -69,7 +70,7 @@ class UpdateStudentActivitiesRequest : public google_apis::UrlFetchRequestBase {
   void OnDataParsed(bool success);
 
   std::string session_id_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::string device_id_;
   std::string active_tab_title_;
   std::string url_base_;

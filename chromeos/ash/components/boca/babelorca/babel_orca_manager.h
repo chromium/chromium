@@ -67,7 +67,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<babelorca::CaptionController> caption_controller,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
       PrefService* pref_service);
 

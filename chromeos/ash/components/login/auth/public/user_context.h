@@ -25,6 +25,7 @@
 #include "components/user_manager/user_type.h"
 
 class AccountId;
+class GaiaId;
 
 namespace user_manager {
 class User;
@@ -129,7 +130,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   bool operator!=(const UserContext& context) const;
 
   const AccountId& GetAccountId() const;
-  const std::string& GetGaiaID() const;
+  GaiaId GetGaiaID() const;
   // Information about the user password - either a plain-text password or a
   // its hashed/transformed representation.
   const Key* GetKey() const;
