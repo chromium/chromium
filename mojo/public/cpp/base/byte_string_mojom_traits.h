@@ -18,7 +18,7 @@ template <>
 struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     StructTraits<mojo_base::mojom::ByteStringDataView, std::string> {
   static base::span<const uint8_t> data(const std::string& string) {
-    return base::as_bytes(base::make_span(string));
+    return base::as_byte_span(string);
   }
   static bool Read(mojo_base::mojom::ByteStringDataView data, std::string* out);
 };

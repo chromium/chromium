@@ -22,8 +22,8 @@ template <>
 struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     StructTraits<mojo_base::mojom::WStringDataView, std::wstring> {
   static base::span<const uint16_t> data(const std::wstring& str) {
-    return base::make_span(reinterpret_cast<const uint16_t*>(str.data()),
-                           str.size());
+    return base::span(reinterpret_cast<const uint16_t*>(str.data()),
+                      str.size());
   }
 
   static bool Read(mojo_base::mojom::WStringDataView data, std::wstring* out);

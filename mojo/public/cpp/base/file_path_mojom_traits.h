@@ -24,9 +24,8 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     StructTraits<mojo_base::mojom::FilePathDataView, base::FilePath> {
 #if BUILDFLAG(IS_WIN)
   static base::span<const uint16_t> path(const base::FilePath& path) {
-    return base::make_span(
-        reinterpret_cast<const uint16_t*>(path.value().data()),
-        path.value().size());
+    return base::span(reinterpret_cast<const uint16_t*>(path.value().data()),
+                      path.value().size());
   }
 #else
   static const base::FilePath::StringType& path(const base::FilePath& path) {

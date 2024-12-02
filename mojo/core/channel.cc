@@ -944,8 +944,8 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
     }
 
     DispatchResult result =
-        TryDispatchMessage(base::make_span(read_buffer_->occupied_bytes(),
-                                           read_buffer_->num_occupied_bytes()),
+        TryDispatchMessage(base::span(read_buffer_->occupied_bytes(),
+                                      read_buffer_->num_occupied_bytes()),
                            next_read_size_hint);
     if (result == DispatchResult::kOK) {
       if (ShouldRecordSubsampledHistograms()) {

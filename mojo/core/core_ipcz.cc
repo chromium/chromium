@@ -656,7 +656,7 @@ MojoResult MojoWrapPlatformSharedMemoryRegionIpcz(
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   auto buffer = ipcz_driver::SharedBuffer::CreateForMojoWrapper(
-      base::make_span(platform_handles, num_platform_handles), num_bytes, *guid,
+      base::span(platform_handles, num_platform_handles), num_bytes, *guid,
       access_mode);
   if (!buffer) {
     return MOJO_RESULT_INVALID_ARGUMENT;
@@ -761,7 +761,7 @@ MojoResult MojoAttachMessagePipeToInvitationIpcz(
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   return invitation->Attach(
-      base::make_span(static_cast<const uint8_t*>(name), name_num_bytes),
+      base::span(static_cast<const uint8_t*>(name), name_num_bytes),
       message_pipe_handle);
 }
 
@@ -777,7 +777,7 @@ MojoResult MojoExtractMessagePipeFromInvitationIpcz(
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   return invitation->Extract(
-      base::make_span(static_cast<const uint8_t*>(name), name_num_bytes),
+      base::span(static_cast<const uint8_t*>(name), name_num_bytes),
       message_pipe_handle);
 }
 

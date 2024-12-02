@@ -72,8 +72,8 @@ class TestChannel : public core::Channel::Delegate {
   }
 
   void SendMessage(const std::string& message) {
-    auto data = base::make_span(
-        reinterpret_cast<const uint8_t*>(message.data()), message.size());
+    auto data = base::span(reinterpret_cast<const uint8_t*>(message.data()),
+                           message.size());
     channel_->Write(core::Channel::Message::CreateIpczMessage(data, {}));
   }
 

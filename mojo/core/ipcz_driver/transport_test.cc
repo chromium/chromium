@@ -53,7 +53,7 @@ struct TestMessage {
   }
 
   void Transmit(Transport& transmitter) {
-    transmitter.Transmit(base::make_span(bytes), base::make_span(handles));
+    transmitter.Transmit(base::span(bytes), base::span(handles));
   }
 
   std::vector<uint8_t> bytes;
@@ -116,9 +116,8 @@ class MojoIpczTransportTest : public test::MojoTestBase {
   static scoped_refptr<T> DeserializeObjectFrom(Transport& receiver,
                                                 const TestMessage& message) {
     scoped_refptr<ObjectBase> object;
-    const IpczResult result =
-        receiver.DeserializeObject(base::make_span(message.bytes),
-                                   base::make_span(message.handles), object);
+    const IpczResult result = receiver.DeserializeObject(
+        base::span(message.bytes), base::span(message.handles), object);
     CHECK_EQ(result, IPCZ_RESULT_OK);
     CHECK_EQ(object->type(), T::object_type());
     return base::WrapRefCounted(static_cast<T*>(object.get()));
@@ -193,9 +192,8 @@ class TransportListener {
                                IpczTransportActivityFlags flags,
                                const struct IpczTransportActivityOptions*) {
     auto* listener = reinterpret_cast<TransportListener*>(transport);
-    auto bytes = base::make_span(static_cast<const uint8_t*>(data), num_bytes);
-    listener->HandleActivity(bytes, base::make_span(handles, num_handles),
-                             flags);
+    auto bytes = base::span(static_cast<const uint8_t*>(data), num_bytes);
+    listener->HandleActivity(bytes, base::span(handles, num_handles), flags);
     return IPCZ_RESULT_OK;
   }
 

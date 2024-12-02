@@ -38,8 +38,8 @@ StructTraits<mojo_base::mojom::RelativeFilePathDataView, base::FilePath>::path(
     const base::FilePath& path) {
   CHECK(!path.IsAbsolute());
   CHECK(!path.ReferencesParent());
-  return base::make_span(reinterpret_cast<const uint16_t*>(path.value().data()),
-                         path.value().size());
+  return base::span(reinterpret_cast<const uint16_t*>(path.value().data()),
+                    path.value().size());
 }
 #else
 // static

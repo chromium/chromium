@@ -30,7 +30,7 @@ std::string_view AsString(base::span<const uint8_t> bytes) {
 }
 
 base::span<const uint8_t> AsBytes(std::string_view s) {
-  return base::as_bytes(base::make_span(s)).first(s.length());
+  return base::as_byte_span(s).first(s.length());
 }
 
 // Wraps a RingBuffer with more convient string-based I/O for tests to use.
@@ -48,14 +48,14 @@ class TestRingBuffer {
 
   std::string Read(size_t n) {
     std::vector<uint8_t> data(n);
-    auto bytes = base::make_span(data);
+    auto bytes = base::span(data);
     const size_t size = buffer_.Read(bytes);
     return std::string(AsString(bytes.first(size)));
   }
 
   std::optional<std::string> ReadAll(size_t n) {
     std::vector<uint8_t> data(n);
-    if (!buffer_.ReadAll(base::make_span(data))) {
+    if (!buffer_.ReadAll(base::span(data))) {
       return std::nullopt;
     }
     return std::string(data.begin(), data.end());
@@ -63,14 +63,14 @@ class TestRingBuffer {
 
   std::string Peek(size_t n) {
     std::vector<uint8_t> data(n);
-    auto bytes = base::make_span(data);
+    auto bytes = base::span(data);
     const size_t size = buffer_.Peek(bytes);
     return std::string(AsString(bytes.first(size)));
   }
 
   std::optional<std::string> PeekAll(size_t n) {
     std::vector<uint8_t> data(n);
-    if (!buffer_.PeekAll(base::make_span(data))) {
+    if (!buffer_.PeekAll(base::span(data))) {
       return std::nullopt;
     }
     return std::string(data.begin(), data.end());
