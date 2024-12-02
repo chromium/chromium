@@ -3625,21 +3625,6 @@
             ]
         }
     ],
-    "CPSS-V2-Android": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240508",
-                    "enable_features": [
-                        "PermissionDedicatedCpssSettingAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPSS-V3": [
         {
             "platforms": [
