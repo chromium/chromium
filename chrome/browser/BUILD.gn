@@ -4134,8 +4134,6 @@ static_library("browser") {
       "webauthn/change_pin_controller_impl.h",
       "webauthn/chrome_authenticator_request_delegate.cc",
       "webauthn/chrome_authenticator_request_delegate.h",
-      "webauthn/chrome_web_authentication_delegate.cc",
-      "webauthn/chrome_web_authentication_delegate.h",
       "webauthn/enclave_manager.cc",
       "webauthn/enclave_manager.h",
       "webauthn/enclave_manager_factory.cc",

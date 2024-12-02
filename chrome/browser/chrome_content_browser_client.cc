@@ -201,7 +201,6 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/webapps/web_app_offline.h"
-#include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -6543,10 +6542,11 @@ void AddChromeSchemeFactories(
   // InstantService might be null for some irregular profiles, e.g. the System
   // Profile.
   if (instant_service && instant_service->IsInstantProcess(render_process_id)) {
-    factories->emplace(chrome::kChromeSearchScheme,
-                       content::CreateWebUIURLLoaderFactory(
-                           frame_host, chrome::kChromeSearchScheme,
-                           /*allowed_hosts=*/base::flat_set<std::string>()));
+    factories->emplace(
+        chrome::kChromeSearchScheme,
+        content::CreateWebUIURLLoaderFactory(
+            frame_host, chrome::kChromeSearchScheme,
+            /*allowed_webui_hosts=*/base::flat_set<std::string>()));
   }
 
   extensions::ExtensionWebContentsObserver* web_observer =

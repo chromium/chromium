@@ -23,7 +23,4 @@ extern const char kLastUsedPairingFromSyncPublicKey[] =
 const char kRemoteProxiedRequestsAllowed[] =
     "webauthn.remote_proxied_requests_allowed";
 
-const char kWebAuthnTouchIdMetadataSecretPrefName[] =
-    "webauthn.touchid.metadata_secret";
-
 }  // namespace webauthn::pref_names
