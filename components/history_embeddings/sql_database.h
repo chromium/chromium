@@ -42,15 +42,6 @@ class SqlDatabase : public VectorDatabase {
   void SetEmbedderMetadata(EmbedderMetadata embedder_metadata,
                            os_crypt_async::Encryptor encryptor);
 
-  // Inserts or replaces `passages` keyed by `url_id`. `visit_id` and
-  // `visit_time` are needed too, to respect History deletions and expirations.
-  // If there are existing passages for `url_id`, they are replaced. Returns
-  // whether this operation was successful.
-  bool InsertOrReplacePassages(const UrlData& url_passages);
-
-  // Store embeddings; this is part of the implementation for `AddUrlData`.
-  bool InsertOrReplaceEmbeddings(const UrlData& url_embeddings);
-
   // Gets the passages associated with `url_id`. Returns nullopt if there's
   // nothing available.
   std::optional<proto::PassagesValue> GetPassages(history::URLID url_id);
@@ -69,9 +60,12 @@ class SqlDatabase : public VectorDatabase {
   // does not exist, keyed on url_id.
   std::vector<UrlData> GetUrlPassagesWithoutEmbeddings();
 
+  // This is like `AddUrlData` but accepts mismatched passages and embeddings.
+  bool AddAnyUrlDataForTesting(UrlData url_data);
+
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
-  bool AddUrlData(UrlData url_passages_embeddings) override;
+  bool AddUrlData(UrlData url_data) override;
   std::unique_ptr<UrlDataIterator> MakeUrlDataIterator(
       std::optional<base::Time> time_range_start) override;
 
@@ -107,6 +101,19 @@ class SqlDatabase : public VectorDatabase {
 
   // Deletes passages and embeddings for visits before `expiration_time`.
   void DeleteExpiredData(base::Time expiration_time);
+
+  // Inserts or replaces `passages` keyed by `url_id`. `visit_id` and
+  // `visit_time` are needed too, to respect History deletions and expirations.
+  // If there are existing passages for `url_id`, they are replaced. Returns
+  // whether this operation was successful.
+  // Note: Does not LazyInit because this is part of the AddUrlData
+  // implementation only, and transactions preclude initialization.
+  bool InsertOrReplacePassages(const UrlData& url_passages);
+
+  // Store embeddings; this is part of the implementation for `AddUrlData`.
+  // Note: Does not LazyInit because this is part of the AddUrlData
+  // implementation only, and transactions preclude initialization.
+  bool InsertOrReplaceEmbeddings(const UrlData& url_embeddings);
 
   // The directory storing the database.
   const base::FilePath storage_dir_;
