@@ -1009,7 +1009,8 @@ void ToolbarView::InitLayout() {
     toolbar_controller_ = std::make_unique<ToolbarController>(
         ToolbarController::GetDefaultResponsiveElements(browser_),
         ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
-        container_view_, overflow_button_, pinned_toolbar_actions_container_);
+        container_view_, overflow_button_, pinned_toolbar_actions_container_,
+        PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
     overflow_button_->set_toolbar_controller(toolbar_controller_.get());
   }
 
