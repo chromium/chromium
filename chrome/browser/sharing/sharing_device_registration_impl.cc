@@ -129,15 +129,17 @@ void SharingDeviceRegistrationImpl::OnVapidTargetInfoRetrieved(
     SharingDeviceRegistrationResult result,
     std::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info) {
   if (result != SharingDeviceRegistrationResult::kSuccess) {
-    std::move(callback).Run(result);
-    return;
+    // Clear results if the registration failed but proceed to register using
+    // sender ID.
+    authorized_entity = std::nullopt;
+    vapid_target_info = std::nullopt;
   }
 
   if (!CanSendViaSenderID(sync_service_)) {
-    OnSharingTargetInfoRetrieved(
-        std::move(callback), std::move(authorized_entity),
-        std::move(vapid_target_info), SharingDeviceRegistrationResult::kSuccess,
-        /*sharing_target_info=*/std::nullopt);
+    OnSharingTargetInfoRetrieved(std::move(callback),
+                                 std::move(authorized_entity),
+                                 std::move(vapid_target_info), result,
+                                 /*sharing_target_info=*/std::nullopt);
     return;
   }
 
