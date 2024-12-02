@@ -267,6 +267,12 @@ bool FedCmAccountSelectionView::Show(
         state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(*new_accounts_[0],
                                                              new_idp_data);
+        // This is a placeholder assuming the tab containing the disclosure
+        // dialog will be closed. This will be updated upon clicking on
+        // continue, back or cancel button. If none of these buttons are clicked
+        // by time the dialog is closed, it means our placeholder assumption is
+        // true i.e. the user has closed the tab.
+        modal_disclosure_dialog_state_ = DisclosureDialogResult::kDestroy;
       } else {
         // Normally we'd show the request permission dialog but without the
         // disclosure text, there is no material difference between the account
@@ -526,11 +532,11 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   // The dialog is not guaranteed to be shown. The dialog will be hidden if the
   // associated web contents are hidden.
 
-  // This is a placeholder assuming the tab containing the loading dialog
-  // will be closed. This will be updated upon proceeding to the account
-  // chooser, completing the login to IDP flow on a pop-up or clicking on the
-  // cancel button. If none of these happen by time the dialog is closed, it
-  // means our placeholder assumption is true i.e. the user has closed the tab.
+  // This is a placeholder assuming the tab containing the disclosure dialog
+  // will be closed. This will be updated upon proceeding to the verifying
+  // sheet, clicking the back button or clicking the cancel button. If none of
+  // these happen by time the dialog is closed, it means our placeholder
+  // assumption is true i.e. the user has closed the tab.
   modal_loading_dialog_state_ = LoadingDialogResult::kDestroy;
   return true;
 }
@@ -609,6 +615,10 @@ void FedCmAccountSelectionView::OnAccountSelected(
     modal_account_chooser_state_ = AccountChooserResult::kAccountRow;
   }
 
+  if (modal_disclosure_dialog_state_) {
+    modal_disclosure_dialog_state_ = DisclosureDialogResult::kContinue;
+  }
+
   // If the account is a returning user or if the account is selected from UI
   // which shows the disclosure text or if the dialog doesn't need to ask for
   // the user's permission to share their id/email/name/picture, show the
@@ -633,6 +643,12 @@ void FedCmAccountSelectionView::OnAccountSelected(
   if (dialog_type_ == DialogType::MODAL) {
     state_ = State::REQUEST_PERMISSION;
     account_selection_view_->ShowRequestPermissionDialog(account, idp_data);
+    // This is a placeholder assuming the tab containing the disclosure dialog
+    // will be closed. This will be updated upon proceeding to the verifying
+    // sheet, clicking the back button or clicking the cancel button. If none of
+    // these happen by time the dialog is closed, it means our placeholder
+    // assumption is true i.e. the user has closed the tab.
+    modal_disclosure_dialog_state_ = DisclosureDialogResult::kDestroy;
     UpdateDialogPositionIfModal();
     return;
   }
@@ -658,6 +674,9 @@ void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
 
 void FedCmAccountSelectionView::OnBackButtonClicked() {
   // No need to protect input here since back cannot be the first event.
+  if (state_ == State::REQUEST_PERMISSION) {
+    modal_disclosure_dialog_state_ = DisclosureDialogResult::kBack;
+  }
 
   // If the dialog type is modal and there is only one IDP and one account, show
   // the single account picker.
@@ -707,6 +726,10 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
   if (modal_account_chooser_state_ && (state_ == State::SINGLE_ACCOUNT_PICKER ||
                                        state_ == State::MULTI_ACCOUNT_PICKER)) {
     modal_account_chooser_state_ = AccountChooserResult::kCancelButton;
+  }
+
+  if (modal_disclosure_dialog_state_ && state_ == State::REQUEST_PERMISSION) {
+    modal_disclosure_dialog_state_ = DisclosureDialogResult::kCancel;
   }
 
   if (state_ == State::LOADING) {
@@ -1241,8 +1264,7 @@ void FedCmAccountSelectionView::LogDialogDismissal(
     }
   }
 
-  // If dialog type is modal, a loading dialog must have been opened. Record the
-  // outcome.
+  // If a modal loading dialog was open, record the outcome.
   if (modal_loading_dialog_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.LoadingDialogResult",
                               *modal_loading_dialog_state_);
@@ -1253,6 +1275,21 @@ void FedCmAccountSelectionView::LogDialogDismissal(
       ukm::builders::Blink_FedCm(source_id)
           .SetButton_LoadingDialogResult(
               static_cast<int>(*modal_loading_dialog_state_))
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
+
+  // If a modal disclosure dialog was open, record the outcome.
+  if (modal_disclosure_dialog_state_) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.DisclosureDialogResult",
+                              *modal_disclosure_dialog_state_);
+    if (account_selection_view_->web_contents()) {
+      ukm::SourceId source_id = account_selection_view_->web_contents()
+                                    ->GetPrimaryMainFrame()
+                                    ->GetPageUkmSourceId();
+      ukm::builders::Blink_FedCm(source_id)
+          .SetButton_DisclosureDialogResult(
+              static_cast<int>(*modal_disclosure_dialog_state_))
           .Record(ukm::UkmRecorder::Get());
     }
   }
