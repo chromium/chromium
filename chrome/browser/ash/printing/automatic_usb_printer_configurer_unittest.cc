@@ -133,7 +133,7 @@ class FakePpdProvider : public chromeos::PpdProvider {
                      ReverseLookupCallback cb) override {}
 
  private:
-  ~FakePpdProvider() override {}
+  ~FakePpdProvider() override = default;
   base::flat_map<std::string, std::string> ppds_;
 };
 

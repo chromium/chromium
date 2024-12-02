@@ -51,7 +51,7 @@ class CupsPrintJobManager : public KeyedService {
     virtual void OnPrintJobCancelled(base::WeakPtr<CupsPrintJob> job) {}
 
    protected:
-    ~Observer() override {}
+    ~Observer() override = default;
   };
 
   static std::unique_ptr<CupsPrintJobManager> CreateInstance(Profile* profile);

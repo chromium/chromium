@@ -146,7 +146,7 @@ ThreadSafeHelper::ThreadSafeHelper(
     CupsProxyServiceDelegate* const delegate,
     scoped_refptr<base::SequencedTaskRunner> runner)
     : main_runner_(runner), socket_(std::move(socket)) {}
-ThreadSafeHelper::~ThreadSafeHelper() {}
+ThreadSafeHelper::~ThreadSafeHelper() = default;
 
 void ThreadSafeHelper::ProxyToCups(std::vector<uint8_t> request,
                                    SocketManagerCallback cb) {

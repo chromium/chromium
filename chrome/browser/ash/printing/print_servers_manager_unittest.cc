@@ -111,7 +111,7 @@ class PrintServersManagerTest : public testing::Test,
     manager_->AddObserver(this);
   }
 
-  ~PrintServersManagerTest() override {}
+  ~PrintServersManagerTest() override = default;
 
   static PrintServer CreatePrintServer(std::string id,
                                        std::string server_url,
