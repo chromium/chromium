@@ -318,14 +318,11 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
     sum_of_consumed_buffered_amount_ += a;
   }
 
-  static Vector<uint8_t> AsVector(const char* data, size_t size) {
+  template <size_t N>
+  static Vector<uint8_t> AsVector(const char (&literal)[N]) {
     Vector<uint8_t> v;
-    v.Append(reinterpret_cast<const uint8_t*>(data),
-             static_cast<wtf_size_t>(size));
+    v.AppendSpan(base::span(literal).template first<N - 1>());
     return v;
-  }
-  static Vector<uint8_t> AsVector(const char* data) {
-    return AsVector(data, strlen(data));
   }
 
   Vector<uint8_t> ReadDataFromDataPipe(
@@ -633,14 +630,10 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferWithNullBytes) {
                 {WebSocketMessageType::BINARY, kLengthOfEachMessage},
             }));
 
-  ASSERT_EQ(AsVector("\0ar", kLengthOfEachMessage),
-            ReadDataFromDataPipe(readable, 3u));
-  ASSERT_EQ(AsVector("b\0z", kLengthOfEachMessage),
-            ReadDataFromDataPipe(readable, 3u));
-  ASSERT_EQ(AsVector("qu\0", kLengthOfEachMessage),
-            ReadDataFromDataPipe(readable, 3u));
-  ASSERT_EQ(AsVector("\0\0\0", kLengthOfEachMessage),
-            ReadDataFromDataPipe(readable, 3u));
+  ASSERT_EQ(AsVector("\0ar"), ReadDataFromDataPipe(readable, 3u));
+  ASSERT_EQ(AsVector("b\0z"), ReadDataFromDataPipe(readable, 3u));
+  ASSERT_EQ(AsVector("qu\0"), ReadDataFromDataPipe(readable, 3u));
+  ASSERT_EQ(AsVector("\0\0\0"), ReadDataFromDataPipe(readable, 3u));
 }
 
 TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferNonLatin1UTF8) {
