@@ -46,7 +46,7 @@ constexpr std::string_view kFakeSpki = "spki";
 constexpr std::string kFakeDMToken = "dm_token";
 
 std::vector<uint8_t> ToBytes(std::string_view str) {
-  auto bytes = base::as_bytes(base::make_span(str));
+  auto bytes = base::as_byte_span(str);
   return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }
 

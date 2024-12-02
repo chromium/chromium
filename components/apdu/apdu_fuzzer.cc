@@ -13,8 +13,8 @@
 namespace apdu {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  ApduCommand::CreateFromMessage(base::make_span(data, size));
-  ApduResponse::CreateFromMessage(base::make_span(data, size));
+  ApduCommand::CreateFromMessage(base::span(data, size));
+  ApduResponse::CreateFromMessage(base::span(data, size));
   return 0;
 }
 

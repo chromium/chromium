@@ -562,10 +562,10 @@ TEST_F(FormCacheBrowserTest, FieldAndFrameLimit) {
   EXPECT_THAT(forms.updated_forms,
               Each(Property("fields", &FormData::fields, SizeIs(1))));
   EXPECT_THAT(
-      base::make_span(forms.updated_forms).first(kMaxExtractableChildFrames),
+      base::span(forms.updated_forms).first<kMaxExtractableChildFrames>(),
       Each(Property("child_frames", &FormData::child_frames, SizeIs(1))));
   EXPECT_THAT(
-      base::make_span(forms.updated_forms).subspan(kMaxExtractableChildFrames),
+      base::span(forms.updated_forms).subspan<kMaxExtractableChildFrames>(),
       Each(Property("child_frames", &FormData::child_frames, IsEmpty())));
 
   EXPECT_THAT(forms.removed_forms, IsEmpty());

@@ -166,7 +166,7 @@ TEST(CreatePayloadWithProcessingFailuresTest, VerifyMultipleMessages) {
                                        "You'd better not ignore it."};
 
   const allocation_recorder::Payload payload =
-      CreatePayloadWithProcessingFailures(base::make_span(messages));
+      CreatePayloadWithProcessingFailures(base::span(messages));
 
   ASSERT_TRUE(payload.has_processing_failures());
   EXPECT_EQ(std::ssize(messages),

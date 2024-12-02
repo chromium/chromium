@@ -171,7 +171,7 @@ auto ContainsCreditCardFooterSuggestions(bool with_gpay_logo) {
       SizeIs(Ge(2)),
       ResultOf(
           [](const auto& container) {
-            return base::make_span(container).template last<2>();
+            return base::span(container).template last<2>();
           },
           ElementsAre(EqualsSuggestion(SuggestionType::kSeparator),
                       EqualsManagePaymentsMethodsSuggestion(with_gpay_logo))));

@@ -168,15 +168,15 @@ FieldSignature CalculateFieldSignatureForField(
 }
 
 uint64_t StrToHash64Bit(std::string_view str) {
-  auto bytes = base::as_bytes(base::make_span(str));
+  auto bytes = base::as_byte_span(str);
   const base::SHA1Digest digest = base::SHA1Hash(bytes);
-  return PackBytes(base::make_span(digest).subspan<0, 8>());
+  return PackBytes(base::span(digest).first<8>());
 }
 
 uint32_t StrToHash32Bit(std::string_view str) {
-  auto bytes = base::as_bytes(base::make_span(str));
+  auto bytes = base::as_byte_span(str);
   const base::SHA1Digest digest = base::SHA1Hash(bytes);
-  return PackBytes(base::make_span(digest).subspan<0, 4>());
+  return PackBytes(base::span(digest).first<4>());
 }
 
 int64_t HashFormSignature(FormSignature form_signature) {

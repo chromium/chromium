@@ -59,8 +59,8 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
 
   std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
-    return base::make_span(static_cast<const uint8_t*>(array_buffer_->Data()),
-                           array_buffer_->ByteLength());
+    return base::span(static_cast<const uint8_t*>(array_buffer_->Data()),
+                      array_buffer_->ByteLength());
   }
 
   void CopyInto(base::span<uint8_t> dest) const override {
@@ -165,8 +165,8 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
             CHECK(backing_store->ByteLength() ==
                   array_buffer_value->GetLength());
             array_buffer_value->CopyInto(
-                base::make_span(static_cast<uint8_t*>(backing_store->Data()),
-                                backing_store->ByteLength()));
+                base::span(static_cast<uint8_t*>(backing_store->Data()),
+                           backing_store->ByteLength()));
             return v8::ArrayBuffer::New(isolate, std::move(backing_store));
           }},
       message);

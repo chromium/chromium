@@ -209,7 +209,7 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
   }
 
   ASSERT_TRUE(file.WriteAndCheck(
-      /*offset=*/0, base::as_bytes(base::make_span(past_breadcrumbs))));
+      /*offset=*/0, base::as_byte_span(past_breadcrumbs)));
   ASSERT_TRUE(file.Flush());
   file.Close();
   ASSERT_EQ(written_events, GetPersistedEvents().size());

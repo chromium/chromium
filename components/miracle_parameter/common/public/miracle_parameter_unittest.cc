@@ -821,15 +821,15 @@ TEST_F(MiracleParameterTest, MiracleParameterForEnum) {
 
   auto GetParamA = [&]() {
     return GetMiracleParameterAsEnum(kFeature, "a", ParamEnum::kADefault,
-                                     base::make_span(param_enums));
+                                     base::span(param_enums));
   };
   auto GetParamB = [&]() {
     return GetMiracleParameterAsEnum(kFeature, "b", ParamEnum::kBDefault,
-                                     base::make_span(param_enums));
+                                     base::span(param_enums));
   };
   auto GetParamC = [&]() {
     return GetMiracleParameterAsEnum(kFeature, "c", ParamEnum::kCDefault,
-                                     base::make_span(param_enums));
+                                     base::span(param_enums));
   };
 
   {

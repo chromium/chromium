@@ -42,7 +42,7 @@ class ReadMaskedDomainListProto {
     if (base::ReadStreamToString(
             base::FileToFILE(base::File(std::move(fd)), "r"), &raw_mdl)) {
       return mojo_base::ProtoWrapper(
-          base::as_bytes(base::make_span(raw_mdl)), kMaskedDomainListProto,
+          base::as_byte_span(raw_mdl), kMaskedDomainListProto,
           mojo_base::ProtoWrapperBytes::GetPassKey());
     }
     return std::nullopt;

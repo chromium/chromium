@@ -224,8 +224,7 @@ std::string CaptureTypeWithPattern(
     std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options) {
   return CaptureTypeWithPattern(
-      type, base::StrCat(base::make_span(pattern_span_initializer_list)),
-      options);
+      type, base::StrCat(base::span(pattern_span_initializer_list)), options);
 }
 
 std::string NoCapturePattern(const std::string& pattern,

@@ -23,8 +23,7 @@ CommerceInternalsUI::CommerceInternalsUI(
     : CommerceInternalsUIBase(shopping_service),
       ui::MojoWebUIController(web_ui, true) {
   std::move(setup_callback)
-      .Run(base::make_span(kCommerceInternalsResources,
-                           kCommerceInternalsResourcesSize),
+      .Run(base::span(kCommerceInternalsResources),
            IDR_COMMERCE_INTERNALS_COMMERCE_INTERNALS_HTML);
 }
 
