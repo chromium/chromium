@@ -388,7 +388,8 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     const Profile& profile,
     const webapps::AppId& app_id,
     blink::mojom::DisplayMode requested_display_mode,
-    bool ignore_browser_tabs_for_standalone_apps) {
+    bool ignore_browser_tabs_for_standalone_apps,
+    bool for_navigate_new) {
   std::optional<std::pair<Browser*, int>> first_app_browser_match;
   std::optional<std::pair<Browser*, int>> first_browser_tab_match;
   // These are the type `std::optional<std::pair<Browser*, int>>` for easy usage
@@ -453,6 +454,9 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
   switch (requested_display_mode) {
     case blink::mojom::DisplayMode::kUndefined:
     case blink::mojom::DisplayMode::kBrowser:
+      if (for_navigate_new) {
+        return first_normal_browser;
+      }
       if (first_browser_tab_match) {
         return first_browser_tab_match;
       }
@@ -1355,7 +1359,9 @@ ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
 
   std::optional<std::pair<Browser*, int>> app_host = GetAppHostForCapturing(
       profile, app_id, registrar.GetAppEffectiveDisplayMode(app_id),
-      ignore_browser_tabs_for_standalone_apps);
+      ignore_browser_tabs_for_standalone_apps,
+      /*for_navigate_new=*/result.effective_client_mode ==
+          LaunchHandler::ClientMode::kNavigateNew);
   if (app_host.has_value()) {
     CHECK(app_host->first);
     result.browser = app_host->first;
