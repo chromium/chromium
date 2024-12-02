@@ -2767,7 +2767,7 @@
   {
     "name": "enable-cros-touch-text-editing-redesign",
     "owners": [ "michellegc@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-cros-virtual-keyboard-global-emoji-preferences",
