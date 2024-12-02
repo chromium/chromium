@@ -273,7 +273,7 @@ class FakeNetworkOnlineStateForTest : public net::NetworkChangeNotifier {
   FakeNetworkOnlineStateForTest& operator=(
       const FakeNetworkOnlineStateForTest&) = delete;
 
-  ~FakeNetworkOnlineStateForTest() override {}
+  ~FakeNetworkOnlineStateForTest() override = default;
 
   ConnectionType GetCurrentConnectionType() const override {
     return online_ ? net::NetworkChangeNotifier::CONNECTION_ETHERNET
