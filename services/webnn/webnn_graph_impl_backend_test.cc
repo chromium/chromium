@@ -3516,7 +3516,16 @@ struct Resample2dTester {
 };
 
 // Test building and computing a graph with single operator resample2d.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorResample2d) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM_FAMILY)
+// Test times out on Windows 11 / ARM bot, see https:  // crbug.com/381510750.
+#define MAYBE_BuildAndComputeSingleOperatorResample2d \
+  DISABLED_BuildAndComputeSingleOperatorResample2d
+#else
+#define MAYBE_BuildAndComputeSingleOperatorResample2d \
+  BuildAndComputeSingleOperatorResample2d
+#endif
+TEST_F(WebNNGraphImplBackendTest,
+       MAYBE_BuildAndComputeSingleOperatorResample2d) {
   // Test resample2d with "NearestNeighbor" mode, explicit scales = [2, 3] and
   // axes = [2, 3].
   {
