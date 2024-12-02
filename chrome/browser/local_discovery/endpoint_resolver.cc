@@ -19,7 +19,7 @@ EndpointResolver::EndpointResolver() {
   service_discovery_client_ = ServiceDiscoverySharedClient::GetInstance();
 }
 
-EndpointResolver::~EndpointResolver() {}
+EndpointResolver::~EndpointResolver() = default;
 
 void EndpointResolver::Start(const net::HostPortPair& address,
                              ResultCallback callback) {
