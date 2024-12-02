@@ -59,6 +59,11 @@ CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
                                                  std::string currency,
                                                  int price_lower_bound,
                                                  int price_upper_bound);
+
+sync_pb::AutofillWalletSpecifics
+CreateAutofillWalletSpecificsForPaymentInstrumentCreationOption(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_SYNC_BRIDGE_TEST_UTIL_H_

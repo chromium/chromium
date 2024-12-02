@@ -8,6 +8,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -39,6 +40,7 @@
 namespace autofill {
 namespace {
 
+using ::base::test::EqualsProto;
 using syncer::EntityChange;
 using syncer::EntityData;
 
@@ -71,6 +73,30 @@ EntityData SpecificsToEntity(const sync_pb::AutofillWalletSpecifics& specifics,
   data.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
       syncer::AUTOFILL_WALLET_DATA, client_tag);
   return data;
+}
+
+struct WalletTypes {
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
+};
+
+WalletTypes PopulateWalletTypesFromSyncData(
+    const syncer::EntityChangeList& entity_data) {
+  WalletTypes wallet_types;
+  PopulateWalletTypesFromSyncData(
+      entity_data, wallet_types.wallet_cards, wallet_types.wallet_ibans,
+      wallet_types.customer_data, wallet_types.cloud_token_data,
+      wallet_types.bank_accounts, wallet_types.benefits,
+      wallet_types.payment_instruments,
+      wallet_types.payment_instrument_creation_options);
+  return wallet_types;
 }
 
 class PaymentsSyncBridgeUtilTest : public testing::Test {
@@ -171,9 +197,12 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   ASSERT_EQ(2U, wallet_cards.size());
 
@@ -318,9 +347,12 @@ TEST_P(PaymentsSyncBridgeUtilCardBenefitsTest,
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   EXPECT_EQ(2U, wallet_cards.size());
 
@@ -874,6 +906,47 @@ TEST_F(PaymentsSyncBridgeUtilTest,
             server_cvc->last_updated_timestamp);
 }
 
+// Tests that SetAutofillWalletSpecificsFromPaymentInstrumentCreationOption
+// populates wallet specifics with the PaymentInstrumentCreationOption.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       SetWalletSpecificsFromPaymentInstrumentCreationOption) {
+  sync_pb::PaymentInstrumentCreationOption payment_instrument_creation_option =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
+  sync_pb::AutofillWalletSpecifics expected_wallet_specifics =
+      CreateAutofillWalletSpecificsForPaymentInstrumentCreationOption(
+          payment_instrument_creation_option);
+
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  SetAutofillWalletSpecificsFromPaymentInstrumentCreationOption(
+      payment_instrument_creation_option, wallet_specifics);
+
+  EXPECT_THAT(wallet_specifics, EqualsProto(expected_wallet_specifics));
+}
+
+// Tests that PopulateWalletTypesFromSyncData populates
+// PaymentInstrumentCreationOptions.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       PopulatePaymentInstrumentCreationOptionsFromSyncData) {
+  sync_pb::PaymentInstrumentCreationOption payment_instrument_creation_option =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
+  std::string payment_instrument_creation_option_id =
+      "payment_instrument_creation_option:1234";
+
+  syncer::EntityChangeList entity_change_list;
+  sync_pb::AutofillWalletSpecifics wallet_specifics =
+      CreateAutofillWalletSpecificsForPaymentInstrumentCreationOption(
+          payment_instrument_creation_option);
+  entity_change_list.push_back(EntityChange::CreateAdd(
+      payment_instrument_creation_option_id,
+      SpecificsToEntity(wallet_specifics,
+                        /*client_tag=*/"payment_instrument_creation_option")));
+
+  EXPECT_THAT(PopulateWalletTypesFromSyncData(entity_change_list)
+                  .payment_instrument_creation_options,
+              testing::UnorderedElementsAre(
+                  EqualsProto(payment_instrument_creation_option)));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Tests that PopulateWalletTypesFromSyncData populates BankAccounts.
 TEST_F(PaymentsSyncBridgeUtilTest, PopulateBankAccountFromSyncData) {
@@ -905,9 +978,12 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateBankAccountFromSyncData) {
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   ASSERT_EQ(1u, bank_accounts.size());
   EXPECT_EQ(expected_bank_account, bank_accounts.at(0));
@@ -941,9 +1017,12 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   EXPECT_EQ(0u, bank_accounts.size());
 }
@@ -997,9 +1076,12 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   ASSERT_EQ(1u, payment_instruments.size());
   sync_pb::PaymentInstrument payment_instrument = payment_instruments.at(0);
@@ -1066,9 +1148,12 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   EXPECT_EQ(0u, payment_instruments.size());
 }
@@ -1108,9 +1193,12 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   ASSERT_EQ(1u, payment_instruments.size());
   sync_pb::PaymentInstrument payment_instrument = payment_instruments.at(0);
@@ -1168,9 +1256,12 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   ASSERT_EQ(0u, payment_instruments.size());
 }
@@ -1214,9 +1305,12 @@ TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   ASSERT_EQ(1U, wallet_cards.size());
   EXPECT_EQ(test_case.card_network, wallet_cards.front().network());
@@ -1307,9 +1401,12 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   std::vector<BankAccount> bank_accounts;
   std::vector<CreditCardBenefit> benefits;
   std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
                                   customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments);
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
 
   ASSERT_EQ(1U, wallet_cards.size());
   // With the flag off, the card network is `kGenericCard` instead of
@@ -1389,6 +1486,112 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   EXPECT_TRUE(
       AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
 }
+
+// Tests that AreAnyItemsDifferent() returns false if payment instrument
+// creation options are the same.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentCreationOptionsDifferent_ReturnFalseForSameData) {
+  sync_pb::PaymentInstrumentCreationOption creation_option_1 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
+  sync_pb::PaymentInstrumentCreationOption creation_option_2 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"5678");
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options_1 = {
+      creation_option_1, creation_option_2};
+
+  sync_pb::PaymentInstrumentCreationOption creation_option_3 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
+  sync_pb::PaymentInstrumentCreationOption creation_option_4 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"5678");
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options_2 = {
+      creation_option_3, creation_option_4};
+
+  EXPECT_FALSE(AreAnyItemsDifferent(creation_options_1, creation_options_2));
+}
+
+// Tests that AreAnyItemsDifferent() returns true if payment instrument creation
+// options have different vector sizes.
+TEST_F(
+    PaymentsSyncBridgeUtilTest,
+    AreAnyPaymentInstrumentCreationOptionsDifferent_ReturnTrueForDifferentDataSize) {
+  sync_pb::PaymentInstrumentCreationOption creation_option_1 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
+  sync_pb::PaymentInstrumentCreationOption creation_option_2 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"5678");
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options_1 = {
+      creation_option_1, creation_option_2};
+
+  sync_pb::PaymentInstrumentCreationOption creation_option_3 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options_2 = {
+      creation_option_3};
+
+  EXPECT_TRUE(AreAnyItemsDifferent(creation_options_1, creation_options_2));
+}
+
+// Tests that AreAnyItemsDifferent() returns true if payment instrument creation
+// options have different ids.
+TEST_F(
+    PaymentsSyncBridgeUtilTest,
+    AreAnyPaymentInstrumentCreationOptionsDifferent_ReturnTrueForDifferentId) {
+  sync_pb::PaymentInstrumentCreationOption creation_option_1 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options_1 = {
+      creation_option_1};
+
+  sync_pb::PaymentInstrumentCreationOption creation_option_2 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"5678");
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options_2 = {
+      creation_option_2};
+
+  EXPECT_TRUE(AreAnyItemsDifferent(creation_options_1, creation_options_2));
+}
+
+// Tests that AreAnyItemsDifferent() returns true if payment instrument creation
+// options have different BNPL issuer data.
+TEST_F(
+    PaymentsSyncBridgeUtilTest,
+    AreAnyPaymentInstrumentCreationOptionsDifferent_ReturnTrueForDifferentBnplIssuerDetails) {
+  sync_pb::PaymentInstrumentCreationOption creation_option_1 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options_1 = {
+      creation_option_1};
+
+  sync_pb::PaymentInstrumentCreationOption creation_option_2 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
+  sync_pb::BnplIssuerDetails* bnpl_2 =
+      creation_option_2.mutable_buy_now_pay_later_option();
+  bnpl_2->set_issuer_id("different_issuer_id");
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options_2 = {
+      creation_option_2};
+
+  EXPECT_TRUE(AreAnyItemsDifferent(creation_options_1, creation_options_2));
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Tests that payment instrument creation option is supported if the BNPL
+// syncing experiment flag is enabled.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       IsPaymentInstrumentCreationOptionSupportedBnplFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+
+  EXPECT_TRUE(IsPaymentInstrumentCreationOptionSupported());
+}
+
+// Tests that payment instrument creation option is not supported if the BNPL
+// syncing experiment flag is disabled.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       IsPaymentInstrumentCreationOptionSupportedBnplFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+
+  EXPECT_FALSE(IsPaymentInstrumentCreationOptionSupported());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace autofill

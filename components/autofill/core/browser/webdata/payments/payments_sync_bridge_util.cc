@@ -887,6 +887,16 @@ void SetAutofillWalletSpecificsFromPaymentInstrument(
   *wallet_specifics.mutable_payment_instrument() = payment_instrument;
 }
 
+void SetAutofillWalletSpecificsFromPaymentInstrumentCreationOption(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics) {
+  wallet_specifics.set_type(
+      AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION);
+  *wallet_specifics.mutable_payment_instrument_creation_option() =
+      payment_instrument_creation_option;
+}
+
 void CopyRelevantWalletMetadataAndCvc(
     const PaymentsAutofillTable& table,
     std::vector<CreditCard>* cards_from_server) {
@@ -927,7 +937,9 @@ void PopulateWalletTypesFromSyncData(
     std::vector<CreditCardCloudTokenData>& cloud_token_data,
     std::vector<BankAccount>& bank_accounts,
     std::vector<CreditCardBenefit>& benefits,
-    std::vector<sync_pb::PaymentInstrument>& payment_instruments) {
+    std::vector<sync_pb::PaymentInstrument>& payment_instruments,
+    std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        payment_instrument_creation_options) {
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill_wallet());
 
@@ -983,14 +995,15 @@ void PopulateWalletTypesFromSyncData(
                            .instrument_details_case() ==
                        sync_pb::PaymentInstrument::InstrumentDetailsCase::
                            kBnplIssuerDetails &&
-                   IsBnplSupported()) {
+                   IsBnplIssuerSupported()) {
           payment_instruments.push_back(
               autofill_specifics.payment_instrument());
         }
         break;
-      // TODO(crbug.com/374767814): Implement PopulateWalletTypesFromSyncData
-      // for Payment Instrument Creation Option.
       case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION:
+        payment_instrument_creation_options.push_back(
+            autofill_specifics.payment_instrument_creation_option());
+        break;
       // This entry is deprecated and not supported anymore.
       case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
       case sync_pb::AutofillWalletSpecifics::UNKNOWN:
@@ -1073,6 +1086,33 @@ bool AreAnyItemsDifferent(
   return AreAnyItemsDifferent(old_instrument_strings, new_instrument_strings);
 }
 
+bool AreAnyItemsDifferent(
+    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        old_creation_options,
+    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        new_creation_options) {
+  int old_creation_options_size = old_creation_options.size();
+  int new_creation_options_size = new_creation_options.size();
+  if (old_creation_options_size != new_creation_options_size) {
+    return true;
+  }
+
+  std::vector<std::string> old_creation_option_strings,
+      new_creation_option_strings;
+  old_creation_option_strings.reserve(old_creation_options_size);
+  new_creation_option_strings.reserve(new_creation_options_size);
+
+  for (const auto& creation_option : old_creation_options) {
+    old_creation_option_strings.push_back(creation_option.SerializeAsString());
+  }
+  for (const auto& creation_option : new_creation_options) {
+    new_creation_option_strings.push_back(creation_option.SerializeAsString());
+  }
+
+  return AreAnyItemsDifferent(old_creation_option_strings,
+                              new_creation_option_strings);
+}
+
 bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
   // A valid offer has a non-empty id.
   if (!specifics.has_id())
@@ -1153,7 +1193,7 @@ bool AreMaskedBankAccountSupported() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-bool IsBnplSupported() {
+bool IsBnplIssuerSupported() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(
@@ -1175,7 +1215,13 @@ bool IsEwalletAccountSupported() {
 bool IsGenericPaymentInstrumentSupported() {
   // Currently only eWallet accounts and BNPL are using the generic payment
   // instrument proto for read/write.
-  return IsEwalletAccountSupported() || IsBnplSupported();
+  return IsEwalletAccountSupported() || IsBnplIssuerSupported();
+}
+
+bool IsPaymentInstrumentCreationOptionSupported() {
+  // Currently only BNPL issuer is using the payment instrument
+  // creation option proto for read/write.
+  return IsBnplIssuerSupported();
 }
 
 }  // namespace autofill

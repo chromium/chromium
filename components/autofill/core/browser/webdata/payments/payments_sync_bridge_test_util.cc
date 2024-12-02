@@ -200,4 +200,17 @@ CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
   return wallet_specifics;
 }
 
+sync_pb::AutofillWalletSpecifics
+CreateAutofillWalletSpecificsForPaymentInstrumentCreationOption(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option) {
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  wallet_specifics.set_type(
+      sync_pb::AutofillWalletSpecifics_WalletInfoType::
+          AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT_CREATION_OPTION);
+  *wallet_specifics.mutable_payment_instrument_creation_option() =
+      payment_instrument_creation_option;
+  return wallet_specifics;
+}
+
 }  // namespace autofill
