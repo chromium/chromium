@@ -157,6 +157,11 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
   GetViewAccessibility().SetIsEditable(true);
   UpdateAccessibleName();
+
+  title_text_changed_subscription_ =
+      title_->AddTextChangedCallback(base::BindRepeating(
+          &TabGroupHeader::UpdateTooltipText, base::Unretained(this)));
+  UpdateTooltipText();
 }
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
@@ -278,15 +283,19 @@ void TabGroupHeader::OnFocus() {
       nullptr, TabSlotController::HoverCardUpdateType::kFocus);
 }
 
-std::u16string TabGroupHeader::GetTooltipText(const gfx::Point& p) const {
+void TabGroupHeader::OnGroupChanged() {
+  UpdateTooltipText();
+}
+
+void TabGroupHeader::UpdateTooltipText() {
   if (!title_->GetText().empty()) {
-    return l10n_util::GetStringFUTF16(
+    SetCachedTooltipText(l10n_util::GetStringFUTF16(
         IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, title_->GetText(),
-        tab_slot_controller_->GetGroupContentString(group().value()));
+        tab_slot_controller_->GetGroupContentString(group().value())));
   } else {
-    return l10n_util::GetStringFUTF16(
+    SetCachedTooltipText(l10n_util::GetStringFUTF16(
         IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
-        tab_slot_controller_->GetGroupContentString(group().value()));
+        tab_slot_controller_->GetGroupContentString(group().value())));
   }
 }
 

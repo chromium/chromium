@@ -171,26 +171,24 @@ void MenuItemView::ViewHierarchyChanged(
   }
 }
 
-std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
-  if (!tooltip_.empty())
-    return tooltip_;
-
-  if (type_ == Type::kSeparator)
-    return std::u16string();
-
-  const MenuController* controller = GetMenuController();
-  if (!controller ||
-      controller->exit_type() != MenuController::ExitType::kNone) {
-    // Either the menu has been closed or we're in the process of closing the
-    // menu. Don't attempt to query the delegate as it may no longer be valid.
-    return std::u16string();
+void MenuItemView::UpdateTooltipText(std::optional<std::u16string> new_text) {
+  if (new_text.has_value()) {
+    custom_tooltip_ = new_text.value();
+    SetCachedTooltipText(custom_tooltip_);
+    return;
   }
 
-  if (GetRootMenuItem()->canceled_) {
-    // TODO(sky): if |canceled_| is true, controller->exit_type() should be
-    // something other than ExitType::kNone, but crash reports seem to indicate
-    // otherwise. Figure out why this is needed.
-    return std::u16string();
+  if (!custom_tooltip_.empty()) {
+    SetCachedTooltipText(custom_tooltip_);
+    return;
+  }
+
+  SetCachedTooltipText(std::u16string());
+}
+
+std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
+  if (!GetCachedTooltipText().empty()) {
+    return GetCachedTooltipText();
   }
 
   const MenuDelegate* delegate = GetDelegate();
@@ -365,7 +363,11 @@ MenuItemView* MenuItemView::AddMenuItemAt(
   }
   if (GetDelegate() && !GetDelegate()->IsCommandVisible(item_id))
     item->SetVisible(false);
-  return submenu_->AddChildViewAt(item, index);
+  auto* added_item = submenu_->AddChildViewAt(item, index);
+
+  added_item->UpdateTooltipText();
+
+  return added_item;
 }
 
 void MenuItemView::RemoveMenuItem(View* item) {
@@ -534,7 +536,7 @@ void MenuItemView::SetSelectionOfActionableSubmenu(
 void MenuItemView::SetTooltip(const std::u16string& tooltip, int item_id) {
   MenuItemView* item = GetMenuItemByID(item_id);
   DCHECK(item);
-  item->tooltip_ = tooltip;
+  item->UpdateTooltipText(tooltip);
 }
 
 void MenuItemView::SetIcon(const ui::ImageModel& icon) {
@@ -902,6 +904,8 @@ MenuItemView::MenuItemView(MenuItemView* parent,
   UpdateAccessibleSelection();
   UpdateAccessibleKeyShortcuts();
   UpdateAccessibleExpandedCollapsedState();
+
+  UpdateTooltipText();
 }
 
 void MenuItemView::PrepareForRun(bool has_mnemonics, bool show_mnemonics) {

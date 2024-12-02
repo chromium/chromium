@@ -930,4 +930,44 @@ TEST_F(MenuItemViewA11yTest, AccessibleExpandedCollapsedState) {
   EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
 }
+
+TEST_F(MenuItemViewA11yTest, TooltipText) {
+  const int id = 1000;
+  const auto type = views::MenuItemView::Type::kNormal;
+  const int index = 0;
+
+  menu_item_view()->AddMenuItemAt(index, id, u"Custom", std::u16string(),
+                                  std::u16string(), ui::ImageModel(),
+                                  ui::ImageModel(), type, ui::NORMAL_SEPARATOR,
+                                  std::nullopt, std::nullopt, std::nullopt);
+
+  menu_item_view()->SetTooltip(u"Tooltip", id);
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetCachedTooltipText(),
+            u"Tooltip");
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(gfx::Point()),
+            u"Tooltip");
+}
+
+TEST_F(MenuItemViewA11yTest, TooltipTextAccessibility) {
+  const int id = 1000;
+  const auto type = views::MenuItemView::Type::kNormal;
+  const int index = 0;
+
+  menu_item_view()->AddMenuItemAt(index, id, u"Custom", std::u16string(),
+                                  std::u16string(), ui::ImageModel(),
+                                  ui::ImageModel(), type, ui::NORMAL_SEPARATOR,
+                                  std::nullopt, std::nullopt, std::nullopt);
+  ui::AXNodeData data;
+
+  menu_item_view()->SetTooltip(u"Tooltip", id);
+  menu_item_view()
+      ->GetMenuItemByID(id)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetCachedTooltipText(),
+            u"Tooltip");
+  // When no description is explicitly set, the tooltip should be used.
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Tooltip");
+}
 }  // namespace views

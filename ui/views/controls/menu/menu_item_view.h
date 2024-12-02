@@ -142,6 +142,9 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   FocusBehavior GetFocusBehavior() const override;
 
+  // To update the custom tooltip, call this method with the new text.
+  void UpdateTooltipText(std::optional<std::u16string> new_text = std::nullopt);
+
   // Returns if a given |anchor| is a bubble or not.
   static bool IsBubble(MenuAnchorPosition anchor);
 
@@ -666,7 +669,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   raw_ptr<ImageView> icon_view_ = nullptr;
 
   // The tooltip to show on hover for this menu item.
-  std::u16string tooltip_;
+  std::u16string custom_tooltip_;
 
   // Cached dimensions. This is cached as text sizing calculations are quite
   // costly.

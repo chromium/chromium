@@ -33,6 +33,7 @@ class TabSlotView : public views::View {
 
   // Used to set the tab group that this view belongs to.
   virtual void SetGroup(std::optional<tab_groups::TabGroupId> group);
+  virtual void OnGroupChanged() {}
 
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
