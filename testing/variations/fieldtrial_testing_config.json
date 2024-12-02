@@ -17126,45 +17126,6 @@
             ]
         }
     ],
-    "PerformanceInterventionUILaunch": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledString1_20240724",
-                    "params": {
-                        "intervention_dialog_version": "1"
-                    },
-                    "enable_features": [
-                        "PerformanceInterventionUI"
-                    ]
-                },
-                {
-                    "name": "EnabledString2_20240724",
-                    "params": {
-                        "intervention_dialog_version": "2"
-                    },
-                    "enable_features": [
-                        "PerformanceInterventionUI"
-                    ]
-                },
-                {
-                    "name": "EnabledString3_20240724",
-                    "params": {
-                        "intervention_dialog_version": "3"
-                    },
-                    "enable_features": [
-                        "PerformanceInterventionUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "PeripheralCustomization": [
         {
             "platforms": [

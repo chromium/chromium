@@ -34,13 +34,16 @@ PerformanceInterventionButtonController::
     : browser_(browser) {
   CHECK(delegate);
   delegate_ = delegate;
-  CHECK(PerformanceDetectionManager::HasInstance());
-  PerformanceDetectionManager* const detection_manager =
-      PerformanceDetectionManager::GetInstance();
-  const PerformanceDetectionManager::ResourceTypeSet resource_types = {
-      PerformanceDetectionManager::ResourceType::kCpu};
-  detection_manager->AddActionableTabsObserver(resource_types, this);
-  browser->tab_strip_model()->AddObserver(this);
+
+  // The `PerformanceDetectionManager` is undefined in unit tests because it
+  // is constructed in `ChromeContentBrowserClient::CreateBrowserMainParts`.
+  if (PerformanceDetectionManager::HasInstance()) {
+    const PerformanceDetectionManager::ResourceTypeSet resource_types = {
+        PerformanceDetectionManager::ResourceType::kCpu};
+    PerformanceDetectionManager::GetInstance()->AddActionableTabsObserver(
+        resource_types, this);
+    browser->tab_strip_model()->AddObserver(this);
+  }
 }
 
 PerformanceInterventionButtonController::
