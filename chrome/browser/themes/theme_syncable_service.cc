@@ -678,9 +678,12 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
   }
 
   if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
-    // Fetch ntp background dict from pref.
-    // TODO(crbug.com/356148174): Query NtpCustomBackgroundService instead.
-    if (PrefService* prefs = profile_->GetPrefs()) {
+    // Skip setting background in the specifics if the background is set using
+    // local resource.
+    PrefService* prefs = profile_->GetPrefs();
+    if (prefs && !prefs->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
+      // Fetch ntp background dict from pref.
+      // TODO(crbug.com/356148174): Query NtpCustomBackgroundService instead.
       if (const base::Value* pref = prefs->GetUserPrefValue(
               prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse)) {
         *theme_specifics.mutable_ntp_background() =
@@ -813,6 +816,12 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
   if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
       prefs) {
     for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
+      // Skip setting ntp background pref if the background is currently set
+      // using a local resource.
+      if (pref_in_migration == ThemePrefInMigration::kNtpCustomBackgroundDict &&
+          prefs->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
+        continue;
+      }
       if (const base::Value* value =
               prefs->GetUserPrefValue(pref_names.non_syncing_pref_name)) {
         prefs->Set(pref_names.syncing_pref_name, value->Clone());
