@@ -16,6 +16,7 @@
     exceptionsThrown.push(exceptionThrown);
   };
 
+  await evaluate(url, {mode: 'same-origin'});
   await evaluate(url);
   await evaluate(`${url}?origin=${encodeURIComponent('http://127.0.0.1')}`);
   await evaluate(`${url}?methods=GET&origin=1`, {
