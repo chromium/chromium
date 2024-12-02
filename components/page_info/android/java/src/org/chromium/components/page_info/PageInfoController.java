@@ -135,9 +135,6 @@ public class PageInfoController
     // The controller for the cookies section of the page info.
     private PageInfoCookiesController mCookiesController;
 
-    // The controller for the tracking protection section of the page info. Replaces cookies.
-    private PageInfoTrackingProtectionController mTrackingProtectionController;
-
     // The controller for the tracking protection section for the 100% 3PCD launch UI.
     private PageInfoTrackingProtectionLaunchController mTrackingProtectionLaunchController;
 
@@ -283,11 +280,6 @@ public class PageInfoController
                     new PageInfoTrackingProtectionLaunchController(
                             this, mView.getCookiesRowView(), mDelegate);
             mSubpageControllers.add(mTrackingProtectionLaunchController);
-        } else if (mDelegate.showTrackingProtectionUi()) {
-            mTrackingProtectionController =
-                    new PageInfoTrackingProtectionController(
-                            this, mView.getCookiesRowView(), mDelegate);
-            mSubpageControllers.add(mTrackingProtectionController);
         } else {
             mCookiesController =
                     new PageInfoCookiesController(this, mView.getCookiesRowView(), mDelegate);
@@ -367,10 +359,6 @@ public class PageInfoController
         if (mCookiesController != null) {
             mCookiesController.destroy();
             mCookiesController = null;
-        }
-        if (mTrackingProtectionController != null) {
-            mTrackingProtectionController.destroy();
-            mTrackingProtectionController = null;
         }
         if (mTrackingProtectionLaunchController != null) {
             mTrackingProtectionLaunchController.destroy();
@@ -511,10 +499,6 @@ public class PageInfoController
 
     public View getPageInfoViewForTesting() {
         return mContainer;
-    }
-
-    public PageInfoTrackingProtectionController getTrackingProtectionControllerForTesting() {
-        return mTrackingProtectionController;
     }
 
     public PageInfoCookiesController getCookiesControllerForTesting() {

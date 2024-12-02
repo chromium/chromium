@@ -279,13 +279,10 @@ public class PageInfoViewTest {
                         ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS)) {
             var tpController = controller.getTrackingProtectionLaunchControllerForTesting();
             tpController.setFixedExceptionExpirationForTesting(true);
-        } else if (isModeBUiInCookiesController) {
+        } else {
             var tpController = controller.getCookiesControllerForTesting();
             tpController.setFixedExceptionExpirationForTesting(true);
             tpController.setDaysUntilExpirationForTesting(days);
-        } else {
-            var tpController = controller.getTrackingProtectionControllerForTesting();
-            tpController.setFixedExceptionExpirationForTesting(true);
         }
     }
 
@@ -306,7 +303,7 @@ public class PageInfoViewTest {
     private void enableTpcdGrantEnforcement() {
         PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
         assertNotNull(controller);
-        var tpController = controller.getTrackingProtectionControllerForTesting();
+        var tpController = controller.getCookiesControllerForTesting();
         tpController.setEnforcementForTesting(CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT);
     }
 
