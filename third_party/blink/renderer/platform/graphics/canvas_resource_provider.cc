@@ -1133,8 +1133,25 @@ CanvasResourceProvider::CreateSharedImageProvider(
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     CanvasResourceHost* resource_host) {
-  gfx::Size size = gfx::Size(info.width(), info.height());
+  return CanvasResourceProvider::CreateSharedImageProvider(
+      gfx::Size(info.width(), info.height()), info.colorType(),
+      info.alphaType(), info.refColorSpace(), filter_quality, should_initialize,
+      context_provider_wrapper, raster_mode, shared_image_usage_flags,
+      resource_host);
+}
 
+std::unique_ptr<CanvasResourceProvider>
+CanvasResourceProvider::CreateSharedImageProvider(
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
+    cc::PaintFlags::FilterQuality filter_quality,
+    ShouldInitialize should_initialize,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    RasterMode raster_mode,
+    gpu::SharedImageUsageSet shared_image_usage_flags,
+    CanvasResourceHost* resource_host) {
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
@@ -1158,14 +1175,14 @@ CanvasResourceProvider::CreateSharedImageProvider(
 
   const bool is_accelerated = raster_mode == RasterMode::kGPU;
 
-  SkColorType adjusted_color_type = info.colorType();
+  SkColorType adjusted_color_type = sk_color_type;
   // TODO(https://crbug.com/1210946): Pass in info as is for all cases.
   // Overriding the info to use RGBA instead of N32 is needed because code
   // elsewhere assumes RGBA. OTOH the software path seems to be assuming N32
   // somewhere in the later pipeline but for offscreen canvas only.
   if (!shared_image_usage_flags.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                                        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
-    if (is_accelerated && info.colorType() != kRGBA_F16_SkColorType) {
+    if (is_accelerated && sk_color_type != kRGBA_F16_SkColorType) {
       adjusted_color_type = kRGBA_8888_SkColorType;
     }
   }
@@ -1208,7 +1225,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
 #endif
 
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
-      size, adjusted_color_type, info.alphaType(), info.refColorSpace(),
+      size, adjusted_color_type, alpha_type, std::move(sk_color_space),
       filter_quality, context_provider_wrapper, is_accelerated,
       shared_image_usage_flags, resource_host);
   if (provider->IsValid()) {

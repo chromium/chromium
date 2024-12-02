@@ -136,6 +136,18 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceHost* resource_host = nullptr);
 
+  static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
+      gfx::Size size,
+      SkColorType sk_color_type,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
+      cc::PaintFlags::FilterQuality filter_quality,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      RasterMode raster_mode,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      CanvasResourceHost* resource_host = nullptr);
+
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       const SkImageInfo& info,
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
