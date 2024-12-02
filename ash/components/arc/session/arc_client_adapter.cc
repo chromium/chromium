@@ -82,7 +82,6 @@ ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
   StartArcMiniInstanceRequest request;
   request.set_native_bridge_experiment(params.native_bridge_experiment);
   request.set_lcd_density(params.lcd_density);
-  request.set_arc_file_picker_experiment(params.arc_file_picker_experiment);
   request.set_play_store_auto_update(
       ToArcMiniInstanceRequestPlayStoreAutoUpdate(
           params.play_store_auto_update));

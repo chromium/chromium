@@ -190,7 +190,6 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
   static const base::Feature constexpr* kFeatureLookup[] = {
       &arc::kBootCompletedBroadcastFeature,
       &arc::kCustomTabsExperimentFeature,
-      &arc::kFilePickerExperimentFeature,
       &arc::kNativeBridgeToggleFeature,
       &features::kSessionManagerLongKillTimeout,
       &features::kSessionManagerLivenessCheck,

@@ -5859,11 +5859,6 @@ const char kArcExtendServiceAnrTimeoutDescription[] =
     " extended from 20 seconds to 30 seconds for foreground services, 200"
     " seconds to 300 seconds for background services.";
 
-const char kArcFilePickerExperimentName[] =
-    "Enable file picker experiment for ARC";
-const char kArcFilePickerExperimentDescription[] =
-    "Enables using ChromeOS file picker in ARC.";
-
 const char kArcFriendlierErrorDialogName[] =
     "Enable friendlier error dialog for ARC";
 const char kArcFriendlierErrorDialogDescription[] =

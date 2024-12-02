@@ -82,7 +82,6 @@ StartParams GetPopulatedStartParams() {
   StartParams params;
   params.native_bridge_experiment = false;
   params.lcd_density = 240;
-  params.arc_file_picker_experiment = true;
   params.play_store_auto_update =
       StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_ON;
   params.arc_custom_tabs_experiment = true;
@@ -2803,22 +2802,6 @@ TEST_F(ArcVmClientAdapterTest, LazyWebViewInitDisabled) {
 
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_FALSE(request.enable_web_view_zygote_lazy_init());
-}
-
-TEST_F(ArcVmClientAdapterTest, ArcFilePickerExperimentFalse) {
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.arc_file_picker_experiment = false;
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(request.mini_instance_request().arc_file_picker_experiment());
-}
-
-TEST_F(ArcVmClientAdapterTest, ArcFilePickerExperimentTrue) {
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.arc_file_picker_experiment = true;
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(request.mini_instance_request().arc_file_picker_experiment());
 }
 
 TEST_F(ArcVmClientAdapterTest, ArcCustomTabsExperimentFalse) {

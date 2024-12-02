@@ -53,9 +53,6 @@ struct StartParams {
   bool native_bridge_experiment = false;
   int lcd_density = -1;
 
-  // Experiment flag for go/arc-file-picker.
-  bool arc_file_picker_experiment = false;
-
   // Optional mode for play store auto-update.
   PlayStoreAutoUpdate play_store_auto_update =
       PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT;
