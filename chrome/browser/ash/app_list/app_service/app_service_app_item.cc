@@ -63,7 +63,6 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
     case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kStandaloneBrowserExtension:
       // Other app types are user-installed.
       return true;
   }

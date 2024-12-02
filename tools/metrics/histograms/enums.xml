@@ -605,7 +605,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="12" label="Chrome browser (inc. web/Chrome apps in tabs)"/>
   <int value="13" label="Chrome app opened in Standalone browser"/>
   <int value="14" label="Browser extension"/>
-  <int value="15" label="Extension opened in Standalone browser"/>
+  <int value="15" label="(Obsolete) Extension opened in Standalone browser"/>
   <int value="16" label="Web app opened in Standalone browser"/>
   <int value="17" label="Bruschetta app"/>
 </enum>

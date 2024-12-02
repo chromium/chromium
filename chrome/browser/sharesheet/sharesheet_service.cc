@@ -494,7 +494,6 @@ void SharesheetService::RecordUserActionMetrics(
       case apps::AppType::kBruschetta:
       case apps::AppType::kStandaloneBrowserChromeApp:
       case apps::AppType::kExtension:
-      case apps::AppType::kStandaloneBrowserExtension:
       case apps::AppType::kUnknown:
         NOTREACHED();
     }

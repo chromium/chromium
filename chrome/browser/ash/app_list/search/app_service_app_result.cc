@@ -112,7 +112,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::AppType::kBruschetta:
       return ash::BRUSCHETTA_APP;
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kUnknown:
       NOTREACHED();
   }

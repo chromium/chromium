@@ -64,8 +64,6 @@ constexpr auto kAppTypeNameMap =
         {apps::kStandaloneBrowserChromeAppHistogramName,
          apps::AppTypeName::kStandaloneBrowserChromeApp},
         {apps::kExtensionHistogramName, apps::AppTypeName::kExtension},
-        {apps::kStandaloneBrowserExtensionHistogramName,
-         apps::AppTypeName::kStandaloneBrowserExtension},
         {apps::kStandaloneBrowserWebAppHistogramName,
          apps::AppTypeName::kStandaloneBrowserWebApp},
         {apps::kBruschettaHistogramName, apps::AppTypeName::kBruschetta},
@@ -253,8 +251,7 @@ bool IsAppOpenedWithBrowserWindow(Profile* profile,
   if (app_type == AppType::kWeb || app_type == AppType::kSystemWeb ||
       app_type == AppType::kExtension ||
       app_type == AppType::kStandaloneBrowser ||
-      app_type == AppType::kStandaloneBrowserChromeApp ||
-      app_type == AppType::kStandaloneBrowserExtension) {
+      app_type == AppType::kStandaloneBrowserChromeApp) {
     return true;
   }
 
@@ -320,8 +317,6 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
       return AppTypeName::kStandaloneBrowserChromeApp;
     case AppType::kExtension:
       return apps::AppTypeName::kExtension;
-    case AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeName::kStandaloneBrowserExtension;
     case AppType::kBruschetta:
       return apps::AppTypeName::kBruschetta;
   }
@@ -357,8 +352,6 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
       return kStandaloneBrowserChromeAppHistogramName;
     case apps::AppTypeName::kExtension:
       return kExtensionHistogramName;
-    case apps::AppTypeName::kStandaloneBrowserExtension:
-      return kStandaloneBrowserExtensionHistogramName;
     case apps::AppTypeName::kStandaloneBrowserWebApp:
       return kStandaloneBrowserWebAppHistogramName;
     case apps::AppTypeName::kBruschetta:
@@ -445,7 +438,6 @@ bool ShouldRecordAppKMForAppTypeName(AppType app_type) {
     case AppType::kExtension:
     case AppType::kStandaloneBrowser:
     case AppType::kStandaloneBrowserChromeApp:
-    case AppType::kStandaloneBrowserExtension:
       return true;
     case AppType::kBruschetta:
     case AppType::kUnknown:
@@ -512,8 +504,6 @@ AppTypeName GetAppTypeName(Profile* profile,
                                                          container);
     case AppType::kExtension:
       return apps::AppTypeName::kExtension;
-    case AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeName::kStandaloneBrowserExtension;
     case AppType::kBruschetta:
       return apps::AppTypeName::kBruschetta;
   }

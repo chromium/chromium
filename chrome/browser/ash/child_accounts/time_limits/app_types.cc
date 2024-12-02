@@ -25,7 +25,6 @@ std::string AppTypeToString(apps::AppType app_type) {
     case apps::AppType::kChromeApp:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kStandaloneBrowserExtension:
       return "Extension";
     case apps::AppType::kBuiltIn:
       return "Built in";

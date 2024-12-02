@@ -117,7 +117,6 @@ export class AppManagementAppDetailsItem extends
         return this.i18n('appManagementAppDetailsTypeChrome' + suffix);
       case AppType.kWeb:
       case AppType.kExtension:
-      case AppType.kStandaloneBrowserExtension:
         return this.i18n('appManagementAppDetailsTypeWeb' + suffix);
       default:
         console.error('App type not handled by app management.');

@@ -71,7 +71,6 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
     // Extensions are recorded separately, and AppService only has some
     // extensions with file browser handlers.
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       return kUnknownAppsCountHistogramName;
     case apps::AppType::kArc:
       return kArcAppsCountHistogramName;

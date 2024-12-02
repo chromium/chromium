@@ -49,7 +49,6 @@ apps::AppTypeName GetHistogrameAppType(apps::AppType app_type) {
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       return apps::AppTypeName::kUnknown;
     case apps::AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
@@ -184,7 +183,6 @@ void AppLaunchHandler::LaunchApp(apps::AppType app_type,
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       NOTREACHED();
   }
   restore_data_->RemoveApp(app_id);

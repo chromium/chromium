@@ -851,7 +851,6 @@ std::string GetAppTypeForJson(apps::AppRegistryCache* apps_cache,
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       // Default to unsupported. This app should not be captured.
       return kAppTypeUnsupported;
   }
@@ -1767,7 +1766,6 @@ bool FillApp(const std::string& app_id,
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       // Unsupported app types will be ignored.
       return false;
   }

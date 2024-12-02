@@ -93,7 +93,6 @@ std::optional<DlpFileDestination> GetFileDestinationForApp(
   switch (app_update.AppType()) {
     case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kChromeApp:
       return DlpFileDestination(GURL(base::StrCat(
           {extensions::kExtensionScheme, "://", app_update.AppId()})));

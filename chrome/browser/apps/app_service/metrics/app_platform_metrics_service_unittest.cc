@@ -331,12 +331,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
                  /*is_platform_app=*/true)});
 
     pre_installed_apps_.insert(
-        {kExtensionId,
-         TestApp(kExtensionId, AppType::kStandaloneBrowserExtension,
-                 "PDF Viewer", Readiness::kReady, InstallReason::kUser,
-                 InstallSource::kChromeWebStore)});
-
-    pre_installed_apps_.insert(
         {"u", TestApp("u", AppType::kUnknown, "", Readiness::kReady,
                       InstallReason::kUnknown, InstallSource::kUnknown,
                       /*should_notify_initialized=*/false)});
@@ -1602,8 +1596,6 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
                         AppTypeName::kStandaloneBrowser);
   VerifyAppUsageTimeUkm(kChromeAppId, base::Minutes(4),
                         AppTypeName::kStandaloneBrowserChromeApp);
-  VerifyAppUsageTimeUkm(kExtensionId, base::Minutes(3),
-                        AppTypeName::kStandaloneBrowserExtension);
 }
 
 TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
@@ -1662,8 +1654,6 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   FakePublisher fake_standalone_browser(proxy, AppType::kStandaloneBrowser);
   FakePublisher fake_standalone_browser_chrome_app(
       proxy, AppType::kStandaloneBrowserChromeApp);
-  FakePublisher fake_standalone_browser_extension(
-      proxy, AppType::kStandaloneBrowserExtension);
 
   EXPECT_CALL(fake_borealis_apps,
               Launch(/*app_id=*/borealis::kClientAppId, ui::EF_NONE,
@@ -1781,21 +1771,6 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
       2 /*Launch kChromeAppId + kChromeAppId2*/,
       AppTypeNameV2::kStandaloneBrowserChromeAppWindow);
 
-  EXPECT_CALL(fake_standalone_browser_extension,
-              Launch(/*app_id=*/kExtensionId, ui::EF_NONE,
-                     LaunchSource::kFromChromeInternal, _))
-      .Times(1);
-  proxy->Launch(
-      /*app_id=*/kExtensionId, ui::EF_NONE, LaunchSource::kFromChromeInternal,
-      nullptr);
-  VerifyAppsLaunchUkm("app://" + std::string(kExtensionId),
-                      AppTypeName::kStandaloneBrowserExtension,
-                      LaunchSource::kFromChromeInternal);
-  VerifyAppLaunchPerAppTypeHistogram(1,
-                                     AppTypeName::kStandaloneBrowserExtension);
-  VerifyAppLaunchPerAppTypeV2Histogram(
-      1, AppTypeNameV2::kStandaloneBrowserExtension);
-
   proxy->LaunchAppWithUrl(
       /*app_id=*/kWebAppId1, ui::EF_NONE, GURL("https://boo.com/a"),
       LaunchSource::kFromFileManager, nullptr);
@@ -1831,8 +1806,6 @@ TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   FakePublisher fake_arc_apps(proxy, AppType::kArc);
   FakePublisher fake_standalone_browser_chrome_app(
       proxy, AppType::kStandaloneBrowserChromeApp);
-  FakePublisher fake_standalone_browser_extension(
-      proxy, AppType::kStandaloneBrowserExtension);
 
   proxy->UninstallSilently(kAndroidAppId, UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://com.google.A", AppTypeName::kArc,
@@ -1842,12 +1815,6 @@ TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
       /*app_id=*/kChromeAppId, UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://" + std::string(kChromeAppId),
                          AppTypeName::kStandaloneBrowserChromeApp,
-                         UninstallSource::kAppList);
-
-  proxy->UninstallSilently(
-      /*app_id=*/kExtensionId, UninstallSource::kAppList);
-  VerifyAppsUninstallUkm("app://" + std::string(kExtensionId),
-                         AppTypeName::kStandaloneBrowserExtension,
                          UninstallSource::kAppList);
 }
 
@@ -2424,15 +2391,6 @@ TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserChromeApp) {
   VerifyUkm("app://" + std::string(kChromeAppId),
             AppTypeName::kStandaloneBrowserChromeApp, /*event_count=*/1,
             InputEventSource::kKeyboard);
-}
-
-TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
-  ModifyInstance(kExtensionId, window(), kActiveInstanceState);
-  CreateInputEvent(InputEventSource::kMouse);
-  app_platform_input_metrics()->OnTwoHours();
-  VerifyUkm("app://" + std::string(kExtensionId),
-            AppTypeName::kStandaloneBrowserExtension, /*event_count=*/1,
-            InputEventSource::kMouse);
 }
 
 // Tests for app platform metrics observers.

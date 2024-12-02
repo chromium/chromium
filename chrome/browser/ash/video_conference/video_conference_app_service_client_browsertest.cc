@@ -642,7 +642,6 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
         apps::AppType::kStandaloneBrowser, apps::AppType::kRemote,
         apps::AppType::kBorealis, apps::AppType::kSystemWeb,
         apps::AppType::kStandaloneBrowserChromeApp, apps::AppType::kExtension,
-        apps::AppType::kStandaloneBrowserExtension,
         apps::AppType::kBruschetta}) {
     // Create a fake id.
     const std::string app_id = base::NumberToString(static_cast<int>(type));

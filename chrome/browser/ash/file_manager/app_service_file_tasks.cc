@@ -93,7 +93,6 @@ TaskType GetTaskType(apps::AppType app_type) {
     case apps::AppType::kChromeApp:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kStandaloneBrowserExtension:
       // Chrome apps and Extensions both get called file_handler, even though
       // extensions really have file_browser_handler. It doesn't matter anymore
       // because both are executed through App Service, which can tell the
@@ -257,7 +256,6 @@ void FindAppServiceTasks(Profile* profile,
       apps::AppType::kChromeApp,
       apps::AppType::kExtension,
       apps::AppType::kStandaloneBrowserChromeApp,
-      apps::AppType::kStandaloneBrowserExtension,
       apps::AppType::kBruschetta,
       apps::AppType::kCrostini,
       apps::AppType::kPluginVm,

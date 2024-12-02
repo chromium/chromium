@@ -61,8 +61,6 @@ chromium-metrics-reviews@google.com.
   <variant name="StandaloneBrowser" summary="Standalone browsers"/>
   <variant name="StandaloneBrowserChromeApp"
       summary="Chrome apps hosted by lacros."/>
-  <variant name="StandaloneBrowserExtension"
-      summary="Extension hosted by lacros."/>
   <variant name="StandaloneBrowserWebApp" summary="Web apps hosted by lacros."/>
   <variant name="SystemWebApp" summary="System web apps"/>
   <variant name="WebApp" summary="Web apps"/>
@@ -88,8 +86,6 @@ chromium-metrics-reviews@google.com.
       summary="Chrome apps opened in Standalone browser tabs."/>
   <variant name="StandaloneBrowserChromeAppWindow"
       summary="Chrome apps opened in Standalone browser windows."/>
-  <variant name="StandaloneBrowserExtension"
-      summary="Extension hosted by lacros."/>
   <variant name="StandaloneBrowserWebAppTab"
       summary="Web apps opened in Standalone browser tabs."/>
   <variant name="StandaloneBrowserWebAppWindow"

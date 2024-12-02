@@ -34,8 +34,6 @@ std::ostream& operator<<(std::ostream& os, AppType v) {
       return os << "AppType::kStandaloneBrowserChromeApp";
     case AppType::kExtension:
       return os << "AppType::kExtension";
-    case AppType::kStandaloneBrowserExtension:
-      return os << "AppType::kStandaloneBrowserExtension";
     case AppType::kBruschetta:
       return os << "AppType::kBruschetta";
   }
@@ -194,8 +192,6 @@ ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type) {
       return ApplicationType::APPLICATION_TYPE_STANDALONE_BROWSER_CHROME_APP;
     case AppType::kExtension:
       return ApplicationType::APPLICATION_TYPE_EXTENSION;
-    case AppType::kStandaloneBrowserExtension:
-      return ApplicationType::APPLICATION_TYPE_STANDALONE_BROWSER_EXTENSION;
     case AppType::kBruschetta:
       return ApplicationType::APPLICATION_TYPE_BRUSCHETTA;
   }
@@ -243,7 +239,6 @@ std::optional<PackageType> ConvertAppTypeToPackageType(AppType app_type) {
     case AppType::kSystemWeb:
     case AppType::kStandaloneBrowserChromeApp:
     case AppType::kExtension:
-    case AppType::kStandaloneBrowserExtension:
       return std::nullopt;
   }
 }

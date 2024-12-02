@@ -49,7 +49,6 @@ std::optional<std::string> GetAppReportingCategoryForType(
     case ::apps::AppType::kRemote:
     case ::apps::AppType::kStandaloneBrowserChromeApp:
     case ::apps::AppType::kExtension:
-    case ::apps::AppType::kStandaloneBrowserExtension:
       return kAppCategoryChromeAppsExtensions;
     case ::apps::AppType::kWeb:
       return kAppCategoryPWA;

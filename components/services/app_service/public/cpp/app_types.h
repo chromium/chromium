@@ -36,8 +36,8 @@ enum class AppType {
   kSystemWeb = 10,         // System web app.
   kStandaloneBrowserChromeApp = 11,  // Chrome app hosted in Lacros.
   kExtension = 12,                   // Browser extension.
-  kStandaloneBrowserExtension = 13,  // Extension hosted in Lacros.
-  kBruschetta = 14,                  // Bruschetta app, see go/bruschetta.
+  // kStandaloneBrowserExtension = 13,  // Removed. No longer used.
+  kBruschetta = 14,  // Bruschetta app, see go/bruschetta.
 
   // The value for UMA. Should be updated when a new entry is added.
   kMaxValue = kBruschetta

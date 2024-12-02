@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Chrome browser (inc. web/Chrome apps in tabs)"/>
   <int value="15" label="Chrome app opened in Standalone browser"/>
   <int value="16" label="Browser extension"/>
-  <int value="17" label="Extension opened in Standalone browser"/>
+  <int value="17" label="(Obsolete) Extension opened in Standalone browser"/>
   <int value="18" label="Chrome apps opened in Standalone browser windows"/>
   <int value="19" label="Chrome apps opened in Standalone browser tabs"/>
   <int value="20" label="Web apps opened in Standalone browser windows"/>

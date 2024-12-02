@@ -264,7 +264,6 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       NOTREACHED();
     case apps::AppType::kStandaloneBrowserChromeApp:
       // Do nothing special for kStandaloneBrowserChromeApp.

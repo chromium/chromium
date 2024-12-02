@@ -86,7 +86,6 @@ constexpr char kExampleUrl3[] = "https://3.example.com/";
 constexpr char kExampleUrl4[] = "https://4.example.com/";
 constexpr char kExampleUrl5[] = "https://5.example.com/";
 constexpr char kExampleUrl6[] = "https://6.example.com/";
-constexpr char kExampleUrl7[] = "https://7.example.com/";
 
 constexpr char kExampleSourceUrl1[] = "1.example.com";
 constexpr char kExampleSourceUrl2[] = "2.example.com";
@@ -118,8 +117,6 @@ constexpr char kFilePath5[] = "test5.txt";
 
 constexpr char kStandaloneBrowserChromeAppId[] = "standaloneChromeApp";
 constexpr char kExtensionAppId[] = "extensionApp";
-constexpr char kStandaloneBrowserExtensionAppId[] =
-    "standaloneBrowserExtensionApp";
 constexpr char kChromeAppId[] = "chromeApp";
 constexpr char kArcAppId[] = "arcApp";
 constexpr char kCrostiniAppId[] = "crostiniApp";
@@ -2112,11 +2109,8 @@ class DlpFilesAppLaunchTest_ExtensionApp
                           kExampleUrl1);
     CreateAndStoreFakeApp(kExtensionAppId, apps::AppType::kExtension,
                           kExampleUrl2);
-    CreateAndStoreFakeApp(kStandaloneBrowserExtensionAppId,
-                          apps::AppType::kStandaloneBrowserExtension,
-                          kExampleUrl3);
     CreateAndStoreFakeApp(kChromeAppId, apps::AppType::kChromeApp,
-                          kExampleUrl4);
+                          kExampleUrl3);
   }
 };
 
@@ -2127,8 +2121,6 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(apps::AppType::kStandaloneBrowserChromeApp,
                         kStandaloneBrowserChromeAppId),
         std::make_tuple(apps::AppType::kExtension, kExtensionAppId),
-        std::make_tuple(apps::AppType::kStandaloneBrowserExtension,
-                        kStandaloneBrowserExtensionAppId),
         std::make_tuple(apps::AppType::kChromeApp, kChromeAppId)));
 
 TEST_P(DlpFilesAppLaunchTest_ExtensionApp, CheckIfAppLaunchAllowed) {
@@ -2408,12 +2400,12 @@ class DlpFilesAppLaunchTest_Unsupported
     CreateAndStoreFakeApp(kUnknownAppId, apps::AppType::kUnknown, kExampleUrl1);
     CreateAndStoreFakeApp(kBuiltInAppId, apps::AppType::kBuiltIn, kExampleUrl2);
     CreateAndStoreFakeApp(kStandaloneBrowserAppId,
-                          apps::AppType::kStandaloneBrowser, kExampleUrl4);
-    CreateAndStoreFakeApp(kRemoteAppId, apps::AppType::kRemote, kExampleUrl5);
+                          apps::AppType::kStandaloneBrowser, kExampleUrl3);
+    CreateAndStoreFakeApp(kRemoteAppId, apps::AppType::kRemote, kExampleUrl4);
     CreateAndStoreFakeApp(kBorealisAppId, apps::AppType::kBorealis,
-                          kExampleUrl6);
+                          kExampleUrl5);
     CreateAndStoreFakeApp(kBruschettaAppId, apps::AppType::kBruschetta,
-                          kExampleUrl7);
+                          kExampleUrl6);
   }
 };
 

@@ -38,7 +38,7 @@ enum class AppTypeName {
   kChromeBrowser = 12,
   kStandaloneBrowserChromeApp = 13,
   kExtension = 14,
-  kStandaloneBrowserExtension = 15,
+  // kStandaloneBrowserExtension = 15,  // Removed.
   kStandaloneBrowserWebApp = 16,
   kBruschetta = 17,
 
@@ -73,7 +73,7 @@ enum class AppTypeNameV2 {
   // kStandaloneBrowserChromeAppTab.
   kStandaloneBrowserChromeApp = 15,
   kExtension = 16,
-  kStandaloneBrowserExtension = 17,
+  // kStandaloneBrowserExtension = 17,  // Removed.
   kStandaloneBrowserChromeAppWindow = 18,
   kStandaloneBrowserChromeAppTab = 19,
   kStandaloneBrowserWebAppWindow = 20,
@@ -104,8 +104,6 @@ constexpr char kChromeBrowserHistogramName[] = "ChromeBrowser";
 constexpr char kStandaloneBrowserChromeAppHistogramName[] =
     "StandaloneBrowserChromeApp";
 constexpr char kExtensionHistogramName[] = "Extension";
-constexpr char kStandaloneBrowserExtensionHistogramName[] =
-    "StandaloneBrowserExtension";
 constexpr char kStandaloneBrowserChromeAppWindowHistogramName[] =
     "StandaloneBrowserChromeAppWindow";
 constexpr char kStandaloneBrowserChromeAppTabHistogramName[] =

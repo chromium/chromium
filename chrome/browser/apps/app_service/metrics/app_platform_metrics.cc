@@ -71,7 +71,6 @@ constexpr auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
     apps::AppTypeName::kChromeBrowser,
     apps::AppTypeName::kStandaloneBrowserChromeApp,
     apps::AppTypeName::kExtension,
-    apps::AppTypeName::kStandaloneBrowserExtension,
     apps::AppTypeName::kStandaloneBrowserWebApp,
     apps::AppTypeName::kBruschetta,
 });
@@ -125,8 +124,6 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kStandaloneBrowserChromeAppWindow;
     case apps::AppType::kExtension:
       return apps::AppTypeNameV2::kExtension;
-    case apps::AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeNameV2::kStandaloneBrowserExtension;
     case apps::AppType::kBruschetta:
       return apps::AppTypeNameV2::kBruschetta;
   }
@@ -187,8 +184,6 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     }
     case apps::AppType::kExtension:
       return apps::AppTypeNameV2::kExtension;
-    case apps::AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeNameV2::kStandaloneBrowserExtension;
   }
 }
 
@@ -285,8 +280,6 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
       return kStandaloneBrowserChromeAppHistogramName;
     case apps::AppTypeNameV2::kExtension:
       return kExtensionHistogramName;
-    case apps::AppTypeNameV2::kStandaloneBrowserExtension:
-      return kStandaloneBrowserExtensionHistogramName;
     case apps::AppTypeNameV2::kStandaloneBrowserChromeAppWindow:
       return kStandaloneBrowserChromeAppWindowHistogramName;
     case apps::AppTypeNameV2::kStandaloneBrowserChromeAppTab:
@@ -479,7 +472,6 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
     case AppType::kExtension:
     case AppType::kStandaloneBrowser:
     case AppType::kStandaloneBrowserChromeApp:
-    case AppType::kStandaloneBrowserExtension:
     case AppType::kSystemWeb:
       return ukm::AppSourceUrlRecorder::GetSourceIdForUrl(
           url, ukm::AppType::kChromeApp);
@@ -526,7 +518,6 @@ GURL AppPlatformMetrics::GetURLForApp(Profile* profile,
     case AppType::kExtension:
     case AppType::kStandaloneBrowser:
     case AppType::kStandaloneBrowserChromeApp:
-    case AppType::kStandaloneBrowserExtension:
     // For system web apps, call GetSourceIdForChromeApp to record the app
     // id because the url could be filtered by the server side.
     case AppType::kSystemWeb:

@@ -36,8 +36,6 @@ AppType EnumTraits<AppType, apps::AppType>::ToMojom(apps::AppType input) {
       return AppType::kStandaloneBrowserChromeApp;
     case apps::AppType::kExtension:
       return AppType::kExtension;
-    case apps::AppType::kStandaloneBrowserExtension:
-      return AppType::kStandaloneBrowserExtension;
     case apps::AppType::kBruschetta:
       return AppType::kBruschetta;
   }
@@ -84,9 +82,6 @@ bool EnumTraits<AppType, apps::AppType>::FromMojom(AppType input,
       return true;
     case AppType::kExtension:
       *output = apps::AppType::kExtension;
-      return true;
-    case AppType::kStandaloneBrowserExtension:
-      *output = apps::AppType::kStandaloneBrowserExtension;
       return true;
     case AppType::kBruschetta:
       *output = apps::AppType::kBruschetta;
