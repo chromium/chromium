@@ -109,6 +109,11 @@ const double kRetainA11yFocusSeconds = 0.75;
   [self showSnackbarMessage:message];
 }
 
+- (void)dismissAllSnackbars {
+  [[MDCSnackbarManager defaultManager]
+      dismissAndCallCompletionBlocksWithCategory:nil];
+}
+
 #pragma mark - MDCSnackbarManagerDelegate
 
 - (void)snackbarManager:(MDCSnackbarManager*)snackbarManager

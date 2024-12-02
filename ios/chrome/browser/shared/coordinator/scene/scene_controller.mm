@@ -3113,6 +3113,11 @@ using UserFeedbackDataCallback =
   // they are not visible.
   ios::provider::HideModalViewStack();
 
+  // Dismiss all snackbars.
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.mainInterface.browser->GetCommandDispatcher(), SnackbarCommands);
+  [snackbarHandler dismissAllSnackbars];
+
   // Exit fullscreen mode for web page when we re-enter app through external
   // intents.
   web::WebState* webState =
