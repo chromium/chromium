@@ -28,7 +28,7 @@ class SubresourceFilterWebSocketBrowserTest
     : public SubresourceFilterBrowserTest,
       public ::testing::WithParamInterface<WebSocketCreationPolicy> {
  public:
-  SubresourceFilterWebSocketBrowserTest() {}
+  SubresourceFilterWebSocketBrowserTest() = default;
 
   SubresourceFilterWebSocketBrowserTest(
       const SubresourceFilterWebSocketBrowserTest&) = delete;
