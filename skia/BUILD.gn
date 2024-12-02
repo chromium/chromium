@@ -428,6 +428,7 @@ component("skia") {
       sources += skia_ports_fontmgr_empty_sources
       public += skia_ports_fontmgr_empty_public
     }
+    sources += skia_ports_typeface_proxy_sources
     sources += skia_ports_typeface_fontations_sources
 
     # Fontations Rust/C++ bridge interfaces.
