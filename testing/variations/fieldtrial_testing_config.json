@@ -9089,6 +9089,38 @@
             ]
         }
     ],
+    "EnableLazyLoadImageForInvisiblePage": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_AllInvisiblePage",
+                    "params": {
+                        "enabled_page_type": "all_invisible_page"
+                    },
+                    "enable_features": [
+                        "EnableLazyLoadImageForInvisiblePage"
+                    ]
+                },
+                {
+                    "name": "Enabled_PrerenderPage",
+                    "params": {
+                        "enabled_page_type": "prerender_page"
+                    },
+                    "enable_features": [
+                        "EnableLazyLoadImageForInvisiblePage"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableMainFrameOnlyADPFRendererMain": [
         {
             "platforms": [

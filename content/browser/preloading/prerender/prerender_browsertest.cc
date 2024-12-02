@@ -9606,13 +9606,25 @@ IN_PROC_BROWSER_TEST_P(InvisiblePageLazyLoadingImageBrowserTest, LazyLoading) {
   EXPECT_EQ(EvalJs(prerender_frame_host, "image_loaded"), true);
 }
 
+class DisabledInvisiblePageLazyLoadingImageBrowserTest
+    : public PrerenderBrowserTest {
+ public:
+  DisabledInvisiblePageLazyLoadingImageBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kEnableLazyLoadImageForInvisiblePage);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that loading=lazy doesn't prevent image load in a prerendered page.
 // This test is tested under the condition that
 // blink::features::kEnableLazyLoadImageForInvisiblePage is disabled.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LazyLoading) {
-  ASSERT_FALSE(
-      base::FeatureList::IsEnabled(
-          blink::features::kEnableLazyLoadImageForInvisiblePage));
+IN_PROC_BROWSER_TEST_F(DisabledInvisiblePageLazyLoadingImageBrowserTest,
+                       LazyLoading) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      blink::features::kEnableLazyLoadImageForInvisiblePage));
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/prerender/image_loading_lazy.html");
   const GURL kImageUrl = GetUrl("/blank.jpg");
