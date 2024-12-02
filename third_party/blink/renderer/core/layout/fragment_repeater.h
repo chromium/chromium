@@ -26,6 +26,12 @@ class FragmentRepeater {
   STACK_ALLOCATED();
 
  public:
+  // When regular layout is complete, we will have the right number of cloned
+  // root fragments, but its child fragments have not yet been cloned. Do that
+  // now, and update break tokens accordingly.
+  static void DeepCloneRepeatableRoot(LayoutBox&);
+
+ private:
   FragmentRepeater(bool is_first_clone, bool is_last_fragment)
       : is_first_clone_(is_first_clone), is_last_fragment_(is_last_fragment) {}
 
@@ -35,7 +41,6 @@ class FragmentRepeater {
   // layout.
   void CloneChildFragments(const PhysicalBoxFragment& cloned_fragment);
 
- private:
   const LayoutResult* Repeat(const LayoutResult& other);
 
   const LayoutResult* GetClonableLayoutResult(

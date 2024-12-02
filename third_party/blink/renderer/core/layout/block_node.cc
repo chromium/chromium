@@ -772,17 +772,9 @@ void BlockNode::FinishRepeatableRoot() const {
 
   box_->FinalizeLayoutResults();
 
-  wtf_size_t fragment_count = box_->PhysicalFragmentCount();
-  DCHECK_GE(fragment_count, 1u);
   box_->ClearNeedsLayout();
-  for (wtf_size_t i = 1; i < fragment_count; i++) {
-    const PhysicalBoxFragment& physical_fragment =
-        *box_->GetPhysicalFragment(i);
-    bool is_first = i == 1;
-    bool is_last = i + 1 == fragment_count;
-    FragmentRepeater repeater(is_first, is_last);
-    repeater.CloneChildFragments(physical_fragment);
-  }
+
+  FragmentRepeater::DeepCloneRepeatableRoot(*box_);
 }
 
 void BlockNode::PrepareForLayout() const {
