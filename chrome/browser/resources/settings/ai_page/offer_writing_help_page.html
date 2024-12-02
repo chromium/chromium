@@ -1,11 +1,15 @@
-<style include="cr-shared-style settings-shared iron-flex
-    settings-columned-section">
+<style include="cr-shared-style settings-shared settings-columned-section">
   .cr-row {
     border-top: none;
   }
 
   .list-frame {
     padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  #disabledSitesList {
+    display: flex;
+    flex-direction: column;
   }
 
   #disabledSitesList > div:not(:first-child) {
@@ -83,7 +87,7 @@
       $i18n{offerWritingHelpNoDisabledSites}
     </div>
   </div>
-  <div id="disabledSitesList" class="layout vertical list-frame" role="list">
+  <div id="disabledSitesList" class="list-frame" role="list">
     <template is="dom-repeat" items="[[siteList_]]">
       <div class="list-item" role="listitem">
         <div class="start cr-padded-text">[[item]]</div>

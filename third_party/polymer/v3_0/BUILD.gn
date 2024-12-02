@@ -13,7 +13,6 @@ assert(!is_android && !is_ios)
 js_files = [
   "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
   "iron-a11y-keys/iron-a11y-keys.js",
-  "iron-flex-layout/iron-flex-layout-classes.js",
   "iron-list/iron-list.js",
   "iron-media-query/iron-media-query.js",
   "iron-resizable-behavior/iron-resizable-behavior.js",
@@ -22,12 +21,6 @@ js_files = [
   "paper-ripple/paper-ripple.js",
 ]
 
-# Also needed on LaCros for Print Preview. Remove once CrOS Print Preview
-# launches.
-if (is_chromeos) {
-  js_files += [ "iron-fit-behavior/iron-fit-behavior.js" ]
-}
-
 if (is_chromeos_ash) {
   js_files += [
     "iron-a11y-announcer/iron-a11y-announcer.js",
@@ -35,6 +28,8 @@ if (is_chromeos_ash) {
     "iron-collapse/iron-collapse.js",
     "iron-dropdown/iron-dropdown.js",
     "iron-dropdown/iron-dropdown-scroll-manager.js",
+    "iron-flex-layout/iron-flex-layout-classes.js",
+    "iron-fit-behavior/iron-fit-behavior.js",
     "iron-icon/iron-icon.js",
     "iron-iconset-svg/iron-iconset-svg.js",
     "iron-location/iron-location.js",
@@ -188,7 +183,6 @@ ts_library("library") {
     "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",
     "components-chromium/iron-a11y-keys/iron-a11y-keys.d.ts",
     "components-chromium/iron-behaviors/iron-control-state.d.ts",
-    "components-chromium/iron-flex-layout/iron-flex-layout-classes.d.ts",
     "components-chromium/iron-list/iron-list.d.ts",
     "components-chromium/iron-media-query/iron-media-query.d.ts",
     "components-chromium/iron-resizable-behavior/iron-resizable-behavior.d.ts",
@@ -259,6 +253,7 @@ ts_library("library") {
       "components-chromium/iron-collapse/iron-collapse.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown-scroll-manager.d.ts",
+      "components-chromium/iron-flex-layout/iron-flex-layout-classes.d.ts",
       "components-chromium/iron-icon/iron-icon.d.ts",
       "components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts",
       "components-chromium/iron-location/iron-location.d.ts",
