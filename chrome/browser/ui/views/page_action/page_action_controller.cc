@@ -26,11 +26,13 @@ void PageActionController::Register(actions::ActionId action_id) {
 }
 
 void PageActionController::Show(actions::ActionId action_id) {
-  FindPageActionModel(action_id)->SetShowRequested(true);
+  FindPageActionModel(action_id)->SetShowRequested(
+      base::PassKey<PageActionController>(), true);
 }
 
 void PageActionController::Hide(actions::ActionId action_id) {
-  FindPageActionModel(action_id)->SetShowRequested(false);
+  FindPageActionModel(action_id)->SetShowRequested(
+      base::PassKey<PageActionController>(), false);
 }
 
 void PageActionController::AddObserver(
