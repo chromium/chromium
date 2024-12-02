@@ -50,7 +50,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Test relating to {@link ShoppingPersistedTabData} */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING)
+@EnableFeatures(ChromeFeatureList.PRICE_ANNOTATIONS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ShoppingPersistedTabDataTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
@@ -87,7 +87,7 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":check_if_price_drop_is_seen/true")
+    @EnableFeatures(ChromeFeatureList.PRICE_ANNOTATIONS + ":check_if_price_drop_is_seen/true")
     public void testShoppingProto() {
         Tab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
@@ -189,7 +189,7 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING
+            ChromeFeatureList.PRICE_ANNOTATIONS
                     + ":price_tracking_stale_tab_threshold_seconds/86400")
     public void test2DayTabWithStaleOverride1day() {
         MockTab tab =
@@ -212,7 +212,7 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING
+            ChromeFeatureList.PRICE_ANNOTATIONS
                     + ":price_tracking_stale_tab_threshold_seconds/86400")
     public void testHalfDayTabWithStaleOverride1day() {
         MockTab tab =

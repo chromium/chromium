@@ -109,9 +109,6 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
 
   bool IsMerchantViewerEnabled(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
-  bool IsCommercePriceTrackingEnabled(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj);
-
   bool IsPriceInsightsEligible(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
   bool IsDiscountEligibleToShowOnNavigation(JNIEnv* env,

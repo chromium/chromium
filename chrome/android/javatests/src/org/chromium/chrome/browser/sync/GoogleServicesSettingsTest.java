@@ -157,8 +157,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Preference"})
-    @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":allow_disable_price_annotations/true")
+    @EnableFeatures(ChromeFeatureList.PRICE_ANNOTATIONS + ":allow_disable_price_annotations/true")
     public void testPriceTrackingAnnotations() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -191,8 +190,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Preference"})
-    @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":allow_disable_price_annotations/false")
+    @EnableFeatures(ChromeFeatureList.PRICE_ANNOTATIONS + ":allow_disable_price_annotations/false")
     public void testPriceTrackingAnnotations_FeatureDisabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -213,8 +211,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Preference"})
-    @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":allow_disable_price_annotations/true")
+    @EnableFeatures(ChromeFeatureList.PRICE_ANNOTATIONS + ":allow_disable_price_annotations/true")
     public void testPriceTrackingAnnotations_NotSignedIn() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

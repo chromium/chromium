@@ -840,11 +840,6 @@ bool ShoppingService::IsMerchantViewerEnabled() {
                                       kCommerceMerchantViewerRegionLaunched);
 }
 
-bool ShoppingService::IsCommercePriceTrackingEnabled() {
-  return IsRegionLockedFeatureEnabled(kCommercePriceTracking,
-                                      kCommercePriceTrackingRegionLaunched);
-}
-
 bool ShoppingService::IsPriceInsightsEligible() {
   if (!IsRegionLockedFeatureEnabled(kPriceInsights,
                                     kPriceInsightsRegionLaunched)) {

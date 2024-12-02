@@ -26,4 +26,17 @@ jboolean JNI_CommerceFeatureUtils_IsShoppingListEligible(
                                         : nullptr);
 }
 
+jboolean JNI_CommerceFeatureUtils_IsPriceAnnotationsEnabled(
+    JNIEnv* env,
+    jlong shopping_service_android_ptr) {
+  if (!shopping_service_android_ptr) {
+    return false;
+  }
+  ShoppingService* service =
+      reinterpret_cast<ShoppingServiceAndroid*>(shopping_service_android_ptr)
+          ->GetShoppingService();
+  return IsPriceAnnotationsEnabled(service ? service->GetAccountChecker()
+                                           : nullptr);
+}
+
 }  // namespace commerce

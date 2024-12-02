@@ -28,7 +28,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Test relating to {@link ShoppingPersistedTabData} where native is not mocked. */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING})
+@EnableFeatures({ChromeFeatureList.PRICE_ANNOTATIONS})
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ShoppingPersistedTabDataNativeTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();

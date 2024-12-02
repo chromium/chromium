@@ -100,7 +100,7 @@ public class CommerceSubscriptionsServiceUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         mTestValues = new FeatureList.TestValues();
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.PRICE_ANNOTATIONS, true);
         FeatureList.setTestValues(mTestValues);
 
         mMockNotificationManager = new MockNotificationManagerProxy();

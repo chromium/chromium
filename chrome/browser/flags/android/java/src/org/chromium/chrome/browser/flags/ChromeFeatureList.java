@@ -284,7 +284,6 @@ public abstract class ChromeFeatureList {
             "CollectAndroidFrameTimelineMetrics";
     public static final String COMMAND_LINE_ON_NON_ROOTED = "CommandLineOnNonRooted";
     public static final String COMMERCE_MERCHANT_VIEWER = "CommerceMerchantViewer";
-    public static final String COMMERCE_PRICE_TRACKING = "CommercePriceTracking";
     public static final String CONTEXTUAL_PAGE_ACTIONS = "ContextualPageActions";
     public static final String CONTEXTUAL_PAGE_ACTION_READER_MODE =
             "ContextualPageActionReaderMode";
@@ -415,6 +414,7 @@ public abstract class ChromeFeatureList {
             "PrefetchBrowserInitiatedTriggers";
     public static final String PRERENDER2 = "Prerender2";
     public static final String PRECONNECT_ON_TAB_CREATION = "PreconnectOnTabCreation";
+    public static final String PRICE_ANNOTATIONS = "PriceAnnotations";
     public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";
     public static final String PRICE_INSIGHTS = "PriceInsights";
     public static final String PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE =

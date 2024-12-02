@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 
@@ -60,7 +61,7 @@ public class PriceTrackingFeatures {
         if (profile == null) return false;
         ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
         if (service == null) return false;
-        return service.isCommercePriceTrackingEnabled();
+        return CommerceFeatureUtils.isPriceAnnotationsEnabled(service);
     }
 
     private static boolean isSignedIn(Profile profile) {
@@ -90,7 +91,7 @@ public class PriceTrackingFeatures {
         int defaultDuration = (int) TimeUnit.DAYS.toMillis(1);
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    ChromeFeatureList.PRICE_ANNOTATIONS,
                     PRICE_ANNOTATIONS_ENABLED_METRICS_WINDOW_DURATION_PARAM,
                     defaultDuration);
         }
@@ -104,7 +105,7 @@ public class PriceTrackingFeatures {
         if (FeatureList.isInitialized()) {
             return isPriceTrackingEligible(profile)
                     && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                            ChromeFeatureList.PRICE_ANNOTATIONS,
                             ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM,
                             true);
         }
@@ -115,7 +116,7 @@ public class PriceTrackingFeatures {
         if (FeatureList.isInitialized()) {
             return isPriceTrackingEligible(profile)
                     && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                            ChromeFeatureList.PRICE_ANNOTATIONS,
                             PRICE_DROP_IPH_ENABLED_PARAM,
                             false);
         }
@@ -126,7 +127,7 @@ public class PriceTrackingFeatures {
         if (FeatureList.isInitialized()) {
             return isPriceTrackingEligible(profile)
                     && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                            ChromeFeatureList.PRICE_ANNOTATIONS,
                             PRICE_DROP_BADGE_ENABLED_PARAM,
                             false);
         }

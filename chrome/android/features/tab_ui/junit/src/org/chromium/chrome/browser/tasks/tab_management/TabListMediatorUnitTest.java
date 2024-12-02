@@ -4975,9 +4975,9 @@ public class TabListMediatorUnitTest {
 
     private static void setPriceTrackingEnabledForTesting(boolean value) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
+        testValues.addFeatureFlagOverride(ChromeFeatureList.PRICE_ANNOTATIONS, true);
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                ChromeFeatureList.PRICE_ANNOTATIONS,
                 PriceTrackingFeatures.PRICE_DROP_IPH_ENABLED_PARAM,
                 String.valueOf(value));
         FeatureList.mergeTestValues(testValues, /* replace= */ true);

@@ -71,7 +71,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 /** Tests for {@link PriceDropNotificationManager}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.EnableFeatures(
-        ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":user_managed_notification_max_number/2")
+        ChromeFeatureList.PRICE_ANNOTATIONS + ":user_managed_notification_max_number/2")
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class PriceDropNotificationManagerTest {
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =

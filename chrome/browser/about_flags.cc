@@ -7356,14 +7356,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSuppressToolbarCapturesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSuppressToolbarCaptures)},
 
-    {"enable-commerce-price-tracking",
-     commerce::flag_descriptions::kCommercePriceTrackingName,
-     commerce::flag_descriptions::kCommercePriceTrackingDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         commerce::kCommercePriceTracking,
-         commerce::kCommercePriceTrackingAndroidVariations,
-         "CommercePriceTracking")},
-
     {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
      commerce::flag_descriptions::kPriceInsightsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(commerce::kPriceInsights)},

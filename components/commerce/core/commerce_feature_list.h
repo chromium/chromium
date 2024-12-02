@@ -20,36 +20,6 @@ class PrefService;
 
 namespace commerce {
 
-BASE_DECLARE_FEATURE(kCommercePriceTracking);
-BASE_DECLARE_FEATURE(kCommercePriceTrackingRegionLaunched);
-
-// Price tracking variations for Android.
-constexpr flags_ui::FeatureEntry::FeatureParam
-    kCommercePriceTracking_PriceAlerts[] = {{"enable_price_tracking", "true"}};
-
-constexpr flags_ui::FeatureEntry::FeatureParam
-    kCommercePriceTracking_PriceNotifications[] = {
-        {"enable_price_tracking", "true"},
-        {"enable_price_notification", "true"}};
-
-constexpr flags_ui::FeatureEntry::FeatureVariation
-    kCommercePriceTrackingAndroidVariations[] = {
-        {"Price alerts", kCommercePriceTracking_PriceAlerts,
-         std::size(kCommercePriceTracking_PriceAlerts), nullptr},
-        {"Price notifications", kCommercePriceTracking_PriceNotifications,
-         std::size(kCommercePriceTracking_PriceNotifications), nullptr},
-};
-
-// Price tracking variations for iOS.
-constexpr flags_ui::FeatureEntry::FeatureParam
-    kCommercePriceTrackingNotifications[] = {
-        {"enable_price_notification", "true"}};
-
-constexpr flags_ui::FeatureEntry::FeatureVariation
-    kCommercePriceTrackingVariations[] = {
-        {"Price Tracking Notifications", kCommercePriceTrackingNotifications,
-         std::size(kCommercePriceTrackingNotifications), nullptr}};
-
 BASE_DECLARE_FEATURE(kCommerceAllowChipExpansion);
 BASE_DECLARE_FEATURE(kCommerceAllowLocalImages);
 BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates);
@@ -59,6 +29,9 @@ BASE_DECLARE_FEATURE(kCommerceLocalPDPDetection);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewerRegionLaunched);
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
+
+BASE_DECLARE_FEATURE(kPriceAnnotations);
+BASE_DECLARE_FEATURE(kPriceAnnotationsRegionLaunched);
 
 // Feature flag for Price Insights.
 BASE_DECLARE_FEATURE(kPriceInsights);
