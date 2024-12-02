@@ -120,8 +120,6 @@ void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  // TODO(crbug.com/367263145): If a sign in tab already exists, it should
-  // update its access point.
   signin_ui_util::SignInFromSingleAccountPromo(profile, account, access_point_);
 
   signin_util::SignedInState signed_in_state = signin_util::GetSignedInState(
@@ -156,6 +154,8 @@ void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
     return;
   }
 
+  // TODO(crbug.com/319411636): Investigate how we could get the sign in tab
+  // differently.
   content::WebContents* sign_in_tab_contents =
       signin_ui_util::GetSignInTabWithAccessPoint(
           tabs::TabInterface::GetFromContents(web_contents_.get())

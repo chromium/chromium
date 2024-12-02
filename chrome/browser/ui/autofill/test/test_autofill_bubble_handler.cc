@@ -59,22 +59,10 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
     content::WebContents* contents,
     std::unique_ptr<SaveAddressBubbleController> controller,
     bool is_user_gesture) {
-  if (!save_address_profile_bubble_view_) {
+  if (!save_address_profile_bubble_view_)
     save_address_profile_bubble_view_ = std::make_unique<TestAutofillBubble>();
-  }
   return save_address_profile_bubble_view_.get();
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-AutofillBubbleBase* TestAutofillBubbleHandler::ShowAddressSignInPromo(
-    content::WebContents* web_contents,
-    base::OnceCallback<void(content::WebContents*)> move_address_callback) {
-  if (!address_sign_in_promo_bubble_view_) {
-    address_sign_in_promo_bubble_view_ = std::make_unique<TestAutofillBubble>();
-  }
-  return address_sign_in_promo_bubble_view_.get();
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 AutofillBubbleBase*
 TestAutofillBubbleHandler::ShowSaveAutofillPredictionImprovementsBubble(

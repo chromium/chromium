@@ -7,9 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
-#include "components/signin/public/base/signin_buildflags.h"
-
 namespace content {
 class WebContents;
 }
@@ -77,16 +74,6 @@ class AutofillBubbleHandler {
       content::WebContents* web_contents,
       std::unique_ptr<SaveAddressBubbleController> controller,
       bool is_user_gesture) = 0;
-
-  // Opens a promo bubble after an address save or update, offering to move the
-  // address to account store if the user signs in through the bubble. This move
-  // will be performed by the `move_address_callback`.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  virtual AutofillBubbleBase* ShowAddressSignInPromo(
-      content::WebContents* web_contents,
-      base::OnceCallback<void(content::WebContents*)>
-          move_address_callback) = 0;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Opens an update address bubble. The bubble's lifecycle is controlled by its
   // widget, and the controller must handle the widget closing to invalidate
