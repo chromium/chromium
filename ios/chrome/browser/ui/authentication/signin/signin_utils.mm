@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "net/base/network_change_notifier.h"
 
@@ -142,16 +141,20 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(profile);
-    switch (history_sync::GetSkipReason(sync_service, auth_service,
-                                        profile->GetPrefs(), YES)) {
-      case history_sync::HistorySyncSkipReason::kNone:
+    HistorySyncSkipReason skip_reason = [HistorySyncCoordinator
+        getHistorySyncOptInSkipReason:sync_service
+                authenticationService:auth_service
+                          prefService:profile->GetPrefs()
+                isHistorySyncOptional:YES];
+    switch (skip_reason) {
+      case HistorySyncSkipReason::kNone:
         // Need to show the upgrade promo, to show the history sync opt-in.
         break;
-      case history_sync::HistorySyncSkipReason::kNotSignedIn:
+      case HistorySyncSkipReason::kNotSignedIn:
         NOTREACHED();
-      case history_sync::HistorySyncSkipReason::kAlreadyOptedIn:
-      case history_sync::HistorySyncSkipReason::kSyncForbiddenByPolicies:
-      case history_sync::HistorySyncSkipReason::kDeclinedTooOften:
+      case HistorySyncSkipReason::kAlreadyOptedIn:
+      case HistorySyncSkipReason::kSyncForbiddenByPolicies:
+      case HistorySyncSkipReason::kDeclinedTooOften:
         return false;
     }
   }

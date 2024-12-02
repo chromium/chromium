@@ -10,13 +10,11 @@ source_set("signin_history_sync") {
     "signin_and_history_sync_coordinator.mm",
   ]
   deps = [
-    "//components/sync/service",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",

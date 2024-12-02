@@ -5,12 +5,10 @@
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator.h"
 
 #import "base/ios/block_types.h"
-#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
@@ -37,7 +35,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -45,7 +42,6 @@
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_util.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 
@@ -70,8 +66,6 @@
   // Coordinator for the history sync opt-in screen that should appear after
   // sign-in.
   HistorySyncPopupCoordinator* _historySyncPopupCoordinator;
-  raw_ptr<AuthenticationService> _authenticationService;
-  raw_ptr<syncer::SyncService> _syncService;
 }
 
 - (void)start {
@@ -113,26 +107,24 @@
   // manager which is not present in an OffTheRecord Profile.
   DCHECK(!self.mediator);
   ProfileIOS* profile = self.browser->GetProfile();
-
-  sync_sessions::SessionSyncService* sessionSyncService =
+  sync_sessions::SessionSyncService* syncService =
       SessionSyncServiceFactory::GetForProfile(profile);
-  _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   sessions::TabRestoreService* restoreService =
       IOSChromeTabRestoreServiceFactory::GetForProfile(profile);
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
-  _syncService = SyncServiceFactory::GetForProfile(profile);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
   BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   SceneState* currentSceneState = self.browser->GetSceneState();
   BOOL isDisabled = IsIncognitoModeForced(profile->GetPrefs());
   self.mediator = [[RecentTabsMediator alloc]
-      initWithSessionSyncService:sessionSyncService
+      initWithSessionSyncService:syncService
                  identityManager:identityManager
                   restoreService:restoreService
                    faviconLoader:faviconLoader
-                     syncService:_syncService
+                     syncService:service
                      browserList:browserList
                       sceneState:currentSceneState
                 disabledByPolicy:isDisabled
@@ -181,8 +173,6 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   [self.mediator disconnect];
-  _syncService = nullptr;
-  _authenticationService = nullptr;
 }
 
 - (void)dismissButtonTapped {
@@ -236,22 +226,16 @@
   // Show the History Sync Opt-In screen. The coordinator will dismiss itself
   // if there is no signed-in account (eg. if sign-in unsuccessful) or if sync
   // is disabled by policies.
-  if (history_sync::GetSkipReason(_syncService, _authenticationService,
-                                  self.browser->GetProfile()->GetPrefs(), NO) !=
-      history_sync::HistorySyncSkipReason::kNone) {
-    [self.mediator refreshSessionsView];
-  } else {
-    _historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
-        initWithBaseViewController:self.recentTabsTableViewController
-                           browser:self.browser
-                     showUserEmail:!dedicatedSignInDone
-                 signOutIfDeclined:dedicatedSignInDone
-                        isOptional:NO
-                       accessPoint:signin_metrics::AccessPoint::
-                                       ACCESS_POINT_RECENT_TABS];
-    _historySyncPopupCoordinator.delegate = self;
-    [_historySyncPopupCoordinator start];
-  }
+  _historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
+      initWithBaseViewController:self.recentTabsTableViewController
+                         browser:self.browser
+                   showUserEmail:!dedicatedSignInDone
+               signOutIfDeclined:dedicatedSignInDone
+                      isOptional:NO
+                     accessPoint:signin_metrics::AccessPoint::
+                                     ACCESS_POINT_RECENT_TABS];
+  _historySyncPopupCoordinator.delegate = self;
+  [_historySyncPopupCoordinator start];
 }
 
 #pragma mark - RecentTabsContextMenuDelegate

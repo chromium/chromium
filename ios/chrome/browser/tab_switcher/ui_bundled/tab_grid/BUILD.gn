@@ -74,7 +74,6 @@ source_set("tab_grid") {
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/sharing/ui_bundled",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/snackbar/ui_bundled",
     "//ios/chrome/browser/supervised_user/model:capabilities",
     "//ios/chrome/browser/sync/model",
