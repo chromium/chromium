@@ -17,7 +17,7 @@ namespace vr {
 // to call these methods from the main thread.
 class VR_BASE_EXPORT BrowserUiInterface {
  public:
-  virtual ~BrowserUiInterface() {}
+  virtual ~BrowserUiInterface() = default;
 
   virtual void SetCapturingState(
       const CapturingStateModel& active_capturing,

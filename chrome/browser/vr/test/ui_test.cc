@@ -59,8 +59,8 @@ bool WillElementBeVisible(const UiElement* element) {
 
 }  // namespace
 
-UiTest::UiTest() {}
-UiTest::~UiTest() {}
+UiTest::UiTest() = default;
+UiTest::~UiTest() = default;
 
 void UiTest::SetUp() {
   ui_instance_ = std::make_unique<Ui>();

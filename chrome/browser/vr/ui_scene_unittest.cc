@@ -42,7 +42,7 @@ size_t NumElementsInSubtree(UiElement* element) {
 
 class AlwaysDirty : public UiElement {
  public:
-  ~AlwaysDirty() override {}
+  ~AlwaysDirty() override = default;
 
   bool OnBeginFrame(const gfx::Transform& head_pose) override { return true; }
 };

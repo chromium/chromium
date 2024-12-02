@@ -6,7 +6,7 @@
 
 namespace vr {
 
-MockBrowserUiInterface::MockBrowserUiInterface() {}
-MockBrowserUiInterface::~MockBrowserUiInterface() {}
+MockBrowserUiInterface::MockBrowserUiInterface() = default;
+MockBrowserUiInterface::~MockBrowserUiInterface() = default;
 
 }  // namespace vr

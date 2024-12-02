@@ -9,8 +9,8 @@
 
 namespace vr {
 
-Grid::Grid() {}
-Grid::~Grid() {}
+Grid::Grid() = default;
+Grid::~Grid() = default;
 
 void Grid::SetGridColor(SkColor color) {
   animator().TransitionColorTo(this, last_frame_time(), GRID_COLOR, grid_color_,
