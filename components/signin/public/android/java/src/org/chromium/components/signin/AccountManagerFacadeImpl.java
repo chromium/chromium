@@ -152,7 +152,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 new AuthTask<AccessTokenData>() {
                     @Override
                     public AccessTokenData run() throws AuthException {
-                        return mDelegate.getAccessToken(
+                        return mDelegate.getAuthToken(
                                 AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
                                 scope);
                     }
@@ -201,7 +201,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 new AuthTask<Void>() {
                     @Override
                     public Void run() throws AuthException {
-                        mDelegate.invalidateAccessToken(accessToken);
+                        mDelegate.invalidateAuthToken(accessToken);
                         return null;
                     }
 

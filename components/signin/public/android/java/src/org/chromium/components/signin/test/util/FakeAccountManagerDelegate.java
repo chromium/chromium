@@ -93,7 +93,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public AccessTokenData getAccessToken(Account account, String scope) throws AuthException {
+    public AccessTokenData getAuthToken(Account account, String scope) throws AuthException {
         AccountHolder accountHolder = tryGetAccountHolder(account.name);
         if (accountHolder == null) {
             throw new AuthException(
@@ -104,7 +104,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public void invalidateAccessToken(String authToken) {
+    public void invalidateAuthToken(String authToken) {
         if (authToken == null) {
             throw new IllegalArgumentException("AuthToken can not be null");
         }
