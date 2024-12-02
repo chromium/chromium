@@ -82,7 +82,7 @@ void HostEventFileLogger::LogEvent(const EventTraceData& data) {
       data.thread_id, EventTraceData::SeverityToString(data.severity).c_str(),
       data.file_name.c_str(), data.line, data.message.c_str());
 
-  log_file_.WriteAtCurrentPosAndCheck(base::as_bytes(base::make_span(message)));
+  log_file_.WriteAtCurrentPosAndCheck(base::as_byte_span(message));
 }
 
 }  // namespace remoting
