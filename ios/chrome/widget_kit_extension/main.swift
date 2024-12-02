@@ -26,11 +26,14 @@ struct ChromeWidgets: WidgetBundle {
     QuickActionsWidget()
     #if IOS_ENABLE_WIDGETS_FOR_MIM
       SearchWidgetConfigurable()
+      #if IOS_ENABLE_SHORTCUTS_WIDGET
+        ShortcutsWidgetConfigurable()
+      #endif
     #else
       SearchWidget()
-    #endif
-    #if IOS_ENABLE_SHORTCUTS_WIDGET
-      ShortcutsWidget()
+      #if IOS_ENABLE_SHORTCUTS_WIDGET
+        ShortcutsWidget()
+      #endif
     #endif
     SearchPasswordsWidget()
     #if IOS_ENABLE_WIDGETS_FOR_MIM
