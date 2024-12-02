@@ -6,13 +6,6 @@ import("//build/config/c++/c++.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 
-config("visibility_hack") {
-  cflags = [
-    "-include",
-    rebase_path("//buildtools/third_party/libc++/gross_hack.h", root_build_dir),
-  ]
-}
-
 # Used by libc++ and libc++abi.
 # See //build/config/c++:runtime_library for the config used by users of libc++.
 config("config") {
@@ -209,10 +202,7 @@ target(_libcxx_target_type, "libc++") {
 
   defines = []
 
-  if (!libcxx_is_shared && !is_win &&
-      # TODO: Remove this when //third_party/cronet_android_mainline_clang
-      # supports -fvisibility-global-new-delete flag.
-      !llvm_android_mainline) {
+  if (!libcxx_is_shared && !is_win) {
     if (is_apple && is_clang) {
       # We want operator new/delete to be private on Mac, but these functions
       # are implicitly created by the compiler for each translation unit, as
@@ -233,16 +223,7 @@ target(_libcxx_target_type, "libc++") {
       # similar to that overrides the default elf merging rules, and
       # make the allocator's gn config pass that to all its dependencies,
       # then remove this override here.
-      # TODO(thakis): libc++ removed the _LIBCPP_OVERRIDABLE_FUNC_VIS hook
-      # in https://github.com/llvm/llvm-project/pull/113139, and recommended
-      # fvisibility-global-new-delete=force-default as alternative. Sadly,
-      # this doesn't actually work, see the discussion on that PR. As a
-      # workaround, inject a header everywhere :/
-      #defines += [
-      #  "_LIBCPP_OVERRIDABLE_FUNC_VIS=__attribute__((__visibility__(\"default\")))",
-      #]
-      cflags = [ "-fvisibility-global-new-delete=force-default" ]
-      public_configs = [ ":visibility_hack" ]
+      defines += [ "_LIBCPP_OVERRIDABLE_FUNC_VIS=__attribute__((__visibility__(\"default\")))" ]
     }
   }
 
