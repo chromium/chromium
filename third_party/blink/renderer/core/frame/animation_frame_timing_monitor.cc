@@ -266,11 +266,8 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     timing_info->SetDidPause();
   }
 
-  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-          frame->DomWindow())) {
-    DOMWindowPerformance::performance(*frame->DomWindow())
-        ->ReportLongAnimationFrameTiming(timing_info);
-  }
+  DOMWindowPerformance::performance(*frame->DomWindow())
+      ->ReportLongAnimationFrameTiming(timing_info);
   RecordLongAnimationFrameUKMAndTrace(*timing_info, *frame->DomWindow());
 }
 

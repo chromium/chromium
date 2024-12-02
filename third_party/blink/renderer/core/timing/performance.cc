@@ -437,9 +437,7 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
                                            maybe_name);
   }
 
-  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-          GetExecutionContext()) &&
-      long_animation_frame_buffer_.size()) {
+  if (long_animation_frame_buffer_.size()) {
     entries = MergePerformanceEntryVectors(
         entries, long_animation_frame_buffer_, maybe_name);
   }
@@ -595,12 +593,9 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kLongAnimationFrame:
-      if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-              GetExecutionContext())) {
         UseCounter::Count(GetExecutionContext(),
                           WebFeature::kLongAnimationFrameRequested);
         entries = &long_animation_frame_buffer_;
-      }
       break;
 
     case PerformanceEntry::kInvalid:

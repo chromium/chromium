@@ -17,7 +17,7 @@ enum ScriptWindowAttribution {
 };
 
 // https://github.com/w3c/longtasks/blob/loaf-explainer/loaf-explainer.md
-[Exposed=Window, RuntimeEnabled=LongAnimationFrameTiming]
+[Exposed=Window]
 interface PerformanceScriptTiming : PerformanceEntry {
     readonly attribute ScriptInvokerType invokerType;
     readonly attribute DOMString invoker;

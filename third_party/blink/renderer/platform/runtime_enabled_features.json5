@@ -2565,12 +2565,6 @@
       public: true,
     },
     {
-      // Enables long aniamtion frames as a performance API (the
-      // "long-animation-frame" timeline entry)
-      name: "LongAnimationFrameTiming",
-      status: "stable"
-    },
-    {
       // Long press on a link selects the link text instead of bringing up
       // context menu. Enabled only on Android AuthView.
       name: "LongPressLinkSelectText",
