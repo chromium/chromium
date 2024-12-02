@@ -59,6 +59,8 @@ class BrowserWebStateListDelegateTest
     return web_state;
   }
 
+  ProfileIOS* profile() { return profile_.get(); }
+
  private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -79,7 +81,10 @@ INSTANTIATE_TEST_SUITE_P(
 // when a WebState is inserted.
 TEST_P(BrowserWebStateListDelegateTest, InsertionPolicy) {
   const BrowserWebStateListDelegateTestParam param = GetParam();
-  BrowserWebStateListDelegate delegate(std::get<0>(param), std::get<1>(param));
+  BrowserWebStateListDelegate delegate(
+      profile()->GetOffTheRecordProfile(),
+      std::get<BrowserWebStateListDelegate::InsertionPolicy>(param),
+      std::get<BrowserWebStateListDelegate::ActivationPolicy>(param));
 
   std::unique_ptr<web::WebState> web_state = CreateWebState();
   ASSERT_FALSE(web_state->IsRealized());
@@ -105,7 +110,10 @@ TEST_P(BrowserWebStateListDelegateTest, InsertionPolicy) {
 // when a WebState is marked as the active one.
 TEST_P(BrowserWebStateListDelegateTest, ActivationPolicy) {
   const BrowserWebStateListDelegateTestParam param = GetParam();
-  BrowserWebStateListDelegate delegate(std::get<0>(param), std::get<1>(param));
+  BrowserWebStateListDelegate delegate(
+      profile()->GetOffTheRecordProfile(),
+      std::get<BrowserWebStateListDelegate::InsertionPolicy>(param),
+      std::get<BrowserWebStateListDelegate::ActivationPolicy>(param));
 
   std::unique_ptr<web::WebState> web_state = CreateWebState();
   ASSERT_FALSE(web_state->IsRealized());

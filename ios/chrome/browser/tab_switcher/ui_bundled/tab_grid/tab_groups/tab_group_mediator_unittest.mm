@@ -192,7 +192,7 @@ TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
 TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
   auto other_browser = std::make_unique<TestBrowser>(
       profile_.get(), scene_state_,
-      std::make_unique<BrowserWebStateListDelegate>());
+      std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
   SnapshotBrowserAgent::CreateForBrowser(other_browser.get());
 
   browser_list_->AddBrowser(other_browser.get());

@@ -1102,7 +1102,7 @@ TEST_P(BaseGridMediatorTest, DropLocalTabFromTabGroup) {
 TEST_P(BaseGridMediatorTest, DropCrossWindowTab) {
   auto other_browser = std::make_unique<TestBrowser>(
       profile_.get(), scene_state_,
-      std::make_unique<BrowserWebStateListDelegate>());
+      std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
   SnapshotBrowserAgent::CreateForBrowser(other_browser.get());
 
   browser_list_->AddBrowser(other_browser.get());
@@ -1180,7 +1180,7 @@ TEST_P(BaseGridMediatorTest, DropCrossBrowserTabGroup) {
   // Prepare the other web state list, from which the group will be dragged.
   auto other_browser = std::make_unique<TestBrowser>(
       profile_.get(), scene_state_,
-      std::make_unique<BrowserWebStateListDelegate>());
+      std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
   SnapshotBrowserAgent::CreateForBrowser(other_browser.get());
 
   browser_list_->AddBrowser(other_browser.get());
