@@ -88,17 +88,21 @@ base::expected<TimeDelta, ProcessCPUUsageError> ParseTotalCPUTimeFromStats(
   return base::ok(cpu_time);
 }
 
+size_t GetKbFieldAsSizeT(std::string_view value_str) {
+  std::vector<std::string_view> split_value_str =
+      SplitStringPiece(value_str, " ", TRIM_WHITESPACE, SPLIT_WANT_ALL);
+  CHECK(split_value_str.size() == 2 && split_value_str[1] == "kB");
+  size_t value;
+  CHECK(StringToSizeT(split_value_str[0], &value));
+  return value;
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
     ProcessHandle process) {
   return WrapUnique(new ProcessMetrics(process));
-}
-
-size_t ProcessMetrics::GetResidentSetSize() const {
-  return internal::ReadProcStatsAndGetFieldAsSizeT(process_, internal::VM_RSS) *
-         checked_cast<size_t>(getpagesize());
 }
 
 base::expected<TimeDelta, ProcessCPUUsageError>
@@ -140,9 +144,27 @@ bool ProcessMetrics::GetCumulativeCPUUsagePerThread(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-uint64_t ProcessMetrics::GetVmSwapBytes() const {
-  return internal::ReadProcStatusAndGetKbFieldAsSizeT(process_, "VmSwap") *
-         1024;
+base::expected<ProcessMemoryInfo, ProcessUsageError>
+ProcessMetrics::GetMemoryInfo() const {
+  StringPairs pairs;
+  if (!internal::ReadProcFileToTrimmedStringPairs(process_, "status", &pairs)) {
+    return base::unexpected(ProcessUsageError::kSystemError);
+  }
+  ProcessMemoryInfo dump;
+  for (const auto& pair : pairs) {
+    const std::string& key = pair.first;
+    const std::string& value_str = pair.second;
+    if (key == "VmSwap") {
+      dump.vm_swap_bytes = GetKbFieldAsSizeT(value_str) * 1024;
+    } else if (key == "VmRSS") {
+      dump.resident_set_bytes = GetKbFieldAsSizeT(value_str) * 1024;
+    } else if (key == "RssAnon") {
+      dump.rss_anon_bytes = GetKbFieldAsSizeT(value_str) * 1024;
+    } else {
+      continue;
+    }
+  }
+  return dump;
 }
 
 bool ProcessMetrics::GetPageFaultCounts(PageFaultCounts* counts) const {

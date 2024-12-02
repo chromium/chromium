@@ -64,7 +64,7 @@ struct PageFaultCounts {
 // Convert a POSIX timeval to microseconds.
 BASE_EXPORT int64_t TimeValToMicroseconds(const struct timeval& tv);
 
-enum class ProcessCPUUsageError {
+enum class ProcessUsageError {
   // The OS returned an error while measuring the CPU usage. The possible causes
   // vary by platform.
   kSystemError,
@@ -72,6 +72,32 @@ enum class ProcessCPUUsageError {
   // Process CPU usage couldn't be measured because the process wasn't running.
   // Some platforms may return kSystemError instead in this situation.
   kProcessNotFound,
+};
+
+using ProcessCPUUsageError = ProcessUsageError;
+
+struct ProcessMemoryInfo {
+  uint64_t resident_set_bytes;
+
+#if BUILDFLAG(IS_APPLE)
+  uint64_t physical_footprint_bytes;
+  uint64_t internal_bytes;
+  uint64_t compressed_bytes;
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
+  uint64_t rss_anon_bytes;
+  uint64_t vm_swap_bytes;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+  uint64_t private_bytes;
+#endif  // BUILDFLAG(IS_WIN)
+
+  // On iOS,
+  //   TBD: https://crbug.com/714961
 };
 
 // Provides performance metrics for a specified process (CPU usage and IO
@@ -113,11 +139,16 @@ class BASE_EXPORT ProcessMetrics {
   // convenience wrapper for CreateProcessMetrics().
   static std::unique_ptr<ProcessMetrics> CreateCurrentProcessMetrics();
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Resident Set Size is a Linux/Android specific memory concept. Do not
-  // attempt to extend this to other platforms.
-  BASE_EXPORT size_t GetResidentSetSize() const;
-#endif
+  // Provides synchronous access to memory metrics for a process. This interface
+  // has platform-specific restrictions:
+  //  * On Android, due to sandboxing restrictions, processes can only access
+  //    memory metrics for themselves.
+  //  * On Linux, due to sandboxing restrictions, only the privileged browser
+  //    process has access to memory metrics for sandboxed child processes.
+  //  * On Fuchsia, due to the API expecting a ProcessId rather than a
+  //    ProcessHandle, processes can only access memory metrics for themselves
+  //    or for children of base::GetDefaultJob().
+  base::expected<ProcessMemoryInfo, ProcessUsageError> GetMemoryInfo() const;
 
   // Returns the percentage of time spent executing, across all threads of the
   // process, in the interval since the last time the method was called, using
@@ -193,9 +224,6 @@ class BASE_EXPORT ProcessMetrics {
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Bytes of swap as reported by /proc/[pid]/status.
-  uint64_t GetVmSwapBytes() const;
-
   // Minor and major page fault count as reported by /proc/[pid]/stat.
   // Returns true for success.
   bool GetPageFaultCounts(PageFaultCounts* counts) const;
