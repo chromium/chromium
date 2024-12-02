@@ -27,7 +27,7 @@ CastMediaSessionController::CastMediaSessionController(
     mojo::Remote<media_router::mojom::MediaController> route_controller)
     : route_controller_(std::move(route_controller)) {}
 
-CastMediaSessionController::~CastMediaSessionController() {}
+CastMediaSessionController::~CastMediaSessionController() = default;
 
 void CastMediaSessionController::Send(
     media_session::mojom::MediaSessionAction action) {
