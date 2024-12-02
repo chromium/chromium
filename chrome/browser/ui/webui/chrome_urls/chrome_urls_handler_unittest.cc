@@ -6,6 +6,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -39,6 +40,27 @@ class TestWebUIConfig : public content::WebUIConfig {
       : content::WebUIConfig(scheme, host), enabled_(enabled) {}
 
   ~TestWebUIConfig() override = default;
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override {
+    return enabled_;
+  }
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override {
+    return nullptr;
+  }
+
+ private:
+  bool enabled_;
+};
+
+class TestInternalWebUIConfig : public webui::InternalWebUIConfig {
+ public:
+  TestInternalWebUIConfig(const std::string& host, bool enabled)
+      : webui::InternalWebUIConfig(host), enabled_(enabled) {}
+
+  ~TestInternalWebUIConfig() override = default;
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override {
     return enabled_;
@@ -95,12 +117,16 @@ TEST_F(ChromeUrlsHandlerTest, GetUrls) {
   // Register some test configs.
   content::ScopedWebUIConfigRegistration config(
       std::make_unique<TestWebUIConfig>(content::kChromeUIScheme, "foo", true));
+  content::ScopedWebUIConfigRegistration config_internal(
+      std::make_unique<TestInternalWebUIConfig>("foo-internals", true));
   content::ScopedWebUIConfigRegistration config_untrusted(
       std::make_unique<TestWebUIConfig>(content::kChromeUIUntrustedScheme,
                                         "bar", true));
   content::ScopedWebUIConfigRegistration config_disabled(
       std::make_unique<TestWebUIConfig>(content::kChromeUIScheme, "cats",
                                         false));
+  content::ScopedWebUIConfigRegistration config_internal_disabled(
+      std::make_unique<TestInternalWebUIConfig>("cats-internals", false));
   content::ScopedWebUIConfigRegistration config_untrusted_disabled(
       std::make_unique<TestWebUIConfig>(content::kChromeUIUntrustedScheme,
                                         "dogs", false));
@@ -129,33 +155,53 @@ TEST_F(ChromeUrlsHandlerTest, GetUrls) {
 
   // Validate WebUI URL data.
   bool found_foo = false;
+  bool found_foo_internals = false;
   bool found_bar = false;
   bool found_cats = false;
+  bool found_cats_internals = false;
   bool found_dogs = false;
   for (const auto& info : url_data->webui_urls) {
-    // Check that the 4 configs added are returned, and are in the expected
+    // Check that the 6 configs added are returned, and are in the expected
     // order.
     if (info->url.spec() == "chrome://cats/") {
       found_cats = true;
       EXPECT_FALSE(info->enabled);
-      EXPECT_FALSE(found_bar || found_dogs || found_foo);
-    } else if (info->url.spec() == "chrome://foo/") {
+      EXPECT_FALSE(info->internal);
+      EXPECT_FALSE(found_cats_internals || found_bar || found_dogs ||
+                   found_foo || found_foo_internals);
+    } else if (info->url.spec() == "chrome://cats-internals/") {
       EXPECT_TRUE(found_cats);
+      found_cats_internals = true;
+      EXPECT_FALSE(info->enabled);
+      EXPECT_TRUE(info->internal);
+      EXPECT_FALSE(found_bar || found_dogs || found_foo || found_foo_internals);
+    } else if (info->url.spec() == "chrome://foo/") {
+      EXPECT_TRUE(found_cats && found_cats_internals);
       found_foo = true;
       EXPECT_TRUE(info->enabled);
+      EXPECT_FALSE(info->internal);
+      EXPECT_FALSE(found_bar || found_dogs || found_foo_internals);
+    } else if (info->url.spec() == "chrome://foo-internals/") {
+      EXPECT_TRUE(found_cats && found_cats_internals && found_foo);
+      found_foo_internals = true;
+      EXPECT_TRUE(info->enabled);
+      EXPECT_TRUE(info->internal);
       EXPECT_FALSE(found_bar || found_dogs);
     } else if (info->url.spec() == "chrome-untrusted://bar/") {
-      EXPECT_TRUE(found_cats && found_foo);
+      EXPECT_TRUE(found_cats && found_cats_internals && found_foo &&
+                  found_foo_internals);
       found_bar = true;
       EXPECT_TRUE(info->enabled);
       EXPECT_FALSE(found_dogs);
     } else if (info->url.spec() == "chrome-untrusted://dogs/") {
-      EXPECT_TRUE(found_cats && found_foo && found_bar);
+      EXPECT_TRUE(found_cats && found_cats_internals && found_foo &&
+                  found_foo_internals && found_bar);
       found_dogs = true;
       EXPECT_FALSE(info->enabled);
     }
   }
-  EXPECT_TRUE(found_cats && found_foo && found_bar && found_dogs);
+  EXPECT_TRUE(found_cats && found_cats_internals && found_foo && found_bar &&
+              found_dogs && found_foo_internals);
 
   // Validate command URL data.
   base::span<const base::cstring_view> expected_urls =

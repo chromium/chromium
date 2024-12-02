@@ -17,9 +17,22 @@ export function getHtml(this: ChromeUrlsAppElement) {
       html`<li>${info.url.url}</li>`
     }`)}
 </ul>
-<h2>For Debug</h2>
+${this.internalUrlInfos_.length ? html`
+  <h2>Internal Debugging Page URLs</h2>
+  <p>
+    <span>Internal debugging pages are currently </span>
+    <span class="bold">${this.getDebugPagesEnabledText_()}</span><span>.</span>
+  </p>
+  <ul>
+    ${this.internalUrlInfos_.map(info => html`
+      ${this.isInternalUiEnabled_(info) ?
+        html`<li><a href="${info.url.url}">${info.url.url}</a></li>` :
+        html`<li>${info.url.url}</li>`
+      }`)}
+  </ul>` : ''}
+<h2>Command URLs for Debug</h2>
 <p>
-The following pages are for debugging purposes only. Because they crash or hang
+The following URLs are for debugging purposes only. Because they crash or hang
 the renderer, they're not linked directly; you can type them into the address
 bar if you need them.
 </p>

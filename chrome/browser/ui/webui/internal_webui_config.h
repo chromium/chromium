@@ -19,6 +19,9 @@ class WebUIController;
 
 namespace webui {
 
+// Returns whether `url` is an internal debugging WebUI page.
+bool IsInternalWebUI(const GURL& url);
+
 // This subclass of WebUIConfig sets IsWebUIEnabled() to the value of the
 // InternalWebUisEnabled pref.
 class InternalWebUIConfig : public content::WebUIConfig {
