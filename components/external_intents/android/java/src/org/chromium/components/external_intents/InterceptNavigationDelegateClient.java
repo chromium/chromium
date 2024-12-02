@@ -23,9 +23,6 @@ public interface InterceptNavigationDelegateClient {
     /* Creates an ExternalNavigationHandler instance that is configured for this client. */
     ExternalNavigationHandler createExternalNavigationHandler();
 
-    /* Returns the time of the user's last interaction with the app. */
-    long getLastUserInteractionTime();
-
     /* Gets a RedirectHandler instance that is associated with this client, creating it if
      * necessary. */
     RedirectHandler getOrCreateRedirectHandler();

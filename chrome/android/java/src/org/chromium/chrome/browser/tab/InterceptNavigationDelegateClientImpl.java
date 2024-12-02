@@ -8,7 +8,6 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
@@ -73,12 +72,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     @Override
     public ExternalNavigationHandler createExternalNavigationHandler() {
         return mTab.getDelegateFactory().createExternalNavigationHandler(mTab);
-    }
-
-    @Override
-    public long getLastUserInteractionTime() {
-        ChromeActivity associatedActivity = mTab.getActivity();
-        return (associatedActivity == null) ? -1 : associatedActivity.getLastUserInteractionTime();
     }
 
     @Override

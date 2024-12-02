@@ -156,9 +156,6 @@ public class ContextualSearchManager
     /** A means of observing all the browser's tabs. */
     private final TabModelSelector mTabModelSelector;
 
-    /** A supplier of the last time the user interacted with the browser. */
-    private final Supplier<Long> mLastUserInteractionTimeSupplier;
-
     private final Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     private ContextualSearchSelectionController mSelectionController;
@@ -263,8 +260,6 @@ public class ContextualSearchManager
      * @param browserControlsStateProvider Access to the current state of the browser controls.
      * @param windowAndroid A window to create the overlay panel with.
      * @param tabModelSelector A means of observing all tabs in the browser.
-     * @param lastUserInteractionTimeSupplier A supplier of the last time a user interacted with the
-     *     browser.
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} when available.
      */
     public ContextualSearchManager(
@@ -277,7 +272,6 @@ public class ContextualSearchManager
             BrowserControlsStateProvider browserControlsStateProvider,
             WindowAndroid windowAndroid,
             TabModelSelector tabModelSelector,
-            Supplier<Long> lastUserInteractionTimeSupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mProfile = profile;
@@ -288,7 +282,6 @@ public class ContextualSearchManager
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mWindowAndroid = windowAndroid;
         mTabModelSelector = tabModelSelector;
-        mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mDpToPx = mActivity.getResources().getDisplayMetrics().density;
 
@@ -1168,7 +1161,6 @@ public class ContextualSearchManager
                     pageTransition,
                     isRedirect,
                     hasUserGesture,
-                    mLastUserInteractionTimeSupplier.get(),
                     RedirectHandler.NO_COMMITTED_ENTRY_INDEX,
                     /* isInitialNavigation= */ true,
                     isRendererInitiated);

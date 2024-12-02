@@ -15,8 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.HashSet;
@@ -113,8 +111,6 @@ public class RedirectHandler {
     // NavigationChain so that the history state can be correctly set even after the tab is hidden.
     private int mLastCommittedEntryIndexBeforeStartingNavigation = INVALID_ENTRY_INDEX;
 
-    private long mLastUserInteractionTimeMillis;
-
     public static RedirectHandler create() {
         return new RedirectHandler();
     }
@@ -192,20 +188,17 @@ public class RedirectHandler {
     }
 
     /**
-     * Updates new url loading information to trace navigation.
-     * A time based heuristic is used to determine if this loading is an effective redirect or not
-     * if core of |pageTransType| is LINK.
+     * Updates new url loading information to trace navigation. A time based heuristic is used to
+     * determine if this loading is an effective redirect or not if core of |pageTransType| is LINK.
      *
-     * http://crbug.com/322567 : Trace navigation started from an external app.
+     * <p>http://crbug.com/322567 : Trace navigation started from an external app.
      * http://crbug.com/331571 : Trace navigation started from user typing to do not override such
-     * navigation.
-     * http://crbug.com/426679 : Trace every navigation and the last committed entry index right
-     * before starting the navigation.
+     * navigation. http://crbug.com/426679 : Trace every navigation and the last committed entry
+     * index right before starting the navigation.
      *
      * @param pageTransType page transition type of this loading.
      * @param isRedirect whether this loading is http redirect or not.
      * @param hasUserGesture whether this loading is started by a user gesture.
-     * @param lastUserInteractionTime time when the last user interaction was made.
      * @param lastCommittedEntryIndex the last committed entry index right before this loading.
      * @param isInitialNavigation whether this loading is for the initial navigation in a Tab.
      * @param isRendererInitiated whether the navigation was initiated by a Renderer.
@@ -214,12 +207,9 @@ public class RedirectHandler {
             int pageTransType,
             boolean isRedirect,
             boolean hasUserGesture,
-            long lastUserInteractionTime,
             int lastCommittedEntryIndex,
             boolean isInitialNavigation,
             boolean isRendererInitiated) {
-        mLastUserInteractionTimeMillis = lastUserInteractionTime;
-
         // Treat anything renderer-initiated without a gesture as part of the same navigation
         // chain. Server redirects are also part of the same navigation chain.
         boolean isSameNavigationChain = isRedirect || (isRendererInitiated && !hasUserGesture);
@@ -369,23 +359,6 @@ public class RedirectHandler {
 
     public boolean intentPrefersToStayInChrome() {
         return mIntentState != null && mIntentState.mPreferToStayInChrome;
-    }
-
-    public void maybeLogExternalRedirectBlockedWithMissingGesture() {
-        if (!mNavigationChainState.mInitialNavigationState.isRendererInitiated
-                || mNavigationChainState.mInitialNavigationState.hasUserGesture) {
-            return;
-        }
-
-        long millisSinceLastGesture =
-                SystemClock.elapsedRealtime() - mLastUserInteractionTimeMillis;
-        Log.w(
-                TAG,
-                "External navigation blocked due to missing gesture. Last input was "
-                        + millisSinceLastGesture
-                        + "ms ago.");
-        RecordHistogram.recordTimesHistogram(
-                "Android.Intent.BlockedExternalNavLastGestureTime", millisSinceLastGesture);
     }
 
     public void setPerformedHiddenCrossFrameNavigation() {

@@ -2166,7 +2166,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 mHubManagerSupplier,
                 mIntentMetadataOneshotSupplier,
                 mLayoutStateProviderSupplier,
-                this::getLastUserInteractionTime,
                 getBrowserControlsManager(),
                 getWindowAndroid(),
                 getLifecycleDispatcher(),

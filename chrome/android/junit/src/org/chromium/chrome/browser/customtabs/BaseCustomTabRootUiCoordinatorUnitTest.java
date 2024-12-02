@@ -110,7 +110,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    @Mock private Supplier<Long> mLastUserInteractionTimeSupplier;
     @Mock private BrowserControlsManager mBrowserControlsManager;
 
     @Mock
@@ -186,7 +185,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mBookmarkModelSupplier,
                         mTabBookmarkerSupplier,
                         mTabModelSelectorSupplier,
-                        mLastUserInteractionTimeSupplier,
                         mBrowserControlsManager,
                         mWindowAndroid,
                         mActivityLifecycleDispatcher,

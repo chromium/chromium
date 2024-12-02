@@ -2166,19 +2166,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Intent.BlockedExternalNavLastGestureTime" units="ms"
-    expires_after="2024-12-08">
-  <owner>mthiesse@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    When a navigation to an external protocol is blocked due to a missing
-    gesture on the redirect chain, records the time in milliseconds since the
-    last time the user touched the screen before the navigation. Note that this
-    notion is decoupled from the last user activation in blink due to quirks
-    around how the RedirectHandler works.
-  </summary>
-</histogram>
-
 <histogram name="Android.Intent.HasNonSpoofablePackageName" enum="Boolean"
     expires_after="2024-12-01">
   <owner>katzz@google.com</owner>
