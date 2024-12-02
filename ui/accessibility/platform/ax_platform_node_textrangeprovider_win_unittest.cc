@@ -4477,10 +4477,21 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     // |text_node| has a grammar error on "some text", a highlight for the
     // first word, a spelling error for the second word, a "spelling-error"
     // highlight for the fourth word, and a "grammar-error" highlight for the
-    // fifth word. So the range has mixed annotations.
-    EXPECT_UIA_TEXTATTRIBUTE_MIXED(text_range_provider,
-                                   UIA_AnnotationTypesAttributeId);
+    // fifth word. So the range has both spelling and grammar error and also
+    // highlighted text.
+    base::win::ScopedVariant annotation_types_variant;
+    EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
 
+    EXPECT_EQ(annotation_types_variant.type(), VT_ARRAY | VT_I4);
+    std::vector<int> expected_annotations = {AnnotationType_SpellingError,
+                                             AnnotationType_GrammarError,
+                                             AnnotationType_Highlighted};
+    EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
+                            expected_annotations);
+  }
+
+  {
     // Testing annotations in range [5,9)
     // start: TextPosition, anchor_id=2, text_offset=5,
     //        annotated_text=some <t>ext and some other text
@@ -4588,10 +4599,18 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   {
     // |heading_text_node| has a a spelling error for one word, and no
-    // annotations for the remaining text, so the range has mixed annotations.
-    EXPECT_UIA_TEXTATTRIBUTE_MIXED(heading_text_range_provider,
-                                   UIA_AnnotationTypesAttributeId);
+    // annotations for the remaining text, so the range has spelling error.
+    base::win::ScopedVariant annotation_types_variant;
+    EXPECT_HRESULT_SUCCEEDED(heading_text_range_provider->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
 
+    EXPECT_EQ(annotation_types_variant.type(), VT_ARRAY | VT_I4);
+    std::vector<int> expected_annotations = {AnnotationType_SpellingError};
+    EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
+                            expected_annotations);
+  }
+
+  {
     // start: TextPosition, anchor_id=4, text_offset=5,
     //        annotated_text=more <t>ext
     // end  : TextPosition, anchor_id=4, text_offset=9,
