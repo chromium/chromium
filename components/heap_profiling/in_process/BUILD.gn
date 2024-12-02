@@ -55,10 +55,7 @@ source_set("unit_tests") {
   # HeapProfilerController's dependencies are not compiled on iOS unless
   # use_allocator_shim is true.
   if (!is_ios || use_allocator_shim) {
-    sources = [
-      "heap_profiler_controller_unittest.cc",
-      "heap_profiler_parameters_unittest.cc",
-    ]
+    sources = [ "heap_profiler_controller_unittest.cc" ]
     deps = [
       ":in_process",
       ":mojom",
