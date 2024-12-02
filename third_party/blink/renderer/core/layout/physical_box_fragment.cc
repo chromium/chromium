@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/outline_utils.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
@@ -215,16 +216,26 @@ const PhysicalBoxFragment* PhysicalBoxFragment::CloneWithPostLayoutFragments(
     child.fragment = child->PostLayout();
     DCHECK(child.fragment);
 
-    if (!child->IsFragmentainerBox())
+    const auto* child_fragment = DynamicTo<PhysicalBoxFragment>(child.get());
+    if (!child_fragment) {
       continue;
+    }
+    // See if there's a fragmentainer here. A column fragmentainer is a direct
+    // child of a multicol container fragment. A page fragmentainer is wrapped
+    // inside a page border box, which is wrapped inside a page container box.
+    if (child_fragment->GetBoxType() == kPageContainer) {
+      child_fragment = &GetPageArea(GetPageBorderBox(*child_fragment));
+    }
+    if (!child_fragment->IsFragmentainerBox()) {
+      continue;
+    }
 
     // Fragmentainers don't have the concept of post-layout fragments, so if
     // this is a fragmentation context root (such as a multicol container), we
     // need to not only update its children, but also the children of the
     // children that are fragmentainers.
-    auto& fragmentainer = *To<PhysicalBoxFragment>(child.fragment.Get());
     for (PhysicalFragmentLink& fragmentainer_child :
-         fragmentainer.GetMutableForCloning().Children()) {
+         child_fragment->GetMutableForCloning().Children()) {
       auto& old_child =
           *To<PhysicalBoxFragment>(fragmentainer_child.fragment.Get());
       fragmentainer_child.fragment = old_child.PostLayout();
