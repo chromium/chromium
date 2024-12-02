@@ -26,7 +26,7 @@ MockRenderViewContextMenu::MockMenuItem::MockMenuItem()
 MockRenderViewContextMenu::MockMenuItem::MockMenuItem(
     const MockMenuItem& other) = default;
 
-MockRenderViewContextMenu::MockMenuItem::~MockMenuItem() {}
+MockRenderViewContextMenu::MockMenuItem::~MockMenuItem() = default;
 
 MockRenderViewContextMenu::MockMenuItem&
 MockRenderViewContextMenu::MockMenuItem::operator=(const MockMenuItem& other) =
@@ -39,7 +39,7 @@ MockRenderViewContextMenu::MockRenderViewContextMenu(bool incognito)
                                /*create_if_needed=*/true)
                          : original_profile_.get()) {}
 
-MockRenderViewContextMenu::~MockRenderViewContextMenu() {}
+MockRenderViewContextMenu::~MockRenderViewContextMenu() = default;
 
 bool MockRenderViewContextMenu::IsCommandIdChecked(int command_id) const {
   return observer_->IsCommandIdChecked(command_id);
