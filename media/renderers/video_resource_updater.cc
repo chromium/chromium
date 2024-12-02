@@ -456,6 +456,8 @@ class VideoResourceUpdater::SoftwarePlaneResource
     shared_image_ = std::move(shared_image_mapping.shared_image);
     shared_mapping_ = std::move(shared_image_mapping.mapping);
     CHECK(shared_image_);
+
+    sync_token_ = shared_image_interface->GenVerifiedSyncToken();
   }
 
   SoftwarePlaneResource(const SoftwarePlaneResource&) = delete;
@@ -463,25 +465,15 @@ class VideoResourceUpdater::SoftwarePlaneResource
 
   ~SoftwarePlaneResource() override {
     DCHECK(shared_image_);
-    auto shared_image_interface =
-        video_resource_updater_->shared_image_interface();
-    if (shared_image_interface) {
-      shared_image_interface->DestroySharedImage(
-          GetSyncToken(shared_image_interface), std::move(shared_image_));
-    }
+    shared_image_->UpdateDestructionSyncToken(sync_token_);
   }
 
   const scoped_refptr<gpu::ClientSharedImage>& shared_image() const {
     return shared_image_;
   }
+  const gpu::SyncToken& sync_token() { return sync_token_; }
 
   void* pixels() { return shared_mapping_.memory(); }
-
-  gpu::SyncToken GetSyncToken(
-      scoped_refptr<gpu::SharedImageInterface> shared_image_interface) {
-    DCHECK(shared_image_interface);
-    return shared_image_interface->GenVerifiedSyncToken();
-  }
 
   // Returns a memory dump GUID consistent across processes.
   base::UnguessableToken GetSharedMemoryGuid() const {
@@ -492,6 +484,7 @@ class VideoResourceUpdater::SoftwarePlaneResource
   // Used for SharedImage.
   // SoftwarePlaneResource is called only in VideoResourceUpdater.
   const raw_ptr<VideoResourceUpdater> video_resource_updater_;
+  gpu::SyncToken sync_token_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
   base::WritableSharedMemoryMapping shared_mapping_;
@@ -802,6 +795,7 @@ VideoResourceUpdater::PlaneResource* VideoResourceUpdater::AllocateResource(
 
   if (software_compositor()) {
     DCHECK_EQ(format, viz::SinglePlaneFormat::kBGRA_8888);
+    DCHECK(shared_image_interface());
 
     all_resources_.push_back(std::make_unique<SoftwarePlaneResource>(
         plane_resource_id, plane_size, color_space, shared_image_interface(),
@@ -1366,8 +1360,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwarePlanes(
       const auto& shared_image = software_resource->shared_image();
       transferable_resource =
           viz::TransferableResource::MakeSoftwareSharedImage(
-              shared_image,
-              software_resource->GetSyncToken(shared_image_interface()),
+              shared_image, software_resource->sync_token(),
               software_resource->resource_size(), plane_resource->si_format(),
               viz::TransferableResource::ResourceSource::kVideo);
     } else {
