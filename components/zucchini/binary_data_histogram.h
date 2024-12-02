@@ -8,9 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
-#include "base/containers/heap_array.h"
 #include "components/zucchini/buffer_view.h"
 
 namespace zucchini {
@@ -64,7 +64,7 @@ class BinaryDataHistogram {
   // Attempts to compute the histogram, returns true iff successful.
   bool Compute(ConstBufferView region);
 
-  bool IsValid() const { return !histogram_.empty(); }
+  bool IsValid() const { return static_cast<bool>(histogram_); }
 
   // Returns distance to another histogram (heuristics). If two binaries are
   // identical then their histogram distance is 0. However, the converse is not
@@ -81,8 +81,9 @@ class BinaryDataHistogram {
 
   // 2^16 buckets holding counts of all 2-byte sequences in the data. The counts
   // are stored as signed values to simplify computing the distance between two
-  // histograms.
-  base::HeapArray<int32_t> histogram_;
+  // histograms. Note that HeapArray is intentionally not used due to its
+  // overhead being unacceptable (see crbug.com/381332105).
+  std::unique_ptr<int32_t[]> histogram_;
 };
 
 }  // namespace zucchini
