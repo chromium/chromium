@@ -148,7 +148,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
 
 void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,
-    const blink::StorageKey& storage_key,
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback loader_callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
@@ -160,11 +159,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     CompleteWithoutLoader();
     return;
   }
-
-  // Update the host. This is important to do before falling back to network
-  // below, so service worker APIs still work even if the service worker is
-  // bypassed for request interception.
-  InitializeServiceWorkerClient(tentative_resource_request, storage_key);
 
   // Fall back to network if we were instructed to bypass the service worker for
   // request interception, or if the context is gone so we have to bypass
@@ -209,29 +203,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
           &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
           weak_factory_.GetWeakPtr(), /*is_for_navigation=*/true,
           base::TimeTicks::Now()));
-}
-
-void ServiceWorkerControlleeRequestHandler::InitializeServiceWorkerClient(
-    const network::ResourceRequest& tentative_resource_request,
-    const blink::StorageKey& storage_key) {
-  // Update the container host with this request, clearing old controller state
-  // if this is a redirect.
-  service_worker_client_->SetControllerRegistration(
-      nullptr,
-      /*notify_controllerchange=*/false);
-  const GURL stripped_url =
-      net::SimplifyUrlForRequest(tentative_resource_request.url);
-
-  service_worker_client_->UpdateUrls(
-      stripped_url,
-      // The storage key only has a top_level_site, not
-      // an origin, so we must extract the origin from
-      // trusted_params.
-      tentative_resource_request.trusted_params
-          ? tentative_resource_request.trusted_params->isolation_info
-                .top_frame_origin()
-          : std::nullopt,
-      storage_key);
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(

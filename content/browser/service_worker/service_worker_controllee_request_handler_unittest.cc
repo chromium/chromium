@@ -88,7 +88,8 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               test->service_worker_client_,
               /*skip_service_worker=*/false,
               FrameTreeNodeId(),
-              base::DoNothing())) {}
+              base::DoNothing())),
+          service_worker_client_(test->service_worker_client_) {}
 
     void MaybeCreateLoader() {
       network::ResourceRequest resource_request;
@@ -96,10 +97,12 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
       resource_request.destination = destination_;
       resource_request.headers = request()->extra_request_headers();
       DCHECK(!loader_loop_.AnyQuitCalled());
+      service_worker_client_->UpdateUrls(
+          resource_request.url, url::Origin::Create(resource_request.url),
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(resource_request.url)));
       handler_->MaybeCreateLoader(
           resource_request,
-          blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(resource_request.url)),
           nullptr,
           base::BindOnce(
               [](base::OnceClosure closure,
@@ -126,6 +129,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
     const network::mojom::RequestDestination destination_;
     std::unique_ptr<net::URLRequest> request_;
     std::unique_ptr<ServiceWorkerControlleeRequestHandler> handler_;
+    base::WeakPtr<ServiceWorkerClient> service_worker_client_;
     base::RunLoop loader_loop_;
   };
 

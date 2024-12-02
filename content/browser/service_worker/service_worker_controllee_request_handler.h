@@ -78,6 +78,9 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   // If |skip_service_worker| is true, service workers are bypassed for
   // request interception.
+  // `service_worker_client->UpdateUrls()` should be called for this
+  // request/redirect leg before constructing
+  // `ServiceWorkerControlleeRequestHandler`.
   ServiceWorkerControlleeRequestHandler(
       base::WeakPtr<ServiceWorkerContextCore> context,
       std::string fetch_event_client_id,
@@ -97,7 +100,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // class is created.
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_request,
-      const blink::StorageKey& storage_key,
       BrowserContext* browser_context,
       NavigationLoaderInterceptor::LoaderCallback loader_callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback);
@@ -110,11 +112,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
  private:
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerControlleeRequestHandlerTest,
                            ActivateWaitingVersion);
-
-  // Does all initialization of |service_worker_client_| for a request.
-  void InitializeServiceWorkerClient(
-      const network::ResourceRequest& tentative_request,
-      const blink::StorageKey& storage_key);
 
   void ContinueWithRegistration(
       // True when FindRegistrationForClientUrl() is called for navigation.
