@@ -77,15 +77,21 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
         // accounts and part of the next one are visible.
         RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
         int numAccounts = sheetItemListView.getAdapter().getItemCount();
-        if (numAccounts > MAX_VISIBLE_ACCOUNTS_WIDGET_MODE) {
+
+        // When the number of rows is just over the limit and the last one is the user a different
+        // account button, we increase the max to avoid cutting off the use a different account
+        // button since its size is a bit different so it looks odd.
+        float maxRowSize = MAX_VISIBLE_ACCOUNTS_WIDGET_MODE;
+        if (sheetItemListView.findViewById(R.id.add_account) != null
+                && numAccounts == (int) (maxRowSize + 1)) {
+            ++maxRowSize;
+        }
+        if (numAccounts > maxRowSize) {
             sheetItemListView.measure(
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            int measuredHeight = sheetItemListView.getMeasuredHeight();
-            int containerHeight =
-                    Math.round(
-                            ((float) measuredHeight / numAccounts)
-                                    * MAX_VISIBLE_ACCOUNTS_WIDGET_MODE);
+            int accountHeight = sheetItemListView.getChildAt(0).getMeasuredHeight();
+            int containerHeight = Math.round(accountHeight * maxRowSize);
             sheetContainer.getLayoutParams().height = containerHeight;
         } else {
             // Need to set the height here in case it was changed by a previous {@link
