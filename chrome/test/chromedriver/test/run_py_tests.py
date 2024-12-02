@@ -5641,7 +5641,7 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
     self._http_server.SetDataForPath('/local2.html',
       bytes('<p>DONE!</p>', 'utf-8'))
     self._http_server.SetDataForPath('/local1.html',
-      bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
+      bytes('<span>Ready, Steady, Go!</span>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="/local1.html">', 'utf-8'))
     for _ in range(0, 2):
@@ -5661,7 +5661,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1)
-      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
@@ -5674,7 +5673,7 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
     self._http_server.SetDataForPath('/remote.html',
       bytes('<p>DONE!</p>', 'utf-8'))
     self._http_server.SetDataForPath('/local.html',
-      bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
+      bytes('<span>Ready, Steady, Go!</span>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="/local.html">', 'utf-8'))
     for _ in range(0, 2):
@@ -5694,7 +5693,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1)
-      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
@@ -5710,7 +5708,7 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
     self._http_server.SetDataForPath('/remote2.html',
       bytes('<p>DONE!</p>', 'utf-8'))
     self._http_server.SetDataForPath('/remote1.html',
-      bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
+      bytes('<span>Ready, Steady, Go!</span>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="%s">' % remote1_url, 'utf-8'))
     for _ in range(0, 2):
@@ -5730,7 +5728,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1)
-      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
@@ -5749,7 +5746,7 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
     self._http_server.SetDataForPath('/local.html',
       bytes('<p>DONE!</p>', 'utf-8'))
     self._http_server.SetDataForPath('/remote.html',
-      bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
+      bytes('<span>Ready, Steady, Go!</span>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="%s">' % remote_url, 'utf-8'))
     # It was reproted that the test with 2 internal iterations fails twice in a
@@ -5778,7 +5775,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1)
-      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
@@ -5807,7 +5803,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1)
-      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
@@ -5839,7 +5834,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       self.assertTrue(self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1))
-      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
@@ -5881,7 +5875,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       self.assertTrue(self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1))
-      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
@@ -5921,7 +5914,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       self.assertTrue(self.WaitForCondition(
         lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
         timeout=1))
-      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
