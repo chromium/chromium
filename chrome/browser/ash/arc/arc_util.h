@@ -178,6 +178,8 @@ void UpdateArcFileSystemCompatibilityPrefIfNeeded(
 // Check if the ARCVM DLC image was installed on the device.
 void CheckArcVmDlcImageExist(base::OnceClosure callback);
 
+void SetArcvmDlcImageStatus(bool availability);
+
 // Returns the supervision transition status as stored in profile prefs.
 ArcManagementTransition GetManagementTransition(const Profile* profile);
 

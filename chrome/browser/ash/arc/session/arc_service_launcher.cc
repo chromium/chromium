@@ -38,7 +38,9 @@
 #include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
 #include "ash/components/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
@@ -140,6 +142,18 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
                                              std::move(delegate));
 }
 
+void CheckArcvmDlcImageStatus() {
+  base::FilePath arc_vm_dlc_image_path(
+      "/opt/google/vms/android/system.raw.img");
+  // Check if the ARCVM DLC image exists before calling
+  // GetArcStatusForProfile(). This blocks the main thread but is necessary to
+  // ensure arc availability is consistent, especially during Ash Chrome
+  // restarts. The check only occurs when the arcvm_dlc USE flag is enabled,
+  // which is currently specific to the Reven board.
+  bool is_arcvm_dlc_image_available = base::PathExists(arc_vm_dlc_image_path);
+  arc::SetArcvmDlcImageStatus(is_arcvm_dlc_image_available);
+}
+
 }  // namespace
 
 ArcServiceLauncher::ArcServiceLauncher(
@@ -184,6 +198,12 @@ void ArcServiceLauncher::Initialize() {
                      weak_factory_.GetWeakPtr()),
       kTpmOwnershipCheckDelay);
 #else
+  if (arc::IsArcVmDlcEnabled() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kLoginUser)) {
+    CheckArcvmDlcImageStatus();
+  }
+
   arc_session_manager_->ExpandPropertyFilesAndReadSalt();
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 }
