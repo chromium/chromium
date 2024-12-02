@@ -911,7 +911,7 @@ class SafeBrowsingServiceFactoryImpl : public SafeBrowsingServiceFactory {
  private:
   friend class base::NoDestructor<SafeBrowsingServiceFactoryImpl>;
 
-  SafeBrowsingServiceFactoryImpl() {}
+  SafeBrowsingServiceFactoryImpl() = default;
 };
 
 SafeBrowsingServiceFactory* GetSafeBrowsingServiceFactory() {

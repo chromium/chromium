@@ -30,14 +30,14 @@ namespace {
 class FakeSafeBrowsingUIManager
     : public safe_browsing::TestSafeBrowsingUIManager {
  public:
-  FakeSafeBrowsingUIManager() {}
+  FakeSafeBrowsingUIManager() = default;
 
   FakeSafeBrowsingUIManager(const FakeSafeBrowsingUIManager&) = delete;
   FakeSafeBrowsingUIManager& operator=(const FakeSafeBrowsingUIManager&) =
       delete;
 
  protected:
-  ~FakeSafeBrowsingUIManager() override {}
+  ~FakeSafeBrowsingUIManager() override = default;
 
   void DisplayBlockingPage(const UnsafeResource& resource) override {
     resource.DispatchCallback(FROM_HERE, true /* proceed */,

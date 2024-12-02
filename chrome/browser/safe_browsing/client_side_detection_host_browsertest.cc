@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(
 
 class ClientSideDetectionHostVibrateTest : public InProcessBrowserTest {
  public:
-  ClientSideDetectionHostVibrateTest() {}
+  ClientSideDetectionHostVibrateTest() = default;
 
   ClientSideDetectionHostVibrateTest(
       const ClientSideDetectionHostVibrateTest&) = delete;

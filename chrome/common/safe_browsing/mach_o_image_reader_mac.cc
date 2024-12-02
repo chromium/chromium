@@ -25,7 +25,7 @@ class ByteSlice {
   // Creates a slice for a given data array.
   explicit ByteSlice(const uint8_t* data, size_t size)
       : data_(data), size_(size) {}
-  ~ByteSlice() {}
+  ~ByteSlice() = default;
 
   bool IsValid() {
     return data_ != nullptr;
@@ -74,11 +74,11 @@ class ByteSlice {
   // Copy and assign allowed.
 };
 
-MachOImageReader::LoadCommand::LoadCommand() {}
+MachOImageReader::LoadCommand::LoadCommand() = default;
 
 MachOImageReader::LoadCommand::LoadCommand(const LoadCommand& other) = default;
 
-MachOImageReader::LoadCommand::~LoadCommand() {}
+MachOImageReader::LoadCommand::~LoadCommand() = default;
 
 // static
 bool MachOImageReader::IsMachOMagicValue(uint32_t magic) {
@@ -94,7 +94,7 @@ MachOImageReader::MachOImageReader()
       commands_() {
 }
 
-MachOImageReader::~MachOImageReader() {}
+MachOImageReader::~MachOImageReader() = default;
 
 bool MachOImageReader::Initialize(const uint8_t* image, size_t image_size) {
   if (!image)

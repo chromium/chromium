@@ -68,7 +68,7 @@ class MockSafeBrowsingUIManager : public safe_browsing::SafeBrowsingUIManager {
   }
 
  protected:
-  ~MockSafeBrowsingUIManager() override {}
+  ~MockSafeBrowsingUIManager() override = default;
 };
 
 }  // namespace

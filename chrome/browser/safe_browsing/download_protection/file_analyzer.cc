@@ -44,7 +44,7 @@ FileAnalyzer::Results ExtractFileFeatures(
 }  // namespace
 
 FileAnalyzer::Results::Results() = default;
-FileAnalyzer::Results::~Results() {}
+FileAnalyzer::Results::~Results() = default;
 FileAnalyzer::Results::Results(const FileAnalyzer::Results& other) = default;
 
 FileAnalyzer::FileAnalyzer(
@@ -53,7 +53,7 @@ FileAnalyzer::FileAnalyzer(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-FileAnalyzer::~FileAnalyzer() {}
+FileAnalyzer::~FileAnalyzer() = default;
 
 void FileAnalyzer::Start(const base::FilePath& target_path,
                          const base::FilePath& tmp_path,

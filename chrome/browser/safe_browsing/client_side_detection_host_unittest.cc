@@ -150,7 +150,7 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MockClientSideDetectionService& operator=(
       const MockClientSideDetectionService&) = delete;
 
-  ~MockClientSideDetectionService() override {}
+  ~MockClientSideDetectionService() override = default;
 
   MOCK_METHOD3(SendClientReportPhishingRequest,
                void(std::unique_ptr<ClientPhishingRequest>,
@@ -195,7 +195,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   }
 
  protected:
-  ~MockSafeBrowsingUIManager() override {}
+  ~MockSafeBrowsingUIManager() override = default;
 };
 
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {

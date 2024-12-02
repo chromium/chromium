@@ -128,8 +128,8 @@ class TestPhishingDOMFeatureExtractor : public PhishingDOMFeatureExtractor {
 
 class TestChromeContentRendererClient : public ChromeContentRendererClient {
  public:
-  TestChromeContentRendererClient() {}
-  ~TestChromeContentRendererClient() override {}
+  TestChromeContentRendererClient() = default;
+  ~TestChromeContentRendererClient() override = default;
   // Since visited_link_reader_ in ChromeContentRenderClient never get
   // initiated, overrides VisitedLinkedHash() function to prevent crashing.
   uint64_t VisitedLinkHash(std::string_view canonical_url) override {

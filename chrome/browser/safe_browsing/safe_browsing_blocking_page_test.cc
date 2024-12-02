@@ -429,7 +429,7 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   }
 
  protected:
-  ~FakeSafeBrowsingUIManager() override {}
+  ~FakeSafeBrowsingUIManager() override = default;
 
  private:
   std::string report_;
@@ -446,9 +446,6 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
 
 class TestThreatDetailsFactory : public ThreatDetailsFactory {
  public:
-  TestThreatDetailsFactory() : details_() {}
-  ~TestThreatDetailsFactory() override {}
-
   std::unique_ptr<ThreatDetails> CreateThreatDetails(
       BaseUIManager* delegate,
       WebContents* web_contents,
@@ -470,7 +467,7 @@ class TestThreatDetailsFactory : public ThreatDetailsFactory {
   ThreatDetails* get_details() { return details_; }
 
  private:
-  raw_ptr<ThreatDetails, AcrossTasksDanglingUntriaged> details_;
+  raw_ptr<ThreatDetails, AcrossTasksDanglingUntriaged> details_ = nullptr;
 };
 
 // A SafeBrowingBlockingPage class that lets us wait until it's hidden.
@@ -535,7 +532,7 @@ class TestSafeBrowsingBlockingPageFactory
     : public SafeBrowsingBlockingPageFactory {
  public:
   TestSafeBrowsingBlockingPageFactory() : always_show_back_to_safety_(true) {}
-  ~TestSafeBrowsingBlockingPageFactory() override {}
+  ~TestSafeBrowsingBlockingPageFactory() override = default;
 
   void SetAlwaysShowBackToSafety(bool value) {
     always_show_back_to_safety_ = value;
@@ -630,7 +627,7 @@ class TestSafeBrowsingBlockingPageFactory
 
 class SafeBrowsingBlockingPageTestHelper {
  public:
-  SafeBrowsingBlockingPageTestHelper() {}
+  SafeBrowsingBlockingPageTestHelper() = default;
   SafeBrowsingBlockingPageTestHelper(
       const SafeBrowsingBlockingPageTestHelper&) = delete;
   SafeBrowsingBlockingPageTestHelper& operator=(
@@ -692,7 +689,7 @@ class SafeBrowsingBlockingPageBrowserTest
   SafeBrowsingBlockingPageBrowserTest& operator=(
       const SafeBrowsingBlockingPageBrowserTest&) = delete;
 
-  ~SafeBrowsingBlockingPageBrowserTest() override {}
+  ~SafeBrowsingBlockingPageBrowserTest() override = default;
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {

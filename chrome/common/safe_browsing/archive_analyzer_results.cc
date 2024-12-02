@@ -55,7 +55,7 @@ ArchiveAnalyzerResults::ArchiveAnalyzerResults() = default;
 ArchiveAnalyzerResults::ArchiveAnalyzerResults(
     const ArchiveAnalyzerResults& other) = default;
 
-ArchiveAnalyzerResults::~ArchiveAnalyzerResults() {}
+ArchiveAnalyzerResults::~ArchiveAnalyzerResults() = default;
 
 void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           base::File* file,

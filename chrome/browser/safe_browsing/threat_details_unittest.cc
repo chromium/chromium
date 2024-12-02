@@ -145,7 +145,7 @@ class ThreatDetailsWrap : public ThreatDetails {
     SetShouldSendReport(true);
   }
 
-  ~ThreatDetailsWrap() override {}
+  ~ThreatDetailsWrap() override = default;
 
   void ThreatDetailsDone(WebContentsKey web_contents_key) {
     ++done_callback_count_;
@@ -211,7 +211,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   bool ReportWasSent() { return report_sent_; }
 
  private:
-  ~MockSafeBrowsingUIManager() override {}
+  ~MockSafeBrowsingUIManager() override = default;
 
   std::string serialized_;
   bool report_sent_;

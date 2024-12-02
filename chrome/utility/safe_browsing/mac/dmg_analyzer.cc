@@ -67,7 +67,7 @@ MachOFeatureExtractor::MachOFeatureExtractor()
   buffer_.reserve(1024 * 1024);
 }
 
-MachOFeatureExtractor::~MachOFeatureExtractor() {}
+MachOFeatureExtractor::~MachOFeatureExtractor() = default;
 
 bool MachOFeatureExtractor::IsMachO(ReadStream* stream) {
   uint32_t magic = 0;
