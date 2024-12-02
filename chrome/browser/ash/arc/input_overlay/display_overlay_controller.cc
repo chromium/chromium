@@ -90,7 +90,7 @@ std::unique_ptr<views::Widget> CreateTransientWidget(
 
 class DisplayOverlayController::FocusCycler {
  public:
-  FocusCycler() {}
+  FocusCycler() = default;
   ~FocusCycler() = default;
 
   // Adds `widget` to `widget_list_` if `widget` is visible and not in

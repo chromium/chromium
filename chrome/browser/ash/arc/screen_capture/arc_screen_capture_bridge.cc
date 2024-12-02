@@ -63,7 +63,7 @@ ArcScreenCaptureBridge::PendingCaptureParams::PendingCaptureParams(
       display_name(display_name),
       callback(std::move(callback)) {}
 
-ArcScreenCaptureBridge::PendingCaptureParams::~PendingCaptureParams() {}
+ArcScreenCaptureBridge::PendingCaptureParams::~PendingCaptureParams() = default;
 
 ArcScreenCaptureBridge::GrantedCaptureParams::GrantedCaptureParams(
     const std::string& display_name,
@@ -73,7 +73,7 @@ ArcScreenCaptureBridge::GrantedCaptureParams::GrantedCaptureParams(
       desktop_id(desktop_id),
       enable_notification(enable_notification) {}
 
-ArcScreenCaptureBridge::GrantedCaptureParams::~GrantedCaptureParams() {}
+ArcScreenCaptureBridge::GrantedCaptureParams::~GrantedCaptureParams() = default;
 
 ArcScreenCaptureBridge::ArcScreenCaptureBridge(content::BrowserContext* context,
                                                ArcBridgeService* bridge_service)

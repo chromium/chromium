@@ -150,7 +150,7 @@ class MockArcPolicyBridgeObserver : public ArcPolicyBridge::Observer {
 // |true| before destruction.
 class CheckedBoolean {
  public:
-  CheckedBoolean() {}
+  CheckedBoolean() = default;
 
   CheckedBoolean(const CheckedBoolean&) = delete;
   CheckedBoolean& operator=(const CheckedBoolean&) = delete;

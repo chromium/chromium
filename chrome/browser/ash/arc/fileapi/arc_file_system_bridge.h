@@ -61,7 +61,7 @@ class ArcFileSystemBridge
     virtual void OnRootsChanged() {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   ArcFileSystemBridge(content::BrowserContext* context,

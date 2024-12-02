@@ -16,7 +16,7 @@
 
 namespace arc::input_overlay {
 
-InputElement::InputElement() {}
+InputElement::InputElement() = default;
 
 InputElement::InputElement(ui::DomCode code) {
   input_sources_ = InputSource::IS_KEYBOARD;

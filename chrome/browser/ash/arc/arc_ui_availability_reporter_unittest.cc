@@ -48,7 +48,7 @@ int64_t ReadSingleStatistics(Mode mode) {
 
 class ArcUiAvailabilityReporterTest : public testing::Test {
  public:
-  ArcUiAvailabilityReporterTest() {}
+  ArcUiAvailabilityReporterTest() = default;
 
   ArcUiAvailabilityReporterTest(const ArcUiAvailabilityReporterTest&) = delete;
   ArcUiAvailabilityReporterTest& operator=(

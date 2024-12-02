@@ -528,7 +528,7 @@ class ArcPolicyBridgeFactory
  private:
   friend base::DefaultSingletonTraits<ArcPolicyBridgeFactory>;
 
-  ArcPolicyBridgeFactory() {}
+  ArcPolicyBridgeFactory() = default;
   ~ArcPolicyBridgeFactory() override = default;
 };
 
