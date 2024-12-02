@@ -700,6 +700,11 @@ const char kLensUnaryApisWithHttpTransportEnabledName[] =
 const char kLensUnaryApisWithHttpTransportEnabledDescription[] =
     "Enables the unary APIs with HTTP transport.";
 
+const char kLensUnaryHttpTransportEnabledName[] =
+    "Lens unary HTTP transport enabled";
+const char kLensUnaryHttpTransportEnabledDescription[] =
+    "Enables the HTTP transport for unary requests.";
+
 const char kLensWebPageLoadOptimizationEnabledName[] =
     "Lens web page load optimization";
 const char kLensWebPageLoadOptimizationEnabledDescription[] =

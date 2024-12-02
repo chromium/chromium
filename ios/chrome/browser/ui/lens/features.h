@@ -31,4 +31,7 @@ BASE_DECLARE_FEATURE(kLensWebPageLoadOptimizationEnabled);
 // Whether to use unary APIs with HTTP transport.
 BASE_DECLARE_FEATURE(kLensUnaryApisWithHttpTransportEnabled);
 
+// Whether to use HTTP transport for unary requests.
+BASE_DECLARE_FEATURE(kLensUnaryHttpTransportEnabled);
+
 #endif  // IOS_CHROME_BROWSER_UI_LENS_FEATURES_H_

@@ -2226,6 +2226,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillPaymentsSheetV2Name,
      flag_descriptions::kAutofillPaymentsSheetV2Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillPaymentsSheetV2Ios)},
+    {"lens-unary-http-transport-enabled",
+     flag_descriptions::kLensUnaryHttpTransportEnabledName,
+     flag_descriptions::kLensUnaryHttpTransportEnabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensUnaryHttpTransportEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

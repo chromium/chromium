@@ -5777,6 +5777,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-unary-http-transport-enabled",
+    "owners": ["cmyang@google.com", "brandonli@google.com", "lihailong@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-web-page-load-optimization-enabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 140
