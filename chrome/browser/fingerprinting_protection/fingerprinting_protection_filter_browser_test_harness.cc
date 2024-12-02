@@ -4,10 +4,16 @@
 
 #include "chrome/browser/fingerprinting_protection/fingerprinting_protection_filter_browser_test_harness.h"
 
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace fingerprinting_protection_filter {
 
@@ -26,6 +32,13 @@ FingerprintingProtectionFilterBrowserTest::
 
 void FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread() {
   SubresourceFilterSharedBrowserTest::SetUpOnMainThread();
+#if !BUILDFLAG(IS_ANDROID)
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "components/test/data/subresource_filter");
+#else
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/fingerprinting_protection");
+#endif  // !BUILDFLAG(IS_ANDROID)
   // Allow derived classes to start the server on their own.
 }
 
@@ -57,6 +70,16 @@ void FingerprintingProtectionFilterBrowserTest::AssertUrlContained(
     const GURL& sub_url) {
   ASSERT_NE(full_url.spec().find(std::string(sub_url.spec())),
             std::string::npos);
+}
+
+bool FingerprintingProtectionFilterBrowserTest::NavigateToDestination(
+    const GURL& url) {
+#if !BUILDFLAG(IS_ANDROID)
+  return ui_test_utils::NavigateToURL(browser(), url);
+#else
+  return content::NavigateToURL(chrome_test_utils::GetActiveWebContents(this),
+                                url);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // ============= FingerprintingProtectionFilterDryRunBrowserTest ==============
