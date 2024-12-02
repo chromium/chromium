@@ -38,10 +38,6 @@ class SequencedTaskRunner;
 class TickClock;
 }  // namespace base
 
-namespace chromeos {
-class PasskeyDialogController;
-}
-
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
@@ -227,10 +223,6 @@ class ChromeAuthenticatorRequestDelegate
   }
 
   GPMEnclaveController* enclave_controller_for_testing() const;
-#if BUILDFLAG(IS_CHROMEOS)
-  chromeos::PasskeyDialogController& chromeos_passkey_controller_for_testing()
-      const;
-#endif
 
   // content::AuthenticatorRequestClientDelegate:
   void SetRelyingPartyId(const std::string& rp_id) override;
