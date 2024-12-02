@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -91,11 +91,13 @@ void ScrollMarkerPseudoElement::AttachLayoutTree(AttachContext& context) {
   // ::scroll-marker child and clear dirty bits for the RebuildLayoutTree()
   // pass.
   ContainerNode::AttachLayoutTree(context);
+
   if (scroll_marker_group_) {
-    if (LayoutObject* group_box = scroll_marker_group_->GetLayoutObject()) {
-      // Mark the ::scroll-marker-group box for layout to make sure it's
-      // repopulated with re-attached ::scroll-marker boxes.
-      group_box->SetNeedsLayoutAndFullPaintInvalidation(
+    if (LayoutObject* scroller_box = scroll_marker_group_->GetLayoutObject()
+                                         ->ScrollerFromScrollMarkerGroup()) {
+      // Mark the scroller for layout to make sure we repopulate the
+      // ::scroll-marker-group box with ::scroll-marker boxes.
+      scroller_box->SetNeedsLayoutAndFullPaintInvalidation(
           layout_invalidation_reason::kScrollMarkersChanged);
     }
   }
