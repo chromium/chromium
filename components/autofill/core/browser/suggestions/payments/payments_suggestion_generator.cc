@@ -867,6 +867,28 @@ Suggestion CreateCreditCardSuggestion(
   return suggestion;
 }
 
+// Creates a suggestion for the BNPL issuer selection.
+// The suggestion text shows the minimum eligible value of all available
+// BNPL issuers.
+Suggestion CreateBnplSuggestion() {
+  Suggestion bnpl_suggestion;
+
+  bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
+  bnpl_suggestion.type = SuggestionType::kBnplEntry;
+
+  bnpl_suggestion.main_text =
+      Suggestion::Text(l10n_util::GetStringUTF16(
+                           IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_MAIN_TEXT),
+                       Suggestion::Text::IsPrimary(true));
+  // TODO(crbug.com/362515469): Replace hardcoded BNPL minimum range with
+  // dynamic values retrieved from BNPL issuer data.
+  bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL,
+      base::StrCat({u"$", base::NumberToString16(35)})))}};
+
+  return bnpl_suggestion;
+}
+
 }  // namespace
 
 std::vector<Suggestion> GetSuggestionsForCreditCards(
@@ -1078,6 +1100,36 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
       std::back_inserter(suggestions));
 
   return suggestions;
+}
+
+std::vector<Suggestion> MaybeCreateNewSuggestionsWithBnpl(
+    const base::span<const Suggestion>& current_suggestions) {
+  // No need to add BNPL suggestion if the current suggestion list is empty.
+  if (current_suggestions.empty()) {
+    return {};
+  }
+
+  std::vector<Suggestion> updated_suggestions;
+  updated_suggestions.reserve(current_suggestions.size() + 1);
+  // Insert BNPL suggestion before the first footer item.
+  for (size_t index = 0; index < current_suggestions.size(); index++) {
+    // No need to add new BNPL suggestion if there is already one.
+    if (current_suggestions[index].type == SuggestionType::kBnplEntry) {
+      return {};
+    }
+
+    if (IsCreditCardFooterSuggestion(current_suggestions, index)) {
+      updated_suggestions.push_back(CreateBnplSuggestion());
+      updated_suggestions.insert(updated_suggestions.end(),
+                                 current_suggestions.begin() + index,
+                                 current_suggestions.end());
+      break;
+    }
+
+    updated_suggestions.push_back(current_suggestions[index]);
+  }
+
+  return updated_suggestions;
 }
 
 std::vector<CreditCard> GetTouchToFillCardsToSuggest(
@@ -1297,6 +1349,78 @@ bool IsCardSuggestionAcceptable(const CreditCard& card,
   return true;
 }
 
+bool IsCreditCardFooterSuggestion(
+    const base::span<const Suggestion>& suggestions,
+    size_t line_number) {
+  if (line_number >= suggestions.size()) {
+    return false;
+  }
+
+  switch (suggestions[line_number].type) {
+    case SuggestionType::kSeparator:
+      // Separators are a special case: They belong into the footer iff the
+      // next item exists and is a footer item.
+      // Index will be checked at the beginning of every
+      // IsCreditCardFooterSuggestion() call to avoid infinite recursion.
+      return IsCreditCardFooterSuggestion(suggestions, line_number + 1);
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kShowAccountCards:
+    case SuggestionType::kUndoOrClear:
+      return true;
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
+    case SuggestionType::kPasswordAccountStorageEmpty:
+    case SuggestionType::kPasswordAccountStorageOptIn:
+    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
+    case SuggestionType::kPasswordAccountStorageReSignin:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kEditPredictionImprovementsInformation:
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kAutocompleteEntry:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
+    case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kFillExistingPlusAddress:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kIbanEntry:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kPlusAddressError:
+    case SuggestionType::kTitle:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kFillPredictionImprovements:
+    case SuggestionType::kPredictionImprovementsError:
+    case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kBnplEntry:
+      return false;
+  }
+}
+
 std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
@@ -1326,6 +1450,16 @@ Suggestion CreateCreditCardSuggestionForTest(
       card_linked_offer_available,
       metadata_logging_context.has_value() ? *metadata_logging_context
                                            : dummy_context);
+}
+
+std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
+    bool should_show_scan_credit_card,
+    bool should_show_cards_from_account,
+    bool is_autofilled,
+    bool with_gpay_logo) {
+  return GetCreditCardFooterSuggestions(should_show_scan_credit_card,
+                                        should_show_cards_from_account,
+                                        is_autofilled, with_gpay_logo);
 }
 
 bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,

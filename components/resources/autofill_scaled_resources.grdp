@@ -14,6 +14,7 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_VISA" file="autofill/visa.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_TROY" file="autofill/troy.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_IBAN" file="autofill/iban.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_BNPL_GENERIC" file="autofill/pay_over_time.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG" file="autofill/virtual_card_enroll.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_DARK" file="autofill/virtual_card_enroll_dark.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_AMEX" file="autofill/metadata/amex.png" />
@@ -28,6 +29,8 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_VERVE" file="autofill/metadata/verve.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_VISA" file="autofill/metadata/visa.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_TROY" file="autofill/metadata/troy.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_BNPL_GENERIC" file="autofill/metadata/pay_over_time.png" />
+
   <if expr="_google_chrome">
     <then>
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="google_chrome/autofill/googlepay.png" />

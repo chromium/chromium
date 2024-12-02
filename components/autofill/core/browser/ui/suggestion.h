@@ -276,6 +276,7 @@ struct Suggestion {
     kCardVerve,
     kCardVisa,
     kIban,
+    kBnpl,
     kAutofillPredictionImprovements,
   };
 
