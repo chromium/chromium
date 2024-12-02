@@ -980,8 +980,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
-  // Scroll down if the shortcuts may not be completely in view due to Trending
-  // Queries.
   [[[EarlGrey
       selectElementWithMatcher:
           grey_allOf(
@@ -1524,12 +1522,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that feed ablation successfully hides the feed from the NTP and the
 // toggle from the Chrome settings.
 - (void)testFeedAblationHidesFeed {
-  // Relaunch the app with trending queries disabled, to ensure that the
-  // discover feed is always present.
-  // TODO(crbug.com/40856730): Trending queries is configured as a
-  // first-run trial, and one of the arms removes the discover
-  // feed. Fix these tests to force an appropriate configuration or
-  // otherwise support the various possible experiment arms.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -1574,9 +1566,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that content suggestions are hidden for supervised users on sign-in.
 // When the supervised user signs out the active policy should apply to the NTP.
 - (void)testFeedHiddenForSupervisedUser {
-  // Disable trending queries experiment to ensure that the Discover feed is
-  // visible when first opening the NTP.
-  // TODO(crbug.com/40856730): Adapt the test with launch of trending queries.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(std::string("--") +
@@ -1634,9 +1623,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // TODO(crbug.com/346756363): Remove this test when supervision status system
 // capabilities are deprecated.
 - (void)testFeedHiddenForSupervisedUserViaSystemCapabilities {
-  // Disable trending queries experiment to ensure that the Discover feed is
-  // visible when first opening the NTP.
-  // TODO(crbug.com/40856730): Adapt the test with launch of trending queries.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(std::string("--") +
