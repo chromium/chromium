@@ -253,7 +253,6 @@ group("dev_ui_resources") {
     "engagement:resources",
     "family_link_user_internals:resources",
     "internal_debug_pages_disabled:resources",
-    "internals:resources",
     "location_internals:resources",
     "media:resources",
     "memory_internals:resources",
@@ -296,6 +295,7 @@ group("dev_ui_resources") {
     ]
   } else {
     public_deps += [
+      "internals:resources",
       "media_router/internals:resources",
       "on_device_internals:resources",
       "webui_js_error:resources",
@@ -320,7 +320,6 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/engagement_resources.pak",
     "$root_gen_dir/chrome/family_link_user_internals_resources.pak",
     "$root_gen_dir/chrome/internal_debug_pages_disabled_resources.pak",
-    "$root_gen_dir/chrome/internals_resources.pak",
     "$root_gen_dir/chrome/location_internals_resources.pak",
     "$root_gen_dir/chrome/media_resources.pak",
     "$root_gen_dir/chrome/memory_internals_resources.pak",
@@ -358,6 +357,7 @@ repack("dev_ui_paks") {
     ]
   } else {
     sources += [
+      "$root_gen_dir/chrome/internals_resources.pak",
       "$root_gen_dir/chrome/media_router_internals_resources.pak",
       "$root_gen_dir/chrome/on_device_internals_resources.pak",
       "$root_gen_dir/chrome/webui_js_error_resources.pak",
