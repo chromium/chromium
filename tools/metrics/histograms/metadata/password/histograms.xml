@@ -273,6 +273,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Passkeys.IOSMigration" enum="PasskeysMigration"
+    expires_after="2025-11-21">
+  <owner>sugoi@chromium.org</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    Records whether passkeys migrated from the CPE were created or updated
+    during Chrome's passkey migration process.
+  </summary>
+</histogram>
+
 <histogram name="PasswordBubble.AddUsernameBubble.UsernameAdded"
     enum="BooleanYesNo" expires_after="2025-03-30">
   <owner>sygiet@google.com</owner>
