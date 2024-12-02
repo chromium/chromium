@@ -225,7 +225,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/scoped_add_feature_flags.h"
-#include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"    // nogncheck
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"

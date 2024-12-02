@@ -4,7 +4,6 @@
 
 #include "chrome/browser/lacros/cloud_file_system_path_cache.h"
 
-#include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/lacros/lacros_service.h"
 
 CloudFileSystemPathCache::CloudFileSystemPathCache() = default;

@@ -57,11 +57,6 @@
 #include "components/user_manager/user_names.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_paths_lacros.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#endif
-
 namespace web_app {
 
 namespace {
@@ -169,9 +164,6 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   // Helper that creates simple test profile.
   std::unique_ptr<TestingProfile> CreateProfile(bool is_guest = false) {
     TestingProfile::Builder profile_builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     if (is_guest) {
       profile_builder.SetGuestSession();
     }
@@ -214,17 +206,6 @@ class PreinstalledWebAppManagerTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kExtraWebAppsDir, extra_web_apps_dir);
-#else
-    base::FilePath config_dir = GetConfigDir(test_dir);
-    auto default_paths = crosapi::mojom::DefaultPaths::New();
-    default_paths->documents =
-        base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
-    default_paths->downloads =
-        base::PathService::CheckedGet(chrome::DIR_DEFAULT_DOWNLOADS);
-    default_paths->preinstalled_web_app_config = config_dir;
-    default_paths->preinstalled_web_app_extra_config =
-        config_dir.AppendASCII(extra_web_apps_dir);
-    chrome::SetLacrosDefaultPathsFromInitParams(default_paths.get());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
