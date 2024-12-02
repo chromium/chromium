@@ -8,14 +8,15 @@
 #import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_constants.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller+Testing.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_delegate.h"
+#import "ios/chrome/browser/download/ui_bundled/features.h"
+#import "ios/chrome/browser/download/ui_bundled/radial_progress_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_constants.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_delegate.h"
-#import "ios/chrome/browser/download/ui_bundled/features.h"
-#import "ios/chrome/browser/download/ui_bundled/radial_progress_view.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
@@ -1182,6 +1183,12 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       period ? IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE_PERIOD
              : IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
       base::SysNSStringToUTF16(_fileName), base::SysNSStringToUTF16(fileSize));
+}
+
+#pragma mark - Testing
+
+- (UIButton*)actionButton {
+  return [self currentVisibleButton];
 }
 
 @end

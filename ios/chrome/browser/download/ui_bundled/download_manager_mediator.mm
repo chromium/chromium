@@ -66,9 +66,7 @@ void DownloadManagerMediator::SetPrefService(PrefService* pref_service) {
 void DownloadManagerMediator::SetConsumer(
     id<DownloadManagerConsumer> consumer) {
   consumer_ = consumer;
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
-  }
+  SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
   UpdateConsumer();
 }
 
@@ -190,32 +188,27 @@ void DownloadManagerMediator::UpdateConsumer() {
   }
   DownloadManagerState state = GetDownloadManagerState();
   base::FilePath filename = download_task_->GenerateFileName();
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    [consumer_ setMultipleDestinationsAvailable:IsSaveToDriveAvailable()];
-    DownloadFileDestination destination = upload_task_ == nullptr
-                                              ? DownloadFileDestination::kFiles
-                                              : DownloadFileDestination::kDrive;
-    [consumer_ setDownloadFileDestination:destination];
-    // Feed the identity user email to the consumer. If there is no upload task,
-    // then `identity` and `identity.userEmail` will be nil, which is fine.
-    id<SystemIdentity> identity =
-        upload_task_ ? upload_task_->GetIdentity() : nil;
-    [consumer_ setSaveToDriveUserEmail:identity.userEmail];
-    [consumer_ setInstallDriveButtonVisible:!is_google_drive_app_installed_
-                                   animated:NO];
+  [consumer_ setMultipleDestinationsAvailable:IsSaveToDriveAvailable()];
+  DownloadFileDestination destination = upload_task_ == nullptr
+                                            ? DownloadFileDestination::kFiles
+                                            : DownloadFileDestination::kDrive;
+  [consumer_ setDownloadFileDestination:destination];
+  // Feed the identity user email to the consumer. If there is no upload task,
+  // then `identity` and `identity.userEmail` will be nil, which is fine.
+  id<SystemIdentity> identity =
+      upload_task_ ? upload_task_->GetIdentity() : nil;
+  [consumer_ setSaveToDriveUserEmail:identity.userEmail];
+  [consumer_ setInstallDriveButtonVisible:!is_google_drive_app_installed_
+                                 animated:NO];
 
-    // A file can be opened if it is not already presented in the web state and
-    // of type PDF.
-    DocumentDownloadTabHelper* document_download_tab_helper =
-        DocumentDownloadTabHelper::FromWebState(download_task_->GetWebState());
-    BOOL can_open_file = !document_download_tab_helper
-                              ->IsDownloadTaskCreatedByCurrentTabHelper() &&
-                         filename.MatchesExtension(".pdf");
-    [consumer_ setCanOpenFile:can_open_file];
-  } else if (state == kDownloadManagerStateSucceeded &&
-             !IsGoogleDriveAppInstalled()) {
-    [consumer_ setInstallDriveButtonVisible:YES animated:YES];
-  }
+  // A file can be opened if it is not already presented in the web state and
+  // of type PDF.
+  DocumentDownloadTabHelper* document_download_tab_helper =
+      DocumentDownloadTabHelper::FromWebState(download_task_->GetWebState());
+  BOOL can_open_file = !document_download_tab_helper
+                            ->IsDownloadTaskCreatedByCurrentTabHelper() &&
+                       filename.MatchesExtension(".pdf");
+  [consumer_ setCanOpenFile:can_open_file];
 
   [consumer_ setState:state];
   [consumer_ setCountOfBytesReceived:download_task_->GetReceivedBytes()];
@@ -307,9 +300,6 @@ float DownloadManagerMediator::GetDownloadManagerProgress() const {
 }
 
 void DownloadManagerMediator::UpdateUploadTask() {
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    return;
-  }
   UploadTask* new_upload_task = nullptr;
   if (download_task_) {
     DriveTabHelper* drive_tab_helper =
@@ -333,9 +323,7 @@ void DownloadManagerMediator::SetUploadTask(UploadTask* task) {
 
 void DownloadManagerMediator::AppWillEnterForeground() {
   CHECK(base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground));
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
-  }
+  SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
   UpdateConsumer();
 }
 

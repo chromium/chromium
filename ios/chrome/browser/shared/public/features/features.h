@@ -473,9 +473,6 @@ int SafetyCheckNotificationsImpressionLimit();
 // Feature flag enabling Choose from Drive.
 BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
 
-// Feature flag enabling Save to Drive.
-BASE_DECLARE_FEATURE(kIOSSaveToDrive);
-
 // Feature flag enabling Save to Photos.
 BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
 

@@ -576,10 +576,6 @@ const char kIOSChooseFromDriveName[] = "IOS Choose from Drive";
 const char kIOSChooseFromDriveDescription[] =
     "Enables the Choose from Drive feature on iOS.";
 
-const char kIOSSaveToDriveName[] = "IOS Save to Drive";
-const char kIOSSaveToDriveDescription[] =
-    "Enables the Save to Drive feature on iOS.";
-
 const char kIOSSaveToPhotosImprovementsName[] =
     "IOS Save to Photos Improvements";
 const char kIOSSaveToPhotosImprovementsDescription[] =

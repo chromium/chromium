@@ -16,9 +16,7 @@ using drive::DriveService;
 using drive::DriveServiceFactory;
 
 DriveTabHelper::DriveTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {
-  DCHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
-}
+    : web_state_(web_state) {}
 
 DriveTabHelper::~DriveTabHelper() = default;
 

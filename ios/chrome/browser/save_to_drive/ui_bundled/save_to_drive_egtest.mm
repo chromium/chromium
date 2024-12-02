@@ -142,7 +142,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration configuration;
-  configuration.features_enabled.push_back(kIOSSaveToDrive);
   if ([self isRunningTest:@selector(testCanRetryDownloadToDrive)]) {
     const std::string commandLineSwitch =
         std::string(kTestDriveFileUploaderCommandLineSwitch);

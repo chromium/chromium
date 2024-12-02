@@ -13,8 +13,6 @@
 class DriveServiceFactoryTest : public PlatformTest {
  protected:
   DriveServiceFactoryTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {kIOSSaveToDrive, kIOSChooseFromDrive}, {});
     profile_ = TestProfileIOS::Builder().Build();
   }
 
