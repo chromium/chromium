@@ -18,10 +18,10 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.cached_flags.CachedFieldTrialParameter;
 import org.chromium.components.cached_flags.CachedFlag;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +29,7 @@ import java.util.Set;
 /** Tests the behavior of {@link ChromeFeatureList}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ChromeFeatureListWithProcessorUnitTest {
+public class ChromeFeatureListUnitTest {
     private static final double EPSILON = 1e-7f;
 
     /** In unit tests, all flags checked must have their value specified. */
@@ -110,11 +110,7 @@ public class ChromeFeatureListWithProcessorUnitTest {
     public void testAllCachedFlagsMap_matchesCachedFlagsDeclared() throws IllegalAccessException {
         HashSet<String> cachedFlagsDeclared = new HashSet<>();
         for (Field field : ChromeFeatureList.class.getDeclaredFields()) {
-            int modifiers = field.getModifiers();
-            if (CachedFlag.class.isAssignableFrom(field.getType())
-                    && Modifier.isPublic(modifiers)
-                    && Modifier.isStatic(modifiers)
-                    && Modifier.isFinal(modifiers)) {
+            if (CachedFlag.class.isAssignableFrom(field.getType())) {
                 CachedFlag flag = (CachedFlag) field.get(null);
                 cachedFlagsDeclared.add(flag.getFeatureName());
             }
@@ -130,8 +126,37 @@ public class ChromeFeatureListWithProcessorUnitTest {
 
         Set<String> listedButNotDeclared = Sets.difference(cachedFlagsListed, cachedFlagsDeclared);
         assertEquals(
-                "Cached flags listed in |sAllCachedFlags|, but not declared as public static "
-                        + "final in ChromeFeatureList",
+                "Cached flags listed in |sAllCachedFlags|, but not declared in ChromeFeatureList",
+                Collections.emptySet(),
+                listedButNotDeclared);
+    }
+
+    @Test
+    public void testParamsCached_matchesCachedParamsDeclared() throws IllegalAccessException {
+        HashSet<String> cachedParamsDeclared = new HashSet<>();
+        for (Field field : ChromeFeatureList.class.getDeclaredFields()) {
+            if (CachedFieldTrialParameter.class.isAssignableFrom(field.getType())) {
+                CachedFieldTrialParameter<?> param = (CachedFieldTrialParameter<?>) field.get(null);
+                cachedParamsDeclared.add(param.getFeatureName() + ":" + param.getName());
+            }
+        }
+
+        Set<String> cachedParamsListed = new HashSet<>();
+        for (CachedFieldTrialParameter<?> param : ChromeFeatureList.sParamsCached) {
+            cachedParamsListed.add(param.getFeatureName() + ":" + param.getName());
+        }
+
+        Set<String> declaredButNotListed =
+                Sets.difference(cachedParamsDeclared, cachedParamsListed);
+        assertEquals(
+                "Cached params declared in ChromeFeatureList, but not added to |sParamsCached|",
+                Collections.emptySet(),
+                declaredButNotListed);
+
+        Set<String> listedButNotDeclared =
+                Sets.difference(cachedParamsListed, cachedParamsDeclared);
+        assertEquals(
+                "Cached params listed in |sParamsCached|, but not declared in ChromeFeatureList",
                 Collections.emptySet(),
                 listedButNotDeclared);
     }

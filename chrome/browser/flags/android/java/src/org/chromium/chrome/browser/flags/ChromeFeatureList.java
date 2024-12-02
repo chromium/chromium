@@ -11,6 +11,7 @@ import org.chromium.base.FeatureMap;
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
+import org.chromium.base.MutableParamWithSafeDefault;
 import org.chromium.build.BuildConfig;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.cached_flags.CachedFieldTrialParameter;
@@ -31,7 +32,8 @@ import java.util.Map;
  * <p>This class also provides convenience methods to access values of flags and their field trial
  * parameters through {@link ChromeFeatureMap}.
  *
- * <p>Chrome-layer {@link CachedFlag}s are instantiated here as well.
+ * <p>Chrome-layer {@link CachedFlag}s and {@link MutableFlagWithSafeDefault}s are instantiated
+ * here, as well as {@link CachedFieldTrialParameter}s and {@link MutableParamWithSafeDefault}s.
  */
 public abstract class ChromeFeatureList {
 
@@ -1090,36 +1092,38 @@ public abstract class ChromeFeatureList {
             newIntCachedFieldTrialParameter(DELAY_TEMP_STRIP_REMOVAL, "timeout_ms", 1000);
 
     /** Cached param whether we disable e2e on the recent tabs page. */
-    public static BooleanCachedFieldTrialParameter sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e =
-            newBooleanCachedFieldTrialParameter(
-                    DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_recent_tabs_e2e", false);
+    public static final BooleanCachedFieldTrialParameter
+            sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e =
+                    newBooleanCachedFieldTrialParameter(
+                            DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_recent_tabs_e2e", false);
 
     /** Cached param whether we disable e2e on the CCT media viewer. */
-    public static BooleanCachedFieldTrialParameter
+    public static final BooleanCachedFieldTrialParameter
             sDrawKeyNativeEdgeToEdgeDisableCctMediaViewerE2e =
                     newBooleanCachedFieldTrialParameter(
                             DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_cct_media_viewer_e2e", false);
 
     /** Cached param whether we disable e2e on the hub. */
-    public static BooleanCachedFieldTrialParameter sDrawKeyNativeEdgeToEdgeDisableHubE2e =
+    public static final BooleanCachedFieldTrialParameter sDrawKeyNativeEdgeToEdgeDisableHubE2e =
             newBooleanCachedFieldTrialParameter(
                     DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_hub_e2e", false);
 
     /** Cached param whether we disable e2e on new tab page. */
-    public static BooleanCachedFieldTrialParameter sDrawKeyNativeEdgeToEdgeDisableNtpE2e =
+    public static final BooleanCachedFieldTrialParameter sDrawKeyNativeEdgeToEdgeDisableNtpE2e =
             newBooleanCachedFieldTrialParameter(
                     DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_ntp_e2e", false);
 
     /** Cached param whether we disable e2e on incognito new tab page. See crbug.com/368675202 */
-    public static BooleanCachedFieldTrialParameter sDrawKeyNativeEdgeToEdgeDisableIncognitoNtpE2e =
-            newBooleanCachedFieldTrialParameter(
-                    DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_incognito_ntp_e2e", false);
+    public static final BooleanCachedFieldTrialParameter
+            sDrawKeyNativeEdgeToEdgeDisableIncognitoNtpE2e =
+                    newBooleanCachedFieldTrialParameter(
+                            DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_incognito_ntp_e2e", false);
 
     /**
      * Param for the OEMs that need an exception for min versions. Its value should be a comma
      * separated list of integers, and its index should match {@link #sEdgeToEdgeBottomChinOemList}.
      */
-    public static StringCachedFieldTrialParameter sEdgeToEdgeBottomChinOemMinVersions =
+    public static final StringCachedFieldTrialParameter sEdgeToEdgeBottomChinOemMinVersions =
             newStringCachedFieldTrialParameter(
                     EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_min_versions", "");
 
@@ -1128,7 +1132,7 @@ public abstract class ChromeFeatureList {
      * separated list of manufacturer, and its index should match {@link
      * #sEdgeToEdgeBottomChinOemMinVersions}.
      */
-    public static StringCachedFieldTrialParameter sEdgeToEdgeBottomChinOemList =
+    public static final StringCachedFieldTrialParameter sEdgeToEdgeBottomChinOemList =
             newStringCachedFieldTrialParameter(
                     EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_list", "");
 
