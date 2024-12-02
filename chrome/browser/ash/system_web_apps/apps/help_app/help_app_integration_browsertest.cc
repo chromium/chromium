@@ -1230,28 +1230,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 #endif
 }
 
-// TODO(crbug.com/381127101): Re-enable this test
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
-                       DISABLED_HelpAppV2CanOpenAlmanacScheme) {
-  WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
-
-  base::test::TestFuture<apps::PackageId> future;
-  apps::AppInstallServiceAsh::InstallAppCallbackForTesting() =
-      future.GetCallback();
-  constexpr char kScript[] = R"(
-    (() => {
-      location.href = 'almanac://install-app?package_id=web:test';
-      return true;
-    })();
-  )";
-  EXPECT_EQ(true,
-            content::EvalJs(
-                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
-  EXPECT_EQ(future.Get<apps::PackageId>(),
-            apps::PackageId::FromString("web:test"));
-}
-
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2CanOpenCrosAppsScheme) {
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
