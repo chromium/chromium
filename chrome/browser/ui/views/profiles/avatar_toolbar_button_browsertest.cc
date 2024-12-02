@@ -1099,6 +1099,12 @@ INSTANTIATE_TEST_SUITE_P(,
 class AvatarToolbarButtonEnterpriseBadgingBrowserTest
     : public AvatarToolbarButtonBrowserTest {
  public:
+  AvatarToolbarButtonEnterpriseBadgingBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kEnterpriseProfileBadgingForAvatar,
+         switches::kExplicitBrowserSigninUIOnDesktop},
+        {});
+  }
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
         true /* is_initialization_complete_return */,
@@ -1112,8 +1118,7 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kEnterpriseProfileBadgingForAvatar};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
@@ -1248,6 +1253,88 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
                                                     false);
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
+// test makes sure the greeting is not shown when the management badge is shown
+// in the profile avatar pill.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       GreetingShownWhenManagementNotAccepted) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+
+  std::u16string name(u"TestName");
+  AccountInfo account_info = Signin(u"work@managed.com", name);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
+                                                    false);
+
+  // The button is in a waiting for image state, the name is not yet displayed.
+  // At this point the user has not accepted management yet.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+
+  // The greeting will only show when the image is loaded.
+  AddSignedInImage(account_info.account_id);
+
+  // Since the user has not accepted management, the greeting will still be
+  // shown.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
+
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // Once the name is not shown anymore, we expect no text.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       GreetingNotShownWhenManagementAccepted) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+
+  AccountInfo account_info = Signin(u"work@managed.com", u"TestName");
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+
+  // The greeting would only show when the image is loaded. Set the image to
+  // make sure we do not have a false positive later.
+  AddSignedInImage(account_info.account_id);
+
+  // We do not expect a greeting to be shown if user accepted management.
+  EXPECT_EQ(avatar->GetText(), u"Work");
+}
+
+// Tests the flow for a managed sign-in.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       PRE_SignedInWithNewSessionKeepWorkBadge) {
+  // Sign in.
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  std::u16string name(u"TestName");
+  AccountInfo account_info = SigninWithImage(u"work@managed.com", name);
+
+  // Since the user has not accepted management yet, the greeting will be
+  // shown.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+
+  // Once the name is not shown anymore, we expect no text since management is
+  // not accepted.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+
+  // Management is usually accepted by the time the greeting is finished. The
+  // work badgge should be shown once this happens.
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+  EXPECT_EQ(avatar->GetText(), u"Work");
+}
+
+// Test that the work badge remains upon restart for a user that has already
+// accepted management.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       SignedInWithNewSessionKeepWorkBadge) {
+  signin::WaitForRefreshTokensLoaded(GetIdentityManager());
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  EXPECT_EQ(avatar->GetText(), u"Work");
+  // Previously added image on signin should still be shown in the new session.
+  EXPECT_TRUE(IsSignedInImageUsed());
 }
 
 class AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest
