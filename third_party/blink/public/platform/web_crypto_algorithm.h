@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_H_
 
+#include <array>
+
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 
@@ -115,8 +117,8 @@ struct WebCryptoAlgorithmInfo {
 
   // A map from the operation to the expected parameter type of the algorithm.
   // If an operation is not applicable for the algorithm, set to Undefined.
-  const ParamsTypeOrUndefined
-      operation_to_params_type[kWebCryptoOperationLast + 1];
+  const std::array<ParamsTypeOrUndefined, kWebCryptoOperationLast + 1>
+      operation_to_params_type;
 };
 
 class WebCryptoAesCbcParams;
