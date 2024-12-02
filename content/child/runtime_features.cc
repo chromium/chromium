@@ -31,6 +31,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
+#include "net/base/features.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
@@ -339,6 +340,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
       runtimeFeatureNameToChromiumFeatureMapping[] = {
           {"AllowContentInitiatedDataUrlNavigations",
            raw_ref(features::kAllowContentInitiatedDataUrlNavigations)},
+          {"AllowSameSiteNoneCookiesInSandbox",
+           raw_ref(net::features::kAllowSameSiteNoneCookiesInSandbox)},
           {"AllowURNsInIframes", raw_ref(blink::features::kAllowURNsInIframes)},
           {"AllowURNsInIframes",
            raw_ref(features::kPrivacySandboxAdsAPIsOverride),
