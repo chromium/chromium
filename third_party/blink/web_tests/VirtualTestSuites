@@ -1232,7 +1232,7 @@
       "http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js"
     ],
     "args": ["--test-third-party-cookie-phaseout", "--use-related-website-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}"],
-    "expires": "Dec 1, 2024",
+    "expires": "Dec 1, 2025",
     "owners": ["chrome-first-party-sets@chromium.org"]
   },
   {
