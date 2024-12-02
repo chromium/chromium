@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_LOG_ROUTER_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
@@ -16,13 +16,10 @@ class LogRouter;
 
 // A factory that associates autofill::LogRouter instances with
 // profiles. This returns nullptr for off-the-record profiles.
-class AutofillLogRouterFactory : public BrowserStateKeyedServiceFactory {
+class AutofillLogRouterFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static autofill::LogRouter* GetForProfile(ProfileIOS* profile);
   static AutofillLogRouterFactory* GetInstance();
-
-  AutofillLogRouterFactory(const AutofillLogRouterFactory&) = delete;
-  AutofillLogRouterFactory& operator=(const AutofillLogRouterFactory&) = delete;
 
  private:
   friend class base::NoDestructor<AutofillLogRouterFactory>;

@@ -4,21 +4,16 @@
 
 #include "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 
-#include <memory>
-#include <utility>
-
-#include "base/no_destructor.h"
 #include "components/autofill/core/browser/logging/log_router.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/web/public/browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#include "ios/web/public/browser_state.h"
 
 namespace autofill {
 
 // static
 LogRouter* AutofillLogRouterFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<LogRouter*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<LogRouter>(profile,
+                                                          /*create=*/true);
 }
 
 // static
@@ -28,9 +23,7 @@ AutofillLogRouterFactory* AutofillLogRouterFactory::GetInstance() {
 }
 
 AutofillLogRouterFactory::AutofillLogRouterFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AutofillInternalsService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("AutofillInternalsService") {}
 
 AutofillLogRouterFactory::~AutofillLogRouterFactory() = default;
 
