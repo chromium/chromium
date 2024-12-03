@@ -16,10 +16,9 @@ import type {BrowserProxy} from '../browser_proxy.js';
 import type {WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {Screenshot, WebPageData} from '../glic_api/glic_api.js';
-
-import type {PostMessageRequestHandler} from './post_message_transport.js';
-import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {HostRequestTypes} from './request_types.js';
+import type {PostMessageRequestHandler} from '../glic_api/post_message_transport.js';
+import {PostMessageRequestReceiver, PostMessageRequestSender} from '../glic_api/post_message_transport.js';
+import type {HostRequestTypes} from '../glic_api/request_types.js';
 
 
 // Turn everything except void into a promise.

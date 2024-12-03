@@ -138,6 +138,20 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 }
 
-export function boot(windowProxy: WindowProxy): GlicHostRegistry {
-  return new GlicHostRegistryImpl(windowProxy);
+// Returns a promise which resolves to the `GlicHostRegistry`. This promise
+// never resolves if a message from Chromium glic is not received.
+// This should be called on or before page load.
+export function createGlicHostRegistryOnLoad(): Promise<GlicHostRegistry> {
+  const {promise, resolve} = Promise.withResolvers<GlicHostRegistry>();
+  const messageHandler = async (event: MessageEvent) => {
+    if (event.origin !== 'chrome://glic' || event.source === null) {
+      return;
+    }
+    if (event.data && event.data['type'] === 'glic-bootstrap') {
+      resolve(new GlicHostRegistryImpl(event.source as WindowProxy));
+      window.removeEventListener('message', messageHandler);
+    }
+  };
+  window.addEventListener('message', messageHandler);
+  return promise;
 }

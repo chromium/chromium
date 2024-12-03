@@ -19,9 +19,9 @@ build_webui("build") {
     "browser_proxy.ts",
     "main.ts",
     "glic_api_impl/glic_api_host.ts",
-    "glic_api_impl/glic_api_client.ts",
-    "glic_api_impl/post_message_transport.ts",
-    "glic_api_impl/request_types.ts",
+    "glic_api/glic_api_client.ts",
+    "glic_api/post_message_transport.ts",
+    "glic_api/request_types.ts",
     "glic_api/glic_api.ts",
   ]
 
@@ -58,7 +58,7 @@ glic_api_injection_manifest = "$target_gen_dir/glic_api_injection_manifest.json"
 optimize_webui("glic_api_injection") {
   host = "about:blank"
   input = rebase_path("$target_gen_dir/tsc", root_build_dir)
-  js_module_in_files = [ "glic_api_impl/glic_api_client.js" ]
+  js_module_in_files = [ "glic_api/glic_api_client.js" ]
   out_manifest = "$glic_api_injection_manifest"
   deps = [ ":build_ts" ]
 }

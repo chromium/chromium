@@ -10,7 +10,7 @@ import type {HostRequestTypes, WebClientRequestTypes} from './request_types.js';
 // even if the web client is recreated.
 
 // Requests sent over postMessage have this structure.
-interface RequestMessage {
+declare interface RequestMessage {
   // Present for any Glic request message.
   glicRequest: true;
   // The type of request.
@@ -24,7 +24,7 @@ interface RequestMessage {
 
 // Responses sent over postMessage have this structure. Responses are messages
 // sent in response to a `RequestMessage`.
-interface ResponseMessage {
+declare interface ResponseMessage {
   // The type of request.
   type: string;
   // The round-tripped `RequestMessage.requestId`.
@@ -34,7 +34,7 @@ interface ResponseMessage {
 }
 
 // Something that has postMessage() - probably a window or WindowProxy.
-interface PostMessageSender {
+declare interface PostMessageSender {
   postMessage(message: any, targetOrigin: string, transfer?: Transferable[]):
       void;
 }

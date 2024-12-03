@@ -8,6 +8,8 @@ import type {TabContextResult, TabData} from '../glic_api/glic_api.js';
 This file defines messages sent over postMessage in-between the Glic WebUI
 and the Glic web client.
 
+CHANGES MADE HERE MUST BE BACKWARDS COMPATIBLE.
+
 Request type entries should have this structure
 // The name of the function, should be unique.
 'name': {
@@ -24,14 +26,14 @@ readability, and ensures that each name is unique.
 */
 
 // Types of requests to the host (Chrome).
-export interface HostRequestTypes {
+export declare interface HostRequestTypes {
   // This message is sent after the client returns successfully from
   // initialize(). It is not part of the GlicBrowserHost public API.
-  'glicBrowserWebClientInitialized': {
+  glicBrowserWebClientInitialized: {
     request: {},
     response: void,
   };
-  'glicBrowserGetChromeVersion': {
+  glicBrowserGetChromeVersion: {
     request: {},
     response: {
       major: number,
@@ -40,7 +42,7 @@ export interface HostRequestTypes {
       patch: number,
     },
   };
-  'glicBrowserCreateTab': {
+  glicBrowserCreateTab: {
     request: {
       url: string,
       options: {openInBackground?: boolean, windowId?: string},
@@ -50,11 +52,11 @@ export interface HostRequestTypes {
       tabData?: TabData,
     },
   };
-  'glicBrowserClosePanel': {
+  glicBrowserClosePanel: {
     request: {},
     response: void,
   };
-  'glicBrowserGetContextFromFocusedTab': {
+  glicBrowserGetContextFromFocusedTab: {
     request: {
       options: {
         innerText?: boolean,
@@ -67,7 +69,7 @@ export interface HostRequestTypes {
       tabContextResult?: TabContextResult,
     },
   };
-  'glicBrowserResizeWindow': {
+  glicBrowserResizeWindow: {
     request: {
       width: number,
       height: number,
@@ -80,14 +82,14 @@ export interface HostRequestTypes {
 }
 
 // Types of requests to the GlicWebClient.
-export interface WebClientRequestTypes {
-  'glicWebClientNotifyPanelOpened': {
+export declare interface WebClientRequestTypes {
+  glicWebClientNotifyPanelOpened: {
     request: {
       dockedToWindowId: string|undefined,
     },
     response: void,
   };
-  'glicWebClientNotifyPanelClosed': {
+  glicWebClientNotifyPanelClosed: {
     request: {},
     response: void,
   };
