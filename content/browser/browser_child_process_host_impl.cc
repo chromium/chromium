@@ -187,7 +187,8 @@ BrowserChildProcessHostImpl::BrowserChildProcessHostImpl(
     : data_(process_type), delegate_(delegate) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  data_.id = ChildProcessHostImpl::GenerateChildProcessUniqueId();
+  data_.id =
+      ChildProcessHostImpl::GenerateChildProcessUniqueId().GetUnsafeValue();
 
   // Create a persistent memory segment for subprocess histograms.
   CreateMetricsAllocator();

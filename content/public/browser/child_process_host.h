@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/common/content_constants.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -86,11 +87,8 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // This ensures that IDs are unique for all different types of child
   // processes.
   //
-  // This function is threadsafe since RenderProcessHost is on the UI thread,
-  // but normally this will be used on the IO thread.
-  //
   // This will never return kInvalidUniqueID.
-  static int GenerateChildProcessUniqueId();
+  static ChildProcessId GenerateChildProcessUniqueId();
 
   // These flags may be passed to GetChildPath in order to alter its behavior,
   // causing it to return a child path more suited to a specific task.
