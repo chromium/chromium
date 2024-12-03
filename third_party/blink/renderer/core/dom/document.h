@@ -76,7 +76,6 @@
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 #include "third_party/blink/renderer/core/dom/node_list_invalidation_type.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
-#include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/dom/user_action_element_set.h"
@@ -150,6 +149,7 @@ class CaretPositionFromPointOptions;
 class CDATASection;
 class CSSStyleSheet;
 class CanvasFontCache;
+class CharacterData;
 class CheckPseudoHasCacheScope;
 class ChromeClient;
 class Comment;
@@ -1961,11 +1961,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void CancelPendingJavaScriptUrls();
 
-  HeapObserverList<SynchronousMutationObserver>&
-  SynchronousMutationObserverSet() {
-    return synchronous_mutation_observer_set_;
-  }
-
   void NotifyUpdateCharacterData(CharacterData* character_data,
                                  const TextDiffRange&);
   void NotifyChangeChildren(const ContainerNode& container,
@@ -2863,9 +2858,6 @@ class CORE_EXPORT Document : public ContainerNode,
       element_explicitly_set_attr_elements_map_;
   HeapHashMap<WeakMember<Element>, Member<CachedAttrAssociatedElementsMap>>
       element_cached_attr_associated_elements_map_;
-
-  HeapObserverList<SynchronousMutationObserver>
-      synchronous_mutation_observer_set_;
 
   Member<DisplayLockDocumentState> display_lock_document_state_;
 
