@@ -190,8 +190,10 @@
             disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                     syncStatus.firstSetupInProgress,
                     prefs.signin.allowed_on_next_startup.value)]]">
-          $i18n{peopleSignIn}
-        </cr-button>
+          [[getTurnOnSyncLabel_(
+                      '$i18nPolymer{peopleSignIn}',
+                      '$i18nPolymer{turnOnSync}')]]
+             </cr-button>
         <cr-button id="turn-off"
             class="cr-button-gap"
             hidden="[[!shouldShowTurnOffButton_(syncStatus.signedInState,

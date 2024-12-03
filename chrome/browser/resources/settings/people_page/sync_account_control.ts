@@ -243,6 +243,13 @@ export class SettingsSyncAccountControlElement extends
         email;
   }
 
+  private getTurnOnSyncLabel_(peopleSignIn: string, turnOnSync: string):
+      string {
+    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') ?
+        turnOnSync :
+        peopleSignIn;
+  }
+
   private getAccountImageSrc_(image: string|null): string {
     // image can be undefined if the account has not set an avatar photo.
     return image || 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
