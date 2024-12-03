@@ -7,7 +7,7 @@ import '/strings.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {GlicApiHost} from './glic_api_host.js';
+import {GlicApiHost} from './glic_api_impl/glic_api_host.js';
 
 const browserProxy = BrowserProxyImpl.getInstance();
 const webview =

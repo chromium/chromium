@@ -8,17 +8,18 @@
 
 // TODO(crbug.com/379677413): Add tests for the API host.
 
-import type {Screenshot, WebPageData} from '//glic/glic_api/glic_api.js';
-import type {PostMessageRequestHandler} from '//glic/glic_api_host/post_message_transport.js';
-import {PostMessageRequestReceiver, PostMessageRequestSender} from '//glic/glic_api_host/post_message_transport.js';
-import type {HostRequestTypes} from '//glic/glic_api_host/request_types.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
-import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {BrowserProxy} from './browser_proxy.js';
-import type {WebClientHandlerInterface, WebClientInterface} from './glic.mojom-webui.js';
-import {WebClientHandlerRemote, WebClientReceiver} from './glic.mojom-webui.js';
+import type {BrowserProxy} from '../browser_proxy.js';
+import type {WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import {WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
+import type {Screenshot, WebPageData} from '../glic_api/glic_api.js';
+
+import type {PostMessageRequestHandler} from './post_message_transport.js';
+import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
+import type {HostRequestTypes} from './request_types.js';
 
 
 // Turn everything except void into a promise.

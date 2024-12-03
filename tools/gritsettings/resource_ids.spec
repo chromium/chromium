@@ -409,7 +409,7 @@
     "includes": [4000],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/glic/resources.grd": {
-    "META": {"sizes": {"includes": [8]}},
+    "META": {"sizes": {"includes": [11]}},
     "includes": [4010],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/hats/resources.grd": {

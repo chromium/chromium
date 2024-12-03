@@ -8,8 +8,7 @@ import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_messa
 import type {WebClientRequestTypes} from './request_types.js';
 
 // Web client side of the Glic API.
-// Communicates with the Chrome-WebUI-side in
-// ../glic_api_host.ts
+// Communicates with the Chrome-WebUI-side in glic_api_host.ts
 
 class GlicHostRegistryImpl implements GlicHostRegistry {
   constructor(private windowProxy: WindowProxy) {}
