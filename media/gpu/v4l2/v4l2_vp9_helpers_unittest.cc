@@ -89,7 +89,7 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
     IvfFrameHeader ivf_frame_header;
     const uint8_t* ivf_payload;
     ASSERT_TRUE(ivf_parser.ParseNextFrame(&ivf_frame_header, &ivf_payload));
-    buffers[i] = base::make_span(ivf_payload, ivf_frame_header.frame_size);
+    buffers[i] = base::span(ivf_payload, ivf_frame_header.frame_size);
   }
 
   std::vector<uint32_t> frame_sizes;

@@ -493,7 +493,7 @@ bool NdkAudioEncoder::DrainConfig() {
 
   if (GetOutputFormat(options_) == AudioEncoder::AacOutputFormat::ADTS) {
     NullMediaLog null_log;
-    if (!aac_config_parser_.Parse(base::make_span(data_start, mc_buffer_size),
+    if (!aac_config_parser_.Parse(base::span(data_start, mc_buffer_size),
                                   &null_log)) {
       LogError({EncoderStatus::Codes::kInvalidOutputBuffer,
                 "Could not parse output config"});
@@ -558,8 +558,7 @@ void NdkAudioEncoder::DrainOutput() {
 
   auto output_format = GetOutputFormat(options_);
 
-
-  auto mc_data = base::make_span(buf_data + mc_buffer_offset, mc_buffer_size);
+  auto mc_data = base::span(buf_data + mc_buffer_offset, mc_buffer_size);
   base::HeapArray<uint8_t> output_data;
 
   if (output_format == AudioEncoder::AacOutputFormat::ADTS) {

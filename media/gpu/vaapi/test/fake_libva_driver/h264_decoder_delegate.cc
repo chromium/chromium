@@ -555,7 +555,7 @@ void H264DecoderDelegate::Run() {
   for (const auto& slice_data_buffer : slice_data_buffers_) {
     // Add the H264 start code for each slice.
     bitstream_builder.AppendBits(32, 0x00000001);
-    const base::span<const uint8_t> data = base::make_span(
+    const base::span<const uint8_t> data(
         reinterpret_cast<uint8_t*>(slice_data_buffer->GetData()),
         slice_data_buffer->GetDataSize());
     for (size_t i = 0; i < slice_data_buffer->GetDataSize(); i++) {

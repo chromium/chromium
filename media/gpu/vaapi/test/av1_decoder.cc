@@ -882,7 +882,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   const size_t tile_columns = current_frame_header.tile_info.tile_columns;
   const bool slice_parameters_success = FillAV1SliceParameters(
       obu_parser_->tile_buffers(), tile_columns,
-      base::make_span(ivf_frame_data_.get(), ivf_frame_header_.frame_size),
+      base::span(ivf_frame_data_.get(), ivf_frame_header_.frame_size),
       slice_params);
   LOG_ASSERT(slice_parameters_success)
       << "Failed to fill slice parameters for current frame.";

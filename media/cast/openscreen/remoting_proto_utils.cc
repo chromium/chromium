@@ -218,8 +218,7 @@ bool ConvertProtoToAudioDecoderConfig(
   // Either "extra_data" or "aac_extra_data" should be populated but not both.
   const bool isAac =
       audio_message.codec() == openscreen::cast::AudioDecoderConfig::kCodecAAC;
-  const auto extra_data = base::make_span(audio_message.extra_data().begin(),
-                                          audio_message.extra_data().end());
+  const auto extra_data = base::span(audio_message.extra_data());
   audio_config->Initialize(
       ToMediaAudioCodec(audio_message.codec()).value(),
       ToMediaSampleFormat(audio_message.sample_format()).value(),

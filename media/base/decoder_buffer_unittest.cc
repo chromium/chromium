@@ -197,7 +197,7 @@ TEST(DecoderBufferTest, FromExternalMemory) {
   constexpr size_t kDataSize = std::size(kData);
 
   auto external_memory = std::make_unique<ExternalMemoryAdapterForTesting>(
-      base::make_span(kData, kDataSize));
+      base::span(kData, kDataSize));
   auto buffer = DecoderBuffer::FromExternalMemory(std::move(external_memory));
   ASSERT_TRUE(buffer.get());
   EXPECT_EQ(buffer->size(), kDataSize);

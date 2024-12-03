@@ -481,7 +481,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
       effects_processor_) {
-    auto data_span = base::make_span(data, base::checked_cast<size_t>(length));
+    auto data_span = base::span(data, base::checked_cast<size_t>(length));
 
     mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
         reference_time, timestamp, capture_begin_timestamp, format, metadata,

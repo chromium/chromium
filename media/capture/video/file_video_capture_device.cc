@@ -298,8 +298,8 @@ base::span<const uint8_t> Y4mFileParser::GetNextFrame() {
   } else {
     current_byte_index_ += frame_size_ + kY4MSimpleFrameDelimiterSize;
   }
-  return base::make_span(video_frame_.get(),
-                         base::checked_cast<size_t>(frame_size_));
+  return base::span(video_frame_.get(),
+                    base::checked_cast<size_t>(frame_size_));
 }
 
 MjpegFileParser::MjpegFileParser(const base::FilePath& file_path)

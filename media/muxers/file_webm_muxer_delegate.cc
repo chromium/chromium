@@ -61,7 +61,7 @@ mkvmuxer::int32 FileWebmMuxerDelegate::DoWrite(const void* buf,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const bool success = webm_file_.WriteAtCurrentPosAndCheck(
-      base::as_bytes(base::make_span(static_cast<const uint8_t*>(buf), len)));
+      base::as_bytes(base::span(static_cast<const uint8_t*>(buf), len)));
   LOG_IF(ERROR, !success) << "Failed to write muxer data to file.";
 
   return success ? 0 : -1;

@@ -215,8 +215,7 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     std::unique_ptr<uint8_t[]> av1c =
         libgav1::ObuParser::GetAV1CodecConfigurationBox(
             data.data(), data.size(), &av1c_size);
-    base::span<const uint8_t> av1c_span =
-        base::make_span(av1c.get(), av1c_size);
+    base::span<const uint8_t> av1c_span(av1c.get(), av1c_size);
 
     // Build a format configuration with AV1 extensions.
     base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =

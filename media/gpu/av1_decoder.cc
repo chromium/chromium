@@ -224,7 +224,7 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   }
 
   const AV1Accelerator::Status status = accelerator_->SetStream(
-      base::make_span(stream_.get(), stream_size_), decrypt_config_.get());
+      base::span(stream_.get(), stream_size_), decrypt_config_.get());
   if (status != AV1Accelerator::Status::kOk) {
     on_error_ = true;
     return;
@@ -594,7 +594,7 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
   }
   const AV1Accelerator::Status status = accelerator_->SubmitDecode(
       *pic, *current_sequence_header_, ref_frames_, tile_buffers,
-      base::make_span(stream_.get(), stream_size_));
+      base::span(stream_.get(), stream_size_));
   if (status != AV1Accelerator::Status::kOk) {
     if (status == AV1Accelerator::Status::kTryAgain)
       pending_pic_ = std::move(pic);

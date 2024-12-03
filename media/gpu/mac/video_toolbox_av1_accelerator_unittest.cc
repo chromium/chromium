@@ -63,9 +63,9 @@ TEST_F(VideoToolboxAV1AcceleratorTest, DecodeRaw) {
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_));
-  accelerator_->SetStream(base::make_span(frame_data), nullptr);
+  accelerator_->SetStream(base::span(frame_data), nullptr);
   accelerator_->SubmitDecode(*pic, sequence_header, ref_frames, tile_buffers,
-                             base::make_span(frame_data));
+                             base::span(frame_data));
   accelerator_->OutputPicture(*pic);
 
   // Verify `sample`.
@@ -104,11 +104,11 @@ TEST_F(VideoToolboxAV1AcceleratorTest, DecodeSuperframe) {
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillRepeatedly(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_)).Times(2);
-  accelerator_->SetStream(base::make_span(superframe_data), nullptr);
+  accelerator_->SetStream(base::span(superframe_data), nullptr);
   accelerator_->SubmitDecode(*pic1, sequence_header, ref_frames, tile_buffers,
-                             base::make_span(superframe_data));
+                             base::span(superframe_data));
   accelerator_->SubmitDecode(*pic2, sequence_header, ref_frames, tile_buffers,
-                             base::make_span(superframe_data));
+                             base::span(superframe_data));
   accelerator_->OutputPicture(*pic2);
 
   // Verify `sample`.
@@ -123,7 +123,7 @@ TEST_F(VideoToolboxAV1AcceleratorTest, DecodeSuperframe) {
 
   // Submit `show_existing_frame` frame.
   constexpr uint8_t show_existing_frame_data[] = {0x01, 0x02, 0x03, 0x04};
-  accelerator_->SetStream(base::make_span(show_existing_frame_data), nullptr);
+  accelerator_->SetStream(base::span(show_existing_frame_data), nullptr);
   accelerator_->OutputPicture(*pic1);
 
   // Verify `sample`.

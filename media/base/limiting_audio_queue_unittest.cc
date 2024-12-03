@@ -42,10 +42,9 @@ void VerifyAudioBuffer(scoped_refptr<AudioBuffer> buffer,
 
   for (int ch = 0; ch < kChannels; ++ch) {
     const size_t kSpanSize = sizeof(float) * static_cast<size_t>(number_frames);
-    base::span<uint8_t> input_span = base::make_span(
+    base::span<uint8_t> input_span(
         reinterpret_cast<uint8_t*>(expected_data->channel(ch)), kSpanSize);
-    base::span<uint8_t> output_span =
-        base::make_span(buffer->channel_data()[ch], kSpanSize);
+    base::span<uint8_t> output_span(buffer->channel_data()[ch], kSpanSize);
     EXPECT_EQ(input_span, output_span);
   }
 }
