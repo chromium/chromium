@@ -71,8 +71,10 @@ export class Page {
       const promotionSection =
           document.createElement('promotion-banner-section-container') as
           HTMLElement;
-      policyElement.insertBefore(
-          promotionSection, getRequiredElement('status-section'));
+
+      // Insert the promotion section before the policy element.
+      const policyParent = getRequiredElement('policy-ui-container');
+      policyParent.insertBefore(promotionSection, policyElement);
 
       const promotionDismissButton =
           promotionSection.shadowRoot!.getElementById(
