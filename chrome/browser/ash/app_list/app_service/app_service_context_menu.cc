@@ -27,7 +27,6 @@
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_context_menu.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
@@ -129,15 +128,7 @@ AppServiceContextMenu::AppServiceContextMenu(
         app_type_ = apps_util::IsInstalled(update.Readiness())
                         ? update.AppType()
                         : apps::AppType::kUnknown;
-        is_platform_app_ = update.IsPlatformApp().value_or(false);
       });
-  // StandaloneBrowserExtension creates its own context menus for platform apps.
-  if (app_type_ == apps::AppType::kStandaloneBrowserChromeApp &&
-      is_platform_app_) {
-    standalone_browser_extension_menu_ =
-        std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
-            app_id, StandaloneBrowserExtensionAppContextMenu::Source::kAppList);
-  }
 }
 
 AppServiceContextMenu::~AppServiceContextMenu() = default;
@@ -167,14 +158,6 @@ void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
     return;
   }
 
-  // StandaloneBrowserExtension handles its own context menus for platform apps.
-  // Forward to that class.
-  if (app_type_ == apps::AppType::kStandaloneBrowserChromeApp &&
-      is_platform_app_) {
-    standalone_browser_extension_menu_->GetMenuModel(std::move(callback));
-    return;
-  }
-
   proxy_->GetMenuModel(
       app_id(), apps::MenuType::kAppList, controller()->GetAppListDisplayId(),
       base::BindOnce(&AppServiceContextMenu::OnGetMenuModel,
@@ -182,13 +165,6 @@ void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
 }
 
 void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
-  // StandaloneBrowserExtension handles its own context menus. Forward to that
-  // class.
-  if (standalone_browser_extension_menu_) {
-    standalone_browser_extension_menu_->ExecuteCommand(command_id, event_flags);
-    return;
-  }
-
   // Place new windows on the same display as the context menu.
   display::ScopedDisplayForNewWindows scoped_display(
       controller()->GetAppListDisplayId());
@@ -276,15 +252,8 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
 }
 
 bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
-  // StandaloneBrowserExtension handles its own context menus. Forward to that
-  // class.
-  if (standalone_browser_extension_menu_) {
-    return standalone_browser_extension_menu_->IsCommandIdChecked(command_id);
-  }
-
   switch (app_type_) {
-    case apps::AppType::kWeb:
-    case apps::AppType::kStandaloneBrowserChromeApp:  // hosted app
+    case apps::AppType::kWeb:  // hosted app
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         auto user_window_mode = apps::WindowMode::kUnknown;
@@ -327,12 +296,6 @@ bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
 }
 
 bool AppServiceContextMenu::IsCommandIdEnabled(int command_id) const {
-  // StandaloneBrowserExtension handles its own context menus. Forward to that
-  // class.
-  if (standalone_browser_extension_menu_) {
-    return standalone_browser_extension_menu_->IsCommandIdEnabled(command_id);
-  }
-
   if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(command_id) &&
       extension_menu_items_) {
     return extension_menu_items_->IsCommandIdEnabled(command_id);
@@ -433,10 +396,8 @@ void AppServiceContextMenu::ShowAppInfo() {
 
 void AppServiceContextMenu::SetLaunchType(int command_id) {
   switch (app_type_) {
-    case apps::AppType::kWeb:
-    case apps::AppType::kStandaloneBrowserChromeApp: {
-      // Web apps and standalone browser hosted apps can only toggle between
-      // kWindow and kBrowser.
+    case apps::AppType::kWeb: {
+      // Web apps can only toggle between kWindow and kBrowser.
       apps::WindowMode user_window_mode =
           ConvertUseLaunchTypeCommandToWindowMode(command_id);
       if (user_window_mode != apps::WindowMode::kUnknown) {

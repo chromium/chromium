@@ -103,8 +103,6 @@ source_set("app_service") {
     sources += [
       "app_notifications.cc",
       "app_notifications.h",
-      "extension_apps_utils.cc",
-      "extension_apps_utils.h",
       "media_requests.cc",
       "media_requests.h",
       "menu_item_constants.h",

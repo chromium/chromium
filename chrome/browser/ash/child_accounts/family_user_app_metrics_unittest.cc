@@ -174,10 +174,6 @@ class FamilyUserAppMetricsTest
         /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::AppType::kStandaloneBrowser));
     deltas.push_back(MakeApp(
-        /*app_id=*/"lca", /*app_name=*/"lacros chrome app",
-        /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::AppType::kStandaloneBrowserChromeApp));
-    deltas.push_back(MakeApp(
         /*app_id=*/"r", /*app_name=*/"remote",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::AppType::kRemote));

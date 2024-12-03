@@ -56,17 +56,5 @@ ChromeShelfItemFactory::CreateShelfItemDelegateForAppId(
   if (app_id == arc::kPlayStoreAppId) {
     return std::make_unique<ArcPlaystoreShortcutShelfItemController>();
   }
-
-  auto* proxy =
-      apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile_);
-  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
-
-  // Standalone browser platform apps are handled by standalone browser
-  // extension app shelf item controller.
-  if (app_type == apps::AppType::kStandaloneBrowserChromeApp) {
-    return std::make_unique<StandaloneBrowserExtensionAppShelfItemController>(
-        ash::ShelfID(app_id));
-  }
-
   return std::make_unique<AppShortcutShelfItemController>(ash::ShelfID(app_id));
 }

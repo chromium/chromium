@@ -115,7 +115,6 @@ constexpr char kFilePath3[] = "test3.txt";
 constexpr char kFilePath4[] = "test4.txt";
 constexpr char kFilePath5[] = "test5.txt";
 
-constexpr char kStandaloneBrowserChromeAppId[] = "standaloneChromeApp";
 constexpr char kExtensionAppId[] = "extensionApp";
 constexpr char kChromeAppId[] = "chromeApp";
 constexpr char kArcAppId[] = "arcApp";
@@ -2103,14 +2102,10 @@ class DlpFilesAppLaunchTest_ExtensionApp
  protected:
   void SetUp() override {
     DlpFilesAppLaunchTest::SetUp();
-
-    CreateAndStoreFakeApp(kStandaloneBrowserChromeAppId,
-                          apps::AppType::kStandaloneBrowserChromeApp,
-                          kExampleUrl1);
     CreateAndStoreFakeApp(kExtensionAppId, apps::AppType::kExtension,
-                          kExampleUrl2);
+                          kExampleUrl1);
     CreateAndStoreFakeApp(kChromeAppId, apps::AppType::kChromeApp,
-                          kExampleUrl3);
+                          kExampleUrl2);
   }
 };
 
@@ -2118,8 +2113,6 @@ INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
     DlpFilesAppLaunchTest_ExtensionApp,
     ::testing::Values(
-        std::make_tuple(apps::AppType::kStandaloneBrowserChromeApp,
-                        kStandaloneBrowserChromeAppId),
         std::make_tuple(apps::AppType::kExtension, kExtensionAppId),
         std::make_tuple(apps::AppType::kChromeApp, kChromeAppId)));
 

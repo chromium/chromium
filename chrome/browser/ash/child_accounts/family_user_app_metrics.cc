@@ -59,8 +59,6 @@ constexpr char kBruschettaAppsCountHistogramName[] =
     "FamilyUser.BruschettaAppsCount2";
 constexpr char kSystemWebAppsCountHistogramName[] =
     "FamilyUser.SystemWebAppsCount2";
-constexpr char kStandaloneBrowserChromeAppCountHistogramName[] =
-    "FamilyUser.LacrosChromeAppsCount2";
 
 // TODO(agawronska): Add metrics for extensions, possibly differentiating Ash
 // from Lacros (AKA StandaloneBrowser).
@@ -94,8 +92,6 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
       return kBruschettaAppsCountHistogramName;
     case apps::AppType::kSystemWeb:
       return kSystemWebAppsCountHistogramName;
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      return kStandaloneBrowserChromeAppCountHistogramName;
   }
 }
 

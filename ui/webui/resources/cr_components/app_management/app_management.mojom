@@ -19,7 +19,6 @@ enum AppType {
   kRemote,                // Remote app.
   kBorealis,              // Borealis app, see go/borealis-app.
   kSystemWeb,             // System web app.
-  kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
   kExtension,             // Browser extension.
   kBruschetta,            // Bruschetta app, see go/bruschetta.
 };

@@ -62,7 +62,6 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kPluginVm:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
-    case apps::AppType::kStandaloneBrowserChromeApp:
       // Other app types are user-installed.
       return true;
   }
@@ -200,8 +199,6 @@ void AppServiceAppItem::Activate(int event_flags) {
         if (update.AppType() == apps::AppType::kCrostini ||
             update.AppType() == apps::AppType::kWeb ||
             update.AppType() == apps::AppType::kSystemWeb ||
-            (update.AppType() == apps::AppType::kStandaloneBrowserChromeApp &&
-             !update.IsPlatformApp().value_or(true)) ||
             (update.AppType() == apps::AppType::kChromeApp &&
              update.IsPlatformApp().value_or(true))) {
           is_active_app = true;

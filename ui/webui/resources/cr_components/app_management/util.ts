@@ -128,7 +128,6 @@ function getUserActionHistogramNameForAppType(appType: AppType): string {
       return 'AppManagement.AppDetailViews.ArcApp';
     case AppType.kChromeApp:
     case AppType.kStandaloneBrowser:
-    case AppType.kStandaloneBrowserChromeApp:
       // TODO(crbug.com/40188614): Figure out appropriate behavior for
       // Lacros-hosted chrome-apps.
       return 'AppManagement.AppDetailViews.ChromeApp';

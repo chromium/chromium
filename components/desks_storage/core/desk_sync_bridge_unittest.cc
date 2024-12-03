@@ -1048,26 +1048,6 @@ TEST_F(DeskSyncBridgeTest, EnsureChromeAppCanBeSavedProperly) {
           kChromeAppWindowId, desk_test_util::kTestChromeAppId)));
 }
 
-TEST_F(DeskSyncBridgeTest, EnsureLacrosChromeAppCanBeSavedProperly) {
-  CreateBridge();
-
-  std::unique_ptr<DeskTemplate> desk_template =
-      SavedDeskBuilder()
-          .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
-          .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(SavedDeskGenericAppBuilder()
-                            .SetAppId(desk_test_util::kTestLacrosChromeAppId)
-                            .SetWindowId(kChromeAppWindowId)
-                            .Build())
-          .Build();
-
-  EXPECT_THAT(
-      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
-      EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
-          kDefaultTemplateIndex, desk_template->created_time(),
-          kChromeAppWindowId, desk_test_util::kTestLacrosChromeAppId)));
-}
-
 TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
   constexpr int kUnsupportedAppWindowId = 1888;
   CreateBridge();

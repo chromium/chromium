@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -109,11 +108,8 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
                                             kShelfContextMenuAppInfoChromeApp
                                       : ash::settings::AppManagementEntryPoint::
                                             kAppListContextMenuAppInfoChromeApp;
-      chrome::ShowAppManagementPage(
-          ProfileManager::GetPrimaryUserProfile(),
-          apps::GetEscapedAppId(app_id_,
-                                apps::AppType::kStandaloneBrowserChromeApp),
-          entry);
+      chrome::ShowAppManagementPage(ProfileManager::GetPrimaryUserProfile(),
+                                    app_id_, entry);
       return;
     }
     default:

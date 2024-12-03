@@ -1211,14 +1211,7 @@ bool FloatingWorkspaceService::AreRequiredAppTypesInitialized() {
   if (!initialized_types.contains(apps::AppType::kWeb)) {
     return false;
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return (
-      initialized_types.contains(apps::AppType::kStandaloneBrowser) &&
-      initialized_types.contains(apps::AppType::kStandaloneBrowserChromeApp));
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return initialized_types.contains(apps::AppType::kChromeApp);
-#endif
 }
 
 void FloatingWorkspaceService::OnAppTypeInitialized(apps::AppType app_type) {

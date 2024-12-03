@@ -59,9 +59,6 @@ chromium-metrics-reviews@google.com.
   <variant name="PluginVm" summary="Plugin VM app"/>
   <variant name="RemoteApp" summary="Remote apps"/>
   <variant name="StandaloneBrowser" summary="Standalone browsers"/>
-  <variant name="StandaloneBrowserChromeApp"
-      summary="Chrome apps hosted by lacros."/>
-  <variant name="StandaloneBrowserWebApp" summary="Web apps hosted by lacros."/>
   <variant name="SystemWebApp" summary="System web apps"/>
   <variant name="WebApp" summary="Web apps"/>
 </variants>
@@ -80,16 +77,6 @@ chromium-metrics-reviews@google.com.
   <variant name="PluginVm" summary="Plugin VM app"/>
   <variant name="RemoteApp" summary="Remote apps"/>
   <variant name="StandaloneBrowser" summary="Standalone browsers"/>
-  <variant name="StandaloneBrowserChromeApp"
-      summary="Chrome apps hosted by lacros."/>
-  <variant name="StandaloneBrowserChromeAppTab"
-      summary="Chrome apps opened in Standalone browser tabs."/>
-  <variant name="StandaloneBrowserChromeAppWindow"
-      summary="Chrome apps opened in Standalone browser windows."/>
-  <variant name="StandaloneBrowserWebAppTab"
-      summary="Web apps opened in Standalone browser tabs."/>
-  <variant name="StandaloneBrowserWebAppWindow"
-      summary="Web apps opened in Standalone browser windows."/>
   <variant name="SystemWebApp" summary="System web apps"/>
   <variant name="WebAppTab" summary="Web apps opened in tabs"/>
   <variant name="WebAppWindow" summary="Web apps opened in standalone windows"/>

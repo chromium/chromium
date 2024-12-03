@@ -169,7 +169,6 @@ bool IsAppPinEditable(apps::AppType app_type,
     case apps::AppType::kChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
-    case apps::AppType::kStandaloneBrowserChromeApp:
       return true;
     case apps::AppType::kStandaloneBrowser:
       // Lacros behaves like the Chrome browser icon and cannot be unpinned.

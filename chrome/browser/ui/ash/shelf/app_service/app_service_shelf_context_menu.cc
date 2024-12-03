@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
@@ -277,7 +276,6 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
 
 bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
   switch (app_type_) {
-    case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb: {
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
@@ -533,7 +531,6 @@ void AppServiceShelfContextMenu::ShowAppInfo() {
 
 void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
   switch (app_type_) {
-    case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb: {
       // Web apps can only toggle between kWindow, kTabbed and kBrowser.

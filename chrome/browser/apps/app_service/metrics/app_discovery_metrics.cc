@@ -409,7 +409,6 @@ std::string AppDiscoveryMetrics::GetAppStringToRecord(
     case AppType::kChromeApp:
     case AppType::kExtension:
     case AppType::kStandaloneBrowser:
-    case AppType::kStandaloneBrowserChromeApp:
     case AppType::kSystemWeb:
       return url.spec();
 

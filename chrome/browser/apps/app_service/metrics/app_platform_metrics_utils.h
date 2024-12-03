@@ -29,17 +29,17 @@ enum class AppTypeName {
   kCrostini = 3,
   kChromeApp = 4,
   kWeb = 5,
-  // kMacOs = 6,  // Removed.
+  // kMacOs = 6,                        // Removed.
   kPluginVm = 7,
   kStandaloneBrowser = 8,
   kRemote = 9,
   kBorealis = 10,
   kSystemWeb = 11,
   kChromeBrowser = 12,
-  kStandaloneBrowserChromeApp = 13,
+  // kStandaloneBrowserChromeApp = 13,  // Removed.
   kExtension = 14,
   // kStandaloneBrowserExtension = 15,  // Removed.
-  kStandaloneBrowserWebApp = 16,
+  // kStandaloneBrowserWebApp = 16,     // Removed.
   kBruschetta = 17,
 
   // Add any new values above this one, and update kMaxValue to the highest
@@ -62,22 +62,20 @@ enum class AppTypeNameV2 {
   kChromeAppTab = 5,
   kWebWindow = 6,
   kWebTab = 7,
-  // kMacOs = 8, // Removed.
+  // kMacOs = 8,                              // Removed.
   kPluginVm = 9,
   kStandaloneBrowser = 10,
   kRemote = 11,
   kBorealis = 12,
   kSystemWeb = 13,
   kChromeBrowser = 14,
-  // Deprecated. Replaced by kStandaloneBrowserChromeAppWindow and
-  // kStandaloneBrowserChromeAppTab.
-  kStandaloneBrowserChromeApp = 15,
+  // kStandaloneBrowserChromeApp = 15,        // Removed.
   kExtension = 16,
-  // kStandaloneBrowserExtension = 17,  // Removed.
-  kStandaloneBrowserChromeAppWindow = 18,
-  kStandaloneBrowserChromeAppTab = 19,
-  kStandaloneBrowserWebAppWindow = 20,
-  kStandaloneBrowserWebAppTab = 21,
+  // kStandaloneBrowserExtension = 17,        // Removed.
+  // kStandaloneBrowserChromeAppWindow = 18,  // Removed.
+  // kStandaloneBrowserChromeAppTab = 19,     // Removed.
+  // kStandaloneBrowserWebAppWindow = 20,     // Removed.
+  // kStandaloneBrowserWebAppTab = 21,        // Removed.
   kBruschetta = 22,
 
   // Add any new values above this one, and update kMaxValue to the highest
@@ -101,19 +99,7 @@ constexpr char kRemoteHistogramName[] = "RemoteApp";
 constexpr char kBorealisHistogramName[] = "Borealis";
 constexpr char kSystemWebAppHistogramName[] = "SystemWebApp";
 constexpr char kChromeBrowserHistogramName[] = "ChromeBrowser";
-constexpr char kStandaloneBrowserChromeAppHistogramName[] =
-    "StandaloneBrowserChromeApp";
 constexpr char kExtensionHistogramName[] = "Extension";
-constexpr char kStandaloneBrowserChromeAppWindowHistogramName[] =
-    "StandaloneBrowserChromeAppWindow";
-constexpr char kStandaloneBrowserChromeAppTabHistogramName[] =
-    "StandaloneBrowserChromeAppTab";
-constexpr char kStandaloneBrowserWebAppHistogramName[] =
-    "StandaloneBrowserWebApp";
-constexpr char kStandaloneBrowserWebAppWindowHistogramName[] =
-    "StandaloneBrowserWebAppWindow";
-constexpr char kStandaloneBrowserWebAppTabHistogramName[] =
-    "StandaloneBrowserWebAppTab";
 constexpr char kBruschettaHistogramName[] = "Bruschetta";
 
 // Determines what app type a web app should be logged as based on its launch
@@ -122,14 +108,6 @@ constexpr char kBruschettaHistogramName[] = "Bruschetta";
 AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     const std::string& app_id,
                                     apps::LaunchContainer container);
-
-// Determines what app type a chrome app in Lacros should be logged as based on
-// its launch container and app id. In particular, chrome apps in Lacros tabs
-// are logged as part of Lacros browser.
-AppTypeName GetAppTypeNameForStandaloneBrowserChromeApp(
-    Profile* profile,
-    const std::string& app_id,
-    apps::LaunchContainer container);
 
 // Returns false if |window| is a Chrome app window or a standalone web app
 // window. Otherwise, return true.

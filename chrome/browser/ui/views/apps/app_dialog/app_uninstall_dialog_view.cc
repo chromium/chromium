@@ -265,9 +265,6 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
       NOTREACHED();
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      // Do nothing special for kStandaloneBrowserChromeApp.
-      break;
     // TODO(crbug.com/376071296): Clean up the switch/case items below.
     case apps::AppType::kArc:
 #if BUILDFLAG(IS_CHROMEOS)

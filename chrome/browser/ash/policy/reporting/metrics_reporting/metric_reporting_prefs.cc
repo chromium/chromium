@@ -47,7 +47,6 @@ std::optional<std::string> GetAppReportingCategoryForType(
       return kAppCategoryLinuxApps;
     case ::apps::AppType::kChromeApp:
     case ::apps::AppType::kRemote:
-    case ::apps::AppType::kStandaloneBrowserChromeApp:
     case ::apps::AppType::kExtension:
       return kAppCategoryChromeAppsExtensions;
     case ::apps::AppType::kWeb:
