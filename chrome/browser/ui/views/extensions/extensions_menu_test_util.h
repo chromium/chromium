@@ -44,6 +44,12 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
   void OnViewIsDeleting(views::View* observed_view) override;
 
  private:
+  // Opens the extensions menu if it's not already showing.
+  void OpenExtensionsMenu();
+
+  // Returns whether the extensions menu created by this test helper is showing.
+  bool IsExtensionsMenuShowing();
+
   // Returns the ExtensionMenuItemView for the given `id` from the
   // `menu_view`.
   ExtensionMenuItemView* GetMenuItemViewForId(

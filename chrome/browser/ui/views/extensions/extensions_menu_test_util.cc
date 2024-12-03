@@ -48,29 +48,13 @@ ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser)
   extensions_container_ = BrowserView::GetBrowserViewForBrowser(browser_)
                               ->toolbar()
                               ->extensions_container();
-
-  std::unique_ptr<views::BubbleDialogDelegate> bubble_dialog;
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    bubble_dialog =
-        extensions_container_->GetExtensionsMenuCoordinatorForTesting()
-            ->CreateExtensionsMenuBubbleDialogDelegateForTesting(
-                extensions_container_->GetExtensionsButton(),
-                extensions_container_);
-  } else {
-    bubble_dialog = std::make_unique<ExtensionsMenuView>(
-        extensions_container_->GetExtensionsButton(), browser_,
-        extensions_container_);
-    menu_view_ = views::AsViewClass<ExtensionsMenuView>(
-        bubble_dialog->GetContentsView());
-
-    menu_view_->View::AddObserver(this);
-  }
-
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_dialog));
 }
 
 ExtensionsMenuTestUtil::~ExtensionsMenuTestUtil() {
+  if (!IsExtensionsMenuShowing()) {
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     extensions_container_->GetExtensionsMenuCoordinatorForTesting()->Hide();
@@ -106,6 +90,8 @@ gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
 }
 
 void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
+  OpenExtensionsMenu();
+
   ExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   ExtensionsMenuButton* primary_button =
@@ -164,6 +150,40 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
       views::BubbleBorder::TOP_RIGHT,
       views::PlatformStyle::kAdjustBubbleIfOffscreen,
       views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
+}
+
+void ExtensionsMenuTestUtil::OpenExtensionsMenu() {
+  if (IsExtensionsMenuShowing()) {
+    return;
+  }
+
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_dialog;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    bubble_dialog =
+        extensions_container_->GetExtensionsMenuCoordinatorForTesting()
+            ->CreateExtensionsMenuBubbleDialogDelegateForTesting(
+                extensions_container_->GetExtensionsButton(),
+                extensions_container_);
+  } else {
+    bubble_dialog = std::make_unique<ExtensionsMenuView>(
+        extensions_container_->GetExtensionsButton(), browser_,
+        extensions_container_);
+    menu_view_ = views::AsViewClass<ExtensionsMenuView>(
+        bubble_dialog->GetContentsView());
+
+    menu_view_->View::AddObserver(this);
+  }
+
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_dialog));
+}
+
+bool ExtensionsMenuTestUtil::IsExtensionsMenuShowing() {
+  return base::FeatureList::IsEnabled(
+             extensions_features::kExtensionsMenuAccessControl)
+             ? extensions_container_->GetExtensionsMenuCoordinatorForTesting()
+                   ->IsShowing()
+             : menu_view_;
 }
 
 ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
