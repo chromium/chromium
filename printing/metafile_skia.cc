@@ -379,8 +379,7 @@ bool MetafileSkia::SaveTo(base::File* file) const {
       break;
     }
     DCHECK_GE(buffer.size(), read_size);
-    if (!file->WriteAtCurrentPosAndCheck(
-            base::make_span(&buffer[0], read_size))) {
+    if (!file->WriteAtCurrentPosAndCheck(base::span(&buffer[0], read_size))) {
       return false;
     } else if (is_at_end) {
       break;
