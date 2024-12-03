@@ -14,10 +14,10 @@
 <translation id="4376888869070172068">郵便番号の形式が正しくありません。</translation>
 <translation id="4518701284698680367">郵便番号を入力してください（例: <ph name="EXAMPLE" />）。郵便番号がわからない場合は<ph name="BEGIN_LINK" />こちら<ph name="END_LINK" />でお調べください。</translation>
 <translation id="5089810972385038852">都道府県 / 州</translation>
-<translation id="5095208057601539847">州</translation>
+<translation id="5095208057601539847">都道府県</translation>
 <translation id="5327248766486351172">名前</translation>
 <translation id="5937097533660449554">州</translation>
-<translation id="6132429659673988671">町（suburb）</translation>
+<translation id="6132429659673988671">字・大字</translation>
 <translation id="6207937957461833379">国/地域</translation>
 <translation id="6247152910634872706">組織</translation>
 <translation id="6271429879296260742">PIN コード</translation>

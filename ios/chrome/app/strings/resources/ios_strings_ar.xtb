@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1005023885865154304">فتح إعدادات "الملء التلقائي لكلمات المرور"</translation>
-<translation id="1005230401424685968">سنة</translation>
+<translation id="1005230401424685968">السنة</translation>
 <translation id="1012067394176927315">انقر على "تفعيل" في القائمة للاطّلاع على المحتوى</translation>
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
@@ -99,7 +99,7 @@
 <translation id="1445276840641906250">جميع علامات التبويب في متصفِّح واحد</translation>
 <translation id="1446895492767488343">إخفاء "طلب عرض موقع جهاز جوّال"</translation>
 <translation id="1450170672351507823">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
-<translation id="1460751212339734034">وفِّر وقت الكتابة</translation>
+<translation id="1460751212339734034">وقت أكثر، كتابة أقلّ</translation>
 <translation id="1466035273550360103">ليست هناك أي علامات تبويب مفتوحة</translation>
 <translation id="1469381646033328562">يدير أحد والدَيك حسابك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -544,7 +544,7 @@
 <translation id="3650299480924308502">بعد تسجيل الخروج، سيتم حذف البيانات غير المحفوظة من هذا الجهاز. ويمكن أن يشمل ذلك كلمات المرور والسجلّ وغيرها.</translation>
 <translation id="3659297405161482746">لا تتوفّر أي طرق دفع</translation>
 <translation id="3668816008081204991">"قائمة القراءة" مخفية</translation>
-<translation id="3670030362669914947">رقم</translation>
+<translation id="3670030362669914947">الرقم</translation>
 <translation id="3679163990085797665">حذف الإدخالات المقروءة</translation>
 <translation id="368329460027487650">تم تسجيل الخروج. سيتم فتح خيارات لتسجيل الدخول.</translation>
 <translation id="3695446226812920698">تعرَّف على كيفية إجراء ذلك</translation>
@@ -907,7 +907,7 @@
 <translation id="5433691172869980887">تم نسخ اسم المستخدم</translation>
 <translation id="5439618055789623719">تم تسجيل الدخول بحساب <ph name="USER_EMAIL" />.</translation>
 <translation id="5444892875087332195">الإشارات المرجعية</translation>
-<translation id="5452354193031718372">ننصحك باستخدام كلمة مرور قوية مما يلي:</translation>
+<translation id="5452354193031718372">ننصحك باستخدام كلمة مرور قوية كما يلي:</translation>
 <translation id="5454211924362324495">لمنع الآخرين من استخدام كلمة مرورك، <ph name="BEGIN_LINK" />عليك تغييرها من خلال<ph name="WEBSITE" /><ph name="END_LINK" />.</translation>
 <translation id="5457082343331641453">إضافة نص إلى طلب البحث</translation>
 <translation id="5470555063139385235">الإرسال إلى جهازك</translation>
@@ -1019,7 +1019,7 @@
 <translation id="5922999516621365983">اسحب علامة التبويب هنا لتثبيتها.</translation>
 <translation id="5936006948844852401">إدارة مساحة التخزين</translation>
 <translation id="5936065461722368675">ترجمة الصفحة بأكملها</translation>
-<translation id="5937560539988385583">تمت ترجمة الصفحة.</translation>
+<translation id="5937560539988385583">تمت ترجمة الصفحة</translation>
 <translation id="5938160824633642847">جهازك ممتلئ تقريبًا. يمكنك إخلاء بعض المساحة وإعادة المحاولة.</translation>
 <translation id="594324569139756587">حظر ملفات تعريف الارتباط الخارجية</translation>
 <translation id="5944869793365969636">مسح رمز الاستجابة السريعة</translation>
@@ -1130,7 +1130,7 @@
 <translation id="6410883413783534063">يمكنك فتح علامات تبويب لزيارة صفحات مختلفة في آنٍ واحد.</translation>
 <translation id="6416807286621280684">تعرَّف على آخر المعلومات بشأن الطرود التي يتم تتبُّعها وموعد التسليم.</translation>
 <translation id="6418346271604475326">‏جارٍ إعداد PDF</translation>
-<translation id="6429213933892582367">‏افتح Password Options (خيارات كلمات المرور).</translation>
+<translation id="6429213933892582367">‏افتح "خيارات كلمات المرور" (Password Options).</translation>
 <translation id="6434591244308415567">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6443118737398455446">تاريخ انتهاء الصلاحية غير صالح</translation>
 <translation id="6444435711855078002">خيارات إضافية</translation>
@@ -1609,7 +1609,7 @@
 <translation id="8560253818350321773">عرض العناصر الأكثر استخدامًا أولاً</translation>
 <translation id="8564894539416715395">صفحة علامة تبويب جديدة</translation>
 <translation id="8569721750632860947">‏ما هو عنوان URL الذي تريد إضافته إلى "قائمة القراءة"؟</translation>
-<translation id="8571213806525832805">الأسابيع الـ4 الأخيرة</translation>
+<translation id="8571213806525832805">آخر 4 أسابيع</translation>
 <translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8590286732816598906">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />"، القائمة.</translation>
