@@ -135,6 +135,8 @@
     {name: "sec-ch-viewport-width", Symbol: "kViewportWidth"},
     {name: "sec-ch-width", Symbol: "kResourceWidth"},
     {name: "set-cookie", Symbol: "kLowerSetCookie"},
+    {name: "signature", Symbol: "kSignature"},
+    {name: "signature-input", Symbol: "kSignatureInput"},
     {name: "viewport-width", Symbol: "kViewportWidth_DEPRECATED"},
     {name: "width", Symbol: "kResourceWidth_DEPRECATED"},
   ],

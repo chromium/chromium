@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -36,6 +37,9 @@
 namespace blink {
 
 namespace {
+
+using network::mojom::FetchResponseType;
+using network::mojom::RequestMode;
 
 constexpr char kBasicScript[] = "alert('test');";
 constexpr char kSha256Integrity[] =
@@ -492,8 +496,6 @@ TEST_F(SubresourceIntegrityTest, ParsingBase64) {
 // requests, successful and failing CORS checks as well as when the response was
 // handled by a service worker.
 TEST_F(SubresourceIntegrityTest, OriginIntegrity) {
-  using network::mojom::FetchResponseType;
-  using network::mojom::RequestMode;
   constexpr auto kOk = kIntegritySuccess;
   constexpr auto kFail = kIntegrityFailure;
   const KURL& url = sec_url;
@@ -794,6 +796,94 @@ TEST_P(SubresourceIntegritySignatureTest, ParseBoth) {
                           signature_pairs);
   } while (std::next_permutation(signature_pairs.begin(), signature_pairs.end(),
                                  CompareIntegrityMetadataPair));
+}
+
+TEST_P(SubresourceIntegritySignatureTest, CheckEmpty) {
+  // Regardless of the flag's state, no signatures + no requirements = valid.
+  IntegrityReport integrity_report;
+  IntegrityMetadataSet metadata_set;
+
+  String raw_headers = "";
+  EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
+      metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
+      raw_headers, integrity_report))
+      << "Fetch variant";
+
+  Resource* resource =
+      CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
+  EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report))
+      << "Resource variant";
+}
+
+TEST_P(SubresourceIntegritySignatureTest, CheckNotSigned) {
+  IntegrityReport integrity_report;
+  IntegrityMetadataSet metadata_set;
+  metadata_set.signatures.insert(
+      std::make_pair("", IntegrityAlgorithm::kEd25519));
+  String raw_headers = "";
+
+  // If the flag is set, the lack of a signature will fail any signature
+  // integrity requirement.
+  EXPECT_EQ(!SignaturesEnabled(),
+            SubresourceIntegrity::CheckSubresourceIntegrity(
+                metadata_set, /*buffer=*/nullptr, sec_url,
+                FetchResponseType::kCors, raw_headers, integrity_report));
+
+  Resource* resource =
+      CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
+  EXPECT_EQ(!SignaturesEnabled(),
+            SubresourceIntegrity::CheckSubresourceIntegrity(
+                metadata_set, /*buffer=*/nullptr, sec_url, *resource,
+                integrity_report))
+      << "Resource variant";
+}
+
+TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
+  // Known-good message signature constants:
+  String kPublicKey = "JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+  String kValidDigestHeader =
+      "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
+  String kValidSignatureInputHeader =
+      "signature=(\"identity-digest\";sf);alg=\"ed25519\";"
+      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
+  String kValidSignatureHeader =
+      "signature=:H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus5p24qPK7"
+      "DtVQcxJFhzSYDj4RBq9grZTAQ==:";
+
+  String raw_headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Identity-Digest: " +
+      kValidDigestHeader +
+      "\r\n"
+      "Signature-Input: " +
+      kValidSignatureInputHeader +
+      "\r\n"
+      "Signature: " +
+      kValidSignatureHeader + "\r\n\r\n";
+
+  IntegrityReport integrity_report;
+  IntegrityMetadataSet metadata_set;
+  metadata_set.signatures = {
+      std::make_pair(kPublicKey, IntegrityAlgorithm::kEd25519)};
+
+  // Valid signature matching the integrity requirement should always pass.
+  EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
+      metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
+      raw_headers, integrity_report));
+
+  Resource* resource =
+      CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
+  ResourceResponse& response = resource->GetMutableResponseForTesting();
+  response.SetHttpHeaderField(http_names::kIdentityDigest,
+                              AtomicString(kValidDigestHeader));
+  response.SetHttpHeaderField(http_names::kSignatureInput,
+                              AtomicString(kValidSignatureInputHeader));
+  response.SetHttpHeaderField(http_names::kSignature,
+                              AtomicString(kValidSignatureHeader));
+  EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report))
+      << "Resource variant";
 }
 
 }  // namespace blink

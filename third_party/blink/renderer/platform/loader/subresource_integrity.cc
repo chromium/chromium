@@ -10,12 +10,14 @@
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "services/network/public/mojom/sri_message_signature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/integrity_report.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -74,8 +76,11 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     return false;
   }
 
+  const ResourceResponse& response = resource.GetResponse();
+  String raw_headers = response.HttpHeaderFields().GetAsRawString(
+      response.HttpStatusCode(), response.HttpStatusText());
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       integrity_report);
+                                       raw_headers, integrity_report);
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
@@ -83,6 +88,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     FetchResponseType response_type,
+    const String& raw_headers,
     IntegrityReport& integrity_report) {
   // We're only going to check the integrity of non-errors, and
   // non-opaque responses.
@@ -97,7 +103,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
   }
 
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       integrity_report);
+                                       raw_headers, integrity_report);
 }
 
 String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
@@ -141,6 +147,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     const IntegrityMetadataSet& parsed_metadata,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
+    const String& raw_headers,
     IntegrityReport& integrity_report) {
   // Implements https://wicg.github.io/signature-based-sri/#matching.
   //
@@ -161,8 +168,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   //     metadata from set] on |parsedMetadata|["signatures"].
   //
   //     (We're doing these in a slightly different order, breaking the hashing
-  //      work into the `CheckHashesImpl()` block below, and the signature work
-  //      into another TBD function.)
+  //      work into the `CheckHashesImpl()` block below, and likewise the
+  //      signature work into `CheckSignaturesImp()`.
 
   //
   // Verify the hash-based integrity constraints:
@@ -172,12 +179,13 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     return false;
   }
 
-  // TODO(https://crbug.com/380783670): Check the strongest signature-based
-  // integrity constraints from `parsed_metadata.signatures`.
-  if (!parsed_metadata.signatures.empty()) {
-    integrity_report.AddConsoleErrorMessage(
-        "Subresource Integrity: Signature-based matching is currently "
-        "unimplemented.");
+  //
+  // And the signature-based constraints (iff the relevant runtime-enabled
+  // feature is enabled).
+  //
+  if (RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled() &&
+      !CheckSignaturesImpl(parsed_metadata.signatures, resource_url,
+                           raw_headers, integrity_report)) {
     return false;
   }
   return true;
@@ -254,6 +262,68 @@ bool SubresourceIntegrity::CheckHashesImpl(
       Base64Encode(actual_value) + "'. The resource has been blocked.");
   integrity_report.AddUseCount(
       WebFeature::kSRIElementWithNonMatchingIntegrityAttribute);
+  return false;
+}
+
+bool SubresourceIntegrity::CheckSignaturesImpl(
+    const WTF::HashSet<IntegrityMetadataPair>& integrity_pairs,
+    const KURL& resource_url,
+    const String& raw_headers,
+    IntegrityReport& integrity_report) {
+  // This implements steps 6 and 8 of
+  // https://wicg.github.io/signature-based-sri/#matching.
+  //
+  // (For the moment we're skipping step 4, as we only have one signature
+  // type, so a list of the "strongest" obviously includes all of them.)
+  //
+  //
+  // 6.  Let |signature-match| be `true` if |signature-metadata| is empty, and
+  //     `false` otherwise.
+  if (integrity_pairs.empty()) {
+    return true;
+  }
+
+  //
+  // 8.3. Let |result| be the result of [validating an integrity signature]
+  //      over response using algorithm and public key.
+  //
+  //      (Our implementation is ordered differently from the spec: we check
+  //       signature validity in the network stack, directly after receiving
+  //       headers. This means we'll only get to this point in cases where
+  //       the signature is both valid for SRI, and verifies as internally
+  //       consistent (e.g. the public key in the `keyid` field can be used
+  //       to validate the signature base.
+  //
+  //       With this in mind, all we need to do here is verify that at least
+  //       one of the key digests in `parsed_metadata.signatures` matches at
+  //       least one of the signatures we parsed from |raw_headers|.)
+  Vector<network::mojom::blink::SRIMessageSignaturePtr> signatures =
+      ParseSRIMessageSignaturesFromHeaders(raw_headers);
+
+  // This would be caught below, but we'll exit early for unsigned resources
+  // so we can provide a better error message in the console.
+  if (signatures.empty() && !integrity_pairs.empty()) {
+    integrity_report.AddConsoleErrorMessage(
+        "Subresource Integrity: The resource at `" +
+        resource_url.ElidedString() +
+        "` was not signed, but integrity "
+        "checks are required. The resource has been blocked.");
+    return false;
+  }
+
+  for (const IntegrityMetadata& metadata : integrity_pairs) {
+    String public_key = metadata.Digest();
+    for (const auto& signature : signatures) {
+      if (signature->keyid == public_key) {
+        return true;
+      }
+    }
+  }
+
+  integrity_report.AddConsoleErrorMessage(
+      "Subresource Integrity: The resource at `" + resource_url.ElidedString() +
+      "` was not signed in a way that "
+      "matched the required integrity checks.");
   return false;
 }
 

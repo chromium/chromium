@@ -502,16 +502,14 @@ class FetchManager::Loader final
                       FetchManager::Loader* loader,
                       String integrity_metadata,
                       std::optional<IdentityDigest> identity_digest,
-                      const KURL& url,
-                      FetchResponseType response_type)
+                      const KURL& url)
         : body_(body),
           updater_(updater),
           response_(response),
           loader_(loader),
           integrity_metadata_(integrity_metadata),
           identity_digest_(identity_digest),
-          url_(url),
-          response_type_(response_type) {
+          url_(url) {
       // We need to have some kind of integrity metadata to check: either SRI
       // metadata, or an `Identity-Digest` header.
       DCHECK(!integrity_metadata.empty() ||
@@ -555,10 +553,14 @@ class FetchManager::Loader final
           SubresourceIntegrity::ParseIntegrityAttribute(
               integrity_metadata_, metadata_set, &integrity_report);
 
+          const FetchResponseData* data = response_->GetResponse();
+          String raw_headers = data->InternalHeaderList()->GetAsRawString(
+              data->Status(), data->StatusMessage());
           FetchResponseType type =
-              !updater_ ? FetchResponseType::kError : response_type_;
+              !updater_ ? FetchResponseType::kError : data->GetType();
           integrity_failed = !SubresourceIntegrity::CheckSubresourceIntegrity(
-              metadata_set, &buffer_, url_, type, integrity_report);
+              metadata_set, &buffer_, url_, type, raw_headers,
+              integrity_report);
           integrity_report.SendReports(loader_->GetExecutionContext());
         }
         if (!integrity_failed) {
@@ -597,7 +599,6 @@ class FetchManager::Loader final
     String integrity_metadata_;
     std::optional<IdentityDigest> identity_digest_;
     KURL url_;
-    const FetchResponseType response_type_;
     SegmentedBuffer buffer_;
     bool finished_ = false;
   };
@@ -807,8 +808,7 @@ void FetchManager::Loader::DidReceiveResponse(
 
     integrity_verifier_ = MakeGarbageCollected<IntegrityVerifier>(
         underlying, verified, r, this, GetFetchRequestData()->Integrity(),
-        identity_digest, response.CurrentRequestUrl(),
-        r->GetResponse()->GetType());
+        identity_digest, response.CurrentRequestUrl());
   }
 }
 

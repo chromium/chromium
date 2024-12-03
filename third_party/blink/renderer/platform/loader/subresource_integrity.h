@@ -44,6 +44,7 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                         const SegmentedBuffer* buffer,
                                         const KURL& resource_url,
                                         const FetchResponseType,
+                                        const String& raw_headers,
                                         IntegrityReport&);
 
   // The IntegrityMetadataSet argument is an out parameters which contains the
@@ -69,6 +70,7 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   static bool CheckSubresourceIntegrityImpl(const IntegrityMetadataSet&,
                                             const SegmentedBuffer* buffer,
                                             const KURL& resource_url,
+                                            const String& raw_headers,
                                             IntegrityReport&);
 
   // Handles hash validation during SRI checks.
@@ -76,6 +78,12 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                               const SegmentedBuffer*,
                               const KURL&,
                               IntegrityReport&);
+
+  // Handles signature-based matching during SRI checks
+  static bool CheckSignaturesImpl(const WTF::HashSet<IntegrityMetadataPair>&,
+                                  const KURL& resource_url,
+                                  const String& raw_headers,
+                                  IntegrityReport&);
 
   enum AlgorithmParseResult {
     kAlgorithmValid,

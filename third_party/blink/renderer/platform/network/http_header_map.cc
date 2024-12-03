@@ -32,6 +32,8 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
 namespace blink {
 
 HTTPHeaderMap::HTTPHeaderMap() = default;
@@ -56,6 +58,23 @@ void HTTPHeaderMap::Adopt(std::unique_ptr<CrossThreadHTTPHeaderMapData> data) {
   Clear();
   for (const auto& header : *data)
     Set(AtomicString(header.first), AtomicString(header.second));
+}
+
+String HTTPHeaderMap::GetAsRawString(int status_code,
+                                     String status_message) const {
+  StringBuilder builder;
+  builder.Append("HTTP/1.1 ");
+  builder.AppendNumber(status_code);
+  builder.Append(" ");
+  builder.Append(status_message);
+  builder.Append("\r\n");
+  for (auto& it : headers_) {
+    builder.Append(it.key);
+    builder.Append(":");
+    builder.Append(it.value);
+    builder.Append("\r\n");
+  }
+  return builder.ToString();
 }
 
 }  // namespace blink

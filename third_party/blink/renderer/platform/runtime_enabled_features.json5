@@ -3919,6 +3919,7 @@
     {
       name: "SignatureBasedIntegrity",
       status: "experimental",
+      depends_on: ["IdentityDigest"]
     },
     {
       name: "SiteInitiatedMirroring",
