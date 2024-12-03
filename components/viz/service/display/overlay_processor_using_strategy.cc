@@ -988,8 +988,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
 
   OverlayCombinationToTest result =
       overlay_combination_cache_.GetOverlayCombinationToTest(
-          base::make_span(first_candidate_without_masks,
-                          sorted_candidates.end()),
+          base::span(first_candidate_without_masks, sorted_candidates.end()),
           max_overlays_without_mask_candidates);
 
   std::vector<OverlayProposedCandidate> test_candidates =
@@ -1059,7 +1058,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   // Only declare test candidates that do not have candidates with rounded
   // display masks.
   overlay_combination_cache_.DeclarePromotedCandidates(
-      base::make_span(test_candidates.begin(), begin_rounded_corner_candidate));
+      base::span(test_candidates.begin(), begin_rounded_corner_candidate));
 
   // Update `candidates` if it was decided to composite some test_candidates in
   // `ProcessOverlayTestResults()`.

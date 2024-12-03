@@ -144,7 +144,7 @@ class ToValueVisitor {
                   const char* field_name,
                   const std::string& field) {
     value_->Set(field_name,
-                base::Base64Encode(base::as_bytes(base::make_span(field))));
+                base::Base64Encode(base::as_bytes(base::span(field))));
   }
 
   template <class P>
@@ -155,7 +155,7 @@ class ToValueVisitor {
     if (!repeated_field.empty()) {
       base::Value::List list;
       for (const auto& field : repeated_field) {
-        list.Append(base::Base64Encode(base::as_bytes(base::make_span(field))));
+        list.Append(base::Base64Encode(base::as_byte_span(field)));
       }
       value_->Set(field_name, std::move(list));
     }

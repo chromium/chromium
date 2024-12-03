@@ -96,8 +96,8 @@ base::span<const uint8_t> MakePixelSpan(const std::vector<T>& vec) {
 }
 
 base::span<const uint8_t> MakePixelSpan(const SkBitmap& bitmap) {
-  return base::make_span(static_cast<const uint8_t*>(bitmap.getPixels()),
-                         bitmap.computeByteSize());
+  return base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
+                    bitmap.computeByteSize());
 }
 
 void AllocateAndRegisterSharedBitmapMemory(

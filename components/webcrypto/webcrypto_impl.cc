@@ -853,9 +853,9 @@ bool WebCryptoImpl::DeserializeKeyForClone(
     const unsigned char* key_data,
     unsigned key_data_size,
     blink::WebCryptoKey& key) {
-  return webcrypto::DeserializeKeyForClone(
-      algorithm, type, extractable, usages,
-      base::make_span(key_data, key_data_size), &key);
+  return webcrypto::DeserializeKeyForClone(algorithm, type, extractable, usages,
+                                           base::span(key_data, key_data_size),
+                                           &key);
 }
 
 bool WebCryptoImpl::SerializeKeyForClone(

@@ -40,8 +40,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
     const sync_pb::WebauthnCredentialSpecifics& specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
   // Name must be UTF-8 decodable.
-  entity_data->name =
-      base::HexEncode(base::as_bytes(base::make_span(specifics.sync_id())));
+  entity_data->name = base::HexEncode(base::as_byte_span(specifics.sync_id()));
   *entity_data->specifics.mutable_webauthn_credential() = specifics;
   return entity_data;
 }

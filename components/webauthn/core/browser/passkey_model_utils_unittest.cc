@@ -166,7 +166,7 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
                                                      &encrypted_data));
   EXPECT_FALSE(encrypted_data.private_key().empty());
   auto ec_key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
-      base::as_bytes(base::make_span(encrypted_data.private_key())));
+      base::as_byte_span(encrypted_data.private_key()));
   EXPECT_NE(ec_key, nullptr);
   std::vector<uint8_t> ec_key_pub;
   EXPECT_TRUE(ec_key->ExportPublicKey(&ec_key_pub));

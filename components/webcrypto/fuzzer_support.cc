@@ -92,7 +92,7 @@ void ImportEcKeyFromDerFuzzData(const uint8_t* data,
 
   blink::WebCryptoKey key;
   webcrypto::Status status = webcrypto::ImportKey(
-      format, base::make_span(data, size),
+      format, base::span(data, size),
       CreateEcImportAlgorithm(algorithm_id, curve), true, usages, &key);
 
   // These errors imply a bad setup of parameters, and means ImportKey() may not
@@ -137,7 +137,7 @@ void ImportEcKeyFromRawFuzzData(const uint8_t* data, size_t size) {
 
   blink::WebCryptoKey key;
   webcrypto::Status status = webcrypto::ImportKey(
-      blink::kWebCryptoKeyFormatRaw, base::make_span(data, size),
+      blink::kWebCryptoKeyFormatRaw, base::span(data, size),
       CreateEcImportAlgorithm(algorithm_id, curve), true, usages, &key);
 
   // These errors imply a bad setup of parameters, and means ImportKey() may not
@@ -170,7 +170,7 @@ void ImportRsaKeyFromDerFuzzData(const uint8_t* data,
 
   blink::WebCryptoKey key;
   webcrypto::Status status = webcrypto::ImportKey(
-      format, base::make_span(data, size),
+      format, base::span(data, size),
       CreateRsaHashedImportAlgorithm(algorithm_id, hash_id), true, usages,
       &key);
 

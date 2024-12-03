@@ -209,10 +209,8 @@ Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
   size_t input_size_part1 =
       static_cast<size_t>(num_blocks_until_reset * AES_BLOCK_SIZE);
   DCHECK_LT(input_size_part1, data.size());
-  base::span<uint8_t> output_part1 =
-      base::make_span(*buffer).first(input_size_part1);
-  base::span<uint8_t> output_part2 =
-      base::make_span(*buffer).subspan(input_size_part1);
+  const auto [output_part1, output_part2] =
+      base::span(*buffer).split_at(input_size_part1);
 
   // Encrypt the first part (before wrap-around).
   Status status =

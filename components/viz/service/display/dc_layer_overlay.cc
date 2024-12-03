@@ -257,7 +257,7 @@ bool HasOccludingDamageRect(
   // surface_damage_rect_list[overlay_damage_index] is the damage rect of
   // this overlay surface.
   gfx::Rect occluding_damage_rect = gfx::UnionRects(
-      base::make_span(surface_damage_rect_list).first(overlay_damage_index));
+      base::span(surface_damage_rect_list).first(overlay_damage_index));
   occluding_damage_rect.Intersect(quad_rect_in_target_space);
 
   return !occluding_damage_rect.IsEmpty();

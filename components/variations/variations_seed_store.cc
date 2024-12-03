@@ -107,12 +107,11 @@ VerifySignatureResult VerifySeedSignature(
 
   crypto::SignatureVerifier verifier;
   if (!verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256,
-                           base::as_bytes(base::make_span(signature)),
-                           kPublicKey)) {
+                           base::as_byte_span(signature), kPublicKey)) {
     return VerifySignatureResult::INVALID_SIGNATURE;
   }
 
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(seed_bytes)));
+  verifier.VerifyUpdate(base::as_byte_span(seed_bytes));
   if (!verifier.VerifyFinal())
     return VerifySignatureResult::INVALID_SEED;
 

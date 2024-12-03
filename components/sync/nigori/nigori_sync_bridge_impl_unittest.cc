@@ -1074,20 +1074,20 @@ TEST_F(NigoriSyncBridgeImplTest,
   // Encryption should succeed since a default key exists.
   CrossUserSharingPublicPrivateKeyPair peer_key_pair =
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
-  ASSERT_TRUE(cryptographer()
-                  ->AuthEncryptForCrossUserSharing(
-                      base::as_bytes(base::make_span("hello world")),
-                      peer_key_pair.GetRawPublicKey())
-                  .has_value());
+  ASSERT_TRUE(
+      cryptographer()
+          ->AuthEncryptForCrossUserSharing(base::as_byte_span("hello world"),
+                                           peer_key_pair.GetRawPublicKey())
+          .has_value());
 
   EXPECT_CALL(*storage(), ClearData);
   bridge()->ApplyDisableSyncChanges();
   EXPECT_FALSE(cryptographer()->CanEncrypt());
-  EXPECT_FALSE(cryptographer()
-                   ->AuthEncryptForCrossUserSharing(
-                       base::as_bytes(base::make_span("hello world")),
-                       peer_key_pair.GetRawPublicKey())
-                   .has_value());
+  EXPECT_FALSE(
+      cryptographer()
+          ->AuthEncryptForCrossUserSharing(base::as_byte_span("hello world"),
+                                           peer_key_pair.GetRawPublicKey())
+          .has_value());
 }
 
 // Tests decryption logic for explicit passphrase. In order to check that we're

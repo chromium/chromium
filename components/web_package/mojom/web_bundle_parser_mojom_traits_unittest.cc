@@ -32,7 +32,7 @@ constexpr uint8_t kTestSignature[] = {
 }  // namespace
 
 TEST(StructTraitsTest, Ed25519PublicKey) {
-  auto input = Ed25519PublicKey::Create(base::make_span(kTestPublicKey));
+  auto input = Ed25519PublicKey::Create(base::span(kTestPublicKey));
   EXPECT_THAT(input.bytes(), ElementsAreArray(kTestPublicKey));
 
   Ed25519PublicKey output;
@@ -46,7 +46,7 @@ TEST(StructTraitsTest, Ed25519PublicKey) {
 }
 
 TEST(StructTraitsTest, Ed25519Signature) {
-  auto input = Ed25519Signature::Create(base::make_span(kTestSignature));
+  auto input = Ed25519Signature::Create(base::span(kTestSignature));
   EXPECT_THAT(input.bytes(), ElementsAreArray(kTestSignature));
 
   Ed25519Signature output;
