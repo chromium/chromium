@@ -56,6 +56,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
 
   [self configureButton:backButton width:kAdaptiveToolbarButtonWidth];
   backButton.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
+  backButton.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_BACK);
   [backButton addTarget:self.actionHandler
                  action:@selector(backAction)
        forControlEvents:UIControlEventTouchUpInside];
@@ -79,6 +81,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
       self.visibilityConfiguration.forwardButtonVisibility;
   forwardButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_ACCNAME_FORWARD);
+  forwardButton.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_FORWARD);
   [forwardButton addTarget:self.actionHandler
                     action:@selector(forwardAction)
           forControlEvents:UIControlEventTouchUpInside];

@@ -6021,6 +6021,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOGGLE_SWITCH_ACCESSIBILITY_HINT" desc="Action hint for any switch. This is spoken by VoiceOver. [iOS only]">
         Double tap to toggle setting
       </message>
+      <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_BACK" desc="The accessibility hint for the toolbar back button, to open the long press menu [iOS only].">
+        Double tap and hold to open history
+      </message>
+      <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_FORWARD" desc="The accessibility hint for the toolbar forward button, to open the long press menu [iOS only].">
+        Double tap and hold to open history
+      </message>
       <message name="IDS_IOS_TOOLBAR_CLOSE_MENU" desc="The accessibility label for the toolbar close settings menu button [iOS only].">
         Close menu
       </message>
