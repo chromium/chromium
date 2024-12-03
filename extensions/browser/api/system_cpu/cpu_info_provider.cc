@@ -46,6 +46,7 @@ bool CpuInfoProvider::QueryInfo() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/381925994): Port temperature reading to Android.
   using CPUTemperatureInfo =
       chromeos::system::CPUTemperatureReader::CPUTemperatureInfo;
   std::vector<CPUTemperatureInfo> cpu_temp_info =

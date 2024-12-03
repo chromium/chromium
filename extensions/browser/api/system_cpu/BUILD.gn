@@ -5,8 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("system_cpu") {
   sources = [
@@ -32,7 +32,7 @@ source_set("system_cpu") {
     sources += [ "cpu_info_provider_mac.cc" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos || enable_desktop_android_extensions) {
     sources += [ "cpu_info_provider_linux.cc" ]
   }
 
