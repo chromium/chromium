@@ -459,19 +459,6 @@ export interface MetricsBrowserProxy {
       void;
 
   /**
-   * Helper function that calls recordHistogram for
-   * Settings.SafetyCheck.NotificationsListCount histogram.
-   */
-  recordSafetyCheckNotificationsListCountHistogram(suggestions: number): void;
-
-  /**
-   * Helper function that calls recordHistogram for the
-   * Settings.SafetyCheck.NotificationsModuleInteractions histogram
-   */
-  recordSafetyCheckNotificationsModuleInteractionsHistogram(
-      interaction: SafetyCheckNotificationsModuleInteractions): void;
-
-  /**
    * Helper function that calls recordBooleanHistogram for the
    * Settings.SafetyCheck.NotificationsModuleEntryPointShown histogram
    */
@@ -677,23 +664,6 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.SafetyCheck.Interactions',
       interaction,
       SafetyCheckInteractions.MAX_VALUE,
-    ]);
-  }
-
-  recordSafetyCheckNotificationsListCountHistogram(suggestions: number) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.NotificationsListCount',
-      suggestions,
-      99 /*max value for Notification suggestions*/,
-    ]);
-  }
-
-  recordSafetyCheckNotificationsModuleInteractionsHistogram(
-      interaction: SafetyCheckNotificationsModuleInteractions) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.NotificationsModuleInteractions',
-      interaction,
-      SafetyCheckNotificationsModuleInteractions.MAX_VALUE,
     ]);
   }
 

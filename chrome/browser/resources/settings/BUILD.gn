@@ -194,7 +194,6 @@ build_webui("build") {
     "site_settings/file_system_site_entry_item.ts",
     "site_settings/file_system_site_list.ts",
     "site_settings/media_picker.ts",
-    "site_settings/review_notification_permissions.ts",
     "site_settings_page/recent_site_permissions.ts",
     "site_settings_page/site_settings_list.ts",
     "site_settings_page/site_settings_page.ts",

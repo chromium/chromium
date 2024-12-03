@@ -2233,8 +2233,6 @@ void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_MORE_ACTIONS_ARIA_LABEL},
       {"safetyCheckNotificationPermissionReviewUndo",
        IDS_SETTINGS_SAFETY_CHECK_TOAST_UNDO_BUTTON_LABEL},
-      {"safetyCheckNotificationPermissionReviewDoneLabel",
-       IDS_SETTINGS_SAFETY_CHECK_SITE_PERMISSIONS_REVIEW_DONE_LABEL},
       {"safetyCheckNotificationPermissionReviewBlockAllLabel",
        IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_BLOCK_ALL_LABEL},
       {"safetyCheckUnusedSitePermissionsHeaderAriaLabel",

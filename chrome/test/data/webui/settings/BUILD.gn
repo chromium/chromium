@@ -77,8 +77,6 @@ build_webui_tests("build") {
     "recent_site_permissions_test.ts",
     "reset_page_test.ts",
     "reset_profile_banner_test.ts",
-    "review_notification_permissions_interactive_ui_test.ts",
-    "review_notification_permissions_test.ts",
     "route_test.ts",
     "safety_check_page_test.ts",
     "safety_check_permissions_test.ts",

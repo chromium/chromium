@@ -61,8 +61,3 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, MAYBE_SettingsUISearch) {
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, Menu) {
   RunTest("settings/settings_menu_interactive_ui_test.js", "mocha.run()");
 }
-
-IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ReviewNotificationPermissionsFocus) {
-  RunTest("settings/review_notification_permissions_interactive_ui_test.js",
-          "mocha.run()");
-}
