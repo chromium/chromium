@@ -647,9 +647,12 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   }
 
   // If the cluster info optimization is enabled, request the cluster info prior
-  // to making the full image request.
+  // to making the full image request. Also do this for the contextual search
+  // flow since the request flow for contextual searchbox will fail without the
+  // cluster info handshake.
   if (!cluster_info_ &&
-      (lens::features::IsLensOverlayClusterInfoOptimizationEnabled())) {
+      (lens::features::IsLensOverlayClusterInfoOptimizationEnabled()
+      || lens::features::IsLensOverlayContextualSearchboxEnabled())) {
     FetchClusterInfoRequest();
     return;
   }
@@ -741,15 +744,6 @@ void LensOverlayQueryController::
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
-
-  // The content bytes ideally are uploaded separately once the cluster info is
-  // retrieved. However, if the cluster info request fails, we should include
-  // them in this request. So if page content bytes are available, and the
-  // cluster info was not retrieved, included them in this request.
-  if (!underlying_content_bytes_.empty() && !cluster_info_.has_value()) {
-    request.mutable_objects_request()->mutable_payload()->CopyFrom(
-        CreatePageContentPayload());
-  }
 
   FullImageRequestDataReady(sequence_id, request);
 }
