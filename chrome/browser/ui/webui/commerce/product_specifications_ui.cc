@@ -158,12 +158,11 @@ void ProductSpecificationsUI::BindInterface(
     mojo::PendingReceiver<
         product_specifications::mojom::ProductSpecificationsHandlerFactory>
         receiver) {
-  product_specifications_handler_factory_receiver_.reset();
-  product_specifications_handler_factory_receiver_.Bind(std::move(receiver));
+  product_specifications_factory_receiver_.reset();
+  product_specifications_factory_receiver_.Bind(std::move(receiver));
 }
 
 void ProductSpecificationsUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -177,8 +176,8 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker,
           std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
                                                                 profile),
           optimization_guide_keyed_service

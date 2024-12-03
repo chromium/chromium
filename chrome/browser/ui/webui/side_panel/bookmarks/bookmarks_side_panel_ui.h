@@ -96,7 +96,6 @@ class BookmarksSidePanelUI
 
   // shopping_service::mojom::ShoppingServiceHandlerFactory:
   void CreateShoppingServiceHandler(
-      mojo::PendingRemote<shopping_service::mojom::Page> page,
       mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
           receiver) override;
 

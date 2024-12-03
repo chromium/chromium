@@ -40,8 +40,6 @@ class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
 
   void OpenUrlInNewTab(const GURL& url) override;
 
-  void ShowBookmarkEditorForCurrentUrl() override;
-
   void ShowFeedbackForPriceInsights() override;
 
   void ShowFeedbackForProductSpecifications(const std::string& log_id) override;

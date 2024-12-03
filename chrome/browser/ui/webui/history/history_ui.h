@@ -92,7 +92,6 @@ class HistoryUI : public ui::MojoWebUIController,
 
  private:
   void CreateShoppingServiceHandler(
-      mojo::PendingRemote<shopping_service::mojom::Page> page,
       mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
           receiver) override;
   // help_bubble::mojom::HelpBubbleHandlerFactory:

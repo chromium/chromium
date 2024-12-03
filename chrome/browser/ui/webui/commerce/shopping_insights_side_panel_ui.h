@@ -70,7 +70,6 @@ class ShoppingInsightsSidePanelUI
  private:
   // shopping_service::mojom::ShoppingListHandlerFactory:
   void CreateShoppingServiceHandler(
-      mojo::PendingRemote<shopping_service::mojom::Page> page,
       mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
           receiver) override;
 
