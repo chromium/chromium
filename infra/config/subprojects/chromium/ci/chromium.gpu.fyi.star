@@ -2285,14 +2285,44 @@ ci.thin_tester(
             "mac_pro_amd_gpu",
         ],
         per_test_modifications = {
+            "context_lost_metal_passthrough_graphite_tests": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/379737179): Either remove or try with
+                        # some (but less aggressive than default)
+                        # parallelization depending on whether this improves
+                        # stability or not.
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
             "services_unittests": targets.remove(
                 reason = "The face and barcode detection tests fail on the Mac Pros.",
             ),
             "webgl2_conformance_metal_passthrough_graphite_tests": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/379737179): Either remove or try with
+                        # some (but less aggressive than default)
+                        # parallelization depending on whether this improves
+                        # stability or not.
+                        "--jobs=1",
+                    ],
+                ),
                 replacements = targets.replacements(
                     args = {
                         # Causes problems on older hardware. crbug.com/1499911.
                         "--enable-metal-debug-layers": None,
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
                     },
                 ),
             ),
