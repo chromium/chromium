@@ -258,9 +258,6 @@ TEST_P(DataSharingServiceImplTest, ShouldLeaveGroup) {
 }
 
 TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
-  GroupData group_data = GroupData();
-  group_data.group_token =
-      GroupToken(data_sharing::GroupId(kGroupId), kTokenBlob);
   GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
                   "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
 
@@ -268,17 +265,16 @@ TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
       data_sharing_service_->ParseDataSharingUrl(url);
 
   // Verify valid path.
-  EXPECT_TRUE(result.has_value());
-  EXPECT_EQ(group_data.group_token.group_id.value(),
-            result.value().group_id.value());
-  EXPECT_EQ(group_data.group_token.access_token, result.value().access_token);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(kGroupId, result.value().group_id.value());
+  EXPECT_EQ(kTokenBlob, result.value().access_token);
   EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 
   // Verify host/path error.
   std::string invalid = "https://www.test.com/";
   url = GURL(invalid + "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
   result = data_sharing_service_->ParseDataSharingUrl(url);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             DataSharingService::ParseUrlStatus::kHostOrPathMismatchFailure);
   EXPECT_FALSE(
@@ -286,13 +282,21 @@ TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
 
   // Verify query missing error.
   url = GURL(data_sharing::features::kDataSharingURL.Get() +
-             "?group_id=" + kGroupId);
+             "?access_token=" + kGroupId);
   result = data_sharing_service_->ParseDataSharingUrl(url);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             DataSharingService::ParseUrlStatus::kQueryMissingFailure);
-  EXPECT_FALSE(
-      data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
+  EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
+
+  // Verify access token missing is ok.
+  url = GURL(data_sharing::features::kDataSharingURL.Get() +
+             "?group_id=" + kGroupId);
+  result = data_sharing_service_->ParseDataSharingUrl(url);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(kGroupId, result.value().group_id.value());
+  EXPECT_EQ("", result.value().access_token);
+  EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 }
 
 TEST_P(DataSharingServiceImplTest, GetDataSharingUrl) {

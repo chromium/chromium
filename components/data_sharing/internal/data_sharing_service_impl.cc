@@ -485,7 +485,18 @@ DataSharingServiceImpl::GetCollaborationGroupSyncBridgeForTesting() {
 
 bool DataSharingServiceImpl::ShouldInterceptNavigationForShareURL(
     const GURL& url) {
-  return ParseDataSharingUrl(url).has_value();
+  ParseUrlResult result = ParseDataSharingUrl(url);
+  if (result.has_value()) {
+    return true;
+  }
+  switch (result.error()) {
+    case ParseUrlStatus::kUnknown:
+    case ParseUrlStatus::kHostOrPathMismatchFailure:
+      return false;
+    case ParseUrlStatus::kQueryMissingFailure:
+    case ParseUrlStatus::kSuccess:
+      return true;
+  }
 }
 
 void DataSharingServiceImpl::HandleShareURLNavigationIntercepted(
@@ -522,10 +533,14 @@ DataSharingService::ParseUrlResult DataSharingServiceImpl::ParseDataSharingUrl(
 
   std::string group_id;
   std::string access_token;
-  net::GetValueForKeyInQuery(url, kGroupIdKey, &group_id);
-  net::GetValueForKeyInQuery(url, kTokenBlobKey, &access_token);
+  if (!net::GetValueForKeyInQuery(url, kGroupIdKey, &group_id)) {
+    group_id.clear();
+  }
+  if (!net::GetValueForKeyInQuery(url, kTokenBlobKey, &access_token)) {
+    access_token.clear();
+  }
 
-  if (group_id.empty() || access_token.empty()) {
+  if (group_id.empty()) {
     return base::unexpected(ParseUrlStatus::kQueryMissingFailure);
   }
 
