@@ -90,7 +90,7 @@ void InitializeServiceWorkerClient(
                 .top_frame_origin()
           : std::nullopt,
       service_worker_client.CalculateStorageKeyForUpdateUrls(
-          tentative_resource_request.url, isolation_info_from_interceptor));
+          stripped_url, isolation_info_from_interceptor));
 }
 
 }  // namespace
