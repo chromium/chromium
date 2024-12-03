@@ -75,7 +75,7 @@ enum class AuthenticationOperation {
 // If YES, the sign-in command will not be presented and ignored if there is
 // any dialog already presented on the NTP.
 // Default value: NO.
-@property(nonatomic, assign) BOOL skipIfUINotAvaible;
+@property(nonatomic, assign) BOOL skipIfUINotAvailable;
 
 // The completion to be invoked after the operation is complete.
 @property(nonatomic, copy, readonly)

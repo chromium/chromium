@@ -1765,22 +1765,27 @@ using UserFeedbackDataCallback =
   _sceneURLLoadingService->LoadUrlInNewTab(params);
 }
 
-// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
-// dispatcher.
-- (void)showSignin:(ShowSigninCommand*)command
-    baseViewController:(UIViewController*)baseViewController {
+// Returns `YES` if a signin coordinator can be opened by the scene controller.
+// Otherwise, execute the completion with `SigninCoordinatorUINotAvailable`.
+// Fails if another signin coordinator is already opened.
+- (BOOL)canPresentSigninCoordinatorOrCompletion:
+            (SigninCoordinatorCompletionCallback)completion
+                             baseViewController:
+                                 (UIViewController*)baseViewController
+                           skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
+                                    accessPoint:(signin_metrics::AccessPoint)
+                                                    accessPoint {
   // Calling this method when there is a signinCoordinator alive is incorrect
   // as there should not be 2 signinCoordinators alive at the same time (note
   // that allocating the second one will dealloc the first and this crashes in
   // various ways).
-  if (command.skipIfUINotAvaible &&
-      (baseViewController.presentedViewController ||
-       ![self isTabAvailableToPresentViewController])) {
+  if (skipIfUINotAvailable && (baseViewController.presentedViewController ||
+                               ![self isTabAvailableToPresentViewController])) {
     // Make sure the UI is available to present the sign-in view.
-    if (command.completion) {
-      command.completion(SigninCoordinatorUINotAvailable, nil);
+    if (completion) {
+      completion(SigninCoordinatorUINotAvailable, nil);
     }
-    return;
+    return NO;
   }
   if (self.signinCoordinator) {
     // As of M121, the CHECK bellow is known to fire in various cases. The goal
@@ -1788,7 +1793,7 @@ using UserFeedbackDataCallback =
     // for which of the access points they are triggered.
     base::UmaHistogramEnumeration(
         "Signin.ShowSigninCoordinatorWhenAlreadyPresent.NewAccessPoint",
-        command.accessPoint, signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+        accessPoint, signin_metrics::AccessPoint::ACCESS_POINT_MAX);
     base::UmaHistogramEnumeration(
         "Signin.ShowSigninCoordinatorWhenAlreadyPresent.OldAccessPoint",
         self.signinCoordinator.accessPoint,
@@ -1807,6 +1812,20 @@ using UserFeedbackDataCallback =
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  return YES;
+}
+
+// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
+// dispatcher.
+- (void)showSignin:(ShowSigninCommand*)command
+    baseViewController:(UIViewController*)baseViewController {
+  if (![self
+          canPresentSigninCoordinatorOrCompletion:command.completion
+                               baseViewController:baseViewController
+                             skipIfUINotAvailable:command.skipIfUINotAvailable
+                                      accessPoint:command.accessPoint]) {
+    return;
+  }
   Browser* mainBrowser = self.mainInterface.browser;
 
   switch (command.operation) {
