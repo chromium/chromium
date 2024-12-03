@@ -805,8 +805,10 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
     const MouseEventWithHitTestResults& event) {
   TRACE_EVENT0("blink", "MouseEventManager::handleMouseDraggedEvent");
 
-  bool is_pen = event.Event().pointer_type ==
-                blink::WebPointerProperties::PointerType::kPen;
+  bool is_pen = (event.Event().pointer_type ==
+                     blink::WebPointerProperties::PointerType::kPen ||
+                 event.Event().pointer_type ==
+                     blink::WebPointerProperties::PointerType::kEraser);
 
   WebPointerProperties::Button pen_drag_button =
       WebPointerProperties::Button::kLeft;

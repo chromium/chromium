@@ -793,7 +793,8 @@ bool PointerEventManager::HandleScrollbarTouchDrag(const WebPointerEvent& event,
                                                    Scrollbar* scrollbar) {
   if (!scrollbar ||
       (event.pointer_type != WebPointerProperties::PointerType::kTouch &&
-       event.pointer_type != WebPointerProperties::PointerType::kPen)) {
+       event.pointer_type != WebPointerProperties::PointerType::kPen &&
+       event.pointer_type != WebPointerProperties::PointerType::kEraser)) {
     return false;
   }
 
@@ -1180,7 +1181,9 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
   }
 
   if (mouse_event.GetType() == WebInputEvent::Type::kMouseLeave &&
-      mouse_event.pointer_type == WebPointerProperties::PointerType::kPen) {
+      (mouse_event.pointer_type == WebPointerProperties::PointerType::kPen ||
+       mouse_event.pointer_type ==
+           WebPointerProperties::PointerType::kEraser)) {
     pointer_event_factory_.Remove(pointer_event->pointerId());
   }
   return result;
