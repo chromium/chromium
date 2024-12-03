@@ -313,7 +313,8 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
                          *request_info,
                          protocol::Network::Initiator::TypeEnum::Preload,
                          /*initiator_url=*/std::nullopt,
-                         /*initiator_devtools_request_id=*/"", timestamp);
+                         /*initiator_devtools_request_id=*/"",
+                         /*frame_token=*/std::nullopt, timestamp);
   }
 }
 

@@ -476,13 +476,6 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   result->subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
-  // Notify that the loading is completed to DevTools. It fires
-  // `Network.onLoadingFinished` event.
-  devtools_instrumentation::OnWorkerMainScriptLoadingFinished(
-      FrameTreeNode::From(ancestor_render_frame_host),
-      DedicatedWorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
-      network::URLLoaderCompletionStatus(net::OK));
-
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {

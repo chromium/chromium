@@ -243,6 +243,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                    const char* initiator_type,
                    const std::optional<GURL>& initiator_url,
                    const std::string& initiator_devtools_request_id,
+                   std::optional<base::UnguessableToken> frame_token,
                    base::TimeTicks timestamp);
   void ResponseReceived(const std::string& request_id,
                         const std::string& loader_id,

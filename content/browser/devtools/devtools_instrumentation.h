@@ -422,7 +422,7 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
 // Fires `Network.onRequestWillBeSent` event for a dedicated worker and shared
 // worker main script. Used for PlzDedicatedWorker/PlzSharedWorker.
 void OnWorkerMainScriptRequestWillBeSent(
-    FrameTreeNode* ftn,
+    RenderFrameHostImpl& ancestor_frame_host,
     const base::UnguessableToken& worker_token,
     network::ResourceRequest& request);
 
@@ -433,13 +433,6 @@ void OnWorkerMainScriptLoadingFailed(
     const base::UnguessableToken& worker_token,
     FrameTreeNode* ftn,
     RenderFrameHostImpl* ancestor_rfh,
-    const network::URLLoaderCompletionStatus& status);
-
-// Fires `Network.onLoadingFinished` event for a dedicated worker main script.
-// Used for PlzDedicatedWorker.
-void OnWorkerMainScriptLoadingFinished(
-    FrameTreeNode* ftn,
-    const base::UnguessableToken& worker_token,
     const network::URLLoaderCompletionStatus& status);
 
 // Adds a message from a worklet to the devtools console. This is specific to

@@ -102,6 +102,7 @@ interface CoreProbes {
   void PrepareRequest(CoreProbeSink*, DocumentLoader*, ResourceRequest&, ResourceLoaderOptions&, ResourceType);
   void WillSendRequest([Keep] ExecutionContext*, DocumentLoader*, const KURL& fetch_context_url, const ResourceRequest&, const ResourceResponse& redirect_response, const ResourceLoaderOptions&, ResourceType, RenderBlockingBehavior, base::TimeTicks timestamp);
   void WillSendNavigationRequest(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const KURL&, const AtomicString& http_method, EncodedFormData*);
+  void WillSendWorkerMainRequest(ExecutionContext*, uint64_t identifier, const KURL&);
   void MarkResourceAsCached(LocalFrame*, DocumentLoader*, uint64_t identifier);
   void DidReceiveResourceResponse(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const ResourceResponse&, const Resource*);
   void DidReceiveData(CoreProbeSink*, uint64_t identifier, DocumentLoader*, base::SpanOrSize<const char> data);

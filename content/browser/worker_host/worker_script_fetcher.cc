@@ -349,8 +349,7 @@ void WorkerScriptFetcher::CreateAndStart(
   // shared workers, `ancestor_render_frame_host` and
   // `creator_render_frame_host` are always same.
   devtools_instrumentation::OnWorkerMainScriptRequestWillBeSent(
-      ancestor_render_frame_host.frame_tree_node(), devtools_worker_token,
-      *resource_request);
+      ancestor_render_frame_host, devtools_worker_token, *resource_request);
 
   WorkerScriptFetcher::CreateScriptLoader(
       worker_process_id, worker_token, initial_request_url,

@@ -218,6 +218,7 @@
         "WillSendEventSourceRequest",
         "WillSendRequest",
         "WillSendNavigationRequest",
+        "WillSendWorkerMainRequest",
         "WillSendWebSocketHandshakeRequest",
         "SetDevToolsIds",
         "IsCacheDisabled",

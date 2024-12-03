@@ -1358,6 +1358,17 @@ void InspectorNetworkAgent::WillSendNavigationRequest(
                                    InspectorPageAgent::kDocumentResource);
 }
 
+void InspectorNetworkAgent::WillSendWorkerMainRequest(uint64_t identifier,
+                                                      const KURL& url) {
+  CHECK(worker_or_worklet_global_scope_);
+  String request_id = RequestId(nullptr, identifier);
+  String loader_id;                          // No loader for worker requests.
+  scoped_refptr<EncodedFormData> post_data;  // No post data.
+  resources_data_->ResourceCreated(request_id, loader_id, url, post_data);
+  resources_data_->SetResourceType(request_id,
+                                   InspectorPageAgent::kScriptResource);
+}
+
 // This method was pulled out of PrepareRequest(), because we want to be able
 // to create DevTools issues before the PrepareRequest() call. We need these
 // IDs to be set, to properly create a DevTools issue.
@@ -1501,21 +1512,6 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
       saved_type == InspectorPageAgent::kEventSourceResource ||
       saved_type == InspectorPageAgent::kPingResource) {
     type = saved_type;
-  }
-
-  // Main Worker requests are initiated in the browser, so saved_type will not
-  // be found. We therefore must explicitly set it.
-  if (worker_or_worklet_global_scope_ &&
-      worker_or_worklet_global_scope_->IsWorkerGlobalScope()) {
-    WorkerGlobalScope* worker_global_scope =
-        To<WorkerGlobalScope>(worker_or_worklet_global_scope_.Get());
-    auto main_resource_identifier =
-        worker_global_scope->MainResourceIdentifier();
-
-    if (main_resource_identifier == identifier) {
-      DCHECK(saved_type == InspectorPageAgent::kOtherResource);
-      type = InspectorPageAgent::kScriptResource;
-    }
   }
 
   // Resources are added to NetworkResourcesData as a WeakMember here and

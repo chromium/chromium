@@ -2543,6 +2543,7 @@ void NetworkHandler::RequestSent(
     const char* initiator_type,
     const std::optional<GURL>& initiator_url,
     const std::string& initiator_devtools_request_id,
+    std::optional<base::UnguessableToken> frame_token,
     base::TimeTicks timestamp) {
   if (!enabled_)
     return;
@@ -2580,6 +2581,11 @@ void NetworkHandler::RequestSent(
     resource_type = Network::ResourceTypeEnum::Script;
   }
 
+  std::optional<std::string> frame_id;
+  if (frame_token.has_value()) {
+    frame_id = frame_token->ToString();
+  }
+
   // TODO(crbug.com/40798984): Populate redirectHasExtraInfo instead of
   // just returning false.
   frontend_->RequestWillBeSent(
@@ -2587,8 +2593,7 @@ void NetworkHandler::RequestSent(
       timestamp.since_origin().InSecondsF(),
       base::Time::Now().InSecondsFSinceUnixEpoch(), std::move(initiator),
       /*redirectHasExtraInfo=*/false, std::unique_ptr<Network::Response>(),
-      resource_type, std::nullopt /* frame_id */,
-      request_info.has_user_gesture);
+      resource_type, std::move(frame_id), request_info.has_user_gesture);
 }
 
 namespace {

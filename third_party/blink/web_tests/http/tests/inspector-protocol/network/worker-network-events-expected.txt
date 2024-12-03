@@ -1,0 +1,20 @@
+Tests that Network.requestWillBeSent and other network events are emitted for worker main script and import scripts
+http://127.0.0.1:8000/inspector-protocol/network/resources/final.js
+[
+    [0] : worker.Network.loadingFinished
+    [1] : worker.Network.requestWillBeSent
+    [2] : worker.Network.responseReceived
+]
+http://127.0.0.1:8000/inspector-protocol/network/resources/worker-with-import.html
+[
+    [0] : page.Network.loadingFinished
+    [1] : page.Network.requestWillBeSent
+    [2] : page.Network.responseReceived
+]
+http://127.0.0.1:8000/inspector-protocol/network/resources/worker-with-import.js
+[
+    [0] : page.Network.requestWillBeSent
+    [1] : worker.Network.loadingFinished
+    [2] : worker.Network.responseReceived
+]
+
