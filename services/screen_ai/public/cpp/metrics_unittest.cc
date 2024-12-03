@@ -5,73 +5,55 @@
 #include "services/screen_ai/public/cpp/metrics.h"
 
 #include "base/metrics/metrics_hashes.h"
-#include "base/test/metrics/histogram_tester.h"
+#include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_tree_update.h"
 
 namespace screen_ai {
 
 namespace {
 
-constexpr char kTestMetricName[] =
-    "Accessibility.PdfOcr.MostDetectedLanguageInOcrData2";
+TEST(ScreenAIMetricsTest, NoLanguages) {
+  chrome_screen_ai::VisualAnnotation annotation;
+  annotation.add_lines();
+
+  std::optional<uint64_t> most_detected_language =
+      GetMostDetectedLanguageInOcrData(annotation);
+  EXPECT_FALSE(most_detected_language.has_value());
+}
 
 TEST(ScreenAIMetricsTest, BaseAndLocaleAreDifferent) {
-  ui::AXTreeUpdate fake_tree_update;
-  ui::AXNodeData fake_node_data;
-  fake_node_data.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
-                                    "en-US");
-  fake_tree_update.nodes.emplace_back(std::move(fake_node_data));
+  chrome_screen_ai::VisualAnnotation annotation;
+  auto* line = annotation.add_lines();
+  line->add_words()->set_language("en-US");
 
-  base::HistogramTester histogram_tester;
-  RecordMostDetectedLanguageInOcrData(kTestMetricName, fake_tree_update);
-
-  histogram_tester.ExpectTotalCount(kTestMetricName, 1);
-  histogram_tester.ExpectBucketCount(kTestMetricName,
-                                     base::HashMetricName("en-US"), 1);
+  std::optional<uint64_t> most_detected_language =
+      GetMostDetectedLanguageInOcrData(annotation);
+  EXPECT_TRUE(most_detected_language.has_value());
+  EXPECT_EQ(most_detected_language.value(), base::HashMetricName("en-US"));
 }
 
 TEST(ScreenAIMetricsTest, BaseAndLocaleAreSame) {
-  ui::AXTreeUpdate fake_tree_update;
-  ui::AXNodeData fake_node_data;
-  fake_node_data.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
-                                    "ru-RU");
-  fake_tree_update.nodes.emplace_back(std::move(fake_node_data));
+  chrome_screen_ai::VisualAnnotation annotation;
+  auto* line = annotation.add_lines();
+  line->add_words()->set_language("ru-RU");
 
-  base::HistogramTester histogram_tester;
-  RecordMostDetectedLanguageInOcrData(kTestMetricName, fake_tree_update);
-
-  histogram_tester.ExpectTotalCount(kTestMetricName, 1);
-  histogram_tester.ExpectBucketCount(kTestMetricName,
-                                     base::HashMetricName("ru"), 1);
+  std::optional<uint64_t> most_detected_language =
+      GetMostDetectedLanguageInOcrData(annotation);
+  EXPECT_TRUE(most_detected_language.has_value());
+  EXPECT_EQ(most_detected_language.value(), base::HashMetricName("ru"));
 }
 
 TEST(ScreenAIMetricsTest, RecordOnlyMostDetectedLanguage) {
-  ui::AXTreeUpdate fake_tree_update;
-  ui::AXNodeData fake_node_us_data;
-  fake_node_us_data.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
-                                       "en-US");
-  ui::AXNodeData fake_node_es_data;
-  fake_node_es_data.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
-                                       "es-US");
-  ui::AXNodeData fake_node_fr_data;
-  fake_node_fr_data.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
-                                       "fr-CA");
-  fake_tree_update.nodes = {fake_node_us_data, fake_node_us_data,
-                            fake_node_us_data, fake_node_es_data,
-                            fake_node_es_data, fake_node_fr_data};
+  chrome_screen_ai::VisualAnnotation annotation;
+  auto* line = annotation.add_lines();
+  line->add_words()->set_language("en-US");
+  line->add_words()->set_language("es-US");
+  line->add_words()->set_language("fr-CA");
 
-  base::HistogramTester histogram_tester;
-  RecordMostDetectedLanguageInOcrData(kTestMetricName, fake_tree_update);
-
-  histogram_tester.ExpectTotalCount(kTestMetricName, 1);
-  histogram_tester.ExpectBucketCount(kTestMetricName,
-                                     base::HashMetricName("en-US"), 1);
-  histogram_tester.ExpectBucketCount(kTestMetricName,
-                                     base::HashMetricName("es-US"), 0);
-  histogram_tester.ExpectBucketCount(kTestMetricName,
-                                     base::HashMetricName("fr-CA"), 0);
+  std::optional<uint64_t> most_detected_language =
+      GetMostDetectedLanguageInOcrData(annotation);
+  EXPECT_TRUE(most_detected_language.has_value());
+  EXPECT_EQ(most_detected_language.value(), base::HashMetricName("en-US"));
 }
 
 }  // namespace

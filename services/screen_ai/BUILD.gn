@@ -35,6 +35,7 @@ source_set("screen_ai") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/screen_ai/buildflags",
     "//services/screen_ai/proto",
+    "//services/screen_ai/public/cpp:metrics",
     "//services/screen_ai/public/cpp:utilities",
     "//services/screen_ai/public/mojom:factory",
     "//services/screen_ai/public/mojom:mojom",

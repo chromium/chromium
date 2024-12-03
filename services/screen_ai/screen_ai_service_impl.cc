@@ -20,8 +20,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "services/screen_ai/buildflags/buildflags.h"
+#include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 #include "services/screen_ai/proto/visual_annotator_proto_convertor.h"
+#include "services/screen_ai/public/cpp/metrics.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
@@ -351,6 +353,14 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
                             elapsed_time);
     base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize.PDF",
                                 image.width() * image.height());
+
+    std::optional<uint64_t> most_detected_language =
+        GetMostDetectedLanguageInOcrData(*result);
+    if (most_detected_language.has_value()) {
+      base::UmaHistogramSparse(
+          "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF",
+          most_detected_language.value());
+    }
   }
 
   return result;
