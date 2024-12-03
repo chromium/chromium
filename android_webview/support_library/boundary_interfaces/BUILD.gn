@@ -56,7 +56,10 @@ android_library("boundary_interface_java") {
   # build when we mirror this into AndroidX. We are only permitted to depend on
   # core Android classes and other AndroidX classes (must be in the androidx.*
   # package name).
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  deps = [
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
 }
 
 android_apk("boundary_interface_example_apk") {

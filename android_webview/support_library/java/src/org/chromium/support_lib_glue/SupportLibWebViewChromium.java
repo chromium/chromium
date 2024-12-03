@@ -12,6 +12,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.Nullable;
+import androidx.core.os.CancellationSignal;
+
 import com.android.webview.chromium.SharedWebViewChromium;
 import com.android.webview.chromium.SharedWebViewRendererClientAdapter;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
@@ -219,6 +222,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     @Override
     public void prerenderUrl(
             String url,
+            @Nullable CancellationSignal cancellationSignal,
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.PRERENDER_URL")) {
@@ -230,6 +234,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     @Override
     public void prerenderUrl(
             String url,
+            @Nullable CancellationSignal cancellationSignal,
             /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParameters,
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback) {

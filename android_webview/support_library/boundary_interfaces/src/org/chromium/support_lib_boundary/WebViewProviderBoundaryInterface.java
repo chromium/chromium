@@ -9,6 +9,9 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.Nullable;
+import androidx.core.os.CancellationSignal;
+
 import java.lang.reflect.InvocationHandler;
 
 /**
@@ -52,11 +55,13 @@ public interface WebViewProviderBoundaryInterface {
 
     void prerenderUrl(
             String url,
+            @Nullable CancellationSignal cancellationSignal,
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback);
 
     void prerenderUrl(
             String url,
+            @Nullable CancellationSignal cancellationSignal,
             /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParameters,
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback);
