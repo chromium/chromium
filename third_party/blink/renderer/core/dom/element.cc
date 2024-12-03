@@ -3791,7 +3791,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   StyleRecalcContext local_style_recalc_context = style_recalc_context;
   local_style_recalc_context.style_scope_frame = &style_scope_frame;
 
-  StyleRecalcChange child_change = change.ForChildren(*this);
+  StyleRecalcChange child_change =
+      IsPseudoElement() ? change.ForPseudoElement() : change.ForChildren(*this);
   if (change.ShouldRecalcStyleFor(*this)) {
     child_change = RecalcOwnStyle(change, local_style_recalc_context);
     if (GetStyleChangeType() == kSubtreeStyleChange) {
