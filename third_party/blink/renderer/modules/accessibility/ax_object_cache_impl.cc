@@ -3418,25 +3418,16 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
   return success;
 }
 
-void AXObjectCacheImpl::ResetActiveBlockFlowContainer() {
-  active_block_flow_container_ = nullptr;
-  active_block_flow_data_ = nullptr;
-}
-
 const AXBlockFlowData* AXObjectCacheImpl::GetBlockFlowData(
     const AXObject* object) {
   // TODO: Assumption that we are only really working on one paragraph at a
   // time turned out to be incorrect. Ideally, we can come up with a strategy
-  // to make this work in order to avoid memory bloat.
+  // to make this work in order to avoid memory bloat. For now just compute the
+  // AxBlockFlowData every time as depending on a cached version may cause
+  // problems.
   LayoutBlockFlow* block_flow =
       object->GetLayoutObject()->FragmentItemsContainer();
-
-  if (block_flow != active_block_flow_container_) {
-    active_block_flow_container_ = block_flow;
-    active_block_flow_data_ = MakeGarbageCollected<AXBlockFlowData>(block_flow);
-  }
-
-  return active_block_flow_data_;
+  return MakeGarbageCollected<AXBlockFlowData>(block_flow);
 }
 
 bool AXObjectCacheImpl::IsParsingMainDocument() const {
@@ -6143,9 +6134,6 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(node_to_parse_before_more_tree_updates_);
   visitor->Trace(weak_factory_for_serialization_pipeline_);
   visitor->Trace(weak_factory_for_loc_updates_pipeline_);
-
-  visitor->Trace(active_block_flow_data_);
-  visitor->Trace(active_block_flow_container_);
 
   AXObjectCache::Trace(visitor);
 }
