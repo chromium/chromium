@@ -1118,6 +1118,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebApp.Isolated.KeyDistributionComponent.KeyRotationInfoSource"
+    enum="KeyRotationInfoSource" expires_after="2026-01-01">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Key rotation data for Isolated Web Apps (i.e. which custom key a particular
+    app bundle must be signed with to be accepted) comes from the Iwa Key
+    Distribution component which is managed by the Chrome component updater.
+
+    This metric records the currently loaded data source for calls to
+    IwaKeyDistributionInfoProvider::GetKeyRotationInfo() -- whether there's no
+    component loaded at all, whether the component is preloaded with Chrome
+    distribution or whether it's properly downloaded from Omaha servers.
+
+    This is normally called during installation/updates as well as before
+    launching the app.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.KeyDistributionComponent.UpdateError"
+    enum="IwaComponentUpdateError" expires_after="2026-01-01">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Key rotation data for Isolated Web Apps (i.e. which custom key a particular
+    app bundle must be signed with to be accepted) comes from the Iwa Key
+    Distribution component which is managed by the Chrome component updater.
+
+    This metric records the different types of errors that might occur during
+    the processing of the fresh component data delivered by the Chrome component
+    updater. The preloaded version can only be loaded on Chrome startup, and the
+    downloaded version will be pulled in if there's an update on the Omaha side
+    as part of the regular check that takes place every ~5 hours.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.KeyDistributionComponent.UpdateSource"
+    enum="IwaComponentUpdateSource" expires_after="2026-01-01">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Key rotation data for Isolated Web Apps (i.e. which custom key a particular
+    app bundle must be signed with to be accepted) comes from the Iwa Key
+    Distribution component which is managed by the Chrome component updater.
+
+    If the processing of the component data is successful, records whether this
+    component is preloaded (i.e. comes with Chrome) or downloaded from Omaha
+    servers. The preloaded version can only be loaded on Chrome startup, and the
+    downloaded version will be pulled in if there's an update on the Omaha side
+    as part of the regular check that takes place every ~5 hours.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.OrphanedBundlesCleanupJobError"
     enum="IsolatedWebAppCleanupOrphanedIWAsError" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>

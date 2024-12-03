@@ -9,9 +9,11 @@
 
 #include "base/base64.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
@@ -71,8 +73,7 @@ IN_PROC_BROWSER_TEST_F(
               HasValue());
   EXPECT_THAT(test::InstallIwaKeyDistributionComponent(base::Version("1.0.0"),
                                                        CreateValidData()),
-              ErrorIs(Eq(IwaKeyDistributionInfoProvider::ComponentUpdateError::
-                             kStaleVersion)));
+              ErrorIs(Eq(IwaComponentUpdateError::kStaleVersion)));
   EXPECT_THAT(test::InstallIwaKeyDistributionComponent(base::Version("2.1.0"),
                                                        CreateValidData()),
               HasValue());
@@ -86,7 +87,29 @@ IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
   base::ScopedPathOverride user_dir_override(
       component_updater::DIR_COMPONENT_USER);
 
+  base::HistogramTester ht;
+
+  // Trigger a call to GetKeyRotationInfo() to ensure the correctness of logged
+  // UMAs.
+  IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo("anything");
+
+  EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
+              base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1)));
+
   EXPECT_THAT(test::RegisterPreloadedIwaKeyDistributionComponent(), HasValue());
+
+  // Trigger a call to GetKeyRotationInfo() to ensure the correctness of logged
+  // UMAs.
+  IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo("anything");
+
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyDistributionComponentUpdateSource),
+      base::BucketsAre(base::Bucket(IwaComponentUpdateSource::kPreloaded, 1)));
+
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyRotationInfoSource),
+      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
+                       base::Bucket(KeyRotationInfoSource::kPreloaded, 1)));
 }
 
 }  // namespace web_app

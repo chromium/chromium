@@ -164,6 +164,7 @@ source_set("web_applications") {
     "isolated_web_apps/jobs/get_isolated_web_app_size_job.h",
     "isolated_web_apps/jobs/prepare_install_info_job.cc",
     "isolated_web_apps/jobs/prepare_install_info_job.h",
+    "isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h",
     "isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.cc",
     "isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h",
     "isolated_web_apps/pending_install_info.cc",

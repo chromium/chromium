@@ -22,14 +22,13 @@ namespace web_app::test {
 
 namespace {
 
-using ComponentUpdateFuture = base::test::TestFuture<
-    base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>>;
+using ComponentUpdateFuture =
+    base::test::TestFuture<base::expected<void, IwaComponentUpdateError>>;
 
 class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
  public:
-  using UpdateCallback = base::OnceCallback<void(
-      base::expected<void,
-                     IwaKeyDistributionInfoProvider::ComponentUpdateError>)>;
+  using UpdateCallback =
+      base::OnceCallback<void(base::expected<void, IwaComponentUpdateError>)>;
 
   ComponentUpdateWaiter(base::Version expected_version,
                         UpdateCallback on_update)
@@ -56,9 +55,8 @@ class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
     std::move(on_update_).Run(base::ok());
     obs_.Reset();
   }
-  void OnComponentUpdateError(
-      const base::Version& version,
-      IwaKeyDistributionInfoProvider::ComponentUpdateError error) override {
+  void OnComponentUpdateError(const base::Version& version,
+                              IwaComponentUpdateError error) override {
     if (expected_version_ && version != expected_version_) {
       return;
     }
@@ -78,9 +76,9 @@ class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
 
 }  // namespace
 
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
-UpdateKeyDistributionInfo(const base::Version& version,
-                          const base::FilePath& path) {
+base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
+    const base::Version& version,
+    const base::FilePath& path) {
   ComponentUpdateFuture future;
   auto waiter =
       std::make_unique<ComponentUpdateWaiter>(version, future.GetCallback());
@@ -89,9 +87,9 @@ UpdateKeyDistributionInfo(const base::Version& version,
   return future.Take();
 }
 
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
-UpdateKeyDistributionInfo(const base::Version& version,
-                          const IwaKeyDistribution& kd_proto) {
+base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
+    const base::Version& version,
+    const IwaKeyDistribution& kd_proto) {
   base::ScopedTempDir component_install_dir;
   CHECK(component_install_dir.CreateUniqueTempDir());
   auto path = component_install_dir.GetPath().AppendASCII("krc");
@@ -99,8 +97,7 @@ UpdateKeyDistributionInfo(const base::Version& version,
   return UpdateKeyDistributionInfo(version, path);
 }
 
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
-UpdateKeyDistributionInfo(
+base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::Version& version,
     const std::string& web_bundle_id,
     std::optional<base::span<const uint8_t>> expected_key) {
@@ -116,7 +113,7 @@ UpdateKeyDistributionInfo(
   return UpdateKeyDistributionInfo(version, key_distribution);
 }
 
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
+base::expected<void, IwaComponentUpdateError>
 InstallIwaKeyDistributionComponent(const base::Version& version,
                                    const IwaKeyDistribution& kd_proto) {
   CHECK(base::FeatureList::IsEnabled(
@@ -165,7 +162,7 @@ InstallIwaKeyDistributionComponent(const base::Version& version,
   return result;
 }
 
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
+base::expected<void, IwaComponentUpdateError>
 InstallIwaKeyDistributionComponent(
     const base::Version& version,
     const std::string& web_bundle_id,
@@ -185,7 +182,7 @@ InstallIwaKeyDistributionComponent(
   return InstallIwaKeyDistributionComponent(version, key_distribution);
 }
 
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
+base::expected<void, IwaComponentUpdateError>
 RegisterPreloadedIwaKeyDistributionComponent() {
   ComponentUpdateFuture future;
   auto waiter = std::make_unique<ComponentUpdateWaiter>(future.GetCallback());

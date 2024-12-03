@@ -10,9 +10,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
@@ -37,9 +39,6 @@ using testing::HasSubstr;
 using testing::IsEmpty;
 using testing::Property;
 using testing::VariantWith;
-
-using ComponentUpdateError =
-    IwaKeyDistributionInfoProvider::ComponentUpdateError;
 
 constexpr std::array<uint8_t, 4> kExpectedKey = {0x00, 0x00, 0x00, 0x00};
 constexpr char kWebBundleId[] =
@@ -72,34 +71,61 @@ class IwaIwaKeyDistributionInfoProviderTest : public testing::Test {
 };
 
 TEST_F(IwaIwaKeyDistributionInfoProviderTest, LoadComponent) {
+  base::HistogramTester ht;
+
   EXPECT_THAT(test::UpdateKeyDistributionInfo(base::Version("1.0.0"),
                                               CreateValidData()),
               HasValue());
+
+  EXPECT_THAT(ht.GetAllSamples(kIwaKeyDistributionComponentUpdateSource),
+              base::BucketsAre(base::Bucket(
+                  /*IwaComponentUpdateSource::kDownloaded*/ 1, 1)));
 }
 
 TEST_F(IwaIwaKeyDistributionInfoProviderTest,
        LoadComponentAndThenStaleComponent) {
+  base::HistogramTester ht;
+
   auto data = CreateValidData();
   EXPECT_THAT(test::UpdateKeyDistributionInfo(base::Version("1.0.0"), data),
               HasValue());
   EXPECT_THAT(test::UpdateKeyDistributionInfo(base::Version("0.9.0"), data),
-              ErrorIs(Eq(ComponentUpdateError::kStaleVersion)));
+              ErrorIs(Eq(IwaComponentUpdateError::kStaleVersion)));
+
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyDistributionComponentUpdateSource),
+      base::BucketsAre(base::Bucket(IwaComponentUpdateSource::kDownloaded, 1)));
+  EXPECT_THAT(ht.GetAllSamples(kIwaKeyDistributionComponentUpdateError),
+              base::BucketsAre(
+                  base::Bucket(IwaComponentUpdateError::kStaleVersion, 1)));
 }
 
 TEST_F(IwaIwaKeyDistributionInfoProviderTest, LoadComponentWrongPath) {
+  base::HistogramTester ht;
+
   EXPECT_THAT(
       test::UpdateKeyDistributionInfo(base::Version("1.0.0"), base::FilePath()),
-      ErrorIs(Eq(ComponentUpdateError::kFileNotFound)));
+      ErrorIs(Eq(IwaComponentUpdateError::kFileNotFound)));
+
+  EXPECT_THAT(ht.GetAllSamples(kIwaKeyDistributionComponentUpdateError),
+              base::BucketsAre(
+                  base::Bucket(IwaComponentUpdateError::kFileNotFound, 1)));
 }
 
 TEST_F(IwaIwaKeyDistributionInfoProviderTest, LoadComponentFaultyData) {
+  base::HistogramTester ht;
+
   base::ScopedTempDir component_install_dir;
   CHECK(component_install_dir.CreateUniqueTempDir());
   auto path = component_install_dir.GetPath().AppendASCII("krc");
   CHECK(base::WriteFile(path, "not_a_proto"));
 
   EXPECT_THAT(test::UpdateKeyDistributionInfo(base::Version("1.0.0"), path),
-              ErrorIs(Eq(ComponentUpdateError::kProtoParsingFailure)));
+              ErrorIs(Eq(IwaComponentUpdateError::kProtoParsingFailure)));
+
+  EXPECT_THAT(ht.GetAllSamples(kIwaKeyDistributionComponentUpdateError),
+              base::BucketsAre(base::Bucket(
+                  IwaComponentUpdateError::kProtoParsingFailure, 1)));
 }
 
 class SignedWebBundleSignatureVerifierWithKeyDistributionTest
@@ -148,6 +174,8 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
   EXPECT_EQ(parsed_integrity_block.web_bundle_id().id(),
             ib_attributes.web_bundle_id);
 
+  base::HistogramTester ht;
+
   web_package::SignedWebBundleSignatureVerifier signature_verifier;
   EXPECT_THAT(web_package::test::VerifySignatures(signature_verifier, file,
                                                   parsed_integrity_block),
@@ -156,6 +184,9 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
                   base::StringPrintf("Web Bundle ID <%s> doesn't match any "
                                      "public key in the signature list.",
                                      kWebBundleId))));
+
+  EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
+              base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1)));
 
   auto expected_key = absl::visit(
       [](const auto& key_pair) -> base::span<const uint8_t> {
@@ -169,6 +200,11 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
   EXPECT_THAT(web_package::test::VerifySignatures(signature_verifier, file,
                                                   parsed_integrity_block),
               HasValue());
+
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyRotationInfoSource),
+      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
+                       base::Bucket(KeyRotationInfoSource::kDownloaded, 1)));
 
   auto random_key = web_package::test::Ed25519KeyPair::CreateRandom();
   EXPECT_THAT(
@@ -185,6 +221,11 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
                             kWebBundleId)))));
 
   EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyRotationInfoSource),
+      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
+                       base::Bucket(KeyRotationInfoSource::kDownloaded, 2)));
+
+  EXPECT_THAT(
       test::UpdateKeyDistributionInfo(base::Version("1.0.2"), kWebBundleId,
                                       /*expected_key=*/std::nullopt),
       HasValue());
@@ -195,6 +236,11 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
       ErrorIs(FieldsAre(Error::Type::kWebBundleIdError,
                         HasSubstr(base::StringPrintf(
                             "Web Bundle ID <%s> is disabled", kWebBundleId)))));
+
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyRotationInfoSource),
+      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
+                       base::Bucket(KeyRotationInfoSource::kDownloaded, 3)));
 }
 
 }  // namespace web_app
