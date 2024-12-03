@@ -592,9 +592,9 @@ If your command has parameters, update the [`BidiCommandParameterParser`](https:
 
 Write the core logic for your command in the appropriate domain processor. Again, [example](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/modules/permissions/PermissionsProcessor.ts#L32) is your friend.
 
-#### Call the domain processor's method
+#### Call the module processor's method
 
-Call your new domain processor method from `CommandProcessor.#processCommand`, passing in the parsed parameters. [Example](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L313).
+Call your new module processor method from `CommandProcessor.#processCommand`, passing in the parsed parameters. [Example](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L313).
 
 #### Add e2e tests
 

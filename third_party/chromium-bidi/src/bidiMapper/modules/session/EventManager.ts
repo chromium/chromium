@@ -196,7 +196,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     }
 
     // List of the subscription items that were actually added. Each contains a specific
-    // event and context. No domain event (like "network") or global context subscription
+    // event and context. No module event (like "network") or global context subscription
     // (like null) are included.
     const addedSubscriptionItems: SubscriptionItem[] = [];
 
@@ -225,7 +225,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     }
 
     // Iterate over all new subscription items and call hooks if any. There can be
-    // duplicates, e.g. when subscribing to the whole domain and some specific event in
+    // duplicates, e.g. when subscribing to the whole module and some specific event in
     // the same time ("network", "network.responseCompleted"). `distinctValues` guarantees
     // that hooks are called only once per pair event + context.
     distinctValues(addedSubscriptionItems).forEach(({contextId, event}) => {

@@ -17,7 +17,7 @@
  */
 
 /**
- * @fileoverview Utility functions for the Network domain.
+ * @fileoverview Utility functions for the Network module.
  */
 import type {Protocol} from 'devtools-protocol';
 

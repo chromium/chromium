@@ -32,7 +32,7 @@ import {
 } from '../network/NetworkUtils.js';
 
 /**
- * Responsible for handling the `storage` domain.
+ * Responsible for handling the `storage` module.
  */
 export class StorageProcessor {
   readonly #browserCdpClient: CdpClient;

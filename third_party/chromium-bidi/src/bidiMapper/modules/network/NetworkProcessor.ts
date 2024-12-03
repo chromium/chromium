@@ -27,7 +27,7 @@ import type {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
 import {isSpecialScheme, type ParsedUrlPattern} from './NetworkUtils.js';
 
-/** Dispatches Network domain commands. */
+/** Dispatches Network module commands. */
 export class NetworkProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;

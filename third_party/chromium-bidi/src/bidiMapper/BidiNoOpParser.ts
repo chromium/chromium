@@ -31,7 +31,7 @@ import type {
 import type {BidiCommandParameterParser} from './BidiParser.js';
 
 export class BidiNoOpParser implements BidiCommandParameterParser {
-  // Bluetooth domain
+  // Bluetooth module
   // keep-sorted start block=yes
   parseHandleRequestDevicePromptParams(
     params: unknown,
@@ -55,7 +55,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   // keep-sorted end
 
-  // Browser domain
+  // Browser module
   // keep-sorted start block=yes
   parseRemoveUserContextParams(
     params: unknown,
@@ -64,7 +64,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   // keep-sorted end
 
-  // Browsing Context domain
+  // Browsing Context module
   // keep-sorted start block=yes
   parseActivateParams(params: unknown): BrowsingContext.ActivateParameters {
     return params as BrowsingContext.ActivateParameters;
@@ -114,7 +114,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   // keep-sorted end
 
-  // CDP domain
+  // CDP module
   // keep-sorted start block=yes
   parseGetSessionParams(params: unknown): Cdp.GetSessionParameters {
     return params as Cdp.GetSessionParameters;
@@ -127,7 +127,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   // keep-sorted end
 
-  // Script domain
+  // Script module
   // keep-sorted start block=yes
   parseAddPreloadScriptParams(
     params: unknown,
@@ -153,7 +153,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   // keep-sorted end
 
-  // Input domain
+  // Input module
   // keep-sorted start block=yes
   parsePerformActionsParams(params: unknown): Input.PerformActionsParameters {
     return params as Input.PerformActionsParameters;
@@ -166,7 +166,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   // keep-sorted end
 
-  // Network domain
+  // Network module
   // keep-sorted start block=yes
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
     return params as Network.AddInterceptParameters;
@@ -204,7 +204,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   // keep-sorted end
 
-  // Permissions domain
+  // Permissions module
   // keep-sorted start block=yes
   parseSetPermissionsParams(
     params: unknown,
@@ -213,14 +213,14 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   // keep-sorted end
 
-  // Session domain
+  // Session module
   // keep-sorted start block=yes
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
     return params as Session.SubscriptionRequest;
   }
   // keep-sorted end
 
-  // Storage domain
+  // Storage module
   // keep-sorted start block=yes
   parseDeleteCookiesParams(params: unknown): Storage.DeleteCookiesParameters {
     return params as Storage.DeleteCookiesParameters;

@@ -308,7 +308,7 @@ describe('SubscriptionManager', () => {
       ).to.deep.equal([]);
     });
 
-    it('should unsubscribe the domain', () => {
+    it('should unsubscribe the module', () => {
       subscriptionManager.subscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.unsubscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
       expect(
@@ -319,7 +319,7 @@ describe('SubscriptionManager', () => {
       ).to.deep.equal([]);
     });
 
-    it('should not unsubscribe the domain if not subscribed', () => {
+    it('should not unsubscribe the module if not subscribed', () => {
       subscriptionManager.subscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.unsubscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
       expect(

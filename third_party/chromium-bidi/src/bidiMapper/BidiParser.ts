@@ -29,7 +29,7 @@ import type {
 } from '../protocol/protocol.js';
 
 export interface BidiCommandParameterParser {
-  // Bluetooth domain
+  // Bluetooth module
   // keep-sorted start block=yes
   parseHandleRequestDevicePromptParams(
     params: unknown,
@@ -45,14 +45,14 @@ export interface BidiCommandParameterParser {
   ): Bluetooth.SimulatePreconnectedPeripheralParameters;
   // keep-sorted end
 
-  // Browser domain
+  // Browser module
   // keep-sorted start block=yes
   parseRemoveUserContextParams(
     params: unknown,
   ): Browser.RemoveUserContextParameters;
   // keep-sorted end
 
-  // Browsing Context domain
+  // Browsing Context module
   // keep-sorted start block=yes
   parseActivateParams(params: unknown): BrowsingContext.ActivateParameters;
   parseCaptureScreenshotParams(
@@ -78,28 +78,28 @@ export interface BidiCommandParameterParser {
   ): BrowsingContext.TraverseHistoryParameters;
   // keep-sorted end
 
-  // CDP domain
+  // CDP module
   // keep-sorted start block=yes
   parseGetSessionParams(params: unknown): Cdp.GetSessionParameters;
   parseResolveRealmParams(params: unknown): Cdp.ResolveRealmParameters;
   parseSendCommandParams(params: unknown): Cdp.SendCommandParameters;
   // keep-sorted end
 
-  // Input domain
+  // Input module
   // keep-sorted start block=yes
   parsePerformActionsParams(params: unknown): Input.PerformActionsParameters;
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters;
   parseSetFilesParams(params: unknown): Input.SetFilesParameters;
   // keep-sorted end
 
-  // PermissionsDomain domain
+  // Permissions module
   // keep-sorted start block=yes
   parseSetPermissionsParams(
     params: unknown,
   ): Permissions.SetPermissionParameters;
   // keep-sorted end block=yes
 
-  // Network domain
+  // Network module
   // keep-sorted start block=yes
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters;
   parseContinueRequestParams(
@@ -121,7 +121,7 @@ export interface BidiCommandParameterParser {
   parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters;
   // keep-sorted end block=yes
 
-  // Script domain
+  // Script module
   // keep-sorted start block=yes
   parseAddPreloadScriptParams(
     params: unknown,
@@ -135,12 +135,12 @@ export interface BidiCommandParameterParser {
   ): Script.RemovePreloadScriptParameters;
   // keep-sorted end
 
-  // Session domain
+  // Session module
   // keep-sorted start block=yes
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest;
   // keep-sorted end
 
-  // Storage domain
+  // Storage module
   // keep-sorted start block=yes
   parseDeleteCookiesParams(params: unknown): Storage.DeleteCookiesParameters;
   parseGetCookiesParams(params: unknown): Storage.GetCookiesParameters;
