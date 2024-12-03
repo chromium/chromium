@@ -37,6 +37,7 @@ constexpr auto kHighlighterSizes =
     });
 // LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_size_selector.ts:HighlighterSizes)
 
+// LINT.IfChange(PenColors)
 constexpr auto kPenColors =
     base::MakeFixedFlatMap<SkColor, StrokeMetricPenColor>({
         {SK_ColorBLACK, StrokeMetricPenColor::kBlack},
@@ -60,7 +61,9 @@ constexpr auto kPenColors =
         {SkColorSetRGB(0x19, 0x67, 0xD2), StrokeMetricPenColor::kBlue3},
         {SkColorSetRGB(0x88, 0x59, 0x45), StrokeMetricPenColor::kTan3},
     });
+// LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_color_selector.ts:PenColors)
 
+// LINT.IfChange(HighlighterColors)
 constexpr auto kHighlighterColors =
     base::MakeFixedFlatMap<SkColor, StrokeMetricHighlighterColor>({
         {SkColorSetRGB(0xF2, 0x8B, 0x82),
@@ -81,6 +84,7 @@ constexpr auto kHighlighterColors =
         {SkColorSetRGB(0xFF, 0x63, 0x0C),
          StrokeMetricHighlighterColor::kOrange},
     });
+// LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_color_selector.ts:HighlighterColors)
 
 void ReportStrokeTypeAndSize(StrokeMetricBrushType type,
                              StrokeMetricBrushSize size) {
