@@ -9657,6 +9657,7 @@ test("unit_tests") {
       "//chrome/browser/ui/toasts:toasts",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views/page_action",
       "//components/app_constants",
       "//components/commerce/core:pref_names",
       "//components/commerce/core:shopping_service_test_support",
