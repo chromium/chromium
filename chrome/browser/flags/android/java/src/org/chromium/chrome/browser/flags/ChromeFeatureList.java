@@ -538,7 +538,6 @@ public abstract class ChromeFeatureList {
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TRACE_BINDER_IPC = "TraceBinderIpc";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
-    public static final String TRACKING_PROTECTION_3PCD_UX = "TrackingProtection3pcdUx";
     public static final String TRACKING_PROTECTION_USER_BYPASS_PWA =
             "TrackingProtectionUserBypassPwa";
     public static final String TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER =
