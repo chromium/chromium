@@ -29,17 +29,15 @@ struct ChromeWidgets: WidgetBundle {
       #if IOS_ENABLE_SHORTCUTS_WIDGET
         ShortcutsWidgetConfigurable()
       #endif
+      SearchPasswordsWidgetConfigurable()
+      DinoGameWidgetConfigurable()
     #else
       QuickActionsWidget()
       SearchWidget()
       #if IOS_ENABLE_SHORTCUTS_WIDGET
         ShortcutsWidget()
       #endif
-    #endif
-    SearchPasswordsWidget()
-    #if IOS_ENABLE_WIDGETS_FOR_MIM
-      DinoGameWidgetConfigurable()
-    #else
+      SearchPasswordsWidget()
       DinoGameWidget()
     #endif
     #if IOS_ENABLE_LOCKSCREEN_WIDGET
