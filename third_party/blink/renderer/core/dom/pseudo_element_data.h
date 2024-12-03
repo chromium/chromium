@@ -34,6 +34,12 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const {
     return column_pseudo_elements_;
   }
+  ColumnPseudoElement* GetColumnPseudoElement(wtf_size_t idx) const {
+    if (!column_pseudo_elements_ || idx >= column_pseudo_elements_->size()) {
+      return nullptr;
+    }
+    return column_pseudo_elements_->at(idx);
+  }
   void AddColumnPseudoElement(ColumnPseudoElement& column_pseudo_element) {
     if (!column_pseudo_elements_) {
       column_pseudo_elements_ =
@@ -42,11 +48,15 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     DCHECK(column_pseudo_elements_->Find(column_pseudo_element) == kNotFound);
     column_pseudo_elements_->push_back(column_pseudo_element);
   }
-  void ClearColumnPseudoElements() {
+  void ClearColumnPseudoElements(wtf_size_t to_keep) {
     if (!column_pseudo_elements_) {
       return;
     }
-    column_pseudo_elements_->clear();
+    if (to_keep) {
+      column_pseudo_elements_->Shrink(to_keep);
+    } else {
+      column_pseudo_elements_->clear();
+    }
   }
 
   bool HasPseudoElements() const;

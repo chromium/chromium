@@ -123,13 +123,24 @@ ElementRareDataVector::GetColumnPseudoElements() const {
   }
   return data->GetColumnPseudoElements();
 }
-void ElementRareDataVector::ClearColumnPseudoElements() {
+
+ColumnPseudoElement* ElementRareDataVector::GetColumnPseudoElement(
+    wtf_size_t idx) const {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    return nullptr;
+  }
+  return data->GetColumnPseudoElement(idx);
+}
+
+void ElementRareDataVector::ClearColumnPseudoElements(wtf_size_t to_keep) {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
   if (!data) {
     return;
   }
-  data->ClearColumnPseudoElements();
+  data->ClearColumnPseudoElements(to_keep);
 }
 
 CSSStyleDeclaration& ElementRareDataVector::EnsureInlineCSSStyleDeclaration(

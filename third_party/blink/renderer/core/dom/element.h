@@ -1401,17 +1401,18 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void SetPseudoElementStylesChangeCounters(bool value);
 
-  // Create per column (fragmentainer) ::column pseudo element during layout,
-  // and add it to the end of the list of generated column pseudo elements.
-  // Also, if ::column::scroll-marker is specified, it creates one
-  // ::scroll-marker per ::column pseudo element. ClearColumnPseudoElements()
-  // needs to be called before each layout pass that generate these pseudo
-  // elements.
-  ColumnPseudoElement* CreateColumnPseudoElementIfNeeded(
+  // Get (or create if it doesn't already exist) a per-column (fragmentainer)
+  // ::column pseudo-element for the given column index.
+  ///
+  // Also, if ::column::scroll-marker is specified, create one ::scroll-marker
+  // per ::column pseudo-element, if needed, and if it doesn't already exist.
+  ColumnPseudoElement* GetOrCreateColumnPseudoElementIfNeeded(
       wtf_size_t index,
       const PhysicalRect& column_rect);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
-  void ClearColumnPseudoElements();
+
+  // Clear all ::column pseudo-elements, except for the leading `to_keep` ones.
+  void ClearColumnPseudoElements(wtf_size_t to_keep = 0);
 
   // True if a scroller has not been explicitly scrolled by a user or by a
   // programmatic scroll. Indicates that we should use the CSS scroll-start

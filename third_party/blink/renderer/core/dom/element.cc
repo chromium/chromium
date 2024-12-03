@@ -6985,45 +6985,55 @@ void Element::SetPseudoElementStylesChangeCounters(bool value) {
   EnsureElementRareData().SetPseudoElementStylesChangeCounters(value);
 }
 
-ColumnPseudoElement* Element::CreateColumnPseudoElementIfNeeded(
+ColumnPseudoElement* Element::GetOrCreateColumnPseudoElementIfNeeded(
     wtf_size_t index,
     const PhysicalRect& column_rect) {
   if (const ComputedStyle* style = GetComputedStyle();
       !style || !style->HasPseudoElementStyle(kPseudoIdColumn)) {
     return nullptr;
   }
-  auto* column_pseudo_element = MakeGarbageCollected<ColumnPseudoElement>(
-      /*originating_element=*/this, index, column_rect);
-  const ComputedStyle* style =
-      column_pseudo_element->CustomStyleForLayoutObject(
-          StyleRecalcContext::FromInclusiveAncestors(*this));
-  if (!style) {
-    style = &GetDocument().GetStyleResolver().InitialStyle();
-  }
-  column_pseudo_element->SetComputedStyle(style);
   ElementRareDataVector& data = EnsureElementRareData();
-  data.AddColumnPseudoElement(*column_pseudo_element);
-  column_pseudo_element->InsertedInto(*this);
-  probe::PseudoElementCreated(column_pseudo_element);
-  if (!style->CanGeneratePseudoElement(kPseudoIdScrollMarker)) {
+  ColumnPseudoElement* column_pseudo_element =
+      data.GetColumnPseudoElement(index);
+  if (!column_pseudo_element) {
+    column_pseudo_element = MakeGarbageCollected<ColumnPseudoElement>(
+        /*originating_element=*/this, index);
+    data.AddColumnPseudoElement(*column_pseudo_element);
+    const ComputedStyle* style =
+        column_pseudo_element->CustomStyleForLayoutObject(
+            StyleRecalcContext::FromInclusiveAncestors(*this));
+    if (!style) {
+      style = &GetDocument().GetStyleResolver().InitialStyle();
+    }
+    column_pseudo_element->SetComputedStyle(style);
+    column_pseudo_element->InsertedInto(*this);
+    probe::PseudoElementCreated(column_pseudo_element);
+  }
+  column_pseudo_element->SetColumnRect(column_rect);
+
+  if (!column_pseudo_element->GetComputedStyle()->CanGeneratePseudoElement(
+          kPseudoIdScrollMarker)) {
     return column_pseudo_element;
   }
 
-  auto* scroll_marker =
-      MakeGarbageCollected<ScrollMarkerPseudoElement>(column_pseudo_element);
-  const ComputedStyle* scroll_marker_style =
-      scroll_marker->CustomStyleForLayoutObject(
-          StyleRecalcContext::FromInclusiveAncestors(*column_pseudo_element));
-  if (!scroll_marker_style) {
-    scroll_marker->Dispose();
-    return column_pseudo_element;
+  auto* scroll_marker = To<ScrollMarkerPseudoElement>(
+      column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker));
+  if (!scroll_marker) {
+    scroll_marker =
+        MakeGarbageCollected<ScrollMarkerPseudoElement>(column_pseudo_element);
+    const ComputedStyle* scroll_marker_style =
+        scroll_marker->CustomStyleForLayoutObject(
+            StyleRecalcContext::FromInclusiveAncestors(*column_pseudo_element));
+    if (!scroll_marker_style) {
+      scroll_marker->Dispose();
+      return column_pseudo_element;
+    }
+    scroll_marker->SetComputedStyle(scroll_marker_style);
+    column_pseudo_element->EnsureElementRareData().SetPseudoElement(
+        kPseudoIdScrollMarker, scroll_marker);
+    scroll_marker->InsertedInto(*column_pseudo_element);
+    probe::PseudoElementCreated(scroll_marker);
   }
-
-  scroll_marker->SetComputedStyle(scroll_marker_style);
-  column_pseudo_element->EnsureElementRareData().SetPseudoElement(
-      kPseudoIdScrollMarker, scroll_marker);
-  scroll_marker->InsertedInto(*column_pseudo_element);
-  probe::PseudoElementCreated(scroll_marker);
 
   return column_pseudo_element;
 }
@@ -7036,21 +7046,24 @@ const ColumnPseudoElementsVector* Element::GetColumnPseudoElements() const {
   return data->GetColumnPseudoElements();
 }
 
-void Element::ClearColumnPseudoElements() {
+void Element::ClearColumnPseudoElements(wtf_size_t to_keep) {
   ElementRareDataVector* data = GetElementRareData();
   if (!data) {
     return;
   }
+  wtf_size_t idx = 0u;
   if (const ColumnPseudoElementsVector* column_pseudo_elements =
           data->GetColumnPseudoElements()) {
     for (PseudoElement* column_pseudo_element : *column_pseudo_elements) {
-      if (ElementRareDataVector* column_data =
-              column_pseudo_element->GetElementRareData()) {
-        column_data->ClearPseudoElements();
+      if (++idx > to_keep) {
+        if (ElementRareDataVector* column_data =
+                column_pseudo_element->GetElementRareData()) {
+          column_data->ClearPseudoElements();
+        }
       }
     }
   }
-  data->ClearColumnPseudoElements();
+  data->ClearColumnPseudoElements(to_keep);
 }
 
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
