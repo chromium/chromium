@@ -135,6 +135,27 @@ void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
       duration);
 }
 
+void LogInitiatePurchaseActionResultUkm(const std::string& result,
+                                        ukm::SourceId ukm_source_id) {
+  ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult(
+      ukm_source_id)
+      .SetResult(ConvertPurchaseActionResultToEnumValue(result))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result) {
+  if (result == "Failed") {
+    return 0;  // See the definition of the enum
+               // FacilitatedPayments.InitiatePurchaseActionResult.
+  } else if (result == "Succeeded") {
+    return 1;
+  } else if (result == "Abandoned") {
+    return 2;
+  } else {
+    NOTREACHED();
+  }
+}
+
 void LogFopSelectorShown(bool shown) {
   // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.

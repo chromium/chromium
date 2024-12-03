@@ -33,6 +33,12 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h:FopSelectorAction) -->
 
+<enum name="FacilitatedPayments.InitiatePurchaseActionResult">
+  <int value="0" label="Failed"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Abandoned"/>
+</enum>
+
 <enum name="FacilitatedPayments.PayFlowExitedReason">
   <int value="0" label="Code validator failed"/>
   <int value="1" label="Invalid code"/>

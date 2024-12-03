@@ -317,6 +317,23 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorResult) {
   }
 }
 
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogInitiatePurchaseActionResult) {
+  size_t index = 0;
+  for (const std::string result : {"Succeeded", "Failed", "Abandoned"}) {
+    LogInitiatePurchaseActionResultUkm(result,
+                                       ukm::UkmRecorder::GetNewSourceID());
+
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult::
+            kEntryName,
+        {ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult::
+             kResultName});
+    ASSERT_EQ(ukm_entries.size(), index + 1);
+    EXPECT_EQ(ukm_entries[index++].metrics.at("Result"),
+              ConvertPurchaseActionResultToEnumValue(result));
+  }
+}
+
 TEST_F(FacilitatedPaymentsMetricsUkmTest, LogTransactionResult_UkmLogged) {
   LogTransactionResult(TransactionResult::kSuccess, TriggerSource::kDOMSearch,
                        base::Milliseconds(10),

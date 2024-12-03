@@ -863,6 +863,7 @@ TEST_F(FacilitatedPaymentsManagerTest, LogInitiatePurchaseActionAttempt) {
 // latency of the invoke purchase action is logged.
 TEST_F(FacilitatedPaymentsManagerTest,
        LogInitiatePurchaseActionResultAndLatency) {
+  size_t index = 0;
   for (PurchaseActionResult result :
        {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
         PurchaseActionResult::kResultCanceled}) {
@@ -887,6 +888,14 @@ TEST_F(FacilitatedPaymentsManagerTest,
                       ".Latency"}),
         /*sample=*/2000,
         /*expected_count=*/1);
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult::
+            kEntryName,
+        {ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult::
+             kResultName});
+    ASSERT_EQ(ukm_entries.size(), index + 1);
+    EXPECT_EQ(ukm_entries[index++].metrics.at("Result"),
+              static_cast<uint8_t>(result));
   }
 }
 
