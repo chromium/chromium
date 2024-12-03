@@ -2281,7 +2281,6 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/resource_sizes.pydeps',
     'build/android/test_runner.pydeps',
     'build/android/test_wrapper/logdog_wrapper.pydeps',
-    'build/lacros/lacros_resource_sizes.pydeps',
     'build/protoc_java.pydeps',
     'chrome/android/monochrome/scripts/monochrome_python_tests.pydeps',
     'chrome/test/chromedriver/log_replay/client_replay_unittest.pydeps',
