@@ -25,7 +25,6 @@
 #include "build/ios_buildflags.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/apple/scoped_dispatch_object.h"
 #include "base/environment.h"
 #include "base/mac/process_requirement.h"
 #endif
@@ -225,18 +224,7 @@ class BASE_EXPORT MachPortRendezvousServerMac final
   MachPortRendezvousServerMac();
   ~MachPortRendezvousServerMac() override;
 
-  struct ClientData {
-    ClientData();
-    ClientData(ClientData&&);
-    ~ClientData();
-
-    // A DISPATCH_SOURCE_TYPE_PROC / DISPATCH_PROC_EXIT dispatch source. When
-    // the source is triggered, it calls OnClientExited().
-    apple::ScopedDispatchObject<dispatch_source_t> exit_watcher;
-
-    MachPortsForRendezvous ports;
-    std::optional<mac::ProcessRequirement> requirement;
-  };
+  struct ClientData;
 
   // Returns the `ClientData` for `pid`, creating it if necessary.
   // It will be cleaned up automatically when `pid` exits.
