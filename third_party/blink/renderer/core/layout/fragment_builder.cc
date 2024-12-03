@@ -206,8 +206,9 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
       }
     }
   }
-  if (child.IsBox() &&
+  if (child.IsCSSBox() &&
       (child.Style().AnchorName() || child.IsImplicitAnchor())) {
+    DCHECK(child.GetLayoutObject());
     // Set the child's `anchor-name` before propagating its descendants', so
     // that ancestors have precedence over their descendants.
     LogicalRect rect{child_offset,
