@@ -1124,7 +1124,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1769157454356586138">Échec de l'analyse. Ce fichier est bloqué par votre administrateur.</translation>
 <translation id="1770407692401984718">Faire glisser une image ici ou</translation>
 <translation id="177053719077591686">Sauvegarder les applications Android sur Google Disque.</translation>
-<translation id="1771075623623424448">Vous recherchez la page de journal de l'appareil du navigateur? Consultez<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Créez un point d'accès Wi-Fi à l'aide des données mobiles de votre <ph name="DEVICE_TYPE" /> pour fournir une connexion Internet à d'autres appareils. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Données d'application hébergée</translation>
 <translation id="177529472352014190">Connectez-vous à OneDrive</translation>
@@ -3131,6 +3130,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3166443275568926403">Performance et état de la pile</translation>
 <translation id="3167446923957429259">Bougez votre bouche vers la gauche</translation>
 <translation id="3167562202484086668">Supprimer toutes les données du <ph name="BRAND" /></translation>
+<translation id="3169901410527787002">Toujours lire les entrées clavier dans la barre d'adresse</translation>
 <translation id="3169930038976362151">Choisissez le thème qui correspond à vos besoins. Pour changer votre thème, votre fond d'écran, votre écran de veille et plus, il suffit de maintenir le doigt sur le bureau.</translation>
 <translation id="3170072451822350649">Vous pouvez également sauter l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Corps</translation>
@@ -10136,7 +10136,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8195920051450756553">Délai avant l'activation de la même touche à nouveau</translation>
 <translation id="8197673340773315084">Ajoutez un nom ou une étiquette, comme Travail ou Personnel</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet en cours…</translation>
-<translation id="8198457270656084773">Vous recherchez la page du journal de l'appareil du système? Consultez<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">(Service) réseau et propriétés de l’appareil</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8202160505685531999">Veuillez entrer de nouveau votre mot de passe pour mettre à jour votre profil <ph name="DEVICE_TYPE" />.</translation>

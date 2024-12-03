@@ -1365,6 +1365,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7425037327577270384">Help me write</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Can't disable or remove this APN. Make sure that enabled <ph name="ATTACH" /> APNs are disabled or removed.</translation>
+<translation id="7453118953486228603">Click to summarise the selected text</translation>
 <translation id="7458970041932198923">Please connect to a network and reload the page to view and set avatars.</translation>
 <translation id="7469648432129124067">Portal detected</translation>
 <translation id="7481312909269577407">Forward</translation>
@@ -1723,6 +1724,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9133772297793293778">Press one to four modifiers and one other key on your keyboard. To exit editing mode, press alt + esc.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Left shift</translation>
+<translation id="9147928237330776930">Too few words to summarise</translation>
 <translation id="9149391708638971077">Run memory test</translation>
 <translation id="9159524746324788320">hamburgers</translation>
 <translation id="9161276708550942948">space</translation>

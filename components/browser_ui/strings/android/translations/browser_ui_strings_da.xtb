@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Angiv webadresse</translation>
 <translation id="5975083100439434680">Zoom ud</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Du kan nu hurtigt få adgang til foreslåede faner fra din enheds appliste og i søgeresultater på enheden. Du kan til enhver tid deaktivere dette i Chrome-indstillingerne.</translation>
 <translation id="6015775454662021376">Styr dette websites adgang til din enhed</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6042308850641462728">Mere</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Spørg først</translation>
 <translation id="7423538860840206698">Blokeret fra at læse udklipsholderen</translation>
 <translation id="7425915948813553151">Mørkt tema på websites</translation>
+<translation id="7488573225650545859">Skjul Se faner på din appliste</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Når dette er slået til, kan websites vise loginmeddelelser. Når dette er slået fra, kan websites ikke vise loginmeddelelser.</translation>
 <translation id="7553211568594248088">Afslut søgehub</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Dette indhold er fra <ph name="DOMAIN_NAME" />, som leveres af Google.</translation>
 <translation id="8088603949666785339">Flere valgmuligheder i <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Reducerer ydeevnen, men gør V8 mere modstandsdygtig over for angreb</translation>
+<translation id="8112925981674547014">Se faner på din appliste</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome begrænser cookies igen fra i morgen}one{Chrome begrænser cookies igen om # dag}other{Chrome begrænser cookies igen om # dage}}</translation>
 <translation id="8116925261070264013">Websites, hvor lyden er slået fra</translation>
 <translation id="8117244575099414087">Når dette er slået til, kan websites anvende din enheds sensorer. Når dette er slået fra, kan websites ikke anvende sensorer.</translation>

@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">Паслугі пра прыбіранні</translation>
 <translation id="1475299637784133125">Шукаеце версію браўзера? Наведайце старонку</translation>
 <translation id="1476595624592550506">Змяніце пароль</translation>
+<translation id="1482372785911828880">Вельмі тонкія рысы</translation>
 <translation id="1482879811280872320">Язда на веласіпедзе</translation>
 <translation id="1483493594462132177">Адправіць</translation>
 <translation id="1484449009683144042">Дапамога з напісаннем – гэта эксперыментальная функцыя на аснове AI, якая не заўсёды працуе бездакорна.
@@ -1315,6 +1316,7 @@
 <translation id="3375754925484257129">Запусціць праверку бяспекі Chrome</translation>
 <translation id="3377144306166885718">Сервер выкарыстоўвае ўстарэлую версію пратакола TLS.</translation>
 <translation id="3377188786107721145">Памылка аналізу палітыкі</translation>
+<translation id="3377642479079205807">Тонкія рысы</translation>
 <translation id="3378612801784846695">Тэмы выяўляюцца на падставе нядаўняй гісторыі прагляду вамі сайтаў і выкарыстоўваюцца сайтамі для паказу вам персаналізаванай рэкламы. Інфармацыя, якая можа раскрыць вашу асобу, пры гэтым не абагульваецца.</translation>
 <translation id="3380365263193509176">Невядомая памылка</translation>
 <translation id="3380864720620200369">Ідэнтыфікатар кліента:</translation>
@@ -1419,7 +1421,6 @@
 <translation id="3552297013052089404">Шрыфт без засечак</translation>
 <translation id="3558573058928565255">Светлы час дня</translation>
 <translation id="3559897352860026926">Папрасіце адміністратара спраўдзіць налады канфігурацыі воблака "<ph name="CLOUD_PROVIDER" />".</translation>
-<translation id="3560408312959371419">Параметры для абароны ад адсочвання і даных сайтаў на прыладзе</translation>
 <translation id="3560824484345057728">Паказаць спіс звязаных сайтаў</translation>
 <translation id="3566021033012934673">Падключэнне не з’яўляецца прыватным</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
@@ -2485,6 +2486,7 @@
 <translation id="5481682542063333508">Прапаноўваць дапамогу з напісаннем</translation>
 <translation id="54817484435770891">Дадайце сапраўдны адрас</translation>
 <translation id="5483838506518938965">Усё гатова</translation>
+<translation id="5485100387355669506">Вельмі тоўстыя рысы</translation>
 <translation id="5485973315555778056">Машына воблака</translation>
 <translation id="5488590678320979185">Кнопка "Стварыць нататку". Каб хутка стварыць новую нататку ў Google Keep, націсніце яе.</translation>
 <translation id="5490432419156082418">Адрасы і іншае</translation>
@@ -2594,7 +2596,6 @@
 <translation id="5675809467256309336">Танцавальная і электронная музыка</translation>
 <translation id="5675959228867414813">Паказваць па даце</translation>
 <translation id="567604591393105935">Ніжні аркуш з камерцыйнай інфармацыяй адкрыты на палову экрана</translation>
-<translation id="5677928146339483299">Заблакіравана</translation>
 <translation id="5678007133659493065">Фольга</translation>
 <translation id="5680642791693447368">Трылеры, крымінальныя і дэтэктыўныя фільмы</translation>
 <translation id="568292603005599551">Размяшчэнне відарыса па восі X</translation>
@@ -2953,7 +2954,6 @@
 <translation id="633770708279464947">Значэнне <ph name="SECURE_DNS_SALT" /> з’яўляецца недапушчальным і не будзе выкарыстоўвацца.</translation>
 <translation id="6340739886198108203">Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца рабіць здымкі або відэазапісы экрана, калі паказваецца канфідэнцыяльнае змесціва:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Палітыка адміністратара не рэкамендуе запампоўваць гэты файл сюды: <ph name="DESTINATION_NAME" />}one{Палітыка адміністратара не рэкамендуе запампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}few{Палітыка адміністратара не рэкамендуе запампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}many{Палітыка адміністратара не рэкамендуе запампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}other{Палітыка адміністратара не рэкамендуе запампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">Абарона ад адсочвання</translation>
 <translation id="634500758737709758">Маршруты</translation>
 <translation id="6348220984832452017">Дзеючыя варыянты</translation>
 <translation id="6349101878882523185">Усталяваць праграму "<ph name="APP_NAME" />"</translation>
@@ -3670,6 +3670,7 @@
 <translation id="7599089013883397081">Час чакання спампоўвання перавышаны</translation>
 <translation id="7608583484192556132">Персаналізацыя рэкламы, якую вы бачыце, залежыць ад мноства фактараў, у тым ліку ад гэтай налады, <ph name="BEGIN_LINK_1" />рэкламы, якая прапануецца сайтамі<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />налад файлаў cookie<ph name="END_LINK_2" /> і ад таго, ці персаналізуецца рэклама на сайце, які вы праглядаеце. <ph name="BEGIN_LINK_3" />Даведацца больш пра кіраванне прыватнасцю ў рэкламе<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Значэнне параметра знаходзіцца па-за межамі дыяпазону (<ph name="VALUE" />).</translation>
+<translation id="761261689936461781">Тоўстыя рысы</translation>
 <translation id="7613889955535752492">Да: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб паглядзець паролі або кіраваць імі ў наладах Chrome, націсніце Tab, затым Enter</translation>
 <translation id="7616645509853975347">Адміністратар уключыў злучальнікі Chrome Enterprise Connectors у вашым браўзеры. У злучальнікаў ёсць доступ да некаторых вашых даных.</translation>
@@ -4388,7 +4389,6 @@
 <translation id="893332455753468063">Дадаць імя</translation>
 <translation id="8942355029279167844">Адміністратар дазволіў праграме "<ph name="APP_NAME" />" збіраць даныя дыягностыкі дзеля ўдасканалення работы прадукту. Дадатковая інфармацыя – па спасылцы <ph name="BEGIN_LINK" /> https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лайм</translation>
-<translation id="8944485226638699751">Абмежаваны</translation>
 <translation id="8949410982325929394">Тон</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8952569554322479410">Вэб-сайт запытвае наступны дазвол на доступ: <ph name="REQUEST_TYPE" />. Прайдзіце апытанне, каб дапамагчы нам палепшыць працэс запыту дазволаў вэб-сайтамі. Гэта зойме адну хвіліну.</translation>

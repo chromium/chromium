@@ -1133,7 +1133,6 @@
 <translation id="1769157454356586138">स्कैन नहीं किया जा सका. आपके एडमिन ने इस फ़ाइल को ब्लॉक किया है</translation>
 <translation id="1770407692401984718">किसी इमेज को खींचें और यहां छोड़ें या</translation>
 <translation id="177053719077591686">Google Drive पर Android ऐप्लिकेशन का बैक अप लें.</translation>
-<translation id="1771075623623424448">ब्राउज़र के डिवाइस लॉग पेज की तलाश है? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="1773329206876345543">अन्य डिवाइसों को इंटरनेट से कनेक्ट करने के लिए, अपने <ph name="DEVICE_TYPE" /> के मोबाइल डेटा का इस्तेमाल करके वाई-फ़ाई हॉटस्पॉट कॉन्फ़िगर करें. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">होस्ट किया गया ऐप्लिकेशन डेटा</translation>
 <translation id="177529472352014190">OneDrive से कनेक्ट करें</translation>
@@ -3142,6 +3141,7 @@
 <translation id="3166443275568926403">परफ़ॉर्मेंस और बैटरी की स्थिति</translation>
 <translation id="3167446923957429259">अपना मुंह बाईं ओर घुमाएं</translation>
 <translation id="3167562202484086668"><ph name="BRAND" /> का पूरा डेटा मिटाएं</translation>
+<translation id="3169901410527787002">पता बार में हमेशा कीबोर्ड के इनपुट पढ़ें</translation>
 <translation id="3169930038976362151">अपनी ज़रूरतों के मुताबिक थीम चुनें. अपनी थीम, वॉलपेपर, स्क्रीन सेवर वगैरह बदलने के लिए, बस डेस्कटॉप पर बटन को दबाकर रखें.</translation>
 <translation id="3170072451822350649">आप प्रवेश करना छोड़ भी सकते हैं और <ph name="LINK_START" />अतिथि के रूप में ब्राउज़<ph name="LINK_END" /> कर सकते हैं.</translation>
 <translation id="3175067642577044620">मुख्य हिस्सा</translation>
@@ -10146,7 +10146,6 @@
 <translation id="8195920051450756553">एक ही बटन के दोबारा ऐक्टिवेट होने में लगने वाला समय</translation>
 <translation id="8197673340773315084">नाम या लेबल जोड़ें. जैसे, ऑफ़िस या निजी</translation>
 <translation id="8198456017687137612">कास्टिंग टैब</translation>
-<translation id="8198457270656084773">सिस्टम के डिवाइस लॉग पेज की तलाश है? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="8199300056570174101">नेटवर्क (सेवा) और डिवाइस प्रॉपर्टी</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8202160505685531999">अपनी <ph name="DEVICE_TYPE" /> प्रोफ़ाइल अपडेट करने के लिए कृपया अपना पासवर्ड फिर से डालें.</translation>

@@ -1131,7 +1131,6 @@
 <translation id="1769157454356586138">הסריקה נכשלה. לפי הגדרת האדמין, הקובץ הזה חסום.</translation>
 <translation id="1770407692401984718">אפשר לגרור לכאן תמונה או</translation>
 <translation id="177053719077591686">‏גיבוי אפליקציות ל-Android ב-Google Drive.</translation>
-<translation id="1771075623623424448">רוצה לאתר את דף יומן המכשיר של הדפדפן? צריך לעבור אל <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">‏אפשר ליצור נקודת Wi-Fi לשיתוף אינטרנט שמשתמשת בחבילת הגלישה של <ph name="DEVICE_TYPE" /> כדי לספק אינטרנט למכשירים אחרים. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">נתוני יישומים מתארחים</translation>
 <translation id="177529472352014190">‏חיבור ל-OneDrive</translation>
@@ -10154,7 +10153,6 @@
 <translation id="8195920051450756553">השהיה לפני הפעלה חוזרת של אותו מקש</translation>
 <translation id="8197673340773315084">יש להוסיף שם או תווית, כמו 'עבודה' או 'אישי'</translation>
 <translation id="8198456017687137612">העברת הכרטיסייה</translation>
-<translation id="8198457270656084773">רוצה לאתר את דף יומן המכשיר של המערכת? צריך לעבור אל <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">מאפייני רשת (שירות) ומכשיר</translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8202160505685531999">יש להזין שוב את הסיסמה כדי לעדכן את פרופיל <ph name="DEVICE_TYPE" />.</translation>

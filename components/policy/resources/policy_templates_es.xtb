@@ -4093,6 +4093,15 @@ Ambas tienen el mismo efecto en el comportamiento del navegador.</translation>
 <translation id="4027608872760987929">Habilitar proveedor de búsquedas predeterminadas</translation>
 <translation id="4030152268425532846">Inhabilitar la anulación de inicio de sesión automático</translation>
 <translation id="4043796890723386527">Evita que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitado en el navegador <ph name="LACROS_NAME" />.</translation>
+<translation id="4047633048700722778">Si se define la política, controla el filtro de URL SafeSites, que usa la API Google Safe Search para clasificar las URL como pornográficas o no.
+
+Cuando se asignan estos valores:
+
+* No filtrar el contenido para adultos de los sitios, o no se le asigna ningún valor a la política: los sitios no se filtran.
+
+* Filtrar el contenido para adultos de los sitios: los sitios pornográficos se filtran.
+
+La política se aplica tanto a la URL a la que va el usuario como a los iframes. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> prevalece sobre esta política y se puede usar para anular los veredictos de la API Google Safe Search.</translation>
 <translation id="4051723201852944592">Habilitar la oclusión de ventana</translation>
 <translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
 <translation id="4053157306171963473">Inhabilitar los informes sobre el tiempo de actividad del dispositivo</translation>
@@ -9674,6 +9683,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se inhabilita la política o no se establece, no se enviarán paquetes.</translation>
 <translation id="8168359201203671567">Color arcoíris para la retroiluminación del teclado</translation>
 <translation id="8169452762291746260">Inhabilitar la supervisión del estado de los dispositivos</translation>
+<translation id="8170359860920320269">Filtrar el contenido para adultos de los sitios</translation>
 <translation id="8171262216089271568">Habilitar el cursor grande en la pantalla de inicio de sesión</translation>
 <translation id="8171924760436219650">Cambiar el botón principal del ratón al botón derecho en la pantalla de inicio de sesión</translation>
 <translation id="81724933026241365">Permitir que los usuarios apaguen el dispositivo usando el icono de apagar o el botón de encendido físico</translation>

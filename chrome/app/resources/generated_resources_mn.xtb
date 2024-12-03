@@ -1128,7 +1128,6 @@
 <translation id="1769157454356586138">Скан амжилтгүй боллоо. Энэ файлыг танай администратор блоклосон</translation>
 <translation id="1770407692401984718">Зургийг ийшээ чирэх эсвэл</translation>
 <translation id="177053719077591686">Android аппуудыг Google Драйв руу хуулбарлана уу.</translation>
-<translation id="1771075623623424448">Хөтчийн төхөөрөмжийн логийн хуудсыг хайж байна уу? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />-д зочилно уу.</translation>
 <translation id="1773329206876345543">Бусад төхөөрөмжийг интернэтээр хангахын тулд <ph name="DEVICE_TYPE" />-н мобайл датагаа ашиглан Wi-Fi сүлжээний цэг үүсгэнэ үү. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Аппликейшний өгөгдлийг зохион байгуулсан</translation>
 <translation id="177529472352014190">OneDrive-д холбогдох</translation>
@@ -3137,6 +3136,7 @@
 <translation id="3166443275568926403">Гүйцэтгэл болон батарейн төлөв</translation>
 <translation id="3167446923957429259">Амаа зүүн тийш мушийлгана уу</translation>
 <translation id="3167562202484086668"><ph name="BRAND" />-н бүх өгөгдлийг устгах</translation>
+<translation id="3169901410527787002">Хаяг оруулах хэсэгт гарын оруулгыг байнга унших</translation>
 <translation id="3169930038976362151">Таны хэрэгцээнд тохирсон загварыг сонгоно уу. Загвар, дэлгэцийн зураг, дэлгэц амраагч болон бусад зүйлээ өөрчлөхийн тулд ердөө дэлгэц дээр удаан дарна уу.</translation>
 <translation id="3170072451822350649">Та нэвтэрч орох ажиллагааг алгасаж болох бөгөөд <ph name="LINK_START" /> зочны хувиар хайлт хийж болно<ph name="LINK_END" /> .</translation>
 <translation id="3175067642577044620">Үндсэн хэсэг</translation>
@@ -10139,7 +10139,6 @@
 <translation id="8195920051450756553">Нэг товчийг дахин идэвхжүүлэхээс өмнөх саатал</translation>
 <translation id="8197673340773315084">Ажил эсвэл Хувийн зэрэг нэр эсвэл шошго нэмнэ үү</translation>
 <translation id="8198456017687137612">Табыг дамжуулж байна</translation>
-<translation id="8198457270656084773">Системийн төхөөрөмжийн логийн хуудсыг хайж байна уу? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />-д зочилно уу.</translation>
 <translation id="8199300056570174101">Сүлжээ (Үйлчилгээ) болон Төхөөрөмжийн тодруулга</translation>
 <translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" />-ын профайлаа шинэчлэхийн тулд нууц үгээ дахин оруулна уу.</translation>

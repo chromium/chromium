@@ -1123,7 +1123,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1769157454356586138">Analisi non riuscita. Questo file è bloccato dall'amministratore</translation>
 <translation id="1770407692401984718">Trascina un'immagine qui oppure</translation>
 <translation id="177053719077591686">Esegui il backup delle app per Android su Google Drive.</translation>
-<translation id="1771075623623424448">Stai cercando la pagina del log del dispositivo del browser? Visita<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Crea un hotspot Wi-Fi utilizzando i dati mobili di <ph name="DEVICE_TYPE" /> per fornire internet ad altri dispositivi. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Dati app in hosting</translation>
 <translation id="177529472352014190">Collegati a OneDrive</translation>
@@ -6315,7 +6314,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5448092089030025717">{NUM_REUSED,plural, =0{Nessuna password riutilizzata}=1{1 password riutilizzata}other{{NUM_REUSED} password riutilizzate}}</translation>
 <translation id="5448293924669608770">Spiacenti, qualcosa è andato storto in fase di accesso</translation>
 <translation id="5449551289610225147">Password non valida</translation>
-<translation id="5449588825071916739">Aggiungi tutte le schede ai Preferiti</translation>
+<translation id="5449588825071916739">Aggiungi tutte le schede ai preferiti</translation>
 <translation id="5449716055534515760">Chiu&amp;di finestra</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> per esplorare i dispositivi Bluetooth</translation>
 <translation id="5450469615146335984">Seleziona una scorciatoia per ogni azione</translation>
@@ -10131,7 +10130,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8195920051450756553">Ritardo prima di attivare di nuovo lo stesso tasto</translation>
 <translation id="8197673340773315084">Aggiungi un nome o un'etichetta, ad es. "Lavoro"</translation>
 <translation id="8198456017687137612">Trasmissione della scheda in corso…</translation>
-<translation id="8198457270656084773">Stai cercando la pagina del log di sistema del dispositivo? Visita<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Proprietà dispositivo e rete (servizio)</translation>
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8202160505685531999">Inserisci di nuovo la password per aggiornare il profilo <ph name="DEVICE_TYPE" />.</translation>

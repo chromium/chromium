@@ -1123,7 +1123,6 @@
 <translation id="1769157454356586138">სკანირება ვერ მოხერხდა. ეს ფაილი დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="1770407692401984718">ჩავლებით გადმოიტანეთ სურათი აქ ან</translation>
 <translation id="177053719077591686">Android აპების სარეზერვო ასლების შექმნა Google Drive-ზე.</translation>
-<translation id="1771075623623424448">ბრაუზერის მოწყობილობის ჟურნალის გვერდს ეძებთ? მოინახულეთ<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">შექმენით Wi‑Fi უსადენო ქსელი თქვენი <ph name="DEVICE_TYPE" />-ის მობილური ინტერნეტის მეშვეობით, რათა სხვა მოწყობილობებს გაუზიაროთ ინტერნეტი. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">ჰოსტის პროგრამის მონაცემები</translation>
 <translation id="177529472352014190">OneDrive-თან დაკავშირება</translation>
@@ -10133,7 +10132,6 @@
 <translation id="8195920051450756553">დაყოვნება იმავე კლავიშის აქტივაციამდე</translation>
 <translation id="8197673340773315084">დაამატეთ სახელი ან ლეიბლი, მაგალითად, „სამსახურის“ ან „პირადი“</translation>
 <translation id="8198456017687137612">მიმდინარეობს ჩანართის ტრანსლირება</translation>
-<translation id="8198457270656084773">სისტემის მოწყობილობის ჟურნალის გვერდს ეძებთ? მოინახულეთ<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">ქსელის (სერვისი) და მოწყობილობის მახასიათებლები</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8202160505685531999">თქვენი <ph name="DEVICE_TYPE" />-ის პროფილის განსაახლებლად, გთხოვთ, ხელახლა შეიყვანოთ თქვენი პაროლი.</translation>

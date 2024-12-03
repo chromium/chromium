@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Веб хаяг оруулна уу</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Та одоо санал болгосон табд төхөөрөмжийнхөө аппын жагсаалт, төхөөрөмжийн хайлтын илэрцүүдээс түргэн хандах боломжтой. Үүнийг Chrome-н тохиргоонд хүссэн үедээ унтраана уу.</translation>
 <translation id="6015775454662021376">Таны төхөөрөмж рүү хандах энэ сайтын хандалтыг удирдах</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6042308850641462728">Илүү их</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Эхлээд асуу</translation>
 <translation id="7423538860840206698">Түр санах ойгоос уншихыг хориглосон</translation>
 <translation id="7425915948813553151">Сайтуудад зориулсан бараан загвар</translation>
+<translation id="7488573225650545859">Аппын жагсаалтдаа таб харахыг нуух</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Асаалттай үед сайтууд нэвтрэх сануулга харуулах боломжтой. Унтраалттай үед сайтууд нэвтрэх сануулга харуулах боломжгүй.</translation>
 <translation id="7553211568594248088">Хабын хайлтаас гарах</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479"><ph name="DOMAIN_NAME" />-н энэ агуулгыг Google танд хүргэж байна.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />-н бусад сонголт</translation>
 <translation id="8090579562279016251">Гүйцэтгэлийг багасгах хэдий ч V8-г халдлагуудад илүү тэсвэртэй болгоно</translation>
+<translation id="8112925981674547014">Аппын жагсаалтдаа таб харах</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome күүкинүүдийг маргааш дахин хязгаарлана}other{Chrome күүкинүүдийг дахин хязгаарлах хүртэл # хоног үлдсэн}}</translation>
 <translation id="8116925261070264013">Дууг хаасан</translation>
 <translation id="8117244575099414087">Асаалттай үед сайтууд таны төхөөрөмжийн мэдрэгчдийг ашиглах боломжтой. Унтраалттай үед сайтууд мэдрэгчдийг ашиглах боломжгүй.</translation>

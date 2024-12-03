@@ -1118,7 +1118,6 @@
 <translation id="1769157454356586138">扫描失败。您的管理员已屏蔽此文件</translation>
 <translation id="1770407692401984718">将图片拖到此处，或者</translation>
 <translation id="177053719077591686">将 Android 应用备份到 Google 云端硬盘。</translation>
-<translation id="1771075623623424448">想查看浏览器设备日志页面？请访问 <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
 <translation id="1773329206876345543">使用 <ph name="DEVICE_TYPE" /> 的移动流量创建 WLAN 热点，以便向其他设备提供互联网连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">托管应用数据</translation>
 <translation id="177529472352014190">连接到 OneDrive</translation>
@@ -3120,6 +3119,7 @@
 <translation id="3166443275568926403">性能和电池状态</translation>
 <translation id="3167446923957429259">将嘴向左移</translation>
 <translation id="3167562202484086668">删除所有 <ph name="BRAND" />数据</translation>
+<translation id="3169901410527787002">始终读取地址栏中的键盘输入内容</translation>
 <translation id="3169930038976362151">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等，轻触并按住桌面即可执行所需操作。</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
 <translation id="3175067642577044620">正文</translation>
@@ -10119,7 +10119,6 @@
 <translation id="8195920051450756553">再次启用同一按键前的延迟时间</translation>
 <translation id="8197673340773315084">添加一个名称或标签，例如“工作”或“个人”</translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
-<translation id="8198457270656084773">想查看系统设备日志页面？请访问 <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
 <translation id="8199300056570174101">网络（服务）和设备属性</translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8202160505685531999">请重新输入密码，以便更新您的<ph name="DEVICE_TYPE" />资料。</translation>

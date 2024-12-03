@@ -280,6 +280,7 @@
 <translation id="1474576429883213321">Послуги прибирання</translation>
 <translation id="1475299637784133125">Шукаєте версію веб-переглядача? Перейдіть на сторінку</translation>
 <translation id="1476595624592550506">Змініть пароль</translation>
+<translation id="1482372785911828880">Дуже тонкий</translation>
 <translation id="1482879811280872320">Велоспорт</translation>
 <translation id="1483493594462132177">Надіслати</translation>
 <translation id="1484449009683144042">Це експериментальний інструмент на основі ШІ, тому він не завжди працює правильно.
@@ -1314,6 +1315,7 @@
 <translation id="3375754925484257129">Виконати перевірку безпеки Chrome</translation>
 <translation id="3377144306166885718">Сервер використовував застарілу версію TLS.</translation>
 <translation id="3377188786107721145">Помилка аналізу правила</translation>
+<translation id="3377642479079205807">Тонкий</translation>
 <translation id="3378612801784846695">Теми визначаються на основі вашої нещодавньої історії вебперегляду й використовуються сайтами, щоб показувати вам персоналізовану рекламу й водночас захищати ваші ідентифікаційні дані</translation>
 <translation id="3380365263193509176">Невідома помилка</translation>
 <translation id="3380864720620200369">Ідентифікатор клієнта:</translation>
@@ -1419,7 +1421,6 @@
 <translation id="3552297013052089404">Шрифт Sans Serif</translation>
 <translation id="3558573058928565255">День</translation>
 <translation id="3559897352860026926">Попросіть адміністратора перевірити налаштування конфігурації для сервісу <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560408312959371419">Параметри для функції захисту від відстеження й даних сайтів на пристрої</translation>
 <translation id="3560824484345057728">Переглянути пов’язані сайти</translation>
 <translation id="3566021033012934673">З’єднання не конфіденційне</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
@@ -2486,6 +2487,7 @@
 <translation id="5481682542063333508">Пропонувати допомогу з текстом</translation>
 <translation id="54817484435770891">Додати дійсну адресу</translation>
 <translation id="5483838506518938965">Готово</translation>
+<translation id="5485100387355669506">Дуже товстий</translation>
 <translation id="5485973315555778056">Машина хмари</translation>
 <translation id="5488590678320979185">Кнопка "Створити нотатку"; активуйте, щоб швидко створити нову нотатку в Google Keep</translation>
 <translation id="5490432419156082418">Адреси й інше</translation>
@@ -2595,7 +2597,6 @@
 <translation id="5675809467256309336">Танцювальна й електронна музика</translation>
 <translation id="5675959228867414813">Показувати за датою</translation>
 <translation id="567604591393105935">Нижній екран із комерційною пропозицією відкрито на половину висоти</translation>
-<translation id="5677928146339483299">Заблоковано</translation>
 <translation id="5678007133659493065">Фольга</translation>
 <translation id="5680642791693447368">Трилери, детективи й кримінальні фільми</translation>
 <translation id="568292603005599551">Горизонтальне положення зображення</translation>
@@ -2954,7 +2955,6 @@
 <translation id="633770708279464947">Значення <ph name="SECURE_DNS_SALT" /> недійсне й не використовуватиметься.</translation>
 <translation id="6340739886198108203">Згідно з правилом адміністратора не рекомендовано здійснювати запис екрана, коли на ньому видно конфіденційний контент:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Згідно з правилом адміністратора не рекомендовано завантажувати цей файл у розташування <ph name="DESTINATION_NAME" />}one{Згідно з правилом адміністратора не рекомендовано завантажувати ці файли в розташування <ph name="DESTINATION_NAME" />}few{Згідно з правилом адміністратора не рекомендовано завантажувати ці файли в розташування <ph name="DESTINATION_NAME" />}many{Згідно з правилом адміністратора не рекомендовано завантажувати ці файли в розташування <ph name="DESTINATION_NAME" />}other{Згідно з правилом адміністратора не рекомендовано завантажувати ці файли в розташування <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">Захист від відстеження</translation>
 <translation id="634500758737709758">Покрокові інструкції</translation>
 <translation id="6348220984832452017">Активні варіанти</translation>
 <translation id="6349101878882523185">Установіть додаток <ph name="APP_NAME" /></translation>
@@ -3671,6 +3671,7 @@
 <translation id="7599089013883397081">Час очікування завантаження минув</translation>
 <translation id="7608583484192556132">Персоналізація реклами залежить від різних факторів, зокрема цього параметра, <ph name="BEGIN_LINK_1" />пропонованих сайтами оголошень<ph name="END_LINK_1" /> і <ph name="BEGIN_LINK_2" />налаштувань файлів cookie<ph name="END_LINK_2" />, а також від того, чи персоналізує рекламу сайт, який ви переглядаєте. <ph name="BEGIN_LINK_3" />Докладніше про керування конфіденційністю в рекламі.<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Значення за межами діапазону <ph name="VALUE" />.</translation>
+<translation id="761261689936461781">Товстий</translation>
 <translation id="7613889955535752492">Діє до: <ph name="EXPIRATION_MONTH" />.<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб переглянути паролі й керувати ними в налаштуваннях Chrome</translation>
 <translation id="7616645509853975347">Ваш адміністратор увімкнув Chrome Enterprise Connectors у веб-переглядачі. Ці конектори мають доступ до деяких ваших даних.</translation>
@@ -4390,7 +4391,6 @@
 <translation id="893332455753468063">Додайте ім’я</translation>
 <translation id="8942355029279167844">Адміністратор надав додатку <ph name="APP_NAME" /> дозвіл збирати дані діагностики, щоб покращувати роботу продукту. Докладніше читайте на сторінці <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лаймовий</translation>
-<translation id="8944485226638699751">Обмежено</translation>
 <translation id="8949410982325929394">Тон</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8952569554322479410">Веб-сайт щойно надіслав такий запит на доступ: <ph name="REQUEST_TYPE" />. Пройдіть опитування, щоб допомогти нам покращити процес запиту доступу веб-сайтами (це займе всього хвилину).</translation>

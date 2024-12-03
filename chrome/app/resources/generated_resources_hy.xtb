@@ -1125,7 +1125,6 @@
 <translation id="1769157454356586138">Չհաջողվեց սկանավորել։ Ադմինիստրատորն արգելափակել է այս ֆայլը։</translation>
 <translation id="1770407692401984718">Քաշեք պատկերն այստեղ կամ</translation>
 <translation id="177053719077591686">Android-ի հավելվածների պահուստավորումը Google Drive-ում</translation>
-<translation id="1771075623623424448">Դիտարկիչի սարքերի մատյա՞նն եք փնտրում։ Անցեք <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />։</translation>
 <translation id="1773329206876345543">Այլ սարքերի ինտերնետով ապահովելու համար ստեղծեք Wi-Fi թեժ կետ՝ օգտագործելով ձեր <ph name="DEVICE_TYPE" />-ի բջջային ինտերնետը։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Խնամվող հավելվածների տվյալները</translation>
 <translation id="177529472352014190">Միանալ OneDrive-ին</translation>
@@ -3128,6 +3127,7 @@
 <translation id="3166443275568926403">Արտադրողականությունը և մարտկոցի վիճակը</translation>
 <translation id="3167446923957429259">Բերանը շարժեք դեպի ձախ</translation>
 <translation id="3167562202484086668">Ջնջել բոլոր տվյալները «<ph name="BRAND" />» ծառայությունից</translation>
+<translation id="3169901410527787002">Միշտ կարդալ հասցեագոտում ստեղնաշարով կատարված մուտքագրումը</translation>
 <translation id="3169930038976362151">Ընտրեք ձեզ հարմար թեմա։ Թեման, պաստառը, էկրանապահը և այլ տարրեր փոխելու համար պարզապես հպեք աշխատասեղանին և պահեք։</translation>
 <translation id="3170072451822350649">Դուք կարող եք նաև մուտք չգործել և <ph name="LINK_START" />սկսել հյուրի աշխատաշրջան<ph name="LINK_END" />:</translation>
 <translation id="3175067642577044620">Հիմնական տեքստ</translation>
@@ -10128,7 +10128,6 @@
 <translation id="8195920051450756553">Հապաղումը նախքան նույն ստեղնի նորից ակտիվացումը</translation>
 <translation id="8197673340773315084">Ավելացրեք անվանում կամ պիտակ, օրինակ՝ «Աշխատանքային» կամ «Անձնական»</translation>
 <translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>
-<translation id="8198457270656084773">Համակարգի սարքերի մատյա՞նն եք փնտրում։ Անցեք <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />։</translation>
 <translation id="8199300056570174101">Ցանցի (ծառայության) և սարքի կարգավորումներ</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8202160505685531999">Նորից մուտքագրեք գաղտնաբառը՝ ձեր <ph name="DEVICE_TYPE" /> սարքի պրոֆիլը թարմացնելու համար:</translation>

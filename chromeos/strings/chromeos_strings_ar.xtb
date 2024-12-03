@@ -1365,6 +1365,7 @@
 <translation id="7425037327577270384">مساعدة في الكتابة</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏لا يمكن إيقاف اسم نقطة الوصول (APN) هذا أو إزالته. يُرجى إيقاف أو إزالة أسماء نقاط الوصول المفعَّلة من نوع <ph name="ATTACH" />.</translation>
+<translation id="7453118953486228603">انقر لتلخيص النص المحدَّد</translation>
 <translation id="7458970041932198923">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الصور الرمزية وتحديدها.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>
@@ -1723,6 +1724,7 @@
 <translation id="9133772297793293778">‏اضغط على ما بين 1 إلى 4 مفاتيح تعديل ومفتاح آخر على لوحة المفاتيح. للخروج من وضع التعديل، اضغط على Alt + مفتاح الخروج (Esc).</translation>
 <translation id="9137526406337347448">‏خدمات Google</translation>
 <translation id="9138630967333032450">‏المفتاح Shift الأيسر</translation>
+<translation id="9147928237330776930">عدد الكلمات قليل جدًا ولا يمكن تلخيص النص المحدَّد</translation>
 <translation id="9149391708638971077">تشغيل اختبار الذاكرة</translation>
 <translation id="9159524746324788320">هامبورغر</translation>
 <translation id="9161276708550942948">مفتاح المسافة</translation>

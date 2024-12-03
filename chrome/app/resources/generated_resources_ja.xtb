@@ -1122,7 +1122,6 @@
 <translation id="1769157454356586138">スキャンに失敗しました。このファイルは管理者によってブロックされました。</translation>
 <translation id="1770407692401984718">ここに画像をドラッグ、または</translation>
 <translation id="177053719077591686">Android アプリを Google ドライブにバックアップします。</translation>
-<translation id="1771075623623424448">ブラウザのデバイスログ ページをお探しですか？<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> にアクセスしてください。</translation>
 <translation id="1773329206876345543">他のデバイスでインターネットを使用するには、<ph name="DEVICE_TYPE" /> のモバイルデータ通信を使用する Wi-Fi アクセス ポイントを作成します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">ホストされているアプリデータ</translation>
 <translation id="177529472352014190">OneDrive に接続</translation>
@@ -10117,7 +10116,6 @@
 <translation id="8195920051450756553">同じキーを再び有効にするまでの待機時間</translation>
 <translation id="8197673340773315084">名前やラベル（仕事、個人など）を入力</translation>
 <translation id="8198456017687137612">タブをキャスト中</translation>
-<translation id="8198457270656084773">システムのデバイスログ ページをお探しですか？<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> にアクセスしてください。</translation>
 <translation id="8199300056570174101">ネットワーク（サービス）とデバイスのプロパティ</translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> のプロフィールを更新するにはパスワードを再入力してください。</translation>

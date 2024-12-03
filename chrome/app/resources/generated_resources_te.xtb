@@ -1130,7 +1130,6 @@
 <translation id="1769157454356586138">స్కాన్ విఫలమైంది. ఈ ఫైల్‌ను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు</translation>
 <translation id="1770407692401984718">ఇమేజ్‌ను ఇక్కడకు లాగండి లేదా</translation>
 <translation id="177053719077591686">Google Driveకు Android యాప్‌లను బ్యాకప్ చేయండి.</translation>
-<translation id="1771075623623424448">బ్రౌజర్ పరికరం-లాగ్ పేజీ కోసం వెతుకుతున్నారా? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />‌ను చూడండి.</translation>
 <translation id="1773329206876345543">ఇతర పరికరాలకు ఇంటర్నెట్‌ను అందించడానికి మీ <ph name="DEVICE_TYPE" /> మొబైల్ డేటాను ఉపయోగించి Wi-Fi హాట్‌స్పాట్‌ను క్రియేట్ చేయండి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">హోస్ట్ చేసిన యాప్‌ డేటా</translation>
 <translation id="177529472352014190">OneDriveకు కనెక్ట్ చేయండి</translation>
@@ -3139,6 +3138,7 @@
 <translation id="3166443275568926403">పనితీరు, బ్యాటరీ స్టేట్</translation>
 <translation id="3167446923957429259">మీ నోటిని ఎడమ వైపునకు తిప్పండి</translation>
 <translation id="3167562202484086668">మొత్తం <ph name="BRAND" /> డేటాను తొలగించండి</translation>
+<translation id="3169901410527787002">అడ్రస్ బార్‌లో కీబోర్డ్ ఇన్‌పుట్‌ను ఎల్లప్పుడూ చదవండి</translation>
 <translation id="3169930038976362151">మీ అవసరాలకు తగిన రూపాన్ని ఎంచుకోండి. మీ రూపాన్ని, వాల్‌పేపర్‌ను, స్క్రీన్ సేవర్‌ను, ఇంకా మరిన్నింటిని మార్చడానికి, డెస్క్‌టాప్‌పై తాకి, నొక్కి ఉంచండి.</translation>
 <translation id="3170072451822350649">మీరు సైన్ ఇన్ చేయడాన్ని కూడా దాట వేయవచ్చు. <ph name="LINK_START" />అతిథిగా బ్రౌజ్ చేయవచ్చు<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">విషయం</translation>
@@ -10141,7 +10141,6 @@
 <translation id="8195920051450756553">ఏదైనా కీని మళ్లీ యాక్టివేట్ చేయడానికి ముందు అది యాక్టివేట్ అవ్వకుండా ఆలస్యం అయ్యేలా చేయండి</translation>
 <translation id="8197673340773315084">'ఆఫీస్', 'వ్యక్తిగతం' వంటి లేబుల్‌ను లేదా ఏదైనా పేరును జోడించండి</translation>
 <translation id="8198456017687137612">ప్రసారం చేసే ట్యాబ్</translation>
-<translation id="8198457270656084773">సిస్టమ్ పరికరం-లాగ్ పేజీ కోసం వెతుకుతున్నారా? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />‌ను చూడండి.</translation>
 <translation id="8199300056570174101">నెట్‌వర్క్ (సేవ) మరియు పరికర లక్షణాలు</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8202160505685531999">దయచేసి మీ <ph name="DEVICE_TYPE" /> ప్రొఫైల్‌ను అప్‌డేట్ చేయ‌డానికి మీ పాస్‌వర్డ్‌ను మళ్లీ నమోదు చేయండి.</translation>

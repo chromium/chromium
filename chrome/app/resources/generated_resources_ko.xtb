@@ -1132,7 +1132,6 @@
 <translation id="1769157454356586138">스캔할 수 없습니다. 관리자가 이 파일을 차단했습니다.</translation>
 <translation id="1770407692401984718">여기로 이미지를 드래그하거나</translation>
 <translation id="177053719077591686">Google Drive에 Android 앱 백업.</translation>
-<translation id="1771075623623424448">브라우저 기기 로그 페이지를 찾고 계신가요? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />에서 확인하세요.</translation>
 <translation id="1773329206876345543"><ph name="DEVICE_TYPE" />의 모바일 데이터를 사용해 다른 기기에 인터넷을 제공하는 Wi-Fi 핫스팟을 만드세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">호스팅된 앱 데이터</translation>
 <translation id="177529472352014190">OneDrive에 연결</translation>
@@ -3143,6 +3142,7 @@
 <translation id="3166443275568926403">성능 및 배터리 상태</translation>
 <translation id="3167446923957429259">입을 왼쪽으로 움직이기</translation>
 <translation id="3167562202484086668">모든 <ph name="BRAND" /> 데이터 삭제</translation>
+<translation id="3169901410527787002">주소 표시줄의 키보드 입력 항상 읽기</translation>
 <translation id="3169930038976362151">나에게 적합한 테마를 선택하세요. 바탕화면에서 길게 터치하면 테마, 배경화면, 화면 보호기 등을 변경할 수 있습니다.</translation>
 <translation id="3170072451822350649">로그인을 건너뛰고 <ph name="LINK_START" />게스트로 로그인<ph name="LINK_END" />할 수도 있습니다.</translation>
 <translation id="3175067642577044620">본문</translation>
@@ -5428,7 +5428,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4804827417948292437">아보카도</translation>
 <translation id="4806071198808203109">동영상 프레임을 다른 이름으로 저장(&amp;F)…</translation>
 <translation id="4806457879608775995">약관을 검토하고 데이터를 관리하세요</translation>
-<translation id="4807098396393229769">카드 명의</translation>
+<translation id="4807098396393229769">카드에 표기된 이름</translation>
 <translation id="4807122856660838973">세이프 브라우징 사용 설정</translation>
 <translation id="4807514039636325497">DBus 세부정보</translation>
 <translation id="4808525520374557629">감지된 성능 문제를 개선하는 방법을 제안하는 알림을 받습니다. <ph name="BEGIN_LINK" />성능 문제 알림 자세히 알아보기<ph name="END_LINK" /></translation>
@@ -9749,7 +9749,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="792514962475806987">고정 돋보기 확대/축소 수준:</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" />의 응답을 기다리는 중...</translation>
 <translation id="7926423016278357561">본인이 아닙니다.</translation>
-<translation id="7926975587469166629">카드 별명</translation>
+<translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="7928175190925744466">이 비밀번호를 이미 변경하셨나요?</translation>
 <translation id="7929468958996190828"><ph name="BEGIN_LINK" />지금 새로고침<ph name="END_LINK" />하거나, 비슷한 탭을 새로 연 후에 다시 시도해 주세요.</translation>
 <translation id="7929962904089429003">메뉴 열기</translation>
@@ -10149,7 +10149,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8195920051450756553">동일한 키를 다시 활성화하기 전 지연</translation>
 <translation id="8197673340773315084">'직장', '개인'과 같은 이름 또는 라벨 추가</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
-<translation id="8198457270656084773">시스템 기기 로그 페이지를 찾고 계신가요? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />에서 확인하세요.</translation>
 <translation id="8199300056570174101">네트워크(서비스) 및 기기 속성</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> 프로필을 업데이트하려면 비밀번호 다시 입력</translation>

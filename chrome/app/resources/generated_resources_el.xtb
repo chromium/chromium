@@ -1132,7 +1132,6 @@
 <translation id="1769157454356586138">Η σάρωση απέτυχε. Η επικόλληση αυτού του αρχείου αποκλείστηκε από τον διαχειριστή σας</translation>
 <translation id="1770407692401984718">Σύρετε μια εικόνα εδώ ή</translation>
 <translation id="177053719077591686">Δημιουργία αντιγράφων ασφαλείας για εφαρμογές Android στο Google Drive.</translation>
-<translation id="1771075623623424448">Αναζητάτε τη σελίδα καταγραφής συσκευής του προγράμματος περιήγησης; Μεταβείτε στο <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Δημιουργήστε ένα σημείο πρόσβασης Wi-Fi χρησιμοποιώντας τα δεδομένα κινητής τηλεφωνίας της συσκευής <ph name="DEVICE_TYPE" />, για να παρέχετε σύνδεση στο διαδίκτυο για άλλες συσκευές. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Δεδομένα φιλοξενούμενης εφαρμογής</translation>
 <translation id="177529472352014190">Σύνδεση στο OneDrive</translation>
@@ -10150,7 +10149,6 @@
 <translation id="8195920051450756553">Καθυστέρηση πριν από την εκ νέου ενεργοποίηση του ίδιου πλήκτρου</translation>
 <translation id="8197673340773315084">Προσθέστε ένα όνομα ή μια ετικέτα, όπως Εργασία ή Προσωπικό</translation>
 <translation id="8198456017687137612">Καρτέλα μετάδοσης</translation>
-<translation id="8198457270656084773">Αναζητάτε τη σελίδα καταγραφής συσκευής του συστήματος; Μεταβείτε στο <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Ιδιότητες δικτύου (Υπηρεσία) και συσκευής</translation>
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8202160505685531999">Εισαγάγετε ξανά τον κωδικό πρόσβασής σας για να ενημερώσετε το προφίλ σας στο <ph name="DEVICE_TYPE" />.</translation>

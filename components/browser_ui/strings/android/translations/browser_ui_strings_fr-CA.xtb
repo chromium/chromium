@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Entrez l'adresse Web</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> : <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Vous pouvez maintenant accéder rapidement aux onglets suggérés à partir de la liste d'applis de votre appareil et dans les résultats de recherche de l'appareil. Désactivez cette option à tout moment dans les paramètres de Chrome.</translation>
 <translation id="6015775454662021376">Gérez l'accès de ce site à votre appareil</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6042308850641462728">Plus</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Demander d'abord</translation>
 <translation id="7423538860840206698">La lecture du presse-papiers a été bloquée</translation>
 <translation id="7425915948813553151">Thème sombre pour les sites</translation>
+<translation id="7488573225650545859">Masquer Afficher les onglets dans votre liste d'applis</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Lorsque cette option est activée, les sites peuvent afficher des invites de connexion. Lorsqu'elle est désactivée, les sites ne peuvent pas afficher d'invites de connexion.</translation>
 <translation id="7553211568594248088">Quitter la recherche Hub</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Ce contenu provient de <ph name="DOMAIN_NAME" />, fourni par Google.</translation>
 <translation id="8088603949666785339">Plus d'options dans le <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Réduit les performances, mais rend le V8 plus résistant aux attaques</translation>
+<translation id="8112925981674547014">Afficher les onglets dans votre liste d'applis</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome limitera à nouveau les témoins demain}one{# jour jusqu'à ce que Chrome limite à nouveau les témoins}other{# jours jusqu'à ce que Chrome limite à nouveau les témoins}}</translation>
 <translation id="8116925261070264013">Désactivés</translation>
 <translation id="8117244575099414087">Lorsque cette option est activée, les sites peuvent utiliser les capteurs de votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser de capteurs.</translation>

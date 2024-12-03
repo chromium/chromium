@@ -1125,7 +1125,6 @@
 <translation id="1769157454356586138">Не удалось выполнить сканирование. Этот файл заблокирован администратором.</translation>
 <translation id="1770407692401984718">Перетащите изображение сюда или</translation>
 <translation id="177053719077591686">Резервное копирование приложений для Android на Google Диск.</translation>
-<translation id="1771075623623424448">Ищете журнал устройств браузера? Перейдите на страницу <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Создайте точку доступа Wi-Fi, используя мобильную передачу данных на устройстве <ph name="DEVICE_TYPE" />, чтобы другие устройства могли подключаться к интернету. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Данные размещаемых приложений</translation>
 <translation id="177529472352014190">Подключиться к OneDrive</translation>
@@ -6674,7 +6673,7 @@
 <translation id="5705882733397021510">Назад</translation>
 <translation id="5707185214361380026">Не удалось загрузить расширение из:</translation>
 <translation id="5708171344853220004">Имя участника Microsoft</translation>
-<translation id="5709557627224531708">Сделайте Google Chrome браузером по умолчанию</translation>
+<translation id="5709557627224531708">Сделайте Chrome браузером по умолчанию</translation>
 <translation id="5711010025974903573">Служебные журналы</translation>
 <translation id="5711983031544731014">Невозможно разблокировать. Введите пароль.</translation>
 <translation id="5712153969432126546">Иногда на сайтах публикуются файлы в формате PDF, например документы, договоры или формы.</translation>
@@ -10142,7 +10141,6 @@
 <translation id="8195920051450756553">Время задержки перед активацией повторно нажатой клавиши</translation>
 <translation id="8197673340773315084">Укажите название, например "Рабочий"</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
-<translation id="8198457270656084773">Ищете журнал устройств системы? Перейдите на страницу <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Настройки сети и устройства</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8202160505685531999">Чтобы обновить профиль устройства <ph name="DEVICE_TYPE" />, введите пароль ещё раз</translation>

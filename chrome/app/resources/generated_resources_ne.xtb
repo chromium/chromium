@@ -1120,7 +1120,6 @@
 <translation id="1769157454356586138">स्क्यान गर्न सकिएन। तपाईंका एड्मिनले यो फाइल ब्लक गर्नुभएको छ</translation>
 <translation id="1770407692401984718">कुनै फोटो ड्रयाग गरेर यहाँ ड्रप गर्नुहोस् वा</translation>
 <translation id="177053719077591686">Android एपहरू Google Drive मा ब्याकअप गर्नुहोस्।</translation>
-<translation id="1771075623623424448">ब्राउजरसम्बन्धी जानकारी भएको डिभाइसको लग पेज खोज्दै हुनुहुन्छ? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="1773329206876345543">अन्य डिभाइसहरूमा इन्टरनेट उपलब्ध गराउन आफ्नो <ph name="DEVICE_TYPE" /> को मोबाइल डेटा प्रयोग गरेर Wi-Fi हटस्पट बनाउनुहोस्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">होस्ट गरिएको एप लगत</translation>
 <translation id="177529472352014190">OneDrive मा कनेक्ट गर्नुहोस्</translation>
@@ -3126,6 +3125,7 @@
 <translation id="3166443275568926403">पर्फर्मेन्स र ब्याट्रीको स्थिति</translation>
 <translation id="3167446923957429259">आफ्नो मुख बायाँतिर लैजानुहोस्</translation>
 <translation id="3167562202484086668"><ph name="BRAND" /> मा भएका सबै डेटा मेटाउनुहोस्</translation>
+<translation id="3169901410527787002">एड्रेस बारमा किबोर्डमार्फत इन्पुट गरिएको टेक्स्ट सधैँ रिड गर्ने</translation>
 <translation id="3169930038976362151">आफूलाई उपयुक्त हुने थिम छनौट गर्नुहोस्। आफ्ना थिम, वालपेपर, स्क्रिन सेभर र थप कुराहरू बदल्न डेस्कटपमा टच एण्ड होल्ड गरे पुग्छ।</translation>
 <translation id="3170072451822350649">तपाइँले साइन इन गर्न पनि छाड्न सक्नुहुन्छ र <ph name="LINK_START" />पाहनुाको रूपाम ब्राउज गर्न सक्नुहुन्छ<ph name="LINK_END" />।</translation>
 <translation id="3175067642577044620">मुख्य भाग</translation>
@@ -10127,7 +10127,6 @@
 <translation id="8195920051450756553">एउटै की फेरि एक्टिभेट हुन लाग्ने समय</translation>
 <translation id="8197673340773315084">"कार्य" वा "व्यक्तिगत" जस्तो कुनै नाम वा लेबल हाल्नुहोस्</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>
-<translation id="8198457270656084773">सिस्टमसम्बन्धी जानकारी भएको डिभाइसको लग पेज खोज्दै हुनुहुन्छ? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="8199300056570174101">नेटवर्क (सेवा) र डिभाइसका गुणहरू</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8202160505685531999">कृपया तपाईँको <ph name="DEVICE_TYPE" /> प्रोफाइल अद्यावधिक गर्न तपाईँको पासवर्ड फेरि हाल्नुहोस्।</translation>

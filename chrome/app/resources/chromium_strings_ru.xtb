@@ -257,6 +257,7 @@
 <translation id="4510853178268397146">Для этого расширения не опубликованы меры по обеспечению конфиденциальности, например сведения о том, как оно собирает и использует данные. Chromium рекомендует удалить его.</translation>
 <translation id="452711251841752011">Добро пожаловать в Chromium! Открыто новое окно браузера.</translation>
 <translation id="4531137820806573936">Браузеру Chromium требуется разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание движений рук.</translation>
+<translation id="4534145890176164066">Chromium лучше определяет формы и быстрее их заполняет</translation>
 <translation id="4536805923587466102">Вы уже вошли в аккаунт <ph name="USER_EMAIL_ADDRESS" /> в другом профиле Chromium.</translation>
 <translation id="4544142686420020088">Не удалось обновить Chromium. <ph name="BEGIN_LINK" />Выяснить причины неполадок и устранить их<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Чтобы повысить скорость браузера Chromium и удобство работы в нем, эту вкладку можно сделать неактивной.</translation>
@@ -473,6 +474,7 @@
 <translation id="7349591376906416160">Ваш системный администратор задал настройки, согласно которым Chromium должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Chromium заблокировал скачивание, поскольку этот файл может представлять опасность для ваших личных аккаунтов и аккаунтов в социальных сетях, включая <ph name="USER_EMAIL" />.</translation>
 <translation id="7384121030444253939">Это расширение больше не поддерживается. Рекомендуем удалить его из Chromium.</translation>
+<translation id="7389750180956889333">Chromium лучше определяет формы и быстрее их заполняет. Подробнее <ph name="BEGIN_LINK" />об автозаполнении Chrome<ph name="END_LINK" />…</translation>
 <translation id="7398989605938454041">Профили Chromium позволяют хранить личные и рабочие данные в браузере раздельно.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium для разработчиков</translation>
 <translation id="7450541714075000668">Текст скопирован.</translation>

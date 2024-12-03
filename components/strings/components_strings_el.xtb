@@ -1421,7 +1421,6 @@
 <translation id="3552297013052089404">Γραμματοσειρά Sans-serif</translation>
 <translation id="3558573058928565255">Ημέρα</translation>
 <translation id="3559897352860026926">Ζητήστε από τον διαχειριστή να επαληθεύσει τις ρυθμίσεις διαμόρφωσης για το <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560408312959371419">Επιλογές για προστασίες από παρακολούθηση και δεδομένα ιστοτόπου στη συσκευή</translation>
 <translation id="3560824484345057728">Εμφάνιση σχετικών ιστοτόπων</translation>
 <translation id="3566021033012934673">Η σύνδεσή σας δεν είναι ιδιωτική</translation>
 <translation id="3566336457819493938">215 x 315 χιλ.</translation>
@@ -2600,7 +2599,6 @@
 <translation id="5675809467256309336">Χορευτική και ηλεκτρονική μουσική</translation>
 <translation id="5675959228867414813">Εμφάνιση κατά ημερομηνία</translation>
 <translation id="567604591393105935">Το φύλλο κάτω μέρους εμπορικών πληροφοριών άνοιξε στο μισό ύψος</translation>
-<translation id="5677928146339483299">Αποκλεισμένο</translation>
 <translation id="5678007133659493065">Φιλμ αλουμινίου</translation>
 <translation id="5680642791693447368">Ταινίες θρίλερ, εγκλημάτων και μυστηρίου</translation>
 <translation id="568292603005599551">Θέση εικόνας στον άξονα X</translation>
@@ -2959,7 +2957,6 @@
 <translation id="633770708279464947">Η τιμή <ph name="SECURE_DNS_SALT" /> δεν είναι έγκυρη και δεν θα χρησιμοποιηθεί.</translation>
 <translation id="6340739886198108203">Η πολιτική διαχειριστή δεν συνιστά τη λήψη στιγμιότυπων οθόνης ή εγγραφών όταν εμπιστευτικό περιεχόμενο είναι ορατό:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά τη μεταφόρτωση αυτού του αρχείου σε <ph name="DESTINATION_NAME" />.}other{Η πολιτική διαχειριστή δεν συνιστά τη μεταφόρτωση αυτών των αρχείων σε <ph name="DESTINATION_NAME" />.}}</translation>
-<translation id="6344622098450209924">Προστασία από παρακολούθηση</translation>
 <translation id="634500758737709758">Οδηγίες</translation>
 <translation id="6348220984832452017">Ενεργές παραλλαγές</translation>
 <translation id="6349101878882523185">Εγκατάσταση εφαρμογής <ph name="APP_NAME" /></translation>
@@ -4398,7 +4395,6 @@
 <translation id="893332455753468063">Προσθήκη ονόματος</translation>
 <translation id="8942355029279167844">Ο διαχειριστής επέτρεψε στην εφαρμογή <ph name="APP_NAME" /> να συλλέγει διαγνωστικά στοιχεία για τη βελτίωση της εμπειρίας του προϊόντος. Ανατρέξτε στη διεύθυνση <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> για περισσότερες πληροφορίες.</translation>
 <translation id="8943282376843390568">Λάιμ</translation>
-<translation id="8944485226638699751">Περιορισμένα</translation>
 <translation id="8949410982325929394">Τόνος</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8952569554322479410">Ένας ιστότοπος μόλις ζήτησε πρόσβαση για το στοιχείο <ph name="REQUEST_TYPE" />. Βοηθήστε μας να βελτιώσουμε τον τρόπο με τον οποίο οι ιστότοποι ζητούν πρόσβαση, συμμετέχοντας σε αυτή την έρευνα διάρκειας 1 λεπτού.</translation>

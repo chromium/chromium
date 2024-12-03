@@ -1131,7 +1131,6 @@
 <translation id="1769157454356586138">掃瞄失敗。管理員已封鎖此檔案</translation>
 <translation id="1770407692401984718">將圖片拖曳至此處或</translation>
 <translation id="177053719077591686">在「Google 雲端硬碟」中備份 Android 應用程式。</translation>
-<translation id="1771075623623424448">要查看瀏覽器的裝置記錄頁面嗎？請前往 <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">使用 <ph name="DEVICE_TYPE" /> 的流動數據建立 Wi-Fi 熱點，以便向其他裝置提供互聯網連線。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">代管應用程式數據</translation>
 <translation id="177529472352014190">連線至 OneDrive</translation>
@@ -3140,6 +3139,7 @@
 <translation id="3166443275568926403">效能和電池狀態</translation>
 <translation id="3167446923957429259">嘴戚向左邊</translation>
 <translation id="3167562202484086668">刪除所有「<ph name="BRAND" />」資料</translation>
+<translation id="3169901410527787002">一律讀取網址列的鍵盤輸入內容</translation>
 <translation id="3169930038976362151">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要輕觸並按住桌面即可。</translation>
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
 <translation id="3175067642577044620">內文</translation>
@@ -10132,7 +10132,6 @@
 <translation id="8195920051450756553">再次啟動相同按鍵前的延遲時間</translation>
 <translation id="8197673340773315084">新增名稱或標籤，例如「工作」或「個人」</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
-<translation id="8198457270656084773">要查看系統的裝置記錄頁面嗎？請前往 <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
 <translation id="8199300056570174101">網絡 (服務) 和裝置屬性元件</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8202160505685531999">請重新輸入密碼以更新 <ph name="DEVICE_TYPE" /> 的個人檔案。</translation>

@@ -1135,7 +1135,6 @@
 <translation id="1769157454356586138">Помилка сканування. Адміністратор заблокував цей файл.</translation>
 <translation id="1770407692401984718">Перетягніть зображення сюди або</translation>
 <translation id="177053719077591686">Створюйте резервні копії додатків для Android на Google Диску</translation>
-<translation id="1771075623623424448">Шукаєте сторінку журналу пристрою з інформацією про веб-переглядач? Перейдіть на сторінку <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Щоб надати доступ до Інтернету іншим пристроям, створіть точку доступу Wi-Fi, використовуючи мобільний трафік на <ph name="DEVICE_TYPE" />. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Дані розміщених додатків</translation>
 <translation id="177529472352014190">Підключитися до OneDrive</translation>
@@ -3144,6 +3143,7 @@
 <translation id="3166443275568926403">Продуктивність і стан акумулятора</translation>
 <translation id="3167446923957429259">Змістіть рот ліворуч</translation>
 <translation id="3167562202484086668">Видалити всі дані із сервісу <ph name="BRAND" /></translation>
+<translation id="3169901410527787002">Завжди читати текст, введений в адресному рядку за допомогою клавіатури</translation>
 <translation id="3169930038976362151">Виберіть тему відповідно до своїх потреб. Щоб змінити тему, фоновий малюнок, заставку тощо, натисніть і утримуйте будь-яке місце на робочому столі.</translation>
 <translation id="3170072451822350649">Можна також пропустити вхід і <ph name="LINK_START" />працювати в режимі "Гість"<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Основний розділ</translation>
@@ -10151,7 +10151,6 @@
 <translation id="8195920051450756553">Затримка перед повторною активацією клавіші</translation>
 <translation id="8197673340773315084">Додайте назву або мітку, як-от "Робочий" або "Особистий"</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
-<translation id="8198457270656084773">Шукаєте сторінку журналу пристрою з інформацією про систему? Перейдіть на сторінку <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Параметри мережі (служби) і пристрою</translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="8202160505685531999">Щоб оновити профіль <ph name="DEVICE_TYPE" />, введіть пароль ще раз.</translation>

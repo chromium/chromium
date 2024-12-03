@@ -1365,6 +1365,7 @@
 <translation id="7425037327577270384">Помощ при писане</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните APN за <ph name="ATTACH" /> са деактивирани или премахнати.</translation>
+<translation id="7453118953486228603">Кликнете, за да обобщите избрания текст</translation>
 <translation id="7458970041932198923">Свържете се с мрежа и презаредете страницата, за да прегледате аватарите и да зададете такъв.</translation>
 <translation id="7469648432129124067">Открит е портал</translation>
 <translation id="7481312909269577407">Напред</translation>
@@ -1723,6 +1724,7 @@
 <translation id="9133772297793293778">Натиснете модификатор от 1 до 4 и още един клавиш на клавиатурата. За да излезете от режима на редактиране, натиснете Alt + Esc.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9138630967333032450">Клавиш „shift“ вляво</translation>
+<translation id="9147928237330776930">Твърде малко думи за обобщаване</translation>
 <translation id="9149391708638971077">Тестване на паметта</translation>
 <translation id="9159524746324788320">хамбургери</translation>
 <translation id="9161276708550942948">интервал</translation>

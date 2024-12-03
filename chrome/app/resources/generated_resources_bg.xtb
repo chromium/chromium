@@ -1128,7 +1128,6 @@
 <translation id="1769157454356586138">Сканирането не бе успешно. Този файл е блокиран от администратора ви</translation>
 <translation id="1770407692401984718">Плъзнете изображение тук или</translation>
 <translation id="177053719077591686">Създаване в Google Диск на резервно копие на приложенията за Android.</translation>
-<translation id="1771075623623424448">Търсите страницата с регистрационния файл на браузъра на устройството? Посетете <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Създайте точка за достъп до Wi-Fi, като използвате мобилните данни на <ph name="DEVICE_TYPE" />, за да предоставите достъп до интернет на други устройства. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Данни на хостваните приложения</translation>
 <translation id="177529472352014190">Свързване с OneDrive</translation>
@@ -3137,6 +3136,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3166443275568926403">Състояние на ефективността и батерията</translation>
 <translation id="3167446923957429259">Преместване на устните наляво</translation>
 <translation id="3167562202484086668">Изтриване на всички данни от <ph name="BRAND" /></translation>
+<translation id="3169901410527787002">Винаги да се чете текстът, въведен с клавиатурата в адресната лента</translation>
 <translation id="3169930038976362151">Изберете темата, която отговаря на нуждите ви. За да промените темата, тапета, скрийнсейвъра и др., трябва само да докоснете и да задържите работния плот.</translation>
 <translation id="3170072451822350649">Може също да пропуснете влизането и <ph name="LINK_START" />да сърфирате като гост<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Основен текст</translation>
@@ -10146,7 +10146,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8195920051450756553">Забавяне преди повторно активиране на същия клавиш</translation>
 <translation id="8197673340773315084">Добавете име или етикет, като например „Служебен“ или „Личен“</translation>
 <translation id="8198456017687137612">Разделът се предава</translation>
-<translation id="8198457270656084773">Търсите страницата със системния регистрационен файл на устройството? Посетете <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Свойства на мрежата (услугата) и устройството</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
 <translation id="8202160505685531999">Моля, въведете отново паролата си, за да актуализирате потребителския си профил за <ph name="DEVICE_TYPE" />.</translation>

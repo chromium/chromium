@@ -1126,7 +1126,6 @@
 <translation id="1769157454356586138">Не ўдалося выканаць праверку. Гэты файл заблакіраваны адміністратарам.</translation>
 <translation id="1770407692401984718">Перацягніце відарыс сюды або</translation>
 <translation id="177053719077591686">Рэзервовае капіраванне праграм для Android на Google Дыск.</translation>
-<translation id="1771075623623424448">Шукаеце старонку журнала прылад браўзера? Наведаць <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Стварыце хот-спот Wi-Fi, выкарыстоўваючы мабільную перадачу даных на прыладзе <ph name="DEVICE_TYPE" />, каб іншыя прылады маглі падключацца да інтэрнэту. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Даныя размешчанай праграмы</translation>
 <translation id="177529472352014190">Падключыць да OneDrive</translation>
@@ -3129,6 +3128,7 @@
 <translation id="3166443275568926403">Прадукцыйнасць і стан акумулятара</translation>
 <translation id="3167446923957429259">Ссуньце рот улева</translation>
 <translation id="3167562202484086668">Выдаленне ўсіх даных з праграмы "<ph name="BRAND" />"</translation>
+<translation id="3169901410527787002">Заўсёды счытваць увод з клавіятуры ў адрасным радку</translation>
 <translation id="3169930038976362151">Выберыце тэму, якая адпавядае вашым патрэбам. Каб змяніць тэму, шпалеры, застаўку і іншыя параметры, проста дакраніцеся да працоўнага стала і ўтрымлівайце палец.</translation>
 <translation id="3170072451822350649">Таксама можна не ўваходзіць і <ph name="LINK_START" />праглядаць вэб-старонкі як госць<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Асноўны раздзел</translation>
@@ -10137,7 +10137,6 @@
 <translation id="8195920051450756553">Затрымка перад актывацыяй той жа клавішы</translation>
 <translation id="8197673340773315084">Дадайце назву або метку (напрыклад, "Праца" або "Асабістае")</translation>
 <translation id="8198456017687137612">Ідзе трансляцыя ўкладкі</translation>
-<translation id="8198457270656084773">Шукаеце старонку журнала сістэмных прылад? Наведаць <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Уласцівасці прылады і сеткі (сэрвісу)</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8202160505685531999">Каб абнавіць профіль прылады <ph name="DEVICE_TYPE" />, увядзіце пароль яшчэ раз.</translation>

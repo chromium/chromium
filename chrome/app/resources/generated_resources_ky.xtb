@@ -1132,7 +1132,6 @@
 <translation id="1769157454356586138">Скандалган жок. Бул файлды администраторуңуз бөгөттөп койгон</translation>
 <translation id="1770407692401984718">Сүрөттү бул жерге сүйрөңүз же</translation>
 <translation id="177053719077591686">Android колдонмолорунун камдык көчүрмөсүн Google Drive'га сактаңыз.</translation>
-<translation id="1771075623623424448">Серепчинин түзмөк таржымалын издеп жатасызбы? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> барагына өтүңүз.</translation>
 <translation id="1773329206876345543">Башка түзмөктөргө Интернет таратуу үчүн <ph name="DEVICE_TYPE" /> түзмөгүнүн мобилдик трафигинин жардамы менен Wi-Fi байланыш түйүнүн түзүңүз. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Хост колдонмосунун дайындары</translation>
 <translation id="177529472352014190">OneDrive'га туташуу</translation>
@@ -3141,6 +3140,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3166443275568926403">Майнаптуулугу жана батареянын абалы</translation>
 <translation id="3167446923957429259">Оозуңузду солго жылдырыңыз</translation>
 <translation id="3167562202484086668">Бардык <ph name="BRAND" /> маалыматын өчүрүү</translation>
+<translation id="3169901410527787002">Дарек тилкесинде баскычтоп аркылуу киргизилген текстти ар дайым окуу</translation>
 <translation id="3169930038976362151">Өзүңүзгө ыңгайлуу теманы тандаңыз. Теманы, тушкагазды, көшөгөнү жана башкаларды өзгөртүү үчүн жөн гана иш тактада коё бербей басып туруңуз.</translation>
 <translation id="3170072451822350649">Кирбей туруп, <ph name="LINK_START" />Конок катары серептесеңиз болот<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Текст</translation>
@@ -10146,7 +10146,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8195920051450756553">Ошол эле баскычты кайра иштетүүгө чейинки кечигүү</translation>
 <translation id="8197673340773315084">Жумуш же Жеке сыяктуу белги же аталыш кошуңуз</translation>
 <translation id="8198456017687137612">Өтмөктү тышкы экранга чыгаруу</translation>
-<translation id="8198457270656084773">Тутумдун түзмөк таржымалын издеп жатасызбы? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> барагына өтүңүз.</translation>
 <translation id="8199300056570174101">Тармактын (кызматтын) жана түзмөктүн касиеттери</translation>
 <translation id="8200772114523450471">Улантуу</translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> профилиңизди жаңыртуу үчүн сырсөзүңүздү кайра киргизиңиз.</translation>

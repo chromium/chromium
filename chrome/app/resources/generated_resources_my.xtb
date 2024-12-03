@@ -1131,7 +1131,6 @@
 <translation id="1769157454356586138">စကင်ဖတ်၍မရပါ။ ဤဖိုင်ကို သင်၏စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="1770407692401984718">ဤနေရာသို့ ပုံကိုဖိဆွဲပါ သို့မဟုတ်</translation>
 <translation id="177053719077591686">Android အက်ပ်များကို Google Drive တွင် အရန်သိမ်းပါ။</translation>
-<translation id="1771075623623424448">ဘရောင်ဇာ၏ စက်မှတ်တမ်း စာမျက်နှာကို ရှာနေလား။ <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> သို့ ဝင်ကြည့်ပါ။</translation>
 <translation id="1773329206876345543">အခြားစက်များအား အင်တာနက်ပံ့ပိုးရန် သင့် <ph name="DEVICE_TYPE" /> ၏ မိုဘိုင်းဒေတာကိုသုံး၍ Wi-Fi ဟော့စပေါ့ ပြုလုပ်ပါ။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">ဟို့စ် လုပ်ခဲ့သည့် အက်ပ် ဒေတာ</translation>
 <translation id="177529472352014190">OneDrive သို့ ချိတ်ဆက်ရန်</translation>
@@ -3140,6 +3139,7 @@
 <translation id="3166443275568926403">စွမ်းဆောင်ရည်နှင့် ဘက်ထရီအခြေအနေ</translation>
 <translation id="3167446923957429259">ပါးစပ်ကို ဘယ်ဘက်သို့ ရွဲ့ပြပါ</translation>
 <translation id="3167562202484086668"><ph name="BRAND" /> ဒေတာအားလုံးကို ဖျက်ခြင်း</translation>
+<translation id="3169901410527787002">လိပ်စာဘားရှိ ကီးဘုတ်ထည့်သွင်းချက်ကို အမြဲဖတ်ရန်</translation>
 <translation id="3169930038976362151">လိုအပ်သလို အပြင်အဆင်ကို ရွေးနိုင်သည်။ အပြင်အဆင်၊ နောက်ခံ၊ စကရင်နားချိန်ပုံနှင့် အခြားအရာများပြောင်းရန် ဒက်စ်တော့ကို ထိ၍ဖိထားပါ။</translation>
 <translation id="3170072451822350649">သင် မဝင်ဘဲ ကျော်သွားနိုင်ကာ <ph name="LINK_START" />ဧည့်သည် <ph name="LINK_END" /> အနေဖြင့် အသုံးပြုနိုင်ပါသည်။</translation>
 <translation id="3175067642577044620">စာကိုယ်</translation>
@@ -10142,7 +10142,6 @@
 <translation id="8195920051450756553">ကီးတစ်ခုတည်းကို ထပ်မံသုံးနိုင်ရန် စောင့်ဆိုင်းချိန်</translation>
 <translation id="8197673340773315084">‘အလုပ်’ သို့မဟုတ် ‘ကိုယ်ရေးကိုယ်တာ’ ကဲ့သို့ အမည် (သို့) အညွှန်း ထည့်ရန်</translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>
-<translation id="8198457270656084773">စနစ်၏ စက်မှတ်တမ်း စာမျက်နှာကို ရှာနေလား။ <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> သို့ ဝင်ကြည့်ပါ။</translation>
 <translation id="8199300056570174101">ကွန်ရက် (ဝန်ဆောင်မှု) နှင့် စက်ပစ္စည်း သတ်မှတ်ချက်များ</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8202160505685531999">သင့် <ph name="DEVICE_TYPE" /> ကိုယ်ရေးအကျဉ်းကို အသစ်မွမ်းမံရန် ကျေးဇူးပြု၍ သင့်စကားဝှက်ကို ပြန်လည်ရိုက်ထည့်ပါ။</translation>

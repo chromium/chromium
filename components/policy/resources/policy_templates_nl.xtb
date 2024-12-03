@@ -4076,6 +4076,15 @@ Ze hebben beide hetzelfde effect op het gedrag van de browser.</translation>
 <translation id="4027608872760987929">Standaard zoekprovider gebruiken</translation>
 <translation id="4030152268425532846">Automatisch inloggen voortijdig afbreken niet toestaan</translation>
 <translation id="4043796890723386527">Voorkomen dat gebruikers secundaire profielen maken en gebruiken of dat ze de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
+<translation id="4047633048700722778">Als je dit beleid instelt, wordt de toepassing van het SafeSites URL-filter beheerd. Dit filter gebruikt de Google Safe Search API om URL's al dan niet te classificeren als pornografisch.
+
+Als dit beleid is ingesteld op:
+
+* Sites niet filteren op content voor volwassenen (of als het niet is ingesteld), worden de sites niet gefilterd
+
+* Sites filteren op content voor volwassenen, worden de sites gefilterd die zijn geclassificeerd als pornografisch
+
+Het beleid is van toepassing op zowel de URL waar de gebruiker naartoe navigeert als op iframes. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> heeft voorrang op dit beleid en kan worden gebruikt om beoordelingen van de Google Safe Search API te overschrijven.</translation>
 <translation id="4051723201852944592">Occlusie van vensters aanzetten</translation>
 <translation id="4052529125939620019">De componentextensie CryptoToken laden bij opstarten</translation>
 <translation id="4053157306171963473">Rapportage voor tijd van apparaatactiviteit uitzetten</translation>
@@ -9570,6 +9579,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
       Als je het beleid niet toepast of niet instelt, worden er geen pakketten gestuurd.</translation>
 <translation id="8168359201203671567">Regenboogachtergrondverlichting van toetsenbord</translation>
 <translation id="8169452762291746260">Controle van apparaatstatus uitzetten</translation>
+<translation id="8170359860920320269">Sites filteren op content voor volwassenen</translation>
 <translation id="8171262216089271568">Grote cursor op het inlogscherm aanzetten</translation>
 <translation id="8171924760436219650">De rechtermuisknop instellen als de primaire muisknop op het inlogscherm</translation>
 <translation id="81724933026241365">Gebruikers toestaan het apparaat uit te zetten met het icoon Uitzetten of de aan/uit-knop</translation>

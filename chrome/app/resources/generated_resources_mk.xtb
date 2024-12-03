@@ -1133,7 +1133,6 @@
 <translation id="1769157454356586138">Скенирањето не успеа. Администраторот ја блокираше датотекава.</translation>
 <translation id="1770407692401984718">Повлечете слика овде или</translation>
 <translation id="177053719077591686">Направете бекап од апликациите на Android во Google Drive.</translation>
-<translation id="1771075623623424448">Дали ја барате страницата за евиденција на уреди на прелистувачот? Одете на <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Создајте точка на пристап за Wi‑Fi со мобилниот интернет на вашиот <ph name="DEVICE_TYPE" /> за да обезбедите интернет за други уреди. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Вдомени податоци на апликација</translation>
 <translation id="177529472352014190">Поврзете се на OneDrive</translation>
@@ -3142,6 +3141,7 @@
 <translation id="3166443275568926403">Изведба и состојба на батеријата</translation>
 <translation id="3167446923957429259">Помрднете ја устата налево</translation>
 <translation id="3167562202484086668">Избришете ги сите податоци во <ph name="BRAND" /></translation>
+<translation id="3169901410527787002">Секогаш читајте го внесувањето со тастатурата во лентата за адреса</translation>
 <translation id="3169930038976362151">Изберете ја темата што одговара на вашите потреби. За да промените тема, тапет, штедач на екран и друго, само допрете и задржете на работната површина.</translation>
 <translation id="3170072451822350649">Може да прескокнете и најавување и <ph name="LINK_START" />да прелистувате како Гостин<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Главен текст</translation>
@@ -10149,7 +10149,6 @@
 <translation id="8195920051450756553">Одложи пред да го активираш истото копче повторно</translation>
 <translation id="8197673340773315084">Додајте име или етикета, на пр., „Работен“ или „Личен“</translation>
 <translation id="8198456017687137612">Картичка за емитување</translation>
-<translation id="8198457270656084773">Дали ја барате страницата за евиденција на уреди на системот? Одете на <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Својства на уредот и мрежата (услугата)</translation>
 <translation id="8200772114523450471">Продолжи</translation>
 <translation id="8202160505685531999">Повторно внесете ја лозинката за да го ажурирате профилот на <ph name="DEVICE_TYPE" />.</translation>

@@ -1126,7 +1126,6 @@
 <translation id="1769157454356586138">تعذَّر إجراء عملية الفحص، لذا حظرَ المشرف هذا الملف.</translation>
 <translation id="1770407692401984718">يمكنك سحب صورة إلى هنا أو</translation>
 <translation id="177053719077591686">‏الاحتفاظ بنسخة احتياطية من تطبيقات Android في Google Drive</translation>
-<translation id="1771075623623424448">هل تبحث عن صفحة سجلّ الجهاز الخاصة بالمتصفِّح؟ انتقِل إلى <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">‏يمكنك إنشاء نقطة اتصال Wi-Fi باستخدام بيانات الجوّال على <ph name="DEVICE_TYPE" /> لتوفير الإنترنت للأجهزة الأخرى. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">بيانات التطبيقات المستضافة</translation>
 <translation id="177529472352014190">‏ربط حسابك بمساحة تخزين OneDrive</translation>
@@ -10147,7 +10146,6 @@
 <translation id="8195920051450756553">المهلة التي يتم بعد انقضائها تفعيل المفتاح نفسه مرة أخرى</translation>
 <translation id="8197673340773315084">يُرجى إضافة اسم أو تصنيف، مثل "مخصّص للعمل" أو "شخصي".</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
-<translation id="8198457270656084773">هل تبحث عن صفحة سجلّ الجهاز الخاصة بالنظام؟ انتقِل إلى <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">خصائص الشبكة (الخدمة) والجهاز</translation>
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8202160505685531999">يُرجى إعادة إدخال كلمة المرور لتحديث ملف <ph name="DEVICE_TYPE" /> الشخصي.</translation>

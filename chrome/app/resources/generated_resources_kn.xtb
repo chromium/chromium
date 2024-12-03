@@ -634,7 +634,7 @@
 <translation id="1439671507542716852">ದೀರ್ಘ-ಕಾಲದ ಬೆಂಬಲ</translation>
 <translation id="1440090277117135316">ಶಾಲಾ ದಾಖಲಾತಿ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
-<translation id="1442851588227551435">ಸಕ್ರಿಯ Kerberos ಟಿಕೆಟ್ ಅನ್ನು ಹೊಂದಿಸಿ</translation>
+<translation id="1442851588227551435">ಸಕ್ರಿಯ Kerberos ಟಿಕೆಟ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="1444389367706681769">ಔಟರ್ ಸ್ಪೇಸ್</translation>
 <translation id="1444628761356461360">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಸಾಧನದ ಮಾಲೀಕರಿಂದ ನಿರ್ವಹಿಸಿಲಾಗುತ್ತದೆ, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">'<ph name="IMAGE_PATH" />' ಅನ್ನು ಥೀಮ್‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
@@ -1126,7 +1126,6 @@
 <translation id="1769157454356586138">ಸ್ಕ್ಯಾನ್ ವಿಫಲಗೊಂಡಿದೆ. ಈ ಫೈಲ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="1770407692401984718">ಚಿತ್ರವನ್ನು ಇಲ್ಲಿಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ ಅಥವಾ</translation>
 <translation id="177053719077591686">Android ಆ್ಯಪ್‌‌ಗಳನ್ನು Google Drive ನಲ್ಲಿ ಬ್ಯಾಕಪ್ ಮಾಡಿ.</translation>
-<translation id="1771075623623424448">ಬ್ರೌಸರ್ ಸಾಧನ-ಲಾಗ್ ಪುಟಕ್ಕಾಗಿ ಹುಡುಕುತ್ತಿದ್ದೀರಾ? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="1773329206876345543">ಇತರ ಸಾಧನಗಳಿಗೆ ಇಂಟರ್ನೆಟ್ ಒದಗಿಸಲು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಬಳಸಿಕೊಂಡು ವೈ-ಫೈ ಹಾಟ್‌ಸ್ಪಾಟ್ ರಚಿಸಿ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">ಹೋಸ್ಟ್ ಮಾಡಿರುವ ಅಪ್ಲಿಕೇಶನ್ ಡೇಟಾ</translation>
 <translation id="177529472352014190">OneDrive ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
@@ -3134,6 +3133,7 @@
 <translation id="3166443275568926403">ಕಾರ್ಯಕ್ಷಮತೆ ಮತ್ತು ಬ್ಯಾಟರಿ ಸ್ಥಿತಿ</translation>
 <translation id="3167446923957429259">ನಿಮ್ಮ ಬಾಯಿಯನ್ನು ಎಡಬದಿಗೆ ಮೂವ್ ಮಾಡುವುದು</translation>
 <translation id="3167562202484086668">ಎಲ್ಲಾ <ph name="BRAND" /> ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
+<translation id="3169901410527787002">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿರುವ ಕೀಬೋರ್ಡ್ ಇನ್‌ಪುಟ್ ಅನ್ನು ಯಾವಾಗಲೂ ಓದಿರಿ</translation>
 <translation id="3169930038976362151">ನಿಮ್ಮ ಅಗತ್ಯಗಳಿಗೆ ಸರಿಹೊಂದುವ ಥೀಮ್ ಆಯ್ಕೆಮಾಡಿ. ನಿಮ್ಮ ಥೀಮ್, ವಾಲ್‌ಪೇಪರ್, ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಬದಲಾಯಿಸಲು, ಡೆಸ್ಕ್‌ಟಾಪ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</translation>
 <translation id="3170072451822350649">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡುವುದನ್ನು ಸ್ಕಿಪ್‌ ಮಾಡಬಹುದು ಹಾಗೂ <ph name="LINK_START" />ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">ಮುಖ್ಯ ಭಾಗ</translation>
@@ -10138,7 +10138,6 @@
 <translation id="8195920051450756553">ಅದೇ ಕೀಯನ್ನು ಮತ್ತೆ ಸಕ್ರಿಯಗೊಳಿಸುವ ಮೊದಲು ವಿಳಂಬ ಮಾಡಿ</translation>
 <translation id="8197673340773315084">ಕೆಲಸ ಅಥವಾ ವೈಯಕ್ತಿಕ ರೀತಿಯ ಹೆಸರು ಅಥವಾ ಲೇಬಲ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8198456017687137612">ಬಿತ್ತರಿಸುವ ಟ್ಯಾಬ್‌</translation>
-<translation id="8198457270656084773">ಸಿಸ್ಟಂ ಸಾಧನ-ಲಾಗ್ ಪುಟಕ್ಕಾಗಿ ಹುಡುಕುತ್ತಿದ್ದೀರಾ? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="8199300056570174101">ನೆಟ್‌ವರ್ಕ್ (ಸೇವೆ) ಮತ್ತು ಸಾಧನದ ಗುಣಲಕ್ಷಣಗಳು</translation>
 <translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
 <translation id="8202160505685531999">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಪ್ರೊಫೈಲ್ ಅಪ್‌‌ಡೇಟ್‌ ಮಾಡಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಮರುನಮೂದಿಸಿ.</translation>

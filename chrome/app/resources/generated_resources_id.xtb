@@ -1132,7 +1132,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1769157454356586138">Pemindaian gagal. File ini diblokir oleh administrator Anda.</translation>
 <translation id="1770407692401984718">Tarik gambar ke sini atau</translation>
 <translation id="177053719077591686">Cadangkan aplikasi Android ke Google Drive.</translation>
-<translation id="1771075623623424448">Mencari halaman log perangkat browser? Buka <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Buat hotspot Wi-Fi menggunakan data seluler <ph name="DEVICE_TYPE" /> untuk menyediakan internet ke perangkat lain. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Data aplikasi yang dihosting</translation>
 <translation id="177529472352014190">Hubungkan ke OneDrive</translation>
@@ -3141,6 +3140,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3166443275568926403">Performa dan Status Baterai</translation>
 <translation id="3167446923957429259">Gerakkan bibir Anda ke kiri</translation>
 <translation id="3167562202484086668">Hapus semua data <ph name="BRAND" /></translation>
+<translation id="3169901410527787002">Selalu baca input keyboard di kolom URL</translation>
 <translation id="3169930038976362151">Pilih tema yang sesuai dengan kebutuhan Anda. Cukup sentuh lama desktop untuk mengubah tema, wallpaper, screen saver, dan lainnya.</translation>
 <translation id="3170072451822350649">Anda juga dapat melewati proses masuk dan <ph name="LINK_START" />menjelajah sebagai tamu<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Isi</translation>
@@ -10147,7 +10147,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8195920051450756553">Penundaan sebelum mengaktifkan tombol yang sama lagi</translation>
 <translation id="8197673340773315084">Tambahkan nama atau label, seperti Kantor atau Pribadi</translation>
 <translation id="8198456017687137612">Mentransmisikan tab</translation>
-<translation id="8198457270656084773">Mencari halaman log perangkat sistem? Buka <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Properti Perangkat dan Jaringan (Layanan)</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8202160505685531999">Masukkan kembali sandi untuk memperbarui profil <ph name="DEVICE_TYPE" /> Anda.</translation>

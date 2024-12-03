@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">वेब पता डालें</translation>
 <translation id="5975083100439434680">ज़ूम आउट</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">अब अपने डिवाइस में मौजूद ऐप्लिकेशन की सूची और खोज के नतीजों में सुझाए गए टैब को तुरंत ऐक्सेस किया जा सकता है. इसके अलावा, Chrome की सेटिंग में जाकर इसे कभी भी बंद किया जा सकता है.</translation>
 <translation id="6015775454662021376">इस साइट के लिए अपने डिवाइस का ऐक्सेस कंट्रोल करें</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6042308850641462728">और ज़्यादा</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">पहले पूछें</translation>
 <translation id="7423538860840206698">क्लिपबोर्ड पढ़ने से ब्लॉक किया गया है</translation>
 <translation id="7425915948813553151">साइटों के लिए गहरे रंग वाली थीम</translation>
+<translation id="7488573225650545859">'ऐप्लिकेशन की सूची में टैब देखें' को छिपाएं</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">इस सेटिंग के चालू होने पर, साइटें साइन-इन करने के अनुरोध दिखा सकती हैं. इस सेटिंग के बंद होने पर, साइटें साइन-इन करने के अनुरोध नहीं दिखा सकतीं.</translation>
 <translation id="7553211568594248088">हब सर्च से बाहर निकलें</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">यह सामग्री <ph name="DOMAIN_NAME" /> की है जिसे Google के द्वारा वितरित किया गया है.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> में ज़्यादा विकल्प</translation>
 <translation id="8090579562279016251">इससे परफ़ॉर्मेंस कम होती है, लेकिन V8 की सायबर हमलों से बचने की क्षमता बढ़ जाती है</translation>
+<translation id="8112925981674547014">ऐप्लिकेशन की सूची में टैब देखें</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome कल फिर से कुकी को सीमित करेगा}one{Chrome # दिन बाद फिर से कुकी को सीमित करेगा}other{Chrome # दिनों के बाद फिर से कुकी को सीमित करेगा}}</translation>
 <translation id="8116925261070264013">आवाज़ बंद की गई</translation>
 <translation id="8117244575099414087">इस सेटिंग के चालू होने पर, साइटें आपके डिवाइस के सेंसर का इस्तेमाल कर सकती हैं. इस सेटिंग के बंद होने पर, साइटें सेंसर का इस्तेमाल नहीं कर सकतीं.</translation>
