@@ -648,6 +648,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityVisibleCells) {
   Migration_RunTypedTest<kMacMethods>("accessibility-visible-cells.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityVisibleRows) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-visible-rows.html");
+}
+
 // Parameterized attributes
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityIndexTable) {

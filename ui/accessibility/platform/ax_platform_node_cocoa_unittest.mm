@@ -561,6 +561,22 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleCells) {
             [cell node]->GetUniqueId());
 }
 
+// accessibilityVisibleRows on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleRows) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  AXPlatformNodeCocoa* row = GetCocoaNode(2);
+  NSArray* rows = [table accessibilityVisibleRows];
+  EXPECT_EQ([rows count], 1UL);
+  EXPECT_EQ([[rows firstObject] node]->GetUniqueId(),
+            [row node]->GetUniqueId());
+}
+
 // Non-header cells should not support accessibilitySortDirection, even if
 // there's a sort direction in the AXNodeData. Their sort order is "unknown".
 TEST_P(AXPlatformNodeCocoaTest, AccessibilitySortDirectionOnCell) {

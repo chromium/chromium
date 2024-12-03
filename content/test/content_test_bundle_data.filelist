@@ -5614,6 +5614,8 @@ data/accessibility/mac/methods/accessibility-visible-cells-expected.txt
 data/accessibility/mac/methods/accessibility-visible-cells.html
 data/accessibility/mac/methods/accessibility-visible-columns-expected.txt
 data/accessibility/mac/methods/accessibility-visible-columns.html
+data/accessibility/mac/methods/accessibility-visible-rows-expected.txt
+data/accessibility/mac/methods/accessibility-visible-rows.html
 data/accessibility/mac/methods/is-accessibility-disclosed-expected.txt
 data/accessibility/mac/methods/is-accessibility-disclosed.html
 data/accessibility/mac/methods/is-accessibility-element-expected.txt
