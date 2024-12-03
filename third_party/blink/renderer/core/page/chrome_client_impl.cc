@@ -1052,8 +1052,7 @@ void ChromeClientImpl::NotifyPresentationTime(LocalFrame& frame,
   FrameWidget* widget = frame.GetWidgetForLocalRoot();
   if (!widget)
     return;
-  widget->NotifyPresentationTimeInBlink(
-      ConvertToBaseOnceCallback(std::move(callback)));
+  widget->NotifyPresentationTime(std::move(callback));
 }
 
 void ChromeClientImpl::RequestBeginMainFrameNotExpected(LocalFrame& frame,

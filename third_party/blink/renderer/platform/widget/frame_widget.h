@@ -88,7 +88,7 @@ class PLATFORM_EXPORT FrameWidget {
   // is presented to the user. If the presentation is successful, the argument
   // passed to the callback is the presentation timestamp; otherwise, it would
   // be timestamp of when the failure is detected.
-  virtual void NotifyPresentationTimeInBlink(
+  virtual void NotifyPresentationTime(
       base::OnceCallback<void(const viz::FrameTimingDetails&)>
           presentation_callback) = 0;
 

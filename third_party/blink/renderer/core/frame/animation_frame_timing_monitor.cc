@@ -312,10 +312,10 @@ void AnimationFrameTimingMonitor::RequestPresentationTimeForTracing(
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
   if (tracing_enabled) {
     frame.GetChromeClient().NotifyPresentationTime(
-        frame, CrossThreadBindOnce(
-                   &AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
-                   WrapCrossThreadWeakPersistent(this),
-                   current_frame_timing_info_->GetTraceId()));
+        frame,
+        BindOnce(&AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
+                 WrapWeakPersistent(this),
+                 current_frame_timing_info_->GetTraceId()));
   }
 }
 

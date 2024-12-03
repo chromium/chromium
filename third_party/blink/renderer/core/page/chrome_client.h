@@ -564,7 +564,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // the frame to be presented, the `callback` will run with the time of the
   // failure.
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(const viz::FrameTimingDetails&)>;
+      base::OnceCallback<void(const viz::FrameTimingDetails&)>;
   virtual void NotifyPresentationTime(LocalFrame& frame,
                                       ReportTimeCallback callback) {}
 

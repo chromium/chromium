@@ -28,12 +28,12 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -291,19 +291,18 @@ void PaintTiming::RegisterNotifyPresentationTime(PaintEvent event) {
   // 10.1 Wait until an implementation-defined time when the current frame has
   //    been presented to the user.
 
-  RegisterNotifyPresentationTime(
-      CrossThreadBindOnce(&PaintTiming::ReportPresentationTime,
-                          MakeUnwrappingCrossThreadWeakHandle(this), event,
-                          last_rendering_update_end_time_));
+  RegisterNotifyPresentationTime(WTF::BindOnce(
+      &PaintTiming::ReportPresentationTime, WrapWeakPersistent(this), event,
+      last_rendering_update_end_time_));
 }
 
 void PaintTiming::
     RegisterNotifyFirstPaintAfterBackForwardCacheRestorePresentationTime(
         wtf_size_t index) {
-  RegisterNotifyPresentationTime(CrossThreadBindOnce(
+  RegisterNotifyPresentationTime(WTF::BindOnce(
       &PaintTiming::
           ReportFirstPaintAfterBackForwardCacheRestorePresentationTime,
-      MakeUnwrappingCrossThreadWeakHandle(this), index));
+      WrapWeakPersistent(this), index));
 }
 
 void PaintTiming::RegisterNotifyPresentationTime(ReportTimeCallback callback) {

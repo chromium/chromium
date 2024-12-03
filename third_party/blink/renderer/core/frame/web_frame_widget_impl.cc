@@ -3667,13 +3667,6 @@ void WebFrameWidgetImpl::NotifySwapAndPresentationTimeForTesting(
   NotifySwapAndPresentationTime(std::move(callbacks));
 }
 
-void WebFrameWidgetImpl::NotifyPresentationTimeInBlink(
-    base::OnceCallback<void(const viz::FrameTimingDetails&)>
-        presentation_callback) {
-  NotifySwapAndPresentationTime(
-      {.presentation_time_callback = std::move(presentation_callback)});
-}
-
 void WebFrameWidgetImpl::NotifyPresentationTime(
     base::OnceCallback<void(const viz::FrameTimingDetails&)>
         presentation_callback) {

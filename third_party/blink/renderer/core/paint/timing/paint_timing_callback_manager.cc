@@ -38,9 +38,9 @@ void PaintTimingCallbackManagerImpl::
     return;
   }
 
-  auto combined_callback = CrossThreadBindOnce(
-      &PaintTimingCallbackManagerImpl::ReportPaintTime,
-      WrapCrossThreadWeakPersistent(this), std::move(frame_callbacks_));
+  auto combined_callback =
+      WTF::BindOnce(&PaintTimingCallbackManagerImpl::ReportPaintTime,
+                    WrapWeakPersistent(this), std::move(frame_callbacks_));
   frame_callbacks_ =
       std::make_unique<PaintTimingCallbackManager::CallbackQueue>();
 

@@ -661,9 +661,9 @@ void WindowPerformance::EventTimingProcessingEnd(
   if (need_new_promise_for_event_presentation_time_) {
     DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
         *DomWindow()->GetFrame(),
-        CrossThreadBindOnce(&WindowPerformance::OnPresentationPromiseResolved,
-                            WrapCrossThreadWeakPersistent(this),
-                            ++event_presentation_promise_count_));
+        WTF::BindOnce(&WindowPerformance::OnPresentationPromiseResolved,
+                      WrapWeakPersistent(this),
+                      ++event_presentation_promise_count_));
     need_new_promise_for_event_presentation_time_ = false;
   }
 
