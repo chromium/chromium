@@ -27,6 +27,7 @@
 #include "extensions/browser/extension_registry.h"
 
 namespace {
+using NoticeQueueState = ::PrivacySandboxService::NoticeQueueState;
 
 constexpr char kPrivacySandboxPromptHelperEventHistogram[] =
     "Settings.PrivacySandbox.PromptHelperEvent";
@@ -168,8 +169,11 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
 #if !BUILDFLAG(IS_ANDROID)
     if (auto* privacy_sandbox_service =
             PrivacySandboxServiceFactory::GetForProfile(profile())) {
-      privacy_sandbox_service->MaybeUnqueueNotice();
-      privacy_sandbox_service->suppress_queue = true;
+      privacy_sandbox_service->MaybeUnqueueNotice(
+          NoticeQueueState::kReleaseOnDMA);
+      // Set suppress queue to prevent queue operations after DMA notice is
+      // shown.
+      privacy_sandbox_service->SetSuppressQueue(true);
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
     return;
@@ -272,9 +276,11 @@ bool PrivacySandboxPromptHelper::ProfileRequiresPrompt(Profile* profile) {
     //         We are holding the handle, so we must release the handle and
     //         prevent showing.
     if (eligible) {
-      privacy_sandbox_service->MaybeQueueNotice();
+      privacy_sandbox_service->MaybeQueueNotice(
+          NoticeQueueState::kQueueOnThOrNav);
     } else {
-      privacy_sandbox_service->MaybeUnqueueNotice();
+      privacy_sandbox_service->MaybeUnqueueNotice(
+          NoticeQueueState::kReleaseOnThOrNav);
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

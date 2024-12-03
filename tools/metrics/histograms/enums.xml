@@ -27460,6 +27460,18 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Timed out"/>
 </enum>
 
+<!-- LINT.IfChange(NoticeQueueState) -->
+
+<enum name="NoticeQueueState">
+  <int value="0" label="Queued on Startup"/>
+  <int value="1" label="Queued on Tab Helper or DidFinishNav"/>
+  <int value="2" label="Released on Tab Helper or DidFinishNav"/>
+  <int value="3" label="Released on DMA"/>
+  <int value="4" label="Released on Shown"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/privacy_sandbox_service.h:NoticeQueueState) -->
+
 <enum name="NotificationAppStatus">
   <int value="0" label="Undeterminable (old Android version)"/>
   <int value="1" label="Undeterminable (exception thrown)"/>

@@ -957,7 +957,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* privacy_sandbox_service =
           PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
-    privacy_sandbox_service->MaybeQueueNotice();
+    privacy_sandbox_service->MaybeQueueNotice(
+        PrivacySandboxService::NoticeQueueState::kQueueOnStartup);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
