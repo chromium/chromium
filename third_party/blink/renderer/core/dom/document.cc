@@ -5776,11 +5776,12 @@ void Document::NodeChildrenWillBeRemoved(ContainerNode& container) {
         observer->NodeChildrenWillBeRemoved(container);
       });
 
-  if (container.InActiveDocument()) {
-    if (LocalFrame* frame = GetFrame()) {
-      frame->Selection().NodeChildrenWillBeRemoved(container);
-    }
+  if (LocalFrame* frame = GetFrame()) {
+    // TODO(dbaron): Could this also be inside the IsActiveDocument test?
+    frame->Selection().NodeChildrenWillBeRemoved(container);
+  }
 
+  if (container.InActiveDocument()) {
     if (Page* page = GetPage()) {
       page->GetDragCaret().NodeChildrenWillBeRemoved(container);
     }
@@ -5814,11 +5815,12 @@ void Document::NodeWillBeRemoved(Node& n) {
         observer->NodeWillBeRemoved(n);
       });
 
-  if (n.InActiveDocument()) {
-    if (LocalFrame* frame = GetFrame()) {
-      frame->Selection().NodeWillBeRemoved(n);
-    }
+  if (LocalFrame* frame = GetFrame()) {
+    // TODO(dbaron): Could this also be inside the IsActiveDocument test?
+    frame->Selection().NodeWillBeRemoved(n);
+  }
 
+  if (n.InActiveDocument()) {
     if (Page* page = GetPage()) {
       page->GetDragCaret().NodeWillBeRemoved(n);
     }
@@ -5835,6 +5837,10 @@ void Document::NotifyUpdateCharacterData(CharacterData* character_data,
                                          const TextDiffRange& diff) {
   Markers().DidUpdateCharacterData(character_data, diff.offset, diff.old_size,
                                    diff.new_size);
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidUpdateCharacterData(character_data, diff.offset,
+                                              diff.old_size, diff.new_size);
+  }
   synchronous_mutation_observer_set_.ForEachObserver(
       [&](SynchronousMutationObserver* observer) {
         observer->DidUpdateCharacterData(character_data, diff.offset,
@@ -5849,6 +5855,10 @@ void Document::NotifyChangeChildren(
     if (FragmentAnchor* anchor = frame_view->GetFragmentAnchor()) {
       anchor->NewContentMayBeAvailable();
     }
+  }
+
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidChangeChildren(change);
   }
 
   synchronous_mutation_observer_set_.ForEachObserver(
@@ -5916,6 +5926,11 @@ void Document::DidMergeTextNodes(const Text& merged_node,
       range->DidMergeTextNodes(node_to_be_removed_with_index, old_length);
   }
 
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidMergeTextNodes(
+        merged_node, node_to_be_removed_with_index, old_length);
+  }
+
   synchronous_mutation_observer_set_.ForEachObserver(
       [&](SynchronousMutationObserver* observer) {
         observer->DidMergeTextNodes(merged_node, node_to_be_removed_with_index,
@@ -5928,6 +5943,10 @@ void Document::DidMergeTextNodes(const Text& merged_node,
 void Document::DidSplitTextNode(const Text& old_node) {
   for (Range* range : ranges_)
     range->DidSplitTextNode(old_node);
+
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidSplitTextNode(old_node);
+  }
 
   synchronous_mutation_observer_set_.ForEachObserver(
       [&](SynchronousMutationObserver* observer) {

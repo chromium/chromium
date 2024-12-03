@@ -42,6 +42,7 @@
 
 namespace blink {
 
+class CharacterData;
 class Document;
 class EffectPaintPropertyNode;
 class Element;
@@ -54,9 +55,11 @@ class LayoutBlock;
 class LayoutSelection;
 class LayoutText;
 class LocalFrame;
+class NodeWithIndex;
 class PhysicalBoxFragment;
 class Range;
 class SelectionEditor;
+class Text;
 class TextIteratorBehavior;
 enum class SelectionModifyAlteration;
 enum class SelectionModifyDirection;
@@ -317,7 +320,17 @@ class CORE_EXPORT FrameSelection final
   SelectionState ComputePaintingSelectionStateForCursor(
       const InlineCursorPosition& position) const;
 
+  // Notifications from the Document.
   void ContextDestroyed();
+  void DidChangeChildren(const ContainerNode::ChildrenChange& change);
+  void DidMergeTextNodes(const Text& merged_node,
+                         const NodeWithIndex& node_to_be_removed_with_index,
+                         unsigned old_length);
+  void DidSplitTextNode(const Text&);
+  void DidUpdateCharacterData(CharacterData*,
+                              unsigned offset,
+                              unsigned old_length,
+                              unsigned new_length);
   void NodeChildrenWillBeRemoved(ContainerNode&);
   void NodeWillBeRemoved(Node&);
 

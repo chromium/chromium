@@ -396,23 +396,52 @@ void FrameSelection::SetSelectionForAccessibility(
     DidSetSelectionDeprecated(selection, options);
 }
 
+void FrameSelection::DidChangeChildren(
+    const ContainerNode::ChildrenChange& change) {
+  selection_editor_->DidChangeChildren(change);
+}
+
+void FrameSelection::DidMergeTextNodes(
+    const Text& merged_node,
+    const NodeWithIndex& node_to_be_removed_with_index,
+    unsigned old_length) {
+  selection_editor_->DidMergeTextNodes(
+      merged_node, node_to_be_removed_with_index, old_length);
+}
+
+void FrameSelection::DidSplitTextNode(const Text& text) {
+  selection_editor_->DidSplitTextNode(text);
+}
+
+void FrameSelection::DidUpdateCharacterData(CharacterData* data,
+                                            unsigned offset,
+                                            unsigned old_length,
+                                            unsigned new_length) {
+  selection_editor_->DidUpdateCharacterData(data, offset, old_length,
+                                            new_length);
+}
+
 void FrameSelection::NodeChildrenWillBeRemoved(ContainerNode& container) {
-  if (!container.InActiveDocument())
-    return;
-  // TODO(yosin): We should move to call |TypingCommand::CloseTypingIfNeeded()|
-  // to |Editor| class.
-  TypingCommand::CloseTypingIfNeeded(frame_);
+  selection_editor_->NodeChildrenWillBeRemoved(container);
+
+  if (container.InActiveDocument()) {
+    // TODO(yosin): We should move to call
+    // |TypingCommand::CloseTypingIfNeeded()| to |Editor| class.
+    TypingCommand::CloseTypingIfNeeded(frame_);
+  }
 }
 
 void FrameSelection::NodeWillBeRemoved(Node& node) {
+  selection_editor_->NodeWillBeRemoved(node);
+
   // There can't be a selection inside a fragment, so if a fragment's node is
   // being removed, the selection in the document that created the fragment
   // needs no adjustment.
-  if (!node.InActiveDocument())
-    return;
-  // TODO(yosin): We should move to call |TypingCommand::CloseTypingIfNeeded()|
-  // to |Editor| class.
-  TypingCommand::CloseTypingIfNeeded(frame_);
+  if (node.InActiveDocument()) {
+    // TODO(yosin): We should move to call
+    // |TypingCommand::CloseTypingIfNeeded()| to |Editor| class.
+    TypingCommand::CloseTypingIfNeeded(frame_);
+  }
 }
 
 void FrameSelection::DidChangeFocus() {
@@ -639,6 +668,7 @@ void FrameSelection::ContextDestroyed() {
   granularity_ = TextGranularity::kCharacter;
 
   layout_selection_->ContextDestroyed();
+  selection_editor_->ContextDestroyed();
 
   frame_->GetEditor().ClearTypingStyle();
 

@@ -44,8 +44,6 @@ SelectionEditor::SelectionEditor(LocalFrame& frame) : frame_(frame) {
   ClearVisibleSelection();
 }
 
-SelectionEditor::~SelectionEditor() = default;
-
 void SelectionEditor::AssertSelectionValid() const {
 #if DCHECK_IS_ON()
   // Since We don't track dom tree version during attribute changes, we can't
@@ -70,8 +68,8 @@ void SelectionEditor::Dispose() {
 }
 
 Document& SelectionEditor::GetDocument() const {
-  DCHECK(SynchronousMutationObserver::GetDocument());
-  return *SynchronousMutationObserver::GetDocument();
+  DCHECK(document_);
+  return *document_;
 }
 
 VisibleSelection SelectionEditor::ComputeVisibleSelectionInDOMTree() const {
@@ -141,7 +139,6 @@ void SelectionEditor::SetSelectionAndEndTyping(
 }
 
 void SelectionEditor::DidChangeChildren(
-    const ContainerNode&,
     const ContainerNode::ChildrenChange& change) {
   if (GetDocument().StatePreservingAtomicMoveInProgress() &&
       RuntimeEnabledFeatures::AtomicMoveRangePreservationEnabled()) {
@@ -224,14 +221,13 @@ void SelectionEditor::DidInsertNode(const Node& node) {
 
 void SelectionEditor::DidAttachDocument(Document* document) {
   DCHECK(document);
-  DCHECK(!SynchronousMutationObserver::GetDocument())
-      << SynchronousMutationObserver::GetDocument();
+  DCHECK(!document_);
 #if DCHECK_IS_ON()
   style_version_for_dom_tree_ = static_cast<uint64_t>(-1);
   style_version_for_flat_tree_ = static_cast<uint64_t>(-1);
 #endif
   ClearVisibleSelection();
-  SetDocument(document);
+  document_ = document;
 }
 
 void SelectionEditor::ContextDestroyed() {
@@ -250,6 +246,7 @@ void SelectionEditor::ContextDestroyed() {
   has_selection_bounds_ = false;
   cached_anchor_bounds_ = gfx::Rect();
   cached_focus_bounds_ = gfx::Rect();
+  document_ = nullptr;
 }
 
 static Position ComputePositionForChildrenRemoval(const Position& position,
@@ -608,11 +605,11 @@ void SelectionEditor::ClearDocumentCachedRange() {
 
 void SelectionEditor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(document_);
   visitor->Trace(selection_);
   visitor->Trace(cached_visible_selection_in_dom_tree_);
   visitor->Trace(cached_visible_selection_in_flat_tree_);
   visitor->Trace(cached_range_);
-  SynchronousMutationObserver::Trace(visitor);
 }
 
 }  // namespace blink
