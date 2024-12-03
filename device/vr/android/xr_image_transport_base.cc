@@ -34,10 +34,6 @@ bool XrImageTransportBase::UseSharedBuffer() {
   return support_shared_buffer;
 }
 
-GLenum XrImageTransportBase::SharedBufferTextureTarget() {
-  return GL_TEXTURE_2D;
-}
-
 XrImageTransportBase::XrImageTransportBase(
     std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge)
     : mailbox_bridge_(std::move(mailbox_bridge)),
@@ -79,7 +75,7 @@ void XrImageTransportBase::Initialize(WebXrPresentationState* webxr,
 
   webgpu_session_ = webgpu_session;
 
-  DoRuntimeInitialization(UseSharedBuffer() ? SharedBufferTextureTarget()
+  DoRuntimeInitialization(UseSharedBuffer() ? GL_TEXTURE_2D
                                             : GL_TEXTURE_EXTERNAL_OES);
 
   if (UseSharedBuffer()) {
@@ -243,7 +239,7 @@ std::unique_ptr<WebXrSharedBuffer> XrImageTransportBase::CreateBuffer() {
       std::make_unique<WebXrSharedBuffer>();
   // Local resources
   glGenTextures(1, &buffer->local_texture.id);
-  buffer->local_texture.target = SharedBufferTextureTarget();
+  buffer->local_texture.target = GL_TEXTURE_2D;
   return buffer;
 }
 
