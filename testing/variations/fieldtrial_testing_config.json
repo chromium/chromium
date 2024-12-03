@@ -18447,21 +18447,6 @@
             ]
         }
     ],
-    "ProtectedAudienceAndroidWorkletOffMainThread": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgeAndroidWorkletOffMainThread"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudienceBAndAPrivateAggregationAndSampleDebugReports": [
         {
             "platforms": [
