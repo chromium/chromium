@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsFocus) {
               content::EvalJsResult::IsOk());
 }
 
-IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage) {
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage_Partition) {
   web_app::IsolatedWebAppUrlInfo url_info =
       CreateAndInstallEmptyApp(web_app::ManifestBuilder());
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
@@ -852,6 +852,31 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage) {
   EXPECT_EQ(
       "<controlledframe>: "
       "The object has already navigated, so its partition cannot be changed.",
+      console_observer.GetMessageAt(0));
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage_Abort) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  auto* app_web_contents = content::WebContents::FromRenderFrameHost(app_frame);
+  content::WebContentsConsoleObserver console_observer(app_web_contents);
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+  ASSERT_TRUE(ExecJs(app_frame, R"(
+    new Promise((resolve) => {
+      const cf = document.querySelector('controlledframe');
+      cf.addEventListener('loadabort', resolve);
+      cf.src = 'chrome://flags';
+    });
+  )"));
+
+  ASSERT_EQ(1UL, console_observer.messages().size());
+  EXPECT_EQ(
+      "<controlledframe>: "
+      "The load has aborted with error -301: ERR_DISALLOWED_URL_SCHEME.",
       console_observer.GetMessageAt(0));
 }
 
