@@ -21,4 +21,9 @@ enum IntegrityAlgorithm {
   kSha256,
   kSha384,
   kSha512,
+
+  // Signature algorithms:
+  //
+  // https://wicg.github.io/signature-based-sri/#valid-sri-signature-algorithm-token-set
+  kEd25519,
 };

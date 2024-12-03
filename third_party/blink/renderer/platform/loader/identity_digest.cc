@@ -30,8 +30,12 @@ HashAlgorithm GetHashAlgorithm(IntegrityAlgorithm integrity) {
       return kHashAlgorithmSha384;
     case IntegrityAlgorithm::kSha512:
       return kHashAlgorithmSha512;
+
+    // We don't parse signature algorithms, so we should never generate
+    // a parsed `Identity-Digest` header with such a prefix:
+    case IntegrityAlgorithm::kEd25519:
+      NOTREACHED();
   }
-  NOTREACHED();
 }
 
 }  // namespace

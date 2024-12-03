@@ -55,8 +55,9 @@ String IntegrityAlgorithmToDictionaryName(IntegrityAlgorithm algorithm) {
       return "sha-384";
     case IntegrityAlgorithm::kSha512:
       return "sha-512";
+    case IntegrityAlgorithm::kEd25519:
+      NOTREACHED();
   }
-  NOTREACHED();
 }
 
 }  // namespace

@@ -3918,9 +3918,7 @@
     },
     {
       name: "SignatureBasedIntegrity",
-      origin_trial_feature_name: "SignatureBasedIntegrity",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "SiteInitiatedMirroring",

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/integrity_report.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -40,9 +41,16 @@ static bool IsValueCharacter(UChar c) {
   return c >= 0x21 && c <= 0x7e;
 }
 
-static bool DigestsEqual(const DigestValue& digest1,
-                         const DigestValue& digest2) {
-  return digest1 == digest2;
+static bool IsHashingAlgorithm(IntegrityAlgorithm alg) {
+  switch (alg) {
+    case IntegrityAlgorithm::kSha256:
+    case IntegrityAlgorithm::kSha384:
+    case IntegrityAlgorithm::kSha512:
+      return true;
+
+    case IntegrityAlgorithm::kEd25519:
+      return false;
+  }
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
@@ -100,7 +108,16 @@ String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
       return "SHA-384";
     case IntegrityAlgorithm::kSha512:
       return "SHA-512";
+    case IntegrityAlgorithm::kEd25519:
+      DCHECK(RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled());
+      return "Ed25519";
   }
+}
+
+String IntegrityAlgorithmsForConsole() {
+  return RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled()
+             ? "'sha256', 'sha384', 'sha512', or 'ed21159'"
+             : "'sha256', 'sha384', or 'sha512'";
 }
 
 blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
@@ -112,53 +129,129 @@ blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
       return kHashAlgorithmSha384;
     case IntegrityAlgorithm::kSha512:
       return kHashAlgorithmSha512;
+
+    // We'll handle signature algorithms in a different flow, and shouldn't call
+    // into this function at all for any non-hashing algorithms.
+    case IntegrityAlgorithm::kEd25519:
+      NOTREACHED();
   }
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
-    const IntegrityMetadataSet& metadata_set,
+    const IntegrityMetadataSet& parsed_metadata,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     IntegrityReport& integrity_report) {
-  if (metadata_set.empty()) {
+  // Implements https://wicg.github.io/signature-based-sri/#matching.
+  //
+  // 1.  Let |parsedMetadata| be the result of executing [Parse Metadata] on
+  //     |metadataList|.
+  //
+  //     (We're receiving |parsed_metadata| as input to this function.)
+  //
+  // 2.  If both |parsedMetadata|["hashes"] and |parsedMetadata|["signatures"]
+  //     are empty, return true.
+  if (parsed_metadata.empty()) {
     return true;
   }
 
-  // Check any of the "strongest" hash-based integrity constraints.
-  IntegrityAlgorithm max_algorithm = FindBestAlgorithm(metadata_set.hashes);
-  for (const IntegrityMetadata& metadata : metadata_set.hashes) {
-    if (metadata.Algorithm() == max_algorithm &&
-        CheckSubresourceIntegrityDigest(metadata, buffer)) {
+  // 3.  Let |hash-metadata| be the result of executing [Get the strongest
+  //     metadata from set] on |parsedMetadata|["hashes"].
+  // 4.  Let |signature-metadata| be the result of executing [Get the strongest
+  //     metadata from set] on |parsedMetadata|["signatures"].
+  //
+  //     (We're doing these in a slightly different order, breaking the hashing
+  //      work into the `CheckHashesImpl()` block below, and the signature work
+  //      into another TBD function.)
+
+  //
+  // Verify the hash-based integrity constraints:
+  //
+  if (!CheckHashesImpl(parsed_metadata.hashes, buffer, resource_url,
+                       integrity_report)) {
+    return false;
+  }
+
+  // TODO(https://crbug.com/380783670): Check the strongest signature-based
+  // integrity constraints from `parsed_metadata.signatures`.
+  if (!parsed_metadata.signatures.empty()) {
+    integrity_report.AddConsoleErrorMessage(
+        "Subresource Integrity: Signature-based matching is currently "
+        "unimplemented.");
+    return false;
+  }
+  return true;
+}
+
+bool SubresourceIntegrity::CheckHashesImpl(
+    const WTF::HashSet<IntegrityMetadataPair>& hashes,
+    const SegmentedBuffer* buffer,
+    const KURL& resource_url,
+    IntegrityReport& integrity_report) {
+  // This implements steps 3, 5, and 7 of
+  // https://wicg.github.io/signature-based-sri/#matching.
+
+  // 5.  Let |hash-match| be `true` if |hash-metadata| is empty, and `false`
+  //     otherwise.
+  if (hashes.empty()) {
+    return true;
+  }
+
+  // This is more or less step 3 (at least, it is in combination with the
+  // checks in the loop below that ignore non-matching algorithms). We run it
+  // after 5, as `FindBestAlgorithm` assumes that |hashes| is not empty.
+  IntegrityAlgorithm strongest_algorithm = FindBestAlgorithm(hashes);
+
+  // 7.3. Let |actualValue| be the result of [Apply algorithm to bytes] on
+  //      `algorithm` and `bytes`.
+  //
+  // To implement this, we precalculate |buffer|'s digest using the strongest
+  // hashing algorithm:
+  blink::HashAlgorithm hash_algo =
+      IntegrityAlgorithmToHashAlgorithm(strongest_algorithm);
+  DigestValue actual_value;
+  if (!ComputeDigest(hash_algo, buffer, actual_value)) {
+    integrity_report.AddConsoleErrorMessage(
+        "There was an error computing an integrity value for resource '" +
+        resource_url.ElidedString() + "'. The resource has been blocked.");
+    return false;
+  }
+
+  // Then we loop through the asserted hashes, ignoring any that don't use
+  // the strongest algorithm asserted:
+  for (const IntegrityMetadata& metadata : hashes) {
+    if (metadata.Algorithm() != strongest_algorithm) {
+      continue;
+    }
+
+    // And finally decode the metadata's digest for comparison.
+    Vector<char> decoded_metadata;
+    Base64Decode(metadata.Digest(), decoded_metadata);
+    DigestValue expected_value;
+    expected_value.AppendSpan(base::as_byte_span(decoded_metadata));
+
+    // 7.4. If actualValue is a case-sensitive match for expectedValue, return
+    // true set hash-match to true and break.
+    if (actual_value == expected_value) {
       integrity_report.AddUseCount(
           WebFeature::kSRIElementWithMatchingIntegrityAttribute);
       return true;
     }
   }
 
-  // TODO(https://crbug.com/380783670): Check the strongest signature-based
-  // integrity constraints from `metadata_set.signatures`.
-
-  // If we arrive here, none of the "strongest" constraints have validated
-  // the data we received. Report this fact.
-  DigestValue digest;
-  if (ComputeDigest(IntegrityAlgorithmToHashAlgorithm(max_algorithm), buffer,
-                    digest)) {
-    // This message exposes the digest of the resource to the console.
-    // Because this is only to the console, that's okay for now, but we
-    // need to be very careful not to expose this in exceptions or
-    // JavaScript, otherwise it risks exposing information about the
-    // resource cross-origin.
-    integrity_report.AddConsoleErrorMessage(
-        "Failed to find a valid digest in the 'integrity' attribute for "
-        "resource '" +
-        resource_url.ElidedString() + "' with computed " +
-        IntegrityAlgorithmToString(max_algorithm) + " integrity '" +
-        Base64Encode(digest) + "'. The resource has been blocked.");
-  } else {
-    integrity_report.AddConsoleErrorMessage(
-        "There was an error computing an integrity value for resource '" +
-        resource_url.ElidedString() + "'. The resource has been blocked.");
-  }
+  // Record failure if no digest match was found:
+  //
+  // This message exposes the digest of the resource to the console.
+  // Because this is only to the console, that's okay for now, but we
+  // need to be very careful not to expose this in exceptions or
+  // JavaScript, otherwise it risks exposing information about the
+  // resource cross-origin.
+  integrity_report.AddConsoleErrorMessage(
+      "Failed to find a valid digest in the 'integrity' attribute for "
+      "resource '" +
+      resource_url.ElidedString() + "' with computed " +
+      IntegrityAlgorithmToString(strongest_algorithm) + " integrity '" +
+      Base64Encode(actual_value) + "'. The resource has been blocked.");
   integrity_report.AddUseCount(
       WebFeature::kSRIElementWithNonMatchingIntegrityAttribute);
   return false;
@@ -186,24 +279,6 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
   return max_algorithm;
 }
 
-bool SubresourceIntegrity::CheckSubresourceIntegrityDigest(
-    const IntegrityMetadata& metadata,
-    const SegmentedBuffer* buffer) {
-  blink::HashAlgorithm hash_algo =
-      IntegrityAlgorithmToHashAlgorithm(metadata.Algorithm());
-
-  DigestValue digest;
-  if (!ComputeDigest(hash_algo, buffer, digest)) {
-    return false;
-  }
-
-  Vector<char> hash_vector;
-  Base64Decode(metadata.Digest(), hash_vector);
-  DigestValue converted_hash_vector;
-  converted_hash_vector.AppendSpan(base::as_byte_span(hash_vector));
-  return DigestsEqual(digest, converted_hash_vector);
-}
-
 SubresourceIntegrity::AlgorithmParseResult
 SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
                                               const UChar* end,
@@ -214,9 +289,16 @@ SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
       {"sha384", IntegrityAlgorithm::kSha384},
       {"sha-384", IntegrityAlgorithm::kSha384},
       {"sha512", IntegrityAlgorithm::kSha512},
-      {"sha-512", IntegrityAlgorithm::kSha512}};
+      {"sha-512", IntegrityAlgorithm::kSha512},
+      {"ed25519", IntegrityAlgorithm::kEd25519}};
 
   for (size_t i = 0; i < std::size(kPrefixes); i++) {
+    // Parse signature-based algorithm prefixes iff the runtime feature is
+    // enabled.
+    if (!RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled() &&
+        strcmp("ed25519", kPrefixes[i].first) == 0) {
+      continue;
+    }
     const UChar* pos = begin;
     if (SkipToken<UChar>(pos, end, kPrefixes[i].first) &&
         SkipExactly<UChar>(pos, end, '-')) {
@@ -271,7 +353,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     IntegrityReport* integrity_report) {
   // We expect a "clean" metadata_set, since metadata_set should only be filled
   // once.
-  DCHECK(metadata_set.hashes.empty() && metadata_set.signatures.empty());
+  DCHECK(metadata_set.empty());
 
   Vector<UChar> characters;
   attribute.StripWhiteSpace().AppendTo(characters);
@@ -304,8 +386,8 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
       if (integrity_report) {
         integrity_report->AddConsoleErrorMessage(
             "Error parsing 'integrity' attribute ('" + attribute +
-            "'). The specified hash algorithm must be one of "
-            "'sha256', 'sha384', or 'sha512'.");
+            "'). The specified hash algorithm must be one of " +
+            IntegrityAlgorithmsForConsole() + ".");
         integrity_report->AddUseCount(
             WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
       }
@@ -317,9 +399,8 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
       if (integrity_report) {
         integrity_report->AddConsoleErrorMessage(
             "Error parsing 'integrity' attribute ('" + attribute +
-            "'). The hash algorithm must be one of 'sha256', "
-            "'sha384', or 'sha512', followed by a '-' "
-            "character.");
+            "'). The hash algorithm must be one of " +
+            IntegrityAlgorithmsForConsole() + ", followed by a '-' character.");
         integrity_report->AddUseCount(
             WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
       }
@@ -357,9 +438,11 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     }
 
     IntegrityMetadata integrity_metadata(digest, algorithm);
-    // TODO(https://crbug.com/380783670): Differentiate between hash-based and
-    // signature-based algorithms.
-    metadata_set.hashes.insert(integrity_metadata.ToPair());
+    if (IsHashingAlgorithm(algorithm)) {
+      metadata_set.hashes.insert(integrity_metadata.ToPair());
+    } else {
+      metadata_set.signatures.insert(integrity_metadata.ToPair());
+    }
   }
 }
 
