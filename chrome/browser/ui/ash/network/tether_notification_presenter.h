@@ -62,7 +62,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
 
   class SettingsUiDelegate {
    public:
-    virtual ~SettingsUiDelegate() {}
+    virtual ~SettingsUiDelegate() = default;
 
     // Displays the settings page (opening a new window if necessary) at the
     // provided subpage for the user with the Profile |profile|.

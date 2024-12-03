@@ -237,7 +237,7 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
   }
 }
 
-CandidateWindowView::~CandidateWindowView() {}
+CandidateWindowView::~CandidateWindowView() = default;
 
 views::Widget* CandidateWindowView::InitWidget() {
   views::Widget* widget = BubbleDialogDelegateView::CreateBubble(this);

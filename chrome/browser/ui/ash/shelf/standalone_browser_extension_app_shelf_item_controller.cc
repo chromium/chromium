@@ -69,7 +69,7 @@ StandaloneBrowserExtensionAppShelfItemController::
 }
 
 StandaloneBrowserExtensionAppShelfItemController::
-    ~StandaloneBrowserExtensionAppShelfItemController() {}
+    ~StandaloneBrowserExtensionAppShelfItemController() = default;
 
 void StandaloneBrowserExtensionAppShelfItemController::ItemSelected(
     std::unique_ptr<ui::Event> event,

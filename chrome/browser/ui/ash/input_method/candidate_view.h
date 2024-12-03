@@ -27,7 +27,7 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
                 ui::CandidateWindow::Orientation orientation);
   CandidateView(const CandidateView&) = delete;
   CandidateView& operator=(const CandidateView&) = delete;
-  ~CandidateView() override {}
+  ~CandidateView() override = default;
 
   void GetPreferredWidths(int* shortcut_width, int* candidate_width);
 

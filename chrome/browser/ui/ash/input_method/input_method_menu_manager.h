@@ -21,7 +21,7 @@ class UI_CHROMEOS_EXPORT InputMethodMenuManager {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when the list of menu items is changed.
     virtual void InputMethodMenuItemChanged(

@@ -107,12 +107,12 @@ UserAddingScreenImpl* UserAddingScreenImpl::GetInstance() {
 UserAddingScreenImpl::UserAddingScreenImpl()
     : display_host_(nullptr), im_controller_(this) {}
 
-UserAddingScreenImpl::~UserAddingScreenImpl() {}
+UserAddingScreenImpl::~UserAddingScreenImpl() = default;
 
 }  // anonymous namespace
 
-UserAddingScreen::UserAddingScreen() {}
-UserAddingScreen::~UserAddingScreen() {}
+UserAddingScreen::UserAddingScreen() = default;
+UserAddingScreen::~UserAddingScreen() = default;
 
 UserAddingScreen* UserAddingScreen::Get() {
   return UserAddingScreenImpl::GetInstance();

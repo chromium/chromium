@@ -11,6 +11,6 @@ MockQuickAnswersClient::MockQuickAnswersClient(
     QuickAnswersDelegate* quick_answers_delegate)
     : QuickAnswersClient(url_loader_factory, quick_answers_delegate) {}
 
-MockQuickAnswersClient::~MockQuickAnswersClient() {}
+MockQuickAnswersClient::~MockQuickAnswersClient() = default;
 
 }  // namespace quick_answers

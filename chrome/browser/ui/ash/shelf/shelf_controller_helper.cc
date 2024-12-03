@@ -70,7 +70,7 @@ std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
 ShelfControllerHelper::ShelfControllerHelper(Profile* profile)
     : profile_(profile) {}
 
-ShelfControllerHelper::~ShelfControllerHelper() {}
+ShelfControllerHelper::~ShelfControllerHelper() = default;
 
 std::u16string ShelfControllerHelper::GetLabelForPromiseStatus(
     apps::PromiseStatus status) {

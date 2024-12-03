@@ -6,8 +6,8 @@
 
 namespace ash {
 
-MockLoginDisplayHost::MockLoginDisplayHost() {}
+MockLoginDisplayHost::MockLoginDisplayHost() = default;
 
-MockLoginDisplayHost::~MockLoginDisplayHost() {}
+MockLoginDisplayHost::~MockLoginDisplayHost() = default;
 
 }  // namespace ash

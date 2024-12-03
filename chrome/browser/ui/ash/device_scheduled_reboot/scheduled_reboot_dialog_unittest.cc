@@ -18,7 +18,7 @@ class ScheduledRebootDialogTest : public views::ViewsTestBase {
             std::make_unique<content::BrowserTaskEnvironment>(
                 content::BrowserTaskEnvironment::MainThreadType::UI,
                 content::BrowserTaskEnvironment::TimeSource::MOCK_TIME))) {}
-  ~ScheduledRebootDialogTest() override {}
+  ~ScheduledRebootDialogTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();

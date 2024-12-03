@@ -91,7 +91,7 @@ BirchCalendarFetcher::BirchCalendarFetcher(Profile* profile)
       /*custom_user_agent=*/std::string(), kTrafficAnnotation);
 }
 
-BirchCalendarFetcher::~BirchCalendarFetcher() {}
+BirchCalendarFetcher::~BirchCalendarFetcher() = default;
 
 void BirchCalendarFetcher::Shutdown() {
   sender_.reset();

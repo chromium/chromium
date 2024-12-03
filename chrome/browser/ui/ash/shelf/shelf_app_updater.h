@@ -46,7 +46,7 @@ class ShelfAppUpdater {
     virtual void OnShortcutRemoved(const apps::ShortcutId& id) {}
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   ShelfAppUpdater(const ShelfAppUpdater&) = delete;

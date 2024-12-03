@@ -103,7 +103,7 @@ class TestInputMethodManager : public MockInputMethodManager {
 
    protected:
     friend base::RefCounted<InputMethodManager::State>;
-    ~TestState() override {}
+    ~TestState() override = default;
   };
 
   TestInputMethodManager() : state_(new TestState), util_(&delegate_) {}
