@@ -191,8 +191,8 @@ CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
   sync_pb::EligiblePriceRange* eligible_price_range =
       bnpl_issuer_details->add_eligible_price_range();
   eligible_price_range->set_currency(currency);
-  eligible_price_range->set_min_price_in_micros(0);
-  eligible_price_range->set_max_price_in_micros(35);
+  eligible_price_range->set_min_price_in_micros(price_lower_bound);
+  eligible_price_range->set_max_price_in_micros(price_upper_bound);
 
   payment_instrument_specifics->add_supported_rails(
       sync_pb::PaymentInstrument_SupportedRail::
