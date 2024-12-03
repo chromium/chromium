@@ -20,6 +20,7 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
+#include "partition_alloc/partition_alloc_base/types/same_as_any.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/pointers/instance_tracer.h"
@@ -175,84 +176,29 @@ namespace raw_ptr_traits {
 // that raw_ptr is not used with unsupported types. As an example, see how
 // base::internal::Unretained(Ref)Wrapper uses IsSupportedType to decide whether
 // it should use `raw_ptr<T>` or `T*`.
-template <typename T, typename SFINAE = void>
-struct IsSupportedType {
-  static constexpr bool value = true;
-};
-
-// raw_ptr<T> is not compatible with function pointer types. Also, they don't
-// even need the raw_ptr protection, because they don't point on heap.
 template <typename T>
-struct IsSupportedType<T, std::enable_if_t<std::is_function_v<T>>> {
-  static constexpr bool value = false;
-};
-
-// This section excludes some types from raw_ptr<T> to avoid them from being
-// used inside base::Unretained in performance sensitive places.
-// The ones below were identified from sampling profiler data. See
-// crbug.com/1287151 for more info.
-template <>
-struct IsSupportedType<cc::Scheduler> {
-  static constexpr bool value = false;
-};
-template <>
-struct IsSupportedType<base::internal::DelayTimerBase> {
-  static constexpr bool value = false;
-};
-template <>
-struct IsSupportedType<content::responsiveness::Calculator> {
-  static constexpr bool value = false;
-};
-// The ones below were identified from speedometer3. See crbug.com/335556942 for
-// more info.
-template <>
-struct IsSupportedType<v8::JobTask> {
-  static constexpr bool value = false;
-};
-template <>
-struct IsSupportedType<blink::scheduler::MainThreadTaskQueue> {
-  static constexpr bool value = false;
-};
-template <>
-struct IsSupportedType<base::sequence_manager::internal::TaskQueueImpl> {
-  static constexpr bool value = false;
-};
-template <>
-struct IsSupportedType<base::internal::JobTaskSource> {
-  static constexpr bool value = false;
-};
-template <>
-struct IsSupportedType<mojo::Connector> {
-  static constexpr bool value = false;
-};
-template <>
-struct IsSupportedType<blink::scheduler::NonMainThreadTaskQueue> {
-  static constexpr bool value = false;
-};
-// The ones below were identified from MotionMark. See crbug.com/335556942 for
-// more info.
-template <>
-struct IsSupportedType<cc::ImageDecodeCache> {
-  static constexpr bool value = false;
-};
-template <>
-struct IsSupportedType<cc::TextureLayerImpl> {
-  static constexpr bool value = false;
-};
+struct IsSupportedType {
+  static constexpr bool value =
+      // raw_ptr<T> is not compatible with function pointer types. Also, they
+      // don't even need the raw_ptr protection, because they don't point on
+      // heap.
+      !std::is_function_v<T> &&
 
 #if __OBJC__
-// raw_ptr<T> is not compatible with pointers to Objective-C classes for a
-// multitude of reasons. They may fail to compile in many cases, and wouldn't
-// work well with tagged pointers. Anyway, Objective-C objects have their own
-// way of tracking lifespan, hence don't need the raw_ptr protection as much.
-//
-// Such pointers are detected by checking if they're convertible to |id| type.
-template <typename T>
-struct IsSupportedType<T, std::enable_if_t<std::is_convertible_v<T*, id>>> {
-  static constexpr bool value = false;
-};
+      // raw_ptr<T> is not compatible with pointers to Objective-C classes for a
+      // multitude of reasons. They may fail to compile in many cases, and
+      // wouldn't work well with tagged pointers. Anyway, Objective-C objects
+      // have their own way of tracking lifespan, hence don't need the raw_ptr
+      // protection as much.
+      //
+      // Such pointers are detected by checking if they're convertible to |id|
+      // type.
+      !std::is_convertible_v<T*, id> &&
 #endif  // __OBJC__
 
+      // Specific disallowed types.
+      !partition_alloc::internal::base::kSameAsAny<
+          T,
 #if PA_BUILDFLAG(IS_WIN)
 // raw_ptr<HWND__> is unsafe at runtime - if the handle happens to also
 // represent a valid pointer into a PartitionAlloc-managed region then it can
@@ -268,14 +214,30 @@ struct IsSupportedType<T, std::enable_if_t<std::is_convertible_v<T*, id>>> {
 // upside of this approach is that it will safely handle base::Bind closing over
 // HANDLE.  The downside of this approach is that base::Bind closing over a
 // void* pointer will not get UaF protection.
-#define PA_WINDOWS_HANDLE_TYPE(name)       \
-  template <>                              \
-  struct IsSupportedType<name##__, void> { \
-    static constexpr bool value = false;   \
-  };
+#define PA_WINDOWS_HANDLE_TYPE(name) name##__,
 #include "partition_alloc/partition_alloc_base/win/win_handle_types_list.inc"
 #undef PA_WINDOWS_HANDLE_TYPE
 #endif
+          // Performance-sensitive types identified via sampling profiler data;
+          // see crbug.com/1287151
+          base::internal::DelayTimerBase,
+          cc::Scheduler,
+          content::responsiveness::Calculator,
+
+          // Performance-sensitive types identified via speedometer3; see
+          // crbug.com/335556942
+          base::internal::JobTaskSource,
+          base::sequence_manager::internal::TaskQueueImpl,
+          blink::scheduler::MainThreadTaskQueue,
+          blink::scheduler::NonMainThreadTaskQueue,
+          mojo::Connector,
+          v8::JobTask,
+
+          // Performance-sensitive types identified via MotionMark; see
+          // crbug.com/335556942
+          cc::ImageDecodeCache,
+          cc::TextureLayerImpl>;
+};
 
 #if PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
 template <RawPtrTraits Traits>
