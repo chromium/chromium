@@ -68,6 +68,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   void OnTabAdded(const tab_groups::SavedTabGroupTab& added_tab) override;
   void OnTabRemoved(tab_groups::SavedTabGroupTab removed_tab) override;
   void OnTabUpdated(const tab_groups::SavedTabGroupTab& updated_tab) override;
+  void OnTabSelected(
+      std::optional<tab_groups::SavedTabGroupTab> selected_tab) override;
 
  private:
   // Provides functionality to go from observing the TabGroupSyncService to

@@ -40,6 +40,14 @@ MATCHER_P(TabGroupGuidEq, expected_group, "") {
   return TabGroupsHaveSameGuidAndType(arg, expected_group);
 }
 
+bool TabsHaveSameGuid(std::optional<tab_groups::SavedTabGroupTab> a,
+                      std::optional<tab_groups::SavedTabGroupTab> b) {
+  if (!a || !b) {
+    return false;
+  }
+  return (*a).saved_tab_guid() == (*b).saved_tab_guid();
+}
+
 bool TabsHaveSameGuid(tab_groups::SavedTabGroupTab a,
                       tab_groups::SavedTabGroupTab b) {
   return a.saved_tab_guid() == b.saved_tab_guid();
@@ -77,6 +85,9 @@ class MockTabGroupChangeNotifierObserver
   MOCK_METHOD(void, OnTabAdded, (const tab_groups::SavedTabGroupTab&));
   MOCK_METHOD(void, OnTabRemoved, (tab_groups::SavedTabGroupTab));
   MOCK_METHOD(void, OnTabUpdated, (const tab_groups::SavedTabGroupTab&));
+  MOCK_METHOD(void,
+              OnTabSelected,
+              (std::optional<tab_groups::SavedTabGroupTab>));
 };
 
 class TabGroupChangeNotifierImplTest : public testing::Test {
@@ -717,6 +728,62 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabUpdatedBasedOnSpecificFields) {
   tab_groups::SavedTabGroupTab tab_title_updated = updated_tab_received;
   tab_title_updated.SetTitle(u"new title");
   VerifyTabNotUpdated(tab_group, tab_title_updated);
+}
+
+TEST_F(TabGroupChangeNotifierImplTest, TestTabSelection) {
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  tab_groups::SavedTabGroup tab_group_1 = CreateTestSharedTabGroupWithNoTabs();
+  tab_groups::SavedTabGroupTab tab1 = tab_groups::test::CreateSavedTabGroupTab(
+      "url", u"title", tab_group_1.saved_guid());
+  tab_groups::SavedTabGroupTab tab2 = tab_groups::test::CreateSavedTabGroupTab(
+      "url", u"title", tab_group_1.saved_guid());
+  tab_group_1.AddTabFromSync(tab1);
+  tab_group_1.AddTabFromSync(tab2);
+
+  // Set up notifier with initial tab group data.
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupAdded(TabGroupGuidEq(tab_group_1)));
+  tgss_observer_->OnTabGroupAdded(tab_group_1,
+                                  tab_groups::TriggerSource::REMOTE);
+
+  // Select tab 1.
+  EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab1))).Times(1);
+  tgss_observer_->OnTabSelected(tab_group_1.saved_guid(),
+                                tab1.saved_tab_guid());
+
+  // Select tab 2.
+  EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab2))).Times(1);
+  tgss_observer_->OnTabSelected(tab_group_1.saved_guid(),
+                                tab2.saved_tab_guid());
+
+  // Select a tab outside tab groups.
+  EXPECT_CALL(*notifier_observer_, OnTabSelected(testing::Eq(std::nullopt)))
+      .Times(1);
+  tgss_observer_->OnTabSelected(base::Uuid::GenerateRandomV4(),
+                                base::Uuid::GenerateRandomV4());
+
+  // Add another tab group.
+  tab_groups::SavedTabGroup tab_group_2 = CreateTestSharedTabGroupWithNoTabs();
+  tab_groups::SavedTabGroupTab tab3 = tab_groups::test::CreateSavedTabGroupTab(
+      "url", u"title", tab_group_2.saved_guid());
+  tab_group_2.AddTabFromSync(tab3);
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupAdded(TabGroupGuidEq(tab_group_2)));
+  tgss_observer_->OnTabGroupAdded(tab_group_2,
+                                  tab_groups::TriggerSource::REMOTE);
+
+  // Select tab 3 from the new group.
+  EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab3))).Times(1);
+  tgss_observer_->OnTabSelected(tab_group_2.saved_guid(),
+                                tab3.saved_tab_guid());
+
+  // Select the first tab again.
+  EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab1))).Times(1);
+  tgss_observer_->OnTabSelected(tab_group_1.saved_guid(),
+                                tab1.saved_tab_guid());
 }
 
 }  // namespace collaboration::messaging

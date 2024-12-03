@@ -45,6 +45,8 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
                          tab_groups::TriggerSource source) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          tab_groups::TriggerSource source) override;
+  void OnTabSelected(const std::optional<base::Uuid>& sync_tab_group_id,
+                     const std::optional<base::Uuid>& sync_tab_id) override;
 
   // Fetches the current state of the tab group model, and compares it to what
   // was previously known, publishing any changes that are found.
@@ -55,6 +57,12 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
   // Processes updates to group metadata and tabs within a group.
   void ProcessTabGroupUpdates(const tab_groups::SavedTabGroup& before,
                               const tab_groups::SavedTabGroup& after);
+
+  // Looks for the selected tab within our last known shared tab groups and
+  // returns it if found, else returns std::nullopt.
+  std::optional<tab_groups::SavedTabGroupTab> GetSelectedSharedTabForPublishing(
+      const std::optional<base::Uuid>& sync_tab_group_id,
+      const std::optional<base::Uuid>& sync_tab_id);
 
   std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>
   ConvertToMapOfSharedTabGroup(

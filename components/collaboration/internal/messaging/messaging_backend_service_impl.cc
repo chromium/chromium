@@ -110,4 +110,7 @@ void MessagingBackendServiceImpl::OnTabRemoved(
 void MessagingBackendServiceImpl::OnTabUpdated(
     const tab_groups::SavedTabGroupTab& updated_tab) {}
 
+void MessagingBackendServiceImpl::OnTabSelected(
+    std::optional<tab_groups::SavedTabGroupTab> selected_tab) {}
+
 }  // namespace collaboration::messaging
