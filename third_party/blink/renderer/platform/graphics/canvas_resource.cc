@@ -867,9 +867,9 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       client_si_->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u,
-      CreateSkImageInfo(), transferable_resource_.texture_target(),
-      is_origin_top_left, context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback),
+      CreateSkImageInfo(), client_si_->GetTextureTarget(), is_origin_top_left,
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      std::move(release_callback),
       /*supports_display_compositing=*/true,
       transferable_resource_.is_overlay_candidate);
 }
