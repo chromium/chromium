@@ -1531,6 +1531,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ExportAndroid.CreateDirectoryError"
+    enum="PlatformFileError" expires_after="2025-03-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the error encountered when trying to create a temporary directory
+    during a user-initiated password export. Android only.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ExportAndroid.CreateTempFileError"
+    enum="PlatformFileError" expires_after="2025-03-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the error encountered when trying to create a temporary file during
+    a user-initiated password export. Android only.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ExportAndroid.MoreThanZeroPasswords"
+    enum="BooleanYesNo" expires_after="2025-03-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records whether the serializatiation step of the user-initiated password
+    export flow was attempted for more than 0 passwords. Attempting to export 0
+    passwords is considered an error. Android only.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ExportAndroid.WriteToTempFileError"
+    enum="PlatformFileError" expires_after="2025-03-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the error encountered when trying to write CSV-formatted passwords
+    to a temporary file during a user-initiated password export. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FieldNameCollisionInVotes" enum="Boolean"
     expires_after="2025-03-30">
   <owner>kazinova@google.com</owner>
