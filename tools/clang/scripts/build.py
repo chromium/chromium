@@ -748,15 +748,6 @@ def main():
   if not args.skip_checkout:
     CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
 
-    if not args.llvm_force_head_revision:
-      # Apply https://github.com/llvm/llvm-project/pull/113951 to make rolling
-      # libc++ not blocked on a clang roll. Remove this when rolling past that
-      # revision.
-      GitCherryPick(LLVM_DIR, 'https://github.com/llvm/llvm-project.git',
-                    # This is llvmorg-20-init-10276-g9f69da35e2e5
-                    '9f69da35e2e5438d0c042f76277fff397f6a1505',
-                    git_remote_name='github-llvm')
-
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)
     PACKAGE_VERSION = '%s-0' % CLANG_REVISION
