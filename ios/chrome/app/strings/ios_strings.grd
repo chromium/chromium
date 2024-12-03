@@ -6027,6 +6027,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_FORWARD" desc="The accessibility hint for the toolbar forward button, to open the long press menu [iOS only].">
         Double tap and hold to open history
       </message>
+      <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_NEW_TAB" desc="The accessibility hint for the toolbar new tab button, to open the long press menu [iOS only].">
+        Double tap and hold to open more options
+      </message>
+      <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_TAB_GRID" desc="The accessibility hint for the toolbar tab grid button, to open the long press menu [iOS only].">
+        Double tap and hold to open more options
+      </message>
       <message name="IDS_IOS_TOOLBAR_CLOSE_MENU" desc="The accessibility label for the toolbar close settings menu button [iOS only].">
         Close menu
       </message>

@@ -104,6 +104,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
   ToolbarTabGridButton* tabGridButton = [[ToolbarTabGridButton alloc]
       initWithTabGroupStateImageLoader:imageBlock];
 
+  tabGridButton.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_TAB_GRID);
   [self configureButton:tabGridButton width:kAdaptiveToolbarButtonWidth];
   [tabGridButton addTarget:self.actionHandler
                     action:@selector(tabGridTouchDown)
@@ -242,8 +244,9 @@ const CGFloat kSymbolToolbarPointSize = 24;
 
   newTabButton.accessibilityLabel = [self.toolbarConfiguration
       accessibilityLabelForOpenNewTabButtonInGroup:NO];
-
   newTabButton.accessibilityIdentifier = kToolbarNewTabButtonIdentifier;
+  newTabButton.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_NEW_TAB);
 
   newTabButton.visibilityMask =
       self.visibilityConfiguration.newTabButtonVisibility;
