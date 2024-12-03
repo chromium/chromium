@@ -1066,6 +1066,7 @@ def _set_cwd():
 
 
 def main(sys_args):
+  sys.stdout.reconfigure(line_buffering=True)
   _set_cwd()
   args = sys_args[1:]  # Skip program name.
   options = parse_arguments(args)
