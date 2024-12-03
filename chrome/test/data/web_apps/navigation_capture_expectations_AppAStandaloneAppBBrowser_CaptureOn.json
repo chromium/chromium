@@ -1373,7 +1373,7 @@
       },
       "FocusExisting_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "FocusExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1486,7 +1486,7 @@
       },
       "NavigateExisting_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2A_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",

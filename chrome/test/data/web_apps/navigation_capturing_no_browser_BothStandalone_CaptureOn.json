@@ -177,7 +177,7 @@
       },
       "AppWnd_ScopeA2X_ServerSideViaA_ViaButton_MiddleClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaButton_MiddleClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "app_scope": "/banners/link_capturing/scope_a/",
