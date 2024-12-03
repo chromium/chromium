@@ -2780,8 +2780,9 @@
       // Fix HandleMouseFocus and FrameSelection to use FlatTree parent so
       // correct fallback element receives focus.
       // See https://crbug.com/41420461
+      // This feature was shipped in M133, so this flag can be removed in M135.
       name: "MouseFocusFlatTreeParent",
-      status: "experimental",
+      status: "stable",
     },
     // Move the selection to the last position in the list item. See
     // https://crbug.com/331841851
