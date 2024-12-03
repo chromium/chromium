@@ -94,13 +94,6 @@ void LogPayflowExitedReason(PayflowExitedReason reason) {
                                 reason);
 }
 
-// TODO(crbug.com/367751320): Remove after new PayflowExitedReason histogram is
-// finished.
-void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason) {
-  base::UmaHistogramEnumeration(
-      "FacilitatedPayments.Pix.PaymentNotOfferedReason", reason);
-}
-
 void LogInitiatePaymentAttempt() {
   // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
@@ -154,12 +147,6 @@ uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result) {
   } else {
     NOTREACHED();
   }
-}
-
-void LogFopSelectorShown(bool shown) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
-  UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.FopSelector.Shown", shown);
 }
 
 void LogUiScreenShown(UiState ui_screen) {

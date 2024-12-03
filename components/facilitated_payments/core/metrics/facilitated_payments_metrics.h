@@ -52,20 +52,6 @@ enum class PayflowExitedReason {
   kMaxValue = kFopSelectorClosedByUser
 };
 
-// TODO(crbug.com/367751320): Remove after new PayflowExited histogram is
-// finished.
-// Reasons for why the payment was not offered. These only include the
-// reasons after the renderer has detected a valid code and sent the signal to
-// the browser process.
-enum class PaymentNotOfferedReason {
-  kApiNotAvailable = 0,
-  kRiskDataEmpty = 1,
-  kCodeValidatorFailed = 2,
-  kInvalidCode = 3,
-  kLandscapeScreenOrientation = 4,
-  kMaxValue = kLandscapeScreenOrientation
-};
-
 // Log when a Pix code is copied to the clippboard on an allowlisted merchant
 // website.
 void LogPixCodeCopied(ukm::SourceId ukm_source_id);
@@ -106,13 +92,6 @@ void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration);
 // has been found.
 void LogPayflowExitedReason(PayflowExitedReason reason);
 
-// TODO(crbug.com/367751320): Remove after new PayflowExited histogram is
-// finished.
-// Log the reason for the payment option not offered to the user. This
-// includes all the reasons after receiving a signal from the renderer process
-// that a valid code has been found.
-void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason);
-
 // Log the attempt to send the call to the InitiatePayment backend endpoint.
 void LogInitiatePaymentAttempt();
 
@@ -137,11 +116,6 @@ void LogInitiatePurchaseActionResultUkm(const std::string& result,
 // TODO(crbug.com/379723883): If the above function takes in an enum instead of
 // a string, remove this temporary conversion function.
 uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result);
-
-// Log whether the request to show the FOP(form of payment) selector is
-// successful or not.
-// TODO(crbug.com/377126728): Deprecate this method.
-void LogFopSelectorShown(bool shown);
 
 // Logs showing a new UI screen.
 void LogUiScreenShown(UiState ui_screen);

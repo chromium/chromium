@@ -170,17 +170,6 @@ TEST(FacilitatedPaymentsMetricsTest,
   }
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogFopSelectorShown) {
-  base::HistogramTester histogram_tester;
-
-  LogFopSelectorShown(true);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.FopSelector.Shown",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-}
-
 TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectorShownLatency) {
   base::HistogramTester histogram_tester;
 
@@ -242,7 +231,7 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
   EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
 }
 
-TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShown) {
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShownUkm) {
   LogFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID());
 
   auto ukm_entries = ukm_recorder_.GetEntries(
