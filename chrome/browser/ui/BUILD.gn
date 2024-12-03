@@ -5248,6 +5248,8 @@ static_library("ui") {
       sources += [
         "views/glic/glic_view.cc",
         "views/glic/glic_view.h",
+        "views/glic/glic_web_view.cc",
+        "views/glic/glic_web_view.h",
       ]
       deps += [
         "//chrome/browser/glic:enabling",

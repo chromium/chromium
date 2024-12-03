@@ -10,7 +10,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/events/event_observer.h"
-#include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget.h"
 
@@ -53,7 +52,7 @@ GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
       profile, ProfileKeepAliveOrigin::kGlicView);
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::GLIC_VIEW, KeepAliveRestartOption::ENABLED);
-  auto web_view = std::make_unique<views::WebView>(profile);
+  auto web_view = std::make_unique<GlicWebView>(profile);
   web_view_ = web_view.get();
   web_view->SetSize(initial_size);
   web_view->LoadInitialURL(GURL("chrome://glic"));
