@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_PROFILER_CHROME_UNWIND_INFO_ANDROID_H_
-#define BASE_PROFILER_CHROME_UNWIND_INFO_ANDROID_H_
+#ifndef BASE_PROFILER_CHROME_UNWIND_INFO_ANDROID_32_H_
+#define BASE_PROFILER_CHROME_UNWIND_INFO_ANDROID_32_H_
 
 #include <stdint.h>
 
@@ -42,7 +42,7 @@ struct FunctionTableEntry {
 //
 // Design Doc:
 // https://docs.google.com/document/d/1IYTmGCJZoiQ242xPUZX1fATD6ivsjU1TAt_fPv74ocs/edit?usp=sharing
-struct BASE_EXPORT ChromeUnwindInfoHeaderAndroid {
+struct BASE_EXPORT ChromeUnwindInfoAndroid32Header {
   // The offset in bytes from the start of the unwind info resource to the
   // page table (i.e. the first level of the function address table). The page
   // table represents discrete 128kb 'pages' of memory in the text section,
@@ -83,17 +83,17 @@ struct BASE_EXPORT ChromeUnwindInfoHeaderAndroid {
   uint32_t unwind_instruction_table_size_in_bytes;
 };
 
-struct BASE_EXPORT ChromeUnwindInfoAndroid {
-  ChromeUnwindInfoAndroid(span<const uint8_t> unwind_instruction_table,
-                          span<const uint8_t> function_offset_table,
-                          span<const FunctionTableEntry> function_table,
-                          span<const uint32_t> page_table);
-  ~ChromeUnwindInfoAndroid();
-  ChromeUnwindInfoAndroid(const ChromeUnwindInfoAndroid& other);
-  ChromeUnwindInfoAndroid& operator=(const ChromeUnwindInfoAndroid& other);
+struct BASE_EXPORT ChromeUnwindInfoAndroid32 {
+  ChromeUnwindInfoAndroid32(span<const uint8_t> unwind_instruction_table,
+                            span<const uint8_t> function_offset_table,
+                            span<const FunctionTableEntry> function_table,
+                            span<const uint32_t> page_table);
+  ~ChromeUnwindInfoAndroid32();
+  ChromeUnwindInfoAndroid32(const ChromeUnwindInfoAndroid32& other);
+  ChromeUnwindInfoAndroid32& operator=(const ChromeUnwindInfoAndroid32& other);
 
-  ChromeUnwindInfoAndroid(ChromeUnwindInfoAndroid&& other);
-  ChromeUnwindInfoAndroid& operator=(ChromeUnwindInfoAndroid&& other);
+  ChromeUnwindInfoAndroid32(ChromeUnwindInfoAndroid32&& other);
+  ChromeUnwindInfoAndroid32& operator=(ChromeUnwindInfoAndroid32&& other);
 
   // Unwind instruction table is expected to have following memory layout:
   // +-----------------------------+
@@ -216,11 +216,11 @@ struct BASE_EXPORT ChromeUnwindInfoAndroid {
   raw_span<const uint32_t> page_table;
 };
 
-// Creates `ChromeUnwindInfoAndroid` struct based on binary `data` assuming
-// `data` starts with `ChromeUnwindInfoHeaderAndroid`.
-BASE_EXPORT ChromeUnwindInfoAndroid
-CreateChromeUnwindInfoAndroid(span<const uint8_t> data);
+// Creates `ChromeUnwindInfoAndroid32` struct based on binary `data` assuming
+// `data` starts with `ChromeUnwindInfoAndroid32Header`.
+BASE_EXPORT ChromeUnwindInfoAndroid32
+CreateChromeUnwindInfoAndroid32(span<const uint8_t> data);
 
 }  // namespace base
 
-#endif  // BASE_PROFILER_CHROME_UNWIND_INFO_ANDROID_H_
+#endif  // BASE_PROFILER_CHROME_UNWIND_INFO_ANDROID_32_H_

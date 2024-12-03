@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "base/profiler/chrome_unwinder_android.h"
+#include "base/profiler/chrome_unwinder_android_32.h"
 
 #include <algorithm>
 
@@ -15,7 +15,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
-#include "base/profiler/chrome_unwind_info_android.h"
+#include "base/profiler/chrome_unwind_info_android_32.h"
 
 namespace base {
 namespace {
@@ -45,8 +45,9 @@ bool PopRegister(RegisterContext* context, uint8_t register_index) {
   const auto new_sp = CheckedNumeric<uintptr_t>(sp) + sizeof(uintptr_t);
   const bool success =
       new_sp.AssignIfValid(&RegisterContextStackPointer(context));
-  if (success)
+  if (success) {
     *GetRegisterPointer(context, register_index) = stacktop_value;
+  }
   return success;
 }
 
@@ -73,8 +74,8 @@ uint8_t GetTopBits(uint8_t byte, unsigned bits) {
 
 }  // namespace
 
-ChromeUnwinderAndroid::ChromeUnwinderAndroid(
-    const ChromeUnwindInfoAndroid& unwind_info,
+ChromeUnwinderAndroid32::ChromeUnwinderAndroid32(
+    const ChromeUnwindInfoAndroid32& unwind_info,
     uintptr_t chrome_module_base_address,
     uintptr_t text_section_start_address)
     : unwind_info_(unwind_info),
@@ -83,12 +84,12 @@ ChromeUnwinderAndroid::ChromeUnwinderAndroid(
   DCHECK_GT(text_section_start_address_, chrome_module_base_address_);
 }
 
-bool ChromeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
+bool ChromeUnwinderAndroid32::CanUnwindFrom(const Frame& current_frame) const {
   return current_frame.module &&
          current_frame.module->GetBaseAddress() == chrome_module_base_address_;
 }
 
-UnwindResult ChromeUnwinderAndroid::TryUnwind(
+UnwindResult ChromeUnwinderAndroid32::TryUnwind(
     UnwinderStateCapture* capture_state,
     RegisterContext* thread_context,
     uintptr_t stack_top,
@@ -258,8 +259,9 @@ UnwindInstructionResult ExecuteUnwindInstruction(
 
     instruction++;
     // Only copy lr to pc when pc is not updated by other instructions before.
-    if (!pc_was_updated)
+    if (!pc_was_updated) {
       thread_context->arm_pc = thread_context->arm_lr;
+    }
 
     return UnwindInstructionResult::kCompleted;
   } else if (*instruction == 0b10110010) {
@@ -297,8 +299,9 @@ uintptr_t GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
     // Each function always ends at 0 offset. It is guaranteed to find an entry
     // as long as the function offset table is well-structured.
     if (function_offset <=
-        static_cast<uint32_t>(instruction_offset_from_function_start))
+        static_cast<uint32_t>(instruction_offset_from_function_start)) {
       return unwind_table_index;
+    }
 
   } while (true);
 

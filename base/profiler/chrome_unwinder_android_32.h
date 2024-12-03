@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_PROFILER_CHROME_UNWINDER_ANDROID_H_
-#define BASE_PROFILER_CHROME_UNWINDER_ANDROID_H_
+#ifndef BASE_PROFILER_CHROME_UNWINDER_ANDROID_32_H_
+#define BASE_PROFILER_CHROME_UNWINDER_ANDROID_32_H_
 
 #include <stdint.h>
 
@@ -11,22 +11,22 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/profiler/chrome_unwind_info_android.h"
+#include "base/profiler/chrome_unwind_info_android_32.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/unwinder.h"
 
 namespace base {
 
-// Chrome unwinder implementation for Android, using ChromeUnwindInfoAndroid,
-// a separate binary resource.
-class BASE_EXPORT ChromeUnwinderAndroid : public Unwinder {
+// Chrome unwinder implementation for Android 32-bit ARM, using
+// ChromeUnwindInfoAndroid32, a separate binary resource.
+class BASE_EXPORT ChromeUnwinderAndroid32 : public Unwinder {
  public:
-  ChromeUnwinderAndroid(const ChromeUnwindInfoAndroid& unwind_info,
-                        uintptr_t chrome_module_base_address,
-                        uintptr_t text_section_start_address);
-  ChromeUnwinderAndroid(const ChromeUnwinderAndroid&) = delete;
-  ChromeUnwinderAndroid& operator=(const ChromeUnwinderAndroid&) = delete;
+  ChromeUnwinderAndroid32(const ChromeUnwindInfoAndroid32& unwind_info,
+                          uintptr_t chrome_module_base_address,
+                          uintptr_t text_section_start_address);
+  ChromeUnwinderAndroid32(const ChromeUnwinderAndroid32&) = delete;
+  ChromeUnwinderAndroid32& operator=(const ChromeUnwinderAndroid32&) = delete;
 
   // Unwinder:
   bool CanUnwindFrom(const Frame& current_frame) const override;
@@ -36,7 +36,7 @@ class BASE_EXPORT ChromeUnwinderAndroid : public Unwinder {
                          std::vector<Frame>* stack) override;
 
  private:
-  const ChromeUnwindInfoAndroid unwind_info_;
+  const ChromeUnwindInfoAndroid32 unwind_info_;
   const uintptr_t chrome_module_base_address_;
   const uintptr_t text_section_start_address_;
 };
@@ -83,13 +83,13 @@ struct FunctionOffsetTableIndex {
 //
 // Arguments:
 //  function_offset_table_entry: An entry in function offset table. See
-//    `ChromeUnwindInfoAndroid::function_offset_table` for details.
+//    `ChromeUnwindInfoAndroid32::function_offset_table` for details.
 //  instruction_offset_from_function_start: Number of 2-byte instructions
 //    between the instruction of interest and function start address.
 //
 // Returns:
 //   The index of the first unwind instruction to execute in
-//   `ChromeUnwindInfoAndroid::unwind_instruction_table`.
+//   `ChromeUnwindInfoAndroid32::unwind_instruction_table`.
 BASE_EXPORT uintptr_t
 GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
     const uint8_t* function_offset_table_entry,
@@ -100,9 +100,9 @@ GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
 //
 // Arguments:
 //  page_start_instructions: A list of page_numbers. See
-//    `ChromeUnwindInfoAndroid::page_table` for details.
+//    `ChromeUnwindInfoAndroid32::page_table` for details.
 //  function_offsets_table_indices: A list of `FunctionTableEntry`. See
-//    `ChromeUnwindInfoAndroid::function_table` for details.
+//    `ChromeUnwindInfoAndroid32::function_table` for details.
 //  instruction_byte_offset_from_text_section_start: The distance in bytes
 //    between the instruction of interest and text section start.
 BASE_EXPORT const std::optional<FunctionOffsetTableIndex>
@@ -113,4 +113,4 @@ GetFunctionTableIndexFromInstructionOffset(
 
 }  // namespace base
 
-#endif  // BASE_PROFILER_CHROME_UNWINDER_ANDROID_H_
+#endif  // BASE_PROFILER_CHROME_UNWINDER_ANDROID_32_H_

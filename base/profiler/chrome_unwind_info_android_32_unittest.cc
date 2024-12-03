@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "base/profiler/chrome_unwind_info_android.h"
+#include "base/profiler/chrome_unwind_info_android_32.h"
 
 #include <tuple>
 
@@ -41,8 +41,8 @@ void ExpectSpanSizeAndContentsEqual(span<T, E1, InternalPtrType1> actual,
   }
 }
 
-TEST(ChromeUnwindInfoAndroidTest, CreateUnwindInfo) {
-  ChromeUnwindInfoHeaderAndroid header = {
+TEST(ChromeUnwindInfoAndroid32Test, CreateUnwindInfo) {
+  ChromeUnwindInfoAndroid32Header header = {
       /* page_table_byte_offset */ 64,
       /* page_table_entries */ 1,
 
@@ -57,15 +57,15 @@ TEST(ChromeUnwindInfoAndroidTest, CreateUnwindInfo) {
   };
 
   uint8_t data[512] = {};
-  // Note: `CreateChromeUnwindInfoAndroid` is not expected to verify the content
-  // of each unwind table.
+  // Note: `CreateChromeUnwindInfoAndroid32` is not expected to verify the
+  // content of each unwind table.
   const uint32_t page_table[] = {1};
   const FunctionTableEntry function_table[] = {{0, 2}, {0, 3}};
   const uint8_t function_offset_table[] = {3, 3, 3};
   const uint8_t unwind_instruction_table[] = {4, 4, 4, 4};
 
-  ASSERT_LT(sizeof(ChromeUnwindInfoHeaderAndroid), 64ul);
-  memcpy(&data[0], &header, sizeof(ChromeUnwindInfoHeaderAndroid));
+  ASSERT_LT(sizeof(ChromeUnwindInfoAndroid32Header), 64ul);
+  memcpy(&data[0], &header, sizeof(ChromeUnwindInfoAndroid32Header));
 
   memcpy(&data[header.page_table_byte_offset], page_table, sizeof(page_table));
   memcpy(&data[header.function_table_byte_offset], function_table,
@@ -75,7 +75,7 @@ TEST(ChromeUnwindInfoAndroidTest, CreateUnwindInfo) {
   memcpy(&data[header.unwind_instruction_table_byte_offset],
          unwind_instruction_table, sizeof(unwind_instruction_table));
 
-  ChromeUnwindInfoAndroid unwind_info = CreateChromeUnwindInfoAndroid(data);
+  ChromeUnwindInfoAndroid32 unwind_info = CreateChromeUnwindInfoAndroid32(data);
 
   ASSERT_EQ(&data[64],
             reinterpret_cast<const uint8_t*>(&unwind_info.page_table[0]));

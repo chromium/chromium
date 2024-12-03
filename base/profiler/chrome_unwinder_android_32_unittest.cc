@@ -7,10 +7,10 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "base/profiler/chrome_unwinder_android.h"
+#include "base/profiler/chrome_unwinder_android_32.h"
 
 #include "base/memory/aligned_memory.h"
-#include "base/profiler/chrome_unwind_info_android.h"
+#include "base/profiler/chrome_unwind_info_android_32.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
@@ -19,7 +19,7 @@
 
 namespace base {
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestSmallStackPointerIncrementMinValue) {
   RegisterContext thread_context = {};
   const uint8_t instruction = 0b00000000;
@@ -34,7 +34,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(0x10000004ul, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestSmallStackPointerIncrementMidValue) {
   // xxxxxx = 4; vsp = vsp + (4 << 2) + 4 = vsp + 16 + 4 = vsp + 0x14.
   RegisterContext thread_context = {};
@@ -50,7 +50,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(0x10000014ul, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestSmallStackPointerIncrementMaxValue) {
   RegisterContext thread_context = {};
   const uint8_t instruction = 0b00111111;
@@ -65,7 +65,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(0x10000100ul, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestSmallStackPointerIncrementOverflow) {
   RegisterContext thread_context = {};
   const uint8_t instruction = 0b00111111;
@@ -79,7 +79,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(0xffffffff, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestSmallStackPointerDecrementMinValue) {
   RegisterContext thread_context = {};
   const uint8_t instruction = 0b01000000;
@@ -94,7 +94,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(0x0ffffffcul, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestSmallStackPointerDecrementMidValue) {
   // xxxxxx = 4; vsp = vsp - (4 << 2) - 4 = vsp - 16 - 4 = vsp - 0x14.
   RegisterContext thread_context = {};
@@ -110,7 +110,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(0x0fffffecul, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestSmallStackPointerDecrementMaxValue) {
   RegisterContext thread_context = {};
   const uint8_t instruction = 0b01111111;
@@ -125,7 +125,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(0x0fffff00ul, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestSmallStackPointerDecrementUnderflow) {
   RegisterContext thread_context = {};
   const uint8_t instruction = 0b01111111;
@@ -183,7 +183,7 @@ TEST_P(ChromeAndroidUnwindSetStackPointerFromRegisterValueTest,
   EXPECT_EQ(100ul + register_index, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest, TestCompleteWithNoPriorPCUpdate) {
+TEST(ChromeAndroid32UnwindInstructionTest, TestCompleteWithNoPriorPCUpdate) {
   RegisterContext thread_context = {};
   thread_context.arm_lr = 114;  // r14
   thread_context.arm_pc = 115;  // r15
@@ -197,7 +197,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestCompleteWithNoPriorPCUpdate) {
   EXPECT_EQ(114ul, thread_context.arm_pc);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest, TestCompleteWithPriorPCUpdate) {
+TEST(ChromeAndroid32UnwindInstructionTest, TestCompleteWithPriorPCUpdate) {
   RegisterContext thread_context = {};
   thread_context.arm_lr = 114;  // r14
   thread_context.arm_pc = 115;  // r15
@@ -211,7 +211,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestCompleteWithPriorPCUpdate) {
   EXPECT_EQ(115ul, thread_context.arm_pc);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestPopDiscontinuousRegistersIncludingPC) {
   RegisterContext thread_context = {};
 
@@ -264,7 +264,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(4ul, thread_context.arm_pc);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest, TestPopDiscontinuousRegisters) {
+TEST(ChromeAndroid32UnwindInstructionTest, TestPopDiscontinuousRegisters) {
   RegisterContext thread_context = {};
 
   thread_context.arm_r0 = 100;
@@ -316,7 +316,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestPopDiscontinuousRegisters) {
   EXPECT_EQ(114ul, thread_context.arm_pc);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestPopDiscontinuousRegistersOverflow) {
   RegisterContext thread_context = {};
 
@@ -367,7 +367,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(114ul, thread_context.arm_pc);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest, TestRefuseToUnwind) {
+TEST(ChromeAndroid32UnwindInstructionTest, TestRefuseToUnwind) {
   RegisterContext thread_context = {};
 
   const uint8_t instruction[] = {0b10000000, 0b0};
@@ -381,7 +381,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestRefuseToUnwind) {
   ASSERT_EQ(current_instruction, instruction + 2);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestPopRegistersIncludingR14MinRegisters) {
   RegisterContext thread_context = {};
 
@@ -431,7 +431,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(2ul, thread_context.arm_lr);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestPopRegistersIncludingR14MidRegisters) {
   RegisterContext thread_context = {};
 
@@ -481,7 +481,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(6ul, thread_context.arm_lr);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestPopRegistersIncludingR14MaxRegisters) {
   RegisterContext thread_context = {};
 
@@ -531,7 +531,8 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(9ul, thread_context.arm_lr);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest, TestPopRegistersIncludingR14Overflow) {
+TEST(ChromeAndroid32UnwindInstructionTest,
+     TestPopRegistersIncludingR14Overflow) {
   RegisterContext thread_context = {};
 
   thread_context.arm_r0 = 100;
@@ -578,7 +579,8 @@ TEST(ChromeAndroidUnwindInstructionTest, TestPopRegistersIncludingR14Overflow) {
   EXPECT_EQ(113ul, thread_context.arm_lr);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementMinValue) {
+TEST(ChromeAndroid32UnwindInstructionTest,
+     TestBigStackPointerIncrementMinValue) {
   RegisterContext thread_context = {};
   thread_context.arm_sp = 0x10000000;
 
@@ -598,7 +600,8 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementMinValue) {
   EXPECT_EQ(0x10000204ul, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementMidValue) {
+TEST(ChromeAndroid32UnwindInstructionTest,
+     TestBigStackPointerIncrementMidValue) {
   RegisterContext thread_context = {};
   thread_context.arm_sp = 0x10000000;
 
@@ -620,7 +623,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementMidValue) {
   EXPECT_EQ(0x10000214ul, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest,
+TEST(ChromeAndroid32UnwindInstructionTest,
      TestBigStackPointerIncrementLargeValue) {
   RegisterContext thread_context = {};
   thread_context.arm_sp = 0x10000000;
@@ -644,7 +647,8 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(0x10000404ul, thread_context.arm_sp);
 }
 
-TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementOverflow) {
+TEST(ChromeAndroid32UnwindInstructionTest,
+     TestBigStackPointerIncrementOverflow) {
   RegisterContext thread_context = {};
   thread_context.arm_sp = 0xffffffff;
 
@@ -664,7 +668,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementOverflow) {
   EXPECT_EQ(0xfffffffful, thread_context.arm_sp);
 }
 
-TEST(ChromeUnwinderAndroidTest,
+TEST(ChromeUnwinderAndroid32Test,
      TestFunctionOffsetTableLookupExactMatchingOffset) {
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
@@ -689,7 +693,7 @@ TEST(ChromeUnwinderAndroidTest,
                      /* instruction_offset_from_function_start */ 128));
 }
 
-TEST(ChromeUnwinderAndroidTest,
+TEST(ChromeUnwinderAndroid32Test,
      TestFunctionOffsetTableLookupNonExactMatchingOffset) {
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
@@ -714,7 +718,7 @@ TEST(ChromeUnwinderAndroidTest,
                      /* instruction_offset_from_function_start */ 129));
 }
 
-TEST(ChromeUnwinderAndroidTest, TestFunctionOffsetTableLookupZeroOffset) {
+TEST(ChromeUnwinderAndroid32Test, TestFunctionOffsetTableLookupZeroOffset) {
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
       // offset = 130
@@ -738,7 +742,7 @@ TEST(ChromeUnwinderAndroidTest, TestFunctionOffsetTableLookupZeroOffset) {
                      /* instruction_offset_from_function_start */ 0));
 }
 
-TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEntryInPage) {
+TEST(ChromeUnwinderAndroid32Test, TestAddressTableLookupEntryInPage) {
   const uint32_t page_start_instructions[] = {0, 2};
   const FunctionTableEntry function_offset_table_indices[] = {
       // Page 0
@@ -796,7 +800,7 @@ TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEntryInPage) {
   }
 }
 
-TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEmptyPage) {
+TEST(ChromeUnwinderAndroid32Test, TestAddressTableLookupEmptyPage) {
   const uint32_t page_start_instructions[] = {0, 1, 1};
   const FunctionTableEntry function_offset_table_indices[] = {
       // Page 0
@@ -823,7 +827,8 @@ TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupEmptyPage) {
   EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
 }
 
-TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupInvalidIntructionOffset) {
+TEST(ChromeUnwinderAndroid32Test,
+     TestAddressTableLookupInvalidIntructionOffset) {
   const uint32_t page_start_instructions[] = {0, 1};
   const FunctionTableEntry function_offset_table_indices[] = {
       // Page 0
@@ -860,7 +865,7 @@ TEST(ChromeUnwinderAndroidTest, TestAddressTableLookupInvalidIntructionOffset) {
   }
 }
 
-TEST(ChromeUnwinderAndroidTest,
+TEST(ChromeUnwinderAndroid32Test,
      TestAddressTableLookupOnSecondPageOfFunctionSpanningPageBoundary) {
   const uint32_t page_start_instructions[] = {0, 1, 2};
   const FunctionTableEntry function_offset_table_indices[] = {
@@ -891,7 +896,7 @@ TEST(ChromeUnwinderAndroidTest,
   EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
 }
 
-TEST(ChromeUnwinderAndroidTest,
+TEST(ChromeUnwinderAndroid32Test,
      TestAddressTableLookupWithinFunctionSpanningMultiplePages) {
   const uint32_t page_start_instructions[] = {0, 1, 1, 1};
   const FunctionTableEntry function_offset_table_indices[] = {
@@ -966,12 +971,12 @@ const ModuleCache::Module* AddNativeModule(
   return module_ptr;
 }
 
-TEST(ChromeUnwinderAndroidTest, CanUnwindFrom) {
+TEST(ChromeUnwinderAndroid32Test, CanUnwindFrom) {
   const uint32_t page_table[] = {0};
   const FunctionTableEntry function_table[] = {{0, 0}};
   const uint8_t function_offset_table[] = {0};
   const uint8_t unwind_instruction_table[] = {0};
-  auto dummy_unwind_info = ChromeUnwindInfoAndroid{
+  auto dummy_unwind_info = ChromeUnwindInfoAndroid32{
       unwind_instruction_table,
       function_offset_table,
       function_table,
@@ -982,10 +987,10 @@ TEST(ChromeUnwinderAndroidTest, CanUnwindFrom) {
   auto non_chrome_module = std::make_unique<TestModule>(0x2000, 0x500);
 
   ModuleCache module_cache;
-  ChromeUnwinderAndroid unwinder(dummy_unwind_info,
-                                 chrome_module->GetBaseAddress(),
-                                 /* text_section_start_address */
-                                 chrome_module->GetBaseAddress() + 4);
+  ChromeUnwinderAndroid32 unwinder(dummy_unwind_info,
+                                   chrome_module->GetBaseAddress(),
+                                   /* text_section_start_address */
+                                   chrome_module->GetBaseAddress() + 4);
   unwinder.Initialize(&module_cache);
 
   EXPECT_TRUE(unwinder.CanUnwindFrom({0x1100, chrome_module.get()}));
@@ -998,8 +1003,9 @@ namespace {
 void ExpectFramesEq(const std::vector<Frame>& expected,
                     const std::vector<Frame>& actual) {
   EXPECT_EQ(actual.size(), expected.size());
-  if (actual.size() != expected.size())
+  if (actual.size() != expected.size()) {
     return;
+  }
 
   for (size_t i = 0; i < actual.size(); i++) {
     EXPECT_EQ(expected[i].module, actual[i].module);
@@ -1032,7 +1038,7 @@ class AlignedStackMemory {
 
 }  // namespace
 
-TEST(ChromeUnwinderAndroidTest, TryUnwind) {
+TEST(ChromeUnwinderAndroid32Test, TryUnwind) {
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
   const size_t page_size = 1 << 17;
@@ -1075,7 +1081,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwind) {
       0b10110000,
   };
 
-  auto unwind_info = ChromeUnwindInfoAndroid{
+  auto unwind_info = ChromeUnwindInfoAndroid32{
       unwind_instruction_table,
       function_offset_table,
       function_table,
@@ -1088,8 +1094,8 @@ TEST(ChromeUnwinderAndroidTest, TryUnwind) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                 text_section_start_address);
+  ChromeUnwinderAndroid32 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
 
   unwinder.Initialize(&module_cache);
 
@@ -1122,7 +1128,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwind) {
                  unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopSingleFrame) {
+TEST(ChromeUnwinderAndroid32Test, TryUnwindInfiniteLoopSingleFrame) {
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
   const size_t page_size = 1 << 17;
@@ -1150,7 +1156,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopSingleFrame) {
       0b10110000,
   };
 
-  auto unwind_info = ChromeUnwindInfoAndroid{
+  auto unwind_info = ChromeUnwindInfoAndroid32{
       unwind_instruction_table,
       function_offset_table,
       function_table,
@@ -1163,8 +1169,8 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopSingleFrame) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                 text_section_start_address);
+  ChromeUnwinderAndroid32 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1190,7 +1196,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopSingleFrame) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopMultipleFrames) {
+TEST(ChromeUnwinderAndroid32Test, TryUnwindInfiniteLoopMultipleFrames) {
   // This test aims to produce a scenario, where after the unwind of a number
   // of frames, the sp and pc get to their original state before the unwind.
 
@@ -1242,7 +1248,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopMultipleFrames) {
       0b10110000,
   };
 
-  auto unwind_info = ChromeUnwindInfoAndroid{
+  auto unwind_info = ChromeUnwindInfoAndroid32{
       unwind_instruction_table,
       function_offset_table,
       function_table,
@@ -1255,8 +1261,8 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopMultipleFrames) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                 text_section_start_address);
+  ChromeUnwinderAndroid32 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t first_pc = text_section_start_address + 0x20;    // Function 1.
@@ -1286,7 +1292,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopMultipleFrames) {
                  unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPFrameUnwind) {
+TEST(ChromeUnwinderAndroid32Test, TryUnwindUnalignedSPFrameUnwind) {
   // SP should be 2-uintptr_t aligned before/after each frame unwind.
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
@@ -1315,7 +1321,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPFrameUnwind) {
       0b10110000,
   };
 
-  auto unwind_info = ChromeUnwindInfoAndroid{
+  auto unwind_info = ChromeUnwindInfoAndroid32{
       unwind_instruction_table,
       function_offset_table,
       function_table,
@@ -1328,8 +1334,8 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPFrameUnwind) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                 text_section_start_address);
+  ChromeUnwinderAndroid32 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1358,7 +1364,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPFrameUnwind) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPInstructionUnwind) {
+TEST(ChromeUnwinderAndroid32Test, TryUnwindUnalignedSPInstructionUnwind) {
   // SP should be uintptr_t aligned before/after each unwind instruction
   // execution.
 
@@ -1389,7 +1395,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPInstructionUnwind) {
       0b10110000,  // COMPLETE.
   };
 
-  auto unwind_info = ChromeUnwindInfoAndroid{
+  auto unwind_info = ChromeUnwindInfoAndroid32{
       unwind_instruction_table,
       function_offset_table,
       function_table,
@@ -1402,8 +1408,8 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPInstructionUnwind) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                 text_section_start_address);
+  ChromeUnwinderAndroid32 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1432,7 +1438,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPInstructionUnwind) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidTest, TryUnwindSPOverflow) {
+TEST(ChromeUnwinderAndroid32Test, TryUnwindSPOverflow) {
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
   const size_t page_size = 1 << 17;
@@ -1461,7 +1467,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindSPOverflow) {
       0b10110000,  // COMPLETE.
   };
 
-  auto unwind_info = ChromeUnwindInfoAndroid{
+  auto unwind_info = ChromeUnwindInfoAndroid32{
       unwind_instruction_table,
       function_offset_table,
       function_table,
@@ -1474,8 +1480,8 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindSPOverflow) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                 text_section_start_address);
+  ChromeUnwinderAndroid32 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1505,7 +1511,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindSPOverflow) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidTest, TryUnwindNullSP) {
+TEST(ChromeUnwinderAndroid32Test, TryUnwindNullSP) {
   const uint32_t page_table[] = {0, 2};
   const size_t number_of_pages = std::size(page_table);
   const size_t page_size = 1 << 17;
@@ -1534,7 +1540,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindNullSP) {
       0b10110000,  // COMPLETE.
   };
 
-  auto unwind_info = ChromeUnwindInfoAndroid{
+  auto unwind_info = ChromeUnwindInfoAndroid32{
       unwind_instruction_table,
       function_offset_table,
       function_table,
@@ -1547,8 +1553,8 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindNullSP) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                 text_section_start_address);
+  ChromeUnwinderAndroid32 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
@@ -1578,7 +1584,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindNullSP) {
   ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
-TEST(ChromeUnwinderAndroidTest, TryUnwindInvalidSPOperation) {
+TEST(ChromeUnwinderAndroid32Test, TryUnwindInvalidSPOperation) {
   // This test aims to verify that for each unwind instruction executed, it is
   // always true that sp > frame initial sp.
 
@@ -1610,7 +1616,7 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInvalidSPOperation) {
       0b10110000,  // COMPLETE.
   };
 
-  auto unwind_info = ChromeUnwindInfoAndroid{
+  auto unwind_info = ChromeUnwindInfoAndroid32{
       unwind_instruction_table,
       function_offset_table,
       function_table,
@@ -1623,8 +1629,8 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInvalidSPOperation) {
                          0x1000, number_of_pages * page_size, "ChromeModule"));
 
   uintptr_t text_section_start_address = 0x1100;
-  ChromeUnwinderAndroid unwinder(unwind_info, chrome_module->GetBaseAddress(),
-                                 text_section_start_address);
+  ChromeUnwinderAndroid32 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
 
   unwinder.Initialize(&module_cache);
   uintptr_t pc = text_section_start_address + 0x20;
