@@ -60,7 +60,7 @@ TEST_F(GameDashboardControllerTest, IsGame) {
 }
 
 // Verifies a non-normal window type is not a game and not being observed.
-TEST_F(GameDashboardControllerTest, IsGameWindowPropertyNonNormalWindowType) {
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_NonNormalWindowType) {
   auto non_normal_window = CreateTestWindow(
       gfx::Rect(5, 5, 20, 20), aura::client::WindowType::WINDOW_TYPE_MENU);
   const auto observer =
@@ -70,34 +70,34 @@ TEST_F(GameDashboardControllerTest, IsGameWindowPropertyNonNormalWindowType) {
   EXPECT_FALSE(GameDashboardController::IsGameWindow(non_normal_window.get()));
 }
 
-TEST_F(GameDashboardControllerTest, IsGameWindowPropertyGameArcWindow) {
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_GameArcWindow) {
   // Verifies a game ARC window is a game.
   CreateAppWindowAndVerifyIsGameWindowProperty(
       TestGameDashboardDelegate::kGameAppId, /*expected_is_game=*/true,
       chromeos::AppType::ARC_APP);
 }
 
-TEST_F(GameDashboardControllerTest, IsGameWindowPropertyAllowlistedArcWindow) {
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_AllowlistedArcWindow) {
   // Verifies an allowlisted ARC window is a game.
   CreateAppWindowAndVerifyIsGameWindowProperty(
       TestGameDashboardDelegate::kAllowlistedAppId,
       /*expected_is_game=*/true, chromeos::AppType::ARC_APP);
 }
 
-TEST_F(GameDashboardControllerTest, IsGameWindowPropertyOtherArcWindow) {
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_OtherArcWindow) {
   // Verifies a not-game ARC window is not a game.
   CreateAppWindowAndVerifyIsGameWindowProperty(
       TestGameDashboardDelegate::kOtherAppId, /*expected_is_game=*/false,
       chromeos::AppType::ARC_APP);
 }
 
-TEST_F(GameDashboardControllerTest, IsGameWindowPropertyGFNWindows) {
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_GFNWindows) {
   // Verifies a GeForceNow window is a game.
   CreateAppWindowAndVerifyIsGameWindowProperty(extension_misc::kGeForceNowAppId,
                                                /*expected_is_game=*/true);
 }
 
-TEST_F(GameDashboardControllerTest, IsGameWindowPropertyOtherWindows) {
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_OtherWindows) {
   // Verifies a non-game non-ARC window is not a game.
   CreateAppWindowAndVerifyIsGameWindowProperty(
       TestGameDashboardDelegate::kOtherAppId, /*expected_is_game=*/false);

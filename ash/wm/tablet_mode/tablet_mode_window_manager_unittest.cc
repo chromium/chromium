@@ -1003,7 +1003,7 @@ TEST_F(TabletModeWindowManagerTest, KeepFullScreenModeOn) {
 }
 
 // Similar to the fullscreen mode, the pinned mode should be kept as well.
-TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOnCase1) {
+TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case1) {
   // Scenario: in the default state, pin a window, enter to the tablet mode,
   // then unpin.
   gfx::Rect rect(20, 140, 100, 100);
@@ -1032,7 +1032,7 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOnCase1) {
   EXPECT_FALSE(window_state->IsPinned());
 }
 
-TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOnCase2) {
+TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case2) {
   // Scenario: in the tablet mode, pin a window, exit tablet mode, then unpin.
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
@@ -1069,7 +1069,7 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOnCase2) {
   EXPECT_FALSE(window_state->IsPinned());
 }
 
-TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOnCase3) {
+TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case3) {
   // Scenario: in the default state, pin a window, enter to the tablet mode,
   // exit from the tablet mode, then unpin.
   gfx::Rect rect(20, 140, 100, 100);
@@ -1106,7 +1106,7 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOnCase3) {
   DestroyTabletModeWindowManager();
 }
 
-TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOnCase4) {
+TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case4) {
   // Scenario: in tablet mode, pin a window, exit tablet mode, enter tablet mode
   // again, then unpin.
   gfx::Rect rect(20, 140, 100, 100);
@@ -1143,7 +1143,7 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOnCase4) {
   EXPECT_FALSE(window_state->IsPinned());
 }
 
-TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOnCase5) {
+TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case5) {
   std::unique_ptr<aura::Window> w1(CreateWindow(
       aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(20, 140, 100, 100)));
   WindowState* window_state = WindowState::Get(w1.get());

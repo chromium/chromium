@@ -179,7 +179,7 @@ TEST_F(ArcSystemUIBridgeTest, SendOverlayColor) {
             system_ui_instance_.theme_style());
 }
 
-TEST_F(ArcSystemUIBridgeTest, OnConnectionReadyNeutralToSpritzConversion) {
+TEST_F(ArcSystemUIBridgeTest, OnConnectionReady_NeutralToSpritzConversion) {
   EXPECT_FALSE(system_ui_instance_.dark_theme_status());
   ash::ColorPaletteSeed seed;
   seed.color_mode = ui::ColorProviderKey::ColorMode::kLight;

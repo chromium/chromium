@@ -122,7 +122,7 @@ TEST_F(ArcContainerClientAdapterTest,
   EXPECT_FALSE(child_observer.stopped_called());
 }
 
-TEST_F(ArcContainerClientAdapterTest, StartArcDisableMediaStoreMaintenance) {
+TEST_F(ArcContainerClientAdapterTest, StartArc_DisableMediaStoreMaintenance) {
   StartParams start_params;
   start_params.disable_media_store_maintenance = true;
   client_adapter()->StartMiniArc(std::move(start_params),
@@ -133,7 +133,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArcDisableMediaStoreMaintenance) {
   EXPECT_TRUE(request.disable_media_store_maintenance());
 }
 
-TEST_F(ArcContainerClientAdapterTest, StartArcDisableDownloadProviderDefault) {
+TEST_F(ArcContainerClientAdapterTest, StartArc_DisableDownloadProviderDefault) {
   StartParams start_params;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
@@ -143,7 +143,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArcDisableDownloadProviderDefault) {
   EXPECT_FALSE(request.disable_download_provider());
 }
 
-TEST_F(ArcContainerClientAdapterTest, StartArcDisableDownloadProviderOn) {
+TEST_F(ArcContainerClientAdapterTest, StartArc_DisableDownloadProviderOn) {
   StartParams start_params;
   start_params.disable_download_provider = true;
   client_adapter()->StartMiniArc(std::move(start_params),
@@ -154,7 +154,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArcDisableDownloadProviderOn) {
   EXPECT_TRUE(request.disable_download_provider());
 }
 
-TEST_F(ArcContainerClientAdapterTest, StartArcDoNotUseDevCachesByDefault) {
+TEST_F(ArcContainerClientAdapterTest, StartArc_DoNotUseDevCachesByDefault) {
   StartParams start_params;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
@@ -164,7 +164,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArcDoNotUseDevCachesByDefault) {
   EXPECT_FALSE(request.use_dev_caches());
 }
 
-TEST_F(ArcContainerClientAdapterTest, StartArcUseDevCachesSet) {
+TEST_F(ArcContainerClientAdapterTest, StartArc_UseDevCachesSet) {
   StartParams start_params;
   start_params.use_dev_caches = true;
   client_adapter()->StartMiniArc(std::move(start_params),
@@ -175,7 +175,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArcUseDevCachesSet) {
   EXPECT_TRUE(request.use_dev_caches());
 }
 
-TEST_F(ArcContainerClientAdapterTest, StartArcArcSignedInDefault) {
+TEST_F(ArcContainerClientAdapterTest, StartArc_ArcSignedInDefault) {
   StartParams start_params;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
@@ -185,7 +185,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArcArcSignedInDefault) {
   EXPECT_FALSE(request.arc_signed_in());
 }
 
-TEST_F(ArcContainerClientAdapterTest, StartrcArcSignedIn) {
+TEST_F(ArcContainerClientAdapterTest, Startrc_ArcSignedIn) {
   StartParams start_params;
   start_params.arc_signed_in = true;
   client_adapter()->StartMiniArc(std::move(start_params),
@@ -217,7 +217,7 @@ TEST_F(ArcContainerClientAdapterTest, ArcTTSCachingEnabled) {
   EXPECT_TRUE(request.enable_tts_caching());
 }
 
-TEST_F(ArcContainerClientAdapterTest, ConvertUpgradeParamsSkipTtsCacheSetup) {
+TEST_F(ArcContainerClientAdapterTest, ConvertUpgradeParams_SkipTtsCacheSetup) {
   UpgradeParams upgrade_params;
   upgrade_params.skip_tts_cache = true;
   client_adapter()->UpgradeArc(std::move(upgrade_params),
@@ -238,7 +238,7 @@ TEST_F(ArcContainerClientAdapterTest,
   EXPECT_FALSE(upgrade_request.skip_tts_cache());
 }
 
-TEST_F(ArcContainerClientAdapterTest, StartArcEnableArcAttestationDefault) {
+TEST_F(ArcContainerClientAdapterTest, StartArc_EnableArcAttestationDefault) {
   StartParams start_params;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));

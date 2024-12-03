@@ -268,7 +268,7 @@ TEST_F(EcheTrayTest, OnStatusAreaAnchoredBubbleVisibilityChanged) {
 
 // OnStatusAreaAnchoredBubbleVisibilityChanged() is called on the current bubble
 // and hence should be ignored.
-TEST_F(EcheTrayTest, OnStatusAreaAnchoredBubbleVisibilityChangedSameWidget) {
+TEST_F(EcheTrayTest, OnStatusAreaAnchoredBubbleVisibilityChanged_SameWidget) {
   eche_tray()->LoadBubble(
       GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
       eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
@@ -286,7 +286,7 @@ TEST_F(EcheTrayTest, OnStatusAreaAnchoredBubbleVisibilityChangedSameWidget) {
 
 // OnStatusAreaAnchoredBubbleVisibilityChanged() is called on some other bubble
 // but the visible parameter is false, hence we should not do anything.
-TEST_F(EcheTrayTest, OnStatusAreaAnchoredBubbleVisibilityChangedNonVisible) {
+TEST_F(EcheTrayTest, OnStatusAreaAnchoredBubbleVisibilityChanged_NonVisible) {
   eche_tray()->LoadBubble(
       GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
       eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
@@ -422,7 +422,7 @@ TEST_F(EcheTrayTest, EcheTrayBackButtonClicked) {
   EXPECT_EQ(2u, num_web_content_go_back_calls_);
 }
 
-TEST_F(EcheTrayTest, AcceleratorKeyHandledMinimize) {
+TEST_F(EcheTrayTest, AcceleratorKeyHandled_Minimize) {
   eche_tray()->LoadBubble(
       GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
       eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
@@ -449,7 +449,7 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandledMinimize) {
   EXPECT_FALSE(is_web_content_unloaded_);
 }
 
-TEST_F(EcheTrayTest, AcceleratorKeyHandledCtrlW) {
+TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_W) {
   ResetUnloadWebContent();
   eche_tray()->SetGracefulCloseCallback(base::BindOnce(&UnloadWebContent));
   eche_tray()->LoadBubble(
@@ -468,7 +468,7 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandledCtrlW) {
   EXPECT_TRUE(is_web_content_unloaded_);
 }
 
-TEST_F(EcheTrayTest, AcceleratorKeyHandledBROWSERBACKKEY) {
+TEST_F(EcheTrayTest, AcceleratorKeyHandled_BROWSER_BACK_KEY) {
   ResetWebContentGoBack();
   eche_tray()->SetGracefulGoBackCallback(
       base::BindRepeating(&WebContentGoBack));
@@ -483,7 +483,7 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandledBROWSERBACKKEY) {
   EXPECT_EQ(1u, num_web_content_go_back_calls_);
 }
 
-TEST_F(EcheTrayTest, AcceleratorKeyHandledEsc) {
+TEST_F(EcheTrayTest, AcceleratorKeyHandled_Esc) {
   ResetUnloadWebContent();
   eche_tray()->SetGracefulCloseCallback(base::BindOnce(&UnloadWebContent));
   eche_tray()->LoadBubble(

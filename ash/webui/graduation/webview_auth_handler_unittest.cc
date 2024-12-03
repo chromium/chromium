@@ -206,7 +206,7 @@ TEST_F(WebviewAuthHandlerTest, AuthPersistentFailure) {
   run_loop.Run();
 }
 
-TEST_F(WebviewAuthHandlerTest, AuthTransientFailureMaxRetry) {
+TEST_F(WebviewAuthHandlerTest, AuthTransientFailure_MaxRetry) {
   base::RunLoop run_loop;
   base::HistogramTester histogram_tester;
 

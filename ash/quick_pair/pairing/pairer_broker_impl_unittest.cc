@@ -356,7 +356,7 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
   scoped_refptr<Device> device_;
 };
 
-TEST_F(PairerBrokerImplTest, PairV1DeviceInitial) {
+TEST_F(PairerBrokerImplTest, PairV1Device_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
 
   CreateMockDevice(DeviceFastPairVersion::kV1,
@@ -374,7 +374,7 @@ TEST_F(PairerBrokerImplTest, PairV1DeviceInitial) {
   EXPECT_EQ(account_key_write_count_, 0);
 }
 
-TEST_F(PairerBrokerImplTest, PairV2DeviceInitial) {
+TEST_F(PairerBrokerImplTest, PairV2Device_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -397,7 +397,7 @@ TEST_F(PairerBrokerImplTest, PairV2DeviceInitial) {
   EXPECT_EQ(account_key_write_count_, 1);
 }
 
-TEST_F(PairerBrokerImplTest, PairDeviceSubsequent) {
+TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -419,7 +419,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceSubsequent) {
   EXPECT_TRUE(device_pair_complete_);
 }
 
-TEST_F(PairerBrokerImplTest, BleAddressMatchesCreateHandshake) {
+TEST_F(PairerBrokerImplTest, Ble_Address_Matches_Create_Handshake) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({ash::features::kFastPairBleRotation}, {});
 
@@ -432,7 +432,7 @@ TEST_F(PairerBrokerImplTest, BleAddressMatchesCreateHandshake) {
   ExpectHandshakeExistsForDevice(device_);
 }
 
-TEST_F(PairerBrokerImplTest, BleAddressMismatchNoHandshake) {
+TEST_F(PairerBrokerImplTest, Ble_Address_Mismatch_No_Handshake) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairBleRotation};
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -445,7 +445,7 @@ TEST_F(PairerBrokerImplTest, BleAddressMismatchNoHandshake) {
   EXPECT_EQ(fake_fast_pair_handshake_, nullptr);
 }
 
-TEST_F(PairerBrokerImplTest, BleAddressMismatchSetCallback) {
+TEST_F(PairerBrokerImplTest, Ble_Address_Mismatch_Set_Callback) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairBleRotation};
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -467,7 +467,7 @@ TEST_F(PairerBrokerImplTest, BleAddressMismatchSetCallback) {
   ExpectBleRotatedForDevice(device_);
 }
 
-TEST_F(PairerBrokerImplTest, OnBleAddressRotationPairsSuccessfully) {
+TEST_F(PairerBrokerImplTest, OnBleAddressRotation_Pairs_Successfully) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({ash::features::kFastPairBleRotation}, {});
 
@@ -496,7 +496,7 @@ TEST_F(PairerBrokerImplTest, OnBleAddressRotationPairsSuccessfully) {
   EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
-TEST_F(PairerBrokerImplTest, PairDeviceRetroactive) {
+TEST_F(PairerBrokerImplTest, PairDevice_Retroactive) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
@@ -516,7 +516,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceRetroactive) {
   EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
-TEST_F(PairerBrokerImplTest, AlreadyPairingDeviceInitial) {
+TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -536,7 +536,7 @@ TEST_F(PairerBrokerImplTest, AlreadyPairingDeviceInitial) {
             1);
 }
 
-TEST_F(PairerBrokerImplTest, AlreadyPairingDeviceSubsequent) {
+TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Subsequent) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -558,7 +558,7 @@ TEST_F(PairerBrokerImplTest, AlreadyPairingDeviceSubsequent) {
             1);
 }
 
-TEST_F(PairerBrokerImplTest, AlreadyPairingDeviceRetroactive) {
+TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Retroactive) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
@@ -608,7 +608,7 @@ TEST_F(PairerBrokerImplTest, PairAfterCancelPairing) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
 }
 
-TEST_F(PairerBrokerImplTest, PairDeviceFailureMaxInitial) {
+TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
@@ -633,7 +633,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMaxInitial) {
   histogram_tester_.ExpectTotalCount(kProtocolPairingStepInitial, 1);
 }
 
-TEST_F(PairerBrokerImplTest, PairDeviceFailureMaxSubsequent) {
+TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Subsequent) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -657,7 +657,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMaxSubsequent) {
   histogram_tester_.ExpectTotalCount(kProtocolPairingStepSubsequent, 1);
 }
 
-TEST_F(PairerBrokerImplTest, PairDeviceFailureMaxRetroactive) {
+TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Retroactive) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
@@ -680,7 +680,7 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMaxRetroactive) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
 }
 
-TEST_F(PairerBrokerImplTest, AccountKeyFailureInitial) {
+TEST_F(PairerBrokerImplTest, AccountKeyFailure_Initial) {
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
   pairer_broker_->PairDevice(device_);
@@ -696,7 +696,7 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailureInitial) {
   EXPECT_EQ(account_key_write_count_, 1);
 }
 
-TEST_F(PairerBrokerImplTest, AccountKeyFailureSubsequent) {
+TEST_F(PairerBrokerImplTest, AccountKeyFailure_Subsequent) {
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
   pairer_broker_->PairDevice(device_);
@@ -711,7 +711,7 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailureSubsequent) {
   EXPECT_EQ(account_key_write_count_, 1);
 }
 
-TEST_F(PairerBrokerImplTest, AccountKeyFailureRetroactive) {
+TEST_F(PairerBrokerImplTest, AccountKeyFailure_Retroactive) {
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
   pairer_broker_->PairDevice(device_);
@@ -745,7 +745,7 @@ TEST_F(PairerBrokerImplTest, StopPairing) {
   EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
-TEST_F(PairerBrokerImplTest, ReuseHandshakeInitial) {
+TEST_F(PairerBrokerImplTest, ReuseHandshake_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -774,7 +774,7 @@ TEST_F(PairerBrokerImplTest, ReuseHandshakeInitial) {
             1);
 }
 
-TEST_F(PairerBrokerImplTest, ReuseHandshakeSubsequent) {
+TEST_F(PairerBrokerImplTest, ReuseHandshake_Subsequent) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -805,7 +805,7 @@ TEST_F(PairerBrokerImplTest, ReuseHandshakeSubsequent) {
             1);
 }
 
-TEST_F(PairerBrokerImplTest, ReuseHandshakeRetroactive) {
+TEST_F(PairerBrokerImplTest, ReuseHandshake_Retroactive) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
@@ -834,7 +834,7 @@ TEST_F(PairerBrokerImplTest, ReuseHandshakeRetroactive) {
             1);
 }
 
-TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailedInitial) {
+TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Initial) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairHandshakeLongTermRefactor};
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
@@ -853,7 +853,7 @@ TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailedInitial) {
             1);
 }
 
-TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailedSubsequent) {
+TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Subsequent) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairHandshakeLongTermRefactor};
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
@@ -872,7 +872,7 @@ TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailedSubsequent) {
             1);
 }
 
-TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailedRetroactive) {
+TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Retroactive) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairHandshakeLongTermRefactor};
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);

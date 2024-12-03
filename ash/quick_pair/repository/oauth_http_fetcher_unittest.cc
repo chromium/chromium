@@ -74,7 +74,7 @@ class OAuthHttpFetcherTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
-TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestSuccess) {
+TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_Success) {
   GURL url(kTestUrl);
   std::string body(kBody);
   auto head = network::mojom::URLResponseHead::New();
@@ -94,7 +94,7 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestSuccess) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestFailure) {
+TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_Failure) {
   url_loader_factory_.AddResponse(kTestUrl, "",
                                   net::HTTP_INTERNAL_SERVER_ERROR);
 
@@ -110,7 +110,7 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestFailure) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestMultipleCalls) {
+TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_MultipleCalls) {
   url_loader_factory_.AddResponse(kTestUrl, "",
                                   net::HTTP_INTERNAL_SERVER_ERROR);
 
@@ -128,7 +128,7 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestMultipleCalls) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestNoToken) {
+TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_NoToken) {
   identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
   url_loader_factory_.AddResponse(kTestUrl, "",
                                   net::HTTP_INTERNAL_SERVER_ERROR);
@@ -142,7 +142,7 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestNoToken) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestNoUrlFactory) {
+TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_NoUrlFactory) {
   ON_CALL(*browser_delegate_, GetURLLoaderFactory())
       .WillByDefault(testing::Return(nullptr));
   url_loader_factory_.AddResponse(kTestUrl, "",
@@ -157,7 +157,7 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestNoUrlFactory) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestNoIdentityManager) {
+TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_NoIdentityManager) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(nullptr));
 
@@ -167,14 +167,14 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestNoIdentityManager) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OAuthHttpFetcherTest, ExecuteGetRequestMultipleRaceCondition) {
+TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_MultipleRaceCondition) {
   http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing());
   EXPECT_DEATH(
       http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing()), "");
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OAuthHttpFetcherTest, ExecutePostRequestSuccess) {
+TEST_F(OAuthHttpFetcherTest, ExecutePostRequest_Success) {
   GURL url(kTestUrl);
   std::string body(kBody);
   auto head = network::mojom::URLResponseHead::New();
@@ -194,7 +194,7 @@ TEST_F(OAuthHttpFetcherTest, ExecutePostRequestSuccess) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OAuthHttpFetcherTest, ExecuteDeleteRequestSuccess) {
+TEST_F(OAuthHttpFetcherTest, ExecuteDeleteRequest_Success) {
   GURL url(kTestUrl);
   std::string body(kBody);
   auto head = network::mojom::URLResponseHead::New();

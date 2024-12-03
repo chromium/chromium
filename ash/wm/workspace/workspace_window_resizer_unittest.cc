@@ -241,7 +241,7 @@ class WorkspaceWindowResizerTest : public AshTestBase {
 
 // Assertions around attached window resize dragging from the right with 2
 // windows.
-TEST_F(WorkspaceWindowResizerTest, AttachedResizeRIGHT2) {
+TEST_F(WorkspaceWindowResizerTest, AttachedResize_RIGHT_2) {
   window_->SetBounds(gfx::Rect(0, 300, 400, 300));
   window2_->SetBounds(gfx::Rect(400, 200, 100, 200));
 
@@ -272,7 +272,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResizeRIGHT2) {
 }
 
 // Assertions around collapsing and expanding.
-TEST_F(WorkspaceWindowResizerTest, AttachedResizeRIGHTCompress) {
+TEST_F(WorkspaceWindowResizerTest, AttachedResize_RIGHT_Compress) {
   window_->SetBounds(gfx::Rect(0, 300, 400, 300));
   window2_->SetBounds(gfx::Rect(400, 200, 100, 200));
 
@@ -308,7 +308,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResizeRIGHTCompress) {
 
 // Assertions around attached window resize dragging from the right with 3
 // windows.
-TEST_F(WorkspaceWindowResizerTest, AttachedResizeRIGHT3) {
+TEST_F(WorkspaceWindowResizerTest, AttachedResize_RIGHT_3) {
   window_->SetBounds(gfx::Rect(100, 300, 200, 300));
   window2_->SetBounds(gfx::Rect(300, 300, 150, 200));
   window3_->SetBounds(gfx::Rect(450, 300, 100, 200));
@@ -346,7 +346,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResizeRIGHT3) {
 
 // Assertions around attached window resizing (collapsing and expanding) with
 // 3 windows.
-TEST_F(WorkspaceWindowResizerTest, AttachedResizeRIGHT3Compress) {
+TEST_F(WorkspaceWindowResizerTest, AttachedResize_RIGHT_3_Compress) {
   window_->SetBounds(gfx::Rect(100, 300, 200, 300));
   window2_->SetBounds(gfx::Rect(300, 300, 200, 200));
   window3_->SetBounds(gfx::Rect(450, 300, 100, 200));
@@ -377,7 +377,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResizeRIGHT3Compress) {
 }
 
 // Assertions around collapsing and expanding from the bottom.
-TEST_F(WorkspaceWindowResizerTest, AttachedResizeBOTTOMCompress) {
+TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_Compress) {
   window_->SetBounds(gfx::Rect(0, 100, 400, 300));
   window2_->SetBounds(gfx::Rect(400, 400, 100, 200));
 
@@ -408,7 +408,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResizeBOTTOMCompress) {
 
 // Assertions around attached window resize dragging from the bottom with 2
 // windows.
-TEST_F(WorkspaceWindowResizerTest, AttachedResizeBOTTOM2) {
+TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_2) {
   window_->SetBounds(gfx::Rect(0, 50, 400, 200));
   window2_->SetBounds(gfx::Rect(0, 250, 200, 100));
 
@@ -440,7 +440,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResizeBOTTOM2) {
 
 // Assertions around attached window resize dragging from the bottom with 3
 // windows.
-TEST_F(WorkspaceWindowResizerTest, AttachedResizeBOTTOM3) {
+TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_3) {
   UpdateDisplay("600x800");
   aura::Window* root = Shell::GetPrimaryRootWindow();
   WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
@@ -483,7 +483,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResizeBOTTOM3) {
 
 // Assertions around attached window resizing (collapsing and expanding) with
 // 3 windows.
-TEST_F(WorkspaceWindowResizerTest, AttachedResizeBOTTOM3Compress) {
+TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_3_Compress) {
   window_->SetBounds(gfx::Rect(0, 0, 200, 200));
   window2_->SetBounds(gfx::Rect(10, 200, 200, 200));
   window3_->SetBounds(gfx::Rect(20, 400, 100, 100));
@@ -1076,7 +1076,7 @@ TEST_F(WorkspaceWindowResizerTest, SnapToEdge) {
 }
 
 // Verifies a resize snap when dragging TOPLEFT.
-TEST_F(WorkspaceWindowResizerTest, SnapToWorkAreaTOPLEFT) {
+TEST_F(WorkspaceWindowResizerTest, SnapToWorkArea_TOPLEFT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   std::unique_ptr<WindowResizer> resizer =
       CreateResizerForTest(window_.get(), gfx::Point(), HTTOPLEFT);
@@ -1086,7 +1086,7 @@ TEST_F(WorkspaceWindowResizerTest, SnapToWorkAreaTOPLEFT) {
 }
 
 // Verifies a resize snap when dragging TOPRIGHT.
-TEST_F(WorkspaceWindowResizerTest, SnapToWorkAreaTOPRIGHT) {
+TEST_F(WorkspaceWindowResizerTest, SnapToWorkArea_TOPRIGHT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   gfx::Rect work_area(
       screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()));
@@ -1102,7 +1102,7 @@ TEST_F(WorkspaceWindowResizerTest, SnapToWorkAreaTOPRIGHT) {
 }
 
 // Verifies a resize snap when dragging BOTTOMRIGHT.
-TEST_F(WorkspaceWindowResizerTest, SnapToWorkAreaBOTTOMRIGHT) {
+TEST_F(WorkspaceWindowResizerTest, SnapToWorkArea_BOTTOMRIGHT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   gfx::Rect work_area(
       screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()));
@@ -1119,7 +1119,7 @@ TEST_F(WorkspaceWindowResizerTest, SnapToWorkAreaBOTTOMRIGHT) {
 }
 
 // Verifies a resize snap when dragging BOTTOMLEFT.
-TEST_F(WorkspaceWindowResizerTest, SnapToWorkAreaBOTTOMLEFT) {
+TEST_F(WorkspaceWindowResizerTest, SnapToWorkArea_BOTTOMLEFT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   gfx::Rect work_area(
       screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()));
@@ -1273,7 +1273,7 @@ TEST_F(WorkspaceWindowResizerTest, MagneticallyAttach) {
 
 // The following variants verify magnetic snapping during resize when dragging a
 // particular edge.
-TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeTOP) {
+TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_TOP) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   window2_->SetBounds(gfx::Rect(99, 179, 10, 20));
   window2_->Show();
@@ -1301,7 +1301,7 @@ TEST_F(WorkspaceWindowResizerTest, ResizeTopShouldNotTriggerMaximize) {
   EXPECT_FALSE(IsDwellCountdownTimerRunning());
 }
 
-TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeTOPLEFT) {
+TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_TOPLEFT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   window2_->SetBounds(gfx::Rect(99, 179, 10, 20));
   window2_->Show();
@@ -1326,7 +1326,7 @@ TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeTOPLEFT) {
   }
 }
 
-TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeTOPRIGHT) {
+TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_TOPRIGHT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   window2_->Show();
 
@@ -1351,7 +1351,7 @@ TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeTOPRIGHT) {
   }
 }
 
-TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeRIGHT) {
+TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_RIGHT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   window2_->SetBounds(gfx::Rect(121, 199, 10, 20));
   window2_->Show();
@@ -1363,7 +1363,7 @@ TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeRIGHT) {
   EXPECT_EQ("100,200 21x30", window_->bounds().ToString());
 }
 
-TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeBOTTOMRIGHT) {
+TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_BOTTOMRIGHT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   window2_->Show();
 
@@ -1388,7 +1388,7 @@ TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeBOTTOMRIGHT) {
   }
 }
 
-TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeBOTTOM) {
+TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_BOTTOM) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   window2_->SetBounds(gfx::Rect(111, 233, 10, 20));
   window2_->Show();
@@ -1400,7 +1400,7 @@ TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeBOTTOM) {
   EXPECT_EQ("100,200 20x33", window_->bounds().ToString());
 }
 
-TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeBOTTOMLEFT) {
+TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_BOTTOMLEFT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   window2_->Show();
 
@@ -1425,7 +1425,7 @@ TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeBOTTOMLEFT) {
   }
 }
 
-TEST_F(WorkspaceWindowResizerTest, MagneticallyResizeLEFT) {
+TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_LEFT) {
   window2_->SetBounds(gfx::Rect(89, 209, 10, 20));
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   window2_->Show();
@@ -1736,7 +1736,7 @@ TEST_F(WorkspaceWindowResizerTest, MainWindowHonoursMinWidth) {
 
 // The following variants test that windows are resized correctly to the edges
 // of the screen using touch, when touch point is off of the window border.
-TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdgeRIGHT) {
+TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdge_RIGHT) {
   GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
 
   InitTouchResizeWindow(gfx::Rect(100, 100, 600, kRootHeight - 200), HTRIGHT);
@@ -1767,7 +1767,7 @@ TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdgeRIGHT) {
             touch_resize_window_->bounds());
 }
 
-TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdgeLEFT) {
+TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdge_LEFT) {
   GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
 
   InitTouchResizeWindow(gfx::Rect(100, 100, 600, kRootHeight - 200), HTLEFT);
@@ -1798,7 +1798,7 @@ TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdgeLEFT) {
             touch_resize_window_->bounds());
 }
 
-TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdgeTOP) {
+TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdge_TOP) {
   GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
 
   InitTouchResizeWindow(gfx::Rect(100, 100, 600, kRootHeight - 200), HTTOP);
@@ -1826,7 +1826,7 @@ TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdgeTOP) {
             touch_resize_window_->bounds());
 }
 
-TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdgeBOTTOM) {
+TEST_F(WorkspaceWindowResizerTest, TouchResizeToEdge_BOTTOM) {
   GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
 
   InitTouchResizeWindow(gfx::Rect(100, 100, 600, kRootHeight - 200), HTBOTTOM);

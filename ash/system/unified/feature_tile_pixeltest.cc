@@ -165,7 +165,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTileWithoutDiveInButton) {
       /*revision_number=*/0, widget_.get()));
 }
 
-TEST_F(FeatureTilePixelTest, PrimaryTileRTL) {
+TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
   // Turn on RTL mode.
   base::i18n::SetRTLForTesting(true);
   base::RunLoop().RunUntilIdle();

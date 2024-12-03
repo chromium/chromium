@@ -70,7 +70,7 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly) {
   EXPECT_TRUE(instance()->flags_called_value()->jelly_colors);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompatEnabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(kRoundedWindowCompat);
   Connect();
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
@@ -98,14 +98,14 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest,
             mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompatDisabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Disabled) {
   scoped_feature_list()->InitAndDisableFeature(kRoundedWindowCompat);
   Connect();
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
             mojom::RoundedWindowCompatStrategy::kDisabled);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowsEnabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Enabled) {
   scoped_feature_list()->InitWithFeaturesAndParameters(
       {{chromeos::features::kFeatureManagementRoundedWindows, {}},
        {chromeos::features::kRoundedWindows,
@@ -115,52 +115,52 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowsEnabled) {
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 8);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowsDisabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Disabled) {
   scoped_feature_list()->InitAndDisableFeature(
       chromeos::features::kRoundedWindows);
   Connect();
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 0);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResizeEnabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(
       ash::features::kPipDoubleTapToResize);
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->enable_pip_double_tap);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResizeDisabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Disabled) {
   scoped_feature_list()->InitAndDisableFeature(
       ash::features::kPipDoubleTapToResize);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->enable_pip_double_tap);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompatEnabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kResizeCompat);
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->resize_compat);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompatDisabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Disabled) {
   scoped_feature_list()->InitAndDisableFeature(arc::kResizeCompat);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->resize_compat);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeoutEnabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeout_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kExtendIntentAnrTimeout);
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->extend_intent_anr_timeout);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeoutDisabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeout_Disabled) {
   scoped_feature_list()->InitAndDisableFeature(arc::kExtendIntentAnrTimeout);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->extend_intent_anr_timeout);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendServiceAnrTimeoutEnabled) {
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendServiceAnrTimeout_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kExtendServiceAnrTimeout);
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->extend_service_anr_timeout);

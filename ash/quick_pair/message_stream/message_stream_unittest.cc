@@ -286,7 +286,7 @@ class MessageStreamTest : public testing::Test, public MessageStream::Observer {
   uint8_t sdk_version_ = 0;
 };
 
-TEST_F(MessageStreamTest, ReceiveMessagesObservationSuccessfulMessage) {
+TEST_F(MessageStreamTest, ReceiveMessages_Observation_SuccessfulMessage) {
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
 
@@ -305,7 +305,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesObservationSuccessfulMessage) {
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesObservationNullMessage) {
+TEST_F(MessageStreamTest, ReceiveMessages_Observation_NullMessage) {
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
 
@@ -324,7 +324,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesObservationNullMessage) {
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesGetMessages) {
+TEST_F(MessageStreamTest, ReceiveMessages_GetMessages) {
   EXPECT_TRUE(model_id_.empty());
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -336,7 +336,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesGetMessages) {
   EXPECT_EQ(message_stream_->messages()[0]->get_model_id(), kModelIdString);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesCleanUp) {
+TEST_F(MessageStreamTest, ReceiveMessages_CleanUp) {
   EXPECT_TRUE(model_id_.empty());
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -351,7 +351,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesCleanUp) {
   EXPECT_TRUE(on_destroyed_);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesSocketDisconnect) {
+TEST_F(MessageStreamTest, ReceiveMessages_SocketDisconnect) {
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 0);
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
 
@@ -388,7 +388,7 @@ TEST_F(MessageStreamTest,
   message_stream_->Disconnect(callback.Get());
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesFailureAfterMaxRetries) {
+TEST_F(MessageStreamTest, ReceiveMessages_FailureAfterMaxRetries) {
   EXPECT_FALSE(on_socket_disconnected_);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -419,7 +419,7 @@ TEST_F(MessageStreamTest,
   EXPECT_EQ(ble_address_, kBleAddressString);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesGetMultipleMessages) {
+TEST_F(MessageStreamTest, ReceiveMessages_GetMultipleMessages) {
   EXPECT_TRUE(model_id_.empty());
   EXPECT_TRUE(ble_address_.empty());
   EXPECT_TRUE(message_stream_->messages().empty());
@@ -434,7 +434,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesGetMultipleMessages) {
             kBleAddressString);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesBatteryUpdate) {
+TEST_F(MessageStreamTest, ReceiveMessages_BatteryUpdate) {
   EXPECT_FALSE(battery_update_);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -447,7 +447,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesBatteryUpdate) {
   EXPECT_TRUE(battery_update_);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesRemainingBatteryTime) {
+TEST_F(MessageStreamTest, ReceiveMessages_RemainingBatteryTime) {
   EXPECT_EQ(remaining_battery_time_, 0);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -460,7 +460,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesRemainingBatteryTime) {
   EXPECT_EQ(remaining_battery_time_, 271);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesActiveComponents) {
+TEST_F(MessageStreamTest, ReceiveMessages_ActiveComponents) {
   EXPECT_EQ(active_components_byte_, 0x0F);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -473,7 +473,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesActiveComponents) {
   EXPECT_EQ(active_components_byte_, 0x03);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesSdkVersion) {
+TEST_F(MessageStreamTest, ReceiveMessages_SdkVersion) {
   EXPECT_EQ(sdk_version_, 0);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -486,7 +486,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesSdkVersion) {
   EXPECT_EQ(sdk_version_, 28);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesRingDevice) {
+TEST_F(MessageStreamTest, ReceiveMessages_RingDevice) {
   EXPECT_FALSE(ring_device_);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -499,7 +499,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesRingDevice) {
   EXPECT_TRUE(ring_device_);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesEnableSilenceMode) {
+TEST_F(MessageStreamTest, ReceiveMessages_EnableSilenceMode) {
   EXPECT_FALSE(enable_silence_mode_);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -512,7 +512,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesEnableSilenceMode) {
   EXPECT_TRUE(enable_silence_mode_);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesCompanionAppLogBuffer) {
+TEST_F(MessageStreamTest, ReceiveMessages_CompanionAppLogBuffer) {
   EXPECT_FALSE(log_buffer_full_);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -525,7 +525,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesCompanionAppLogBuffer) {
   EXPECT_TRUE(log_buffer_full_);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesNak) {
+TEST_F(MessageStreamTest, ReceiveMessages_Nak) {
   EXPECT_FALSE(acknowledgement_);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -538,7 +538,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesNak) {
   EXPECT_TRUE(acknowledgement_);
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesEmptyBufferSuccessReceive) {
+TEST_F(MessageStreamTest, ReceiveMessages_EmptyBuffer_SuccessReceive) {
   EXPECT_TRUE(message_stream_->messages().empty());
 
   SetEmptyBuffer();
@@ -553,7 +553,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesEmptyBufferSuccessReceive) {
   EXPECT_FALSE(message_stream_->messages().empty());
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesEmptyBufferErrorReceive) {
+TEST_F(MessageStreamTest, ReceiveMessages_EmptyBuffer_ErrorReceive) {
   EXPECT_TRUE(message_stream_->messages().empty());
 
   SetEmptyBuffer();
@@ -567,7 +567,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesEmptyBufferErrorReceive) {
   EXPECT_TRUE(message_stream_->messages().empty());
 }
 
-TEST_F(MessageStreamTest, ReceiveMessagesBufferFull) {
+TEST_F(MessageStreamTest, ReceiveMessages_BufferFull) {
   EXPECT_TRUE(model_id_.empty());
   EXPECT_TRUE(ble_address_.empty());
 
@@ -583,7 +583,7 @@ TEST_F(MessageStreamTest, ReceiveMessagesBufferFull) {
             kMessageStorageCapacity);
 }
 
-TEST_F(MessageStreamTest, UtilityProcessStoppedRetrySuccess) {
+TEST_F(MessageStreamTest, UtilityProcessStopped_RetrySuccess) {
   EXPECT_TRUE(message_stream_->messages().empty());
   fake_process_manager_->SetProcessStopped(true);
   SetSuccessMessageStreamMessage(kModelIdBytes);

@@ -181,7 +181,7 @@ TEST_F(FastPairNotificationControllerTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairNotificationControllerTest, ShowErrorNotificationRemovedByOS) {
+TEST_F(FastPairNotificationControllerTest, ShowErrorNotification_RemovedByOS) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairErrorNotificationId));
 
@@ -758,7 +758,7 @@ TEST_F(FastPairNotificationControllerTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairNotificationControllerTest, ShowAssociateAccountRemovedByUser) {
+TEST_F(FastPairNotificationControllerTest, ShowAssociateAccount_RemovedByUser) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairAssociateAccountNotificationId));
 
@@ -786,7 +786,7 @@ TEST_F(FastPairNotificationControllerTest, ShowAssociateAccountRemovedByUser) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairNotificationControllerTest, ShowAssociateAccountRemovedByOS) {
+TEST_F(FastPairNotificationControllerTest, ShowAssociateAccount_RemovedByOS) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairAssociateAccountNotificationId));
 

@@ -95,9 +95,9 @@ class ASH_EXPORT TouchCalibratorController
   FRIEND_TEST_ALL_PREFIXES(TouchCalibratorControllerTest,
                            InternalTouchDeviceIsRejected);
   FRIEND_TEST_ALL_PREFIXES(TouchCalibratorControllerTest,
-                           MappingTwoExternalDisplaysFullFlow);
+                           Mapping_TwoExternalDisplays_FullFlow);
   FRIEND_TEST_ALL_PREFIXES(TouchCalibratorControllerTest,
-                           MappingTwoExternalDisplaysSkipFirst);
+                           Mapping_TwoExternalDisplays_SkipFirst);
 
   enum class CalibrationState {
     // Indicates that the touch calibration is currently active with the built

@@ -89,7 +89,7 @@ class MahiNudgeControllerTest : public AshTestBase {
 };
 
 // Tests that the nudge can show when the user is not opted into Mahi.
-TEST_F(MahiNudgeControllerTest, NudgeShowsWhenUserPrefNotEnabled) {
+TEST_F(MahiNudgeControllerTest, NudgeShows_WhenUserPrefNotEnabled) {
   test_magic_boost_state_.AsyncWriteHMREnabled(false);
 
   EXPECT_FALSE(IsMahiNudgeShown());
@@ -98,7 +98,7 @@ TEST_F(MahiNudgeControllerTest, NudgeShowsWhenUserPrefNotEnabled) {
 }
 
 // Tests that the nudge won't show when the user has opted into Mahi.
-TEST_F(MahiNudgeControllerTest, NudgeDoesNotShowWhenUserPrefEnabled) {
+TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_WhenUserPrefEnabled) {
   test_magic_boost_state_.AsyncWriteHMREnabled(true);
 
   EXPECT_FALSE(IsMahiNudgeShown());
@@ -107,7 +107,7 @@ TEST_F(MahiNudgeControllerTest, NudgeDoesNotShowWhenUserPrefEnabled) {
 }
 
 // Tests that the nudge can show when the consent status is unset.
-TEST_F(MahiNudgeControllerTest, NudgeShowsWhenConsentStatusIsUnset) {
+TEST_F(MahiNudgeControllerTest, NudgeShows_WhenConsentStatusIsUnset) {
   test_magic_boost_state_.AsyncWriteHMREnabled(false);
   test_magic_boost_state_.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kUnset);
@@ -118,7 +118,7 @@ TEST_F(MahiNudgeControllerTest, NudgeShowsWhenConsentStatusIsUnset) {
 }
 
 // Tests that the nudge won't show when the consent status is set.
-TEST_F(MahiNudgeControllerTest, NudgeDoesNotShowWhenConsentStatusSet) {
+TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_WhenConsentStatusSet) {
   test_magic_boost_state_.AsyncWriteHMREnabled(false);
 
   test_magic_boost_state_.AsyncWriteConsentStatus(
@@ -145,7 +145,7 @@ TEST_F(MahiNudgeControllerTest, NudgeDoesNotShowWhenConsentStatusSet) {
 
 // Tests that the nudge won't show if the time between shown threshold hasn't
 // passed since it was last shown.
-TEST_F(MahiNudgeControllerTest, NudgeDoesNotShowIfRecentlyShown) {
+TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_IfRecentlyShown) {
   test_magic_boost_state_.AsyncWriteHMREnabled(false);
 
   SetTestTime(base::Time::Now());
@@ -179,7 +179,7 @@ TEST_F(MahiNudgeControllerTest, NudgeDoesNotShowIfRecentlyShown) {
 }
 
 // Tests that the nudge won't show if it has been shown its max number of times.
-TEST_F(MahiNudgeControllerTest, NudgeDoesNotShowIfMaxTimesShown) {
+TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_IfMaxTimesShown) {
   test_magic_boost_state_.AsyncWriteHMREnabled(false);
 
   SetTestTime(base::Time::Now());

@@ -632,7 +632,7 @@ TEST_F(PeripheralBatteryListenerTest,
                                                  mock_device_1_.get(), false);
 }
 
-TEST_F(PeripheralBatteryListenerTest, BluetoothRemoveAndReconnect) {
+TEST_F(PeripheralBatteryListenerTest, Bluetooth_RemoveAndReconnect) {
   testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
   base::ScopedObservation<PeripheralBatteryListener,
                           PeripheralBatteryListener::Observer>
@@ -1033,7 +1033,7 @@ TEST_F(PeripheralBatteryListenerTest, Charger) {
 // TODO(b/215381232): Temporarily support both 'PCHG' name and 'peripheral' name
 // till upstream kernel driver is merged. Remove test case when upstream kernel
 // driver is merged.
-TEST_F(PeripheralBatteryListenerTest, ChargerPCHG) {
+TEST_F(PeripheralBatteryListenerTest, Charger_PCHG) {
   testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
   base::ScopedObservation<PeripheralBatteryListener,
                           PeripheralBatteryListener::Observer>

@@ -80,7 +80,7 @@ TEST_F(AssistantZeroStateViewUnittest, ZeroStateViewIsNotVisibleAfterResponse) {
   ASSERT_FALSE(zero_state_view->GetVisible());
 }
 
-TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsVisibleTabletMode) {
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsVisible_TabletMode) {
   base::test::ScopedFeatureList scoped_feature_list(
       assistant::features::kEnableAssistantOnboarding);
 
@@ -102,7 +102,7 @@ TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsVisibleTabletMode) {
   EXPECT_FALSE(greeting_label->IsDrawn());
 }
 
-TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsNotVisibleTabletMode) {
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsNotVisible_TabletMode) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       assistant::features::kEnableAssistantOnboarding);
@@ -215,7 +215,7 @@ TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisibleAfterResponse) {
   ASSERT_FALSE(launcher_search_iph->IsDrawn());
 }
 
-TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisibleTabletMode) {
+TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisible_TabletMode) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndDisableFeature(
       feature_engagement::kIPHLauncherSearchHelpUiFeature);
@@ -239,7 +239,7 @@ TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisibleTabletMode) {
   ASSERT_FALSE(launcher_search_iph->IsDrawn());
 }
 
-TEST_F(AssistantZeroStateViewUnittest, IphViewIsVisibleTabletMode) {
+TEST_F(AssistantZeroStateViewUnittest, IphViewIsVisible_TabletMode) {
   base::test::ScopedFeatureList feature_list(
       feature_engagement::kIPHLauncherSearchHelpUiFeature);
 

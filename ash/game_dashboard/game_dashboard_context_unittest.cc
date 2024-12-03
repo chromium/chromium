@@ -1347,7 +1347,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowAvailability) {
 
 // Verifies a not O4C resizable app in portrait mode displays the expected
 // description within the screen size row.
-TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitlePortraitResizable) {
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_PortraitResizable) {
   // Create an ARC game window in portrait mode that is resizable.
   SetAppBounds(gfx::Rect(50, 50, 400, 700));
   CreateGameWindow(/*is_arc_window=*/true);
@@ -1361,7 +1361,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitlePortraitResizable) {
 
 // Verifies a not O4C resizable app in landscape mode displays the expected
 // description within the screen size row.
-TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitleLandscapeResizable) {
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_LandscapeResizable) {
   // Create an ARC game window in landscape mode that is resizable.
   CreateGameWindow(/*is_arc_window=*/true);
   game_window_->SetProperty(kArcResizeLockTypeKey,
@@ -1374,7 +1374,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitleLandscapeResizable) {
 
 // Verifies a not O4C resizable app in resizable mode displays the expected
 // description within the screen size row.
-TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitleFreeformResizable) {
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FreeformResizable) {
   // Create an ARC game window in free resizing mode.
   CreateGameWindow(/*is_arc_window=*/true);
   game_window_->SetProperty(kArcResizeLockTypeKey,
@@ -1387,7 +1387,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitleFreeformResizable) {
 
 // Verifies a not O4C non-resizable app in portrait mode displays the expected
 // description within the screen size row.
-TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitlePortraitNonTogglable) {
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_PortraitNonTogglable) {
   // Create an ARC game window that only supports portrait mode.
   SetAppBounds(gfx::Rect(50, 50, 400, 700));
   CreateGameWindow(/*is_arc_window=*/true);
@@ -1402,7 +1402,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitlePortraitNonTogglable) {
 
 // Verifies a not O4C non-resizable app in landscape mode displays the expected
 // description within the screen size row.
-TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitleLandscapeNonTogglable) {
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_LandscapeNonTogglable) {
   // Create an ARC game window that only supports landscape mode.
   CreateGameWindow(/*is_arc_window=*/true);
   game_window_->SetProperty(kArcResizeLockTypeKey,
@@ -1416,7 +1416,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitleLandscapeNonTogglable) {
 
 // Verifies a not O4C resizable app in fullscreen displays the expected
 // description within the screen size row.
-TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitleFullscreenTogglable) {
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenTogglable) {
   // Create an ARC game window in fullscreen that can be resized via the size
   // button in the frame header.
   CreateAnArcAppInFullscreen();
@@ -1436,7 +1436,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitleFullscreenTogglable) {
 
 // Verifies a not O4C non-resizable app in fullscreen displays the expected
 // description within the screen size row.
-TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitleFullscreenNonTogglable) {
+TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenNonTogglable) {
   // Create an ARC game window in fullscreen that can't be resized.
   CreateAnArcAppInFullscreen(
       /*caption_button_model=*/std::make_unique<NonResizableButtonModel>());
@@ -1980,7 +1980,7 @@ TEST_F(GameDashboardContextTest,
   ASSERT_FALSE(button_widget->IsVisible());
 }
 
-TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenTouchEvent) {
+TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
   CreateAnArcAppInFullscreen();
   views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);

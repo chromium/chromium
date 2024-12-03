@@ -148,7 +148,7 @@ TEST_F(PhoneHubUiControllerTest, OnboardingNotEligible) {
   histograms.ExpectTotalCount(kScreenOnOpenedMetric, 0);
 }
 
-TEST_F(PhoneHubUiControllerTest, ShowOnboardingUiWithoutPhone) {
+TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithoutPhone) {
   base::HistogramTester histograms;
   GetFeatureStatusProvider()->SetStatus(
       FeatureStatus::kEligiblePhoneButNotSetUp);
@@ -165,7 +165,7 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUiWithoutPhone) {
   histograms.ExpectTotalCount(kScreenOnOpenedMetric, 0);
 }
 
-TEST_F(PhoneHubUiControllerTest, ShowOnboardingUiWithPhone) {
+TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithPhone) {
   base::HistogramTester histograms;
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kDisabled);
   EXPECT_TRUE(ui_state_changed_);
@@ -201,7 +201,7 @@ TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
   histograms.ExpectTotalCount(kScreenOnOpenedMetric, 0);
 }
 
-TEST_F(PhoneHubUiControllerTest, PhoneConnectingDiscoveredRecently) {
+TEST_F(PhoneHubUiControllerTest, PhoneConnecting_DiscoveredRecently) {
   base::HistogramTester histograms;
   phone_hub_manager_.set_host_last_seen_timestamp(base::Time::Now());
   GetTetherController()->SetStatus(
@@ -216,7 +216,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnectingDiscoveredRecently) {
                                phone_hub_metrics::Screen::kPhoneConnecting, 1);
 }
 
-TEST_F(PhoneHubUiControllerTest, PhoneConnectingDiscoveredHoursAgo) {
+TEST_F(PhoneHubUiControllerTest, PhoneConnecting_DiscoveredHoursAgo) {
   base::HistogramTester histograms;
   phone_hub_manager_.set_host_last_seen_timestamp(base::Time::Now() -
                                                   base::Hours(10));
@@ -231,7 +231,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnectingDiscoveredHoursAgo) {
   histograms.ExpectTotalCount(kScreenOnOpenedMetric, 0);
 }
 
-TEST_F(PhoneHubUiControllerTest, PhoneConnectingNeverDiscovered) {
+TEST_F(PhoneHubUiControllerTest, PhoneConnecting_NeverDiscovered) {
   base::HistogramTester histograms;
   GetTetherController()->SetStatus(
       phonehub::TetherController::Status::kConnectionAvailable);
