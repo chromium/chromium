@@ -1033,6 +1033,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/creator/android:junit",
       "//chrome/browser/data_sharing:data_sharing_public_java",
       "//chrome/browser/data_sharing:factory_java",
+      "//chrome/browser/data_sharing:favicon_java",
       "//chrome/browser/data_sharing:java",
       "//chrome/browser/data_sharing:junit",
       "//chrome/browser/data_sharing:recent_activity_junit_tests",
