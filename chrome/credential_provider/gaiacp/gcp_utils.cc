@@ -372,9 +372,9 @@ void DeleteVersionsExcept(const base::FilePath& gcp_path,
 
 // StdParentHandles ///////////////////////////////////////////////////////////
 
-StdParentHandles::StdParentHandles() {}
+StdParentHandles::StdParentHandles() = default;
 
-StdParentHandles::~StdParentHandles() {}
+StdParentHandles::~StdParentHandles() = default;
 
 // ScopedStartupInfo //////////////////////////////////////////////////////////
 
@@ -1309,9 +1309,9 @@ HRESULT GetGCPWDmToken(const std::wstring& sid, std::wstring* token) {
   return GetGCPWDmTokenInternal(sid, token, false);
 }
 
-FakesForTesting::FakesForTesting() {}
+FakesForTesting::FakesForTesting() = default;
 
-FakesForTesting::~FakesForTesting() {}
+FakesForTesting::~FakesForTesting() = default;
 
 GURL GetGcpwServiceUrl() {
   std::wstring dev = GetGlobalFlagOrDefault(kRegDeveloperMode, L"");

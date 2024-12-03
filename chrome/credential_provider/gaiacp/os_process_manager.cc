@@ -430,7 +430,7 @@ void OSProcessManager::SetInstanceForTesting(OSProcessManager* instance) {
   *GetInstanceStorage() = instance;
 }
 
-OSProcessManager::~OSProcessManager() {}
+OSProcessManager::~OSProcessManager() = default;
 
 HRESULT OSProcessManager::GetTokenLogonSID(const base::win::ScopedHandle& token,
                                            PSID* sid) {

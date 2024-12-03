@@ -147,7 +147,7 @@ HRESULT StoreCurrentGaiaSid() {
 
 }  // namespace
 
-OSGaiaUserManager::~OSGaiaUserManager() {}
+OSGaiaUserManager::~OSGaiaUserManager() = default;
 
 // static
 OSGaiaUserManager** OSGaiaUserManager::GetInstanceStorage() {

@@ -91,7 +91,7 @@ std::wstring OSUserManager::GetLocalDomain() {
   return std::wstring(computer_name, length);
 }
 
-OSUserManager::~OSUserManager() {}
+OSUserManager::~OSUserManager() = default;
 
 #define IS_PASSWORD_STRONG_ENOUGH()    \
   (cur_length > kMinPasswordLength) && \

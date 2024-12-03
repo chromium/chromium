@@ -115,7 +115,7 @@ IMPL_IUNKOWN_NOQI_WITH_REF(FakeCredentialProviderUser)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-FakeCredentialProviderUserArray::FakeCredentialProviderUserArray() {}
+FakeCredentialProviderUserArray::FakeCredentialProviderUserArray() = default;
 
 FakeCredentialProviderUserArray::~FakeCredentialProviderUserArray() {
   EXPECT_EQ(ref_count_, 1u);
@@ -150,7 +150,7 @@ IMPL_IUNKOWN_NOQI_WITH_REF(FakeCredentialProviderUserArray)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-FakeCredentialProviderEvents::FakeCredentialProviderEvents() {}
+FakeCredentialProviderEvents::FakeCredentialProviderEvents() = default;
 
 FakeCredentialProviderEvents::~FakeCredentialProviderEvents() {
   EXPECT_EQ(ref_count_, 1u);
@@ -167,10 +167,10 @@ IMPL_IUNKOWN_NOQI_WITH_REF(FakeCredentialProviderEvents)
 ///////////////////////////////////////////////////////////////////////////////
 
 FakeCredentialProviderCredentialEvents::
-    FakeCredentialProviderCredentialEvents() {}
+    FakeCredentialProviderCredentialEvents() = default;
 
 FakeCredentialProviderCredentialEvents::
-    ~FakeCredentialProviderCredentialEvents() {}
+    ~FakeCredentialProviderCredentialEvents() = default;
 
 HRESULT FakeCredentialProviderCredentialEvents::AppendFieldComboBoxItem(
     ICredentialProviderCredential* pcpc,
@@ -290,7 +290,7 @@ CTestGaiaCredentialProvider::CTestGaiaCredentialProvider() {
       });
 }
 
-CTestGaiaCredentialProvider::~CTestGaiaCredentialProvider() {}
+CTestGaiaCredentialProvider::~CTestGaiaCredentialProvider() = default;
 
 const CComBSTR& CTestGaiaCredentialProvider::username() const {
   return username_;

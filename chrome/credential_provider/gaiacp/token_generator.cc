@@ -24,7 +24,7 @@ TokenGenerator** TokenGenerator::GetInstanceStorage() {
   return &instance_storage;
 }
 
-TokenGenerator::TokenGenerator() {}
+TokenGenerator::TokenGenerator() = default;
 
 TokenGenerator::~TokenGenerator() = default;
 

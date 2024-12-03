@@ -68,7 +68,7 @@ std::optional<base::Value::Dict> ParseDistributionPreferences(
 StandaloneInstallerConfigurator::StandaloneInstallerConfigurator()
     : is_msi_installation_(false) {}
 
-StandaloneInstallerConfigurator::~StandaloneInstallerConfigurator() {}
+StandaloneInstallerConfigurator::~StandaloneInstallerConfigurator() = default;
 
 // static
 StandaloneInstallerConfigurator**

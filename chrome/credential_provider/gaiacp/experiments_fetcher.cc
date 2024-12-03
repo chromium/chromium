@@ -144,7 +144,7 @@ extension::TaskCreator ExperimentsFetcher::GetFetchExperimentsTaskCreator() {
   return base::BindRepeating(&ExperimentsFetchTask::Create);
 }
 
-ExperimentsFetcher::ExperimentsFetcher() {}
+ExperimentsFetcher::ExperimentsFetcher() = default;
 
 ExperimentsFetcher::~ExperimentsFetcher() = default;
 

@@ -65,7 +65,7 @@ CGaiaCredentialProviderModule::CGaiaCredentialProviderModule()
       gcpw_extension_check_performed_(0),
       crashpad_initialized_(0) {}
 
-CGaiaCredentialProviderModule::~CGaiaCredentialProviderModule() {}
+CGaiaCredentialProviderModule::~CGaiaCredentialProviderModule() = default;
 
 // static
 HRESULT WINAPI

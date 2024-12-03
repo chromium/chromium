@@ -32,7 +32,7 @@ struct Config {
 // executed.
 class Task {
  public:
-  virtual ~Task() {}
+  virtual ~Task() = default;
 
   // ESA calls this function to get the execution config for the task. This
   // contains information about whether task is device level or

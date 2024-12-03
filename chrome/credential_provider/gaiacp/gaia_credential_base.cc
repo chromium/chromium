@@ -791,9 +791,9 @@ void GetUserConfigsIfStale(const std::wstring& sid,
 
 }  // namespace
 
-CGaiaCredentialBase::UIProcessInfo::UIProcessInfo() {}
+CGaiaCredentialBase::UIProcessInfo::UIProcessInfo() = default;
 
-CGaiaCredentialBase::UIProcessInfo::~UIProcessInfo() {}
+CGaiaCredentialBase::UIProcessInfo::~UIProcessInfo() = default;
 
 // static
 bool CGaiaCredentialBase::IsCloudAssociationEnabled() {
@@ -928,9 +928,9 @@ HRESULT CGaiaCredentialBase::OnDllUnregisterServer() {
   return S_OK;
 }
 
-CGaiaCredentialBase::CGaiaCredentialBase() {}
+CGaiaCredentialBase::CGaiaCredentialBase() = default;
 
-CGaiaCredentialBase::~CGaiaCredentialBase() {}
+CGaiaCredentialBase::~CGaiaCredentialBase() = default;
 
 bool CGaiaCredentialBase::AreCredentialsValid() const {
   return CanAttemptWindowsLogon() &&

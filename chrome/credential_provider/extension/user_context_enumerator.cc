@@ -31,8 +31,8 @@ UserContextEnumerator* UserContextEnumerator::Get() {
   return *GetInstanceStorage();
 }
 
-UserContextEnumerator::UserContextEnumerator() {}
-UserContextEnumerator::~UserContextEnumerator() {}
+UserContextEnumerator::UserContextEnumerator() = default;
+UserContextEnumerator::~UserContextEnumerator() = default;
 
 HRESULT UserContextEnumerator::PerformTask(const std::string& task_name,
                                            Task& task) {
