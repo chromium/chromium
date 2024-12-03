@@ -31,6 +31,8 @@ extern const char kLastUsedPairingFromSyncPublicKey[];
 // policy.
 extern const char kRemoteProxiedRequestsAllowed[];
 
+extern const char kWebAuthnTouchIdMetadataSecretPrefName[];
+
 }  // namespace webauthn::pref_names
 
 #endif  // CHROME_BROWSER_WEBAUTHN_WEBAUTHN_PREF_NAMES_H_
