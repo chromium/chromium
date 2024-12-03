@@ -98,29 +98,38 @@ public class TaskManagerCoordinatorTest {
     @Test
     @SmallTest
     public void testTaskProperties() {
-        mTasksModel.add(
-                new ListItem(
-                        RowType.TASK,
-                        new PropertyModel.Builder(mTaskModelKeys)
-                                .with(TASK_ID, 1)
-                                .with(TASK_NAME, "foo")
-                                .with(MEMORY_FOOTPRINT, 1_000_000)
-                                .with(CPU, 0.5F)
-                                .with(PROCESS_ID, 1234)
-                                .with(IS_SELECTED, false)
-                                .build()));
+        PropertyModel task =
+                new PropertyModel.Builder(mTaskModelKeys)
+                        .with(TASK_ID, 1)
+                        .with(TASK_NAME, "foo")
+                        .with(MEMORY_FOOTPRINT, 1024_000)
+                        .with(CPU, 0.5F)
+                        .with(PROCESS_ID, 1234)
+                        .with(IS_SELECTED, false)
+                        .build();
+        mTasksModel.add(new ListItem(RowType.TASK, task));
 
         mRecyclerView.layout(0, 0, 1024, 640); // let the items render
 
         assertNotNull(mHeaderView.findViewById(R.id.task_name));
 
-        TextView taskName =
-                mRecyclerView
-                        .findViewHolderForAdapterPosition(0)
-                        .itemView
-                        .findViewById(R.id.task_name);
+        View taskView = mRecyclerView.findViewHolderForAdapterPosition(0).itemView;
+
+        TextView taskName = taskView.findViewById(R.id.task_name);
+        TextView memoryFootprint = taskView.findViewById(R.id.memory_footprint);
+        TextView cpu = taskView.findViewById(R.id.cpu);
+        TextView processId = taskView.findViewById(R.id.process_id);
+
         assertEquals("foo", taskName.getText().toString());
-        // TODO(crbug.com/380188424): Test other properties on customizing stringification per type.
+        assertEquals("1,000K", memoryFootprint.getText().toString());
+        assertEquals("0.5", cpu.getText().toString());
+        assertEquals("1234", processId.getText().toString());
+
+        task.set(MEMORY_FOOTPRINT, -1);
+        task.set(CPU, Float.NaN);
+
+        assertEquals("–", memoryFootprint.getText().toString());
+        assertEquals("–", cpu.getText().toString());
     }
 
     @Test

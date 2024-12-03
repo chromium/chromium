@@ -181,7 +181,6 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
         }
     }
 
-    // TODO(crbug.com/380188424): Customize stringification per column type.
     private static void bindTask(PropertyModel model, View view, PropertyKey key) {
         if (key == TaskManagerProperties.IS_SELECTED) {
             if (model.get(TaskManagerProperties.IS_SELECTED)) {
@@ -201,9 +200,13 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
         if (key == TaskManagerProperties.TASK_NAME) {
             textView.setText(model.get(TaskManagerProperties.TASK_NAME));
         } else if (key == TaskManagerProperties.MEMORY_FOOTPRINT) {
-            textView.setText(String.valueOf(model.get(TaskManagerProperties.MEMORY_FOOTPRINT)));
+            textView.setText(
+                    PropertyStringifier.getMemoryUsageText(
+                            view.getContext(), model.get(TaskManagerProperties.MEMORY_FOOTPRINT)));
         } else if (key == TaskManagerProperties.CPU) {
-            textView.setText(String.valueOf(model.get(TaskManagerProperties.CPU)));
+            textView.setText(
+                    PropertyStringifier.getCpuUsageText(
+                            view.getContext(), model.get(TaskManagerProperties.CPU)));
         } else if (key == TaskManagerProperties.PROCESS_ID) {
             textView.setText(String.valueOf(model.get(TaskManagerProperties.PROCESS_ID)));
         } else {
