@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -182,12 +181,6 @@ EmeConfig::Rule WidevineKeySystemInfo::GetRobustnessConfigRule(
   // require an identifier.
   if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required) {
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kLacrosUseChromeosProtectedMedia)) {
-      return EmeConfig{.identifier = EmeConfigRuleState::kRequired};
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     return EmeConfig{.identifier = EmeConfigRuleState::kRequired,
                      .hw_secure_codecs = EmeConfigRuleState::kRequired};
 #else

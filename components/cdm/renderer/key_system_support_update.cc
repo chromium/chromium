@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cdm/renderer/external_clear_key_key_system_info.h"
 #include "content/public/renderer/key_system_support.h"
 #include "content/public/renderer/render_frame.h"
@@ -82,17 +81,11 @@ SupportedCodecs GetVP9Codecs(
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 SupportedCodecs GetHevcCodecs(
     const base::flat_set<media::VideoCodecProfile>& profiles) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kLacrosEnablePlatformHevc)) {
-    return media::EME_CODEC_NONE;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
     return media::EME_CODEC_NONE;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // If no profiles are specified, then all are supported.
   if (profiles.empty()) {
