@@ -133,7 +133,7 @@ TEST_F(UpdateAddressProfileViewTest, AcceptInvokesTheController) {
   EXPECT_CALL(
       *mock_controller(),
       OnUserDecision(AutofillClient::AddressPromptUserDecision::kAccepted,
-                     Property(&profile_ref::has_value, false)));
+                     Property(&profile_ref::has_value, true)));
   view()->AcceptDialog();
 }
 

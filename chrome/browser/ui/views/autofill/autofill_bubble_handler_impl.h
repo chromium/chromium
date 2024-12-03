@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/signin/public/base/signin_buildflags.h"
 
 class PageActionIconView;
 class ToolbarButtonProvider;
@@ -67,6 +68,12 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
       content::WebContents* web_contents,
       std::unique_ptr<SaveAddressBubbleController> controller,
       bool is_user_gesture) override;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  AutofillBubbleBase* ShowAddressSignInPromo(
+      content::WebContents* web_contents,
+      base::OnceCallback<void(content::WebContents*)> move_address_callback)
+      override;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowUpdateAddressProfileBubble(
       content::WebContents* web_contents,
       std::unique_ptr<UpdateAddressBubbleController> controller,

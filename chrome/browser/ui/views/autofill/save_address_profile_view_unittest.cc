@@ -146,7 +146,7 @@ TEST_F(SaveAddressProfileViewTest, AcceptInvokesTheController) {
   EXPECT_CALL(
       *controller,
       OnUserDecision(AutofillClient::AddressPromptUserDecision::kAccepted,
-                     Property(&profile_ref::has_value, false)));
+                     Property(&profile_ref::has_value, true)));
   CreateViewAndShow(std::move(controller));
   view()->AcceptDialog();
 }

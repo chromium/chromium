@@ -169,10 +169,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       controller_(std::move(controller)) {
   auto* layout_provider = views::LayoutProvider::Get();
 
-  SetAcceptCallback(base::BindOnce(
-      &UpdateAddressBubbleController::OnUserDecision,
-      base::Unretained(controller_.get()),
-      AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt));
+  SetAcceptCallback(
+      base::BindOnce(&UpdateAddressBubbleController::OnUserDecision,
+                     base::Unretained(controller_.get()),
+                     AutofillClient::AddressPromptUserDecision::kAccepted,
+                     controller_->GetProfileToSave()));
   SetCancelCallback(base::BindOnce(
       &UpdateAddressBubbleController::OnUserDecision,
       base::Unretained(controller_.get()),
