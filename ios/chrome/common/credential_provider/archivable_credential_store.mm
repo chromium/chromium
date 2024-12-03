@@ -68,7 +68,7 @@
       // File has not been created, return a fresh mutable set.
       return [[NSMutableDictionary alloc] init];
     }
-    DUMP_WILL_BE_NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED() << error.localizedDescription;
   }
   NSData* data = [NSData dataWithContentsOfURL:self.fileURL
                                        options:0
