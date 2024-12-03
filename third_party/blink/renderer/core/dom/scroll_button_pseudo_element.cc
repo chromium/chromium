@@ -19,6 +19,18 @@
 
 namespace blink {
 
+ScrollButtonPseudoElement::ScrollButtonPseudoElement(
+    Element* originating_element,
+    PseudoId pseudo_id)
+    : PseudoElement(originating_element, pseudo_id),
+      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {
+  SetTabIndexExplicitly();
+}
+
+void ScrollButtonPseudoElement::Trace(Visitor* v) const {
+  PseudoElement::Trace(v);
+}
+
 void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
   bool is_click =
       event.IsMouseEvent() && event.type() == event_type_names::kClick;
@@ -51,6 +63,69 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
     event.SetDefaultHandled();
   }
   PseudoElement::DefaultEventHandler(event);
+}
+
+bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
+  // Note: we can hit it here, since we don't unsubscribe from
+  // scroll snapshot client (maybe we should).
+  if (!isConnected()) {
+    return true;
+  }
+  Element* originating_element = UltimateOriginatingElement();
+  CHECK(originating_element);
+  auto* scroller = DynamicTo<LayoutBox>(originating_element->GetLayoutObject());
+  if (!scroller || !scroller->IsScrollContainer()) {
+    return true;
+  }
+  ScrollableArea* scrollable_area = scroller->GetScrollableArea();
+  Scrollbar* horizontal = scrollable_area->HorizontalScrollbar();
+  Scrollbar* vertical = scrollable_area->VerticalScrollbar();
+  bool enabled = enabled_;
+  switch (GetPseudoId()) {
+    case kPseudoIdScrollUpButton: {
+      if (vertical) {
+        enabled_ = vertical->CurrentPos() != 0.0f;
+      }
+      break;
+    }
+    case kPseudoIdScrollDownButton: {
+      if (vertical) {
+        enabled_ = vertical->CurrentPos() != vertical->Maximum();
+      }
+      break;
+    }
+    case kPseudoIdScrollLeftButton: {
+      if (horizontal) {
+        enabled_ = horizontal->CurrentPos() != 0.0f;
+      }
+      break;
+    }
+    case kPseudoIdScrollRightButton: {
+      if (horizontal) {
+        enabled_ = horizontal->CurrentPos() != horizontal->Maximum();
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  if (enabled != enabled_) {
+    PseudoStateChanged(CSSSelector::kPseudoDisabled);
+    return false;
+  }
+  return true;
+}
+
+void ScrollButtonPseudoElement::UpdateSnapshot() {
+  UpdateSnapshotInternal();
+}
+
+bool ScrollButtonPseudoElement::ValidateSnapshot() {
+  return UpdateSnapshotInternal();
+}
+
+bool ScrollButtonPseudoElement::ShouldScheduleNextService() {
+  return false;
 }
 
 }  // namespace blink

@@ -2293,6 +2293,12 @@ class ComputedStyle final : public ComputedStyleBase {
       return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter &&
              IsScrollContainer();
     }
+    if (pseudo == kPseudoIdScrollUpButton ||
+        pseudo == kPseudoIdScrollDownButton ||
+        pseudo == kPseudoIdScrollLeftButton ||
+        pseudo == kPseudoIdScrollRightButton) {
+      return HasPseudoElementStyle(kPseudoIdScrollButton);
+    }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
     }
