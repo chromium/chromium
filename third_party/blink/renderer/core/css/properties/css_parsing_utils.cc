@@ -1278,7 +1278,7 @@ CSSPrimitiveValue* ConsumeNumberOrPercent(
           ConsumePercent(stream, context, value_stream)) {
     if (value->IsNumericLiteralValue()) {
       return CSSNumericLiteralValue::Create(
-          value->GetDoubleValue() / 100.0,
+          To<CSSNumericLiteralValue>(value)->ClampedDoubleValue() / 100.0,
           CSSPrimitiveValue::UnitType::kNumber);
     } else {
       // Just return it directly; when the caller calls ComputeNumber(),
@@ -1353,7 +1353,7 @@ bool IsNonZeroUserUnitsValue(const CSSPrimitiveValue* value) {
   if (const auto* numeric_literal = DynamicTo<CSSNumericLiteralValue>(value)) {
     return numeric_literal->GetType() ==
                CSSPrimitiveValue::UnitType::kUserUnits &&
-           value->GetDoubleValue() != 0;
+           numeric_literal->ClampedDoubleValue() != 0;
   }
   const auto& math_value = To<CSSMathFunctionValue>(*value);
   return math_value.Category() == kCalcNumber && math_value.DoubleValue() != 0;

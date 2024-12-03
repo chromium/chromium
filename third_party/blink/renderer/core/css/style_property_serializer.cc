@@ -975,7 +975,10 @@ std::pair<CSSValueID, double> GetTimelineRangePercent(
     name = To<CSSIdentifierValue>(list->Item(0)).GetValueID();
     if (list->length() == 2u) {
       const auto& offset = To<CSSPrimitiveValue>(list->Item(1));
-      offset_percent = offset.IsPercentage() ? offset.GetDoubleValue() : -1.0;
+      offset_percent =
+          offset.IsPercentage() && offset.GetValueIfKnown().has_value()
+              ? *offset.GetValueIfKnown()
+              : -1.0;
     }
   } else {
     const auto& offset = To<CSSPrimitiveValue>(list->Item(0));
