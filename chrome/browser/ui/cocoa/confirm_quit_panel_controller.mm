@@ -143,9 +143,8 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 @property(class, readonly) NSMenuItem* quitMenuItem;
 
 - (void)animateFadeOut;
-- (NSEvent*)pumpEventQueueForKeyUp:(NSApplication*)app untilDate:(NSDate*)date;
-- (void)hideAllWindowsForApplication:(NSApplication*)app
-                        withDuration:(NSTimeInterval)duration;
+- (NSEvent*)pumpEventQueueForKeyUpUntilDate:(NSDate*)date;
+- (void)hideAllWindowsWithDuration:(NSTimeInterval)duration;
 - (void)sendAccessibilityAnnouncement;
 @end
 
@@ -196,7 +195,7 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
   return self;
 }
 
-- (BOOL)runModalLoopForApplication:(NSApplication*)app {
+- (BOOL)runModalLoop {
   [[maybe_unused]] NS_VALID_UNTIL_END_OF_SCOPE ConfirmQuitPanelController*
       keepAlive = self;
 
@@ -215,10 +214,10 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
     // the next key application, and so on. This is bad, so instead we hide all
     // the windows (without animation) to look like we've "quit" and then wait
     // for the KeyUp event to commit the quit.
-    [self hideAllWindowsForApplication:app withDuration:0];
-    NSEvent* nextEvent = [self pumpEventQueueForKeyUp:app
-                                            untilDate:NSDate.distantFuture];
-    [app discardEventsMatchingMask:NSEventMaskAny beforeEvent:nextEvent];
+    [self hideAllWindowsWithDuration:0];
+    NSEvent* nextEvent =
+        [self pumpEventQueueForKeyUpUntilDate:NSDate.distantFuture];
+    [NSApp discardEventsMatchingMask:NSEventMaskAny beforeEvent:nextEvent];
 
     // Based on how long the user held the keys, record the metric.
     if ([NSDate.date timeIntervalSinceDate:timeNow] <
@@ -255,7 +254,7 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
     NSDate* waitDate = [NSDate
         dateWithTimeIntervalSinceNow:confirm_quit::kShowDuration.InSecondsF() -
                                      kTimeDeltaFuzzFactor];
-    nextEvent = [self pumpEventQueueForKeyUp:app untilDate:waitDate];
+    nextEvent = [self pumpEventQueueForKeyUpUntilDate:waitDate];
 
     // Wait for the time expiry to happen. Once past the hold threshold,
     // commit to quitting and hide all the open windows.
@@ -268,31 +267,26 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
         // At this point, the quit has been confirmed and windows should all
         // fade out to convince the user to release the key combo to finalize
         // the quit.
-        [self hideAllWindowsForApplication:app
-                              withDuration:confirm_quit::kWindowFadeOutDuration
-                                               .InSecondsF()];
+        [self hideAllWindowsWithDuration:confirm_quit::kWindowFadeOutDuration
+                                             .InSecondsF()];
       }
     }
   } while (!nextEvent);
 
   // The user has released the key combo. Discard any events (i.e. the
   // repeated KeyDown Cmd+Q).
-  [app discardEventsMatchingMask:NSEventMaskAny beforeEvent:nextEvent];
+  [NSApp discardEventsMatchingMask:NSEventMaskAny beforeEvent:nextEvent];
 
   if (willQuit) {
     // The user held down the combination long enough that quitting should
     // happen.
     confirm_quit::RecordHistogram(confirm_quit::kHoldDuration);
     return YES;
-  } else {
-    // Slowly fade the confirm window out in case the user doesn't
-    // understand what they have to do to quit.
-    [self dismissPanel];
-    return NO;
   }
-
-  // Default case: terminate.
-  return YES;
+  // Slowly fade the confirm window out in case the user doesn't
+  // understand what they have to do to quit.
+  [self dismissPanel];
+  return NO;
 }
 
 - (void)windowWillClose:(NSNotification*)notif {
@@ -344,18 +338,17 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
 }
 
 // Runs a nested loop that pumps the event queue until the next KeyUp event.
-- (NSEvent*)pumpEventQueueForKeyUp:(NSApplication*)app untilDate:(NSDate*)date {
-  return [app nextEventMatchingMask:NSEventMaskKeyUp
-                          untilDate:date
-                             inMode:NSEventTrackingRunLoopMode
-                            dequeue:YES];
+- (NSEvent*)pumpEventQueueForKeyUpUntilDate:(NSDate*)date {
+  return [NSApp nextEventMatchingMask:NSEventMaskKeyUp
+                            untilDate:date
+                               inMode:NSEventTrackingRunLoopMode
+                              dequeue:YES];
 }
 
 // Iterates through the list of open windows and hides them all.
-- (void)hideAllWindowsForApplication:(NSApplication*)app
-                        withDuration:(NSTimeInterval)duration {
+- (void)hideAllWindowsWithDuration:(NSTimeInterval)duration {
   FadeAllWindowsAnimation* animation =
-      [[FadeAllWindowsAnimation alloc] initWithApplication:app
+      [[FadeAllWindowsAnimation alloc] initWithApplication:NSApp
                                          animationDuration:duration];
 
   // -startAnimation holds a strong reference to the animation until it is

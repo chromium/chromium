@@ -956,8 +956,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   if ([[NSApp currentEvent] type] != NSEventTypeKeyDown)
     return NSTerminateNow;
 
-  return [[ConfirmQuitPanelController sharedController]
-      runModalLoopForApplication:NSApp];
+  return [[ConfirmQuitPanelController sharedController] runModalLoop];
 }
 
 // Called when the app is shutting down. Clean-up as appropriate.
