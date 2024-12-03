@@ -12,6 +12,9 @@
 
 class PrefRegistrySimple;
 
+// This class observes and reports changes to glic prefs such as the
+// enabled/disabled state, and the hotkey for launching the UI. Owned by
+// GlicBackgroundModeManager.
 class GlicConfiguration {
  public:
   class Observer : public base::CheckedObserver {

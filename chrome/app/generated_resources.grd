@@ -18682,6 +18682,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING" desc="This is the heading for the page that appears when a user attempts to load an internal developer debugging page when such pages are disabled by a pref.">
       Internal debugging pages are currently disabled.
     </message>
+
+    <!-- Glic status tray icon strings -->
+    <if expr="is_win or is_macosx">
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
+        <!-- TODO(378139555): Find the correct string for this. -->
+        Open
+      </message>
+    </if>
   </messages>
 </release>
 </grit>

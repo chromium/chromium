@@ -1,17 +1,36 @@
 source_set("launcher") {
   sources = [
-    "glic_background_mode_manager.cc",
     "glic_background_mode_manager.h",
-    "glic_configuration.cc",
     "glic_configuration.h",
+    "glic_controller.h",
   ]
 
   deps = [
+    "//base",
+    "//components/prefs",
+    "//ui/base",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "glic_background_mode_manager.cc",
+    "glic_configuration.cc",
+    "glic_controller.cc",
+    "glic_status_icon.cc",
+    "glic_status_icon.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":launcher",
+    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/common:constants",
     "//components/keep_alive_registry",
-    "//components/prefs",
+    "//components/vector_icons",
     "//ui/base",
+    "//ui/gfx",
   ]
 }
 

@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/common/chrome_features.h"
 
@@ -63,8 +64,8 @@ void GlobalFeatures::Init() {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kGlic)) {
-    glic_background_mode_manager_ =
-        std::make_unique<GlicBackgroundModeManager>();
+    glic_background_mode_manager_ = std::make_unique<GlicBackgroundModeManager>(
+        g_browser_process->status_tray());
   }
 #endif
 }

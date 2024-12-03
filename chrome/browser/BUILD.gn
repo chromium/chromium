@@ -6230,10 +6230,13 @@ static_library("browser") {
 
     deps += [
       "//chrome/browser/glic/launcher",
+      "//chrome/browser/glic/launcher:impl",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/common/notifications",
       "//chrome/updater:browser_sources",
     ]
+
+    allow_circular_includes_from += [ "//chrome/browser/glic/launcher:impl" ]
 
     # Support for the recovery improved component.
     sources += [
