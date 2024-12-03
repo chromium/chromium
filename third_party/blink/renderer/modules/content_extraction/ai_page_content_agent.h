@@ -50,12 +50,13 @@ class MODULES_EXPORT AIPageContentAgent final
   void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
 
   void ProcessNode(const LayoutObject& object,
-                   mojom::blink::AIPageContentNode& content_node) const;
+                   mojom::blink::AIPageContentNode& content_node,
+                   const ComputedStyle& document_style) const;
   mojom::blink::AIPageContentNodePtr MaybeGenerateContentNode(
       const LayoutObject& object) const;
-  void MaybeAddNodeContent(
-      const LayoutObject& object,
-      mojom::blink::AIPageContentAttributes& attributes) const;
+  void MaybeAddNodeContent(const LayoutObject& object,
+                           mojom::blink::AIPageContentAttributes& attributes,
+                           const ComputedStyle& document_style) const;
   void AddNodeId(const LayoutObject& object,
                  mojom::blink::AIPageContentAttributes& attributes) const;
   void AddNodeGeometry(const LayoutObject& object,

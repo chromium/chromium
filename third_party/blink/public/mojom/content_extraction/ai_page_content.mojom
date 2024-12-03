@@ -37,9 +37,23 @@ struct AIPageContentGeometry {
   gfx.mojom.Rect visible_bounding_box;
 };
 
+enum AIPageContentTextSize {
+  kXS,
+  kS,
+  kM,
+  kL,
+  kXL,
+};
+
+struct AIPageContentTextStyle {
+  AIPageContentTextSize text_size;
+  bool has_emphasis;
+};
+
 struct AIPageContentTextInfo {
   string text_content;
   gfx.mojom.Rect text_bounding_box;
+  AIPageContentTextStyle text_style;
 };
 
 struct AIPageContentImageInfo {
