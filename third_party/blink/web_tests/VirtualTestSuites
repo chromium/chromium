@@ -246,7 +246,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=AttributionAggregatableDebugReporting,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444"],
     "owners": ["linnan@chromium.org"],
-    "expires": "Dec 3, 2024"
+    "expires": "June 3, 2025"
   },
   {
     "prefix": "off-main-thread-css-paint",
