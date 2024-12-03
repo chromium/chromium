@@ -35,7 +35,6 @@
 #include <bsm/libbsm.h>
 #include <servers/bootstrap.h>
 
-#include "base/apple/scoped_dispatch_object.h"
 #include "base/environment.h"
 #include "base/mac/info_plist_data.h"
 #include "base/strings/string_number_conversions.h"
@@ -325,19 +324,6 @@ MachPortRendezvousServerIOS::~MachPortRendezvousServerIOS() = default;
 #endif
 
 #if BUILDFLAG(IS_MAC)
-
-struct MachPortRendezvousServerMac::ClientData {
-  ClientData();
-  ClientData(ClientData&&);
-  ~ClientData();
-
-  // A DISPATCH_SOURCE_TYPE_PROC / DISPATCH_PROC_EXIT dispatch source. When
-  // the source is triggered, it calls OnClientExited().
-  apple::ScopedDispatchObject<dispatch_source_t> exit_watcher;
-
-  MachPortsForRendezvous ports;
-  std::optional<mac::ProcessRequirement> requirement;
-};
 
 // static
 MachPortRendezvousServerMac* MachPortRendezvousServerMac::GetInstance() {
