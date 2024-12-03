@@ -291,6 +291,12 @@ DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
   parameters.Set("headerTextColor",
                  color_utils::SkColorToRgbaString(GetProfileForegroundTextColor(
                      bubble_parameters_.profile_highlight_color)));
+  parameters.Set("primaryProfileBadgeColor",
+                 color_utils::SkColorToRgbaString(GetProfileForegroundIconColor(
+                     GetProfileHighlightColor(Profile::FromWebUI(web_ui())))));
+  parameters.Set("interceptedProfileBadgeColor",
+                 color_utils::SkColorToRgbaString(GetProfileForegroundIconColor(
+                     bubble_parameters_.profile_highlight_color)));
   return parameters;
 }
 

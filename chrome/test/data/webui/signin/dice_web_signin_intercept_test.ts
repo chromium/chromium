@@ -31,6 +31,8 @@ const BASE_PARAMETERS: InterceptionParameters = {
   primaryAccount: {pictureUrl: AVATAR_URL_2, avatarBadge: ''},
   useV2Design: false,
   showManagedDisclaimer: false,
+  interceptedProfileBadgeColor: 'rgba(255, 255, 1, 1)',
+  primaryProfileBadgeColor: 'rgba(255, 1, 255, 1)',
 };
 
 function fireParametersChanged(parameters: InterceptionParameters) {
