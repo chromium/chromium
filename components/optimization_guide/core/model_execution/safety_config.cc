@@ -81,13 +81,25 @@ SafetyConfig::SafetyConfig(SafetyConfig&&) = default;
 SafetyConfig::~SafetyConfig() = default;
 SafetyConfig& SafetyConfig::operator=(SafetyConfig&&) = default;
 
-uint32_t SafetyConfig::TokenInterval() const {
+bool SafetyConfig::CanCheckPartialOutput(
+    uint32_t num_output_tokens,
+    uint32_t num_unchecked_output_tokens) const {
   if (!proto_) {
-    // In the absence of a config, HasRawOutputCheck() should be false, so it
-    // will trivially pass. Returning 1 here admits every partial output.
-    return 1;
+    // In the absence of a config, partial outputs are trivially checked at
+    // every token.
+    return true;
   }
-  return features::GetOnDeviceModelTextSafetyTokenInterval();
+  if (!proto_->has_partial_output_checks()) {
+    return false;
+  }
+  if (num_output_tokens < proto_->partial_output_checks().minimum_tokens()) {
+    return false;
+  }
+  if (num_unchecked_output_tokens <
+      proto_->partial_output_checks().token_interval()) {
+    return false;
+  }
+  return true;
 }
 
 bool SafetyConfig::IsTextInUnsupportedOrUndeterminedLanguage(

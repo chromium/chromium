@@ -71,8 +71,6 @@ class SafetyChecker final {
 
   const SafetyConfig& safety_cfg() const { return safety_cfg_; }
 
-  size_t TokenInterval() const { return safety_cfg_.TokenInterval(); }
-
  private:
   base::WeakPtr<TextSafetyClient> client_;
   on_device_model::TextSafetyLoaderParams params_;

@@ -22,10 +22,9 @@ class SafetyConfig final {
   SafetyConfig& operator=(SafetyConfig&&);
   ~SafetyConfig();
 
-  // The minimum number of tokens required between two text safety evaluations
-  // of partial model output. If this is 0, only complete outputs should be
-  // evaluated.
-  uint32_t TokenInterval() const;
+  // Returns true if partial output is ready to be evaluated.
+  bool CanCheckPartialOutput(uint32_t num_output_tokens,
+                             uint32_t num_unchecked_output_tokens) const;
 
   // Whether the text is in a language not supported by the safety classifier,
   // or the language could not be detected despite the classifier requiring one

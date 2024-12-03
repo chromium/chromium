@@ -245,6 +245,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // How many tokens (response chunks) have been added since the last safety
     // evaluation was requested.
     size_t num_unchecked_response_tokens = 0;
+    // How many tokens (response chunks) have been added.
+    size_t num_response_tokens = 0;
 
     struct SafeRawOutput {
       SafeRawOutput();

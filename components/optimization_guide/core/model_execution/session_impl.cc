@@ -491,6 +491,7 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
 
   on_device_state_->current_response += chunk->text;
   on_device_state_->num_unchecked_response_tokens++;
+  on_device_state_->num_response_tokens++;
 
   if (HasRepeatingSuffix(on_device_state_->current_response)) {
     // If a repeat is detected, halt the response, and cancel/finish early.
@@ -509,9 +510,10 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
     return;
   }
 
-  uint32_t interval = on_device_state_->opts.safety_checker->TokenInterval();
-  if (interval == 0 ||
-      on_device_state_->num_unchecked_response_tokens < interval) {
+  if (!on_device_state_->opts.safety_checker->safety_cfg()
+           .CanCheckPartialOutput(
+               on_device_state_->num_response_tokens,
+               on_device_state_->num_unchecked_response_tokens)) {
     // Not enough new data to be worth re-evaluating yet.
     return;
   }

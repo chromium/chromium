@@ -62,6 +62,14 @@ message RequestSafetyCheck {
   optional bool ignore_language_result = 4;
 }
 
+message PartialOutputChecks {
+  // The minimum number of tokens required to evaluate partial output safety.
+  optional uint32 minimum_tokens = 1;
+
+  // The minimum number of tokens required between partial outputs.
+  optional uint32 token_interval = 2;
+}
+
 message RawOutputCheck {
   // How to generate input for the text safety check.
   // Should be written against a google.protobuf.StringValue proto with the raw
@@ -95,6 +103,11 @@ message FeatureTextSafetyConfiguration {
 
   // Safety checks to run on the feature request message.
   repeated RequestSafetyCheck request_check = 4;
+
+  // Configures when and how partial outputs are checked.
+  // If unspecified, all partial outputs are suppressed, and only completed
+  // outputs will be checked / returned to the feature code.
+  optional PartialOutputChecks partial_output_checks = 8;
 
   // Configures the checks to run on raw model output.
   optional RawOutputCheck raw_output_check = 5;
