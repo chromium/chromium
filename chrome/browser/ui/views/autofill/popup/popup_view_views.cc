@@ -798,13 +798,18 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
   // educational messages. The promo bubble should only be shown once in one
   // session and has a limit for how many times it can be shown at most in a
   // period of time.
-  for (auto iph_metadata : base::MakeFlatSet<Suggestion::IPHMetadata>(
+  for (const auto& iph_metadata : base::MakeFlatSet<Suggestion::IPHMetadata>(
            controller_->GetSuggestions(), /*comp=*/{},
            &Suggestion::iph_metadata)) {
     if (iph_metadata.feature) {
       user_education::FeaturePromoParams params(*iph_metadata.feature);
-      params.body_params = iph_metadata.iph_params;
-      params.screen_reader_params = iph_metadata.iph_params;
+      // Setting the params to a `std::vector` (even if it is empty), indicates
+      // to the framework that a substitution should be made. Therefore only
+      // set it if `iph_params` is non-empty.
+      if (!iph_metadata.iph_params.empty()) {
+        params.body_params = iph_metadata.iph_params;
+        params.screen_reader_params = iph_metadata.iph_params;
+      }
       browser->window()->MaybeShowFeaturePromo(std::move(params));
     }
   }
