@@ -121,6 +121,20 @@ TEST_F(CaptureRegionOverlayControllerTest, PaintsGlowAroundCaptureRegion) {
   EXPECT_EQ(bitmap.getColor(190, 190), SK_ColorGREEN);
 }
 
+TEST_F(CaptureRegionOverlayControllerTest, HasGlowAnimation) {
+  gfx::TestAnimationDelegate animation_delegate;
+  CaptureRegionOverlayController capture_region_overlay_controller;
+
+  capture_region_overlay_controller.StartGlowAnimation(&animation_delegate);
+  EXPECT_TRUE(capture_region_overlay_controller.HasGlowAnimation());
+
+  capture_region_overlay_controller.PauseGlowAnimation();
+  EXPECT_TRUE(capture_region_overlay_controller.HasGlowAnimation());
+
+  capture_region_overlay_controller.RemoveGlowAnimation();
+  EXPECT_FALSE(capture_region_overlay_controller.HasGlowAnimation());
+}
+
 }  // namespace
 
 }  // namespace ash

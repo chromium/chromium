@@ -2622,7 +2622,7 @@ TEST_F(ScannerTest, GlowAnimationWhenFetchingActionsDuringSunfishSession) {
   CaptureRegionOverlayController* region_overlay_controller =
       session_test_api.GetCaptureRegionOverlayController();
   ASSERT_TRUE(region_overlay_controller);
-  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
+  EXPECT_FALSE(region_overlay_controller->HasGlowAnimation());
 
   // Select a region to start fetching Scanner actions.
   base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
@@ -2637,6 +2637,7 @@ TEST_F(ScannerTest, GlowAnimationWhenFetchingActionsDuringSunfishSession) {
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
 
   // Glow should be animating.
+  EXPECT_TRUE(region_overlay_controller->HasGlowAnimation());
   const gfx::ThrobAnimation* glow_animation =
       region_overlay_controller->glow_animation_for_testing();
   ASSERT_TRUE(glow_animation);
@@ -2647,6 +2648,7 @@ TEST_F(ScannerTest, GlowAnimationWhenFetchingActionsDuringSunfishSession) {
       std::make_unique<manta::proto::ScannerOutput>(), manta::MantaStatus());
 
   // Glow should be pausing.
+  EXPECT_TRUE(region_overlay_controller->HasGlowAnimation());
   EXPECT_EQ(glow_animation->cycles_remaining(), 0);
 }
 
@@ -2660,7 +2662,7 @@ TEST_F(ScannerTest, GlowAnimationAfterPressingSmartActionsButton) {
   CaptureRegionOverlayController* region_overlay_controller =
       session_test_api.GetCaptureRegionOverlayController();
   ASSERT_TRUE(region_overlay_controller);
-  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
+  EXPECT_FALSE(region_overlay_controller->HasGlowAnimation());
 
   // Click on the smart actions button to start fetching Scanner actions.
   base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
@@ -2674,6 +2676,7 @@ TEST_F(ScannerTest, GlowAnimationAfterPressingSmartActionsButton) {
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
 
   // Glow should be animating.
+  EXPECT_TRUE(region_overlay_controller->HasGlowAnimation());
   const gfx::ThrobAnimation* glow_animation =
       region_overlay_controller->glow_animation_for_testing();
   ASSERT_TRUE(glow_animation);
@@ -2684,6 +2687,7 @@ TEST_F(ScannerTest, GlowAnimationAfterPressingSmartActionsButton) {
       std::make_unique<manta::proto::ScannerOutput>(), manta::MantaStatus());
 
   // Glow should be pausing.
+  EXPECT_TRUE(region_overlay_controller->HasGlowAnimation());
   EXPECT_EQ(glow_animation->cycles_remaining(), 0);
 
   // Reselect a capture region.
@@ -2691,7 +2695,7 @@ TEST_F(ScannerTest, GlowAnimationAfterPressingSmartActionsButton) {
                           /*release_mouse=*/true, /*verify_region=*/true);
 
   // Glow should be removed.
-  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
+  EXPECT_FALSE(region_overlay_controller->HasGlowAnimation());
 }
 
 // Tests that a glow animation is removed if the capture source changes.
@@ -2704,18 +2708,18 @@ TEST_F(ScannerTest, GlowAnimationRemovedOnCaptureSourceChange) {
   CaptureRegionOverlayController* region_overlay_controller =
       session_test_api.GetCaptureRegionOverlayController();
   ASSERT_TRUE(region_overlay_controller);
-  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
+  EXPECT_FALSE(region_overlay_controller->HasGlowAnimation());
 
   // Click on the smart actions button. Glow should be shown.
   LeftClickOn(smart_actions_button);
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
 
-  EXPECT_TRUE(region_overlay_controller->glow_animation_for_testing());
+  EXPECT_TRUE(region_overlay_controller->HasGlowAnimation());
 
   // Switch to video. Glow should be removed.
   capture_mode_controller->SetType(CaptureModeType::kVideo);
 
-  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
+  EXPECT_FALSE(region_overlay_controller->HasGlowAnimation());
 }
 
 TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {

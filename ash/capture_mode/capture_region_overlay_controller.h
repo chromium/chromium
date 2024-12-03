@@ -72,6 +72,10 @@ class ASH_EXPORT CaptureRegionOverlayController {
   // Removes the glow animation if it exists.
   void RemoveGlowAnimation();
 
+  // Returns true if there is currently a glow animation (which may be either
+  // animated or paused).
+  bool HasGlowAnimation() const;
+
   // Paints the current glow state onto `canvas`. `region_bounds_in_canvas`
   // specifies the coordinates of `canvas` to paint the glow around.
   void PaintCurrentGlowState(gfx::Canvas& canvas,

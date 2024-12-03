@@ -3458,7 +3458,8 @@ void CaptureModeSession::ShowFeedbackPage() {
 }
 
 void CaptureModeSession::MaybeRemoveGlowAnimation() {
-  if (capture_region_overlay_controller_) {
+  if (capture_region_overlay_controller_ &&
+      capture_region_overlay_controller_->HasGlowAnimation()) {
     capture_region_overlay_controller_->RemoveGlowAnimation();
     // Schedule repaint to remove glow.
     RefreshGlowRegion();
