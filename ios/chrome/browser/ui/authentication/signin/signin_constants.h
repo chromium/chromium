@@ -85,6 +85,9 @@ extern NSString* const kTangibleSyncViewAccessibilityIdentifier;
 // consistency account chooser.
 extern NSString* const kConsistencyAccountChooserAddAccountIdentifier;
 
+// Name of the accessibility identifier for the managed profile creation screen.
+extern NSString* const kManagedProfileCreationScreenAccessibilityIdentifier;
+
 // Intent for TrustedVaultReauthenticationCoordinator to display either
 // the reauthentication or degraded recoverability dialog.
 typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {

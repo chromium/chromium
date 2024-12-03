@@ -1813,6 +1813,18 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). [iOS only]">
         Your organization limits what you can sync.
       </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MANAGEMENT_DISCLAIMER" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
+       The account <ph name="USER_EMAIL">$1</ph> is managed by <ph name="HOSTED_DOMAIN">$2</ph>, which can view some information.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_CANCEL" meaning="Button label to avoid using a managed profile" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
+       Cancel
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE" meaning="Button label to continue with a managed profile" desc="Message displayed in the primary button on a screen where the user is asked to create a work profile.">
+       Continue
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
+       A separate space for work
+      </message>
       <message name="IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Restrict Accounts To Patterns) [iOS only]">
           Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.
       </message>

@@ -24,6 +24,9 @@ NSString* const kTangibleSyncViewAccessibilityIdentifier =
 NSString* const kConsistencyAccountChooserAddAccountIdentifier =
     @"ConsistencyAccountChooserAddAccountIdentifier";
 
+NSString* const kManagedProfileCreationScreenAccessibilityIdentifier =
+    @"ManagedProfileCreationScreenAccessibilityIdentifier";
+
 const char* kWebSigninConsistencyConsecutiveActiveDismissalLimitParam =
     "consecutive_active_dismissal_limit";
 
