@@ -257,8 +257,10 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
                 .SharedImageInterface()
                 ->UsageForMailbox(source->GetMailboxHolder().mailbox);
         resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-            dest_info, kFilterQuality, kShouldInitialize, context_provider,
-            RasterMode::kGPU, shared_image_usage_flags);
+            gfx::Size(dest_size.width(), dest_size.height()), dest_color_type,
+            dest_alpha_type, dest_color_space, kFilterQuality,
+            kShouldInitialize, context_provider, RasterMode::kGPU,
+            shared_image_usage_flags);
       }
     }
     // If not (or if the SharedImage provider fails), fall back to software.

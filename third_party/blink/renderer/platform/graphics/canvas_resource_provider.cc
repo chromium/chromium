@@ -1126,22 +1126,6 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
 
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateSharedImageProvider(
-    const SkImageInfo& info,
-    cc::PaintFlags::FilterQuality filter_quality,
-    ShouldInitialize should_initialize,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    RasterMode raster_mode,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
-    CanvasResourceHost* resource_host) {
-  return CanvasResourceProvider::CreateSharedImageProvider(
-      gfx::Size(info.width(), info.height()), info.colorType(),
-      info.alphaType(), info.refColorSpace(), filter_quality, should_initialize,
-      context_provider_wrapper, raster_mode, shared_image_usage_flags,
-      resource_host);
-}
-
-std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateSharedImageProvider(
     gfx::Size size,
     SkColorType sk_color_type,
     SkAlphaType alpha_type,
@@ -1253,7 +1237,9 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
   //   the WebGPU interface)
   // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
   return CreateSharedImageProvider(
-      info, cc::PaintFlags::FilterQuality::kLow,
+      gfx::Size(info.width(), info.height()), info.colorType(),
+      info.alphaType(), info.refColorSpace(),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper), RasterMode::kGPU,
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |

@@ -350,7 +350,8 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
         kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
-      info, kFilterQuality, kShouldInitialize,
+      gfx::Size(info.width(), info.height()), info.colorType(),
+      info.alphaType(), info.refColorSpace(), kFilterQuality, kShouldInitialize,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }

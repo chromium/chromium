@@ -128,15 +128,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
-      const SkImageInfo& info,
-      cc::PaintFlags::FilterQuality filter_quality,
-      ShouldInitialize initialize_provider,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      RasterMode raster_mode,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      CanvasResourceHost* resource_host = nullptr);
-
-  static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
       gfx::Size size,
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
