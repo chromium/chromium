@@ -115,6 +115,9 @@ class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
      */
     size_t size() const;
 
+    // Returns a span with data() and size().
+    base::span<const uint8_t> operator*() const;
+
     /**
      * Advance to the next contiguous block of memory, returning true if there
      * is another block, or false if the iterator is exhausted.

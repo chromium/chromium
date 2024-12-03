@@ -321,12 +321,12 @@ class ResponseBodyLoader::Buffer final
   bool IsEmpty() const { return buffered_data_.empty(); }
 
   // Add |buffer| to |buffered_data_|.
-  void AddChunk(const char* buffer, size_t available) {
+  void AddChunk(base::span<const char> buffer) {
     TRACE_EVENT2("loading", "ResponseBodyLoader::Buffer::AddChunk",
                  "total_bytes_read", static_cast<int>(total_bytes_read_),
-                 "added_bytes", static_cast<int>(available));
+                 "added_bytes", static_cast<int>(buffer.size()));
     Vector<char> new_chunk;
-    new_chunk.Append(buffer, base::checked_cast<wtf_size_t>(available));
+    new_chunk.AppendSpan(buffer);
     buffered_data_.emplace_back(std::move(new_chunk));
   }
 
@@ -627,7 +627,7 @@ void ResponseBodyLoader::OnStateChange() {
       if (IsSuspendedForBackForwardCache()) {
         // Save the read data into |body_buffer_| instead.
         DidBufferLoadWhileInBackForwardCache(buffer.size());
-        body_buffer_->AddChunk(buffer.data(), buffer.size());
+        body_buffer_->AddChunk(buffer);
         if (!BackForwardCacheBufferLimitTracker::Get()
                  .IsUnderPerProcessBufferLimit()) {
           // We've read too much data while suspended for back-forward cache.
