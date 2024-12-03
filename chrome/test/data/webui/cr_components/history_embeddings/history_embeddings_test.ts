@@ -178,6 +178,50 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       }
     });
 
+    test('AnnouncesResults', async () => {
+      let announcePromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      let announceEvent = await announcePromise;
+      assertEquals(
+          'Found 2 best matches for \'some query\'',
+          announceEvent.detail.messages.pop());
+
+      // New results for the same query should announce.
+      announcePromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kLoading,
+        answer: '',
+        items: [...mockResults, Object.assign({}, mockResults[0]!)],
+      });
+      announceEvent = await announcePromise;
+      assertEquals(
+          'Found 3 best matches for \'some query\'',
+          announceEvent.detail.messages.pop());
+
+      // Same results for same query should not announce. The check for this is
+      // later where it counts the number of messages at the end of this test.
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [...mockResults, Object.assign({}, mockResults[0]!)],
+      });
+
+      // New queries with their own results should announce.
+      announcePromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      element.searchQuery = 'my new query!';
+      announceEvent = await announcePromise;
+      const messages = announceEvent.detail.messages;
+      assertEquals(
+          'Found 2 best matches for \'my new query!\'', messages.pop());
+
+      // Verify there are no more messages that were unaccounted for.
+      assertEquals(0, messages.length);
+    });
+
     // If this test is flaky, the order of search results being processed by
     // the component is not correct. See crbug.com/371049023.
     test('MultipleResultsAtTheSameTime', async () => {

@@ -104,6 +104,12 @@
   <message name="IDS_HISTORY_SEARCH_EXACT_MATCH_RESULTS" desc="Used when plural/multiple exact match results is found." translateable="false">
     exact matches
   </message>
+  <message name="IDS_HISTORY_SEARCH_EMBEDDINGS_MATCH_RESULT" desc="Used when a single result is found by history search powered by AI." translateable="false">
+    best match
+  </message>
+  <message name="IDS_HISTORY_SEARCH_EMBEDDINGS_MATCH_RESULTS" desc="Used when plural/multiple results are found by history search powered by AI." translateable="false">
+    best matches
+  </message>
   <if expr="not use_titlecase">
     <message name="IDS_HISTORY_SHOW_HISTORY" desc="The show history menu in the app menu">
       &amp;History

@@ -14,6 +14,7 @@ import './icons.html.js';
 import './result_image.js';
 
 import {HistoryResultType, QUERY_RESULT_MINIMUM_AGE} from '//resources/cr_components/history/constants.js';
+import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -486,6 +487,13 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       return;
     }
 
+    const isNewQuery = this.searchResult_?.query !== result.query;
+    const hasResults = result.items.length > 0;
+    const hasNewResults =
+        this.searchResult_?.items.length !== result.items.length;
+    const shouldAnnounceForResults =
+        (isNewQuery && hasResults) || (!isNewQuery && hasNewResults);
+
     // Reset feedback state for new results.
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.searchResult_ = result;
@@ -493,6 +501,16 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     this.loadingAnswer_ = result.answerStatus === AnswerStatus.kLoading;
 
     this.resultPendingMetricsTimestamp_ = performance.now();
+
+    if (shouldAnnounceForResults) {
+      const resultsLabelId = result.items.length === 1 ?
+          'historyEmbeddingsMatch' :
+          'historyEmbeddingsMatches';
+      const message = loadTimeData.getStringF(
+          'foundSearchResults', result.items.length,
+          loadTimeData.getString(resultsLabelId), result.query);
+      getAnnouncerInstance().announce(message);
+    }
   }
 
   private showAnswerSection_(): boolean {
