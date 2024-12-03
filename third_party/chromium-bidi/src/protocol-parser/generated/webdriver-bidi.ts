@@ -68,7 +68,7 @@ export const CommandDataSchema = z.lazy(() =>
     ScriptCommandSchema,
     SessionCommandSchema,
     StorageCommandSchema,
-    WebExtensionsCommandSchema,
+    WebExtensionCommandSchema,
   ]),
 );
 export const ResultDataSchema = z.lazy(() =>
@@ -79,7 +79,7 @@ export const ResultDataSchema = z.lazy(() =>
     ScriptResultSchema,
     SessionResultSchema,
     StorageResultSchema,
-    WebExtensionsResultSchema,
+    WebExtensionResultSchema,
   ]),
 );
 export const EmptyParamsSchema = z.lazy(() => ExtensibleSchema);
@@ -2911,10 +2911,10 @@ export namespace Input {
     }),
   );
 }
-export const WebExtensionsCommandSchema = z.lazy(() =>
+export const WebExtensionCommandSchema = z.lazy(() =>
   z.union([WebExtension.InstallSchema, WebExtension.UninstallSchema]),
 );
-export const WebExtensionsResultSchema = z.lazy(
+export const WebExtensionResultSchema = z.lazy(
   () => WebExtension.InstallResultSchema,
 );
 export namespace WebExtension {
