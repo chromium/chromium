@@ -48,7 +48,7 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
   ExternalFileURLLoaderFactoryTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
-  ~ExternalFileURLLoaderFactoryTest() override {}
+  ~ExternalFileURLLoaderFactoryTest() override = default;
 
   void SetUp() override {
     // Create a testing profile.
