@@ -1234,7 +1234,6 @@
 -virtual/view-transition-mpa-serialization/*
 -virtual/view-transition-mpa-serialization/wpt_internal/*
 # https://github.com/web-platform-tests/wpt/issues/48825
--virtual/view-transition-on-navigation/*
 -virtual/view-transition-wide-gamut/*
 -virtual/view-transition-wide-gamut/wpt_internal/*
 -virtual/web-bluetooth-new-permissions-backend/*
