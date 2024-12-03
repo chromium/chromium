@@ -632,126 +632,6 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_EQ(u"+1 234-567-8910", suggestions[0].main_text.value);
 }
 
-TEST_F(AddressSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_PartialNameFieldHasFullNameMainText) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillGranularFillingAvailable);
-  AutofillProfile profile = test::GetFullProfile();
-
-  EXPECT_THAT(
-      CreateSuggestionsFromProfilesForTest({profile}, {NAME_FIRST, NAME_LAST},
-                                           SuggestionType::kAddressEntry,
-                                           NAME_FIRST,
-                                           /*trigger_field_max_length=*/0),
-      SuggestionVectorMainTextsAre(Suggestion::Text(
-          profile.GetRawInfo(NAME_FULL), Suggestion::Text::IsPrimary(true))));
-}
-
-// TODO(crbug.com/40274514): Move AutofillChildrenSuggestionGeneratorTest.
-// CreateSuggestionsFromProfiles_GroupFillingLabels_* tests under this fixture.
-// Text fixture for label generation related tests. Parameterized by triggering
-// field type since how we build labels depends highly on it.
-class AutofillLabelSuggestionGeneratorTest
-    : public AddressSuggestionGeneratorTest,
-      public testing::WithParamInterface<FieldType> {
- public:
-  std::u16string GetFullFormFillingLabel(const AutofillProfile& profile) {
-    // Phone fields are a snow flake, they contain both `NAME_FULL` and
-    // `ADDRESS_HOME_LINE1`.
-    const std::u16string label_applied_to_phone_fields =
-        profile.GetRawInfo(NAME_FULL) + u", " +
-        profile.GetRawInfo(ADDRESS_HOME_LINE1);
-    return GetTriggeringFieldType() == ADDRESS_HOME_STREET_ADDRESS
-               ? profile.GetRawInfo(NAME_FULL)
-           : GetTriggeringFieldType() == PHONE_HOME_WHOLE_NUMBER
-               ? label_applied_to_phone_fields
-               : profile.GetRawInfo(ADDRESS_HOME_LINE1);
-  }
-
-  FieldType GetTriggeringFieldType() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillGranularFillingAvailable};
-};
-
-INSTANTIATE_TEST_SUITE_P(AddressSuggestionGeneratorTest,
-                         AutofillLabelSuggestionGeneratorTest,
-                         ::testing::ValuesIn({NAME_FULL, ADDRESS_HOME_ZIP,
-                                              ADDRESS_HOME_STREET_ADDRESS,
-                                              PHONE_HOME_WHOLE_NUMBER}));
-
-// Suggestions for `ADDRESS_HOME_LINE1` should have `NAME_FULL` as the label.
-// Suggestions for name or address fields which do not include
-// `ADDRESS_HOME_LINE1` should have `ADDRESS_HOME_LINE1` as the label.
-TEST_P(
-    AutofillLabelSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_FullFormFilling_SuggestionsHaveCorrectLabels) {
-  AutofillProfile profile = test::GetFullProfile();
-  FieldType triggering_field_type = GetTriggeringFieldType();
-  const std::u16string full_form_filling_label =
-      GetFullFormFillingLabel(profile);
-
-  EXPECT_THAT(
-      CreateSuggestionsFromProfilesForTest(
-          {profile}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
-          SuggestionType::kAddressEntry, triggering_field_type,
-          /*trigger_field_max_length=*/0),
-      ElementsAre(AllOf(EqualLabels({{full_form_filling_label}}))));
-}
-
-TEST_P(
-    AutofillLabelSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_FullFormFilling_SuggestionsNeedMoreLabelsForDifferentiation) {
-  AutofillProfile profile1 = test::GetFullProfile();
-  AutofillProfile profile2 = test::GetFullProfile();
-  profile1.SetRawInfo(EMAIL_ADDRESS, u"hoa@gmail.com");
-  profile2.SetRawInfo(EMAIL_ADDRESS, u"pham@gmail.com");
-
-  // The only difference between the two profiles is the email address.
-  // That's why the email address is part of the differentiating label.
-  FieldType triggering_field_type = GetTriggeringFieldType();
-  const std::u16string full_form_filling_label =
-      GetFullFormFillingLabel(profile1) +
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
-
-  EXPECT_THAT(
-      CreateSuggestionsFromProfilesForTest(
-          {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          SuggestionType::kAddressEntry, triggering_field_type,
-          /*trigger_field_max_length=*/0),
-      ElementsAre(
-          AllOf(EqualLabels({{full_form_filling_label + u"hoa@gmail.com"}})),
-          AllOf(EqualLabels({{full_form_filling_label + u"pham@gmail.com"}}))));
-}
-
-// The logic which adds the country as a differentiating label is slightly
-// different than the logic which adds any other differentiating label. Since
-// the country is the last candidate for a differentiating label, this test also
-// prevents random label behaviour (such as non-differentiating label being
-// chosen or label not showing at all).
-TEST_P(
-    AutofillLabelSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_FullFormFilling_CountryIsChosenAsDifferentiatingLabel) {
-  AutofillProfile profile1 = test::GetFullProfile();
-  AutofillProfile profile2 = profile1;
-  profile2.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CH");
-
-  FieldType triggering_field_type = GetTriggeringFieldType();
-  const std::u16string full_form_filling_label =
-      GetFullFormFillingLabel(profile1) +
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
-
-  EXPECT_THAT(
-      CreateSuggestionsFromProfilesForTest(
-          {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          SuggestionType::kAddressEntry, triggering_field_type,
-          /*trigger_field_max_length=*/0),
-      ElementsAre(
-          AllOf(EqualLabels({{full_form_filling_label + u"United States"}})),
-          AllOf(EqualLabels({{full_form_filling_label + u"Switzerland"}}))));
-}
-
 // Tests that suggestions are filtered by the triggering field's value.
 TEST_F(AddressSuggestionGeneratorTest,
        GetSuggestionsForProfiles_PrefixMatching) {
@@ -824,6 +704,121 @@ TEST_F(AddressSuggestionGeneratorTest,
                 .guid.value(),
             profile.guid());
   EXPECT_EQ(test_address_child.type, SuggestionType::kDevtoolsTestAddressEntry);
+}
+
+// Text fixture for label generation related tests. Parameterized by triggering
+// field type since how we build labels depends highly on it.
+class AddressLabelSuggestionGeneratorTest
+    : public AddressSuggestionGeneratorTest,
+      public testing::WithParamInterface<FieldType> {
+ public:
+  std::u16string GetFullFormFillingLabel(const AutofillProfile& profile) {
+    // Phone fields are a snow flake, they contain both `NAME_FULL` and
+    // `ADDRESS_HOME_LINE1`.
+    const std::u16string label_applied_to_phone_fields =
+        profile.GetRawInfo(NAME_FULL) + u", " +
+        profile.GetRawInfo(ADDRESS_HOME_LINE1);
+    return GetTriggeringFieldType() == ADDRESS_HOME_STREET_ADDRESS
+               ? profile.GetRawInfo(NAME_FULL)
+           : GetTriggeringFieldType() == PHONE_HOME_WHOLE_NUMBER
+               ? label_applied_to_phone_fields
+               : profile.GetRawInfo(ADDRESS_HOME_LINE1);
+  }
+
+  FieldType GetTriggeringFieldType() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillImprovedLabels};
+};
+
+INSTANTIATE_TEST_SUITE_P(AddressSuggestionGeneratorTest,
+                         AddressLabelSuggestionGeneratorTest,
+                         ::testing::ValuesIn({NAME_FULL, ADDRESS_HOME_ZIP,
+                                              ADDRESS_HOME_STREET_ADDRESS,
+                                              PHONE_HOME_WHOLE_NUMBER}));
+
+TEST_F(AddressLabelSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_PartialNameFieldHasFullNameMainText) {
+  base::test::ScopedFeatureList features(features::kAutofillImprovedLabels);
+  AutofillProfile profile = test::GetFullProfile();
+
+  EXPECT_THAT(
+      CreateSuggestionsFromProfilesForTest({profile}, {NAME_FIRST, NAME_LAST},
+                                           SuggestionType::kAddressEntry,
+                                           NAME_FIRST,
+                                           /*trigger_field_max_length=*/0),
+      SuggestionVectorMainTextsAre(Suggestion::Text(
+          profile.GetRawInfo(NAME_FULL), Suggestion::Text::IsPrimary(true))));
+}
+
+// Suggestions for `ADDRESS_HOME_LINE1` should have `NAME_FULL` as the label.
+// Suggestions for name or address fields which do not include
+// `ADDRESS_HOME_LINE1` should have `ADDRESS_HOME_LINE1` as the label.
+TEST_P(AddressLabelSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_SuggestionsHaveCorrectLabels) {
+  AutofillProfile profile = test::GetFullProfile();
+  FieldType triggering_field_type = GetTriggeringFieldType();
+  const std::u16string full_form_filling_label =
+      GetFullFormFillingLabel(profile);
+
+  EXPECT_THAT(
+      CreateSuggestionsFromProfilesForTest(
+          {profile}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
+          SuggestionType::kAddressEntry, triggering_field_type,
+          /*trigger_field_max_length=*/0),
+      ElementsAre(AllOf(EqualLabels({{full_form_filling_label}}))));
+}
+
+TEST_P(
+    AddressLabelSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_SuggestionsNeedMoreLabelsForDifferentiation) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = test::GetFullProfile();
+  profile1.SetRawInfo(EMAIL_ADDRESS, u"hoa@gmail.com");
+  profile2.SetRawInfo(EMAIL_ADDRESS, u"pham@gmail.com");
+
+  // The only difference between the two profiles is the email address.
+  // That's why the email address is part of the differentiating label.
+  FieldType triggering_field_type = GetTriggeringFieldType();
+  const std::u16string full_form_filling_label =
+      GetFullFormFillingLabel(profile1) +
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+
+  EXPECT_THAT(
+      CreateSuggestionsFromProfilesForTest(
+          {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
+          SuggestionType::kAddressEntry, triggering_field_type,
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(EqualLabels({{full_form_filling_label + u"hoa@gmail.com"}})),
+          AllOf(EqualLabels({{full_form_filling_label + u"pham@gmail.com"}}))));
+}
+
+// The logic which adds the country as a differentiating label is slightly
+// different than the logic which adds any other differentiating label. Since
+// the country is the last candidate for a differentiating label, this test also
+// prevents random label behaviour (such as non-differentiating label being
+// chosen or label not showing at all).
+TEST_P(AddressLabelSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_CountryIsChosenAsDifferentiatingLabel) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = profile1;
+  profile2.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CH");
+
+  FieldType triggering_field_type = GetTriggeringFieldType();
+  const std::u16string full_form_filling_label =
+      GetFullFormFillingLabel(profile1) +
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+
+  EXPECT_THAT(
+      CreateSuggestionsFromProfilesForTest(
+          {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
+          SuggestionType::kAddressEntry, triggering_field_type,
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(EqualLabels({{full_form_filling_label + u"United States"}})),
+          AllOf(EqualLabels({{full_form_filling_label + u"Switzerland"}}))));
 }
 
 }  // namespace
