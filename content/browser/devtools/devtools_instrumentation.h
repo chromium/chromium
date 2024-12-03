@@ -258,7 +258,7 @@ void DidUpdatePrefetchStatus(
     const std::string& request_id);
 // CDP events Network.* for prefetch
 void OnPrefetchRequestWillBeSent(
-    FrameTreeNode* frame_tree_node,
+    FrameTreeNode& ftn,
     const std::string& request_id,
     const GURL& initiator,
     const network::ResourceRequest& request,

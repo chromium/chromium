@@ -56,28 +56,10 @@ class TestPrefetchService : public PrefetchService {
     prefetch_container->DisablePrecogLoggingForTest();
     prefetches_.push_back(prefetch_container);
 
-    const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
     std::unique_ptr<network::ResourceRequest> request =
         std::make_unique<network::ResourceRequest>();
     network::ResourceRequest::TrustedParams trusted_params;
     request->trusted_params = trusted_params;
-    request->trusted_params->devtools_observer =
-        devtools_observer->MakeSelfOwnedNetworkServiceDevToolsObserver();
-    devtools_observer->OnStartSinglePrefetch(prefetch_container->RequestId(),
-                                             *request, std::nullopt);
-
-    network::mojom::URLResponseHead response_head;
-    devtools_observer->OnPrefetchResponseReceived(
-        prefetch_container->GetURL(), prefetch_container->RequestId(),
-        response_head);
-
-    devtools_observer->OnPrefetchRequestComplete(
-        prefetch_container->RequestId(),
-        network::URLLoaderCompletionStatus{net::ERR_NOT_IMPLEMENTED});
-
-    devtools_observer->OnPrefetchBodyDataReceived(
-        prefetch_container->RequestId(), /*body*/ std::string{},
-        /*is_base64_encoded=*/false);
   }
 
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
@@ -184,79 +166,6 @@ TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
       PrefetchStatus::kPrefetchFailedNetError);
   EXPECT_TRUE(prefetcher.IsPrefetchAttemptFailedOrDiscarded(
       GetCrossOriginUrl("/candidate1.html")));
-}
-
-class MockPrefetcher : public Prefetcher {
- public:
-  explicit MockPrefetcher(RenderFrameHost& render_frame_host)
-      : Prefetcher(render_frame_host) {}
-
-  void OnStartSinglePrefetch(
-      const std::string& request_id,
-      const network::ResourceRequest& request,
-      std::optional<
-          std::pair<const GURL&,
-                    const network::mojom::URLResponseHeadDevToolsInfo&>>
-          redirect_info) override {
-    on_start_signle_prefetch_was_called_ = true;
-    dev_tools_observer_is_valid_ =
-        request.trusted_params->devtools_observer.is_valid();
-  }
-  void OnPrefetchResponseReceived(
-      const GURL& url,
-      const std::string& request_id,
-      const network::mojom::URLResponseHead& response) override {
-    on_prefetch_response_received_was_called_ = true;
-  }
-  void OnPrefetchRequestComplete(
-      const std::string& request_id,
-      const network::URLLoaderCompletionStatus& status) override {
-    on_prefetch_request_complete_was_called_ = true;
-  }
-  void OnPrefetchBodyDataReceived(const std::string& request_id,
-                                  const std::string& body,
-                                  bool is_base64_encoded) override {
-    on_prefetch_body_data_received_was_called_ = true;
-  }
-
-  bool on_start_signle_prefetch_was_called_ = false;
-  bool on_prefetch_response_received_was_called_ = false;
-  bool on_prefetch_request_complete_was_called_ = false;
-  bool on_prefetch_body_data_received_was_called_ = false;
-  bool dev_tools_observer_is_valid_ = false;
-};
-
-TEST_F(PrefetcherTest, MockPrefetcher) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", "https://testproxyhost.com"}});
-
-  MockContentBrowserClient browser_client;
-  auto prefetcher = MockPrefetcher(GetPrimaryMainFrame());
-  base::WeakPtr<MockSpeculationHostDelegate> delegate =
-      browser_client.GetDelegate();
-  ASSERT_TRUE(delegate);
-
-  // Create list of SpeculationCandidatePtrs.
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-
-  auto candidate1 = blink::mojom::SpeculationCandidate::New();
-  candidate1->action = blink::mojom::SpeculationAction::kPrefetch;
-  candidate1->requires_anonymous_client_ip_when_cross_origin = true;
-  candidate1->url = GetCrossOriginUrl("/candidate1.html");
-  candidate1->referrer = blink::mojom::Referrer::New();
-  candidates.push_back(std::move(candidate1));
-
-  prefetcher.ProcessCandidatesForPrefetch(candidates);
-  EXPECT_TRUE(delegate->Candidates().empty());
-  EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
-
-  EXPECT_TRUE(prefetcher.on_start_signle_prefetch_was_called_);
-  EXPECT_TRUE(prefetcher.on_prefetch_response_received_was_called_);
-  EXPECT_TRUE(prefetcher.on_prefetch_request_complete_was_called_);
-  EXPECT_TRUE(prefetcher.on_prefetch_body_data_received_was_called_);
-  EXPECT_TRUE(prefetcher.dev_tools_observer_is_valid_);
 }
 
 }  // namespace

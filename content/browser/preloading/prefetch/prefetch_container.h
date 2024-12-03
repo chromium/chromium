@@ -13,12 +13,12 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info.h"
-#include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
@@ -536,18 +536,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns request id to be used by DevTools and test utilities.
   const std::string& RequestId() const { return request_id_; }
 
-  // Sets DevTools observer
-  void SetDevToolsObserver(
-      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
-    devtools_observer_ = std::move(devtools_observer);
-  }
-
-  // Returns DevTool observer
-  const base::WeakPtr<SpeculationHostDevToolsObserver>& GetDevToolsObserver()
-      const {
-    return devtools_observer_;
-  }
-
   const std::optional<PrefetchResponseSizes>& GetPrefetchResponseSizes() const {
     return prefetch_response_sizes_;
   }
@@ -759,6 +747,16 @@ class CONTENT_EXPORT PrefetchContainer {
   // See also `PrefetchService::AddPrefetchContainerWithoutStartingPrefetch()`.
   void MigrateNewlyAdded(std::unique_ptr<PrefetchContainer> added);
 
+  // DevTools
+  void NotifyPrefetchRequestWillBeSent(
+      const network::mojom::URLResponseHeadPtr* redirect_head);
+  void NotifyPrefetchResponseReceived(
+      const network::mojom::URLResponseHead& head);
+  void NotifyPrefetchRequestComplete(
+      const network::URLLoaderCompletionStatus& completion_status);
+  std::optional<mojo::PendingRemote<network::mojom::DevToolsObserver>>
+  MakeSelfOwnedNetworkServiceDevToolsObserver();
+
   bool is_in_dtor() const { return is_in_dtor_; }
 
  protected:
@@ -948,9 +946,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Request identifier used by DevTools and test utilities.
   std::string request_id_;
-
-  // Weak pointer to DevTools observer
-  base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer_;
 
   // Information of preload pipeline that this prefetch belongs/is related to.
   //
