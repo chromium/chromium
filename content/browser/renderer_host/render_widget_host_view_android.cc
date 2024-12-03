@@ -800,11 +800,11 @@ bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
 void RenderWidgetHostViewAndroid::SetSize(const gfx::Size& size) {
   // Ignore the given size as only the Java code has the power to
   // resize the view on Android.
-  default_bounds_ = gfx::Rect(default_bounds_.origin(), size);
+  default_bounds_dip_ = gfx::Rect(default_bounds_dip_.origin(), size);
 }
 
 void RenderWidgetHostViewAndroid::SetBounds(const gfx::Rect& rect) {
-  default_bounds_ = rect;
+  default_bounds_dip_ = rect;
 }
 
 bool RenderWidgetHostViewAndroid::HasValidFrame() const {
@@ -1186,7 +1186,7 @@ void RenderWidgetHostViewAndroid::SelectAroundCaretAck(
 
 gfx::Rect RenderWidgetHostViewAndroid::GetViewBounds() {
   if (!view_.parent())
-    return default_bounds_;
+    return default_bounds_dip_;
 
   gfx::Size size(view_.GetSize());
 
@@ -1207,14 +1207,17 @@ void RenderWidgetHostViewAndroid::SetInsets(const gfx::Insets& insets) {
 
 gfx::Size RenderWidgetHostViewAndroid::GetCompositorViewportPixelSize() {
   if (!view_.parent()) {
-    if (default_bounds_.IsEmpty()) return gfx::Size();
+    if (default_bounds_dip_.IsEmpty()) {
+      return gfx::Size();
+    }
 
-    float scale_factor = view_.GetDipScale();
-    return gfx::Size(default_bounds_.right() * scale_factor,
-                     default_bounds_.bottom() * scale_factor);
+    const float scale_factor = GetDeviceScaleFactor();
+    return gfx::Size(default_bounds_dip_.right() * scale_factor,
+                     default_bounds_dip_.bottom() * scale_factor);
   }
 
-  return view_.GetPhysicalBackingSize();
+  const float scale_factor = GetDeviceScaleFactor() / view_.GetDipScale();
+  return gfx::ScaleToCeiledSize(view_.GetPhysicalBackingSize(), scale_factor);
 }
 
 int RenderWidgetHostViewAndroid::GetMouseWheelMinimumGranularity() const {
