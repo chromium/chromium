@@ -6,6 +6,7 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
+#include "base/memory/asan_interface.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
