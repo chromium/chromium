@@ -46,21 +46,6 @@ public class AccountManagerTestRule implements TestRule {
     // TODO(crbug.com/372670018) Move remaining test accounts to {@link
     // org.chromium.components.signin.test.util.TestAccounts}.
 
-    public static final AccountInfo TEST_NON_GMAIL_ACCOUNT =
-            new AccountInfo.Builder(
-                            "test@nongmail.com",
-                            FakeAccountManagerFacade.toGaiaId("test@nongmail.com"))
-                    .fullName("Test Non Gmail Full")
-                    .givenName("Test Non Gmail Given")
-                    .accountImage(createAvatar())
-                    .build();
-
-    public static final AccountInfo TEST_ACCOUNT_NO_NAME =
-            new AccountInfo.Builder(
-                            "test.noname@gmail.com",
-                            FakeAccountManagerFacade.toGaiaId("test.noname@gmail.com"))
-                    .build();
-
     public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
             new AccountInfo.Builder(
                             generateChildEmail("test@gmail.com"),
@@ -256,11 +241,6 @@ public class AccountManagerTestRule implements TestRule {
         mFakeAccountManagerFacade.setAddAccountFlowResult(newAccountName, isMinorModeEnabled);
     }
 
-    /** Makes the add account intent creation fail. */
-    public void forceAddAccountIntentCreationFailure() {
-        mFakeAccountManagerFacade.forceAddAccountIntentCreationFailure();
-    }
-
     /** Removes an account with the given {@link CoreAccountId}. */
     public void removeAccount(CoreAccountId accountId) {
         mFakeAccountManagerFacade.removeAccount(accountId);
@@ -312,15 +292,6 @@ public class AccountManagerTestRule implements TestRule {
     public void resolveMinorModeToRestricted(CoreAccountId accountId) {
         // TODO(b/343384614): append instead of overriding
         overrideCapabilities(accountId, MINOR_MODE_REQUIRED);
-    }
-
-    /**
-     * Resolves the minor mode of {@param accountInfo} to unrestricted, so that the UI will not have
-     * any minor restrictions.
-     */
-    public void resolveMinorModeToUnrestricted(CoreAccountId accountId) {
-        // TODO(b/343384614): append instead of overriding
-        overrideCapabilities(accountId, MINOR_MODE_NOT_REQUIRED);
     }
 
     private void overrideCapabilities(CoreAccountId accountId, AccountCapabilities capabilities) {

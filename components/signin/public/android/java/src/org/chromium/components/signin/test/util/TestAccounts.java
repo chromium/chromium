@@ -68,6 +68,11 @@ public class TestAccounts {
                     .hostedDomain("example.com")
                     .accountImage(createAvatar())
                     .build();
+    public static final AccountInfo TEST_ACCOUNT_NO_NAME =
+            new AccountInfo.Builder(
+                            "test.noname@gmail.com",
+                            FakeAccountManagerFacade.toGaiaId("test.noname@gmail.com"))
+                    .build();
 
     /** Returns an avatar image created from test resource. */
     private static Bitmap createAvatar() {

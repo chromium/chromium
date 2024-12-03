@@ -90,7 +90,7 @@ public class SigninPromoMediatorTest {
     @Test
     public void testSecondaryButtonShown_visibleAccountFromAccountManager() {
         doReturn(false).when(mDelegate).shouldHideSecondaryButton();
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME);
+        mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         createSigninPromoMediator();
 
         boolean isSecondaryButtonHidden =
