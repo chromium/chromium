@@ -35,7 +35,7 @@ globalThis.fetchAdaptor = (resource) => (resolve, reject) => {
     .then(resolve, (e) => reject(e.toString()));
 };
 
-let sharedWorkerMessagePortPromise;
+let workerMessagePortPromise;
 /**
  * Used when the hosting realm is a worker. This value is a Promise that
  * resolves to a function that posts a message to the worker's message port,
@@ -47,17 +47,8 @@ globalThis.getPostMessageFunc = async function () {
     return postMessage;  // postMessage available directly in dedicated worker
   }
 
-  if (typeof clients === "object") {
-    // Messages from the ShadowRealm are not in response to any message received
-    // from the ServiceWorker's client, so broadcast them to all clients
-    const allClients = await clients.matchAll({ includeUncontrolled: true });
-    return function broadcast(msg) {
-      allClients.map(client => client.postMessage(msg));
-    }
-  }
-
-  if (sharedWorkerMessagePortPromise) {
-    return await sharedWorkerMessagePortPromise;
+  if (workerMessagePortPromise) {
+    return await workerMessagePortPromise;
   }
 
   throw new Error("getPostMessageFunc is intended for Worker scopes");
@@ -66,12 +57,22 @@ globalThis.getPostMessageFunc = async function () {
 // Port available asynchronously in shared worker, but not via an async func
 let savedResolver;
 if (globalThis.constructor.name === "SharedWorkerGlobalScope") {
-  sharedWorkerMessagePortPromise = new Promise((resolve) => {
+  workerMessagePortPromise = new Promise((resolve) => {
     savedResolver = resolve;
   });
   addEventListener("connect", function (event) {
     const port = event.ports[0];
     savedResolver(port.postMessage.bind(port));
+  });
+} else if (globalThis.constructor.name === "ServiceWorkerGlobalScope") {
+  workerMessagePortPromise = new Promise((resolve) => {
+    savedResolver = resolve;
+  });
+  addEventListener("message", (e) => {
+    if (typeof e.data === "object" && e.data !== null && e.data.type === "connect") {
+      const client = e.source;
+      savedResolver(client.postMessage.bind(client));
+    }
   });
 }
 
@@ -134,7 +135,7 @@ globalThis.setupFakeFetchOverMessagePort = function (port) {
  * the test harness that the tests are finished and there was an error in the
  * setup code.
  *
- * @param {message} string - error message
+ * @param {message} any - error
  */
 globalThis.createSetupErrorResult = function (message) {
   return {
@@ -143,7 +144,8 @@ globalThis.createSetupErrorResult = function (message) {
     asserts: [],
     status: {
       status: 1, // TestsStatus.ERROR,
-      message,
+      message: String(message),
+      stack: typeof message === "object" && message !== null && "stack" in message ? message.stack : undefined,
     },
   };
 };
