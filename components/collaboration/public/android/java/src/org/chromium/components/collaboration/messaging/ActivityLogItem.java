@@ -13,12 +13,7 @@ import androidx.annotation.Nullable;
  */
 public class ActivityLogItem {
     // The type of collaboration event associated with the log item.
-    @CollaborationEvent public int collaborationEvent;
-
-    // Explicit display metadata to be shown in the UI. These fields are deprecated.
-    public String titleText;
-    public String descriptionText;
-    public String timestampText;
+    public @CollaborationEvent int collaborationEvent;
 
     // Display name of the user.
     public String userDisplayName;

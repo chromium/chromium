@@ -16,7 +16,8 @@ constexpr int kDefaultMaxRowsActivityLog = 5;
 
 // TODO(crbug.com/345856704): Update this to UNDEFINED.
 ActivityLogItem::ActivityLogItem()
-    : collaboration_event(CollaborationEvent::TAB_ADDED) {}
+    : collaboration_event(CollaborationEvent::TAB_ADDED),
+      action(RecentActivityAction::kFocusTab) {}
 
 ActivityLogItem::ActivityLogItem(const ActivityLogItem& other) = default;
 

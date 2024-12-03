@@ -43,13 +43,42 @@ struct ActivityLogItem {
   ActivityLogItem(const ActivityLogItem& other);
   ~ActivityLogItem();
 
+  // The type of event associated with the log item.
+  CollaborationEvent collaboration_event;
+
   // Explicit display metadata to be shown in the UI.
+  // Deprecated. Should be removed soon after the platforms have moved to use
+  // the raw values instead of composed strings. The platform UI is responsible
+  // to create the string to be shown.
   std::string title_text;
   std::string description_text;
   std::string timestamp_text;
 
-  // The type of event associated with the log item.
-  CollaborationEvent collaboration_event;
+  // Display name to be shown in the title line.
+  std::string user_display_name;
+
+  // Whether the user associated with the activity log item is the current
+  // signed in user themselves.
+  bool user_is_self = false;
+
+  // Description text to be shown on first half of the description line. This
+  // will be concatenated with the `time_delta` text. Can be empty string for
+  // certain type of events in which case only `time_delta` is to be shown
+  // without concatenation character.
+  std::u16string description;
+
+  // The time duration  that has passed since the action happened. Used for
+  // generating the relative duration text that will be appended to the
+  // description. If the description is empty, the entire description line will
+  // contain only the relative duration without the concatenation character.
+  base::TimeDelta time_delta;
+
+  // Whether the favicon should be shown for this row. Only tab related updates
+  // show a favicon.
+  bool show_favicon = false;
+
+  // The type of action to be taken when this activity row is clicked.
+  RecentActivityAction action;
 
   // Implicit metadata that will be used to invoke the delegate when the
   // activity row is clicked.
