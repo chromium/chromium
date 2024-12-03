@@ -33,7 +33,7 @@ class WvrApi {
                  mozilla::gfx::ImmersiveXRSessionType);
   void PullSystemState();
 
-  mozilla::gfx::VRSystemState get_system_state() { return system_state_; }
+  mozilla::gfx::VRSystemState& get_system_state() { return system_state_; }
 
  private:
   enum class NotifyCondition { YES, NO };
