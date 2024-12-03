@@ -4020,7 +4020,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           Couldn't untrack the price.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE" desc="Title for Price Notifications table view.">
-        Track price
+        Price Tracking
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TOAST_IPH_TEXT" desc="Text for Price tracking toast IPH.">
         Track price here
@@ -6136,7 +6136,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Paste and go
       </message>
       <message name="IDS_IOS_TOOLS_MENU_PRICE_TRACKING" desc="The iOS menu item for Price Notifications" meaning="[Length: 16em] [iOS only].">
-        Track Price
+        Price Tracking
       </message>
       <message name="IDS_IOS_TOOLS_MENU_QR_SCANNER" desc="The iOS menu item for opening the QR Code Scanner screen, allowing the user to scan QR code.">
         Scan QR Code
