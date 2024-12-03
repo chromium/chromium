@@ -454,13 +454,14 @@ class ChildThreadImpl::IOThreadState
 #endif
 
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override {
-    if (base::FeatureList::IsEnabled(features::kBatterySaverModeAlignWakeUps)) {
-      if (battery_saver_mode_enabled) {
+    if (battery_saver_mode_enabled) {
+      if (base::FeatureList::IsEnabled(
+              features::kBatterySaverModeAlignWakeUps)) {
         base::MessagePump::OverrideAlignWakeUpsState(true,
                                                      base::Milliseconds(32));
-      } else {
-        base::MessagePump::ResetAlignWakeUpsState();
       }
+    } else {
+      base::MessagePump::ResetAlignWakeUpsState();
     }
     main_thread_task_runner_->PostTask(
         FROM_HERE,
