@@ -328,9 +328,6 @@ void BookmarksSidePanelUI::CreateShoppingServiceHandler(
       std::make_unique<commerce::ShoppingServiceHandler>(
           std::move(page), std::move(receiver), bookmark_model,
           shopping_service, profile->GetPrefs(), tracker, nullptr, nullptr);
-  shopping_list_context_menu_controller_ =
-      std::make_unique<commerce::ShoppingListContextMenuController>(
-          bookmark_model, shopping_service, shopping_service_handler_.get());
 }
 
 void BookmarksSidePanelUI::CreatePriceTrackingHandler(
@@ -345,8 +342,11 @@ void BookmarksSidePanelUI::CreatePriceTrackingHandler(
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   price_tracking_handler_ = std::make_unique<commerce::PriceTrackingHandler>(
-      std::move(page), std::move(receiver), nullptr, shopping_service, tracker,
+      std::move(page), std::move(receiver), web_ui(), shopping_service, tracker,
       bookmark_model);
+  shopping_list_context_menu_controller_ =
+      std::make_unique<commerce::ShoppingListContextMenuController>(
+          bookmark_model, shopping_service, price_tracking_handler_.get());
 }
 
 bool BookmarksSidePanelUI::IsIncognitoModeAvailable() {

@@ -29,9 +29,9 @@ import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
 import type {SpEmptyStateElement} from '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {PriceTrackingBrowserProxy} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
+import {PriceTrackingBrowserProxyImpl} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
-import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
-import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -257,8 +257,8 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingServiceApi_: ShoppingServiceBrowserProxy =
-      ShoppingServiceBrowserProxyImpl.getInstance();
+  private priceTrackingProxy_: PriceTrackingBrowserProxy =
+      PriceTrackingBrowserProxyImpl.getInstance();
   private shoppingListenerIds_: number[] = [];
   private displayLists_: chrome.bookmarks.BookmarkTreeNode[][];
   private trackedProductInfos_: {[key: string]: BookmarkProductInfo} = {};
@@ -308,18 +308,19 @@ export class PowerBookmarksListElement extends PolymerElement {
     });
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
     this.bookmarksService_.startListening();
-    this.shoppingServiceApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
-      res.productInfos.forEach(
-          product => this.set(
-              `trackedProductInfos_.${product.bookmarkId.toString()}`,
-              product));
-    });
-    this.shoppingServiceApi_.getAllShoppingBookmarkProductInfo().then(res => {
+    this.priceTrackingProxy_.getAllPriceTrackedBookmarkProductInfo().then(
+        res => {
+          res.productInfos.forEach(
+              product => this.set(
+                  `trackedProductInfos_.${product.bookmarkId.toString()}`,
+                  product));
+        });
+    this.priceTrackingProxy_.getAllShoppingBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
           product => this.setAvailableProductInfo_(product));
     });
     this.updateShoppingCollectionFolderId_();
-    const callbackRouter = this.shoppingServiceApi_.getCallbackRouter();
+    const callbackRouter = this.priceTrackingProxy_.getCallbackRouter();
     this.shoppingListenerIds_.push(
         callbackRouter.priceTrackedForBookmark.addListener(
             (product: BookmarkProductInfo) =>
@@ -342,7 +343,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   override disconnectedCallback() {
     this.bookmarksService_.stopListening();
     this.shoppingListenerIds_.forEach(
-        id => this.shoppingServiceApi_.getCallbackRouter().removeListener(id));
+        id => this.priceTrackingProxy_.getCallbackRouter().removeListener(id));
 
     this.shownBookmarksResizeObserver_!.disconnect();
     this.shownBookmarksResizeObserver_ = undefined;
@@ -629,9 +630,10 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private updateShoppingCollectionFolderId_(): void {
-    this.shoppingServiceApi_.getShoppingCollectionBookmarkFolderId().then(res => {
-      this.shoppingCollectionFolderId_ = res.collectionId.toString();
-    });
+    this.priceTrackingProxy_.getShoppingCollectionBookmarkFolderId().then(
+        res => {
+          this.shoppingCollectionFolderId_ = res.collectionId.toString();
+        });
   }
 
   private getActiveFolderLabel_(): string {
@@ -647,7 +649,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private updateShoppingData_() {
     this.availableProductInfos_.clear();
-    this.shoppingServiceApi_.getAllShoppingBookmarkProductInfo().then(res => {
+    this.priceTrackingProxy_.getAllShoppingBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
           product => this.setAvailableProductInfo_(product));
     });

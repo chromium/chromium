@@ -139,7 +139,7 @@ void ShoppingInsightsSidePanelUI::CreatePriceTrackingHandler(
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   price_tracking_handler_ = std::make_unique<commerce::PriceTrackingHandler>(
-      std::move(page), std::move(receiver), nullptr, shopping_service, tracker,
+      std::move(page), std::move(receiver), web_ui(), shopping_service, tracker,
       bookmark_model);
 }
 

@@ -9,8 +9,8 @@ import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
-import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
-import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import type {PriceTrackingBrowserProxy} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
+import {PriceTrackingBrowserProxyImpl} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -66,8 +66,8 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
 
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingServiceApi_: ShoppingServiceBrowserProxy =
-      ShoppingServiceBrowserProxyImpl.getInstance();
+  private priceTrackingProxy_: PriceTrackingBrowserProxy =
+      PriceTrackingBrowserProxyImpl.getInstance();
   private bookmarks_: chrome.bookmarks.BookmarkTreeNode[] = [];
   private priceTracked_: boolean;
   private priceTrackingEligible_: boolean;
@@ -319,12 +319,12 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
           this.dispatchDisabledFeatureEvent_();
         } else {
           if (this.priceTracked_) {
-            this.shoppingServiceApi_.untrackPriceForBookmark(
+            this.priceTrackingProxy_.untrackPriceForBookmark(
                 BigInt(this.bookmarks_[0]!.id));
             chrome.metricsPrivate.recordUserAction(
                 'Commerce.PriceTracking.SidePanel.Untrack.ContextMenu');
           } else {
-            this.shoppingServiceApi_.trackPriceForBookmark(
+            this.priceTrackingProxy_.trackPriceForBookmark(
                 BigInt(this.bookmarks_[0]!.id));
             chrome.metricsPrivate.recordUserAction(
                 'Commerce.PriceTracking.SidePanel.Track.ContextMenu');
