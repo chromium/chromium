@@ -610,8 +610,6 @@ static_library("browser") {
     "infobars/infobar_responder.h",
     "infobars/simple_alert_infobar_creator.cc",
     "infobars/simple_alert_infobar_creator.h",
-    "internal_auth.cc",
-    "internal_auth.h",
     "interstitials/chrome_settings_page_helper.cc",
     "interstitials/chrome_settings_page_helper.h",
     "interstitials/enterprise_util.cc",
