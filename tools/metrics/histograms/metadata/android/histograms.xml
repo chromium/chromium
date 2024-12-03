@@ -6041,6 +6041,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.GeolocationRetained.Granted"
+    enum="BooleanGranted" expires_after="2025-06-30">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether geolocation permission was granted by the embedded app if
+    and only if the app also decided to persist the decision.
+
+    This histogram is emitted when the app calls the result callback for the
+    permission prompt with a true value for the retain parameter.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.GeolocationRetained.ResponseTime" units="ms"
+    expires_after="2025-06-30">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the response time from the embedding app to a
+    onGeoLocationPermissionShowPrompt callback on responses the app decides to
+    retain the value.
+
+    This metric will help us determine if apps are likely responding based on
+    internal logic or if they are showing a UI prompt to the user, as the latter
+    will be reflected in longer response times. Since geo-location requires an
+    Android permission, we might see two peaks in this histogram for apps that
+    only show the Android permission prompt. The aim of this analysis is to
+    determine the impact of potentially removing the retain feature.
+
+    This histogram is emitted when the app calls the result callback for the
+    permission prompt if the retain value is true.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Gfx.HardwareDrawType"
     enum="WebViewDrawAndSubmissionType" expires_after="2025-05-11">
   <owner>vasilyt@chromium.org</owner>
@@ -6593,6 +6627,8 @@ chromium-metrics-reviews@google.com.
 
     This histogram is emitted when the app calls the result callback for the
     permission prompt.
+
+    Note: This histogram was not recorded correctly prior to M133.
   </summary>
 </histogram>
 
