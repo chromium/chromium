@@ -24910,6 +24910,43 @@
             ]
         }
     ],
+    "V8WasmDeoptCallIndirectInlining": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DeoptAndInlining",
+                    "enable_features": [
+                        "WebAssemblyDeopt",
+                        "WebAssemblyInliningCallIndirect"
+                    ]
+                },
+                {
+                    "name": "InliningOnly",
+                    "enable_features": [
+                        "WebAssemblyInliningCallIndirect"
+                    ],
+                    "disable_features": [
+                        "WebAssemblyDeopt"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "WebAssemblyDeopt",
+                        "WebAssemblyInliningCallIndirect"
+                    ]
+                }
+            ]
+        }
+    ],
     "VSyncAlignedPresent": [
         {
             "platforms": [
@@ -25307,58 +25344,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UniversalInstallDefaultUrl"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebAssemblyDeopt": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebAssemblyDeopt"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "WebAssemblyDeopt"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebAssemblyInliningCallIndirect": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebAssemblyInliningCallIndirect"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "WebAssemblyInliningCallIndirect"
                     ]
                 }
             ]
