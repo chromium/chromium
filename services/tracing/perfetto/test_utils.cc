@@ -370,8 +370,7 @@ MockProducerHost::MockProducerHost(
     PerfettoService* service,
     MockProducerClient* producer_client,
     base::OnceClosure datasource_registered_callback)
-    : ProducerHost(service->perfetto_task_runner()),
-      producer_name_(producer_name),
+    : producer_name_(producer_name),
       datasource_registered_callback_(
           std::move(datasource_registered_callback)) {
   mojo::PendingRemote<mojom::ProducerClient> client;

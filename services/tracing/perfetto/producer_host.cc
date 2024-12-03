@@ -13,7 +13,6 @@
 
 #include "base/functional/bind.h"
 #include "base/process/process.h"
-#include "base/tracing/perfetto_task_runner.h"
 #include "build/build_config.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
@@ -25,8 +24,7 @@
 
 namespace tracing {
 
-ProducerHost::ProducerHost(base::tracing::PerfettoTaskRunner* task_runner)
-    : task_runner_(task_runner) {}
+ProducerHost::ProducerHost() = default;
 
 ProducerHost::~ProducerHost() {
   // Manually reset to prevent any callbacks from the ProducerEndpoint

@@ -81,10 +81,6 @@ class PerfettoService : public mojom::PerfettoService {
     return active_service_pids_initialized_;
   }
 
-  base::tracing::PerfettoTaskRunner* perfetto_task_runner() {
-    return &perfetto_task_runner_;
-  }
-
  private:
   void BindOnSequence(mojo::PendingReceiver<mojom::PerfettoService> receiver);
   void CreateServiceOnSequence();
