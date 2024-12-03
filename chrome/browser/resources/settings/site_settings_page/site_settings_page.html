@@ -22,11 +22,6 @@
           </cr-button>
         </settings-safety-hub-module>
       </template>
-      <!-- TODO(crbug.com/40277421): Remove after SafetyHub launched. -->
-      <template is="dom-if" if="[[!enableSafetyHub_]]">
-        <settings-unused-site-permissions>
-        </settings-unused-site-permissions>
-      </template>
     </template>
     <div class="cr-row first">
       <h2>$i18n{siteSettingsRecentPermissionsSectionLabel}</h2>

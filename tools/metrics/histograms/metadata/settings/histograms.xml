@@ -661,17 +661,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.SafetyCheck.UnusedSitePermissionsListCount"
-    units="suggestions" expires_after="2024-11-03">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    The number of suggestions of unused site permissions to revoke, recorded
-    when the list of sites with revoked permissions is initialized when the user
-    opens the SafetyCheck unused site permissions module.
-  </summary>
-</histogram>
-
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsMigrationFail"
     units="type" expires_after="2025-03-30">
   <owner>alimariam@google.com</owner>

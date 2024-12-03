@@ -17,7 +17,6 @@ import '../controls/settings_toggle_button.js';
 import '../privacy_icons.html.js';
 import '../settings_shared.css.js';
 import './recent_site_permissions.js';
-import './unused_site_permissions.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';

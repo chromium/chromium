@@ -1485,12 +1485,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
           "runMochaSuite('UnusedSitePermissionsReview')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
-                       UnusedSitePermissionsReviewSafetyHubDisabled) {
-  RunTest("settings/site_settings_page_test.js",
-          "runMochaSuite('UnusedSitePermissionsReviewSafetyHubDisabled')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SafetyHubDisabled) {
   RunTest("settings/site_settings_page_test.js",
           "runMochaSuite('SafetyHubDisabled')");
@@ -1518,13 +1512,3 @@ IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, MetricsBrowser) {
   RunTest("settings/translate_page_metrics_test_browser.js", "mocha.run()");
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-class SettingsUnusedSitePermissionsTest : public SettingsBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      content_settings::features::kSafetyCheckUnusedSitePermissions};
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsUnusedSitePermissionsTest, All) {
-  RunTest("settings/unused_site_permissions_test.js", "mocha.run()");
-}

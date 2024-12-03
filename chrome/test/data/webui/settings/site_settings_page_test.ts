@@ -389,69 +389,6 @@ suite('UnusedSitePermissionsReview', function() {
   });
 });
 
-// TODO(crbug.com/40267370): Remove after crbug/1443466 launched.
-suite('UnusedSitePermissionsReviewSafetyHubDisabled', function() {
-  let page: SettingsSiteSettingsPageElement;
-  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: false,
-    });
-  });
-
-  setup(async function() {
-    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    await flushTasks();
-  });
-
-  test('VisibilityWithChangingPermissionList', async function() {
-    // The element is not visible when there is nothing to review.
-    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
-
-    // The element becomes visible if the list of permissions is no longer
-    // empty.
-    webUIListenerCallback(
-        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
-        unusedSitePermissionMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
-
-    // Once visible, it remains visible regardless of list length.
-    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
-
-    webUIListenerCallback(
-        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
-        unusedSitePermissionMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
-  });
-
-  test('InvisibleWhenGuestMode', async function() {
-    loadTimeData.overrideValues({
-      isGuest: true,
-    });
-
-    // The element is not visible since it is guest mode.
-    webUIListenerCallback(
-        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
-        unusedSitePermissionMockData);
-    await flushTasks();
-    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
-
-    // Reset loadTimeData values.
-    loadTimeData.overrideValues({
-      isGuest: false,
-    });
-  });
-});
-
 // TODO(crbug.com/40267370): Remove after SafetyHub is launched.
 suite('SafetyHubDisabled', function() {
   let page: SettingsSiteSettingsPageElement;

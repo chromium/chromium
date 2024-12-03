@@ -14,5 +14,3 @@ per-file site_settings_page_test.ts=rainhard@chromium.org,sideyilmaz@chromium.or
 per-file test_privacy_page_browser_proxy.ts=rainhard@chromium.org,sideyilmaz@chromium.org
 per-file test_safety_hub_browser_proxy.ts=sideyilmaz@chromium.org,rainhard@chromium.org
 per-file test_site_settings_prefs_browser_proxy.ts=rainhard@chromium.org,sideyilmaz@chromium.org
-per-file unused_site_permissions_interactive_ui_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org
-per-file unused_site_permissions_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org

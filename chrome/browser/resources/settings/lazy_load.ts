@@ -259,7 +259,6 @@ export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
 export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';
 export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';
 export {SettingsSiteSettingsPageElement} from './site_settings_page/site_settings_page.js';
-export {SettingsUnusedSitePermissionsElement} from './site_settings_page/unused_site_permissions.js';
 // <if expr="not chromeos_ash">
 export {SettingsSystemPageElement} from './system_page/system_page.js';
 export {SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';

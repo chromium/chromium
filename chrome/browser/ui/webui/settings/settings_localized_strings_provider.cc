@@ -2245,8 +2245,6 @@ void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_ALLOW_AGAIN_ARIA_LABEL},
       {"safetyCheckUnusedSitePermissionsAllowAgainLabel",
        IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_ALLOW_AGAIN_LABEL},
-      {"safetyCheckUnusedSitePermissionsDoneLabel",
-       IDS_SETTINGS_SAFETY_CHECK_SITE_PERMISSIONS_REVIEW_DONE_LABEL},
       {"safetyCheckUnusedSitePermissionsGotItLabel", IDS_SETTINGS_GOT_IT},
       {"safetyCheckUnusedSitePermissionsRemovedOnePermissionLabel",
        IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_REMOVED_ONE_PERMISSION_LABEL},

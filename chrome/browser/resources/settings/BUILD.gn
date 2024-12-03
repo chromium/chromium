@@ -198,7 +198,6 @@ build_webui("build") {
     "site_settings_page/recent_site_permissions.ts",
     "site_settings_page/site_settings_list.ts",
     "site_settings_page/site_settings_page.ts",
-    "site_settings_page/unused_site_permissions.ts",
     "site_settings/smart_card_readers_page.ts",
     "site_settings/smart_card_reader_origin_entry.ts",
     "site_settings/pdf_documents.ts",

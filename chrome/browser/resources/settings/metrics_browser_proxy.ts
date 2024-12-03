@@ -478,20 +478,6 @@ export interface MetricsBrowserProxy {
   recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean): void;
 
   /**
-   * Helper function that calls recordHistogram for
-   * Settings.SafetyCheck.UnusedSitePermissionsListCount histogram.
-   */
-  recordSafetyCheckUnusedSitePermissionsListCountHistogram(suggestions: number):
-      void;
-
-  /**
-   * Helper function that calls recordHistogram for the
-   * Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions histogram
-   */
-  recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
-      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions): void;
-
-  /**
    * Helper function that calls recordBooleanHistogram for the
    * Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown histogram
    */
@@ -715,24 +701,6 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.send('metricsHandler:recordBooleanHistogram', [
       'Settings.SafetyCheck.NotificationsModuleEntryPointShown',
       visible,
-    ]);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsListCountHistogram(suggestions:
-                                                               number) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.UnusedSitePermissionsListCount',
-      suggestions,
-      99 /*max value for length of revoked permissions list*/,
-    ]);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
-      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions',
-      interaction,
-      SafetyCheckUnusedSitePermissionsModuleInteractions.MAX_VALUE,
     ]);
   }
 
