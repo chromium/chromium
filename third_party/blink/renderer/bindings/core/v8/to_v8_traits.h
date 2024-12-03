@@ -222,9 +222,7 @@ struct ToV8Traits<IDLObject> {
       const ScriptValue& script_value) {
     DCHECK(!script_value.IsEmpty());
     v8::Local<v8::Value> v8_value = script_value.V8ValueFor(script_state);
-    // TODO(crbug.com/1185033): Change this if-branch to DCHECK.
-    if (!v8_value->IsObject())
-      return v8::Undefined(script_state->GetIsolate());
+    DCHECK(v8_value->IsObject());
     return v8_value;
   }
 };
@@ -595,10 +593,7 @@ struct ToV8Traits<IDLNullable<IDLObject>> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
       const ScriptValue& script_value) {
-    // TODO(crbug.com/1183637): Remove this if-branch.
-    if (script_value.IsEmpty())
-      return v8::Null(script_state->GetIsolate());
-
+    DCHECK(!script_value.IsEmpty());
     v8::Local<v8::Value> v8_value = script_value.V8ValueFor(script_state);
     DCHECK(v8_value->IsNull() || v8_value->IsObject());
     return v8_value;
@@ -803,10 +798,7 @@ struct ToV8Traits<
     std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  const T* value) {
-    // TODO(crbug.com/1185018): nullptr shouldn't be passed.  This should be
-    // DCHECK(value);
-    if (!value)
-      return v8::Null(script_state->GetIsolate());
+    DCHECK(value);
     return value->ToV8(script_state);
   }
 };
