@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div contenteditable id="target"></div>
+    <table>
+      <tbody>
+        <tr>
+          <td>hello</td>
+          <td>world</td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <script>
+    "use strict";
+    function readWriteTest() {
+      const selection = document.getSelection();
+      const range = document.createRange();
+      const table = document.querySelector("table");
+      const firstCell = table.querySelector("td");
+      const helloTextNode = firstCell.firstChild;
+      range.setStart(helloTextNode, 0);
+      range.setEndAfter(table);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand("copy");
+      const target = document.getElementById("target");
+      target.focus();
+      document.execCommand("paste");
+      const expectedHTML =
+        "<table><tbody><tr><td>hello</td><td>world</td></tr></tbody></table>";
+      assert_equals(
+        target.innerHTML.trim(),
+        expectedHTML,
+        "The pasted HTML content should match the expected HTML content"
+      );
+    }
+    test(() => {
+      readWriteTest();
+    }, "Testing extended table selection");
+  </script>
+</html>

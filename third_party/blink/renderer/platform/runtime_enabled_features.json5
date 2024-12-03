@@ -2344,6 +2344,12 @@
       name: "ImportMapIntegrity",
       status: "stable"
     },
+    // This ensures that table tag is included in extended selection.
+    // https://crbug.com/40833812
+    {
+      name: "IncludeTableTagInExtendedSelection",
+      status: "stable",
+    },
     {
       name: "IncomingCallNotifications",
     },
