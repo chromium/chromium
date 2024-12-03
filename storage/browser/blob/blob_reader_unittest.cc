@@ -1202,8 +1202,7 @@ TEST_F(BlobReaderTest, ReadFromIncompleteBlob) {
       BlobReader::Status::IO_PENDING,
       reader_->CalculateSize(base::BindOnce(&SetValue<int>, &size_result)));
   EXPECT_FALSE(reader_->IsInMemory());
-  future_data.Populate(base::as_bytes(base::make_span(kData.data(), kDataSize)),
-                       0);
+  future_data.Populate(base::as_bytes(base::span(kData.data(), kDataSize)), 0);
   context_.NotifyTransportComplete(kUuid);
   base::RunLoop().RunUntilIdle();
   CheckSizeCalculatedAsynchronously(kDataSize, size_result);
