@@ -35,7 +35,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /**
@@ -185,8 +185,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
                 new SpanApplier.SpanInfo(
                         "<link>",
                         "</link>",
-                        new NoUnderlineClickableSpan(
-                                mContext, this::onLinkToAndroidSettingsClicked)));
+                        new ChromeClickableSpan(mContext, this::onLinkToAndroidSettingsClicked)));
     }
 
     private void onLinkToAndroidSettingsClicked(View unusedView) {

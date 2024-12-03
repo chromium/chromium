@@ -15,7 +15,7 @@ import org.chromium.components.payments.R;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -89,8 +89,8 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
         String optOut =
                 context.getString(
                         R.string.secure_payment_confirmation_opt_out_label, deviceString, rpId);
-        NoUnderlineClickableSpan requestToDeleteSpan =
-                new NoUnderlineClickableSpan(context, (widget) -> optOutCallback.run());
+        ChromeClickableSpan requestToDeleteSpan =
+                new ChromeClickableSpan(context, (widget) -> optOutCallback.run());
         return SpanApplier.applySpans(
                 optOut, new SpanInfo("BEGIN_LINK", "END_LINK", requestToDeleteSpan));
     }

@@ -15,7 +15,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Settings fragment for privacy sandbox settings. */
@@ -38,8 +38,7 @@ public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
+                                new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
         // Enable the options menu to be able to clear it.
         setHasOptionsMenu(true);
     }

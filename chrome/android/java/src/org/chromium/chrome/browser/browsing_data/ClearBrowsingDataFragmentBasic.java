@@ -29,7 +29,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -163,13 +163,13 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
                 new SpanInfo(
                         "<link1>",
                         "</link1>",
-                        new NoUnderlineClickableSpan(
+                        new ChromeClickableSpan(
                                 getContext(),
                                 createOpenMyActivityCallback(/* openSearchHistory= */ true))),
                 new SpanInfo(
                         "<link2>",
                         "</link2>",
-                        new NoUnderlineClickableSpan(
+                        new ChromeClickableSpan(
                                 getContext(),
                                 createOpenMyActivityCallback(/* openSearchHistory= */ false))));
     }
@@ -180,7 +180,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
                 new SpanInfo(
                         "<link1>",
                         "</link1>",
-                        new NoUnderlineClickableSpan(
+                        new ChromeClickableSpan(
                                 getContext(),
                                 createOpenMyActivityCallback(/* openSearchHistory= */ false))));
     }

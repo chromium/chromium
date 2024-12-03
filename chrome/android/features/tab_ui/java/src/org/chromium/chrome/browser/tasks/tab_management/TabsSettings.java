@@ -29,7 +29,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Fragment for tab related configurations to Chrome. */
@@ -155,8 +155,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
+                                new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
     }
 
     @VisibleForTesting

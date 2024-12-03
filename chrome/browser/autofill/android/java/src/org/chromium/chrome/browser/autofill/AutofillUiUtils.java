@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.LegalMessageLine;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.url.GURL;
 
@@ -538,7 +538,7 @@ public class AutofillUiUtils {
                             Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 } else {
                     text.setSpan(
-                            new NoUnderlineClickableSpan(
+                            new ChromeClickableSpan(
                                     context, view -> onClickCallback.onResult(link.url)),
                             link.start,
                             link.end,
@@ -554,11 +554,12 @@ public class AutofillUiUtils {
     }
 
     /**
-     * Returns a {@link SpannableString} containing a {@link NoUnderlineClickableSpan} for the text
+     * Returns a {@link SpannableString} containing a {@link ChromeClickableSpan} for the text
      * contained within the tags <link1></link1>.
+     *
      * @param context The context required to fetch the resources.
      * @param stringResourceId The resource id of the string on which the clickable span should be
-     *         applied.
+     *     applied.
      * @param url The url that should be opened when the clickable span is clicked.
      * @param onClickCallback The callback for the link clicks.
      * @return {@link SpannableString} that can be directly set on the TextView.
@@ -570,8 +571,7 @@ public class AutofillUiUtils {
                 new SpanApplier.SpanInfo(
                         "<link1>",
                         "</link1>",
-                        new NoUnderlineClickableSpan(
-                                context, view -> onClickCallback.onResult(url))));
+                        new ChromeClickableSpan(context, view -> onClickCallback.onResult(url))));
     }
 
     /**

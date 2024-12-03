@@ -18,8 +18,8 @@ import android.widget.TextView;
 
 import org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.ViewDelegate;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.EmptyTextWatcher;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -148,7 +148,7 @@ public class OtpVerificationDialogView extends RelativeLayout {
                 new SpanInfo(
                         "<link>",
                         "</link>",
-                        new NoUnderlineClickableSpan(
+                        new ChromeClickableSpan(
                                 context,
                                 textView -> {
                                     viewDelegate.onResendLinkClicked();

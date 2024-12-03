@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPayme
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
@@ -271,7 +271,7 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
                 new SpanApplier.SpanInfo(
                         "<link1>",
                         "</link1>",
-                        new NoUnderlineClickableSpan(context, unused -> callback.run())));
+                        new ChromeClickableSpan(context, unused -> callback.run())));
     }
 
     private static void setShowPaymentMethodsSettingsCallback(View view, Runnable callback) {

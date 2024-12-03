@@ -82,7 +82,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
@@ -1288,8 +1288,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private SpannableString getStorageAccessSummary() {
         final String storageAccessRawString =
                 getContext().getString(R.string.website_settings_storage_access_page_description);
-        final NoUnderlineClickableSpan clickableSpan =
-                new NoUnderlineClickableSpan(
+        final ChromeClickableSpan clickableSpan =
+                new ChromeClickableSpan(
                         getContext(),
                         (widget) -> {
                             getSiteSettingsDelegate()

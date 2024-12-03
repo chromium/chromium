@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -40,7 +40,7 @@ class AccountStorageNoticeView implements BottomSheetContent {
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
+                                new ChromeClickableSpan(
                                         context, unused -> settingsLinkCallback.run())));
         linkView.setText(linkText);
         linkView.setMovementMethod(LinkMovementMethod.getInstance());

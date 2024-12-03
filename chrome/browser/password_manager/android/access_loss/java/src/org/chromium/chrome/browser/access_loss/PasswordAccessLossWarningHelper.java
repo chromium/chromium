@@ -33,7 +33,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Entry-point to the access loss warning UI surface. */
@@ -191,7 +191,7 @@ public class PasswordAccessLossWarningHelper {
         return SpanApplier.applySpans(
                 sheetText,
                 new SpanApplier.SpanInfo(
-                        "<link>", "</link>", new NoUnderlineClickableSpan(mActivity, callback)));
+                        "<link>", "</link>", new ChromeClickableSpan(mActivity, callback)));
     }
 
     private BottomSheetObserver createBottomSheetObserver(

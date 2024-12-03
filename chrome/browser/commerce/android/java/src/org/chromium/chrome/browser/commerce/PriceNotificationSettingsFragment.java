@@ -32,7 +32,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Preferences for features related to price tracking. */
@@ -146,7 +146,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
                 new SpanApplier.SpanInfo(
                         "<link>",
                         "</link>",
-                        new NoUnderlineClickableSpan(getContext(), (view) -> launchAppSettings()));
+                        new ChromeClickableSpan(getContext(), (view) -> launchAppSettings()));
         SpanApplier.applySpans(settingsFullText, info);
 
         mMobileNotificationsText.setSummary(SpanApplier.applySpans(settingsFullText, info));

@@ -16,8 +16,8 @@ import org.chromium.base.Callback;
 import org.chromium.ui.R;
 import org.chromium.ui.util.AttrUtils;
 
-/** Shows a blue clickable link with underlines turned off. */
-public class NoUnderlineClickableSpan extends ClickableSpan {
+/** Shows a blue clickable link with underlines turned on. */
+public class ChromeClickableSpan extends ClickableSpan {
     private final int mColor;
     private final Callback<View> mOnClick;
 
@@ -25,7 +25,7 @@ public class NoUnderlineClickableSpan extends ClickableSpan {
      * @param context The {@link Context} used for accessing colors.
      * @param onClickCallback The callback notified when the span is clicked.
      */
-    public NoUnderlineClickableSpan(Context context, Callback<View> onClickCallback) {
+    public ChromeClickableSpan(Context context, Callback<View> onClickCallback) {
         mColor =
                 AttrUtils.resolveColor(
                         context.getTheme(),
@@ -39,7 +39,7 @@ public class NoUnderlineClickableSpan extends ClickableSpan {
      * @param colorResId The {@link ColorRes} of this clickable span.
      * @param onClickCallback The callback notified when the span is clicked.
      */
-    public NoUnderlineClickableSpan(
+    public ChromeClickableSpan(
             Context context, @ColorRes int colorResId, Callback<View> onClickCallback) {
         mColor = context.getColor(colorResId);
         mOnClick = onClickCallback;
@@ -50,11 +50,10 @@ public class NoUnderlineClickableSpan extends ClickableSpan {
         mOnClick.onResult(view);
     }
 
-    // Disable underline on the link text.
+    // Enable underline on the link text.
     @Override
     public void updateDrawState(TextPaint textPaint) {
         super.updateDrawState(textPaint);
-        textPaint.setUnderlineText(false);
         textPaint.setColor(mColor);
     }
 }

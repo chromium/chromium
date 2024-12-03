@@ -14,7 +14,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetProperties.PageInfoState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Class responsible for binding the model and the view. */
@@ -87,8 +87,8 @@ class PageInfoBottomSheetViewBinder {
         } else if (PageInfoBottomSheetProperties.ON_LEARN_MORE_CLICKED == propertyKey) {
             Callback<View> onLearnMoreClickedCallback =
                     model.get(PageInfoBottomSheetProperties.ON_LEARN_MORE_CLICKED);
-            NoUnderlineClickableSpan settingsLink =
-                    new NoUnderlineClickableSpan(view.getContext(), onLearnMoreClickedCallback);
+            ChromeClickableSpan settingsLink =
+                    new ChromeClickableSpan(view.getContext(), onLearnMoreClickedCallback);
 
             view.mLearnMoreText.setText(
                     SpanApplier.applySpans(

@@ -25,7 +25,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -167,8 +167,8 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
     }
 
     void setOnboardingNotice(String notice, GURL learnMoreUrl) {
-        NoUnderlineClickableSpan settingsLink =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan settingsLink =
+                new ChromeClickableSpan(
                         mContext,
                         v -> {
                             mDelegate.openUrl(learnMoreUrl);

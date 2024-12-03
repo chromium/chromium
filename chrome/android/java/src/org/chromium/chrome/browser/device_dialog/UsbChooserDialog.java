@@ -20,7 +20,7 @@ import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.util.ColorUtils;
@@ -91,7 +91,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
                         new SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
+                                new ChromeClickableSpan(
                                         activity,
                                         (view) -> {
                                             if (mNativeUsbChooserDialogPtr == 0) return;

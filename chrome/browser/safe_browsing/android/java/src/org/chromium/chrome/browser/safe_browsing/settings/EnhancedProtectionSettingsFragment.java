@@ -9,7 +9,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Fragment containing enhanced protection settings. */
@@ -35,7 +35,7 @@ public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFrag
                                 new SpanApplier.SpanInfo(
                                         "<link>",
                                         "</link>",
-                                        new NoUnderlineClickableSpan(
+                                        new ChromeClickableSpan(
                                                 getContext(), this::onLearnMoreClicked))));
     }
 

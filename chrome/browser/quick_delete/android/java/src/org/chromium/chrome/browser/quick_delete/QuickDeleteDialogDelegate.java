@@ -31,7 +31,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -219,11 +219,11 @@ class QuickDeleteDialogDelegate {
                         new SpanApplier.SpanInfo(
                                 "<link1>",
                                 "</link1>",
-                                new NoUnderlineClickableSpan(mContext, openHistoryCallback)),
+                                new ChromeClickableSpan(mContext, openHistoryCallback)),
                         new SpanApplier.SpanInfo(
                                 "<link2>",
                                 "</link2>",
-                                new NoUnderlineClickableSpan(mContext, openActivityCallback)));
+                                new ChromeClickableSpan(mContext, openActivityCallback)));
         text.setText(searchHistoryText);
         text.setMovementMethod(LinkMovementMethod.getInstance());
     }

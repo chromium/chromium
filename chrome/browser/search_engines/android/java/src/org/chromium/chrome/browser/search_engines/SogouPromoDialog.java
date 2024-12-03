@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.widget.PromoDialog;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -64,7 +64,7 @@ public class SogouPromoDialog extends PromoDialog {
             @Nullable Callback<Boolean> onDismissed) {
         super(activity);
         mSpan =
-                new NoUnderlineClickableSpan(
+                new ChromeClickableSpan(
                         activity,
                         (widget) -> {
                             mChoice = UserChoice.SETTINGS;
