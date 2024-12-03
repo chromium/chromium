@@ -192,7 +192,7 @@ bool PassageEmbeddingsServiceController::EmbedderReady() {
 void PassageEmbeddingsServiceController::ResetRemotes() {
   service_remote_.reset();
   embedder_remote_.reset();
-  cpu_logger_.reset();
+  cpu_logger_.StopLoggingAfterNextUpdate();
 }
 
 void PassageEmbeddingsServiceController::OnDisconnected() {

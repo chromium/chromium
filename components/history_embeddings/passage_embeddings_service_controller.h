@@ -5,6 +5,7 @@
 #define COMPONENTS_HISTORY_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
 
 #include "base/types/optional_ref.h"
+#include "components/history_embeddings/cpu_histogram_logger.h"
 #include "components/history_embeddings/embedder.h"
 #include "components/history_embeddings/proto/passage_embeddings_model_metadata.pb.h"
 #include "components/optimization_guide/core/model_info.h"
@@ -12,8 +13,6 @@
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
 namespace history_embeddings {
-
-class CpuHistogramLogger;
 
 inline constexpr char kModelInfoMetricName[] =
     "History.Embeddings.Embedder.ModelInfoStatus";
@@ -83,7 +82,7 @@ class PassageEmbeddingsServiceController {
 
   // When the embeddings service is running, the logger will periodically sample
   // and log the CPU time used by the service process.
-  std::unique_ptr<CpuHistogramLogger> cpu_logger_;
+  CpuHistogramLogger cpu_logger_;
 
  private:
   // Called when the model files on disks are opened and ready to be sent to

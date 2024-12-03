@@ -1976,14 +1976,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Embeddings.Embedder.CpuUsage" units="1/100 %"
+<histogram name="History.Embeddings.Embedder.CpuUsage2" units="1/100 %"
     expires_after="2025-05-04">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
     Periodically samples CPU utilization of the embedder process. A sample is
-    taken every 2 minutes. The utilization is in 0-100% range per CPU, which is
-    then summed up and multiplied by 100.
+    taken every 30 seconds while the embedder service is running. The
+    utilization is in 0-100% range per CPU, which is then summed up and
+    multiplied by 100.
   </summary>
 </histogram>
 
