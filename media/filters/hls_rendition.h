@@ -26,10 +26,9 @@ class ManifestDemuxerEngineHost;
 class MEDIA_EXPORT HlsRenditionHost : public HlsNetworkAccess {
  public:
   // Fetch a new playlist for live content at the requested URI.
-  virtual void UpdateRenditionManifestUri(
-      std::string role,
-      GURL uri,
-      base::OnceCallback<void(bool)> cb) = 0;
+  virtual void UpdateRenditionManifestUri(std::string role,
+                                          GURL uri,
+                                          HlsDemuxerStatusCallback cb) = 0;
 
   // Used to set network speed (bits per second) for the adaptation selector.
   virtual void UpdateNetworkSpeed(uint64_t bps) = 0;
@@ -38,6 +37,9 @@ class MEDIA_EXPORT HlsRenditionHost : public HlsNetworkAccess {
   // When all renditions are ended, the rendition host can notify the engine
   // host as well.
   virtual void SetEndOfStream(bool ended) = 0;
+
+  // Quits demuxing because of an unrecoverable error.
+  virtual void Quit(HlsDemuxerStatus status) = 0;
 };
 
 class MEDIA_EXPORT HlsRendition {

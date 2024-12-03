@@ -3858,6 +3858,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.HLS.InitializationError" enum="HlsDemuxerStatus"
+    expires_after="2025-03-23">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs any error which occurs during initialization of the hls demuxer.
+  </summary>
+</histogram>
+
 <histogram name="Media.HLS.InvalidRenditions" units="count"
     expires_after="2024-12-31">
   <owner>tmathmeyer@chromium.org</owner>
@@ -3887,6 +3896,26 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs whether HLS playback uses a multivariant (as opposed to plain media)
     playlist. Recorded once per player.
+  </summary>
+</histogram>
+
+<histogram name="Media.HLS.ParserError" units="sparse"
+    expires_after="2025-03-23">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs any error which is caused by manifest parsing during either demuxer
+    initialization or mid-playback.
+  </summary>
+</histogram>
+
+<histogram name="Media.HLS.PlaybackError" enum="HlsDemuxerStatus"
+    expires_after="2025-03-23">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs any error which occurs during playback but NOT during initialization of
+    the hls demuxer.
   </summary>
 </histogram>
 

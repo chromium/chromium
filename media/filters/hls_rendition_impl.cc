@@ -58,7 +58,7 @@ void HlsRenditionImpl::CheckState(
     // non-real-time playback? Anything above 1 would hit the end and constantly
     // be in a state of demuxer underflow, and anything slower than 1 would
     // eventually have so much data buffered that it would OOM.
-    engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+    rendition_host_->Quit(HlsDemuxerStatus::Codes::kInvalidLivePlaybackRate);
     return;
   }
 
@@ -110,6 +110,14 @@ void HlsRenditionImpl::CheckState(
 
   // Nothing loaded, nothing left, and not live. Time to stop.
   if (segments_->Exhausted() && duration_.has_value()) {
+    if (!has_ever_played_ && ranges.empty()) {
+      // If we've never loaded any content, and never played anything, then
+      // we can only get into this state if the media content is super messed
+      // up and chunk demuxer loads a bunch of it without ever initializing.
+      // This is an error.
+      rendition_host_->Quit(HlsDemuxerStatus::Codes::kNoDataEverAppended);
+      return;
+    }
     if (!set_stream_end_) {
       set_stream_end_ = true;
       rendition_host_->SetEndOfStream(true);
@@ -134,8 +142,8 @@ void HlsRenditionImpl::CheckState(
   // If media time comes before the last loaded range, then a seek probably
   // failed, and we should raise an error.
   if (std::get<0>(ranges.back()) > media_time) {
-    PipelineStatus error = DEMUXER_ERROR_COULD_NOT_PARSE;
-    engine_host_->OnError(std::move(error)
+    HlsDemuxerStatus error = HlsDemuxerStatus::Codes::kInvalidLoadedRanges;
+    rendition_host_->Quit(std::move(error)
                               .WithData("timestamp", media_time)
                               .WithData("range_start", ranges.back().first)
                               .WithData("range_end", ranges.back().second));
@@ -214,7 +222,7 @@ void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
 
 void HlsRenditionImpl::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
                                         base::TimeDelta delay,
-                                        bool success) {
+                                        HlsDemuxerStatus success) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::FetchManifestUpdates", this);
   auto update_duration = base::TimeTicks::Now() - last_download_time_;
   if (update_duration > delay) {
@@ -390,8 +398,9 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
     // Drop |cb| here, and let the abort handler pick up the pieces.
     // TODO(crbug.com/40057824): If a seek abort interrupts us, we want to not
     // bubble the error upwards.
-    return engine_host_->OnError(
-        {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(result).error()});
+    rendition_host_->Quit(HlsDemuxerStatusTraits::FromReadStatus(
+        std::move(result).error().AddHere()));
+    return;
   }
 
   std::unique_ptr<HlsDataSourceStream> stream = std::move(result).value();
@@ -421,12 +430,14 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
 
           auto maybe_iv = enc_data->GetIVStr(segment->GetMediaSequenceNumber());
           if (!maybe_iv.has_value()) {
-            engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+            rendition_host_->Quit(
+                HlsDemuxerStatus::Codes::kInsufficientCryptoMetadata);
             return;
           }
           auto iv = std::move(maybe_iv).value();
           if (!decryptor_->Init(enc_data->GetKey(), mode, iv)) {
-            engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+            rendition_host_->Quit(
+                HlsDemuxerStatus::Codes::kFailedToDecryptSegment);
             return;
           }
         }
@@ -434,7 +445,9 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
         // Decrypt the ciphertext, and re-assign the data span to point to the
         // cleartext memory in `plaintext`.
         if (!decryptor_->Decrypt(stream_data, &plaintext)) {
-          return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+          rendition_host_->Quit(
+              HlsDemuxerStatus::Codes::kFailedToDecryptSegment);
+          return;
         }
         stream_data = base::span(plaintext.data(), plaintext.size());
         if (plaintext.size() == 0) {
@@ -457,7 +470,8 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
 
   if (!engine_host_->AppendAndParseData(role_, parse_end + base::Seconds(1),
                                         &parse_offset_, stream_data)) {
-    return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+    rendition_host_->Quit(HlsDemuxerStatus::Codes::kCouldNotAppendData);
+    return;
   }
 
   last_discontinuity_sequence_num_ = segment->GetDiscontinuitySequenceNumber();

@@ -12247,6 +12247,28 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="kRefreshTab">Refreshed the tab.</int>
 </enum>
 
+<enum name="HlsDemuxerStatus">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kNoSegmentData"/>
+  <int value="2" label="kInsufficientCryptoMetadata"/>
+  <int value="3" label="kFailedToDecryptSegment"/>
+  <int value="4" label="kUnsupportedCryptoMethod"/>
+  <int value="5" label="kUnsupportedContainer"/>
+  <int value="6" label="kRecursiveMultivariantPlaylists"/>
+  <int value="7" label="kNoRenditions"/>
+  <int value="8" label="kInvalidManifest"/>
+  <int value="9" label="kNetworkReadError"/>
+  <int value="10" label="kNetworkReadAborted"/>
+  <int value="11" label="kNetworkReadStopped"/>
+  <int value="12" label="kUpdateRequiresMediaPlaylist"/>
+  <int value="13" label="kInvalidMimeType"/>
+  <int value="14" label="kMixedVodLiveRenditions"/>
+  <int value="15" label="kInvalidLivePlaybackRate"/>
+  <int value="16" label="kInvalidLoadedRanges"/>
+  <int value="17" label="kCouldNotAppendData"/>
+  <int value="18" label="kNoDataEverAppended"/>
+</enum>
+
 <enum name="HpsTurnOnResult">
   <int value="0" label="Success"/>
   <int value="1" label="Version Mismatch, will cause an update"/>
