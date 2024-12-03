@@ -12,9 +12,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -25,6 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -269,10 +272,15 @@ public class TabArchiver implements TabWindowManager.Observer {
         ThreadUtils.postOnUiThread(
                 mCallbackController.makeCancelable(
                         () -> {
-                            TabModel model = selector.getModel(/* isIncognito= */ false);
+                            TabGroupModelFilter regularTabGroupModelFilter =
+                                    selector.getTabGroupModelFilterProvider()
+                                            .getCurrentTabGroupModelFilter();
+                            TabModel model = regularTabGroupModelFilter.getTabModel();
                             int activeTabId = TabModelUtils.getCurrentTabId(model);
                             List<Tab> tabsToClose = new ArrayList<>();
                             List<Tab> tabsToArchive = new ArrayList<>();
+                            HashMap<Token, Boolean> groupIdToArchiveEligibilityMap =
+                                    new HashMap<>();
                             for (int i = 0; i < model.getCount(); i++) {
                                 Tab tab = model.getTabAt(i);
                                 // If there's an existing archived tab for the tab id, then we've
@@ -285,9 +293,24 @@ public class TabArchiver implements TabWindowManager.Observer {
                                                 .getTabById(tab.getId());
                                 if (archivedTab != null) {
                                     tabsToClose.add(tab);
-                                } else if (activeTabId != tab.getId()
-                                        && isTabEligibleForArchive(tab)) {
-                                    tabsToArchive.add(tab);
+                                } else if (activeTabId != tab.getId()) {
+                                    // If the tab is not part of a tab group or the flag is not
+                                    // enabled, bypass this for the original check on a single tab.
+                                    boolean isTabGroup =
+                                            ChromeFeatureList
+                                                            .sAndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs
+                                                            .isEnabled()
+                                                    && tab.getTabGroupId() != null;
+                                    boolean isTabOrGroupTabEligibleForArchive =
+                                            isTabGroup
+                                                    ? isGroupTabEligibleForArchive(
+                                                            regularTabGroupModelFilter,
+                                                            groupIdToArchiveEligibilityMap,
+                                                            tab)
+                                                    : isTabEligibleForArchive(tab);
+                                    if (isTabOrGroupTabEligibleForArchive) {
+                                        tabsToArchive.add(tab);
+                                    }
                                 }
                             }
                             if (tabsToClose.size() > 0) {
@@ -314,9 +337,39 @@ public class TabArchiver implements TabWindowManager.Observer {
                         }));
     }
 
+    // Check if tab groups are eligible for archive. Only archive a tab group if all tabs in that
+    // group pass archiving eligibility criteria.
+    private boolean isGroupTabEligibleForArchive(
+            TabGroupModelFilter regularTabGroupModelFilter,
+            HashMap<Token, Boolean> groupIdToArchiveEligibilityMap,
+            Tab tab) {
+        // Create a map between group id tokens and their archive eligibility. If a group has
+        // not been checked yet, check all related tabs and assign a status so that tabs with
+        // that group id token can be bypassed in future iterations of this checking cycle.
+        Token tabGroupId = tab.getTabGroupId();
+        if (groupIdToArchiveEligibilityMap.containsKey(tabGroupId)) {
+            return groupIdToArchiveEligibilityMap.get(tabGroupId);
+        } else {
+            boolean isTabGroupEligibleForArchive =
+                    isTabGroupEligibleForArchive(regularTabGroupModelFilter, tab);
+            groupIdToArchiveEligibilityMap.put(tabGroupId, isTabGroupEligibleForArchive);
+            return isTabGroupEligibleForArchive;
+        }
+    }
+
+    private boolean isTabGroupEligibleForArchive(
+            TabGroupModelFilter regularTabGroupModelFilter, Tab tab) {
+        List<Tab> relatedTabList =
+                regularTabGroupModelFilter.getRelatedTabListForRootId(tab.getRootId());
+        for (Tab relatedTab : relatedTabList) {
+            if (!isTabEligibleForArchive(relatedTab)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private boolean isTabEligibleForArchive(Tab tab) {
-        // Explicitly prevent grouped tabs from getting archived.
-        if (tab.getTabGroupId() != null) return false;
         TabState tabState = TabStateExtractor.from(tab);
         if (tabState.contentsState == null) return false;
 

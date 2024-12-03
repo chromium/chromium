@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
@@ -84,6 +85,8 @@ public class TabArchiverTest {
     private @Mock TabModelSelector mSelector;
     private @Mock TabWindowManager mTabWindowManager;
     private @Mock Tab mTab;
+    private @Mock TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    private @Mock TabGroupModelFilter mTabGroupModelFilter;
 
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private TabArchiver mTabArchiver;
@@ -121,6 +124,11 @@ public class TabArchiverTest {
         doReturn(mSelector).when(mTabWindowManager).getTabModelSelectorById(anyInt());
         doReturn(mRegularTabModel).when(mSelector).getModel(anyBoolean());
         doReturn(true).when(mSelector).isTabStateInitialized();
+        doReturn(mTabGroupModelFilterProvider).when(mSelector).getTabGroupModelFilterProvider();
+        doReturn(mTabGroupModelFilter)
+                .when(mTabGroupModelFilterProvider)
+                .getCurrentTabGroupModelFilter();
+        doReturn(mRegularTabModel).when(mTabGroupModelFilter).getTabModel();
 
         mSharedPrefs = ChromeSharedPreferences.getInstance();
         runOnUiThreadBlocking(
@@ -313,7 +321,7 @@ public class TabArchiverTest {
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecords("Tabs.TabArchived.TabCount", 1)
+                        .expectIntRecords("Tabs.TabArchived.TabCount", 2)
                         .build();
         // The grouped tab should be skipped.
         runOnUiThreadBlocking(
@@ -323,8 +331,8 @@ public class TabArchiverTest {
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
                                         .get()));
-        CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
-        assertEquals(1, mArchivedTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
+        assertEquals(2, mArchivedTabModel.getCount());
         watcher.assertExpected();
     }
 
