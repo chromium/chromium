@@ -5726,6 +5726,10 @@ ax::mojom::blink::Role AXObject::DetermineRawAriaRole() const {
 }
 
 ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
+  if (!GetElement()) {
+    return ax::mojom::blink::Role::kUnknown;
+  }
+
   ax::mojom::blink::Role role = DetermineRawAriaRole();
 
   if ((role == ax::mojom::blink::Role::kForm ||
@@ -5751,12 +5755,17 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
   // It also states user agents should ignore the presentational role if
   // the element has global ARIA states and properties.
   if (ui::IsPresentational(role)) {
-    if (IsFrame(GetNode()))
+    if (IsFrame(GetNode())) {
       return ax::mojom::blink::Role::kIframePresentational;
-    if ((GetElement() && GetElement()->SupportsFocus(
-                             Element::UpdateBehavior::kNoneForAccessibility) !=
-                             FocusableState::kNotFocusable) ||
-        ElementHasAnyAriaAttribute(true /* does_undo_role_presentation */)) {
+    }
+    // Focusable nodes can never be presentational.
+    if (GetElement()->SupportsFocus(
+            Element::UpdateBehavior::kNoneForAccessibility) !=
+        FocusableState::kNotFocusable) {
+      return ax::mojom::blink::Role::kUnknown;
+    }
+    // ARIA attributes undoe presentational roles unless its a custom element.
+    if (ElementHasAnyAriaAttribute(true /* does_undo_role_presentation */)) {
       // Must be exposed with a role if focusable or has a global ARIA
       // property that is allowed in this context. See
       // https://w3c.github.io/aria/#presentation for more information about

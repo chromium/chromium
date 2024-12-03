@@ -717,6 +717,14 @@ ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
   return add_result.stored_value->value.Get();
 }
 
+bool Document::HasExplicitlySetAttrElements(const Element* element) const {
+  auto it = element_explicitly_set_attr_elements_map_.find(element);
+  if (it == element_explicitly_set_attr_elements_map_.end()) {
+    return false;
+  }
+  return !it->value->empty();
+}
+
 void Document::MoveElementExplicitlySetAttrElementsMapToNewDocument(
     const Element* element,
     Document& new_document) {

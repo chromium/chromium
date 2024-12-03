@@ -507,6 +507,23 @@ const LayoutObject* GetListMarker(const LayoutObject& layout_object,
   return nullptr;
 }
 
+bool ElementHasAnyAriaRelation(Element& element) {
+  return element.GetDocument().HasExplicitlySetAttrElements(&element) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaActionsAttr) ||
+         AXObject::HasAriaAttribute(element,
+                                    html_names::kAriaActivedescendantAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaControlsAttr) ||
+         AXObject::HasAriaAttribute(element,
+                                    html_names::kAriaDescribedbyAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaDetailsAttr) ||
+         AXObject::HasAriaAttribute(element,
+                                    html_names::kAriaErrormessageAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaFlowtoAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaLabelledbyAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaLabeledbyAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaOwnsAttr);
+}
+
 }  // namespace
 
 using html_names::kAltAttr;
@@ -668,27 +685,45 @@ bool IsExemptFromInlineBlockCheck(ax::mojom::blink::Role role) {
          role == ax::mojom::blink::Role::kEmbeddedObject;
 }
 
+bool AXNodeObject::HasCustomElementTreeProcessing() const {
+  if (!RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+    return false;
+  }
+  if (!GetElement()) {
+    return false;
+  }
+  if (!GetElement()->IsCustomElement()) {
+    return false;
+  }
+
+  return true;
+}
+
 bool AXNodeObject::ShouldIncludeCustomElement() const {
   Element* element = GetElement();
   DCHECK(element);
-  DCHECK(element->IsCustomElement());
-  // Custom elements are generally ignored in the tree, with some exceptions:
+  DCHECK(element->IsCustomElement()) << element;
 
-  // * Has aria role. This indicates the developer wants it in the tree.
-  if (RawAriaRole() != ax::mojom::blink::Role::kUnknown ||
-      role_ == ax::mojom::blink::Role::kGenericContainer) {
+  // Check whether author has forced it to be ignored via role="none".
+  if (RoleValue() == ax::mojom::blink::Role::kNone) {
+    return false;
+  }
+
+  // Custom elements are ignored in the tree by default, with some exceptions:
+
+  // * Has implicit or explicit (role attribute) role.
+  if (RoleValue() != ax::mojom::blink::Role::kGenericContainer) {
+    return true;
+  }
+
+  //* No shadow root attached.
+  if (!element->GetShadowRoot()) {
     return true;
   }
 
   // * Has aria-live. This is a legitimate use case for ARIA semantics on
   // a custom element.
   if (HasAriaAttribute(html_names::kAriaLiveAttr)) {
-    return true;
-  }
-
-  // * Has aria-owns. Not keeping an element with aria-owns in the tree
-  // would break tree reordering expectations and create confusing situations.
-  if (HasARIAOwns(element)) {
     return true;
   }
 
@@ -699,14 +734,6 @@ bool AXNodeObject::ShouldIncludeCustomElement() const {
   // are to be passed down into the shadow subtree by copying.
   if (element->GetElementInternals() &&
       element->GetElementInternals()->HasAnyAttribute()) {
-    return true;
-  }
-
-  // * Has element attributes (explicotly set attribute elements)
-  // As element internals are not a convenient way to declare semantics, and
-  // are used to create relations that cross shadow boundaries, they would
-  // not be useful for passing semantics via DOM attributes.
-  if (GetDocument()->HasExplicitlySetAttrElements(element)) {
     return true;
   }
 
@@ -775,13 +802,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
     }
     return kIgnoreObject;
-  }
-
-  // Custom elements are generally ignored in the tree.
-  if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
-    if (element->IsCustomElement() && !ShouldIncludeCustomElement()) {
-      return kIgnoreObject;
-    }
   }
 
   if (IsA<SVGElement>(node)) {
@@ -884,6 +904,11 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // exposed.
   if (IsEditableRoot())
     return kIncludeObject;
+
+  // Custom elements are generally ignored in the tree, with some exceptions.
+  if (HasCustomElementTreeProcessing()) {
+    return ShouldIncludeCustomElement() ? kIncludeObject : kIgnoreObject;
+  }
 
   // Don't ignored legends, because JAWS uses them to determine redundant text.
   if (IsA<HTMLLegendElement>(node)) {
@@ -1004,18 +1029,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // See https://w3c.github.io/aria/#conflict_resolution_presentation_none
   // for more details.
   if (ElementHasAnyAriaAttribute()) {
-    if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
-      // role="none" is now expected to be on some custom elements, where it
-      // will remove the custom element from the ax tree, in order to avoid
-      // duplicate semantics when they are copied to descendant elements inside
-      // the custom element's dom.
-      if (RoleValue() != ax::mojom::blink::Role::kNone ||
-          !GetElement()->IsCustomElement()) {
-        return kIncludeObject;
-      }
-    } else {
-      return kIncludeObject;
-    }
+    return kIncludeObject;
   }
 
   // Using a title for a name or description causes an object to be included.
@@ -2055,6 +2069,14 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
       if (GetElement()->tabIndex() >= 0) {
         return ax::mojom::blink::Role::kGroup;
       }
+    }
+  }
+
+  // Custom elements have additional minimum role rules.
+  if (HasCustomElementTreeProcessing()) {
+    if (ElementHasAnyAriaRelation(*GetElement()) ||
+        GetElement()->tabIndex() >= 0) {
+      return ax::mojom::blink::Role::kGroup;
     }
   }
 

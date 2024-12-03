@@ -1,8 +1,9 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++staticText name='slot me'
-++++++++inlineTextBox name='slot me'
+++++++genericContainer
+++++++++staticText name='slot me'
+++++++++++inlineTextBox name='slot me'
 ++++++button
 === Start Continuation ===
 rootWebArea name='defineElement'
