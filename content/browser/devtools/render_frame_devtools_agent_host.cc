@@ -219,10 +219,10 @@ void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
     // Inner web contents such as guestviews are already handled by
-    // ForEachRenderFrameHost.
+    // ForEachRenderFrameHostImpl.
     if (wc->GetOutermostWebContents() != wc)
       continue;
-    wc->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+    wc->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
         [result](RenderFrameHostImpl* render_frame_host) {
           FrameTreeNode* node = FrameTreeNode::From(render_frame_host);
           if (!ShouldCreateDevToolsForNode(node))
@@ -999,8 +999,8 @@ void RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories() {
   if (!frame_host_)
     return;
 
-  frame_host_->ForEachRenderFrameHostWithAction([this](
-                                                    RenderFrameHostImpl* rfh) {
+  frame_host_->ForEachRenderFrameHostImplWithAction([this](RenderFrameHostImpl*
+                                                               rfh) {
     if (frame_host_ != rfh && (rfh->is_local_root_subframe() ||
                                &frame_host_->GetPage() != &rfh->GetPage())) {
       return content::RenderFrameHost::FrameIterationAction::kSkipChildren;

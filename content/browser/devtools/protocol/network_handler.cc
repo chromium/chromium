@@ -1467,7 +1467,7 @@ String BuildReportStatus(const net::ReportingReport::Status status) {
 
 std::vector<GURL> ComputeReportingURLs(RenderFrameHostImpl* frame_host) {
   std::vector<GURL> urls;
-  frame_host->ForEachRenderFrameHostWithAction(
+  frame_host->ForEachRenderFrameHostImplWithAction(
       [frame_host, &urls](content::RenderFrameHostImpl* rfh) {
         if (rfh != frame_host && (rfh->is_local_root_subframe() ||
                                   &rfh->GetPage() != &frame_host->GetPage())) {

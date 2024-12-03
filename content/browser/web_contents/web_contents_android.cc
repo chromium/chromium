@@ -374,7 +374,7 @@ ScopedJavaLocalRef<jobject> WebContentsAndroid::GetRenderFrameHostFromId(
 ScopedJavaLocalRef<jobjectArray> WebContentsAndroid::GetAllRenderFrameHosts(
     JNIEnv* env) const {
   std::vector<RenderFrameHost*> frames;
-  web_contents_->ForEachRenderFrameHost(
+  web_contents_->ForEachRenderFrameHostImpl(
       [&frames](RenderFrameHostImpl* rfh) { frames.push_back(rfh); });
   ScopedJavaLocalRef<jobjectArray> jframes =
       Java_WebContentsImpl_createRenderFrameHostArray(env, frames.size());

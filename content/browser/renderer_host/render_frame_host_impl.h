@@ -2330,17 +2330,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   }
 
   // These are the content internal equivalents of
-  // |RenderFrameHost::ForEachRenderFrameHost| whose comment can be referred to
+  // `RenderFrameHost::ForEachRenderFrameHost` whose comment can be referred to
   // for details. Content internals can also access speculative
   // RenderFrameHostImpls if necessary by using the
-  // |ForEachRenderFrameHostIncludingSpeculative| variations.
-  void ForEachRenderFrameHostWithAction(
+  // `ForEachRenderFrameHostImplIncludingSpeculative` variations.
+  void ForEachRenderFrameHostImplWithAction(
       base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame);
-  void ForEachRenderFrameHost(
+  void ForEachRenderFrameHostImpl(
       base::FunctionRef<void(RenderFrameHostImpl*)> on_frame);
-  void ForEachRenderFrameHostIncludingSpeculativeWithAction(
+  void ForEachRenderFrameHostImplIncludingSpeculativeWithAction(
       base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame);
-  void ForEachRenderFrameHostIncludingSpeculative(
+  void ForEachRenderFrameHostImplIncludingSpeculative(
       base::FunctionRef<void(RenderFrameHostImpl*)> on_frame);
 
   bool DocumentUsedWebOTP() override;

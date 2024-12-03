@@ -295,7 +295,7 @@ void FrameAutoAttacher::UpdateFrames() {
   DevToolsAgentHost::List new_auction_worklet_hosts;
   DevToolsAgentHost::List new_shared_storage_worklet_hosts;
   if (render_frame_host_) {
-    render_frame_host_->ForEachRenderFrameHostWithAction(
+    render_frame_host_->ForEachRenderFrameHostImplWithAction(
         [root = render_frame_host_, &new_hosts](RenderFrameHostImpl* rfh) {
           if (rfh == root || !rfh->is_local_root())
             return RenderFrameHost::FrameIterationAction::kContinue;

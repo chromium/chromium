@@ -2688,37 +2688,39 @@ bool RenderFrameHostImpl::IsUntrustedNetworkDisabled() const {
 
 void RenderFrameHostImpl::ForEachRenderFrameHostWithAction(
     base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame) {
-  ForEachRenderFrameHostWithAction(
+  ForEachRenderFrameHostImplWithAction(
       [on_frame](RenderFrameHostImpl* rfh) { return on_frame(rfh); });
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(
     base::FunctionRef<void(RenderFrameHost*)> on_frame) {
-  ForEachRenderFrameHost(
+  ForEachRenderFrameHostImpl(
       [on_frame](RenderFrameHostImpl* rfh) { on_frame(rfh); });
 }
 
-void RenderFrameHostImpl::ForEachRenderFrameHostWithAction(
+void RenderFrameHostImpl::ForEachRenderFrameHostImplWithAction(
     base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame) {
   ForEachRenderFrameHostImpl(on_frame, /*include_speculative=*/false);
 }
 
-void RenderFrameHostImpl::ForEachRenderFrameHost(
+void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
     base::FunctionRef<void(RenderFrameHostImpl*)> on_frame) {
-  ForEachRenderFrameHostWithAction([on_frame](RenderFrameHostImpl* rfh) {
+  ForEachRenderFrameHostImplWithAction([on_frame](RenderFrameHostImpl* rfh) {
     on_frame(rfh);
     return FrameIterationAction::kContinue;
   });
 }
 
-void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculativeWithAction(
-    base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame) {
+void RenderFrameHostImpl::
+    ForEachRenderFrameHostImplIncludingSpeculativeWithAction(
+        base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)>
+            on_frame) {
   ForEachRenderFrameHostImpl(on_frame, /*include_speculative=*/true);
 }
 
-void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
+void RenderFrameHostImpl::ForEachRenderFrameHostImplIncludingSpeculative(
     base::FunctionRef<void(RenderFrameHostImpl*)> on_frame) {
-  ForEachRenderFrameHostIncludingSpeculativeWithAction(
+  ForEachRenderFrameHostImplIncludingSpeculativeWithAction(
       [on_frame](RenderFrameHostImpl* rfh) {
         on_frame(rfh);
         return FrameIterationAction::kContinue;
@@ -2755,7 +2757,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
   // only if |this| is current in its FrameTree.
   // TODO(crbug.com/40203236): Avoid having a RenderFrameHost access its
   // FrameTreeNode's speculative RenderFrameHost by moving
-  // ForEachRenderFrameHostIncludingSpeculative from RenderFrameHostImpl or
+  // ForEachRenderFrameHostImplIncludingSpeculative from RenderFrameHostImpl or
   // possibly removing it entirely.
   if (include_speculative && frame_tree_node()->current_frame_host() == this) {
     RenderFrameHostImpl* speculative_frame_host =
@@ -5621,7 +5623,7 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   //
   // Note that due to PrerenderCommitDeferringCondition, the main frame should
   // have no ongoing NavigationRequest at all, so it is not checked here.
-  ForEachRenderFrameHost([](RenderFrameHostImpl* rfh) {
+  ForEachRenderFrameHostImpl([](RenderFrameHostImpl* rfh) {
     // Interested only in subframes.
     if (rfh->is_main_frame())
       return;
@@ -11033,7 +11035,7 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
   bool found_beforeunload = false;
   bool run_beforeunload_for_legacy = false;
 
-  ForEachRenderFrameHostWithAction(
+  ForEachRenderFrameHostImplWithAction(
       [this, subframes_only, send_ipc, is_reload, &found_beforeunload,
        &run_beforeunload_for_legacy](
           RenderFrameHostImpl* rfh) -> FrameIterationAction {
@@ -11388,8 +11390,9 @@ bool RenderFrameHostImpl::is_initial_empty_document() const {
 uint32_t RenderFrameHostImpl::FindSuddenTerminationHandlers(bool same_origin) {
   uint32_t navigation_termination = 0;
   // Search this frame and subframes for sudden termination disablers
-  ForEachRenderFrameHostWithAction([this, same_origin, &navigation_termination](
-                                       RenderFrameHost* rfh) {
+  ForEachRenderFrameHostImplWithAction([this, same_origin,
+                                        &navigation_termination](
+                                           RenderFrameHostImpl* rfh) {
     if (same_origin &&
         GetLastCommittedOrigin() != rfh->GetLastCommittedOrigin()) {
       return FrameIterationAction::kSkipChildren;
@@ -13821,13 +13824,14 @@ service_manager::InterfaceProvider* RenderFrameHostImpl::GetJavaInterfaces() {
 
 void RenderFrameHostImpl::ForEachImmediateLocalRoot(
     base::FunctionRef<void(RenderFrameHostImpl*)> func_ref) {
-  ForEachRenderFrameHostWithAction([func_ref, this](RenderFrameHostImpl* rfh) {
-    if (rfh->is_local_root() && rfh != this) {
-      func_ref(rfh);
-      return FrameIterationAction::kSkipChildren;
-    }
-    return FrameIterationAction::kContinue;
-  });
+  ForEachRenderFrameHostImplWithAction(
+      [func_ref, this](RenderFrameHostImpl* rfh) {
+        if (rfh->is_local_root() && rfh != this) {
+          func_ref(rfh);
+          return FrameIterationAction::kSkipChildren;
+        }
+        return FrameIterationAction::kContinue;
+      });
 }
 
 void RenderFrameHostImpl::SetVisibilityForChildViews(bool visible) {

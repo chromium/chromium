@@ -6398,7 +6398,7 @@ void NavigationRequest::CommitPageActivation() {
     // since the page entered bfcache. We must update all frames, not just the
     // top frame, because it is possible (though unlikely) that an iframe's
     // entries have changed, too.
-    activated_entry->render_frame_host()->ForEachRenderFrameHostWithAction(
+    activated_entry->render_frame_host()->ForEachRenderFrameHostImplWithAction(
         [this, &activated_entry](RenderFrameHostImpl* rfh) {
           // |this| is given as a parameter to
           // GetNavigationApiHistoryEntryVectors() only for the frame being
@@ -6507,8 +6507,8 @@ void NavigationRequest::CommitPageActivation() {
 
     // Update navigation API entries. A prerendered page has only a single
     // history entry, but now it has access to a full back/forward list.
-    rfh->ForEachRenderFrameHostWithAction([this, &stored_page](
-                                              RenderFrameHostImpl* rfh) {
+    rfh->ForEachRenderFrameHostImplWithAction([this, &stored_page](
+                                                  RenderFrameHostImpl* rfh) {
       // Currently, prerender activation only happens for DIFFERENT_DOCUMENT
       // navigations. If that ever changes, `reason` calculation will need to be
       // updated (and new NavigationApiEntryRestoreReason values added).
