@@ -32,7 +32,8 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
   void SetUp() override {
     GridMediatorTestClass::SetUp();
     mode_holder_ = [[TabGridModeHolder alloc] init];
-    mediator_ = [[RegularGridMediator alloc] initWithModeHolder:mode_holder_];
+    mediator_ = [[RegularGridMediator alloc] initWithModeHolder:mode_holder_
+                                               messagingService:nil];
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
     mediator_.toolbarsMutator = fake_toolbars_mediator_;

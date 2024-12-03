@@ -94,7 +94,8 @@ class BaseGridMediatorTest
       mediator_ =
           [[IncognitoGridMediator alloc] initWithModeHolder:mode_holder_];
     } else {
-      mediator_ = [[RegularGridMediator alloc] initWithModeHolder:mode_holder_];
+      mediator_ = [[RegularGridMediator alloc] initWithModeHolder:mode_holder_
+                                                 messagingService:nil];
     }
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();

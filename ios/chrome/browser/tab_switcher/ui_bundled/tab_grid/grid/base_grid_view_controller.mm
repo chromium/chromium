@@ -1678,6 +1678,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     cell.state = GridCellStateNotEditing;
   }
 
+  cell.activityLabelData =
+      [self.gridProvider activityLabelDataForItem:groupItemIdentifier];
+
   [item fetchGroupTabInfos:^(TabGroupItem* innerItem,
                              NSArray<GroupTabInfo*>* groupTabInfos) {
     if ([cell.itemIdentifier.tabGroupItem isEqual:innerItem]) {
@@ -1744,6 +1747,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   } else {
     [cell hideActivityIndicator];
   }
+
+  cell.activityLabelData =
+      [self.gridProvider activityLabelDataForItem:itemIdentifier];
+
   if (![self.pointerInteractionCells containsObject:cell]) {
     [cell addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
     // `self.pointerInteractionCells` is only expected to get as large as the

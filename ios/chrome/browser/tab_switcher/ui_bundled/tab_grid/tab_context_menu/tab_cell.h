@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class ActivityLabelData;
 @class GridItemIdentifier;
 
 // UICollectionViewCell that represents a tab cell.
@@ -18,8 +19,8 @@
 
 @property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
 
-// Shows the activity label.
-- (void)showActivityLabel;
+// The data used for showing a label on the cell. Nil when the label is hidden.
+@property(nonatomic, strong) ActivityLabelData* activityLabelData;
 
 @end
 

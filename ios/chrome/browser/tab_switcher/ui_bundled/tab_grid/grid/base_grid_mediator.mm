@@ -493,6 +493,15 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   [self.tabGridToolbarHandler showSavedTabGroupIPH];
 }
 
+- (ActivityLabelData*)activityLabelDataForGroup:
+    (tab_groups::TabGroupId)groupID {
+  return nil;
+}
+
+- (ActivityLabelData*)activityLabelDataForTab:(web::WebStateID)webStateID {
+  return nil;
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
@@ -1838,6 +1847,20 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 
 - (BOOL)isItemSelected:(GridItemIdentifier*)itemID {
   return [_selectedEditingItems containItem:itemID];
+}
+
+- (ActivityLabelData*)activityLabelDataForItem:(GridItemIdentifier*)itemID {
+  switch (itemID.type) {
+    case GridItemType::kTab:
+      return [self activityLabelDataForTab:itemID.tabSwitcherItem.identifier];
+    case GridItemType::kGroup:
+      return [self activityLabelDataForGroup:itemID.tabGroupItem.tabGroup
+                                                 ->tab_group_id()];
+    case GridItemType::kInactiveTabsButton:
+    case GridItemType::kSuggestedActions:
+    case GridItemType::kActivitySummary:
+      return nil;
+  }
 }
 
 @end

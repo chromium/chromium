@@ -7,12 +7,16 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/collaboration/public/messaging/message.h"
+#import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_configuration_provider.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_mutator.h"
@@ -34,6 +38,24 @@
   std::unique_ptr<TabsCloser> _tabsCloser;
   // Whether the current grid is selected.
   BOOL _selected;
+  // A service to get activity messages for a shared tab group.
+  raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
+  // A set of ID of the shared tab group that has changed and a user has not
+  // seen it yet.
+  std::set<tab_groups::LocalTabGroupID> _dirtyGroups;
+}
+
+- (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder
+                  messagingService:
+                      (collaboration::messaging::MessagingBackendService*)
+                          messagingService {
+  if ((self = [super initWithModeHolder:modeHolder])) {
+    // TODO(crbug.com/375594684): Start observing the messaging backend service
+    // and update _dirtyGroups.
+    _messagingService = messagingService;
+    [self fetchMessagesForGroup];
+  }
+  return self;
 }
 
 #pragma mark - GridCommands
@@ -204,6 +226,18 @@
   }
 }
 
+// Overrides the parent to return the data used for showing a label if there is
+// a new message for a group.
+- (ActivityLabelData*)activityLabelDataForGroup:
+    (tab_groups::TabGroupId)groupID {
+  if (!_dirtyGroups.contains(groupID)) {
+    return nil;
+  }
+  ActivityLabelData* data = [[ActivityLabelData alloc] init];
+  // TODO(crbug.com/371113934): Set the string "New activity" to the data.
+  return data;
+}
+
 #pragma mark - Private
 
 // YES if there are regular tabs in the grid.
@@ -241,6 +275,30 @@
   TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
       [self.containedGridToolbarsProvider toolbarsConfiguration];
   return containedGridToolbarsConfiguration.undoButton;
+}
+
+// Gets messages to indicate that the shared tab group has changed and the user
+// has not seen it yet and keeps the necessary information from the messages.
+- (void)fetchMessagesForGroup {
+  if (!_messagingService || !_messagingService->IsInitialized()) {
+    return;
+  }
+
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      _messagingService->GetMessages(
+          collaboration::messaging::PersistentNotificationType::
+              DIRTY_TAB_GROUP);
+
+  for (auto& message : messages) {
+    if (!message.attribution.tab_group_metadata.has_value()) {
+      continue;
+    }
+    auto group_data = message.attribution.tab_group_metadata.value();
+    if (!group_data.local_tab_group_id.has_value()) {
+      continue;
+    }
+    _dirtyGroups.insert(group_data.local_tab_group_id.value());
+  }
 }
 
 #pragma mark - Properties

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 
+@class ActivityLabelData;
 class Browser;
 @protocol GridConsumer;
 @protocol GridMediatorDelegate;
@@ -154,6 +155,14 @@ class WebState;
 // Shows the tab group snackbar or IPH.
 // `closedGroups` represents the number of closed groups.
 - (void)showTabGroupSnackbarOrIPH:(int)closedGroups;
+
+// Returns the information needed for showing the label on the cell. Returns nil
+// if there are no new messages for a group.
+- (ActivityLabelData*)activityLabelDataForGroup:(tab_groups::TabGroupId)groupID;
+
+// Returns the information needed for showing the label on the cell. Returns nil
+// if there are no new messages for a tab.
+- (ActivityLabelData*)activityLabelDataForTab:(web::WebStateID)webStateID;
 
 @end
 
