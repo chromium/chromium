@@ -100,11 +100,4 @@ void DesktopNativeCursorManager::InitCursorSizeObserver(
   NOTREACHED();
 }
 
-#if BUILDFLAG(IS_WIN)
-void DesktopNativeCursorManager::InitSystemCursorVisibilityObserver(
-    wm::NativeCursorManagerDelegate* delegate) {
-  NOTREACHED();
-}
-#endif
-
 }  // namespace views
