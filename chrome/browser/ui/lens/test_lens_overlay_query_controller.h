@@ -133,12 +133,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return num_full_page_objects_gen204_pings_sent_;
   }
 
-  const int& num_full_page_translate_gen204_pings_sent() const {
-    return num_full_page_translate_gen204_pings_sent_;
-  }
-
-  const int& num_page_content_update_requests_sent() const {
-    return num_page_content_update_requests_sent_;
+  int latency_gen_204_counter(
+      lens::LensOverlayGen204Controller::LatencyType latency_type) const {
+    auto it = latency_gen_204_counter_.find(latency_type);
+    return it == latency_gen_204_counter_.end() ? 0 : it->second;
   }
 
   void StartQueryFlow(
@@ -148,7 +146,8 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const uint8_t> underlying_content_bytes,
       lens::MimeType underlying_content_type,
-      float ui_scale_factor) override;
+      float ui_scale_factor,
+      base::TimeTicks invocation_time) override;
 
   void SendTaskCompletionGen204IfEnabled(
       lens::mojom::UserAction user_action) override;
@@ -193,9 +192,12 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       const std::vector<std::string>& request_headers,
       const std::vector<std::string>& cors_exempt_headers) override;
 
-  void SendLatencyGen204IfEnabled(base::TimeDelta latency_ms,
-                                  bool is_translate_query,
-                                  std::string vit_query_param_value) override;
+  void SendLatencyGen204IfEnabled(
+      lens::LensOverlayGen204Controller::LatencyType latency_type,
+      base::TimeTicks start_time_ticks,
+      std::string vit_query_param_value,
+      std::optional<base::TimeDelta> cluster_info_latency,
+      std::optional<std::string> encoded_analytics_id) override;
 
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
@@ -274,6 +276,11 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The number of page content update requests sent by the query controller.
   int num_page_content_update_requests_sent_ = 0;
+
+  // Tracker for the number of latency request events sent by the query
+  // controller.
+  base::flat_map<lens::LensOverlayGen204Controller::LatencyType, int>
+      latency_gen_204_counter_;
 };
 
 }  // namespace lens

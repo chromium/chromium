@@ -92,7 +92,8 @@ class LensOverlayQueryController {
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const uint8_t> underlying_content_bytes,
       lens::MimeType underlying_content_type,
-      float ui_scale_factor);
+      float ui_scale_factor,
+      base::TimeTicks invocation_time);
 
   // Clears the state and resets stored values.
   void EndQuery();
@@ -172,10 +173,14 @@ class LensOverlayQueryController {
       const std::vector<std::string>& request_headers,
       const std::vector<std::string>& cors_exempt_headers);
 
-  // Sends a latency Gen204 ping if enabled.
-  virtual void SendLatencyGen204IfEnabled(base::TimeDelta full_image_latency,
-                                          bool is_translate_query,
-                                          std::string vit_query_param_value);
+  // Sends a latency Gen204 ping if enabled, calculating the latency duration
+  // from the start time ticks and base::TimeTicks::Now().
+  virtual void SendLatencyGen204IfEnabled(
+      lens::LensOverlayGen204Controller::LatencyType latency_type,
+      base::TimeTicks start_time_ticks,
+      std::string vit_query_param_value,
+      std::optional<base::TimeDelta> cluster_info_latency,
+      std::optional<std::string> encoded_analytics_id);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -391,6 +396,18 @@ class LensOverlayQueryController {
   // Runs the interaction callback with empty response data, for errors.
   void RunInteractionCallbackForError();
 
+  // Sends a full image request latency Gen204 ping if enabled. Also logs the
+  // cluster info latency if it is available.
+  void SendFullImageLatencyGen204IfEnabled(base::TimeTicks start_time_ticks,
+                                           bool is_translate_query,
+                                           std::string vit_query_param_value);
+
+  // Logs a latency gen204 for an initial latency gen204, only once per type
+  // per query flow, if gen204 logging is enabled.
+  void SendInitialLatencyGen204IfNotAlreadySent(
+      lens::LensOverlayGen204Controller::LatencyType latency_type,
+      std::string vit_query_param_value);
+
   // Creates an endpoint fetcher with the given request_headers to perform the
   // given request. Calls fetcher_created_callback when the EndpointFetcher is
   // created to keep it alive while the request is being made.
@@ -484,6 +501,12 @@ class LensOverlayQueryController {
   // The UI Scaling Factor of the underlying page, if it has been passed in.
   // Else 0.
   float ui_scale_factor_ = 0;
+
+  // The time the query flow was invoked.
+  base::TimeTicks invocation_time_;
+
+  // The time the page contents request was started.
+  base::TimeTicks page_contents_request_start_time_;
 
   // The current state.
   QueryControllerState query_controller_state_ = QueryControllerState::kOff;
@@ -598,6 +621,12 @@ class LensOverlayQueryController {
   // The time it took from sending the cluster info request to receiving
   // the response.
   std::optional<base::TimeDelta> cluster_info_fetch_response_time_;
+
+  // Latency event gen204 request tracker. Used to determine whether or not to
+  // log initial latency metrics for the request. This is only used to track
+  // latency events that should only be logged once per query flow.
+  base::flat_set<lens::LensOverlayGen204Controller::LatencyType>
+      sent_initial_latency_request_events_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

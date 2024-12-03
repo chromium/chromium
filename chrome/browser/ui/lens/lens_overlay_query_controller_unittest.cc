@@ -41,6 +41,8 @@
 
 namespace lens {
 
+using LatencyType = LensOverlayGen204Controller::LatencyType;
+
 // The fake multimodal query text.
 constexpr char kTestQueryText[] = "query_text";
 
@@ -336,12 +338,20 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
 
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -368,7 +378,12 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
                 .locale_context()
                 .time_zone(),
             kTimeZone);
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 0);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInvocationToInitialFullPageObjectsRequestSent),
+            1);
   ASSERT_EQ(query_controller.sent_client_logs().lens_overlay_entry_point(),
             lens::LensOverlayClientLogs::APP_MENU);
   ASSERT_TRUE(query_controller.sent_client_logs().has_paella_id());
@@ -409,7 +424,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
 
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -428,6 +444,12 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
   ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
             latest_suggest_inputs_.encoded_request_id());
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInvocationToInitialClusterInfoRequestSent),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInvocationToInitialFullPageObjectsRequestSent),
+            1);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -474,7 +496,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
 
   // Wait for the access token request for the cluster info to be sent.
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -548,7 +571,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
 
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -599,7 +623,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -657,7 +682,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -727,7 +753,18 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
                    .has_query_metadata());
   ASSERT_TRUE(has_start_time);
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInvocationToInitialFullPageObjectsRequestSent),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInteractionRequestFetchLatency),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInvocationToInitialInteractionRequestSent),
+            1);
   CheckGen204IdsMatch(query_controller.sent_client_logs(),
                       url_response_future.Get());
 }
@@ -774,7 +811,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(query_controller.num_cluster_info_fetch_requests_sent(), 1);
@@ -839,7 +877,8 @@ TEST_F(LensOverlayQueryControllerTest,
       viewport_bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
 
   SkBitmap region_bitmap = CreateNonEmptyBitmap(100, 100);
@@ -924,7 +963,9 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
                    .has_query_metadata());
   ASSERT_TRUE(has_start_time);
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
   CheckGen204IdsMatch(query_controller.sent_client_logs(),
                       url_response_future.Get());
 }
@@ -966,7 +1007,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -1044,7 +1086,9 @@ TEST_F(LensOverlayQueryControllerTest,
                 .query(),
             kTestQueryText);
   ASSERT_TRUE(has_start_time);
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
   CheckGen204IdsMatch(query_controller.sent_client_logs(),
                       url_response_future.Get());
 }
@@ -1071,7 +1115,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
 
   query_controller.SendTextOnlyQuery(
@@ -1104,7 +1149,9 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(latest_suggest_inputs_.has_contextual_visual_input_type());
   ASSERT_EQ(actual_encoded_video_context, kTestEncodedVideoContext);
   ASSERT_TRUE(has_start_time);
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 0);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            0);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -1145,7 +1192,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
-      lens::MimeType::kPdf, 0);
+      lens::MimeType::kPdf, 0, base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
   query_controller.SendContextualTextQuery(
       kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
@@ -1220,7 +1267,12 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(visual_input_type, "pdf");
   ASSERT_TRUE(has_invocation_source);
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 2);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kPageContentUploadLatency),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
@@ -1230,6 +1282,9 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.contextual_visual_input_type(), "pdf");
   ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
             latest_suggest_inputs_.encoded_request_id());
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInvocationToInitialPageContentRequestSent),
+            1);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -1270,7 +1325,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
-      lens::MimeType::kHtml, 0);
+      lens::MimeType::kHtml, 0, base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
   query_controller.SendContextualTextQuery(
       kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
@@ -1345,7 +1400,12 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(visual_input_type, "wp");
   ASSERT_TRUE(has_invocation_source);
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 2);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kPageContentUploadLatency),
+            1);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
@@ -1355,6 +1415,9 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.contextual_visual_input_type(), "wp");
   ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
             latest_suggest_inputs_.encoded_request_id());
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInvocationToInitialPageContentRequestSent),
+            1);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -1395,7 +1458,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
-      lens::MimeType::kPlainText, 0);
+      lens::MimeType::kPlainText, 0, base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
   query_controller.SendContextualTextQuery(
       kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
@@ -1470,7 +1533,12 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(visual_input_type, "wp");
   ASSERT_TRUE(has_invocation_source);
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 2);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kPageContentUploadLatency),
+            1);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
@@ -1480,6 +1548,9 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.contextual_visual_input_type(), "wp");
   ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
             latest_suggest_inputs_.encoded_request_id());
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kInvocationToInitialPageContentRequestSent),
+            1);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -1520,7 +1591,7 @@ TEST_F(LensOverlayQueryControllerTest,
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown,
-      /**/ 0);
+      /**/ 0, base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -1538,7 +1609,9 @@ TEST_F(LensOverlayQueryControllerTest,
   // new query flow due to the timeout occurring.
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_TRUE(url_response_future.IsReady());
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 2);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            2);
   CheckGen204IdsMatch(query_controller.sent_client_logs(),
                       url_response_future.Get());
 }
@@ -1580,7 +1653,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -1634,7 +1708,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
 
   // Check initial fetch objects request id is correct.
@@ -1648,7 +1723,9 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       initial_sent_object_request.request_context().request_id().sequence_id(),
       1);
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
 
   auto region = lens::mojom::CenterRotatedBox::New();
   region->box = gfx::RectF(30, 40, 50, 60);
@@ -1695,8 +1772,12 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       second_sent_object_request.request_context().request_id().sequence_id(),
       4);
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 1);
-  ASSERT_EQ(query_controller.num_full_page_translate_gen204_pings_sent(), 1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageTranslateRequestFetchLatency),
+            1);
 
   // Now change the languages.
   full_image_response_future.Clear();
@@ -1718,8 +1799,12 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       third_sent_object_request.request_context().request_id().sequence_id(),
       5);
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 1);
-  ASSERT_EQ(query_controller.num_full_page_translate_gen204_pings_sent(), 2);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            1);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageTranslateRequestFetchLatency),
+            2);
 
   // Now disable translate mode.
   full_image_response_future.Clear();
@@ -1741,8 +1826,12 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_NE(
       fourth_sent_object_request.request_context().request_id().analytics_id(),
       third_sent_object_request.request_context().request_id().analytics_id());
-  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 2);
-  ASSERT_EQ(query_controller.num_full_page_translate_gen204_pings_sent(), 2);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            2);
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageTranslateRequestFetchLatency),
+            2);
 
   query_controller.EndQuery();
 }
@@ -1789,7 +1878,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -1853,7 +1943,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
 
   auto region = lens::mojom::CenterRotatedBox::New();
