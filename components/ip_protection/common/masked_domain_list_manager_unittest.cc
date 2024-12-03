@@ -121,21 +121,6 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
         true,
         true,
     },
-    // Request from a domain to its subdomain.
-    // `googleapis.com` is listed on the PSL.
-    // An MDL entry claims ownership of `googleapis.com`
-    // No MDL entry claims ownership of `sub.googleapis.com`
-    // Should be proxied because `googleapis.com` is on the MDL and the two
-    // don't belong to the same owner.
-    ExperimentGroupMatchTest{
-        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain"
-        "OwnerDoesntClaimSubdomain",
-        "sub.googleapis.com",
-        "googleapis.com",
-        "1",
-        true,
-        true,
-    },
     // Request from one site in the PSL rules to another in the PSL rules.
     // `co.jp` is listed on the PSL.
     // No MDL entry claims ownership of `co.jp`
@@ -555,11 +540,6 @@ TEST_P(MaskedDomainListManagerExperimentGroupMatchTest, Match) {
   resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("public_suffix");
   resource_owner->add_owned_properties("owned_property.com");
-  // Claim top level domain on the PSL.
-  resource = resource_owner->add_owned_resources();
-  resource->set_domain("googleapis.com");
-  resource->add_experiment_group_ids(1);
-
   // Claim a subdomain on the PSL.
   resource = resource_owner->add_owned_resources();
   resource->set_domain("sub.co.jp");

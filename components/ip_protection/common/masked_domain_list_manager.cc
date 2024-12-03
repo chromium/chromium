@@ -26,22 +26,6 @@ using ::masked_domain_list::Resource;
 using ::masked_domain_list::ResourceOwner;
 using ::network::mojom::IpProtectionProxyBypassPolicy;
 
-// Returns a `ResourceOwner` identical to the input `resource_owner` but without
-// any `owned_resource` exactly matching a private domain listed in the PSL.
-ResourceOwner RemovePslPrivateDomainsFromOwnedResources(
-    const std::set<std::string>& psl_private_domains,
-    const ResourceOwner& resource_owner) {
-  ResourceOwner res = resource_owner;
-  res.clear_owned_resources();
-  for (const Resource& owned_resource : resource_owner.owned_resources()) {
-    if (psl_private_domains.contains(owned_resource.domain())) {
-      continue;
-    }
-    *res.add_owned_resources() = owned_resource;
-  }
-  return res;
-}
-
 }  // namespace
 
 MaskedDomainListManager::MaskedDomainListManager(
@@ -251,16 +235,7 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
     // bypass rules are created per partition.
     std::set<std::string> eligible_domains;
 
-    // Domains that are listed in the public suffix list should not be added to
-    // url_matcher_with_bypass_, because they are not actually owned.
-    // TODO(b/328788380): Client-side removal is only temporarily necessary,
-    // until support for the new PSL field in the MDL is rolled out to chrome
-    // stable and the adjustments to the MDL can be made at source.
-    const ResourceOwner owner_without_psl_owned_properties =
-        RemovePslPrivateDomainsFromOwnedResources(psl_private_domains, owner);
-
-    for (const Resource& resource :
-         owner_without_psl_owned_properties.owned_resources()) {
+    for (const Resource& resource : owner.owned_resources()) {
       if (is_eligible(resource)) {
         eligible_domains.insert(resource.domain());
       }
@@ -272,8 +247,8 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
         break;
       }
       case IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame: {
-        url_matcher_with_bypass_.AddMaskedDomainListRules(
-            eligible_domains, owner_without_psl_owned_properties);
+        url_matcher_with_bypass_.AddMaskedDomainListRules(eligible_domains,
+                                                          owner);
         break;
       }
       case IpProtectionProxyBypassPolicy::kExclusionList: {
