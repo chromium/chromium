@@ -362,12 +362,6 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
   params.argv = const_cast<const char**>(argv);
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Disable system tracing for browser tests by default. This prevents breakage
-  // of tests that spin the run loop until idle on platforms with system tracing
-  // (e.g. Chrome OS). Browser tests exercising this feature re-enable it with a
-  // custom system tracing service.
-  tracing::PerfettoTracedProcess::SetSystemProducerEnabledForTesting(false);
-
 #if !BUILDFLAG(IS_ANDROID)
   // This needs to be before trying to run tests as otherwise utility processes
   // end up being launched as a test, which leads to rerunning the test.

@@ -184,7 +184,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   void ConnectProducer(mojo::PendingRemote<mojom::PerfettoService>);
 
   ProducerClient* producer_client() const;
-  SystemProducer* system_producer() const;  // May be null.
 
   ~PerfettoTracedProcess() override;
 
@@ -219,15 +218,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
   // Overrides SetAllowSystemTracingConsumerCallback() for testing.
   void SetAllowSystemTracingConsumerForTesting(bool allow);
-
-  // Enables or disables system tracing for browser tests.
-  static void SetSystemProducerEnabledForTesting(bool enabled);
-
-  // Called to initialize system tracing, i.e., connecting to a system Perfetto
-  // daemon as a producer. If |system_socket| isn't provided, Perfetto's default
-  // socket name is used.
-  void SetupSystemTracing(
-      std::optional<const char*> system_socket = std::optional<const char*>());
 
   // If the provided |producer| can begin tracing then |start_tracing| will be
   // invoked (unless cancelled by the Perfetto service) at some point later
@@ -319,10 +309,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // A PerfettoProducer that connects to the chrome Perfetto service through
   // mojo.
   std::unique_ptr<ProducerClient> producer_client_;
-  // A PerfettoProducer that connects to the system Perfetto service. If there
-  // is no system Perfetto service this pointer will be valid, but all function
-  // calls will be noops.
-  std::unique_ptr<SystemProducer> system_producer_;
 
   // Platform implementation for the Perfetto client library.
   std::unique_ptr<base::tracing::PerfettoPlatform> platform_;
