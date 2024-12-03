@@ -136,16 +136,15 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
   // This function can only be reached if the redirect heuristic is satisfied
   // for the previous recorded redirect.
   DCHECK(last_commit_timestamp_.has_value());
-  int milliseconds_since_redirect = Bucketize3PCDHeuristicTimeDelta(
-      clock_->Now() - last_commit_timestamp_.value(), base::Minutes(15),
-      base::BindRepeating(&base::TimeDelta::InMilliseconds));
+  int32_t milliseconds_since_redirect = Bucketize3PCDHeuristicSample(
+      (clock_->Now() - last_commit_timestamp_.value()).InMilliseconds(),
+      base::Minutes(15).InMilliseconds());
 
-  int hours_since_last_interaction = -1;
+  int32_t hours_since_last_interaction = -1;
   if (last_user_interaction_time.has_value()) {
-    hours_since_last_interaction = Bucketize3PCDHeuristicTimeDelta(
-        clock_->Now() - last_user_interaction_time.value(), base::Days(60),
-        base::BindRepeating(&base::TimeDelta::InHours)
-            .Then(base::BindRepeating([](int64_t t) { return t; })));
+    hours_since_last_interaction = Bucketize3PCDHeuristicSample(
+        (clock_->Now() - last_user_interaction_time.value()).InHours(),
+        base::Days(60).InHours());
   }
 
   OptionalBool has_same_site_iframe =

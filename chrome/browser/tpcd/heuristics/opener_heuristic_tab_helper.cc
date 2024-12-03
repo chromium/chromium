@@ -224,10 +224,8 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
   auto has_iframe = GetOpenerHasSameSiteIframe(initial_url_);
   int32_t bucketized_time = -1;
   if (auto* time = absl::get_if<base::TimeDelta>(&time_since_interaction_)) {
-    bucketized_time = Bucketize3PCDHeuristicTimeDelta(
-        *time, base::Days(30),
-        base::BindRepeating(&base::TimeDelta::InHours)
-            .Then(base::BindRepeating([](int64_t t) { return t; })));
+    bucketized_time =
+        Bucketize3PCDHeuristicSample(time->InHours(), base::Days(30).InHours());
   }
 
   // Record past interaction in UKM.
@@ -318,9 +316,8 @@ void OpenerHeuristicTabHelper::PopupObserver::RecordInteractionAndCreateGrant(
 
   ukm::builders::OpenerHeuristic_PopupInteraction(
       render_frame_host->GetPageUkmSourceId())
-      .SetSecondsSinceCommitted(Bucketize3PCDHeuristicTimeDelta(
-          time_since_committed, base::Minutes(3),
-          base::BindRepeating(&base::TimeDelta::InSeconds)))
+      .SetSecondsSinceCommitted(Bucketize3PCDHeuristicSample(
+          time_since_committed.InSeconds(), base::Minutes(3).InSeconds()))
       .SetUrlIndex(url_index_)
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_iframe))
       .SetPopupId(popup_id_)
@@ -385,10 +382,9 @@ void OpenerHeuristicTabHelper::EmitPostPopupCookieAccess(
   if (!value.has_value()) {
     return;
   }
-  int32_t hours_since_opener = Bucketize3PCDHeuristicTimeDelta(
-      GetClock()->Now() - value->last_popup_time, base::Days(30),
-      base::BindRepeating(&base::TimeDelta::InHours)
-          .Then(base::BindRepeating([](int64_t t) { return t; })));
+  int32_t hours_since_opener = Bucketize3PCDHeuristicSample(
+      (GetClock()->Now() - value->last_popup_time).InHours(),
+      base::Days(30).InHours());
   OptionalBool is_ad_tagged_cookie = IsAdTaggedCookieForHeuristics(details);
 
   ukm::builders::OpenerHeuristic_PostPopupCookieAccess(source_id)

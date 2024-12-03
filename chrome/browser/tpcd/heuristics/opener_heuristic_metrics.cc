@@ -8,23 +8,10 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/debug/leak_annotations.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
-#include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram.h"
-#include "base/time/time.h"
 
-using base::TimeDelta;
-
-int32_t Bucketize3PCDHeuristicTimeDelta(
-    base::TimeDelta sample_td,
-    base::TimeDelta maximum_td,
-    base::RepeatingCallback<int64_t(const base::TimeDelta*)> cast_time_delta) {
-  constexpr size_t bucket_count = 50;
-  int64_t sample = cast_time_delta.Run(&sample_td);
-  int64_t maximum = cast_time_delta.Run(&maximum_td);
+int32_t Bucketize3PCDHeuristicSample(int64_t sample, int64_t maximum) {
+  static constexpr size_t kBucketCount = 50;
 
   // Clamp the sample between 0 and maximum, and to the max int32 value (only
   // int32 is supported by histograms).
@@ -43,12 +30,12 @@ int32_t Bucketize3PCDHeuristicTimeDelta(
   double log_max = log(static_cast<double>(maximum));
   // Iterate over buckets and return the one closest to the sample.
   // Two of the buckets are 0 and `maximum`. Loop over the remaining buckets.
-  size_t cutoff_count = bucket_count - 2;
-  for (size_t cutoff_index = 0; cutoff_index < cutoff_count; cutoff_index++) {
+  static constexpr size_t kCutoffCount = kBucketCount - 2;
+  for (size_t cutoff_index = 0; cutoff_index < kCutoffCount; ++cutoff_index) {
     // Increment the log of the bucket proportional to the current log over the
     // number of remaining buckets.
     double log_next =
-        log_current + (log_max - log_current) / (cutoff_count - cutoff_index);
+        log_current + (log_max - log_current) / (kCutoffCount - cutoff_index);
     base::Histogram::Sample next = static_cast<int>(std::round(exp(log_next)));
 
     // If the difference between the buckets is too close, just add 1 to the
