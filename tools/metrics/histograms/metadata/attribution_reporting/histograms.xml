@@ -704,6 +704,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.HttpResponseOrNetErrorCode.AppBackgrounded"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-03">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an attribution report, recorded for each report sent
+    on an android device while the chrome application state is 'destroyed'. The
+    HTTP response code is recorded if there is no net error code for the
+    request, or the net error code indicates there was a response code failure.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.HttpResponseOrNetErrorCode.AppDestroyed"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-03">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an attribution report, recorded for each report sent
+    on an android device while the chrome application state is 'stopped'. The
+    HTTP response code is recorded if there is no net error code for the
+    request, or the net error code indicates there was a response code failure.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.HttpResponseOrNetErrorCodeEventLevel"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-30">
   <owner>johnidel@chromium.org</owner>

@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
@@ -35,6 +36,10 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/application_status_listener.h"
+#endif
 
 namespace content {
 
@@ -78,9 +83,29 @@ void NetworkHistogram(std::string_view suffix,
 
 AttributionReportNetworkSender::AttributionReportNetworkSender(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {
+    : url_loader_factory_(std::move(url_loader_factory))
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      application_status_listener_(
+          base::android::ApplicationStatusListener::New(base::BindRepeating(
+              &AttributionReportNetworkSender::OnApplicationStateChanged,
+              // Listener is destroyed at destructor, and
+              // object will be alive for any callback.
+              base::Unretained(this)))) {
+  DCHECK(url_loader_factory_);
+  OnApplicationStateChanged(
+      base::android::ApplicationStatusListener::GetState());
+}
+
+void AttributionReportNetworkSender::OnApplicationStateChanged(
+    base::android::ApplicationState state) {
+  app_state_ = state;
+}
+#else
+{
   DCHECK(url_loader_factory_);
 }
+#endif
 
 AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
 
@@ -248,6 +273,19 @@ void AttributionReportNetworkSender::OnReportSent(
         "Conversions.FirstBatch.HttpResponseOrNetErrorCode",
         response_or_net_error);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (app_state_ == base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES) {
+    base::UmaHistogramSparse(
+        "Conversions.HttpResponseOrNetErrorCode.AppBackgrounded",
+        response_or_net_error);
+  } else if (app_state_ ==
+             base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES) {
+    base::UmaHistogramSparse(
+        "Conversions.HttpResponseOrNetErrorCode.AppDestroyed",
+        response_or_net_error);
+  }
+#endif
 
   std::optional<bool> has_trigger_context_id;
 
