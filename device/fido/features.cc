@@ -168,4 +168,9 @@ BASE_FEATURE(kWebAuthnPasskeyUpgrade,
              "WebAuthenticationPasskeyUpgrade",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Default enabled in M133. Remove in or after M136.
+BASE_FEATURE(kWebAuthnNeverSkipTrustThisComputer,
+             "WebAuthenticationNeverSkipTrustThisComputer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

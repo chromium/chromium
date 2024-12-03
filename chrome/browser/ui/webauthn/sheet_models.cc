@@ -1892,7 +1892,11 @@ std::u16string AuthenticatorTrustThisComputerAssertionSheetModel::
 }
 
 void AuthenticatorTrustThisComputerAssertionSheetModel::OnBack() {
-  dialog_model()->ContactPriorityPhone();
+  if (dialog_model()->priority_phone_name) {
+    dialog_model()->ContactPriorityPhone();
+  } else {
+    dialog_model()->StartOver();
+  }
 }
 
 void AuthenticatorTrustThisComputerAssertionSheetModel::OnAccept() {

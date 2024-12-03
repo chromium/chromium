@@ -1465,8 +1465,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
@@ -1777,8 +1781,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
@@ -2090,13 +2098,18 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // Resolve the connection and wait for the next step.
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
   registration_state_result.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   registration_state_result.key_version = kSecretVersion;
   std::move(connection_cb).Run(std::move(registration_state_result));
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 }
 
@@ -2123,8 +2136,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
             AuthenticatorRequestDialogModel::Step::kPasskeyAutofill);
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnAccountPreselectedIndex(0);
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
@@ -2549,7 +2566,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
@@ -2846,8 +2867,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
@@ -3109,8 +3134,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
@@ -3166,7 +3195,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvPreferred);
   delegate_observer()->WaitForUI();
   model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
@@ -3554,25 +3587,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForDelegateDestruction();
 }
 
-// Tests that have different behaviour when hybrid linking is disabled.
-class HybridParamEnclaveAuthenticatorWithoutPinBrowserTest
-    : public EnclaveAuthenticatorWithoutPinBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(device::kWebAuthnHybridLinking,
-                                              GetParam());
-    EnclaveAuthenticatorWithoutPinBrowserTest::SetUp();
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Attempt a GetAssertion multiple times with GPM passkey bootstrapping
 // offered, and decline each time. The default should change away from GPM after
 // two times declined.
-IN_PROC_BROWSER_TEST_P(HybridParamEnclaveAuthenticatorWithoutPinBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        MultipleDeclinedBootstrappings) {
   EnableUVKeySupport();
   delegate_observer()->SetUseSyncedDeviceCablePairing(/*use_pairing=*/true);
@@ -3597,9 +3615,7 @@ IN_PROC_BROWSER_TEST_P(HybridParamEnclaveAuthenticatorWithoutPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking)
-          ? AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion
-          : AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
@@ -3614,9 +3630,7 @@ IN_PROC_BROWSER_TEST_P(HybridParamEnclaveAuthenticatorWithoutPinBrowserTest,
 
   // ...and select it again from the mechanism list.
   model_observer()->SetStepToObserve(
-      base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking)
-          ? AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion
-          : AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   EXPECT_TRUE(base::ranges::any_of(
       dialog_model()->mechanisms,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
@@ -3653,10 +3667,6 @@ IN_PROC_BROWSER_TEST_P(HybridParamEnclaveAuthenticatorWithoutPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kMechanismSelection);
 }
-
-INSTANTIATE_TEST_SUITE_P(HybridLinkingEnabled,
-                         HybridParamEnclaveAuthenticatorWithoutPinBrowserTest,
-                         testing::Values(false, true));
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        ChangedPINDetectedWhenDoingUV) {
@@ -3816,8 +3826,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
@@ -3892,8 +3906,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, Bug_354083161) {
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
@@ -3954,8 +3972,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(

@@ -1000,7 +1000,9 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
     case AccountState::kRecoverable:
     case AccountState::kIrrecoverable:
-      if (model_->priority_phone_name.has_value()) {
+      if (base::FeatureList::IsEnabled(
+              device::kWebAuthnNeverSkipTrustThisComputer) ||
+          model_->priority_phone_name.has_value()) {
         device::enclave::RecordEvent(device::enclave::Event::kOnboarding);
         model_->SetStep(Step::kTrustThisComputerAssertion);
       } else {
