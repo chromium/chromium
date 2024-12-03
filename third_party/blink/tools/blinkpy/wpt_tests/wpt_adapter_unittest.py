@@ -72,7 +72,7 @@ class WPTAdapterTest(unittest.TestCase):
         self.fs.write_text_file(
             self.finder.path_from_wpt_tests('MANIFEST.json'),
             json.dumps({
-                'version': 8,
+                'version': 9,
                 'items': {
                     'reftest': {
                         'dir': {
@@ -87,7 +87,7 @@ class WPTAdapterTest(unittest.TestCase):
         self.fs.write_text_file(
             self.finder.path_from_web_tests('wpt_internal', 'MANIFEST.json'),
             json.dumps({
-                'version': 8,
+                'version': 9,
                 'url_base': '/wpt_internal/',
                 'items': {
                     'testharness': {

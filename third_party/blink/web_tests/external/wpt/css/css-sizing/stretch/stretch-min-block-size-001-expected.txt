@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[FAIL] [data-expected-height] 8
+  assert_equals: \n<div class="test" style="position: absolute" data-expected-height="50"></div>\nheight expected 50 but got 55
+[FAIL] [data-expected-height] 9
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-start: 10px" data-expected-height="45"></div>\nheight expected 45 but got 55
+[FAIL] [data-expected-height] 10
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-end: 10px" data-expected-height="45"></div>\nheight expected 45 but got 55
+[FAIL] [data-expected-height] 11
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-end: 55px" data-expected-height="10"></div>\nheight expected 10 but got 55
+[FAIL] [data-expected-height] 12
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-start: 55px" data-expected-height="10"></div>\nheight expected 10 but got 55
+[FAIL] [data-expected-height] 15
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-start: 10px" data-expected-height="45"></div>\nheight expected 45 but got 55
+[FAIL] [data-expected-height] 16
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-end: 10px" data-expected-height="45"></div>\nheight expected 45 but got 55
+[FAIL] [data-expected-height] 17
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-end: 55px" data-expected-height="10"></div>\nheight expected 10 but got 55
+[FAIL] [data-expected-height] 18
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-start: 55px" data-expected-height="10"></div>\nheight expected 10 but got 55
+[FAIL] [data-expected-height] 31
+  assert_equals: \n<div class="test" style="position: absolute; box-sizing: border-box;" data-expected-height="50"></div>\nheight expected 50 but got 55
+[FAIL] [data-expected-height] 32
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-start: 10px; box-sizing: border-box;" data-expected-height="45"></div>\nheight expected 45 but got 55
+[FAIL] [data-expected-height] 33
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-end: 10px; box-sizing: border-box;" data-expected-height="45"></div>\nheight expected 45 but got 55
+[FAIL] [data-expected-height] 34
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-end: 55px; box-sizing: border-box;" data-expected-height="10"></div>\nheight expected 10 but got 55
+[FAIL] [data-expected-height] 35
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-start: 55px; box-sizing: border-box;" data-expected-height="10"></div>\nheight expected 10 but got 55
+[FAIL] [data-expected-height] 38
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-start: 10px; box-sizing: border-box;" data-expected-height="45"></div>\nheight expected 45 but got 55
+[FAIL] [data-expected-height] 39
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-end: 10px; box-sizing: border-box;" data-expected-height="45"></div>\nheight expected 45 but got 55
+[FAIL] [data-expected-height] 40
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-end: 55px; box-sizing: border-box;" data-expected-height="10"></div>\nheight expected 10 but got 55
+[FAIL] [data-expected-height] 41
+  assert_equals: \n<div class="test" style="position: absolute; inset-block-start: 55px; box-sizing: border-box;" data-expected-height="10"></div>\nheight expected 10 but got 55
+Harness: the test ran to completion.
+
