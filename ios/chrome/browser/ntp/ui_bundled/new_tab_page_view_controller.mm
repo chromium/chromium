@@ -521,11 +521,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   self.collectionView.clipsToBounds = NO;
 
   [self.overscrollActionsController invalidate];
-
-  // Only re-configure `overscrollActionsController`.
-  if (self.overscrollActionsController) {
-    [self configureOverscrollActionsController];
-  }
+  [self configureOverscrollActionsController];
 
   // Update NTP collection view constraints to ensure the layout adapts to
   // changes in feed visibility.
@@ -843,10 +839,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   // now replaced. In these cases, ignore the scroll event.
   if (scrollView != self.collectionView) {
     return;
-  }
-
-  if (!self.overscrollActionsController) {
-    [self configureOverscrollActionsController];
   }
 
   // User has interacted with the surface, so it is safe to assume that a saved

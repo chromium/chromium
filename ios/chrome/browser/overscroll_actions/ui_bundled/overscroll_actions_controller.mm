@@ -166,9 +166,6 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   // Records if a transition to the overscroll state ACTION_READY was made.
   // This is used to record a cancel gesture.
   BOOL _didTransitionToActionReady;
-  // Records that the controller will be dismissed at the end of the current
-  // animation. No new action should be started.
-  BOOL _shouldInvalidate;
   // Store the set of notifications that did increment the overscroll actions
   // lock. It is used in order to enforce the fact that the lock should only be
   // incremented/decremented once for a given notification.
@@ -331,14 +328,6 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   return gInstanceCount;
 }
 
-- (void)scheduleInvalidate {
-  if (self.overscrollState == OverscrollState::NO_PULL_STARTED) {
-    [self invalidate];
-  } else {
-    _shouldInvalidate = YES;
-  }
-}
-
 - (void)invalidate {
   [self clear];
   [self stopBounce];
@@ -394,7 +383,7 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   CGFloat topMargin = 0;
   if (!_webViewProxy)
     topMargin = self.scrollView.safeAreaInsets.top;
-  if (contentOffsetFromExpandedHeader >= 0) {
+  if (round(contentOffsetFromExpandedHeader) >= 0) {
     // Record initial content offset and dispatch delegate on state change.
     self.overscrollState = OverscrollState::NO_PULL_STARTED;
   } else {
@@ -679,6 +668,10 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 }
 
 - (void)setup {
+  if (self.panGestureRecognizer) {
+    return;
+  }
+
   UIPanGestureRecognizer* panGesture;
   // Workaround a bug occurring when Speak Selection is enabled.
   // See crbug.com/699655.
@@ -838,9 +831,6 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
       self.panPointScreenOrigin = CGPointZero;
       [self resetScrollViewTopContentInset];
       self.disablingFullscreen = NO;
-      if (_shouldInvalidate) {
-        [self invalidate];
-      }
     } break;
     case OverscrollState::STARTED_PULLING: {
       if (!self.overscrollActionView.superview && self.scrollViewDragged) {
@@ -960,9 +950,6 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 #pragma mark - Bounce dynamic
 
 - (void)startBounceWithInitialVelocity:(CGPoint)velocity {
-  if (_shouldInvalidate) {
-    return;
-  }
   [self stopBounce];
   CADisplayLink* dpLink =
       [CADisplayLink displayLinkWithTarget:self
@@ -1039,9 +1026,6 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 
 - (void)overscrollActionsViewDidTapTriggerAction:
     (OverscrollActionsView*)overscrollActionsView {
-  if (_shouldInvalidate) {
-    return;
-  }
   [self.overscrollActionView displayActionAnimation];
   [self
       recordMetricForTriggeredAction:self.overscrollActionView.selectedAction];
