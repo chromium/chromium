@@ -105,7 +105,6 @@ bool HoldingSpaceItem::IsDownloadType(HoldingSpaceItem::Type type) {
   switch (type) {
     case Type::kArcDownload:
     case Type::kDownload:
-    case Type::kLacrosDownload:
       return true;
     case Type::kDiagnosticsLog:
     case Type::kDriveSuggestion:
@@ -134,7 +133,6 @@ bool HoldingSpaceItem::IsScreenCaptureType(HoldingSpaceItem::Type type) {
     case Type::kDiagnosticsLog:
     case Type::kDownload:
     case Type::kDriveSuggestion:
-    case Type::kLacrosDownload:
     case Type::kLocalSuggestion:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
@@ -155,7 +153,6 @@ bool HoldingSpaceItem::IsSuggestionType(HoldingSpaceItem::Type type) {
     case Type::kArcDownload:
     case Type::kDiagnosticsLog:
     case Type::kDownload:
-    case Type::kLacrosDownload:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
     case Type::kPhotoshopWeb:

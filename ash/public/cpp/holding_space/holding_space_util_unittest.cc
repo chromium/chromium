@@ -202,7 +202,6 @@ TEST_F(HoldingSpaceUtilTest, GetAllItemTypes) {
       case HoldingSpaceItem::Type::kDiagnosticsLog:
       case HoldingSpaceItem::Type::kDownload:
       case HoldingSpaceItem::Type::kDriveSuggestion:
-      case HoldingSpaceItem::Type::kLacrosDownload:
       case HoldingSpaceItem::Type::kLocalSuggestion:
       case HoldingSpaceItem::Type::kNearbyShare:
       case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
@@ -311,9 +310,6 @@ TEST_F(HoldingSpaceUtilTest, ItemTypeToString) {
         break;
       case HoldingSpaceItem::Type::kDriveSuggestion:
         expected_string = "DriveSuggestion";
-        break;
-      case HoldingSpaceItem::Type::kLacrosDownload:
-        expected_string = "LacrosDownload";
         break;
       case HoldingSpaceItem::Type::kLocalSuggestion:
         expected_string = "LocalSuggestion";

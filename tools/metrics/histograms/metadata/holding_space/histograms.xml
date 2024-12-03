@@ -53,7 +53,6 @@ chromium-metrics-reviews@google.com.
   <variant name="DiagnosticsLog" summary="Diagnostics app log"/>
   <variant name="Download" summary="Ash-Chrome download"/>
   <variant name="DriveSuggestion" summary="Drive suggestion"/>
-  <variant name="LacrosDownload" summary="Lacros-Chrome download"/>
   <variant name="LocalSuggestion" summary="local suggestion"/>
   <variant name="NearbyShare" summary="Nearby Share"/>
   <variant name="PhoneHubCameraRoll" summary="Phone Hub camera roll"/>

@@ -86,7 +86,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kArcDownload = 5,
     kPrintedPdf = 6,
     kDiagnosticsLog = 7,
-    kLacrosDownload = 8,
+    // kLacrosDownload = 8, Deprecated.
     kScan = 9,
     kPhoneHubCameraRoll = 10,
     kDriveSuggestion = 11,
