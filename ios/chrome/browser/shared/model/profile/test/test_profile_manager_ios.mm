@@ -10,6 +10,7 @@
 #import "base/files/file_path.h"
 #import "base/test/test_file_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -72,16 +73,19 @@ std::vector<ProfileIOS*> TestProfileManagerIOS::GetLoadedProfiles() const {
 }
 
 bool TestProfileManagerIOS::HasProfileWithName(std::string_view name) const {
-  return profiles_map_.find(name) != profiles_map_.end();
+  return profile_attributes_storage_.HasProfileWithName(name);
 }
 
 bool TestProfileManagerIOS::CanCreateProfileWithName(
     std::string_view name) const {
-  return true;
+  return !HasProfileWithName(name);
 }
 
 std::string TestProfileManagerIOS::ReserveNewProfileName() {
-  NOTREACHED();
+  std::string name = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  CHECK(CanCreateProfileWithName(name));
+  profile_attributes_storage_.AddProfile(name);
+  return name;
 }
 
 bool TestProfileManagerIOS::LoadProfileAsync(
@@ -121,7 +125,7 @@ ProfileIOS* TestProfileManagerIOS::LoadProfile(std::string_view name) {
 }
 
 ProfileIOS* TestProfileManagerIOS::CreateProfile(std::string_view name) {
-  // TestProfileManagerIOS cannot create nor load a Profile, so the/
+  // TestProfileManagerIOS cannot create nor load a Profile, so the
   // implementation is equivalent to GetProfileWithName(...).
   return GetProfileWithName(name);
 }
@@ -152,10 +156,17 @@ TestProfileManagerIOS::GetProfileAttributesStorage() {
 
 TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
     TestProfileIOS::Builder builder) {
-  // The ProfileAttributesStorage entry needs to be created before the actual
-  // profile initialization gets kicked off, because the AccountProfileMapper
-  // depends on it.
-  profile_attributes_storage_.AddProfile(builder.GetEffectiveName());
+  const std::string profile_name = builder.GetEffectiveName();
+  if (profile_attributes_storage_.HasProfileWithName(profile_name)) {
+    CHECK(profile_attributes_storage_
+              .GetAttributesForProfileWithName(profile_name)
+              .IsNewProfile());
+  } else {
+    // The ProfileAttributesStorage entry needs to be created before the actual
+    // profile initialization gets kicked off, because the AccountProfileMapper
+    // depends on it.
+    profile_attributes_storage_.AddProfile(profile_name);
+  }
 
   // If this is the first profile ever loaded, mark it as the personal profile.
   if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
@@ -167,7 +178,6 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   // `profile_data_dir_` (i.e. GetStatePath().DirName() == `profile_data_dir_`).
   auto profile = std::move(builder).Build(profile_data_dir_);
 
-  const std::string profile_name = profile->GetProfileName();
   auto [iterator, insertion_success] =
       profiles_map_.insert(std::make_pair(profile_name, std::move(profile)));
   DCHECK(insertion_success);
@@ -175,6 +185,14 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   for (auto& observer : observers_) {
     observer.OnProfileCreated(this, iterator->second.get());
   }
+
+  // Before notifying observers that the profile was loaded, mark it as
+  // no-longer-new.
+  profile_attributes_storage_.UpdateAttributesForProfileWithName(
+      profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
+        attrs.ClearIsNewProfile();
+        return attrs;
+      }));
 
   for (auto& observer : observers_) {
     observer.OnProfileLoaded(this, iterator->second.get());
