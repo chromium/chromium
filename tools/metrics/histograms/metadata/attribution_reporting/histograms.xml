@@ -1041,6 +1041,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.RegistrationProcessed.TimeSinceLastRegistration"
+    units="ms" expires_after="2025-03-30">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the amount of time passed between the last received registration and
+    a new incoming registration. Recorded when a valid header with at least one
+    registration is received.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegistrationProcessed.TimeSinceManagerStartup"
+    units="ms" expires_after="2025-03-30">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the amount of time passed the initialization of AttributionManager
+    and the first incoming registration within the session. Recorded when a
+    valid header with at least one registration is received.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.RegistrationsPerRedirectChain"
     units="registrations" expires_after="2025-03-30">
   <owner>linnan@chromium.org</owner>
