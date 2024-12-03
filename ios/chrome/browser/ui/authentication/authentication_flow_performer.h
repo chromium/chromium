@@ -52,6 +52,7 @@ class ProfileIOS;
 // `hostedDomain`. The confirmation dialog's content will be different depending
 // on the status of User Policy.
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
+                                     userEmail:(NSString*)userEmail
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser;
 

@@ -343,6 +343,7 @@ enum class CancelationReason {
     case SHOW_MANAGED_CONFIRMATION: {
       [_performer
           showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
+                                       userEmail:_identityToSignIn.userEmail
                                   viewController:_presentingViewController
                                          browser:_browser];
       return;

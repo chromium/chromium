@@ -44,6 +44,8 @@
       initWithUserEmail:_userEmail
            hostedDomain:_hostedDomain];
   _viewController.delegate = self;
+  _viewController.managedProfileCreationViewControllerPresentationDelegate =
+      self;
   _viewController.modalInPresentation = YES;
 
   [self.baseViewController presentViewController:_viewController
@@ -52,8 +54,13 @@
 }
 
 - (void)stop {
-  _viewController.delegate = nil;
-  _viewController = nil;
+  if (_viewController) {
+    [_viewController dismissViewControllerAnimated:YES completion:nil];
+    _viewController.delegate = nil;
+    _viewController.managedProfileCreationViewControllerPresentationDelegate =
+        nil;
+    _viewController = nil;
+  }
   [super stop];
 }
 
@@ -61,10 +68,14 @@
 
 - (void)didTapPrimaryActionButton {
   [_viewController dismissViewControllerAnimated:YES completion:nil];
+  _viewController = nil;
+  [self.delegate managedProfileCreationCoordinator:self didAccept:YES];
 }
 
 - (void)didTapSecondaryActionButton {
   [_viewController dismissViewControllerAnimated:YES completion:nil];
+  _viewController = nil;
+  [self.delegate managedProfileCreationCoordinator:self didAccept:NO];
 }
 
 @end

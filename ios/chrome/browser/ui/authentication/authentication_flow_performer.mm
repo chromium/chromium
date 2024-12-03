@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -62,9 +63,14 @@ NSString* const kAuthenticationSnackbarCategory =
 
 }  // namespace
 
+@interface AuthenticationFlowPerformer () <
+    ManagedProfileCreationCoordinatorDelegate>
+@end
 
 @implementation AuthenticationFlowPerformer {
   __weak id<AuthenticationFlowPerformerDelegate> _delegate;
+  // Dialog for the managed confirmation dialog.
+  ManagedProfileCreationCoordinator* _managedConfirmationScreenCoordinator;
   // Dialog for the managed confirmation dialog.
   AlertCoordinator* _managedConfirmationAlertCoordinator;
   // Dialog to display an error.
@@ -86,6 +92,8 @@ NSString* const kAuthenticationSnackbarCategory =
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
+  [_managedConfirmationScreenCoordinator stop];
+  _managedConfirmationScreenCoordinator = nil;
   [_managedConfirmationAlertCoordinator stop];
   _managedConfirmationAlertCoordinator = nil;
   [_errorAlertCoordinator stop];
@@ -139,8 +147,10 @@ NSString* const kAuthenticationSnackbarCategory =
 }
 
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
+                                     userEmail:(NSString*)userEmail
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser {
+  DCHECK(!_managedConfirmationScreenCoordinator);
   DCHECK(!_managedConfirmationAlertCoordinator);
   DCHECK(!_errorAlertCoordinator);
 
@@ -148,18 +158,23 @@ NSString* const kAuthenticationSnackbarCategory =
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                               "ManagedConfirmationDialog_Presented"));
 
+  if (IsManagedProfileCreationUpdatedScreenEnabled()) {
+    _managedConfirmationScreenCoordinator =
+        [[ManagedProfileCreationCoordinator alloc]
+            initWithBaseViewController:viewController
+                             userEmail:userEmail
+                          hostedDomain:hostedDomain
+                               browser:browser];
+    _managedConfirmationScreenCoordinator.delegate = self;
+    [_managedConfirmationScreenCoordinator start];
+    return;
+  }
   __weak AuthenticationFlowPerformer* weakSelf = self;
   ProceduralBlock acceptBlock = ^{
-    base::RecordAction(
-        base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
-                                "ManagedConfirmationDialog_Confirmed"));
-    [weakSelf managedConfirmationAlertAccepted];
+    [weakSelf managedConfirmationAlertAccepted:YES];
   };
   ProceduralBlock cancelBlock = ^{
-    base::RecordAction(
-        base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
-                                "ManagedConfirmationDialog_Canceled"));
-    [weakSelf managedConfirmationAlertCanceled];
+    [weakSelf managedConfirmationAlertAccepted:NO];
   };
   _managedConfirmationAlertCoordinator =
       ManagedConfirmationDialogContentForHostedDomain(
@@ -242,6 +257,7 @@ NSString* const kAuthenticationSnackbarCategory =
                  withCompletion:(ProceduralBlock)callback
                  viewController:(UIViewController*)viewController
                         browser:(Browser*)browser {
+  DCHECK(!_managedConfirmationScreenCoordinator);
   DCHECK(!_managedConfirmationAlertCoordinator);
   DCHECK(!_errorAlertCoordinator);
 
@@ -441,39 +457,65 @@ NSString* const kAuthenticationSnackbarCategory =
 }
 
 // Callback for when the alert is dismissed.
-- (void)alertControllerDidDisappear:(AlertCoordinator*)alertCoordinator {
-  if (_managedConfirmationAlertCoordinator == alertCoordinator) {
-    _managedConfirmationAlertCoordinator = nil;
-    return;
-  } else if (_errorAlertCoordinator == alertCoordinator) {
-    _errorAlertCoordinator = nil;
-    return;
-  }
-  NOTREACHED(base::NotFatalUntil::M136);
+- (void)alertControllerDidDisappear:(ChromeCoordinator*)coordinator {
+  CHECK(!_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
+  CHECK(!_managedConfirmationScreenCoordinator, base::NotFatalUntil::M136);
+  CHECK(_errorAlertCoordinator, base::NotFatalUntil::M136);
+  [_errorAlertCoordinator stop];
+  _errorAlertCoordinator = nil;
 }
 
-- (void)managedConfirmationAlertAccepted {
+// Called when `_managedConfirmationAlertCoordinator` is finished.
+// `accepted` is YES when the user confirmed or NO if the user canceled.
+- (void)managedConfirmationAlertAccepted:(BOOL)accepted {
   CHECK(_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
+  CHECK(!_errorAlertCoordinator, base::NotFatalUntil::M136);
+  CHECK(!_managedConfirmationScreenCoordinator, base::NotFatalUntil::M136);
+  Browser* browser = _managedConfirmationAlertCoordinator.browser;
+  [_managedConfirmationAlertCoordinator stop];
+  _managedConfirmationAlertCoordinator = nil;
+  [self managedConfirmationDidAccept:accepted browser:browser];
+}
+
+// Called when the user accepted to continue to sign-in with a managed account.
+// `accepted` is YES when the user confirmed or NO if the user canceled.
+- (void)managedConfirmationDidAccept:(BOOL)accepted browser:(Browser*)browser {
+  if (!accepted) {
+    base::RecordAction(
+        base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
+                                "ManagedConfirmationDialog_Canceled"));
+    [self.delegate didCancelManagedConfirmation];
+    return;
+  }
+  base::RecordAction(
+      base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
+                              "ManagedConfirmationDialog_Confirmed"));
   // TODO(crbug.com/40225944): Nullify the browser object in the
   // AlertCoordinator when the coordinator is stopped to avoid using the
   // browser object at that moment, in which case the browser object may have
   // been deleted before the callback block is called. This is to avoid
   // potential bad memory accesses.
-  if (Browser* alertedBrowser = _managedConfirmationAlertCoordinator.browser) {
-    PrefService* prefService = alertedBrowser->GetProfile()->GetPrefs();
+  if (browser) {
+    PrefService* prefService = browser->GetProfile()->GetPrefs();
     // TODO(crbug.com/40225352): Remove this line once we determined that the
     // notification isn't needed anymore.
     [self updateUserPolicyNotificationStatusIfNeeded:prefService];
   }
-
-  [self alertControllerDidDisappear:_managedConfirmationAlertCoordinator];
   [self.delegate didAcceptManagedConfirmation];
 }
 
-- (void)managedConfirmationAlertCanceled {
-  CHECK(_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
-  [self alertControllerDidDisappear:_managedConfirmationAlertCoordinator];
-  [self.delegate didCancelManagedConfirmation];
+#pragma mark - ManagedProfileCreationCoordinatorDelegate
+
+- (void)managedProfileCreationCoordinator:
+            (ManagedProfileCreationCoordinator*)coordinator
+                                didAccept:(BOOL)accepted {
+  CHECK(!_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
+  CHECK(!_errorAlertCoordinator, base::NotFatalUntil::M136);
+  CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
+  Browser* browser = _managedConfirmationScreenCoordinator.browser;
+  [_managedConfirmationScreenCoordinator stop];
+  _managedConfirmationScreenCoordinator = nil;
+  [self managedConfirmationDidAccept:accepted browser:browser];
 }
 
 @end

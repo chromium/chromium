@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -187,6 +188,7 @@ class AuthenticationFlowTest : public PlatformTest {
         managed_confirmation_dialog_shown_count_++;
         [authentication_flow_ didAcceptManagedConfirmation];
       }] showManagedConfirmationForHostedDomain:hosted_domain
+                                      userEmail:user_email
                                  viewController:view_controller_
                                         browser:browser_.get()];
 
@@ -261,6 +263,23 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
   // a registration when the account isn't managed.
   scoped_feature_list.InitAndEnableFeature(
       policy::kUserPolicyForSigninOrSyncConsentLevel);
+
+  SignIn(identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
+
+  histogram_tester_.ExpectUniqueSample("Signin.AccountType.SigninConsent",
+                                       SigninAccountType::kRegular, 1);
+}
+
+// Tests a Sign In of a normal account on the same profile using a navigatiion
+// controller.
+TEST_F(AuthenticationFlowTest, TestSignInNewScreen) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Enable user policy to make sure that the authentication flow doesn't try
+  // a registration when the account isn't managed.
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{policy::kUserPolicyForSigninOrSyncConsentLevel,
+                            kManagedProfileCreationUpdatedScreen},
+      /*disabled_features=*/{});
 
   SignIn(identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 

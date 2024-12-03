@@ -8,6 +8,16 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class ManagedProfileCreationCoordinator;
+
+@protocol ManagedProfileCreationCoordinatorDelegate <NSObject>
+
+- (void)managedProfileCreationCoordinator:
+            (ManagedProfileCreationCoordinator*)coordinator
+                                didAccept:(BOOL)didAccept;
+
+@end
+
 // Coordinator to present managed profile creation.
 @interface ManagedProfileCreationCoordinator : ChromeCoordinator
 
@@ -23,6 +33,10 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+@property(nonatomic, weak) id<ManagedProfileCreationCoordinatorDelegate>
+    delegate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ENTERPRISE_MANAGED_PROFILE_CREATION_MANAGED_PROFILE_CREATION_COORDINATOR_H_
