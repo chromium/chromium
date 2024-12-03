@@ -15,6 +15,8 @@ enum class DecoderType {
   kBmpDecoder,
   kJpegDecoder,
   kPngDecoder,
+  kAvifDecoder,
+  kCrabbyAvifDecoder,
 };
 
 std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,
