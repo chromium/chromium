@@ -21,11 +21,7 @@ namespace arc {
 namespace internal {
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 using RawIconPngDataPtr = mojom::RawIconPngDataPtr;
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-using RawIconPngDataPtr = crosapi::mojom::RawIconPngDataPtr;
-#endif
 
 void OnIconsReady0(
     std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> activity_to_icons) {
