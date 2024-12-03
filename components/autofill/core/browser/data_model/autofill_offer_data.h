@@ -41,9 +41,6 @@ class AutofillOfferData {
     GPAY_CARD_LINKED_OFFER,
     // GPay-activated promo code offer.
     GPAY_PROMO_CODE_OFFER,
-    // TODO(b/351080010): Remove this type.
-    // Promo code offer from the FreeListingCouponService. DEPRECATED.
-    FREE_LISTING_COUPON_OFFER,
   };
 
   // Returns an AutofillOfferData for a GPay card-linked offer.
@@ -55,17 +52,6 @@ class AutofillOfferData {
       const DisplayStrings& display_strings,
       const std::vector<int64_t>& eligible_instrument_id,
       const std::string& offer_reward_amount);
-  // TODO(b/351080010): remove this function.
-  // Returns an AutofillOfferData for a free-listing coupon offer.
-  static AutofillOfferData FreeListingCouponOffer(
-      int64_t offer_id,
-      base::Time expiry,
-      const std::vector<GURL>& merchant_origins,
-      const GURL& offer_details_url,
-      const DisplayStrings& display_strings,
-      const std::string& promo_code,
-      bool is_merchant_wide = false,
-      std::optional<std::string> terms_and_conditions = std::nullopt);
   // Returns an AutofillOfferData for a GPay promo code offer.
   static AutofillOfferData GPayPromoCodeOffer(
       int64_t offer_id,

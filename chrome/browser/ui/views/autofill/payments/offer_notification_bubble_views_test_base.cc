@@ -146,8 +146,6 @@ void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
       SetUpCardLinkedOfferDataWithDomains(domains);
       break;
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
-      break;
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       SetUpGPayPromoCodeOfferDataWithDomains(domains);
       break;
