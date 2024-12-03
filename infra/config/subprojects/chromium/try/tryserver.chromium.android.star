@@ -1333,6 +1333,8 @@ try_.builder(
     contact_team_email = "cast-eng@google.com",
     tryjob = try_.job(
         location_filters = [
+            "build/android/.+",
+            "build/config/android/.+",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1353,6 +1355,8 @@ try_.builder(
     contact_team_email = "cast-eng@google.com",
     tryjob = try_.job(
         location_filters = [
+            "build/android/.+",
+            "build/config/android/.+",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1373,6 +1377,8 @@ try_.builder(
     contact_team_email = "cast-eng@google.com",
     tryjob = try_.job(
         location_filters = [
+            "build/android/.+",
+            "build/config/android/.+",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1393,6 +1399,8 @@ try_.builder(
     contact_team_email = "cast-eng@google.com",
     tryjob = try_.job(
         location_filters = [
+            "build/android/.+",
+            "build/config/android/.+",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
