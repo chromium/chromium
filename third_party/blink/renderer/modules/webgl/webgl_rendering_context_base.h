@@ -637,7 +637,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   SkColorInfo CanvasRenderingContextSkColorInfo() const override;
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
-  void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
 
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 

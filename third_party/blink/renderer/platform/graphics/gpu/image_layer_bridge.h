@@ -47,7 +47,6 @@ class PLATFORM_EXPORT ImageLayerBridge
 
   cc::Layer* CcLayer() const;
 
-  void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
 
   bool IsAccelerated() { return image_ && image_->IsTextureBacked(); }

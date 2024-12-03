@@ -77,7 +77,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
   void PageVisibilityChanged() override {}
   bool isContextLost() const override { return false; }
   bool IsComposited() const final { return true; }
-  void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
   bool IsPaintable() const final { return true; }
   int ExternallyAllocatedBufferCountPerPixel() final { return 1; }
   void Stop() final;
@@ -132,8 +131,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
 
-  cc::PaintFlags::FilterQuality filter_quality_ =
-      cc::PaintFlags::FilterQuality::kLow;
   Member<GPUDevice> device_;
 
   // If the system doesn't support the requested format but it's one that WebGPU

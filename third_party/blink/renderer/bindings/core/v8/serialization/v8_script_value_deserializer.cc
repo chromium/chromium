@@ -593,20 +593,16 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           std::move(serialized_script_value_->MojoHandles()[index]));
     }
     case kOffscreenCanvasTransferTag: {
-      uint32_t width = 0, height = 0, canvas_id = 0, client_id = 0, sink_id = 0,
-               filter_quality = 0;
+      uint32_t width = 0, height = 0, canvas_id = 0, client_id = 0, sink_id = 0;
       if (!ReadUint32(&width) || !ReadUint32(&height) ||
           !ReadUint32(&canvas_id) || !ReadUint32(&client_id) ||
-          !ReadUint32(&sink_id) || !ReadUint32(&filter_quality))
+          !ReadUint32(&sink_id)) {
         return nullptr;
+      }
       OffscreenCanvas* canvas =
           OffscreenCanvas::Create(GetScriptState(), width, height);
       canvas->SetPlaceholderCanvasId(canvas_id);
       canvas->SetFrameSinkId(client_id, sink_id);
-      if (filter_quality == 0)
-        canvas->SetFilterQuality(cc::PaintFlags::FilterQuality::kNone);
-      else
-        canvas->SetFilterQuality(cc::PaintFlags::FilterQuality::kLow);
       return canvas;
     }
     case kReadableStreamTransferTag: {

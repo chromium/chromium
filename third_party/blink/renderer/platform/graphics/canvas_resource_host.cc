@@ -52,14 +52,6 @@ void CanvasResourceHost::DiscardResourceProvider() {
   UpdateMemoryUsage();
 }
 
-void CanvasResourceHost::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  filter_quality_ = filter_quality;
-  if (cc_layer_) {
-    cc_layer_->SetFilterQuality(filter_quality);
-  }
-}
-
 void CanvasResourceHost::SetPreferred2DRasterMode(RasterModeHint hint) {
   // TODO(junov): move code that switches between CPU and GPU rasterization
   // to here.

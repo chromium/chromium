@@ -59,10 +59,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
 
-  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
-  cc::PaintFlags::FilterQuality FilterQuality() const {
-    return filter_quality_;
-  }
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
   const gfx::HDRMetadata& GetHDRMetadata() const { return hdr_metadata_; }
 
@@ -136,8 +132,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   unsigned frames_since_last_commit_ = 0;
   std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
-  cc::PaintFlags::FilterQuality filter_quality_ =
-      cc::PaintFlags::FilterQuality::kLow;
   gfx::HDRMetadata hdr_metadata_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
   gfx::Size size_;

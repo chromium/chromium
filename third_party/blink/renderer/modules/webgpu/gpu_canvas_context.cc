@@ -217,16 +217,6 @@ bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
                                          dst_color_space, std::move(callback));
 }
 
-void GPUCanvasContext::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (filter_quality != filter_quality_) {
-    filter_quality_ = filter_quality;
-    if (swap_buffers_) {
-      swap_buffers_->SetFilterQuality(filter_quality);
-    }
-  }
-}
-
 bool GPUCanvasContext::PushFrame() {
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
@@ -562,7 +552,6 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       this, device_->GetDawnControlClient(), device_->GetHandle(),
       swap_texture_descriptor_.usage, internal_usage,
       swap_texture_descriptor_.format, color_space_, hdr_metadata));
-  swap_buffers_->SetFilterQuality(filter_quality_);
 
   // Note: SetContentsOpaque is only an optimization hint. It doesn't
   // actually make the contents opaque.

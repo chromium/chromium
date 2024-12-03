@@ -1324,7 +1324,7 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       std::move(context_provider), graphics_info, using_swap_chain, this,
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, desynchronized,
-      preserve, web_gl_version, chromium_image_usage, Host()->FilterQuality(),
+      preserve, web_gl_version, chromium_image_usage,
       drawing_buffer_color_space_,
       PowerPreferenceToGpuPreference(attrs.power_preference));
 }
@@ -7200,13 +7200,6 @@ void WebGLRenderingContextBase::SetHdrMetadata(
     const gfx::HDRMetadata& hdr_metadata) {
   if (!isContextLost() && GetDrawingBuffer()) {
     GetDrawingBuffer()->SetHdrMetadata(hdr_metadata);
-  }
-}
-
-void WebGLRenderingContextBase::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (!isContextLost() && GetDrawingBuffer()) {
-    GetDrawingBuffer()->SetFilterQuality(filter_quality);
   }
 }
 

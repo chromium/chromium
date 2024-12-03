@@ -77,16 +77,6 @@ cc::Layer* WebGPUSwapBufferProvider::CcLayer() {
   return layer_.get();
 }
 
-void WebGPUSwapBufferProvider::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (filter_quality != filter_quality_) {
-    filter_quality_ = filter_quality;
-    if (layer_) {
-      layer_->SetFilterQuality(filter_quality_);
-    }
-  }
-}
-
 void WebGPUSwapBufferProvider::ReleaseWGPUTextureAccessIfNeeded() {
   if (!current_swap_buffer_ || !current_swap_buffer_->mailbox_texture) {
     return;

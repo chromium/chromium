@@ -125,15 +125,6 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
   has_presented_since_last_set_image_ = false;
 }
 
-void ImageLayerBridge::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (disposed_) {
-    return;
-  }
-
-  layer_->SetFilterQuality(filter_quality);
-}
-
 void ImageLayerBridge::SetUV(const gfx::PointF& left_top,
                              const gfx::PointF& right_bottom) {
   if (disposed_)

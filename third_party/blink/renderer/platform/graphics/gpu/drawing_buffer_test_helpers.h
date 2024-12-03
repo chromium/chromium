@@ -466,7 +466,6 @@ class DrawingBufferForTests : public DrawingBuffer {
             false /* wantDepth */,
             false /* wantStencil */,
             DrawingBuffer::kAllowChromiumImage /* ChromiumImageUsage */,
-            cc::PaintFlags::FilterQuality::kLow,
             PredefinedColorSpace::kSRGB,
             gl::GpuPreference::kHighPerformance),
         live_(nullptr) {}
