@@ -553,9 +553,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  const SkImageInfo resource_info = SkImageInfo::Make(
-      SkISize::Make(surface_size.width(), surface_size.height()),
-      GetRenderingContextSkColorInfo());
+  const SkColorInfo resource_info = GetRenderingContextSkColorInfo();
   if (use_shared_image) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         Size(), resource_info.colorType(), resource_info.alphaType(),
