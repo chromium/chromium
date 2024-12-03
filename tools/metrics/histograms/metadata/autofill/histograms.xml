@@ -1027,7 +1027,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.AutocompleteUnrecognized.FieldFillingStats2"
-    enum="FieldFillingStatus" expires_after="2025-04-13">
+    enum="FieldFillingStatus" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2475,7 +2475,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.FieldFillingStats.{FormType}"
-    enum="FieldFillingStatus" expires_after="2025-04-13">
+    enum="FieldFillingStatus" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4962,7 +4962,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.RendererFillSkipReason" enum="RendererFillSkipReason"
-    expires_after="2025-04-27">
+    expires_after="2025-12-12">
   <owner>jihadghanna@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5736,7 +5736,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.SubmissionDetectionSource.{SubmissionComponent}"
-    enum="AutofillSubmissionSource2" expires_after="2025-04-13">
+    enum="AutofillSubmissionSource2" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5786,7 +5786,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.Suggestion.AcceptanceFieldValueLength.{SuggestionType}"
-    units="units" expires_after="2025-04-13">
+    units="units" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5801,7 +5801,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.Suggestion.StrikeSuppression.Address" enum="Boolean"
-    expires_after="2025-04-13">
+    expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5851,7 +5851,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.Suggestions.AcceptedType" enum="SuggestionType"
-    expires_after="2025-04-13">
+    expires_after="2025-12-12">
   <owner>theocristea@google.com</owner>
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5862,7 +5862,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.SuggestionsCount{SuggestionType}" units="units"
-    expires_after="2025-04-13">
+    expires_after="2025-12-12">
   <owner>jihadghanna@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -6136,7 +6136,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.UndoAfterFill.{FormType}" enum="Boolean"
-    expires_after="2025-04-13">
+    expires_after="2025-12-12">
   <owner>jihadghanna@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
