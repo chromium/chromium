@@ -237,6 +237,22 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
 
       // CDP module
       // keep-sorted start block=yes
+      case 'goog:cdp.getSession':
+        return this.#cdpProcessor.getSession(
+          this.#parser.parseGetSessionParams(command.params),
+        );
+      case 'goog:cdp.resolveRealm':
+        return this.#cdpProcessor.resolveRealm(
+          this.#parser.parseResolveRealmParams(command.params),
+        );
+      case 'goog:cdp.sendCommand':
+        return await this.#cdpProcessor.sendCommand(
+          this.#parser.parseSendCommandParams(command.params),
+        );
+      // keep-sorted end
+      // CDP deprecated domain.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
+      // keep-sorted start block=yes
       case 'cdp.getSession':
         return this.#cdpProcessor.getSession(
           this.#parser.parseGetSessionParams(command.params),

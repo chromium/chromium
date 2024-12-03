@@ -33,7 +33,11 @@ export type Command = {
 export type CommandData =
   | SendCommandCommand
   | GetSessionCommand
-  | ResolveRealmCommand;
+  | ResolveRealmCommand
+  // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
+  | DeprecatedSendCommandCommand
+  | DeprecatedGetSessionCommand
+  | DeprecatedResolveRealmCommand;
 
 export type CommandResponse = {
   type: 'success';
@@ -45,8 +49,13 @@ export type ResultData =
   | GetSessionResult
   | ResolveRealmResult;
 
-export type SendCommandCommand = {
+export type DeprecatedSendCommandCommand = {
   method: 'cdp.sendCommand';
+  params: SendCommandParameters;
+};
+
+export type SendCommandCommand = {
+  method: 'goog:cdp.sendCommand';
   params: SendCommandParameters;
 };
 
@@ -64,8 +73,13 @@ export type SendCommandResult = {
   session?: Protocol.Target.SessionID;
 };
 
-export type GetSessionCommand = {
+export type DeprecatedGetSessionCommand = {
   method: 'cdp.getSession';
+  params: GetSessionParameters;
+};
+
+export type GetSessionCommand = {
+  method: 'goog:cdp.getSession';
   params: GetSessionParameters;
 };
 
@@ -77,8 +91,13 @@ export type GetSessionResult = {
   session?: Protocol.Target.SessionID;
 };
 
-export type ResolveRealmCommand = {
+export type DeprecatedResolveRealmCommand = {
   method: 'cdp.resolveRealm';
+  params: ResolveRealmParameters;
+};
+
+export type ResolveRealmCommand = {
+  method: 'goog:cdp.resolveRealm';
   params: ResolveRealmParameters;
 };
 
@@ -93,10 +112,20 @@ export type ResolveRealmResult = {
 export type Event = {
   type: 'event';
 } & EventData;
-export type EventData = EventDataFor<keyof ProtocolMapping.Events>;
+
+export type EventData =
+  | EventDataFor<keyof ProtocolMapping.Events>
+  | DeprecatedEventDataFor<keyof ProtocolMapping.Events>;
+
+export type DeprecatedEventDataFor<
+  EventName extends keyof ProtocolMapping.Events,
+> = {
+  method: `cdp.${EventName}`;
+  params: EventParametersFor<EventName>;
+};
 
 export type EventDataFor<EventName extends keyof ProtocolMapping.Events> = {
-  method: `cdp.${EventName}`;
+  method: `goog:cdp.${EventName}`;
   params: EventParametersFor<EventName>;
 };
 

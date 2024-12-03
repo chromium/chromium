@@ -410,6 +410,20 @@ export class CdpTarget {
       this.#eventManager.registerEvent(
         {
           type: 'event',
+          method: `goog:cdp.${event}`,
+          params: {
+            event,
+            params,
+            session: this.cdpSessionId,
+          },
+        },
+        this.id,
+      );
+      // Duplicate the event to the deprecated event name.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
           method: `cdp.${event}`,
           params: {
             event,

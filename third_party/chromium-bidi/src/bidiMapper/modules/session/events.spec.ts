@@ -18,19 +18,56 @@ import {expect} from 'chai';
 
 import {ChromiumBidi} from '../../../protocol/protocol.js';
 
-import {assertSupportedEvent, isCdpEvent} from './events.js';
+import {
+  assertSupportedEvent,
+  isCdpEvent,
+  isDeprecatedCdpEvent,
+} from './events.js';
+
+const CDP_EVENTS = [
+  'goog:cdp',
+  'goog:cdp.event',
+  'goog:cdp.Debugger.breakpointResolved',
+];
+const DEPRECATED_CDP_EVENTS = [
+  'cdp',
+  'cdp.event',
+  'cdp.Debugger.breakpointResolved',
+];
+const NON_CDP_EVENTS = ['log', 'log.entryAdded'];
 
 describe('event', () => {
   describe('isCdpEvent', () => {
-    it('should return true for CDP events', () => {
-      expect(isCdpEvent('cdp')).to.be.true;
-      expect(isCdpEvent('cdp.event')).to.be.true;
-    });
+    for (const cdpEvent of CDP_EVENTS)
+      it(`should return true for CDP event '${cdpEvent}'`, () => {
+        expect(isCdpEvent(cdpEvent)).to.be.true;
+      });
+    for (const deprecatedCdpEvent of DEPRECATED_CDP_EVENTS)
+      it(`should return false for deprecated CDP event '${deprecatedCdpEvent}'`, () => {
+        expect(isCdpEvent(deprecatedCdpEvent)).to.be.false;
+      });
 
-    it('should return false for non-CDP events', () => {
-      expect(isCdpEvent('log')).to.be.false;
-      expect(isCdpEvent('log.entryAdded')).to.be.false;
-    });
+    for (const nonCdpEvent of NON_CDP_EVENTS)
+      it(`should return false for non-CDP event '${nonCdpEvent}'`, () => {
+        expect(isCdpEvent(nonCdpEvent)).to.be.false;
+      });
+  });
+
+  describe('isDeprecatedCdpEvent', () => {
+    for (const cdpEvent of CDP_EVENTS)
+      it(`should return false for CDP event '${cdpEvent}'`, () => {
+        expect(isDeprecatedCdpEvent(cdpEvent)).to.be.false;
+      });
+
+    for (const deprecatedCdpEvent of DEPRECATED_CDP_EVENTS)
+      it(`should return true for deprecated CDP event '${deprecatedCdpEvent}'`, () => {
+        expect(isDeprecatedCdpEvent(deprecatedCdpEvent)).to.be.true;
+      });
+
+    for (const nonCdpEvent of NON_CDP_EVENTS)
+      it(`should return false for non-CDP event '${nonCdpEvent}'`, () => {
+        expect(isDeprecatedCdpEvent(nonCdpEvent)).to.be.false;
+      });
   });
 
   describe('assertSupportedEvent', () => {
@@ -40,9 +77,16 @@ describe('event', () => {
       }).to.throw('Unknown event: unknown');
     });
 
-    it('should not throw for known events', () => {
+    it('should not throw for known deprecated CDP events', () => {
       expect(() => {
         assertSupportedEvent('cdp.Debugger.breakpointResolved');
+        assertSupportedEvent(ChromiumBidi.Log.EventNames.LogEntryAdded);
+      }).to.not.throw();
+    });
+
+    it('should not throw for known CDP events', () => {
+      expect(() => {
+        assertSupportedEvent('goog:cdp.Debugger.breakpointResolved');
         assertSupportedEvent(ChromiumBidi.Log.EventNames.LogEntryAdded);
       }).to.not.throw();
     });

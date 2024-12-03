@@ -24,7 +24,7 @@ import {
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {SubscriptionItem} from './EventManager.js';
-import {isCdpEvent} from './events.js';
+import {isCdpEvent, isDeprecatedCdpEvent} from './events.js';
 
 /**
  * Returns the cartesian product of the given arrays.
@@ -142,11 +142,24 @@ export class SubscriptionManager {
         const priority = contextToEventMap.get(context)?.get(eventMethod);
         // For CDP we can't provide specific event name when subscribing
         // to the module directly.
-        // Because of that we need to see event `cdp` exits in the map.
+        // Because of that we need to see event `cdp` exists in the map.
         if (isCdpEvent(eventMethod)) {
           const cdpPriority = contextToEventMap
             .get(context)
             ?.get(ChromiumBidi.BiDiModule.Cdp);
+          // If we subscribe to the event directly and `cdp` module as well
+          // priority will be different we take minimal priority
+          return priority && cdpPriority
+            ? Math.min(priority, cdpPriority)
+            : // At this point we know that we have subscribed
+              // to only one of the two
+              (priority ?? cdpPriority);
+        }
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844.
+        if (isDeprecatedCdpEvent(eventMethod)) {
+          const cdpPriority = contextToEventMap
+            .get(context)
+            ?.get(ChromiumBidi.BiDiModule.DeprecatedCdp);
           // If we subscribe to the event directly and `cdp` module as well
           // priority will be different we take minimal priority
           return priority && cdpPriority

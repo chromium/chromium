@@ -21,11 +21,11 @@ at [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
 
 **"BiDi+"** is an extension of the WebDriver BiDi protocol. In addition to [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) it has:
 
-### Command `cdp.sendCommand`
+### Command `goog:cdp.sendCommand`
 
 ```cddl
 CdpSendCommandCommand = {
-  method: "cdp.sendCommand",
+  method: "goog:cdp.sendCommand",
   params: CdpSendCommandParameters,
 }
 
@@ -45,11 +45,11 @@ The command runs the
 described [CDP command](https://chromedevtools.github.io/devtools-protocol)
 and returns the result.
 
-### Command `cdp.getSession`
+### Command `goog:cdp.getSession`
 
 ```cddl
 CdpGetSessionCommand = {
-   method: "cdp.getSession",
+   method: "goog:cdp.getSession",
    params: CdpGetSessionParameters,
 }
 
@@ -64,11 +64,11 @@ CdpGetSessionResult = {
 
 The command returns the default CDP session for the selected browsing context.
 
-### Command `cdp.resolveRealm`
+### Command `goog:cdp.resolveRealm`
 
 ```cddl
 CdpResolveRealmCommand = {
-   method: "cdp.resolveRealm",
+   method: "goog:cdp.resolveRealm",
    params: CdpResolveRealmParameters,
 }
 
@@ -83,11 +83,11 @@ CdpResolveRealmResult = {
 
 The command returns resolves a BiDi realm to its CDP execution context ID.
 
-### Events `cdp`
+### Events `goog:cdp`
 
 ```cddl
 CdpEventReceivedEvent = {
-   method: "cdp.<CDP Event Name>",
+   method: "goog:cdp.<CDP Event Name>",
    params: CdpEventReceivedParameters,
 }
 
