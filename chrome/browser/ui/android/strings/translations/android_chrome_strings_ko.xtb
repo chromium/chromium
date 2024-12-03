@@ -809,7 +809,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" /> 파일을 삭제하시겠습니까?</translation>
 <translation id="4793679854893018356">Chrome이 사용자를 안전하게 보호하는 방법 알아보기</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
-<translation id="4807098396393229769">카드 명의</translation>
+<translation id="4807098396393229769">카드에 표기된 이름</translation>
 <translation id="480990236307250886">홈페이지 열기</translation>
 <translation id="481574578487123132">연결된 기기</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> 탭 그룹을 닫고 저장함</translation>
@@ -1510,7 +1510,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{조직에서 1개를 차단함}other{조직에서 #개를 차단함}}</translation>
 <translation id="7914399737746719723">앱이 설치됨</translation>
 <translation id="7919123827536834358">자동 번역할 언어</translation>
-<translation id="7926975587469166629">카드 별명</translation>
+<translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="7929962904089429003">메뉴 열기</translation>
 <translation id="7934668619883965330">파일을 다운로드할 수 없습니다. 지원되지 않는 파일 형식입니다.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>

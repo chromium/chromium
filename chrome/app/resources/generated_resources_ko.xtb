@@ -5430,7 +5430,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4804827417948292437">아보카도</translation>
 <translation id="4806071198808203109">동영상 프레임을 다른 이름으로 저장(&amp;F)…</translation>
 <translation id="4806457879608775995">약관을 검토하고 데이터를 관리하세요</translation>
-<translation id="4807098396393229769">카드 명의</translation>
+<translation id="4807098396393229769">카드에 표기된 이름</translation>
 <translation id="4807122856660838973">세이프 브라우징 사용 설정</translation>
 <translation id="4807514039636325497">DBus 세부정보</translation>
 <translation id="4808525520374557629">감지된 성능 문제를 개선하는 방법을 제안하는 알림을 받습니다. <ph name="BEGIN_LINK" />성능 문제 알림 자세히 알아보기<ph name="END_LINK" /></translation>
@@ -9753,7 +9753,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="792514962475806987">고정 돋보기 확대/축소 수준:</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" />의 응답을 기다리는 중...</translation>
 <translation id="7926423016278357561">본인이 아닙니다.</translation>
-<translation id="7926975587469166629">카드 별명</translation>
+<translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="7928175190925744466">이 비밀번호를 이미 변경하셨나요?</translation>
 <translation id="7929468958996190828"><ph name="BEGIN_LINK" />지금 새로고침<ph name="END_LINK" />하거나, 비슷한 탭을 새로 연 후에 다시 시도해 주세요.</translation>
 <translation id="7929962904089429003">메뉴 열기</translation>

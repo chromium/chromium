@@ -6314,7 +6314,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5448092089030025717">{NUM_REUSED,plural, =0{Nessuna password riutilizzata}=1{1 password riutilizzata}other{{NUM_REUSED} password riutilizzate}}</translation>
 <translation id="5448293924669608770">Spiacenti, qualcosa è andato storto in fase di accesso</translation>
 <translation id="5449551289610225147">Password non valida</translation>
-<translation id="5449588825071916739">Aggiungi tutte le schede ai Preferiti</translation>
+<translation id="5449588825071916739">Aggiungi tutte le schede ai preferiti</translation>
 <translation id="5449716055534515760">Chiu&amp;di finestra</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> per esplorare i dispositivi Bluetooth</translation>
 <translation id="5450469615146335984">Seleziona una scorciatoia per ogni azione</translation>
