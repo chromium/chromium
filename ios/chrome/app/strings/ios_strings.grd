@@ -3210,7 +3210,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Done
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_TITLE" desc="The title of the screen on the overflow menu where users can customize the items in the menu." meaning="[iOS only]">
-        Customize menu
+        Customize Menu
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS" desc="The iOS menu item for starting the process to edit actions on the overflow menu." meaning="[iOS only] [Length: Unlimited]">
         Customize Menu
