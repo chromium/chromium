@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
+#include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -71,16 +72,19 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
           GetEventCallback(),
           /*must_support_ctap=*/false);
       const GURL url("https://example.com");
-      url::Origin origin(url::Origin::Create(url));
       base::Value::Dict request_value;
       request_value.Set("foo", "bar");
+      RequestInfo request_info{RequestInfo::RequestType::kGet,
+                               url::Origin::Create(url),
+                               base::Value(std::move(request_value))};
       base::test::TestFuture<base::expected<Response, RequestDispatcher::Error>>
           callback;
+
       auto request_handler = std::make_unique<RequestDispatcher>(
           std::make_unique<device::FidoCableDiscovery>(
               std::vector<device::CableDiscoveryData>()),
-          std::move(discovery), std::move(origin),
-          base::Value(std::move(request_value)), callback.GetCallback());
+          std::move(discovery), std::move(request_info),
+          callback.GetCallback());
       std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
           device::cablev2::authenticator::
               TransactDigitalIdentityFromQRCodeForTesting(

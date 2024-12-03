@@ -19,6 +19,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/qr_code_generator/bitmap_generator.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/web_contents.h"
@@ -45,6 +46,7 @@ using content::digital_credentials::cross_device::Error;
 using content::digital_credentials::cross_device::Event;
 using content::digital_credentials::cross_device::ProtocolError;
 using content::digital_credentials::cross_device::RemoteError;
+using content::digital_credentials::cross_device::RequestInfo;
 using content::digital_credentials::cross_device::Response;
 using content::digital_credentials::cross_device::SystemError;
 using content::digital_credentials::cross_device::SystemEvent;
@@ -112,6 +114,9 @@ void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
   rp_origin_ = rp_origin;
   callback_ = std::move(callback);
 
+  RequestInfo request_info{RequestInfo::RequestType::kGet, rp_origin,
+                           std::move(request)};
+
   std::array<uint8_t, device::cablev2::kQRKeySize> qr_generator_key;
   crypto::RandBytes(qr_generator_key);
 
@@ -119,8 +124,7 @@ void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
       qr_generator_key, device::cablev2::CredentialRequestType::kPresentation);
 
   transaction_ = Transaction::New(
-      rp_origin, std::move(request), qr_generator_key,
-      base::BindRepeating([]() {
+      std::move(request_info), qr_generator_key, base::BindRepeating([]() {
         return SystemNetworkContextManager::GetInstance()->GetContext();
       }),
       base::BindRepeating(&DigitalIdentityProviderDesktop::OnEvent,

@@ -11,6 +11,7 @@
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/cross_device_request_info.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/network_context_factory.h"
 #include "url/origin.h"
@@ -87,11 +88,7 @@ class CONTENT_EXPORT Transaction {
       base::OnceCallback<void(base::expected<Response, Error>)>;
 
   static std::unique_ptr<Transaction> New(
-      // The origin of the requesting page.
-      url::Origin origin,
-      // The request, as would be found in place of "$1" in the following
-      // Javascript: `navigator.identity.get({digital: $1});`
-      base::Value request,
+      RequestInfo request_info,
       // A secret key that was used to generate the generated QR code. Any
       // mobile devices will have to prove that they know this secret because
       // they scanned the QR code.
