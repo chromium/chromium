@@ -678,6 +678,40 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "mac14-arm64-updater-tester-dbg",
+    description_html = _UPDATER_LINK + " macOS 14 arm64 debug tester.",
+    triggered_by = ["mac-updater-builder-arm64-dbg"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    targets = targets.bundle(
+        targets = [
+            "updater_user_gtests_mac",
+        ],
+        mixins = [
+            "mac_14_arm64",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac (arm64)",
+        short_name = "14",
+    ),
+    contact_team_email = "omaha@google.com",
+)
+
+ci.thin_tester(
     name = "mac15-arm64-updater-tester-rel",
     description_html = _UPDATER_LINK + " macOS 15 arm64 release tester.",
     triggered_by = ["mac-updater-builder-arm64-rel"],
