@@ -22993,6 +22993,9 @@
                         "TabGroupPaneAndroid",
                         "TabGroupSyncAndroid",
                         "TabStripGroupCollapseAndroid"
+                    ],
+                    "disable_features": [
+                        "TabGroupSyncDisableNetworkLayer"
                     ]
                 }
             ]
