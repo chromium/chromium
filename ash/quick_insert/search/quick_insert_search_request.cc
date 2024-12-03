@@ -152,6 +152,7 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
     bool search_case_transforms)
     : is_category_specific_search_(category.has_value()),
       client_(CHECK_DEREF(client)),
+      gif_search_debouncer_(kGifDebouncingDelay),
       current_callback_(std::move(callback)),
       done_callback_(std::move(done_callback)) {
   CHECK(!current_callback_.is_null());
@@ -212,13 +213,9 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
 
   if (category == QuickInsertCategory::kGifs) {
     MarkSearchStarted(QuickInsertSearchSource::kGifs);
-    gif_fetcher_ = GifTenorApiFetcher::FetchGifSearchCancellable(
-        client->GetSharedURLLoaderFactory(), base::UTF16ToUTF8(query),
-        std::nullopt, kMaxGifsToSearch,
-        base::BindOnce(ConvertGifResponse)
-            .Then(base::BindOnce(
-                &QuickInsertSearchRequest::HandleGifSearchResponse,
-                weak_ptr_factory_.GetWeakPtr())));
+    gif_search_debouncer_.RequestSearch(base::BindOnce(
+        &QuickInsertSearchRequest::StartGifSearch,
+        weak_ptr_factory_.GetWeakPtr(), base::UTF16ToUTF8(query)));
   }
 
   // These searches do not have category-specific search.
@@ -283,6 +280,16 @@ QuickInsertSearchRequest::~QuickInsertSearchRequest() {
     current_callback_.Reset();
   }
   client_->StopCrosQuery();
+}
+
+void QuickInsertSearchRequest::StartGifSearch(std::string_view query) {
+  gif_fetcher_ = GifTenorApiFetcher::FetchGifSearchCancellable(
+      client_->GetSharedURLLoaderFactory(), query, std::nullopt,
+      kMaxGifsToSearch,
+      base::BindOnce(ConvertGifResponse)
+          .Then(
+              base::BindOnce(&QuickInsertSearchRequest::HandleGifSearchResponse,
+                             weak_ptr_factory_.GetWeakPtr())));
 }
 
 void QuickInsertSearchRequest::HandleSearchSourceResults(
