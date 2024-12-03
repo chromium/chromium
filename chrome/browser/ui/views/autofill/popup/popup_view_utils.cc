@@ -458,6 +458,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kPredictionImprovementsError:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kManageAddress:

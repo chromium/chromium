@@ -38,6 +38,10 @@ enum class SuggestionType {
   kAddressFieldByFieldFilling = 7,
   // kEditAddressProfile = 8, // DEPRECATED
   // kDeleteAddressProfile = 9, // DEPRECATED
+  // Display a suggestion containing address profile data based on prefix
+  // matching, regardless of the type of the field.
+  kAddressEntryOnTyping = 63,
+
   kManageAddress = 10,
   kManageCreditCard = 11,
   kManageIban = 12,
@@ -148,7 +152,7 @@ enum class SuggestionType {
   // Suggestion displayed when there is an error with prediction improvements.
   kEditPredictionImprovementsInformation = 60,
 
-  kMaxValue = kSaveAndFillCreditCardEntry
+  kMaxValue = kAddressEntryOnTyping
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

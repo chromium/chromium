@@ -226,6 +226,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     SuggestionType item_id) {
   switch (item_id) {
     case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDevtoolsTestAddresses:
@@ -670,6 +671,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       // TODO(crbug.com/361414075): Implement previewing prediction
       // improvements.
       break;
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -879,6 +881,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
       break;
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kPasswordEntry:
@@ -1000,6 +1003,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
           .OnRemoveCurrentSingleFieldSuggestion(
               query_field_.name(), suggestion.main_text.value, suggestion.type);
       return true;
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:

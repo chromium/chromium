@@ -225,6 +225,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
       return FillDataType::kSingleFieldFillerIban;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageCreditCard:

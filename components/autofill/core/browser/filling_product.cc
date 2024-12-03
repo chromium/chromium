@@ -47,6 +47,7 @@ std::string FillingProductToString(FillingProduct filling_product) {
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:

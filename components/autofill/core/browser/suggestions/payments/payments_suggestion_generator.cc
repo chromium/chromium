@@ -1382,6 +1382,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kEditPredictionImprovementsInformation:
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kComposeResumeNudge:

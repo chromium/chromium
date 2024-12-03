@@ -14,6 +14,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kAutocompleteEntry";
     case SuggestionType::kAddressEntry:
       return "kAddressEntry";
+    case SuggestionType::kAddressEntryOnTyping:
+      return "kAddressEntryOnTyping";
     case SuggestionType::kAddressFieldByFieldFilling:
       return "kAddressFieldByFieldFilling";
     case SuggestionType::kManageAddress:

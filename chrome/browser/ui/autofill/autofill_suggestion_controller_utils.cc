@@ -60,6 +60,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kComposeResumeNudge:
