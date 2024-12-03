@@ -24,7 +24,7 @@ public interface EducationalTipCardProvider {
     /** Card types that are shown in the educational tip module on the magic stack. */
     @IntDef({
         EducationalTipCardType.DEFAULT_BROWSER_PROMO,
-        EducationalTipCardType.TAB_GROUPS,
+        EducationalTipCardType.TAB_GROUP,
         EducationalTipCardType.TAB_GROUP_SYNC,
         EducationalTipCardType.QUICK_DELETE,
         EducationalTipCardType.NUM_ENTRIES,
@@ -32,7 +32,7 @@ public interface EducationalTipCardProvider {
     @Retention(RetentionPolicy.SOURCE)
     @interface EducationalTipCardType {
         int DEFAULT_BROWSER_PROMO = 0;
-        int TAB_GROUPS = 1;
+        int TAB_GROUP = 1;
         int TAB_GROUP_SYNC = 2;
         int QUICK_DELETE = 3;
         int NUM_ENTRIES = 4;
@@ -42,8 +42,8 @@ public interface EducationalTipCardProvider {
         switch (label) {
             case "default_browser_promo":
                 return EducationalTipCardType.DEFAULT_BROWSER_PROMO;
-            case "tab_groups_promo":
-                return EducationalTipCardType.TAB_GROUPS;
+            case "tab_group_promo":
+                return EducationalTipCardType.TAB_GROUP;
             case "tab_group_sync_promo":
                 return EducationalTipCardType.TAB_GROUP_SYNC;
             case "quick_delete_promo":

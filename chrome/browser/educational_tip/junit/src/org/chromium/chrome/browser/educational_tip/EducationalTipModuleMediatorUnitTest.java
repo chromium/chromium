@@ -43,6 +43,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -70,6 +74,12 @@ public class EducationalTipModuleMediatorUnitTest {
     @Mock EducationalTipModuleMediator.Natives mEducationalTipModuleMediatorJniMock;
     @Mock private Tracker mTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabGroupModelFilterProvider mProvider;
+    @Mock private TabGroupModelFilter mNormalFilter;
+    @Mock private TabGroupModelFilter mIncognitoFilter;
+    @Mock private TabModel mNormalModel;
+    @Mock private TabModel mIncognitoModel;
 
     @Captor
     private ArgumentCaptor<DefaultBrowserPromoTriggerStateListener>
@@ -86,9 +96,16 @@ public class EducationalTipModuleMediatorUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(mContext);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
+        when(mActionDelegate.getTabModelSelector()).thenReturn(mTabModelSelector);
         when(mProfileSupplier.hasValue()).thenReturn(true);
         when(mProfileSupplier.get()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getTabGroupModelFilterProvider()).thenReturn(mProvider);
+        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ false)).thenReturn(mNormalFilter);
+        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ true))
+                .thenReturn(mIncognitoFilter);
+        when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mNormalModel);
+        when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoModel);
         EducationalTipModuleMediatorJni.setInstanceForTesting(mEducationalTipModuleMediatorJniMock);
         mExpectedModuleType = ModuleType.EDUCATIONAL_TIP;
         TrackerFactory.setTrackerForTests(mTracker);
@@ -144,7 +161,7 @@ public class EducationalTipModuleMediatorUnitTest {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
         InputContext inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(2, inputContext.getSizeForTesting());
+        assertEquals(4, inputContext.getSizeForTesting());
 
         // Test signal "should_show_non_role_manager_default_browser_promo".
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(mContext))
@@ -185,6 +202,38 @@ public class EducationalTipModuleMediatorUnitTest {
                 inputContext.getEntryForTesting("has_default_browser_promo_shown_in_other_surface")
                         .floatValue,
                 0.01);
+
+        // Test signal "tab_group_exists".
+        when(mNormalFilter.getTabGroupCount()).thenReturn(0);
+        when(mIncognitoFilter.getTabGroupCount()).thenReturn(0);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
+        assertEquals(0, inputContext.getEntryForTesting("tab_group_exists").floatValue, 0.01);
+
+        when(mNormalFilter.getTabGroupCount()).thenReturn(5);
+        when(mIncognitoFilter.getTabGroupCount()).thenReturn(6);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
+        assertEquals(1, inputContext.getEntryForTesting("tab_group_exists").floatValue, 0.01);
+
+        // Test signal "number_of_tabs".
+        when(mNormalModel.getCount()).thenReturn(0);
+        when(mIncognitoModel.getCount()).thenReturn(0);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
+        assertEquals(0, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
+
+        when(mNormalModel.getCount()).thenReturn(5);
+        when(mIncognitoModel.getCount()).thenReturn(0);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
+        assertEquals(5, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
+
+        when(mNormalModel.getCount()).thenReturn(0);
+        when(mIncognitoModel.getCount()).thenReturn(10);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
+        assertEquals(10, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
+
+        when(mNormalModel.getCount()).thenReturn(10);
+        when(mIncognitoModel.getCount()).thenReturn(10);
+        inputContext = mEducationalTipModuleMediator.createInputContext();
+        assertEquals(20, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
     }
 
     @Test
@@ -208,7 +257,7 @@ public class EducationalTipModuleMediatorUnitTest {
                         PredictionStatus.FAILED,
                         new String[] {
                             "default_browser_promo",
-                            "tab_groups_promo",
+                            "tab_group_promo",
                             "tab_group_sync_promo",
                             "quick_delete_promo"
                         });
@@ -225,7 +274,7 @@ public class EducationalTipModuleMediatorUnitTest {
                         PredictionStatus.SUCCEEDED,
                         new String[] {
                             "default_browser_promo",
-                            "tab_groups_promo",
+                            "tab_group_promo",
                             "tab_group_sync_promo",
                             "quick_delete_promo"
                         });
@@ -238,12 +287,12 @@ public class EducationalTipModuleMediatorUnitTest {
                 new ClassificationResult(
                         PredictionStatus.SUCCEEDED,
                         new String[] {
-                            "tab_groups_promo",
+                            "tab_group_promo",
                             "default_browser_promo",
                             "tab_group_sync_promo",
                             "quick_delete_promo"
                         });
-        expectedResult = EducationalTipCardType.TAB_GROUPS;
+        expectedResult = EducationalTipCardType.TAB_GROUP;
         assertEquals(
                 expectedResult,
                 mEducationalTipModuleMediator.onGetClassificationResult(classificationResult));
@@ -268,10 +317,10 @@ public class EducationalTipModuleMediatorUnitTest {
                                 .getDefaultBrowserPromoTriggerStateListenerForTesting());
         verify(mMockDefaultBrowserPromoUtils).notifyDefaultBrowserPromoVisible();
 
-        mEducationalTipModuleMediator.showModuleWithCardInfo(EducationalTipCardType.TAB_GROUPS);
+        mEducationalTipModuleMediator.showModuleWithCardInfo(EducationalTipCardType.TAB_GROUP);
         mEducationalTipModuleMediator.onViewCreated();
         verify(mEducationalTipModuleMediatorJniMock)
-                .notifyCardShown(mProfile, EducationalTipCardType.TAB_GROUPS);
+                .notifyCardShown(mProfile, EducationalTipCardType.TAB_GROUP);
         verify(mMockDefaultBrowserPromoUtils)
                 .removeListener(
                         mEducationalTipModuleMediator

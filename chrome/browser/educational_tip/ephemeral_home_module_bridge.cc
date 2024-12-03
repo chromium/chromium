@@ -21,7 +21,7 @@ using base::android::JavaParamRef;
 
 enum EducationalTipCardType {
   kDefaultBrowserPromo = 0,
-  kTabGroups = 1,
+  kTabGroup = 1,
   kTabGroupSync = 2,
   kQuickDelete = 3,
 };
@@ -37,9 +37,8 @@ static void JNI_EducationalTipModuleMediator_NotifyCardShown(JNIEnv* env,
     case EducationalTipCardType::kDefaultBrowserPromo:
       registry->NotifyCardShown(segmentation_platform::kDefaultBrowserPromo);
       return;
-    case EducationalTipCardType::kTabGroups:
-      // TODO(crbug.com/355015904): add notify process for tab groups promo
-      // card.
+    case EducationalTipCardType::kTabGroup:
+      registry->NotifyCardShown(segmentation_platform::kTabGroupPromo);
       return;
     case EducationalTipCardType::kTabGroupSync:
       // TODO(crbug.com/355015904): add notify process for tab group sync promo
@@ -65,9 +64,8 @@ static void JNI_EducationalTipModuleMediator_NotifyCardInteracted(
       registry->NotifyCardInteracted(
           segmentation_platform::kDefaultBrowserPromo);
       return;
-    case EducationalTipCardType::kTabGroups:
-      // TODO(crbug.com/355015904): add notify process for tab groups promo
-      // card.
+    case EducationalTipCardType::kTabGroup:
+      registry->NotifyCardInteracted(segmentation_platform::kTabGroupPromo);
       return;
     case EducationalTipCardType::kTabGroupSync:
       // TODO(crbug.com/355015904): add notify process for tab group sync promo

@@ -61,6 +61,6 @@ public class TabGroupPromoCoordinator implements EducationalTipCardProvider {
 
     @Override
     public @EducationalTipCardType int getCardType() {
-        return EducationalTipCardType.TAB_GROUPS;
+        return EducationalTipCardType.TAB_GROUP;
     }
 }

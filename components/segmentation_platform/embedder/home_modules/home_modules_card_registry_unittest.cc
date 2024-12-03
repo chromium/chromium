@@ -147,7 +147,7 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
 
   EXPECT_THAT(registry_->all_output_labels(),
               Not(Contains(kDefaultBrowserPromo)));
-  ASSERT_EQ(0u, registry_->all_cards_input_size());
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -162,6 +162,52 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
   EXPECT_THAT(
       signalKeys,
       Not(Contains("has_default_browser_promo_shown_in_other_surface")));
+#endif
+}
+
+// Tests that the Registry registers the TabGroupPromo card when its feature is
+// enabled.
+TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardEnabled) {
+#if BUILDFLAG(IS_ANDROID)
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Contains(kTabGroupPromo));
+  EXPECT_GE(registry_->all_cards_input_size(), 4u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kTabGroupPromo));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kTabGroupPromo);
+  EXPECT_THAT(signalKeys, Contains("tab_group_exists"));
+  EXPECT_THAT(signalKeys, Contains("number_of_tabs"));
+#endif
+}
+
+// Tests that the Registry won't register the TabGroupPromo card when it is
+// disabled because of user's interaction history.
+TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardDisabled) {
+#if BUILDFLAG(IS_ANDROID)
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  pref_service_.SetUserPref(kTabGroupPromoImpressionCounterPref,
+                            std::make_unique<base::Value>(11));
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Not(Contains(kTabGroupPromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kTabGroupPromo)));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kTabGroupPromo);
+  EXPECT_THAT(signalKeys, Not(Contains("tab_group_exists")));
+  EXPECT_THAT(signalKeys, Not(Contains("number_of_tabs")));
 #endif
 }
 

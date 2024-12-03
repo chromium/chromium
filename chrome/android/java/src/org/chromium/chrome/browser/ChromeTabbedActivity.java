@@ -2398,6 +2398,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
             @NonNull
             @Override
+            public TabModelSelector getTabModelSelector() {
+                return mTabModelSelector;
+            }
+
+            @NonNull
+            @Override
             public BottomSheetController getBottomSheetController() {
                 return mRootUiCoordinator.getBottomSheetController();
             }

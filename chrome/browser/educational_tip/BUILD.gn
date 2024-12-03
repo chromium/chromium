@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/educational_tip/EducationTipModuleActionDelegate.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProvider.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderFactory.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderTriggerState.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilder.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleMediator.java",
@@ -79,6 +80,7 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/educational_tip/DefaultBrowserPromoCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderTriggerStateUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinderUnitTest.java",
@@ -99,6 +101,7 @@ robolectric_library("junit") {
     "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab_ui/android:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/default_browser_promo:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/feature_engagement/public:public_java",

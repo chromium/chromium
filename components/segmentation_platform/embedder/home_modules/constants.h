@@ -42,7 +42,7 @@ const char kShouldShowNonRoleManagerDefaultBrowserPromo[] =
     "should_show_non_role_manager_default_browser_promo";
 const char kHasDefaultBrowserPromoShownInOtherSurface[] =
     "has_default_browser_promo_shown_in_other_surface";
-const char kHaveTabGroups[] = "have_tab_groups";
+const char kTabGroupExists[] = "tab_group_exists";
 const char kNumberOfTabs[] = "number_of_tabs";
 const char kHaveSyncedTabGroups[] = "have_synced_tab_groups";
 const char kHaveClearedBrowsingDataInThirtyDays[] =
@@ -83,6 +83,7 @@ inline constexpr auto kLensEphemeralModuleVariationLabels =
 
 // Labels for emphemeral android modules.
 const char kDefaultBrowserPromo[] = "default_browser_promo";
+const char kTabGroupPromo[] = "tab_group_promo";
 
 // Commandline ASCII Switch key to indicate that the test module backend ranker
 // should be used.

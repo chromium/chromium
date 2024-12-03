@@ -20,6 +20,10 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -41,6 +45,7 @@ public class EducationalTipModuleMediator {
 
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final Profile mProfile;
+    private final TabModelSelector mTabModelSelector;
     private final @ModuleType int mModuleType;
     private final PropertyModel mModel;
     private final ModuleDelegate mModuleDelegate;
@@ -59,6 +64,7 @@ public class EducationalTipModuleMediator {
         mModuleDelegate = moduleDelegate;
         mActionDelegate = actionDelegate;
         mProfile = getRegularProfile(mActionDelegate.getProfileSupplier());
+        mTabModelSelector = mActionDelegate.getTabModelSelector();
         mTracker = TrackerFactory.getTrackerForProfile(mProfile);
         mDefaultBrowserPromoTriggerStateListener = this::removeModule;
 
@@ -83,9 +89,10 @@ public class EducationalTipModuleMediator {
     /** Called when the educational tip module is visible to users on the magic stack. */
     void onViewCreated() {
         @EducationalTipCardType int cardType = mEducationalTipCardProvider.getCardType();
-        EducationalTipModuleMediatorJni.get().notifyCardShown(mProfile, cardType);
 
         if (cardType == EducationalTipCardType.DEFAULT_BROWSER_PROMO) {
+            EducationalTipModuleMediatorJni.get().notifyCardShown(mProfile, cardType);
+
             boolean shouldDisplay =
                     mTracker.shouldTriggerHelpUi(
                             FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
@@ -101,6 +108,13 @@ public class EducationalTipModuleMediator {
                     DefaultBrowserPromoUtils.getInstance();
             defaultBrowserPromoUtils.removeListener(mDefaultBrowserPromoTriggerStateListener);
             defaultBrowserPromoUtils.notifyDefaultBrowserPromoVisible();
+            return;
+        }
+
+        EducationalTipCardProviderTriggerState educationalTipCardProviderTriggerState =
+                EducationalTipCardProviderTriggerState.getInstance();
+        if (educationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(cardType)) {
+            EducationalTipModuleMediatorJni.get().notifyCardShown(mProfile, cardType);
         }
     }
 
@@ -145,7 +159,7 @@ public class EducationalTipModuleMediator {
             return EducationalTipCardType.DEFAULT_BROWSER_PROMO;
         } else if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.EDUCATIONAL_TIP_MODULE, FORCE_TAB_GROUP, false)) {
-            return EducationalTipCardType.TAB_GROUPS;
+            return EducationalTipCardType.TAB_GROUP;
         } else if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.EDUCATIONAL_TIP_MODULE, FORCE_TAB_GROUP_SYNC, false)) {
             return EducationalTipCardType.TAB_GROUP_SYNC;
@@ -179,6 +193,8 @@ public class EducationalTipModuleMediator {
         inputContext.addEntry(
                 "has_default_browser_promo_shown_in_other_surface",
                 ProcessedValue.fromFloat(hasDefaultBrowserPromoShownInOtherSurface()));
+        inputContext.addEntry("tab_group_exists", ProcessedValue.fromFloat(tabGroupExists()));
+        inputContext.addEntry("number_of_tabs", ProcessedValue.fromFloat(getCurrentTabCount()));
         return inputContext;
     }
 
@@ -223,6 +239,27 @@ public class EducationalTipModuleMediator {
         return mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK)
                 ? 0.0f
                 : 1.0f;
+    }
+
+    /**
+     * Returns a value of 1.0f if a tab group exists within either the normal or incognito TabModel.
+     * Otherwise, it returns 0.0f.
+     */
+    private float tabGroupExists() {
+        TabGroupModelFilterProvider provider = mTabModelSelector.getTabGroupModelFilterProvider();
+        TabGroupModelFilter normalFilter =
+                provider.getTabGroupModelFilter(/* isIncognito= */ false);
+        TabGroupModelFilter incognitoFilter =
+                provider.getTabGroupModelFilter(/* isIncognito= */ true);
+        int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();
+        return groupCount > 0 ? 1.0f : 0.0f;
+    }
+
+    /** Returns the total number of tabs across both regular and incognito browsing modes. */
+    private float getCurrentTabCount() {
+        TabModel normalModel = mTabModelSelector.getModel(/* incognito= */ false);
+        TabModel incognitoModel = mTabModelSelector.getModel(/* incognito= */ true);
+        return normalModel.getCount() + incognitoModel.getCount();
     }
 
     @ModuleType
