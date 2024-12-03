@@ -18,6 +18,7 @@
 #include "ui/base/accelerators/accelerator.h"
 
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::Invoke;
 using ::testing::Return;
 
@@ -68,6 +69,21 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
       base::MakeRefCounted<dbus::MockObjectProxy>(
           mock_bus.get(), GlobalShortcutListenerLinux::kPortalServiceName,
           dbus::ObjectPath(GlobalShortcutListenerLinux::kPortalObjectPath));
+
+  auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      mock_bus.get(), "org.freedesktop.systemd1",
+      dbus::ObjectPath("/org/freedesktop/systemd1"));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy("org.freedesktop.systemd1",
+                             dbus::ObjectPath("/org/freedesktop/systemd1")))
+      .Times(AtLeast(0))
+      .WillRepeatedly(Return(mock_systemd_proxy.get()));
+  EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
+      .Times(AtLeast(0))
+      .WillRepeatedly(Invoke([](dbus::MethodCall*, int,
+                                dbus::ObjectProxy::ResponseCallback* callback) {
+        std::move(*callback).Run(nullptr);
+      }));
 
   EXPECT_CALL(*mock_bus, AssertOnOriginThread()).WillRepeatedly([] {});
 
