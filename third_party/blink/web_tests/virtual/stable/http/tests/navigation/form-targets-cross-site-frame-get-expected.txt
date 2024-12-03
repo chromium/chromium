@@ -1,0 +1,23 @@
+Test field:  
+
+--------
+Frame: 'cross-site-frame'
+--------
+This page was requested with the HTTP method GET.
+
+Parameters:
+
+test-field = test-value
+
+Http headers:
+
+HTTP_CONNECTION = keep-alive
+HTTP_HOST = localhost:8080
+HTTP_REFERER = http://127.0.0.1:8000/
+HTTP_SEC_CH_UA = "content_shell";v="999"
+HTTP_SEC_CH_UA_MOBILE = ?0
+HTTP_SEC_CH_UA_PLATFORM = "Unknown"
+HTTP_SEC_FETCH_DEST = iframe
+HTTP_SEC_FETCH_MODE = navigate
+HTTP_SEC_FETCH_SITE = cross-site
+HTTP_UPGRADE_INSECURE_REQUESTS = 1
