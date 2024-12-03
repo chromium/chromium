@@ -32,11 +32,6 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/mojom_parser",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/mojom/mojom_parser.py",
-            "indirect_inputs": {
-                "includes": [
-                    "*.mojom-module",
-                ],
-            },
             "exclude_input_patterns": [
                 "*.stamp",
             ],
