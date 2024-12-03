@@ -2870,7 +2870,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.FormsAI.EditedAutofilledFieldAtSubmission"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2024-12-12">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2880,7 +2880,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.FormsAI.Funnel.{SubmissionState}.{FunnelStage}"
-    enum="Boolean" expires_after="2024-12-12">
+    enum="Boolean" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
