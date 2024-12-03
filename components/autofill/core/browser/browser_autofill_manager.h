@@ -349,6 +349,10 @@ class BrowserAutofillManager : public AutofillManager {
     return metrics_->manual_fallback_logger;
   }
 
+  autofill_metrics::CreditCardFormEventLogger& GetCreditCardFormEventLogger() {
+    return metrics_->credit_card_form_event_logger;
+  }
+
  protected:
   // Stores a `callback` for `form_signature`, possibly overriding an older
   // callback for `form_signature` or triggering a pending callback in case too

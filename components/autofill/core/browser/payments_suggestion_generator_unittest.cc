@@ -16,17 +16,22 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -60,10 +65,13 @@ using gfx::test::AreImagesEqual;
 namespace autofill {
 namespace {
 
+using testing::_;
 using testing::ElementsAre;
+using testing::Eq;
 using testing::Field;
 using testing::IsEmpty;
 using testing::Matcher;
+using testing::NiceMock;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 
@@ -191,6 +199,31 @@ MATCHER_P(SuggestionWithGuidPayload, guid, "") {
   return arg.template GetPayload<Suggestion::Guid>() == guid;
 }
 
+class MockFormInteractionsUkmLogger
+    : public autofill_metrics::FormInteractionsUkmLogger {
+ public:
+  MockFormInteractionsUkmLogger(AutofillClient* client,
+                                ukm::UkmRecorder* ukm_recorder)
+      : FormInteractionsUkmLogger(client, ukm_recorder) {}
+};
+
+class MockCreditCardFormEventLogger
+    : public autofill_metrics::CreditCardFormEventLogger {
+ public:
+  MockCreditCardFormEventLogger(
+      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      PersonalDataManager* personal_data_manager,
+      AutofillClient* client)
+      : CreditCardFormEventLogger(form_interactions_ukm_logger,
+                                  personal_data_manager,
+                                  client) {}
+  MOCK_METHOD(
+      void,
+      OnMetadataLoggingContextReceived,
+      (autofill_metrics::CardMetadataLoggingContext metadata_logging_context),
+      (override));
+};
+
 // TODO(crbug.com/40176273): Move GetSuggestionsForCreditCard tests and
 // BrowserAutofillManagerTestForSharingNickname here from
 // browser_autofill_manager_unittest.cc.
@@ -203,6 +236,13 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     autofill_client_.GetPaymentsAutofillClient()->set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
             autofill_client_.GetPersonalDataManager()));
+    form_interactions_ukm_logger_ =
+        std::make_unique<NiceMock<MockFormInteractionsUkmLogger>>(
+            &autofill_client_, autofill_client_.GetUkmRecorder());
+    credit_card_form_event_logger_ =
+        std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
+            form_interactions_ukm_logger_.get(),
+            autofill_client_.GetPersonalDataManager(), &autofill_client_);
   }
 
   void TearDown() override {
@@ -210,6 +250,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
       CleanUpIbanImageResources();
       did_set_up_image_resource_for_test_ = false;
     }
+    credit_card_form_event_logger_->OnDestroyed();
   }
 
   CreditCard CreateServerCard(
@@ -290,6 +331,10 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   // Tracks whether SetUpIbanImageResources() has been called, so that the
   // created images can be cleaned up when the test has finished.
   bool did_set_up_image_resource_for_test_ = false;
+
+ protected:
+  std::unique_ptr<MockFormInteractionsUkmLogger> form_interactions_ukm_logger_;
+  std::unique_ptr<MockCreditCardFormEventLogger> credit_card_form_event_logger_;
 };
 
 // The card benefits label generation currently varies across operating systems.
@@ -597,10 +642,19 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        GetCreditCardSuggestionsForTouchToFill_BenefitsAdded_RealCard) {
   std::vector<CreditCard> cards = {card()};
-  base::span<const CreditCard> credit_cards_span(cards);
+  base::flat_map<int64_t, std::string>
+      expected_instrument_ids_to_issuer_ids_with_benefits_available = {
+          {cards[0].instrument_id(), cards[0].issuer_id()}};
+  EXPECT_CALL(
+      *credit_card_form_event_logger_,
+      OnMetadataLoggingContextReceived(
+          Field(&autofill_metrics::CardMetadataLoggingContext::
+                    instrument_ids_to_issuer_ids_with_benefits_available,
+                expected_instrument_ids_to_issuer_ids_with_benefits_available)))
+      .Times(1);
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      credit_cards_span, *autofill_client());
+      cards, *autofill_client(), *credit_card_form_event_logger_);
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
   EXPECT_THAT(suggestions[0],
@@ -616,10 +670,19 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
        GetCreditCardSuggestionsForTouchToFill_BenefitsAdded_VirtualCard) {
   CreditCard virtual_card = CreditCard::CreateVirtualCard(card());
   std::vector<CreditCard> cards = {virtual_card};
-  base::span<const CreditCard> credit_cards_span(cards);
+  base::flat_map<int64_t, std::string>
+      expected_instrument_ids_to_issuer_ids_with_benefits_available = {
+          {cards[0].instrument_id(), cards[0].issuer_id()}};
+  EXPECT_CALL(
+      *credit_card_form_event_logger_,
+      OnMetadataLoggingContextReceived(
+          Field(&autofill_metrics::CardMetadataLoggingContext::
+                    instrument_ids_to_issuer_ids_with_benefits_available,
+                expected_instrument_ids_to_issuer_ids_with_benefits_available)))
+      .Times(1);
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      credit_cards_span, *autofill_client());
+      cards, *autofill_client(), *credit_card_form_event_logger_);
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kVirtualCreditCardEntry);
   EXPECT_THAT(
@@ -643,10 +706,9 @@ TEST_P(
   autofill_client()->set_last_committed_primary_main_frame_url(
       GURL("https://random-url.com"));
   std::vector<CreditCard> cards = {card()};
-  base::span<const CreditCard> credit_cards_span(cards);
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      credit_cards_span, *autofill_client());
+      cards, *autofill_client(), *credit_card_form_event_logger_);
 
   // Merchant benefit description is not returned.
   EXPECT_THAT(suggestions[0],
@@ -673,10 +735,9 @@ TEST_P(
       .WillByDefault(testing::Return(
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
   std::vector<CreditCard> cards = {card()};
-  base::span<const CreditCard> credit_cards_span(cards);
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      credit_cards_span, *autofill_client());
+      cards, *autofill_client(), *credit_card_form_event_logger_);
 
   // Category benefit description is not returned.
   EXPECT_THAT(suggestions[0],
@@ -696,10 +757,9 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
           ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
       .WillByDefault(testing::Return(true));
   std::vector<CreditCard> cards = {card()};
-  base::span<const CreditCard> credit_cards_span(cards);
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      credit_cards_span, *autofill_client());
+      cards, *autofill_client(), *credit_card_form_event_logger_);
 
   // Benefit description is not returned.
   EXPECT_THAT(suggestions[0],
@@ -709,6 +769,28 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                    .GetPayload<Suggestion::PaymentsPayload>()
                    .should_display_terms_available);
 }
+
+TEST_P(
+    AutofillCreditCardBenefitsLabelTest,
+    GetCreditCardSuggestionsForTouchToFill_OnMetadataLoggingContextReceivedCalled) {
+  std::vector<CreditCard> cards = {card(),
+                                   CreditCard::CreateVirtualCard(card())};
+  base::flat_map<int64_t, std::string>
+      expected_instrument_ids_to_issuer_ids_with_benefits_available = {
+          {cards[0].instrument_id(), cards[0].issuer_id()},
+          {cards[1].instrument_id(), cards[1].issuer_id()}};
+  EXPECT_CALL(
+      *credit_card_form_event_logger_,
+      OnMetadataLoggingContextReceived(
+          Field(&autofill_metrics::CardMetadataLoggingContext::
+                    instrument_ids_to_issuer_ids_with_benefits_available,
+                expected_instrument_ids_to_issuer_ids_with_benefits_available)))
+      .Times(1);
+
+  GetCreditCardSuggestionsForTouchToFill(cards, *autofill_client(),
+                                         *credit_card_form_event_logger_);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -3440,10 +3522,9 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   CreditCard virtual_card = test::GetVirtualCard();
   CreditCard server_card = CreateServerCard();
   std::vector<CreditCard> cards = {virtual_card, server_card};
-  base::span<const CreditCard> credit_cards_span(cards);
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      credit_cards_span, *autofill_client());
+      cards, *autofill_client(), *credit_card_form_event_logger_);
 
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_EQ(suggestions[0].main_text.value,
@@ -3467,10 +3548,9 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   CreditCard virtual_card = test::GetVirtualCard();
   CreditCard server_card = CreateServerCard();
   std::vector<CreditCard> cards = {virtual_card, server_card};
-  base::span<const CreditCard> credit_cards_span(cards);
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      credit_cards_span, *autofill_client());
+      cards, *autofill_client(), *credit_card_form_event_logger_);
 
   ASSERT_EQ(suggestions.size(), 2U);
   // Virtual card displays `Virtual card` label. If the merchant has opted out
@@ -3495,15 +3575,14 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
 // Verify that the suggestion's `main_text_content_description` appends the
 // network name if the card name and network name differ.
 TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
-       GetCreditCardSuggestionsForTTF_MainTextDescriptionWithNetwork) {
+       GetCreditCardSuggestionsForTouchToFill_MainTextDescriptionWithNetwork) {
   CreditCard server_card = CreateServerCard();
   server_card.SetNickname(u"NickName");
   server_card.SetNetworkForMaskedCard(kVisaCard);
   std::vector<CreditCard> cards = {server_card};
-  base::span<const CreditCard> credit_cards_span(cards);
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      credit_cards_span, *autofill_client());
+      cards, *autofill_client(), *credit_card_form_event_logger_);
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(
@@ -3515,15 +3594,15 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
 
 // Verify that the suggestion's `main_text_content_description` does not include
 // the network name if it is identical to the card name.
-TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
-       GetCreditCardSuggestionsForTTF_MainTextDescriptionWithoutNetwork) {
+TEST_P(
+    AutofillCreditCardSuggestionContentForTouchToFillTest,
+    GetCreditCardSuggestionsForTouchToFill_MainTextDescriptionWithoutNetwork) {
   CreditCard server_card = CreateServerCard();
   server_card.SetNetworkForMaskedCard(kVisaCard);
   std::vector<CreditCard> cards = {server_card};
-  base::span<const CreditCard> credit_cards_span(cards);
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      credit_cards_span, *autofill_client());
+      cards, *autofill_client(), *credit_card_form_event_logger_);
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(suggestions[0]
