@@ -39,20 +39,15 @@ void DoWriteEventsToFile(const base::FilePath& file_path,
                          const size_t position,
                          const std::string& events,
                          const bool append) {
-  const base::MemoryMappedFile::Region region = {0, kPersistedFilesizeInBytes};
-  base::MemoryMappedFile file;
   int flags = base::File::FLAG_READ | base::File::FLAG_WRITE;
   flags |=
       append ? base::File::FLAG_OPEN_ALWAYS : base::File::FLAG_CREATE_ALWAYS;
-  if (!file.Initialize(base::File(file_path, flags), region,
-                       base::MemoryMappedFile::READ_WRITE_EXTEND)) {
+  base::File file(file_path, flags);
+  if (!file.IsValid()) {
     return;
   }
-
   CHECK(position + events.length() <= kPersistedFilesizeInBytes);
-  char* data = reinterpret_cast<char*>(file.data());
-  base::strlcpy(&data[position], events.c_str(),
-                kPersistedFilesizeInBytes - position);
+  file.Write(position, base::as_bytes(base::span(events)));
 }
 
 // Returns breadcrumb events stored at |file_path|.
