@@ -303,7 +303,8 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
       current_swap_buffer_->GetSharedImage(),
       current_swap_buffer_->GetSharedImage()->GetTextureTarget(),
       current_swap_buffer_->GetSyncToken(),
-      current_swap_buffer_->GetSharedImage()->size(), Format(),
+      current_swap_buffer_->GetSharedImage()->size(),
+      current_swap_buffer_->GetSharedImage()->format(),
       current_swap_buffer_->GetSharedImage()->usage().Has(
           gpu::SHARED_IMAGE_USAGE_SCANOUT),
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
