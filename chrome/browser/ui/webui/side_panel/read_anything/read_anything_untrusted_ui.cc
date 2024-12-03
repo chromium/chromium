@@ -132,6 +132,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"languageMenuNoResults", IDS_READING_MODE_LANGUAGE_MENU_NO_RESULTS},
       {"readingModeVoiceDownloadedTitle",
        IDS_READING_MODE_VOICE_DOWNLOADED_TITLE},
+      {"readingModeLanguageMenuItemLabel",
+       IDS_READING_MODE_LANGUAGE_MENU_ITEM_LABEL},
       {"readingModeVoiceDownloadedMessage",
        IDS_READING_MODE_VOICE_DOWNLOADED_MESSAGE},
       {"menu", IDS_MENU},
