@@ -35,26 +35,69 @@ const EventHandlers = [
 const AllEvents = [
   {
     name: 'consolemessage',
-    trigger: async (controlledrame) => {
+    trigger: async (controlledframe) => {
       const triggerScript = `console.log('foobar')`;
-      await executeAsyncScript(controlledrame, triggerScript);
+      await executeAsyncScript(controlledframe, triggerScript);
+    }
+  },
+  {
+    name: 'contentload',
+    trigger: async (controlledframe) => {
+      await new Promise((resolve, reject) => {
+        controlledframe.addEventListener('loadstop', resolve);
+        controlledframe.reload();
+      });
+    }
+  },
+  {
+    name: 'dialog',
+    trigger: async (controlledframe) => {
+      const triggerScript = `window.confirm('hello world');`;
+      await executeAsyncScript(controlledframe, triggerScript);
+    }
+  },
+  {
+    name: 'loadcommit',
+    trigger: async (controlledframe) => {
+      await new Promise((resolve, reject) => {
+        controlledframe.addEventListener('loadstop', resolve);
+        controlledframe.reload();
+      });
+    }
+  },
+  {
+    name: 'loadstart',
+    trigger: async (controlledframe) => {
+      await new Promise((resolve, reject) => {
+        controlledframe.addEventListener('loadstop', resolve);
+        controlledframe.reload();
+      });
+    }
+  },
+  {
+    name: 'loadstop',
+    trigger: async (controlledframe) => {
+      await new Promise((resolve, reject) => {
+        controlledframe.addEventListener('loadstop', resolve);
+        controlledframe.reload();
+      });
     }
   },
   {
     name: 'permissionrequest',
-    trigger: async (controlledrame) => {
+    trigger: async (controlledframe) => {
       const triggerScript = `(async () => {
         await new Promise((resolve, reject) =>
             navigator.geolocation.getCurrentPosition(resolve, resolve));
       })()`;
-      await executeAsyncScript(controlledrame, triggerScript);
+      await executeAsyncScript(controlledframe, triggerScript);
     }
   }
 ];
 
-
 promise_test(async (test) => {
   const controlledFrame = await createControlledFrame('/simple.html');
+
   for (oneEvent of AllEvents) {
     for (eventHandler of EventHandlers) {
       let counter = 0;
