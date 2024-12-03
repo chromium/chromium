@@ -3559,6 +3559,12 @@ const char kIsolationByDefaultDescription[] =
     "behaviors for the web, this flag is likely to break your experience on "
     "sites you visit today.";
 
+const char kSignatureBasedSriName[] = "Signature-based Integrity Checks";
+const char kSignatureBasedSriDescription[] =
+    "Enables signature-based "
+    "integrity checks, as proposed in "
+    "https://wicg.github.io/signature-based-sri/.";
+
 const char kSiteIsolationOptOutName[] = "Disable site isolation";
 const char kSiteIsolationOptOutDescription[] =
     "Disables site isolation "

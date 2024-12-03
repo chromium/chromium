@@ -395,6 +395,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"ReduceAcceptLanguage",
            raw_ref(network::features::kReduceAcceptLanguage)},
           {"SerialPortConnected", raw_ref(features::kSerialPortConnected)},
+          {"SignatureBasedIntegrity",
+           raw_ref(network::features::kSRIMessageSignatureEnforcement)},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},

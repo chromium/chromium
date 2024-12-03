@@ -8098,6 +8098,11 @@
     "expiry_milestone" : 135
   },
   {
+    "name": "signature-based-sri",
+    "owners": [ "mkwst@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "simplified-tab-drag-ui",
     "owners": [ "max@igalia.com", "nickdiego@igalia.com", "thomasanderson@chromium.org"],
     "expiry_milestone": 138
