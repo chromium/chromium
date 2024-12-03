@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -27,6 +28,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_shared_storage_host.h"
@@ -146,6 +148,10 @@ class AuctionWorkletManager::WorkletOwner
   // method has been invoked.
   bool TrustedScoringSignalsUrlAllowed() const;
 
+  // If a process hasn't been assigned for this worklet, add a trace event to
+  // trace the process assignment.
+  void MaybeStartTracingProcessLaunch(uint64_t trace_id);
+
  private:
   friend class base::RefCounted<WorkletOwner>;
 
@@ -210,6 +216,8 @@ class AuctionWorkletManager::WorkletOwner
   raw_ptr<AuctionWorkletManager> worklet_manager_;
 
   const WorkletKey worklet_info_;
+
+  std::vector<uint64_t> trace_ids_;
 
   AuctionProcessManager::ProcessHandle process_handle_;
 
@@ -372,6 +380,14 @@ bool AuctionWorkletManager::WorkletOwner::TrustedScoringSignalsUrlAllowed()
     const {
   CHECK(trusted_signals_url_allowed_.has_value());
   return *trusted_signals_url_allowed_;
+}
+
+void AuctionWorkletManager::WorkletOwner::MaybeStartTracingProcessLaunch(
+    uint64_t trace_id) {
+  if (!is_worklet_ready_) {
+    trace_ids_.push_back(trace_id);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "assign_process_id", trace_id);
+  }
 }
 
 AuctionWorkletManager::WorkletOwner::~WorkletOwner() {
@@ -690,6 +706,11 @@ void AuctionWorkletManager::WorkletOwner::OnThreadReady(
   if (is_worklet_ready_) {
     return;
   }
+  for (uint64_t trace_id : trace_ids_) {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "assign_process_id", trace_id);
+  }
+  trace_ids_.clear();
+
   for (AuctionMetricsRecorder* auction_metrics_recorder :
        auction_metrics_recorders_to_notify_) {
     auction_metrics_recorder->OnWorkletReady();
@@ -983,7 +1004,8 @@ void AuctionWorkletManager::RequestBidderWorklet(
                        trusted_bidding_signals_coordinator),
       std::move(devtools_auction_id), std::move(worklet_available_callback),
       std::move(fatal_error_callback), out_worklet_handle,
-      /*number_of_bidder_threads=*/1, auction_metrics_recorder);
+      /*number_of_bidder_threads=*/1, auction_metrics_recorder,
+      /*trace_id=*/std::nullopt);
 }
 
 void AuctionWorkletManager::RequestSellerWorklet(
@@ -1007,7 +1029,8 @@ void AuctionWorkletManager::RequestSellerWorklet(
   RequestWorkletByKey(std::move(worklet_info), std::move(devtools_auction_id),
                       std::move(worklet_available_callback),
                       std::move(fatal_error_callback), out_worklet_handle,
-                      /*number_of_bidder_threads=*/0, auction_metrics_recorder);
+                      /*number_of_bidder_threads=*/0, auction_metrics_recorder,
+                      /*trace_id=*/std::nullopt);
 }
 
 void AuctionWorkletManager::RequestWorkletByKey(
@@ -1017,7 +1040,8 @@ void AuctionWorkletManager::RequestWorkletByKey(
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle,
     size_t number_of_bidder_threads,
-    AuctionMetricsRecorder* auction_metrics_recorder) {
+    AuctionMetricsRecorder* auction_metrics_recorder,
+    std::optional<uint64_t> trace_id) {
   DCHECK(!out_worklet_handle);
   auto worklet_it = worklets_.find(worklet_info);
   scoped_refptr<WorkletOwner> worklet;
@@ -1030,6 +1054,11 @@ void AuctionWorkletManager::RequestWorkletByKey(
                                                  number_of_bidder_threads);
     worklets_.emplace(std::pair(std::move(worklet_info), worklet.get()));
   }
+
+  if (trace_id) {
+    worklet->MaybeStartTracingProcessLaunch(*trace_id);
+  }
+
   if (auction_metrics_recorder) {
     auction_metrics_recorder->OnWorkletRequested();
     worklet->NotifyAuctionMetricsRecorderWhenReady(auction_metrics_recorder);

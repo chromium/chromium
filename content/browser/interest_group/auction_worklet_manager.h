@@ -326,7 +326,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
                            FatalErrorCallback fatal_error_callback,
                            std::unique_ptr<WorkletHandle>& out_worklet_handle,
                            size_t number_of_bidder_threads,
-                           AuctionMetricsRecorder* auction_metrics_recorder);
+                           AuctionMetricsRecorder* auction_metrics_recorder,
+                           std::optional<uint64_t> trace_id);
 
   // Start an anticipatory process for an origin if we have not yet
   // done so and are able.
