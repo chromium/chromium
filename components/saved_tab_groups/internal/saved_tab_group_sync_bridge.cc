@@ -647,7 +647,8 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
           GetCreatorCacheGuidFromSpecifics(specifics),
           GetLastUpdaterCacheGuidFromSpecifics(specifics),
           TimeFromWindowsEpochMicros(
-              specifics.update_time_windows_epoch_micros()));
+              specifics.update_time_windows_epoch_micros()),
+          /*updated_by=*/GaiaId());
       proto::SavedTabGroupData updated_data =
           SavedTabGroupToData(*existing_group);
 

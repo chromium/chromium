@@ -6,6 +6,7 @@
 #define COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_TYPES_H_
 
 #include <optional>
+#include <string>
 #include <variant>
 
 #include "base/logging.h"
@@ -14,6 +15,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace tab_groups {
 
@@ -32,7 +34,8 @@ using LocalTabGroupID = tab_groups::TabGroupId;
 typedef std::variant<base::Uuid, LocalTabGroupID> EitherGroupID;
 typedef std::variant<base::Uuid, LocalTabID> EitherTabID;
 
-using CollaborationId = base::StrongAlias<class CollaborationIdTag, std::string>;
+using CollaborationId =
+    base::StrongAlias<class CollaborationIdTag, std::string>;
 
 // Base context for tab group actions. Platforms can subclass this to pass
 // additional context such as a browser window.
@@ -157,6 +160,15 @@ struct EventDetails {
   ~EventDetails();
   EventDetails(const EventDetails& other);
   EventDetails& operator=(const EventDetails& other);
+};
+
+// Struct to hold attribution information for a shared tab or tab group.
+struct SharedAttribution {
+  // Obfuscated Gaia ID of the user who created the group or tab.
+  GaiaId created_by;
+
+  // Obfuscated Gaia ID of the user who last updated the group or tab.
+  GaiaId updated_by;
 };
 
 }  // namespace tab_groups

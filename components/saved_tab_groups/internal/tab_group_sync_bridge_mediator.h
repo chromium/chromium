@@ -60,6 +60,13 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
   std::optional<std::string> GetLocalCacheGuidForSavedBridge() const;
   std::optional<GaiaId> GetAccountIdForSavedBridge() const;
 
+  // SharedTabGroupDataSyncBridge specific getters.
+
+  // Returns the obfuscated Gaia ID of the account that is currently syncing
+  // shared tab groups. Returns nullopt if the bridge is not syncing (including
+  // if the bridge has not downloaded any data yet).
+  std::optional<GaiaId> GetTrackingAccountIdForSharedBridge() const;
+
   // SavedTabGroupModelObserver overrides.
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
   void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;

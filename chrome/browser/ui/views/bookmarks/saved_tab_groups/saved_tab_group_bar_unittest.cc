@@ -23,6 +23,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -54,9 +55,14 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView,
  public:
   SavedTabGroupBarUnitTest() {
     if (IsV2UIEnabled()) {
-      feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{tab_groups::kTabGroupsSaveUIUpdate,
+                                data_sharing::features::kDataSharingFeature},
+          {});
     } else {
-      feature_list_.InitWithFeatures({}, {tab_groups::kTabGroupsSaveUIUpdate});
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{data_sharing::features::kDataSharingFeature},
+          {tab_groups::kTabGroupsSaveUIUpdate});
     }
   }
 

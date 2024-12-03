@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -82,6 +83,9 @@ class SavedTabGroup {
   std::optional<base::Uuid> originating_saved_tab_group_guid() const {
     return originating_saved_tab_group_guid_;
   }
+  const SharedAttribution& shared_attribution() const {
+    return shared_attribution_;
+  }
 
   bool is_pinned() const { return position_.has_value(); }
   bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
@@ -124,6 +128,17 @@ class SavedTabGroup {
       std::optional<CollaborationId> collaboration_id);
   SavedTabGroup& SetOriginatingSavedTabGroupGuid(
       std::optional<base::Uuid> originating_saved_tab_group_guid);
+
+  // Sets the updater of the tab group, and also the creator if it's the first
+  // update. This method should be preferred over SetCreatedByAttribution() for
+  // local changes.
+  SavedTabGroup& SetUpdatedByAttribution(GaiaId updated_by);
+
+  // Sets the creator of the tab group. Must be called only when there is no
+  // creator already set. Don't invoke this method, as it should only be invoked
+  // from the sync bridge for incoming sync updates (use
+  // SetUpdatedByAttribution()).
+  SavedTabGroup& SetCreatedByAttribution(GaiaId created_by);
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
@@ -256,6 +271,9 @@ class SavedTabGroup {
   // The saved guid of the group that this group was created from. Used for
   // shared tab groups only.
   std::optional<base::Uuid> originating_saved_tab_group_guid_;
+
+  // Atribution data for the shared tab group.
+  SharedAttribution shared_attribution_;
 };
 
 }  // namespace tab_groups

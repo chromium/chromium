@@ -22,6 +22,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace tab_groups {
 
@@ -169,7 +170,8 @@ class SavedTabGroupModel {
       std::optional<size_t> position,
       std::optional<std::string> creator_cache_guid,
       std::optional<std::string> last_updater_cache_guid,
-      base::Time update_time);
+      base::Time update_time,
+      const GaiaId& updated_by);
   const SavedTabGroupTab* MergeRemoteTab(const SavedTabGroupTab& remote_tab);
 
   // Changes the index of a given tab group by id. The new index provided is the

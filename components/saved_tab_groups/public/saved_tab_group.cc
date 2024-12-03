@@ -20,6 +20,7 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -224,6 +225,20 @@ SavedTabGroup& SavedTabGroup::SetOriginatingSavedTabGroupGuid(
     std::optional<base::Uuid> originating_saved_tab_group_guid) {
   originating_saved_tab_group_guid_ =
       std::move(originating_saved_tab_group_guid);
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::SetUpdatedByAttribution(GaiaId updated_by) {
+  if (shared_attribution_.created_by.empty()) {
+    shared_attribution_.created_by = updated_by;
+  }
+  shared_attribution_.updated_by = std::move(updated_by);
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::SetCreatedByAttribution(GaiaId created_by) {
+  CHECK(shared_attribution_.created_by.empty());
+  shared_attribution_.created_by = std::move(created_by);
   return *this;
 }
 

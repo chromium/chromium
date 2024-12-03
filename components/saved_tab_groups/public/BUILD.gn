@@ -30,6 +30,7 @@ source_set("public") {
     "//components/sync",
     "//components/sync_device_info",
     "//components/tab_groups",
+    "//google_apis",
     "//services/metrics/public/cpp:metrics_cpp",
     "//ui/gfx",
     "//url",

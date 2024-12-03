@@ -26,6 +26,7 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
@@ -560,7 +561,8 @@ TEST_P(SavedTabGroupModelTest, MergeGroupsFromModel) {
           group2.saved_guid(), group2.title(), group2.color(),
           group2.position(), group2.creator_cache_guid(),
           group2.last_updater_cache_guid(),
-          group2.update_time_windows_epoch_micros());
+          group2.update_time_windows_epoch_micros(),
+          /*updated_by=*/GaiaId());
 
   EXPECT_EQ(group2.title(), merged_group->title());
   EXPECT_EQ(group2.color(), merged_group->color());
@@ -607,7 +609,8 @@ TEST_P(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
           updated_group2.color(), updated_group2.position(),
           updated_group2.creator_cache_guid(),
           updated_group2.last_updater_cache_guid(),
-          updated_group2.update_time_windows_epoch_micros());
+          updated_group2.update_time_windows_epoch_micros(),
+          /*updated_by=*/GaiaId());
   EXPECT_EQ(1, merged_group->position());
 
   // Verify group 2 should be the 2nd one in the list.
@@ -655,12 +658,39 @@ TEST_P(SavedTabGroupModelTest, MergeUnpinnedGroupRetainUnpinned) {
           updated_group2.color(), updated_group2.position(),
           updated_group2.creator_cache_guid(),
           updated_group2.last_updater_cache_guid(),
-          updated_group2.update_time_windows_epoch_micros());
+          updated_group2.update_time_windows_epoch_micros(),
+          /*updated_by=*/GaiaId());
   EXPECT_EQ(std::nullopt, merged_group->position());
 
   // Verify group 2 should place behind group 1.
   ASSERT_THAT(GetSavedTabGroupIds(),
               testing::ElementsAre(guid1, guid2, id_3_, id_2_, id_1_));
+}
+
+TEST_P(SavedTabGroupModelTest, MergeSharedTabGroupAttribution) {
+  const GaiaId kCreator("123");
+  const GaiaId kUpdater("456");
+
+  SavedTabGroup group(u"Title", tab_groups::TabGroupColorId::kPink, /*urls=*/{},
+                      /*position=*/std::nullopt);
+  group.SetCollaborationId(CollaborationId("collaboration"));
+  group.SetUpdatedByAttribution(kCreator);
+  saved_tab_group_model_->AddedLocally(group);
+
+  const SavedTabGroup* model_group =
+      saved_tab_group_model_->Get(group.saved_guid());
+  ASSERT_THAT(model_group, NotNull());
+  ASSERT_EQ(model_group->shared_attribution().created_by, kCreator);
+  ASSERT_EQ(model_group->shared_attribution().updated_by, kCreator);
+
+  // Update only the updated by attribution.
+  saved_tab_group_model_->MergeRemoteGroupMetadata(
+      group.saved_guid(), group.title(), group.color(), group.position(),
+      group.creator_cache_guid(), group.last_updater_cache_guid(),
+      group.update_time_windows_epoch_micros(), kUpdater);
+
+  EXPECT_EQ(model_group->shared_attribution().created_by, kCreator);
+  EXPECT_EQ(model_group->shared_attribution().updated_by, kUpdater);
 }
 
 // Tests that merging a tab with the same tab_id changes the state of the object

@@ -160,6 +160,17 @@ std::optional<GaiaId> TabGroupSyncBridgeMediator::GetAccountIdForSavedBridge()
   return saved_bridge_->GetTrackedAccountId();
 }
 
+std::optional<GaiaId>
+TabGroupSyncBridgeMediator::GetTrackingAccountIdForSharedBridge() const {
+  CHECK(shared_bridge_);
+  GaiaId tracked_account_id =
+      shared_bridge_->change_processor()->TrackedAccountId();
+  if (tracked_account_id.empty()) {
+    return std::nullopt;
+  }
+  return tracked_account_id;
+}
+
 void TabGroupSyncBridgeMediator::SavedTabGroupAddedLocally(
     const base::Uuid& guid) {
   const SavedTabGroup* group = model_->Get(guid);

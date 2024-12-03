@@ -38,6 +38,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/account_pref_utils.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace tab_groups {
 namespace {
@@ -281,6 +282,13 @@ void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
       !sync_bridge_mediator_->IsSavedBridgeSyncing());
   group.SetCreatorCacheGuid(
       sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
+  if (group.is_shared_tab_group()) {
+    std::optional<GaiaId> account_id =
+        sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+    if (account_id.has_value()) {
+      group.SetUpdatedByAttribution(std::move(account_id.value()));
+    }
+  }
 
   std::optional<LocalTabGroupID> local_group_id = group.local_group_id();
 
@@ -539,7 +547,12 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   // tab groups, and without migration of local IDs.
   SavedTabGroup shared_group = saved_group->CloneAsSharedTabGroup(
       CollaborationId(std::string(collaboration_id)));
-  for (auto& tab : shared_group.saved_tabs()) {
+  std::optional<std::string> account_id =
+      sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+  if (account_id.has_value()) {
+    shared_group.SetUpdatedByAttribution(std::move(account_id.value()));
+  }
+  for (SavedTabGroupTab& tab : shared_group.saved_tabs()) {
     UpdateTabTitleIfNeeded(shared_group, tab, opt_guide_,
                            stats::TitleSanitizationType::kShareTabGroup);
   }
