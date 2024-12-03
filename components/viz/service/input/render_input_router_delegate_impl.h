@@ -25,6 +25,8 @@ class TouchEmulator;
 
 namespace viz {
 
+class GpuServiceImpl;
+
 // RenderInputRouterDelegateImpl provides RenderInputRouter access to input
 // handling related information and functionality within Viz.
 class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
@@ -48,6 +50,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
                                            uint32_t grouping_id) = 0;
     virtual std::optional<bool> IsDelegatedInkHovering(
         const FrameSinkId& frame_sink_id) = 0;
+    virtual GpuServiceImpl* GetGpuService() = 0;
   };
 
   RenderInputRouterDelegateImpl(

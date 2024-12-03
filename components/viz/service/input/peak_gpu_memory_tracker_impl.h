@@ -1,30 +1,33 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_GPU_PEAK_GPU_MEMORY_TRACKER_IMPL_H_
-#define CONTENT_BROWSER_GPU_PEAK_GPU_MEMORY_TRACKER_IMPL_H_
+#ifndef COMPONENTS_VIZ_SERVICE_INPUT_PEAK_GPU_MEMORY_TRACKER_IMPL_H_
+#define COMPONENTS_VIZ_SERVICE_INPUT_PEAK_GPU_MEMORY_TRACKER_IMPL_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/peak_gpu_memory_tracker.h"
+#include "components/viz/service/viz_service_export.h"
 
-namespace content {
+namespace viz {
+
+class GpuServiceImpl;
 
 // Tracks the peak memory of the GPU service for its lifetime. Upon its
 // destruction a report will be requested from the GPU service. The peak will be
 // reported to UMA Histograms.
 //
 // If the GPU is lost during this objects lifetime, upon destruction there will
-// be no report to UMA Histograms. The same for if there is never a successful
-// GPU connection.
-//
-// This is instantiated via `PeakGpuMemoryTrackerFactory::Create`.
-class PeakGpuMemoryTrackerImpl : public viz::PeakGpuMemoryTracker {
+// be no report to UMA Histograms. Emitting UMA Histograms is done by running
+// PeakGpuMemoryCallback on GpuMain thread.
+class VIZ_SERVICE_EXPORT PeakGpuMemoryTrackerImpl
+    : public PeakGpuMemoryTracker {
  public:
   // Requests the GPU service to begin peak memory tracking.
-  PeakGpuMemoryTrackerImpl(viz::PeakGpuMemoryTracker::Usage usage);
+  PeakGpuMemoryTrackerImpl(PeakGpuMemoryTracker::Usage usage,
+                           GpuServiceImpl* gpu_service);
   // Requests the GPU service provides the peak memory, the result is presented
   // to UMA Histograms.
   ~PeakGpuMemoryTrackerImpl() override;
@@ -35,17 +38,12 @@ class PeakGpuMemoryTrackerImpl : public viz::PeakGpuMemoryTracker {
   void Cancel() override;
 
  private:
-  friend class PeakGpuMemoryTrackerImplTest;
-
-  // A callback which will be run after receiving a callback from the
-  // GpuService. For use by tests to synchronize work done on the UI thread.
-  base::OnceClosure post_gpu_service_callback_for_testing_ = base::DoNothing();
-
   bool canceled_ = false;
-  viz::PeakGpuMemoryTracker::Usage usage_;
+  PeakGpuMemoryTracker::Usage usage_;
+  raw_ptr<GpuServiceImpl> gpu_service_;
   uint32_t sequence_num_;
 };
 
-}  // namespace content
+}  // namespace viz
 
-#endif  // CONTENT_BROWSER_GPU_PEAK_GPU_MEMORY_TRACKER_IMPL_H_
+#endif  // COMPONENTS_VIZ_SERVICE_INPUT_PEAK_GPU_MEMORY_TRACKER_IMPL_H_

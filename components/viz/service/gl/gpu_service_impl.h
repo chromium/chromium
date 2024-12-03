@@ -252,6 +252,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                            CopyGpuMemoryBufferCallback callback) override;
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override;
+  // These methods can be called from the CrBrowserMain thread and the
+  // VizCompositorThread (with InputVizard) for PeakGpuMemory tracking.
   void StartPeakMemoryMonitor(uint32_t sequence_num) override;
   void GetPeakMemoryUsage(uint32_t sequence_num,
                           GetPeakMemoryUsageCallback callback) override;
@@ -555,8 +557,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   // MemoryTracker are created on that thread. All requests made before
   // GpuServiceImpl::InitializeWithHost will be enqueued.
   void StartPeakMemoryMonitorOnMainThread(uint32_t sequence_num);
-  void GetPeakMemoryUsageOnMainThread(uint32_t sequence_num,
-                                      GetPeakMemoryUsageCallback callback);
+  virtual void GetPeakMemoryUsageOnMainThread(
+      uint32_t sequence_num,
+      GetPeakMemoryUsageCallback callback);  // virtual for testing.
 
   void WakeUpGpuOnMainThread();
 

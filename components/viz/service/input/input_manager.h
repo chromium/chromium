@@ -115,6 +115,7 @@ class VIZ_SERVICE_EXPORT InputManager
                                  uint32_t grouping_id) override;
   std::optional<bool> IsDelegatedInkHovering(
       const FrameSinkId& frame_sink_id) override;
+  GpuServiceImpl* GetGpuService() override;
 
   void SetupRenderInputRouterDelegateConnection(
       uint32_t grouping_id,

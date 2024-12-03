@@ -347,6 +347,10 @@ void InputManager::SetupRenderInputRouterDelegateConnection(
                      base::Unretained(this), grouping_id));
 }
 
+GpuServiceImpl* InputManager::GetGpuService() {
+  return frame_sink_manager_->GetGpuService();
+}
+
 input::RenderInputRouter* InputManager::GetRenderInputRouterFromFrameSinkId(
     const FrameSinkId& id) {
   return rir_map_[id].get();

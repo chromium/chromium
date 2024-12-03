@@ -387,6 +387,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   void RequestBeginFrameForGpuService(bool toggle);
 
+  GpuServiceImpl* GetGpuService();
+
  private:
   friend class FrameSinkManagerTest;
   friend class CompositorFrameSinkSupportTestBase;

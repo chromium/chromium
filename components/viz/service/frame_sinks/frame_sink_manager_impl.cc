@@ -1207,4 +1207,8 @@ void FrameSinkManagerImpl::RequestBeginFrameForGpuService(bool toggle) {
   }
 }
 
+GpuServiceImpl* FrameSinkManagerImpl::GetGpuService() {
+  return gpu_service_;
+}
+
 }  // namespace viz

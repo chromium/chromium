@@ -30,6 +30,7 @@
 #include "components/startup_metric_utils/gpu/startup_metric_utils.h"
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/resources/peak_gpu_memory_tracker_util.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -310,6 +311,14 @@ bool WillGetGmbConfigFromGpu() {
 #else
   return false;
 #endif
+}
+
+void RunGetPeakGpuMemoryUsageCallbackOnMainThread(
+    GpuServiceImpl::GetPeakMemoryUsageCallback callback,
+    uint64_t peak_memory,
+    base::flat_map<gpu::GpuPeakMemoryAllocationSource, uint64_t>
+        allocation_per_source) {
+  std::move(callback).Run(peak_memory, std::move(allocation_per_source));
 }
 
 }  // namespace
@@ -1024,7 +1033,6 @@ void GpuServiceImpl::GetVideoMemoryUsageStats(
 }
 
 void GpuServiceImpl::StartPeakMemoryMonitor(uint32_t sequence_num) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
   main_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&GpuServiceImpl::StartPeakMemoryMonitorOnMainThread,
@@ -1033,7 +1041,6 @@ void GpuServiceImpl::StartPeakMemoryMonitor(uint32_t sequence_num) {
 
 void GpuServiceImpl::GetPeakMemoryUsage(uint32_t sequence_num,
                                         GetPeakMemoryUsageCallback callback) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
   main_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GpuServiceImpl::GetPeakMemoryUsageOnMainThread,
                                 weak_ptr_, sequence_num, std::move(callback)));
@@ -1525,6 +1532,13 @@ void GpuServiceImpl::GetPeakMemoryUsageOnMainThread(
   uint64_t peak_memory = 0u;
   auto allocation_per_source =
       gpu_channel_manager_->GetPeakMemoryUsage(sequence_num, &peak_memory);
+
+  auto seq_loc = GetPeakMemoryUsageRequestLocation(sequence_num);
+  if (seq_loc == SequenceLocation::kGpuProcess) {
+    RunGetPeakGpuMemoryUsageCallbackOnMainThread(
+        std::move(callback), peak_memory, std::move(allocation_per_source));
+    return;
+  }
   io_runner_->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), peak_memory,
                                       std::move(allocation_per_source)));
