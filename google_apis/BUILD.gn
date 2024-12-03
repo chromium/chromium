@@ -163,8 +163,6 @@ component("google_apis") {
     "gaia/oauth2_mint_token_flow.h",
     "gaia/oauth_multilogin_result.cc",
     "gaia/oauth_multilogin_result.h",
-    "gaia/oauth_request_signer.cc",
-    "gaia/oauth_request_signer.h",
     "gaia/token_binding_response_encryption_error.h",
     "google_api_keys.cc",
     "google_api_keys.h",
@@ -268,7 +266,6 @@ test("google_apis_unittests") {
     "gaia/oauth2_mint_access_token_fetcher_adapter_unittest.cc",
     "gaia/oauth2_mint_token_flow_unittest.cc",
     "gaia/oauth_multilogin_result_unittest.cc",
-    "gaia/oauth_request_signer_unittest.cc",
     "google_api_keys_unittest.cc",
     "google_api_keys_unittest.h",
   ]
