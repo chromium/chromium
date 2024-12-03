@@ -152,7 +152,7 @@ bool CompareBufferToRGBABuffer(GLenum format,
     for (int x = 0; x < size.width(); ++x) {
       int rgba_index = y * rgba_stride + x * GLFormatBytePerPixel(GL_RGBA);
       int pixels_index = y * pixels_stride + x * bytes_per_pixel;
-      uint8_t expected[4] = {0};
+      uint8_t expected[4] = {0, 0, 0, 0};
       switch (format) {
         case GL_LUMINANCE:  // (L_t, L_t, L_t, 1)
           expected[1] = pixels[pixels_index];

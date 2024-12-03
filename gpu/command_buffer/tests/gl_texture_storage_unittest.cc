@@ -143,7 +143,7 @@ TEST_F(TextureStorageTest, OneLevel) {
 
   glTexStorage2DEXT(GL_TEXTURE_2D, 1, GL_RGBA8_OES, 4, 4);
 
-  uint8_t source_pixels[64] = {0};
+  uint8_t source_pixels[64] = {};
 
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 4, 4,
@@ -160,7 +160,7 @@ TEST_F(TextureStorageTest, MultipleLevels) {
 
   glTexStorage2DEXT(GL_TEXTURE_2D, 2, GL_RGBA8_OES, 2, 2);
 
-  uint8_t source_pixels[16] = {0};
+  uint8_t source_pixels[16] = {};
 
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 2, 2,

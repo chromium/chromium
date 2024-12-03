@@ -1645,7 +1645,10 @@ TEST_P(GLCopyTextureCHROMIUMTest, UninitializedSource) {
   }
   EXPECT_TRUE(GL_NO_ERROR == glGetError());
 
-  uint8_t pixels[kHeight][kWidth][4] = {{{1}}};
+  uint8_t pixels[kHeight][kWidth][4] = {};
+  pixels[0][0][0] = 1;  // Set a pixel to a non-zero value, to ensure the zeroes
+                        // are indeed written by `glReadPixels`.
+
   glReadPixels(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
   for (int x = 0; x < kWidth; ++x) {
     for (int y = 0; y < kHeight; ++y) {

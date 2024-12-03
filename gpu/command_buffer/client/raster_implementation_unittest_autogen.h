@@ -30,9 +30,7 @@ TEST_F(RasterImplementationTest, Flush) {
 }
 
 TEST_F(RasterImplementationTest, GenQueriesEXT) {
-  GLuint ids[2] = {
-      0,
-  };
+  GLuint ids[2] = {};
   struct Cmds {
     cmds::GenQueriesEXTImmediate gen;
     GLuint data[2];

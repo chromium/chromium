@@ -387,9 +387,7 @@ TEST_F(RasterImplementationTest, BeginEndQueryEXT) {
   };
   GenCmds expected_gen_cmds;
   expected_gen_cmds.gen.Init(std::size(expected_ids), &expected_ids[0]);
-  GLuint ids[std::size(expected_ids)] = {
-      0,
-  };
+  GLuint ids[std::size(expected_ids)] = {};
   gl_->GenQueriesEXT(std::size(expected_ids), &ids[0]);
   EXPECT_EQ(0,
             memcmp(&expected_gen_cmds, commands_, sizeof(expected_gen_cmds)));

@@ -186,9 +186,7 @@ TEST_F(DepthTextureTest, RenderTo) {
       continue;
     }
 
-    uint8_t actual_pixels[kResolution * kResolution * 4] = {
-        0,
-    };
+    uint8_t actual_pixels[kResolution * kResolution * 4] = {};
     glReadPixels(
         0, 0, kResolution, kResolution, GL_RGBA, GL_UNSIGNED_BYTE,
         actual_pixels);

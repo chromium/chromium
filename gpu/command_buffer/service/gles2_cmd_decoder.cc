@@ -3193,7 +3193,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   has_fragment_precision_high_ =
       PrecisionMeetsSpecForHighpFloat(range[0], range[1], precision);
 
-  GLint viewport_params[4] = { 0 };
+  GLint viewport_params[4] = {};
   api()->glGetIntegervFn(GL_MAX_VIEWPORT_DIMS, viewport_params);
   viewport_max_width_ = viewport_params[0];
   viewport_max_height_ = viewport_params[1];
