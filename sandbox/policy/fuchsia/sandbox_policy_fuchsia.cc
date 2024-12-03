@@ -55,15 +55,17 @@ namespace policy {
 namespace {
 
 enum SandboxFeature {
+  kNone = 0,
+
   // Provides access to resources required by Vulkan.
-  kProvideVulkanResources = 1 << 1,
+  kProvideVulkanResources = 1 << 0,
 
   // Read only access to /config/ssl, which contains root certs info.
-  kProvideSslConfig = 1 << 2,
+  kProvideSslConfig = 1 << 1,
 };
 
 struct SandboxConfig {
-  base::span<const char* const> services;
+  base::span<const char* const> additional_services;
   uint32_t features;
 };
 
@@ -88,64 +90,70 @@ constexpr const char* kMinimalServices[] = {
 
 // For processes that only get kMinimalServices and no other capabilities.
 constexpr SandboxConfig kMinimalConfig = {
-    base::span<const char* const>(),
-    0,
+    {},
+    kNone,
 };
 
+constexpr const char* kGpuServices[] = {
+    // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
+    fuchsia::media::ProfileProvider::Name_,
+    fuchsia::mediacodec::CodecFactory::Name_,
+    fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
+    fuchsia::sysmem::Allocator::Name_,
+    fuchsia::sysmem2::Allocator::Name_,
+    "fuchsia.vulkan.loader.Loader",
+    fuchsia::tracing::provider::Registry::Name_,
+    fuchsia::ui::composition::Allocator::Name_,
+    fuchsia::ui::composition::Flatland::Name_,
+};
 constexpr SandboxConfig kGpuConfig = {
-    base::make_span((const char* const[]){
-        // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
-        fuchsia::media::ProfileProvider::Name_,
-        fuchsia::mediacodec::CodecFactory::Name_,
-        fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
-        fuchsia::sysmem::Allocator::Name_,
-        fuchsia::sysmem2::Allocator::Name_,
-        "fuchsia.vulkan.loader.Loader",
-        fuchsia::tracing::provider::Registry::Name_,
-        fuchsia::ui::composition::Allocator::Name_,
-        fuchsia::ui::composition::Flatland::Name_,
-    }),
+    kGpuServices,
     kProvideVulkanResources,
 };
 
+constexpr const char* kNetworkServices[] = {
+    "fuchsia.device.NameProvider",
+    "fuchsia.net.name.Lookup",
+    fuchsia::net::interfaces::State::Name_,
+    "fuchsia.posix.socket.Provider",
+};
 constexpr SandboxConfig kNetworkConfig = {
-    base::make_span((const char* const[]){
-        "fuchsia.device.NameProvider",
-        "fuchsia.net.name.Lookup",
-        fuchsia::net::interfaces::State::Name_,
-        "fuchsia.posix.socket.Provider",
-    }),
+    kNetworkServices,
     kProvideSslConfig,
 };
 
+constexpr const char* kRendererServices[] = {
+    fuchsia::fonts::Provider::Name_,
+    fuchsia::kernel::VmexResource::Name_,
+    // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
+    fuchsia::media::ProfileProvider::Name_,
+    fuchsia::memorypressure::Provider::Name_,
+    fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
+    fuchsia::sysmem::Allocator::Name_,
+    fuchsia::sysmem2::Allocator::Name_,
+    fuchsia::ui::composition::Allocator::Name_,
+};
 constexpr SandboxConfig kRendererConfig = {
-    base::make_span((const char* const[]){
-        fuchsia::fonts::Provider::Name_,
-        fuchsia::kernel::VmexResource::Name_,
-        // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
-        fuchsia::media::ProfileProvider::Name_,
-        fuchsia::memorypressure::Provider::Name_,
-        fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
-        fuchsia::sysmem::Allocator::Name_,
-        fuchsia::sysmem2::Allocator::Name_,
-        fuchsia::ui::composition::Allocator::Name_,
-    }),
-    0,
+    kRendererServices,
+    kNone,
 };
 
+constexpr const char* kVideoCaptureServices[] = {
+    fuchsia::camera3::DeviceWatcher::Name_,
+    fuchsia::sysmem::Allocator::Name_,
+    fuchsia::sysmem2::Allocator::Name_,
+};
 constexpr SandboxConfig kVideoCaptureConfig = {
-    base::make_span((const char* const[]){
-        fuchsia::camera3::DeviceWatcher::Name_,
-        fuchsia::sysmem::Allocator::Name_,
-        fuchsia::sysmem2::Allocator::Name_,
-    }),
-    0,
+    kVideoCaptureServices,
+    kNone,
 };
 
+constexpr const char* kServiceWithJitServices[] = {
+    fuchsia::kernel::VmexResource::Name_,
+};
 constexpr SandboxConfig kServiceWithJitConfig = {
-    base::make_span(
-        (const char* const[]){fuchsia::kernel::VmexResource::Name_}),
-    0,
+    kServiceWithJitServices,
+    kNone,
 };
 
 const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
@@ -221,7 +229,7 @@ SandboxPolicyFuchsia::SandboxPolicyFuchsia(sandbox::mojom::Sandbox type) {
           .WithArgs(service_name)
           .Then(base::BindOnce(&AddServiceCallback, service_name));
     }
-    for (const char* service_name : config->services) {
+    for (const char* service_name : config->additional_services) {
       // |service_name_| comes from |config|, which points to a compile-time
       // constant. It will remain valid for the duration of the task.
       filtered_service_directory_
