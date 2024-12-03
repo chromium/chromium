@@ -42,10 +42,7 @@ source_set("browser") {
   if (is_castos) {
     configs += [ "//third_party/breakpad:client_config" ]
     public_configs = [ "//third_party/breakpad:client_config" ]
-    deps += [
-      "//build:chromeos_buildflags",
-      "//third_party/breakpad:client",
-    ]
+    deps += [ "//third_party/breakpad:client" ]
   }
 
   if (is_android) {
