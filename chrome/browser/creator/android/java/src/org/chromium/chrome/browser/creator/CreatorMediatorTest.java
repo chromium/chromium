@@ -16,6 +16,7 @@ import android.view.View;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +52,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link CreatorMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Ignore("Entire test class fails in multiple builds. crbug.com/381939495")
 public class CreatorMediatorTest {
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private FeedSurfaceRendererBridge.Natives mFeedSurfaceRendererBridgeJniMock;
