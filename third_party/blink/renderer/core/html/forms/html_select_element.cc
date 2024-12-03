@@ -1665,9 +1665,10 @@ String HTMLSelectElement::ItemText(const Element& element) const {
   return item_string;
 }
 
-bool HTMLSelectElement::ItemIsDisplayNone(Element& element) const {
+bool HTMLSelectElement::ItemIsDisplayNone(Element& element,
+                                          bool ensure_style) const {
   if (auto* option = DynamicTo<HTMLOptionElement>(element))
-    return option->IsDisplayNone();
+    return option->IsDisplayNone(ensure_style);
   const ComputedStyle* style = ItemComputedStyle(element);
   return !style || style->Display() == EDisplay::kNone;
 }

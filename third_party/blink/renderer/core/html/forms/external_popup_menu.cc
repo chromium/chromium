@@ -274,8 +274,10 @@ void ExternalPopupMenu::GetPopupMenuInfo(
       owner_element.GetListItems();
   wtf_size_t item_count = list_items.size();
   for (wtf_size_t i = 0; i < item_count; ++i) {
-    if (owner_element.ItemIsDisplayNone(*list_items[i]))
+    if (owner_element.ItemIsDisplayNone(*list_items[i],
+                                        /*ensure_style=*/true)) {
       continue;
+    }
 
     Element& item_element = *list_items[i];
 #if BUILDFLAG(IS_ANDROID)
@@ -330,7 +332,7 @@ int ExternalPopupMenu::ToPopupMenuItemIndex(int external_popup_menu_item_index,
   int index_tracker = 0;
   const HeapVector<Member<HTMLElement>>& items = owner_element.GetListItems();
   for (wtf_size_t i = 0; i < items.size(); ++i) {
-    if (owner_element.ItemIsDisplayNone(*items[i]))
+    if (owner_element.ItemIsDisplayNone(*items[i], /*ensure_style=*/true))
       continue;
 #if BUILDFLAG(IS_ANDROID)
     // <hr> elements are not sent to the browser on android
@@ -353,7 +355,7 @@ int ExternalPopupMenu::ToExternalPopupMenuItemIndex(
   int index_tracker = 0;
   const HeapVector<Member<HTMLElement>>& items = owner_element.GetListItems();
   for (wtf_size_t i = 0; i < items.size(); ++i) {
-    if (owner_element.ItemIsDisplayNone(*items[i]))
+    if (owner_element.ItemIsDisplayNone(*items[i], /*ensure_style=*/true))
       continue;
 #if BUILDFLAG(IS_ANDROID)
     // <hr> elements are not sent to the browser on android

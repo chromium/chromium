@@ -1976,7 +1976,7 @@ HTMLOptionElement* SelectType::NextValidOption(int list_index,
     auto* option_element = DynamicTo<HTMLOptionElement>(element);
     if (!option_element)
       continue;
-    if (option_element->IsDisplayNone())
+    if (option_element->IsDisplayNone(/*ensure_style=*/false))
       continue;
     if (element->IsDisabledFormControl())
       continue;
