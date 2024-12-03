@@ -1252,7 +1252,7 @@
             ]
         }
     ],
-    "AsyncNavigationIntercept": [
+    "AsyncNavigationInterceptUnlaunch": [
         {
             "platforms": [
                 "android"
@@ -1260,7 +1260,7 @@
             "experiments": [
                 {
                     "name": "Disabled",
-                    "enable_features": [
+                    "disable_features": [
                         "AsyncNavigationIntercept"
                     ]
                 }

@@ -372,6 +372,7 @@ public class ChromeTabCreator extends TabCreator {
                                         mNativeWindow,
                                         createDefaultTabDelegateFactory()),
                                 null);
+                RedirectHandlerTabHelper.updateIntentInTab(tab, intent);
                 tab.loadUrl(loadUrlParams);
                 TraceEvent.end("ChromeTabCreator.loadUrlWithSpareTab");
             } else {
@@ -384,13 +385,9 @@ public class ChromeTabCreator extends TabCreator {
                                 .setDelegateFactory(delegateFactory)
                                 .setInitiallyHidden(!openInForeground)
                                 .build();
+                RedirectHandlerTabHelper.updateIntentInTab(tab, intent);
                 tab.loadUrl(loadUrlParams);
                 TraceEvent.end("ChromeTabCreator.loadUrl");
-            }
-            // When tab reparenting the |intent| is the reparenting intent, not the intent that
-            // created the tab.
-            if (type != TabLaunchType.FROM_REPARENTING) {
-                RedirectHandlerTabHelper.updateIntentInTab(tab, intent);
             }
             if (intent != null && intent.hasExtra(ServiceTabLauncher.LAUNCH_REQUEST_ID_EXTRA)) {
                 ServiceTabLauncher.onWebContentsForRequestAvailable(
