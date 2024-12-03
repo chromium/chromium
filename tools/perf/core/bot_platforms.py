@@ -886,6 +886,7 @@ WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
     PerfSuite([_GetBenchmarkConfig('speedometer3')]),
     1,
     'win',
+    executables=_WIN_10_EXECUTABLE_CONFIGS,
     is_fyi=True)
 
 # Android
