@@ -1272,14 +1272,14 @@ TEST_F(ElementTest, TheCheckMarkPseudoElement) {
   EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheckMark));
 }
 
-TEST_F(ElementTest, TheSelectArrowPseudoElement) {
+TEST_F(ElementTest, ThePickerIconPseudoElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #a-div::select-arrow {
+      #a-div::picker-icon {
         content: "*";
       }
 
-      #target::select-arrow {
+      #target::picker-icon {
         content: "*";
       }
     </style>
@@ -1295,15 +1295,15 @@ TEST_F(ElementTest, TheSelectArrowPseudoElement) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   Element* div = GetElementById("a-div");
-  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdSelectArrow));
+  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdPickerIcon));
 
-  // The `::select-arrow` pseudo element should only be created for select
+  // The `::picker-icon` pseudo element should only be created for select
   // elements.
   Element* target = GetElementById("target");
-  EXPECT_NE(nullptr, target->GetPseudoElement(kPseudoIdSelectArrow));
+  EXPECT_NE(nullptr, target->GetPseudoElement(kPseudoIdPickerIcon));
 
   Element* target_option = GetElementById("target-option");
-  EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdSelectArrow));
+  EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdPickerIcon));
 }
 
 TEST_F(ElementTest, GenerateScrollMarkerGroup) {

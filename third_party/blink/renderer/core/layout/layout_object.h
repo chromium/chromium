@@ -1072,14 +1072,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsCheckContent() const;
   inline bool IsBeforeContent() const;
   inline bool IsAfterContent() const;
-  inline bool IsSelectArrowContent() const;
+  inline bool IsPickerIconContent() const;
   inline bool IsMarkerContent() const;
   inline bool IsBeforeOrAfterContent() const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
   }
-  static inline bool IsSelectArrowContent(const LayoutObject* obj) {
-    return obj && obj->IsSelectArrowContent();
+  static inline bool IsPickerIconContent(const LayoutObject* obj) {
+    return obj && obj->IsPickerIconContent();
   }
 
   // Returns true if the text is generated (from, e.g., list marker,
@@ -4188,8 +4188,8 @@ inline bool LayoutObject::IsAfterContent() const {
   return true;
 }
 
-inline bool LayoutObject::IsSelectArrowContent() const {
-  if (StyleRef().StyleType() != kPseudoIdSelectArrow) {
+inline bool LayoutObject::IsPickerIconContent() const {
+  if (StyleRef().StyleType() != kPseudoIdPickerIcon) {
     return false;
   }
   // Text nodes don't have their own styles, so ignore the style on a text node.

@@ -64,7 +64,7 @@ bool CanBeHitTestTargetPseudoNodeStyle(const ComputedStyle& style) {
     case kPseudoIdBefore:
     case kPseudoIdCheckMark:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
     case kPseudoIdFirstLetter:
       return true;
     default:

@@ -2743,7 +2743,7 @@ domain DOM
       checkmark
       before
       after
-      select-arrow
+      picker-icon
       marker
       backdrop
       column

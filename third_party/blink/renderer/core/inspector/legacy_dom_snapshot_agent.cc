@@ -339,14 +339,14 @@ LegacyDOMSnapshotAgent::VisitPseudoElements(
       !parent->GetPseudoElement(kPseudoIdCheckMark) &&
       !parent->GetPseudoElement(kPseudoIdBefore) &&
       !parent->GetPseudoElement(kPseudoIdAfter) &&
-      !parent->GetPseudoElement(kPseudoIdSelectArrow)) {
+      !parent->GetPseudoElement(kPseudoIdPickerIcon)) {
     return nullptr;
   }
 
   auto pseudo_elements = std::make_unique<protocol::Array<int>>();
   for (PseudoId pseudo_id :
        {kPseudoIdFirstLetter, kPseudoIdCheckMark, kPseudoIdBefore,
-        kPseudoIdAfter, kPseudoIdSelectArrow}) {
+        kPseudoIdAfter, kPseudoIdPickerIcon}) {
     if (Node* pseudo_node = parent->GetPseudoElement(pseudo_id)) {
       pseudo_elements->emplace_back(VisitNode(pseudo_node,
                                               include_event_listeners,

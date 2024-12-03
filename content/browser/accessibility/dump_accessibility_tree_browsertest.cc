@@ -441,28 +441,27 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCSSPseudoElementSelectArrow) {
+                       AccessibilityCSSPseudoElementPickerIcon) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
-  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-select-arrow.html"));
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-picker-icon.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    AccessibilityCSSPseudoElementSelectArrowOverrideContent) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSPseudoElementPickerIconOverrideContent) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
   RunCSSTest(
-      FILE_PATH_LITERAL("pseudo-element-select-arrow-override-content.html"));
+      FILE_PATH_LITERAL("pseudo-element-picker-icon-override-content.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
-    AccessibilityCSSPseudoElementSelectArrowOverrideContentAlternativeText) {
+    AccessibilityCSSPseudoElementPickerIconOverrideContentAlternativeText) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
   RunCSSTest(FILE_PATH_LITERAL(
-      "pseudo-element-select-arrow-override-content-alternative-text.html"));
+      "pseudo-element-picker-icon-override-content-alternative-text.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

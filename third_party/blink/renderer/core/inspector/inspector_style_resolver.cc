@@ -49,7 +49,7 @@ InspectorStyleResolver::InspectorStyleResolver(
   if (element_pseudo_id && !(element_pseudo_id == kPseudoIdCheckMark ||
                              element_pseudo_id == kPseudoIdBefore ||
                              element_pseudo_id == kPseudoIdAfter ||
-                             element_pseudo_id == kPseudoIdSelectArrow ||
+                             element_pseudo_id == kPseudoIdPickerIcon ||
                              element_pseudo_id == kPseudoIdMarker ||
                              element_pseudo_id == kPseudoIdBackdrop)) {
     return;

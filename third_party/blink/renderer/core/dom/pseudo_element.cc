@@ -92,11 +92,11 @@ PseudoElement* PseudoElement::Create(Element* parent,
     }
   }
 
-  if (pseudo_id == kPseudoIdSelectArrow) {
+  if (pseudo_id == kPseudoIdPickerIcon) {
     CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
 
     if (!IsA<HTMLSelectElement>(parent)) {
-      // The `::select-arrow` pseudo element should only be created for select
+      // The `::picker-icon` pseudo element should only be created for select
       // elements.
       return nullptr;
     }
@@ -122,7 +122,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
     return MakeGarbageCollected<ScrollButtonPseudoElement>(parent, pseudo_id);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
-         pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdSelectArrow ||
+         pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdPickerIcon ||
          pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
          pseudo_id == kPseudoIdColumn);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
@@ -143,10 +143,10 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
       DEFINE_STATIC_LOCAL(QualifiedName, check, (AtomicString("::checkmark")));
       return check;
     }
-    case kPseudoIdSelectArrow: {
-      DEFINE_STATIC_LOCAL(QualifiedName, select_arrow,
-                          (AtomicString("::select-arrow")));
-      return select_arrow;
+    case kPseudoIdPickerIcon: {
+      DEFINE_STATIC_LOCAL(QualifiedName, picker_icon,
+                          (AtomicString("::picker-icon")));
+      return picker_icon;
     }
     case kPseudoIdBackdrop: {
       DEFINE_STATIC_LOCAL(QualifiedName, backdrop,
@@ -446,7 +446,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
     case kPseudoIdScrollMarker:
       break;
     default: {
@@ -496,7 +496,7 @@ bool PseudoElement::CanGenerateContent() const {
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
     case kPseudoIdScrollMarker:
     case kPseudoIdScrollMarkerGroup:
     case kPseudoIdScrollUpButton:
@@ -520,7 +520,7 @@ bool PseudoElement::CanHaveNestedPseudoElement() const {
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
     case kPseudoIdColumn:
       return true;
     default:
@@ -534,7 +534,7 @@ bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
       if (pseudo_id != kPseudoIdMarker)
         return false;
       break;
@@ -605,7 +605,7 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
       return !pseudo_style.ContentPreventsBoxGeneration();
     case kPseudoIdScrollMarker:
     case kPseudoIdScrollUpButton:

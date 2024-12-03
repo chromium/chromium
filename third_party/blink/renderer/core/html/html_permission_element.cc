@@ -547,7 +547,7 @@ bool HTMLPermissionElement::CanGeneratePseudoElement(PseudoId id) const {
     case PseudoId::kPseudoIdAfter:
     case PseudoId::kPseudoIdBefore:
     case PseudoId::kPseudoIdCheckMark:
-    case PseudoId::kPseudoIdSelectArrow:
+    case PseudoId::kPseudoIdPickerIcon:
       return false;
     default:
       return Element::CanGeneratePseudoElement(id);
