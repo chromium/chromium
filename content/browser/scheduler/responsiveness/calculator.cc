@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
@@ -235,8 +236,8 @@ void Calculator::EmitResponsivenessTraceEvents(
   // Emit a trace event to highlight the duration of congested intervals
   // measurement.
   if (congestion_type == CongestionType::kQueueAndExecution) {
-    EmitCongestedIntervalsMeasurementTraceEvent(startup_stage, start_time,
-                                                end_time);
+    EmitCongestedIntervalsMeasurementTraceEvent(
+        startup_stage, start_time, end_time, congested_slices.size());
     // Since a lot of startup tasks are queue and then released, queuing
     // congestion is very noisy and thus ignored before OnFirstIdle().
     if (startup_stage == StartupStage::kFirstInterval ||
@@ -274,11 +275,17 @@ void Calculator::EmitResponsivenessTraceEvents(
 void Calculator::EmitCongestedIntervalsMeasurementTraceEvent(
     StartupStage startup_stage,
     base::TimeTicks start_time,
-    base::TimeTicks end_time) {
+    base::TimeTicks end_time,
+    size_t num_congested_slices) {
   TRACE_EVENT_BEGIN(kLatencyEventCategory,
                     GetCongestedIntervalsMeasurementEvent(startup_stage),
                     congestion_track_, start_time);
-  TRACE_EVENT_END(kLatencyEventCategory, congestion_track_, end_time);
+  TRACE_EVENT_END(
+      kLatencyEventCategory, congestion_track_, end_time,
+      base::trace_event::TriggerFlow("Browser.MainThreadsCongestion",
+                                     num_congested_slices),
+      base::trace_event::TriggerFlow(
+          "Browser.MainThreadsCongestion.RunningOnly", num_congested_slices));
 }
 
 void Calculator::EmitCongestedIntervalTraceEvent(CongestionType congestion_type,

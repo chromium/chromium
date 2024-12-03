@@ -398,6 +398,7 @@
   X("startup,rail")                                                           \
   X("toplevel,graphics.pipeline")                                             \
   X("toplevel,Java")                                                          \
+  X("toplevel,latency")                                                       \
   X("toplevel,viz")                                                           \
   X("ui,input")                                                               \
   X("ui,latency")                                                             \
