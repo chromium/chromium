@@ -1985,9 +1985,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("cookiesSettingsHelpCenterURL",
                          chrome::kCookiesSettingsHelpCenterURL);
 
-  html_source->AddString("trackingProtectionHelpCenterURL",
-                         chrome::kTrackingProtectionHelpCenterURL);
-
   html_source->AddString("relatedWebsiteSetsLearnMoreURL",
                          chrome::kRelatedWebsiteSetsLearnMoreURL);
 
@@ -2514,10 +2511,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_BULLET_1},
       {"thirdPartyCookiesPageBlockBulTwo",
        IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_BULLET_2},
-      {"trackingProtectionLinkRowLabel",
-       IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL},
-      {"trackingProtectionLinkRowSubLabel",
-       IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_SUB_LABEL},
       {"thirdPartyCookiesLinkRowSublabelLimited",
        IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED},
       {"thirdPartyCookiesAlignedPageDescription",
@@ -2541,8 +2534,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"cookiePageRwsSubLabel",
        IDS_SETTINGS_COOKIES_RELATED_WEBSITE_SETS_TOGGLE_SUB_LABEL},
       {"cookiePageAllSitesLink", IDS_SETTINGS_COOKIES_ALL_SITES_LINK},
-      {"trackingProtectionPageTitle",
-       IDS_SETTINGS_TRACKING_PROTECTION_PAGE_TITLE},
       {"trackingProtectionPageDescription",
        IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DESCRIPTION},
       {"trackingProtectionBulletOne",

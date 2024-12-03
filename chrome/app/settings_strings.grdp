@@ -3289,15 +3289,6 @@
   <message name="IDS_SETTINGS_COOKIES_ALL_SITES_LINK" desc="Label for the link row which takes the user to the page listing all sites with storage and permissions">
     See all site data and permissions
   </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL" desc="Label for the Tracking Protection page entry point.">
-    Tracking Protection
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_SUB_LABEL" desc="Sub-label for the Tracking Protection page entry point.">
-    Manage third-party cookies and tracking protections
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_TITLE" desc="The title of a new settings page that allows users to manage settings related to tracking, for example third-party cookies. This settings page will replace the existing cookie settings page at chrome://settings/cookies.">
-    Tracking Protection
-  </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DESCRIPTION" desc="Explanatory text for the Tracking Protection settings page.">
     Chrome limits the type of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
   </message>

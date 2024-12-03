@@ -591,10 +591,6 @@ inline constexpr char kSyncTrustedVaultOptInURL[] =
 inline constexpr char kSyncTrustedVaultLearnMoreURL[] =
     "https://support.google.com/accounts?p=settings_password_ode";
 
-// The URL for the Help Center page about Tracking Protection settings.
-inline constexpr char16_t kTrackingProtectionHelpCenterURL[] =
-    u"https://support.google.com/chrome?p=tracking_protection";
-
 // The URL for the Help Center page about User Bypass.
 inline constexpr char16_t kUserBypassHelpCenterURL[] =
     u"https://support.google.com/chrome?p=pause_protections";
