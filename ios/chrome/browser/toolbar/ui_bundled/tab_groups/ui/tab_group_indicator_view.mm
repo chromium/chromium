@@ -60,8 +60,8 @@
     _separatorView = [self setUpSeparatorView];
     _menuButton = [self menuButton];
 
-    [_stackView addArrangedSubview:_titleView];
     [_stackView addArrangedSubview:_coloredDotView];
+    [_stackView addArrangedSubview:_titleView];
 
     [self addSubview:_stackView];
     [self addSubview:_menuButton];
