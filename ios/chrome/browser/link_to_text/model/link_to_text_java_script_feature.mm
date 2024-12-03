@@ -21,7 +21,7 @@ const char kScriptName[] = "link_to_text";
 const char kGetLinkToTextFunction[] = "linkToText.getLinkToText";
 
 bool IsKnownAmpCache(web::WebFrame* frame) {
-  GURL origin = frame->GetSecurityOrigin();
+  GURL origin = frame->GetSecurityOriginDeprecated();
 
   // Source:
   // https://github.com/ampproject/amphtml/blob/main/build-system/global-configs/caches.json

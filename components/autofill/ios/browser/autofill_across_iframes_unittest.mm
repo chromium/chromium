@@ -640,7 +640,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
         GetFrameForFieldWithIdAttr(trigger_field.id_attribute, fields);
     ASSERT_TRUE(trigger_frame);
     url::Origin trigger_origin =
-        url::Origin::Create(trigger_frame->GetSecurityOrigin());
+        url::Origin::Create(trigger_frame->GetSecurityOriginDeprecated());
     base::flat_set<FieldGlobalId> filled_field_ids =
         GetDriverForFrame(trigger_frame)
             ->ApplyFormAction(mojom::FormActionType::kFill,

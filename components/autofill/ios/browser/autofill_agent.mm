@@ -1230,8 +1230,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   // Necessary so the values can be used inside a block.
   GURL pageURL = _webState->GetLastCommittedURL();
-  GURL frameOrigin =
-      frame ? frame->GetSecurityOrigin() : pageURL.DeprecatedGetOriginAsURL();
+  GURL frameOrigin = frame ? frame->GetSecurityOriginDeprecated()
+                           : pageURL.DeprecatedGetOriginAsURL();
 
   if (auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
           _webState, frame)) {

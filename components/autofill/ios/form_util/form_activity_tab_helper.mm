@@ -130,8 +130,8 @@ std::optional<std::pair<WebFrame*, LocalFrameToken>> GetIsolatedFrame(
     return std::nullopt;
   }
 
-  if (isolated_world_frame->GetSecurityOrigin() !=
-      page_world_frame->GetSecurityOrigin()) {
+  if (isolated_world_frame->GetSecurityOriginDeprecated() !=
+      page_world_frame->GetSecurityOriginDeprecated()) {
     return std::nullopt;
   }
 
@@ -303,8 +303,9 @@ void FormActivityTabHelper::FormSubmissionHandler(
   // `local_frame_token`.
   std::optional<std::vector<FormData>> forms = autofill::ExtractFormsData(
       base::SysUTF8ToNSString(form_data), true, base::UTF8ToUTF16(form_name),
-      web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),
-      *fieldDataManager, *frame_id, local_frame_token);
+      web_state->GetLastCommittedURL(),
+      sender_frame->GetSecurityOriginDeprecated(), *fieldDataManager, *frame_id,
+      local_frame_token);
   if (!forms || forms->size() != 1) {
     return;
   }
