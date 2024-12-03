@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_configuration.h"
@@ -16,8 +14,8 @@
 // static
 TrustedVaultClientBackend* TrustedVaultClientBackendFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<TrustedVaultClientBackend*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<TrustedVaultClientBackend>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -28,9 +26,7 @@ TrustedVaultClientBackendFactory::GetInstance() {
 }
 
 TrustedVaultClientBackendFactory::TrustedVaultClientBackendFactory()
-    : BrowserStateKeyedServiceFactory(
-          "TrustedVaultClientBackend",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("TrustedVaultClientBackend") {}
 
 TrustedVaultClientBackendFactory::~TrustedVaultClientBackendFactory() = default;
 
