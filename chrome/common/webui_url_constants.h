@@ -362,8 +362,6 @@ inline constexpr char kChromeUIUntrustedCompanionSidePanelHost[] =
 inline constexpr char kChromeUIUntrustedCompanionSidePanelURL[] =
     "chrome-untrusted://companion-side-panel.top-chrome/";
 inline constexpr char kChromeUIUntrustedFeedURL[] = "chrome-untrusted://feed/";
-inline constexpr char kChromeUIUntrustedHatsHost[] = "hats";
-inline constexpr char kChromeUIUntrustedHatsURL[] = "chrome-untrusted://hats/";
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelHost[] =
     "read-anything-side-panel.top-chrome";
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelURL[] =

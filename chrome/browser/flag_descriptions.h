@@ -3088,9 +3088,6 @@ extern const char kNtpWideModulesDescription[];
 extern const char kHappinessTrackingSurveysForDesktopDemoName[];
 extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 
-extern const char kHatsWebUIName[];
-extern const char kHatsWebUIDescription[];
-
 extern const char kMainNodeAnnotationsName[];
 extern const char kMainNodeAnnotationsDescription[];
 

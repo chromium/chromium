@@ -5345,11 +5345,6 @@ const char kHappinessTrackingSurveysForDesktopDemoName[] =
 const char kHappinessTrackingSurveysForDesktopDemoDescription[] =
     "Enable showing Happiness Tracking Surveys Demo to users on Desktop";
 
-const char kHatsWebUIName[] = "HaTS in Chrome WebUI";
-const char kHatsWebUIDescription[] =
-    "Enables the Happiness Tracking Surveys being delivered via chrome webui, "
-    "rather than a separate static website.";
-
 const char kMainNodeAnnotationsName[] = "Main Node Annotations";
 const char kMainNodeAnnotationsDescription[] =
     "Uses Screen2x main content extractor to annotate the accessibility tree "

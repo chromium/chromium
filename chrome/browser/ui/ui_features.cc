@@ -132,12 +132,6 @@ const base::FeatureParam<std::string> kIOSPromoPaymentBubbleQRCodeURL{
     "?ios-campaign=desktop-chr-payment&android-campaign=desktop-chr-payment"};
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if !BUILDFLAG(IS_ANDROID)
-// Enables or disables the Happiness Tracking Surveys being delivered via chrome
-// webui, rather than a separate static website.
-BASE_FEATURE(kHaTSWebUI, "HaTSWebUI", base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Controls whether we use a different UX for simple extensions overriding
 // settings.

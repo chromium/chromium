@@ -7692,12 +7692,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kHappinessTrackingSurveysForDesktopDemo)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"hats-webui", flag_descriptions::kHatsWebUIName,
-     flag_descriptions::kHatsWebUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kHaTSWebUI)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-elegant-text-height",
      flag_descriptions::kAndroidElegantTextHeightName,

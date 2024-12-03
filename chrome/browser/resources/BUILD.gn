@@ -35,7 +35,6 @@ group("resources") {
       "downloads:resources",
       "feedback:resources",
       "gaia_auth_host:resources",
-      "hats:resources",
       "history:resources",
       "identity_internals:resources",
       "key_value_pair_viewer_shared:resources",

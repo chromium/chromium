@@ -176,7 +176,6 @@
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing.mojom.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
-#include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
@@ -1817,9 +1816,6 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   }
   registry.ForWebUI<ReadAnythingUntrustedUI>()
       .Add<color_change_listener::mojom::PageHandler>();
-  if (base::FeatureList::IsEnabled(features::kHaTSWebUI)) {
-    registry.ForWebUI<HatsUI>().Add<hats::mojom::PageHandlerFactory>();
-  }
 
   if (base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature)) {
