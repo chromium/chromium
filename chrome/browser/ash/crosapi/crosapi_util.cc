@@ -122,7 +122,6 @@
 #include "chromeos/crosapi/mojom/metrics.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/network_change.mojom.h"
-#include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"
 #include "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom.h"
@@ -374,7 +373,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::NetworkChange>(),
     MakeInterfaceVersionEntry<crosapi::mojom::NetworkingAttributes>(),
     MakeInterfaceVersionEntry<crosapi::mojom::NetworkingPrivate>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::NetworkSettingsService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::OneDriveIntegrationService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::OneDriveNotificationService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::PasskeyAuthenticator>(),

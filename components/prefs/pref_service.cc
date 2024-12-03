@@ -713,16 +713,6 @@ void PrefService::SetStandaloneBrowserPref(std::string_view path,
       path, value.Clone(), WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }
 
-void PrefService::RemoveStandaloneBrowserPref(std::string_view path) {
-  if (!standalone_browser_pref_store_) {
-    LOG(WARNING) << "Failure to remove value of " << path
-                 << " in standalone browser store";
-    return;
-  }
-  standalone_browser_pref_store_->RemoveValue(
-      path, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-}
-
 void PrefService::RemoveAllStandaloneBrowserPrefs() {
   if (!standalone_browser_pref_store_) {
     LOG(WARNING) << "standalone_browser_pref_store_ is null";

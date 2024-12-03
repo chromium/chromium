@@ -1116,10 +1116,10 @@ constexpr char kNoteTakingAppsLockScreenToastShown[] =
 constexpr char kRestoreLastLockScreenNote[] =
     "settings.restore_last_lock_screen_note";
 constexpr char kLockScreenDataPrefKey[] = "lockScreenDataItems";
-
-// Deprecated 11/2024
 inline constexpr char kSyncableVersionedWallpaperInfo[] =
     "syncable_versioned_wallpaper_info";
+constexpr char kLacrosProxyControllingExtension[] =
+    "ash.lacros_proxy_controlling_extension";
 #endif
 
 // Deprecated 11/2024
@@ -1631,9 +1631,8 @@ void RegisterProfilePrefsForMigration(
                              base::Value::List());
   registry->RegisterDictionaryPref(kNoteTakingAppsLockScreenToastShown);
   registry->RegisterBooleanPref(kRestoreLastLockScreenNote, false);
-
-  // Deprecated 11/2024
   registry->RegisterDictionaryPref(kSyncableVersionedWallpaperInfo);
+  registry->RegisterDictionaryPref(kLacrosProxyControllingExtension);
 #endif
 
   // Deprecated 11/2024
@@ -2273,7 +2272,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::ApkWebAppService::RegisterProfilePrefs(registry);
   ash::app_time::AppActivityRegistry::RegisterProfilePrefs(registry);
   ash::app_time::AppTimeController::RegisterProfilePrefs(registry);
-  ash::AshProxyMonitor::RegisterProfilePrefs(registry);
   ash::assistant::prefs::RegisterProfilePrefs(registry);
   ash::auth::AuthFactorConfig::RegisterPrefs(registry);
   ash::bluetooth::DebugLogsManager::RegisterPrefs(registry);
@@ -3007,9 +3005,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNoteTakingAppsLockScreenAllowlist);
   profile_prefs->ClearPref(kNoteTakingAppsLockScreenToastShown);
   profile_prefs->ClearPref(kRestoreLastLockScreenNote);
-
-  // Deprecated 11/2024
   profile_prefs->ClearPref(kSyncableVersionedWallpaperInfo);
+  profile_prefs->ClearPref(kLacrosProxyControllingExtension);
 #endif
 
   // Added 11/2024

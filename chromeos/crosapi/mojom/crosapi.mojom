@@ -77,7 +77,6 @@ import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/one_drive_notification_service.mojom";
 import "chromeos/crosapi/mojom/one_drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
-import "chromeos/crosapi/mojom/network_settings_service.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/passkeys.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
@@ -425,12 +424,7 @@ interface Crosapi {
   BindInSessionAuth@96(
       pending_receiver<chromeos.auth.mojom.InSessionAuth> receiver);
 
-  // Binds the NetworkSettingsService interface for reading and observing
-  // network changes.
-  // Added in M93.
-  [MinVersion=41]
-  BindNetworkSettingsService@46(
-      pending_receiver<NetworkSettingsService> receiver);
+  // BindNetworkSettingsService@46 was removed.
 
   // Binds the KerberosInBrowser interface for showing Kerberos UI.
   // Added in M114.

@@ -434,8 +434,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::prefs::kOrcaEnabled] = settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kEmojiSuggestionEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::prefs::kLacrosProxyControllingExtension] =
-      settings_api::PrefType::kDictionary;
   (*s_allowlist)[::prefs::kLanguageInputMethodSpecificSettings] =
       settings_api::PrefType::kDictionary;
   (*s_allowlist)[ash::prefs::kLastUsedImeShortcutReminderDismissed] =

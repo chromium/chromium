@@ -70,7 +70,6 @@
 #include "chrome/browser/ash/crosapi/metrics_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
-#include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/nonclosable_app_toast_service_ash.h"
@@ -252,8 +251,6 @@ CrosapiAsh::CrosapiAsh()
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
       networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
-      network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
-          g_browser_process->platform_part()->ash_proxy_monitor())),
       one_drive_notification_service_ash_(
           std::make_unique<OneDriveNotificationServiceAsh>()),
       one_drive_integration_service_ash_(
@@ -700,12 +697,6 @@ void CrosapiAsh::BindNativeThemeService(
 void CrosapiAsh::BindNetworkChange(
     mojo::PendingReceiver<crosapi::mojom::NetworkChange> receiver) {
   NOTREACHED();
-}
-
-void CrosapiAsh::BindNetworkSettingsService(
-    ::mojo::PendingReceiver<::crosapi::mojom::NetworkSettingsService>
-        receiver) {
-  network_settings_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindNetworkingAttributes(

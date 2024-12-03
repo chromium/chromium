@@ -200,10 +200,7 @@ interface Prefs {
   // registered.
   SetPref@1(PrefPath path, mojo_base.mojom.Value value) => ();
 
-  // Clears the value of the specified ash pref set by lacros.
-  // The pref must be extension-controlled.
-  [MinVersion=2]
-  ClearExtensionControlledPref@4(PrefPath path) => ();
+  // ClearExtensionControlledPref@4 was removed.
 
   // Adds an observer for ash pref. The observer is fired immediately with the
   // current value. Multiple observers may be registered for any given pref.

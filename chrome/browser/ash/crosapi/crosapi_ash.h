@@ -105,7 +105,6 @@ class MediaUIAsh;
 class MetricsAsh;
 class MultiCaptureServiceAsh;
 class NativeThemeServiceAsh;
-class NetworkSettingsServiceAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
 class OneDriveNotificationServiceAsh;
@@ -297,9 +296,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NativeThemeService> receiver) override;
   void BindNetworkChange(
       mojo::PendingReceiver<mojom::NetworkChange> receiver) override;
-  void BindNetworkSettingsService(
-      ::mojo::PendingReceiver<::crosapi::mojom::NetworkSettingsService>
-          receiver) override;
   void BindNetworkingAttributes(
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
   void BindNetworkingPrivate(
@@ -588,10 +584,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   VpnServiceAsh* vpn_service_ash() { return vpn_service_ash_.get(); }
 
-  NetworkSettingsServiceAsh* network_settings_service_ash() {
-    return network_settings_service_ash_.get();
-  }
-
  private:
   // Called when a connection is lost.
   void OnDisconnected();
@@ -656,7 +648,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
   std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
-  std::unique_ptr<NetworkSettingsServiceAsh> network_settings_service_ash_;
   std::unique_ptr<OneDriveNotificationServiceAsh>
       one_drive_notification_service_ash_;
   std::unique_ptr<OneDriveIntegrationServiceAsh>
