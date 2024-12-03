@@ -883,11 +883,9 @@ WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
 WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
     'win-arm64-snapdragon-elite-perf',
     'Windows Dell Snapdragon Elite',
-    _WIN_ARM64_BENCHMARK_CONFIGS,
+    PerfSuite([_GetBenchmarkConfig('speedometer3')]),
     1,
     'win',
-    executables=_WIN_10_EXECUTABLE_CONFIGS,
-    crossbench=_CROSSBENCH_BENCHMARKS_ALL,
     is_fyi=True)
 
 # Android

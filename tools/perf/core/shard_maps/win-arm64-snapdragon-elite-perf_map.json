@@ -1,74 +1,17 @@
 {
     "0": {
         "benchmarks": {
-            "jetstream2": {
-                "abridged": false
-            },
-            "rendering.desktop": {
-                "abridged": true
-            },
-            "rendering.desktop.notracing": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
-            },
-            "system_health.common_desktop": {
-                "abridged": true
-            }
-        },
-        "executables": {
-            "base_perftests": {
-                "arguments": [
-                    "--test-launcher-jobs=1",
-                    "--test-launcher-retry-limit=0"
-                ],
-                "path": "base_perftests"
-            },
-            "components_perftests": {
-                "arguments": [
-                    "--xvfb"
-                ],
-                "path": "components_perftests"
-            },
-            "dawn_perf_tests": {
-                "arguments": [
-                    "--test-launcher-jobs=1",
-                    "--test-launcher-retry-limit=0"
-                ],
-                "path": "dawn_perf_tests"
-            },
-            "views_perftests": {
-                "arguments": [
-                    "--xvfb"
-                ],
-                "path": "views_perftests"
-            }
-        },
-        "crossbench": {
-            "jetstream_2.2": {
-                "display_name": "jetstream2.crossbench",
-                "arguments": []
-            },
-            "motionmark_1.3": {
-                "display_name": "motionmark1.3.crossbench",
-                "arguments": []
-            },
-            "speedometer_3.0": {
-                "display_name": "speedometer3.crossbench",
-                "arguments": []
             }
         }
     },
     "extra_infos": {
-        "num_stories": 35,
-        "predicted_min_shard_time": 2348.0,
+        "num_stories": 1,
+        "predicted_min_shard_time": 10,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 2348.0,
+        "predicted_max_shard_time": 10,
         "predicted_max_shard_index": 0,
-        "shard #0": 2348.0
+        "shard #0": 10
     }
 }
