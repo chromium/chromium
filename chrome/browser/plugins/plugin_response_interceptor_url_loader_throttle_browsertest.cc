@@ -27,8 +27,8 @@ using content::WebContents;
 class PluginResponseInterceptorURLLoaderThrottleBrowserTest
     : public extensions::ExtensionApiTest {
  public:
-  PluginResponseInterceptorURLLoaderThrottleBrowserTest() {}
-  ~PluginResponseInterceptorURLLoaderThrottleBrowserTest() override {}
+  PluginResponseInterceptorURLLoaderThrottleBrowserTest() = default;
+  ~PluginResponseInterceptorURLLoaderThrottleBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
@@ -52,8 +52,8 @@ class PluginResponseInterceptorURLLoaderThrottleBrowserTest
 
 class DownloadObserver : public content::DownloadManager::Observer {
  public:
-  DownloadObserver() {}
-  ~DownloadObserver() override {}
+  DownloadObserver() = default;
+  ~DownloadObserver() override = default;
 
   const GURL& GetLastUrl() {
     // Wait until the download has been created.
