@@ -39,9 +39,6 @@ declare_args() {
   # Enable iOS 16 lockscreen widget in WidgetKit extension.
   ios_enable_lockscreen_widget = true
 
-  # Enable iOS shortcut widget in WidgetKit extension.
-  ios_enable_shortcuts_widget = true
-
   # Enable iOS Push Notification Service extension.
   ios_enable_push_notification_service_extension = true
 
