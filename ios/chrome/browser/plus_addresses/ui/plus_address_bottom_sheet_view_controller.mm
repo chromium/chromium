@@ -35,6 +35,8 @@ namespace {
 
 using PlusAddressModalCompletionStatus =
     plus_addresses::metrics::PlusAddressModalCompletionStatus;
+using PlusAddressCreationBottomSheetErrorType =
+    plus_addresses::PlusAddressCreationBottomSheetErrorType;
 
 // Generates the notice to be displayed in the bottomsheet, which includes an
 // attributed string.
@@ -137,7 +139,11 @@ UIImageView* BrandingImageView() {
   // Record of the time the bottom sheet is shown.
   base::Time _bottomSheetShownTime;
   // Error that occurred while bottom sheet is showing.
-  std::optional<PlusAddressModalCompletionStatus> _bottomSheetErrorStatus;
+  std::optional<PlusAddressModalCompletionStatus>
+      _bottomSheetModalCompletionErrorStatus;
+  // Stores the error state info for failed creation requests.
+  std::optional<PlusAddressCreationBottomSheetErrorType>
+      _bottomSheetCreationErrorType;
   // Keeps track of the number of times the refresh button was hit.
   NSInteger _refreshCount;
   // The notice message if it will be shown.
@@ -227,7 +233,8 @@ UIImageView* BrandingImageView() {
           [_delegate shouldShowNotice]);
     }
   _reservedPlusAddress = plusAddress;
-  _bottomSheetErrorStatus.reset();
+  _bottomSheetModalCompletionErrorStatus.reset();
+  _bottomSheetCreationErrorType.reset();
   [_reservedPlusAddressTableView reloadData];
 }
 
@@ -236,13 +243,16 @@ UIImageView* BrandingImageView() {
       PlusAddressModalCompletionStatus::kModalConfirmed,
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
-  _bottomSheetErrorStatus.reset();
+  _bottomSheetModalCompletionErrorStatus.reset();
+  _bottomSheetCreationErrorType.reset();
   self.isLoading = NO;
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
-- (void)notifyError:(PlusAddressModalCompletionStatus)status {
-  _bottomSheetErrorStatus = status;
+- (void)notifyError:(PlusAddressModalCompletionStatus)completionStatus
+    withCreateErrorType:(PlusAddressCreationBottomSheetErrorType)errorType {
+  _bottomSheetModalCompletionErrorStatus = completionStatus;
+  _bottomSheetCreationErrorType = errorType;
   self.isLoading = NO;
 }
 
@@ -442,18 +452,27 @@ UIImageView* BrandingImageView() {
       plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled,
       was_notice_shown);
   plus_addresses::metrics::RecordModalShownOutcome(
-      _bottomSheetErrorStatus.value_or(
+      _bottomSheetModalCompletionErrorStatus.value_or(
           PlusAddressModalCompletionStatus::kModalCanceled),
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, was_notice_shown);
-  if (_bottomSheetErrorStatus) {
-    if (*_bottomSheetErrorStatus ==
-        PlusAddressModalCompletionStatus::kReservePlusAddressError) {
+  if (_bottomSheetModalCompletionErrorStatus) {
+    if (_bottomSheetCreationErrorType &&
+        _bottomSheetCreationErrorType.value() ==
+            PlusAddressCreationBottomSheetErrorType::kCreateAffiliation) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.AffiliationErrorCanceled"));
+    } else if (_bottomSheetCreationErrorType &&
+               _bottomSheetCreationErrorType.value() ==
+                   PlusAddressCreationBottomSheetErrorType::kCreateQuota) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.QuotaErrorAccepted"));
+    } else if (*_bottomSheetModalCompletionErrorStatus ==
+               PlusAddressModalCompletionStatus::kReservePlusAddressError) {
       base::RecordAction(
           base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
-    }
-    if (*_bottomSheetErrorStatus ==
-        PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
+    } else if (*_bottomSheetModalCompletionErrorStatus ==
+               PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
       base::RecordAction(
           base::UserMetricsAction("PlusAddresses.CreateErrorCanceled"));
     }
