@@ -2323,7 +2323,8 @@
     },
     {
       name: "IdentityDigest",
-      status: "experimental"
+      status: "experimental",
+      implied_by: ["SignatureBasedIntegrity"]
     },
     {
       name: "ImplicitRootScroller",
@@ -3920,7 +3921,6 @@
     {
       name: "SignatureBasedIntegrity",
       status: "experimental",
-      depends_on: ["IdentityDigest"]
     },
     {
       name: "SiteInitiatedMirroring",
