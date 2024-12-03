@@ -458,15 +458,7 @@ void CreateDefaultTabGroupAndOpenMenu(
 
 // Tests that the Tab Grid button indicator is correctly updated whether a tab
 // is grouped or not.
-// TODO(crbug.com/367287351): Test fails on official bots.
-#if defined(OFFICIAL_BUILD)
-#define MAYBE_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped \
-  DISABLED_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped
-#else
-#define MAYBE_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped \
-  testTabGridButtonUpdatesWhenTabIsGroupedUngrouped
-#endif  // defined(OFFICIAL_BUILD)
-- (void)MAYBE_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped {
+- (void)testTabGridButtonUpdatesWhenTabIsGroupedUngrouped {
   // Open a second tab.
   [ChromeEarlGreyUI openNewTab];
 
