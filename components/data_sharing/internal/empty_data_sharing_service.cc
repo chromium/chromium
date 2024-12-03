@@ -51,9 +51,6 @@ EmptyDataSharingService::GetPossiblyRemovedGroupMember(
   return std::nullopt;
 }
 
-void EmptyDataSharingService::ReadAllGroups(
-    base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {}
-
 void EmptyDataSharingService::ReadGroup(
     const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}

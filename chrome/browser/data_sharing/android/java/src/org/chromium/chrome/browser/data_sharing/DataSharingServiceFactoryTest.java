@@ -86,13 +86,6 @@ public class DataSharingServiceFactoryTest {
                         Assert.assertFalse(dataSharingService.isEmptyService());
 
                         // TODO(ssid): Add tests with SDK delegate once available.
-                        dataSharingService.readAllGroups(
-                                result -> {
-                                    Assert.assertTrue(result.groupDataSet == null);
-                                    Assert.assertEquals(
-                                            result.actionFailure, PeopleGroupActionFailure.UNKNOWN);
-                                    callbackReceived();
-                                });
                         dataSharingService.readGroup(
                                 "bad_id",
                                 result -> {

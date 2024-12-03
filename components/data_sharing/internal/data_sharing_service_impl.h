@@ -74,9 +74,6 @@ class DataSharingServiceImpl : public DataSharingService,
   std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
       const GaiaId& member_gaia_id) override;
-  void ReadAllGroups(
-      base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
-      override;
   void ReadGroup(const GroupId& group_id,
                  base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
                      callback) override;
@@ -146,10 +143,6 @@ class DataSharingServiceImpl : public DataSharingService,
  private:
   void OnReadSingleGroupCompleted(
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
-      const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
-          result);
-  void OnReadAllGroupsCompleted(
-      base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback,
       const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
           result);
   void OnCreateGroupCompleted(

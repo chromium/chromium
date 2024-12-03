@@ -175,41 +175,6 @@ DataSharingServiceImpl::GetPossiblyRemovedGroupMember(
                                                           member_gaia_id);
 }
 
-void DataSharingServiceImpl::ReadAllGroups(
-    base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {
-  // TODO(crbug.com/370897286): this method should be deleted.
-  if (!sdk_delegate_) {
-    // Reply in a posted task to avoid reentrance on the calling side.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            base::unexpected(PeopleGroupActionFailure::kPersistentFailure)));
-    return;
-  }
-
-  data_sharing_pb::ReadGroupsParams params;
-  for (const GroupId& group_id :
-       collaboration_group_sync_bridge_->GetCollaborationGroupIds()) {
-    params.add_group_ids(group_id.value());
-    data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
-        params.add_group_params();
-    group_params->set_group_id(group_id.value());
-    group_params->set_consistency_token("");
-  }
-
-  if (params.group_ids().empty()) {
-    // No groups to read.
-    std::move(callback).Run(std::set<GroupData>());
-    return;
-  }
-
-  sdk_delegate_->ReadGroups(
-      params,
-      base::BindOnce(&DataSharingServiceImpl::OnReadAllGroupsCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void DataSharingServiceImpl::ReadGroup(
     const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
@@ -450,24 +415,6 @@ void DataSharingServiceImpl::OnReadSingleGroupCompleted(
           base::unexpected(PeopleGroupActionFailure::kPersistentFailure));
       return;
     }
-  }
-
-  std::move(callback).Run(
-      base::unexpected(StatusToPeopleGroupActionFailure(result.error())));
-}
-
-void DataSharingServiceImpl::OnReadAllGroupsCompleted(
-    base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback,
-    const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
-        result) {
-  if (result.has_value()) {
-    std::set<GroupData> groups;
-    for (const data_sharing_pb::GroupData& group_data :
-         result.value().group_data()) {
-      groups.insert(GroupDataFromProto(group_data));
-    }
-    std::move(callback).Run(groups);
-    return;
   }
 
   std::move(callback).Run(

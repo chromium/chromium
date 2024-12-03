@@ -148,14 +148,6 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const GroupId& group_id,
       const GaiaId& member_gaia_id) = 0;
 
-  // Refreshes data if necessary. On success passes to the `callback` a set of
-  // all groups known to the client (ordered by id).
-  // TODO(crbug.com/370897286): Deprecate and eventually remove asynchronous
-  // ReadAllGroups() and ReadGroup() methods.
-  virtual void ReadAllGroups(
-      base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>
-          callback) = 0;
-
   // Refreshes data if necessary and passes the GroupData to `callback`.
   virtual void ReadGroup(
       const GroupId& group_id,
