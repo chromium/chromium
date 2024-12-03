@@ -242,8 +242,7 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeRTCCertificate) {
   // This is encoded data generated from Chromium (around M55).
   ScriptState* script_state = scope.GetScriptState();
   Vector<uint8_t> encoded_data;
-  encoded_data.Append(kEcdsaCertificateEncoded,
-                      sizeof(kEcdsaCertificateEncoded));
+  encoded_data.AppendSpan(base::span(kEcdsaCertificateEncoded));
   scoped_refptr<SerializedScriptValue> input = SerializedValue(encoded_data);
 
   // Decode test.

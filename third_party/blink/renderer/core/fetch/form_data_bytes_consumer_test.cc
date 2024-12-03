@@ -89,7 +89,7 @@ scoped_refptr<EncodedFormData> ComplexFormData() {
       BlobDataHandle::Create(std::move(blob_data), size);
   data->AppendBlob(blob_data_handle);
   Vector<char> boundary;
-  boundary.Append("\0", 1);
+  boundary.push_back('\0');
   data->SetBoundary(boundary);
   return data;
 }
@@ -194,7 +194,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBuffer) {
                      MakeGarbageCollected<FormDataBytesConsumer>(buffer)))
                     ->Run();
   Vector<char> expected;
-  expected.Append(kData, std::size(kData));
+  expected.AppendSpan(base::span(kData));
 
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ(expected, result.second);
@@ -547,7 +547,7 @@ scoped_refptr<BlobDataHandle> CreateBlobHandle(const String& content) {
 scoped_refptr<EncodedFormData> CreateDataPipeData() {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
   Vector<char> boundary;
-  boundary.Append("\0", 1);
+  boundary.push_back('\0');
   data->SetBoundary(boundary);
 
   data->AppendData(base::span_from_cstring("foo"));
@@ -572,7 +572,7 @@ TEST_F(FormDataBytesConsumerTest, InvalidType1) {
 scoped_refptr<EncodedFormData> CreateBlobData() {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
   Vector<char> boundary;
-  boundary.Append("\0", 1);
+  boundary.push_back('\0');
   data->SetBoundary(boundary);
 
   data->AppendData(base::span_from_cstring("foo"));
