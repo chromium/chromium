@@ -213,8 +213,9 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::mojom::ViewType view_type =
-      extensions::GetViewType(render_frame_host);
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host);
+  extensions::mojom::ViewType view_type = extensions::GetViewType(web_contents);
 
   if (view_type == extensions::mojom::ViewType::kTabContents ||
       view_type == extensions::mojom::ViewType::kAppWindow ||

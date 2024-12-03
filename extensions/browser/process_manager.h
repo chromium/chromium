@@ -100,7 +100,8 @@ class ProcessManager : public KeyedService,
   // KeyedService support:
   void Shutdown() override;
 
-  void RegisterRenderFrameHost(content::RenderFrameHost* render_frame_host,
+  void RegisterRenderFrameHost(content::WebContents* web_contents,
+                               content::RenderFrameHost* render_frame_host,
                                const Extension* extension);
   void UnregisterRenderFrameHost(content::RenderFrameHost* render_frame_host);
 
