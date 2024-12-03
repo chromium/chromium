@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_conversions.h"
 
 namespace chrome_pdf {
 
@@ -35,6 +36,30 @@ constexpr auto kHighlighterSizes =
         {16.0f, StrokeMetricBrushSize::kExtraThick},
     });
 // LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_size_selector.ts:HighlighterSizes)
+
+constexpr auto kPenColors =
+    base::MakeFixedFlatMap<SkColor, StrokeMetricPenColor>({
+        {SK_ColorBLACK, StrokeMetricPenColor::kBlack},
+        {SkColorSetRGB(0x5F, 0x63, 0x68), StrokeMetricPenColor::kDarkGrey2},
+        {SkColorSetRGB(0x9A, 0xA0, 0xA6), StrokeMetricPenColor::kDarkGrey1},
+        {SkColorSetRGB(0xDA, 0xDC, 0xE0), StrokeMetricPenColor::kLightGrey},
+        {SK_ColorWHITE, StrokeMetricPenColor::kWhite},
+        {SkColorSetRGB(0xF2, 0x8B, 0x82), StrokeMetricPenColor::kRed1},
+        {SkColorSetRGB(0xFD, 0xD6, 0x63), StrokeMetricPenColor::kYellow1},
+        {SkColorSetRGB(0x81, 0xC9, 0x95), StrokeMetricPenColor::kGreen1},
+        {SkColorSetRGB(0x8A, 0xB4, 0xF8), StrokeMetricPenColor::kBlue1},
+        {SkColorSetRGB(0xEE, 0xC9, 0xAE), StrokeMetricPenColor::kTan1},
+        {SkColorSetRGB(0xEA, 0x43, 0x35), StrokeMetricPenColor::kRed2},
+        {SkColorSetRGB(0xFB, 0xBC, 0x04), StrokeMetricPenColor::kYellow2},
+        {SkColorSetRGB(0x34, 0xA8, 0x53), StrokeMetricPenColor::kGreen2},
+        {SkColorSetRGB(0x42, 0x85, 0xF4), StrokeMetricPenColor::kBlue2},
+        {SkColorSetRGB(0xE2, 0xA1, 0x85), StrokeMetricPenColor::kTan2},
+        {SkColorSetRGB(0xC5, 0x22, 0x1F), StrokeMetricPenColor::kRed3},
+        {SkColorSetRGB(0xF2, 0x99, 0x00), StrokeMetricPenColor::kYellow3},
+        {SkColorSetRGB(0x18, 0x80, 0x38), StrokeMetricPenColor::kGreen3},
+        {SkColorSetRGB(0x19, 0x67, 0xD2), StrokeMetricPenColor::kBlue3},
+        {SkColorSetRGB(0x88, 0x59, 0x45), StrokeMetricPenColor::kTan3},
+    });
 
 void ReportStrokeTypeAndSize(StrokeMetricBrushType type,
                              StrokeMetricBrushSize size) {
@@ -66,6 +91,13 @@ void ReportDrawStroke(PdfInkBrush::Type type, const ink::Brush& brush) {
   ReportStrokeTypeAndSize(is_pen ? StrokeMetricBrushType::kPen
                                  : StrokeMetricBrushType::kHighlighter,
                           size_iter->second);
+
+  SkColor sk_color = GetSkColorFromInkBrush(brush);
+  if (is_pen) {
+    auto color_iter = kPenColors.find(sk_color);
+    CHECK(color_iter != kPenColors.end());
+    base::UmaHistogramEnumeration("PDF.Ink2StrokePenColor", color_iter->second);
+  }
 }
 
 void ReportEraseStroke(float size) {
