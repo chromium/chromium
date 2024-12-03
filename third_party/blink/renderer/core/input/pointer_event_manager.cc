@@ -121,7 +121,6 @@ void PointerEventManager::Clear() {
   skip_touch_filter_all_ = false;
   discarded_event_.target = kInvalidDOMNodeId;
   discarded_event_.time = base::TimeTicks();
-  SetDocument(frame_->GetDocument());
 }
 
 void PointerEventManager::Trace(Visitor* visitor) const {
@@ -133,7 +132,6 @@ void PointerEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(mouse_event_manager_);
   visitor->Trace(captured_scrollbar_);
   visitor->Trace(resize_scrollable_area_);
-  SynchronousMutationObserver::Trace(visitor);
 }
 
 PointerEventManager::PointerEventBoundaryEventDispatcher::

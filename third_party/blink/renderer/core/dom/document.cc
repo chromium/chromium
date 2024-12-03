@@ -5779,6 +5779,9 @@ void Document::NodeChildrenWillBeRemoved(ContainerNode& container) {
   if (LocalFrame* frame = GetFrame()) {
     // TODO(dbaron): Could this also be inside the IsActiveDocument test?
     frame->Selection().NodeChildrenWillBeRemoved(container);
+    if (container.isConnected()) {
+      frame->GetEventHandler().NodeChildrenWillBeRemoved(container);
+    }
   }
 
   if (container.InActiveDocument()) {
@@ -5818,6 +5821,9 @@ void Document::NodeWillBeRemoved(Node& n) {
   if (LocalFrame* frame = GetFrame()) {
     // TODO(dbaron): Could this also be inside the IsActiveDocument test?
     frame->Selection().NodeWillBeRemoved(n);
+    if (n.isConnected()) {
+      frame->GetEventHandler().NodeWillBeRemoved(n);
+    }
   }
 
   if (n.InActiveDocument()) {
