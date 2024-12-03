@@ -42,7 +42,7 @@ std::unique_ptr<infobars::InfoBar> SafetyTipInfoBar::CreateInfoBar(
   return base::WrapUnique(new SafetyTipInfoBar(std::move(delegate)));
 }
 
-SafetyTipInfoBar::~SafetyTipInfoBar() {}
+SafetyTipInfoBar::~SafetyTipInfoBar() = default;
 
 SafetyTipInfoBar::SafetyTipInfoBar(
     std::unique_ptr<SafetyTipInfoBarDelegate> delegate)

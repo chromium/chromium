@@ -116,14 +116,14 @@ std::u16string ExpectedAuthority(bool is_proxy, const char* prefix) {
 
 class LoginHandlerWithWebContentsTest : public ChromeRenderViewHostTestHarness {
  public:
-  LoginHandlerWithWebContentsTest() {}
+  LoginHandlerWithWebContentsTest() = default;
 
   LoginHandlerWithWebContentsTest(const LoginHandlerWithWebContentsTest&) =
       delete;
   LoginHandlerWithWebContentsTest& operator=(
       const LoginHandlerWithWebContentsTest&) = delete;
 
-  ~LoginHandlerWithWebContentsTest() override {}
+  ~LoginHandlerWithWebContentsTest() override = default;
 };
 
 }  // namespace

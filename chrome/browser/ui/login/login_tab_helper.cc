@@ -17,7 +17,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-LoginTabHelper::~LoginTabHelper() {}
+LoginTabHelper::~LoginTabHelper() = default;
 
 void LoginTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {

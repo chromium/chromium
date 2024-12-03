@@ -15,7 +15,7 @@ LoginNavigationThrottle::LoginNavigationThrottle(
     content::NavigationHandle* handle)
     : content::NavigationThrottle(handle) {}
 
-LoginNavigationThrottle::~LoginNavigationThrottle() {}
+LoginNavigationThrottle::~LoginNavigationThrottle() = default;
 
 LoginNavigationThrottle::ThrottleCheckResult
 LoginNavigationThrottle::WillProcessResponse() {
