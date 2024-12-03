@@ -1066,6 +1066,7 @@
 -virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-api-denied.https.html
 -virtual/fenced-frame-mparch/external/wpt/fenced-frame/prerender.https.html
 -virtual/fenced-frame-mparch/external/wpt/fenced-frame/resize-lock*
+-virtual/fledge-disable-cookie-deprecation-testing/external/wpt/fledge/tentative/component-ads.https.window.html?11-15
 -virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-09.html
 -virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-colors-mode-42.html
 -virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-colors-mode-43.html

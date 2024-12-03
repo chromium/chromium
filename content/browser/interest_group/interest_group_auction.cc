@@ -2531,7 +2531,9 @@ class InterestGroupAuction::BuyerHelper
     }
 
     if (base::FeatureList::IsEnabled(
-            blink::features::kFledgeRealTimeReporting)) {
+            blink::features::kFledgeRealTimeReporting) &&
+        !base::FeatureList::IsEnabled(
+            features::kCookieDeprecationFacilitatedTesting)) {
       if (!base::ranges::all_of(real_time_contributions,
                                 HasValidRealTimeBucket)) {
         mojo_bids.clear();
@@ -5701,7 +5703,9 @@ void InterestGroupAuction::OnScoreAdComplete(
     }
 
     if (base::FeatureList::IsEnabled(
-            blink::features::kFledgeRealTimeReporting)) {
+            blink::features::kFledgeRealTimeReporting) &&
+        !base::FeatureList::IsEnabled(
+            features::kCookieDeprecationFacilitatedTesting)) {
       // Only keep real time reporting contributions when the seller is
       // opted-in.
       if (config_->non_shared_params.seller_real_time_reporting_type

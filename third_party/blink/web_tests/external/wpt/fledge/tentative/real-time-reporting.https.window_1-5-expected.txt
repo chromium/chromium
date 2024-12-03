@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Real time reporting different buyer and seller both opted-in and called api.
+  assert_true: Auction unexpectedly had no winner expected true got false
+[FAIL] Real time reporting buyer opted-in but not seller.
+  assert_true: Auction unexpectedly had no winner expected true got false
+[FAIL] Real time reporting seller opted-in but not buyer.
+  assert_true: Auction unexpectedly had no winner expected true got false
+[FAIL] Real time reporting different buyer and seller both opted-in but did not call api.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'length')"
+[FAIL] Real time reporting both called api but did not opt-in.
+  assert_true: Auction unexpectedly had no winner expected true got false
+Harness: the test ran to completion.
+

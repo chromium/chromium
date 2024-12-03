@@ -1502,6 +1502,26 @@
     ],
     "expires": "Mar 1, 2025"
   },
+  "This virtual suite disables CookieDeprecationFacilitatedTesting while",
+  "enabling fledge flags, to test fledge features that are disabled when",
+  "CookieDeprecationFacilitatedTesting is enabled.",
+  {
+    "prefix": "fledge-disable-cookie-deprecation-testing",
+    "platforms": ["Linux", "Mac", "Win"],
+    "owners": ["ybourouphael@google.com", "behamilton@google.com", "mmenke@chromium.org", "pauljensen@chromium.org", "qingxinwu@google.com"],
+    "bases": [
+      "external/wpt/fledge/tentative/deprecated-render-url-replacements.https.window.js",
+      "external/wpt/fledge/tentative/auction-config-passed-to-worklets.https.window.js",
+      "external/wpt/fledge/tentative/auction-config.https.window.js",
+      "external/wpt/fledge/tentative/component-ads.https.window.js",
+      "external/wpt/fledge/tentative/component-auction.https.window.js"
+    ],
+    "args": [
+      "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeConsiderKAnonymity",
+      "--disable-features=CookieDeprecationFacilitatedTesting"
+    ],
+    "expires": "Jan 1, 2025"
+  },
   {
     "prefix": "fledge-bidding-and-auction",
     "platforms": [

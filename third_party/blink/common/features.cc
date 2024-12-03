@@ -54,6 +54,12 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
              "AdInterestGroupAPIRestrictedPolicyByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow DeprecatedRenderURLReplacements when
+// CookieDeprecationFacilitatedTesting is enabled.
+BASE_FEATURE(kAlwaysAllowFledgeDeprecatedRenderURLReplacements,
+             "kAlwaysAllowFledgeDeprecatedRenderURLReplacements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Block all MIDI access with the MIDI_SYSEX permission
 BASE_FEATURE(kBlockMidiByDefault,
              "BlockMidiByDefault",
@@ -827,9 +833,17 @@ BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_ENABLED_BY_DEFAULT);
 // subframes. This requires opt-in both from the cross-origin subframe that is
 // sending the beacon as well as the document that contains information about
 // the reportEvent() endpoints.
-BASE_FEATURE(kFencedFramesCrossOriginEventReporting,
-             "FencedFramesCrossOriginEventReporting",
+// The "UnlabeledTraffic" flag only allows cross-origin reportEvent() beacons
+// for non-Mode A/B 3PCD Chrome-facilitated testing traffic. See the
+// "CookieDeprecationFacilitatedTesting" feature in
+// `content/public/common/content_features.cc` for more information.
+BASE_FEATURE(kFencedFramesCrossOriginEventReportingUnlabeledTraffic,
+             "FencedFramesCrossOriginEventReportingUnlabeledTraffic",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// The "AllTraffic" flag allows the feature for all traffic regardless of label.
+BASE_FEATURE(kFencedFramesCrossOriginEventReportingAllTraffic,
+             "FencedFramesCrossOriginEventReportingAllTraffic",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Temporarily un-disable credentials on fenced frame automatic beacons until
 // third party cookie deprecation.
@@ -985,6 +999,11 @@ BASE_FEATURE_PARAM(int,
                    &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
                    "GroupByOriginContextLimit",
                    10);
+BASE_FEATURE_PARAM(bool,
+                   kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting,
+                   &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
+                   "IncludeFacilitatedTestingGroups",
+                   false);
 
 BASE_FEATURE(kFledgeAlwaysReuseBidderContext,
              "FledgeAlwaysReuseBidderContext",
