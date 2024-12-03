@@ -459,6 +459,7 @@ enum FieldType {
   // It should not take precedence over existing types.
   IMPROVED_PREDICTION = 162,
 
+  // Types to represent alternative names (e.g. phonetic name in Japanese).
   ALTERNATIVE_FULL_NAME = 163,
   ALTERNATIVE_GIVEN_NAME = 164,
   ALTERNATIVE_FAMILY_NAME = 165,
