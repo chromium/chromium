@@ -59,6 +59,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerActivityTest.java",
     "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerMediatorTest.java",
   ]
@@ -69,6 +70,7 @@ robolectric_library("junit") {
     "//base:callback_java",
     "//base:log_java",
     "//chrome/android:chrome_app_java_resources",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",

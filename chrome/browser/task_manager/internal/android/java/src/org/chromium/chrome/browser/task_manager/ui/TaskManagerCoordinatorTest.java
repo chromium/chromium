@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.task_manager.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.ALL_COLUMN_KEYS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.CPU;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.HEADER_PROPERTY_KEYS;
@@ -21,10 +23,13 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
@@ -44,6 +49,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class TaskManagerCoordinatorTest {
@@ -159,5 +166,26 @@ public class TaskManagerCoordinatorTest {
 
         mHeaderModel.set(SORT_DESCRIPTOR, new SortDescriptor(TASK_NAME, false));
         assertNotEquals(defaultText, taskNameHeader.getText().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnCreateContextMenu() {
+        mHeaderModel.set(COLUMNS, new PropertyKey[] {TASK_NAME, CPU});
+
+        // Get a real Menu instance.
+        Menu menu = new PopupMenu(mActivity, null).getMenu();
+
+        mCoordinator.onCreateContextMenuImpl(menu);
+
+        assertEquals(ALL_COLUMN_KEYS.length, menu.size());
+
+        MenuItem taskNameItem = menu.getItem(List.of(ALL_COLUMN_KEYS).indexOf(TASK_NAME));
+        assertNotEquals("", taskNameItem.getTitle());
+        assertTrue(taskNameItem.isCheckable());
+        assertTrue(taskNameItem.isChecked());
+
+        MenuItem processIdItem = menu.getItem(List.of(ALL_COLUMN_KEYS).indexOf(PROCESS_ID));
+        assertFalse(processIdItem.isChecked());
     }
 }

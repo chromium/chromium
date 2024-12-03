@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_NAME;
 
 import androidx.test.filters.SmallTest;
 
@@ -57,14 +58,17 @@ public class TaskManagerMediatorTest {
 
         mHeader = new PropertyModel(HEADER_PROPERTY_KEYS);
         mTasks = new ModelList();
-        mMediator = new TaskManagerMediator(1000, mHeader, mTasks, MEMORY_FOOTPRINT);
+        mMediator = new TaskManagerMediator(1000, mHeader, mTasks, TASK_NAME, MEMORY_FOOTPRINT);
         mMediator.onHasKillableSelectedTaskChanged(mOnHasKillableSelectedTaskChanged);
         mMediator.startObserving();
 
         ArgumentCaptor<TaskManagerObserver> observerCaptor =
                 ArgumentCaptor.forClass(TaskManagerObserver.class);
         verify(mBridge)
-                .addObserver(observerCaptor.capture(), eq(1000), eq(RefreshType.MEMORY_FOOTPRINT));
+                .addObserver(
+                        observerCaptor.capture(),
+                        eq(1000),
+                        eq(RefreshType.MEMORY_FOOTPRINT | RefreshType.CPU));
 
         mObserver = observerCaptor.getValue();
     }
@@ -74,7 +78,7 @@ public class TaskManagerMediatorTest {
     public void testBasicAttributes() {
         mObserver.onTaskAdded(1);
 
-        assertArrayEquals(mHeader.get(COLUMNS), new PropertyKey[] {MEMORY_FOOTPRINT});
+        assertArrayEquals(mHeader.get(COLUMNS), new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT});
 
         assertEquals(mTasks.get(0).type, RowType.TASK);
         assertEquals(mTasks.get(0).model.get(TASK_ID), 1);
@@ -204,5 +208,19 @@ public class TaskManagerMediatorTest {
         mMediator.toggleSelection(mTasks.get(1).model);
 
         verify(mOnHasKillableSelectedTaskChanged).onResult(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleColumnFiltering() {
+        assertTrue(mMediator.toggleColumnFiltering(TASK_NAME));
+
+        assertFalse(mMediator.toggleColumnFiltering(MEMORY_FOOTPRINT));
+
+        assertArrayEquals(new PropertyKey[] {MEMORY_FOOTPRINT}, mHeader.get(COLUMNS));
+
+        assertTrue(mMediator.toggleColumnFiltering(TASK_NAME));
+
+        assertArrayEquals(new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT}, mHeader.get(COLUMNS));
     }
 }

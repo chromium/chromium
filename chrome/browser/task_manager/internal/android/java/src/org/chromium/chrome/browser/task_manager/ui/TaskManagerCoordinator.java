@@ -5,12 +5,20 @@
 package org.chromium.chrome.browser.task_manager.ui;
 
 import android.graphics.Typeface;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnCreateContextMenuListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,13 +31,19 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.ButtonCompat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 /** Binds the model and the view of task manager. */
-class TaskManagerCoordinator {
+class TaskManagerCoordinator implements OnCreateContextMenuListener {
+    private final PropertyModel mHeaderModel;
+
     private final TaskManagerMediator mMediator;
 
     private final SimpleRecyclerViewAdapter mAdapter;
-    private final PropertyModelChangeProcessor<PropertyModel, View, PropertyKey>
-            mHeaderChangeProcessor;
+    private final List<PropertyModelChangeProcessor<PropertyModel, View, PropertyKey>>
+            mModelChangeProcessors = new ArrayList<>();
 
     /** Sets up the UI in the activity, binding the activity and the model. */
     TaskManagerCoordinator(
@@ -37,10 +51,11 @@ class TaskManagerCoordinator {
             PropertyModel headerModel,
             ModelList tasksModel,
             TaskManagerMediator mediator) {
+        mHeaderModel = headerModel;
         mMediator = mediator;
 
         LinearLayout headerView = taskManagerView.findViewById(R.id.header_linear_layout);
-        mHeaderChangeProcessor =
+        mModelChangeProcessors.add(
                 PropertyModelChangeProcessor.create(
                         headerModel,
                         headerView,
@@ -68,7 +83,7 @@ class TaskManagerCoordinator {
                                                             TaskManagerProperties.PROCESS_ID));
 
                             bindHeader(model, view, key);
-                        });
+                        }));
 
         RecyclerView recyclerView = taskManagerView.findViewById(R.id.tasks_view);
         recyclerView.setLayoutManager(
@@ -84,6 +99,12 @@ class TaskManagerCoordinator {
                         LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.task_item, parent, false),
                 (model, view, key) -> {
+                    mModelChangeProcessors.add(
+                            PropertyModelChangeProcessor.create(
+                                    headerModel,
+                                    view,
+                                    TaskManagerCoordinator::bindHeaderModelAndTaskView));
+
                     view.setOnClickListener((unused) -> mMediator.toggleSelection(model));
                     bindTask(model, view, key);
                 });
@@ -92,9 +113,11 @@ class TaskManagerCoordinator {
         killButton.setText(R.string.task_manager_kill);
         killButton.setEnabled(false);
         killButton.setOnClickListener((view) -> mMediator.killSelectedTasks());
-
         mMediator.onHasKillableSelectedTaskChanged(
                 (hasSelectedTask) -> killButton.setEnabled(hasSelectedTask));
+
+        taskManagerView.setOnCreateContextMenuListener(this);
+
         mMediator.startObserving();
     }
 
@@ -102,30 +125,48 @@ class TaskManagerCoordinator {
     void destroy() {
         mMediator.stopObserving();
 
+        mModelChangeProcessors.forEach(PropertyModelChangeProcessor::destroy);
         mAdapter.destroy();
-        mHeaderChangeProcessor.destroy();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuIfno) {
+        onCreateContextMenuImpl(menu);
+    }
+
+    @VisibleForTesting
+    void onCreateContextMenuImpl(Menu menu) {
+        Set<PropertyKey> selectedColumns = Set.of(mHeaderModel.get(TaskManagerProperties.COLUMNS));
+
+        for (PropertyKey columnKey : TaskManagerProperties.ALL_COLUMN_KEYS) {
+            MenuItem item = menu.add(getColumnTextResourceId(columnKey));
+            item.setCheckable(true);
+            item.setChecked(selectedColumns.contains(columnKey));
+
+            item.setOnMenuItemClickListener(
+                    (unused) -> {
+                        if (mMediator.toggleColumnFiltering(columnKey)) {
+                            // Handle the visual update as it is being dismissed.
+                            item.setChecked(!item.isChecked());
+                        }
+                        return true;
+                    });
+        }
     }
 
     private static void bindHeader(PropertyModel model, View view, PropertyKey unused) {
         @Nullable SortDescriptor descriptor = model.get(TaskManagerProperties.SORT_DESCRIPTOR);
+        Set<PropertyKey> selectedKeys = Set.of(model.get(TaskManagerProperties.COLUMNS));
 
-        for (PropertyKey columnKey : model.get(TaskManagerProperties.COLUMNS)) {
-            TextView textView;
-            if (columnKey == TaskManagerProperties.TASK_NAME) {
-                textView = view.findViewById(R.id.task_name);
-                textView.setText(R.string.task_manager_task_column);
-            } else if (columnKey == TaskManagerProperties.MEMORY_FOOTPRINT) {
-                textView = view.findViewById(R.id.memory_footprint);
-                textView.setText(R.string.task_manager_mem_footprint_column);
-            } else if (columnKey == TaskManagerProperties.CPU) {
-                textView = view.findViewById(R.id.cpu);
-                textView.setText(R.string.task_manager_cpu_column);
-            } else if (columnKey == TaskManagerProperties.PROCESS_ID) {
-                textView = view.findViewById(R.id.process_id);
-                textView.setText(R.string.task_manager_process_id_column);
-            } else {
-                throw new IllegalArgumentException("column key " + columnKey + " not supported");
+        for (PropertyKey columnKey : TaskManagerProperties.ALL_COLUMN_KEYS) {
+            TextView textView = view.findViewById(getTaskItemViewId(columnKey));
+            if (!selectedKeys.contains(columnKey)) {
+                textView.setVisibility(View.GONE);
+                continue;
             }
+            textView.setVisibility(View.VISIBLE);
+
+            textView.setText(getColumnTextResourceId(columnKey));
 
             // TOOD(crbug.com/380158700): Descriptive message for a11y.
             if (descriptor != null && descriptor.key == columnKey) {
@@ -149,18 +190,72 @@ class TaskManagerCoordinator {
             } else {
                 view.setBackgroundColor(0);
             }
-        } else if (key == TaskManagerProperties.TASK_NAME) {
-            TextView textView = view.findViewById(R.id.task_name);
+            return;
+        }
+        if (!List.of(TaskManagerProperties.ALL_COLUMN_KEYS).contains(key)) {
+            return;
+        }
+
+        TextView textView = view.findViewById(getTaskItemViewId(key));
+
+        if (key == TaskManagerProperties.TASK_NAME) {
             textView.setText(model.get(TaskManagerProperties.TASK_NAME));
         } else if (key == TaskManagerProperties.MEMORY_FOOTPRINT) {
-            TextView textView = view.findViewById(R.id.memory_footprint);
             textView.setText(String.valueOf(model.get(TaskManagerProperties.MEMORY_FOOTPRINT)));
         } else if (key == TaskManagerProperties.CPU) {
-            TextView textView = view.findViewById(R.id.cpu);
             textView.setText(String.valueOf(model.get(TaskManagerProperties.CPU)));
         } else if (key == TaskManagerProperties.PROCESS_ID) {
-            TextView textView = view.findViewById(R.id.process_id);
             textView.setText(String.valueOf(model.get(TaskManagerProperties.PROCESS_ID)));
+        } else {
+            throw new IllegalArgumentException("column key " + key + " not supported");
+        }
+    }
+
+    private static void bindHeaderModelAndTaskView(
+            PropertyModel model, View view, PropertyKey key) {
+        if (key != TaskManagerProperties.COLUMNS) return;
+
+        Set<PropertyKey> selectedKeys = Set.of(model.get(TaskManagerProperties.COLUMNS));
+        for (PropertyKey columnKey : TaskManagerProperties.ALL_COLUMN_KEYS) {
+            View textView = view.findViewById(getTaskItemViewId(columnKey));
+            if (selectedKeys.contains(columnKey)) {
+                textView.setVisibility(View.VISIBLE);
+            } else {
+                textView.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    /** Converts the given header column key to the resource id of the text for the column. */
+    static @StringRes int getColumnTextResourceId(PropertyKey columnKey) {
+        if (columnKey == TaskManagerProperties.TASK_NAME) {
+            return R.string.task_manager_task_column;
+        } else if (columnKey == TaskManagerProperties.MEMORY_FOOTPRINT) {
+            return R.string.task_manager_mem_footprint_column;
+        } else if (columnKey == TaskManagerProperties.CPU) {
+            return R.string.task_manager_cpu_column;
+        } else if (columnKey == TaskManagerProperties.PROCESS_ID) {
+            return R.string.task_manager_process_id_column;
+        } else {
+            throw new IllegalArgumentException("column key " + columnKey + " not supported");
+        }
+    }
+
+    /**
+     * Converts the given header column key to the resource id of the corresponding view in the task
+     * item view.
+     */
+    static @IdRes int getTaskItemViewId(PropertyKey columnKey) {
+        if (columnKey == TaskManagerProperties.TASK_NAME) {
+            return R.id.task_name;
+        } else if (columnKey == TaskManagerProperties.MEMORY_FOOTPRINT) {
+            return R.id.memory_footprint;
+        } else if (columnKey == TaskManagerProperties.CPU) {
+            return R.id.cpu;
+        } else if (columnKey == TaskManagerProperties.PROCESS_ID) {
+            return R.id.process_id;
+        } else {
+            throw new IllegalArgumentException("column key " + columnKey + " not supported");
         }
     }
 }

@@ -82,4 +82,11 @@ class TaskManagerProperties {
 
     /** Property key for whether the task is killable. */
     static final ReadableBooleanPropertyKey IS_KILLABLE = new ReadableBooleanPropertyKey();
+
+    /**
+     * All the property keys that can appear as a column. Sorted in order to appear in the context
+     * menu and the header.
+     */
+    static final PropertyKey[] ALL_COLUMN_KEYS =
+            new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, PROCESS_ID};
 }
