@@ -209,7 +209,7 @@ ui::StylusState EventConverterEvdevImpl::GetStylusSwitchState() {
   }
 
   // Prepare storage for SW_MAX bits
-  unsigned long array[EVDEV_BITS_TO_LONGS(SW_MAX)] = {0};
+  unsigned long array[EVDEV_BITS_TO_LONGS(SW_MAX)] = {};
   int result = ioctl(input_device_fd_.get(), EVIOCGSW(SW_MAX), array);
   if (result == -1) {
     return ui::StylusState::REMOVED;

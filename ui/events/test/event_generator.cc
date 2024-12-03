@@ -602,7 +602,7 @@ void EventGenerator::GestureMultiFingerScroll(int count,
                                               int move_x,
                                               int move_y) {
   const int kMaxTouchPoints = 10;
-  int delays[kMaxTouchPoints] = {0};
+  int delays[kMaxTouchPoints] = {};
   GestureMultiFingerScrollWithDelays(
       count, start, delays, event_separation_time_ms, steps, move_x, move_y);
 }

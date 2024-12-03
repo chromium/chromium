@@ -94,7 +94,7 @@ ui::DomKey DomKeyboardLayoutMapWin::GetDomKeyFromDomCodeForLayout(
   }
 
   // Represents a keyboard state with all keys up (i.e. no keys pressed).
-  BYTE keyboard_state[256] = {0};
+  BYTE keyboard_state[256] = {};
 
   // ToUnicodeEx() return value indicates the category for the scan code
   // passed in for the keyboard layout provided.

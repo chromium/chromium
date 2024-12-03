@@ -34,9 +34,9 @@ class DrmFramebuffer : public base::RefCountedThreadSafe<DrmFramebuffer> {
     uint32_t width = 0;
     uint32_t height = 0;
     size_t num_planes = 0;
-    uint32_t handles[4] = {0};
-    uint32_t strides[4] = {0};
-    uint32_t offsets[4] = {0};
+    uint32_t handles[4] = {};
+    uint32_t strides[4] = {};
+    uint32_t offsets[4] = {};
   };
 
   static scoped_refptr<DrmFramebuffer> AddFramebuffer(
