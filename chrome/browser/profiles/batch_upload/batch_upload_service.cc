@@ -34,8 +34,9 @@ constexpr base::TimeDelta kBatchUploadAvatarButtonOverrideTextDuration =
 // This list contains all the data types that are available for the Batch Upload
 // dialog. Data types should not be repeated and the list is ordered based on
 // the priority of showing in the dialog.
-const std::array<syncer::DataType, 2> kBatchUploadOrderedAvailableTypes{
+const std::array<syncer::DataType, 3> kBatchUploadOrderedAvailableTypes{
     syncer::DataType::PASSWORDS,
+    syncer::DataType::BOOKMARKS,
     syncer::DataType::CONTACT_INFO,
 };
 
