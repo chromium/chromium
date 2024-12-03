@@ -304,13 +304,8 @@ public class TabArchiver implements TabWindowManager.Observer {
                                 } else if (activeTabId != tab.getId()) {
                                     // If the tab is not part of a tab group or the flag is not
                                     // enabled, bypass this for the original check on a single tab.
-                                    boolean isTabGroup =
-                                            ChromeFeatureList
-                                                            .sAndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs
-                                                            .isEnabled()
-                                                    && tab.getTabGroupId() != null;
                                     boolean isTabOrGroupTabEligibleForArchive =
-                                            isTabGroup
+                                            tab.getTabGroupId() != null
                                                     ? isGroupTabEligibleForArchive(
                                                             regularTabGroupModelFilter,
                                                             groupIdToArchiveEligibilityMap,
@@ -351,17 +346,21 @@ public class TabArchiver implements TabWindowManager.Observer {
             TabGroupModelFilter regularTabGroupModelFilter,
             HashMap<Token, Boolean> groupIdToArchiveEligibilityMap,
             Tab tab) {
-        // Create a map between group id tokens and their archive eligibility. If a group has
-        // not been checked yet, check all related tabs and assign a status so that tabs with
-        // that group id token can be bypassed in future iterations of this checking cycle.
-        Token tabGroupId = tab.getTabGroupId();
-        if (groupIdToArchiveEligibilityMap.containsKey(tabGroupId)) {
-            return groupIdToArchiveEligibilityMap.get(tabGroupId);
+        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs.isEnabled()) {
+            // Create a map between group id tokens and their archive eligibility. If a group has
+            // not been checked yet, check all related tabs and assign a status so that tabs with
+            // that group id token can be bypassed in future iterations of this checking cycle.
+            Token tabGroupId = tab.getTabGroupId();
+            if (groupIdToArchiveEligibilityMap.containsKey(tabGroupId)) {
+                return groupIdToArchiveEligibilityMap.get(tabGroupId);
+            } else {
+                boolean isTabGroupEligibleForArchive =
+                        isTabGroupEligibleForArchive(regularTabGroupModelFilter, tab);
+                groupIdToArchiveEligibilityMap.put(tabGroupId, isTabGroupEligibleForArchive);
+                return isTabGroupEligibleForArchive;
+            }
         } else {
-            boolean isTabGroupEligibleForArchive =
-                    isTabGroupEligibleForArchive(regularTabGroupModelFilter, tab);
-            groupIdToArchiveEligibilityMap.put(tabGroupId, isTabGroupEligibleForArchive);
-            return isTabGroupEligibleForArchive;
+            return false;
         }
     }
 

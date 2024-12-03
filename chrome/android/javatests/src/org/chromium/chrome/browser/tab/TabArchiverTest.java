@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -296,7 +297,53 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS_AND_DUPLICATE_TABS)
     public void testGroupedTabsAreNotArchived() throws Exception {
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set the tab to expire after 1 hour to simplify testing.
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+                });
+
+        // Set the clock to 1 hour after 0.
+        doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
+        // Set the timestamp for both tabs at 0, they should will be archived.
+        ((TabImpl) mRegularTabModel.getTabAt(0)).setTimestampMillisForTesting(0);
+        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+
+        // Simulate the first tab being added to a group.
+        runOnUiThreadBlocking(
+                () -> mRegularTabModel.getTabAt(0).setTabGroupId(Token.createRandom()));
+
+        assertEquals(3, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Tabs.TabArchived.TabCount", 1)
+                        .build();
+        // The grouped tab should be skipped.
+        runOnUiThreadBlocking(
+                () ->
+                        mTabArchiver.onTabModelSelectorAdded(
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelectorSupplier()
+                                        .get()));
+        CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS_AND_DUPLICATE_TABS)
+    public void testGroupedTabsAreArchived() throws Exception {
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
         sActivityTestRule.loadUrlInNewTab(
