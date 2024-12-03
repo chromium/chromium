@@ -40,6 +40,9 @@ class GURL;
 // The lens overlay requested to open the overlay menu.
 - (void)lensOverlayDidOpenOverlayMenu:(id<ChromeLensOverlay>)lensOverlay;
 
+// The lens overlay has deferred a gesture.
+- (void)lensOverlayDidDeferGesture:(id<ChromeLensOverlay>)lensOverlay;
+
 @end
 
 // Defines the interface for interacting with a Chrome Lens Overlay.

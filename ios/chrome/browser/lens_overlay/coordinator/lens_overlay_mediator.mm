@@ -193,6 +193,9 @@
   [self.delegate lensOverlayMediatorDidOpenOverlayMenu:self];
 }
 
+- (void)lensOverlayDidDeferGesture:(id<ChromeLensOverlay>)lensOverlay {
+}
+
 #pragma mark - LensOverlayNavigationMutator
 
 - (void)loadLensResult:(id<ChromeLensOverlayResult>)result {
