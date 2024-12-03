@@ -390,11 +390,13 @@ Dispatcher::Dispatcher(
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       extension_scheme);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kAllowSharedArrayBuffersUnconditionally)) {
-    WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
-        extension_scheme);
-  }
+#if !BUILDFLAG(IS_ANDROID)
+  // Currently, extensions are only available on desktop, and are process-
+  // separated from regular web contents. Therefore, it is safe to give them
+  // access to SharedArrayBuffers.
+  WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
+      extension_scheme);
+#endif
 
   // chrome-extension: resources should be allowed to register ServiceWorkers.
   WebSecurityPolicy::RegisterURLSchemeAsAllowingServiceWorkers(
