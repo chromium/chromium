@@ -37,7 +37,7 @@ class BinaryFeatureExtractorWinTest : public testing::Test {
     for (int i = 0; i < chain.element_size(); ++i) {
       scoped_refptr<net::X509Certificate> cert =
           net::X509Certificate::CreateFromBytes(
-              base::as_bytes(base::make_span(chain.element(i).certificate())));
+              base::as_byte_span(chain.element(i).certificate()));
       if (cert)
         certs->push_back(cert);
     }

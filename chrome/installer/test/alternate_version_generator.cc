@@ -627,9 +627,8 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
     DCHECK(archive_resource_name);
     DCHECK(!chrome_packed_7z.empty() || !chrome_7z.empty());
     DCHECK(archive_file);
-    if (!base::WriteFile(
-            *archive_file,
-            base::make_span(resource_data.first, resource_data.second))) {
+    if (!base::WriteFile(*archive_file, base::span(resource_data.first,
+                                                   resource_data.second))) {
       LOG(DFATAL) << "Failed writing \"" << archive_file->value() << "\"";
       return false;
     }
@@ -639,15 +638,15 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
     if (resource_loader.Load(&kSetupEx_[0], &kBl[0], &resource_data)) {
       setup_ex_ = work_dir.directory().Append(&kSetupEx_[0]);
       setup_resource_name = &kSetupEx_[0];
-      if (!base::WriteFile(setup_ex_, base::make_span(resource_data.first,
-                                                      resource_data.second))) {
+      if (!base::WriteFile(setup_ex_, base::span(resource_data.first,
+                                                 resource_data.second))) {
         LOG(DFATAL) << "Failed writing \"" << setup_ex_.value() << "\"";
         return false;
       }
     } else if (resource_loader.Load(&kSetupExe[0], &kBN[0], &resource_data)) {
       setup_resource_name = &kSetupExe[0];
-      if (!base::WriteFile(setup_exe, base::make_span(resource_data.first,
-                                                      resource_data.second))) {
+      if (!base::WriteFile(setup_exe, base::span(resource_data.first,
+                                                 resource_data.second))) {
         LOG(DFATAL) << "Failed writing \"" << setup_exe.value() << "\"";
         return false;
       }

@@ -662,7 +662,7 @@ std::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
     return std::nullopt;
   }
 
-  auto reader = base::SpanReader(base::make_span(*decoded_os_version));
+  auto reader = base::SpanReader(base::span(*decoded_os_version));
   OSVERSIONINFOEX info;
   info.dwOSVersionInfoSize =
       base::U32FromNativeEndian(*reader.Read<sizeof(DWORD)>());

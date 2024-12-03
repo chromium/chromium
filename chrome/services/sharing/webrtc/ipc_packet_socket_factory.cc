@@ -404,8 +404,8 @@ int IpcPacketSocket::SendTo(const void* data,
   send_bytes_available_ -= data_size;
 
   uint64_t packet_id = client_->Send(
-      address_chrome,
-      base::make_span(static_cast<const uint8_t*>(data), data_size), options);
+      address_chrome, base::span(static_cast<const uint8_t*>(data), data_size),
+      options);
 
   // Ensure packet_id is not 0. It can't be the case according to
   // P2PSocketClient::Send().

@@ -397,9 +397,8 @@ HRESULT DecryptUserPasswordUsingEscrowService(
     return E_FAIL;
   }
 
-  auto decrypted_secret =
-      PrivateKeyDecrypt(decoded_private_key,
-                        base::as_bytes(base::make_span(decoded_cipher_text)));
+  auto decrypted_secret = PrivateKeyDecrypt(
+      decoded_private_key, base::as_byte_span(decoded_cipher_text));
 
   if (decrypted_secret == std::nullopt) {
     return E_FAIL;
