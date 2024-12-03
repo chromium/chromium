@@ -19,11 +19,6 @@ WorkerSchedulerProxy::WorkerSchedulerProxy(FrameOrWorkerScheduler* scheduler) {
       FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
       base::BindRepeating(&WorkerSchedulerProxy::OnLifecycleStateChanged,
                           base::Unretained(this)));
-  if (FrameScheduler* frame_scheduler = scheduler->ToFrameScheduler()) {
-    parent_frame_type_ = GetFrameOriginType(frame_scheduler);
-    initial_frame_status_ = GetFrameStatus(frame_scheduler);
-    ukm_source_id_ = frame_scheduler->GetUkmSourceId();
-  }
 }
 
 WorkerSchedulerProxy::~WorkerSchedulerProxy() {

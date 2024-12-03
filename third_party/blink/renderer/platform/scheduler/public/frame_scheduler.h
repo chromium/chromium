@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
@@ -18,10 +17,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-namespace ukm {
-class UkmRecorder;
-}
 
 namespace blink {
 
@@ -33,9 +28,6 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   class PLATFORM_EXPORT Delegate : public FrameOrWorkerScheduler::Delegate {
    public:
     ~Delegate() override = default;
-
-    virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
-    virtual ukm::SourceId GetUkmSourceId() = 0;
 
     // Called when a frame has exceeded a total task time threshold (100ms).
     virtual void UpdateTaskTime(base::TimeDelta time) = 0;
@@ -177,9 +169,6 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // use GetPageScheduler()->IsExemptFromBudgetBasedThrottling for the status
   // of the page.
   virtual bool IsExemptFromBudgetBasedThrottling() const = 0;
-
-  // Returns UKM source id for recording metrics associated with this frame.
-  virtual ukm::SourceId GetUkmSourceId() = 0;
 
   FrameScheduler* ToFrameScheduler() override { return this; }
 

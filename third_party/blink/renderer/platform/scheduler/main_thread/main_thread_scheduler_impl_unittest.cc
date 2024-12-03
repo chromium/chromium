@@ -112,8 +112,6 @@ class MockFrameDelegate : public FrameScheduler::Delegate {
               GetAgentClusterId,
               (),
               (const, override));
-  MOCK_METHOD(ukm::UkmRecorder*, GetUkmRecorder, ());
-  MOCK_METHOD(ukm::SourceId, GetUkmSourceId, ());
   MOCK_METHOD(void, UpdateTaskTime, (base::TimeDelta));
   MOCK_METHOD(void, UpdateActiveSchedulerTrackedFeatures, (uint64_t));
 

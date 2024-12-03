@@ -31,7 +31,6 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
@@ -82,7 +81,6 @@ const double kShortIdlePeriodDurationPercentile = 50;
 // Amount of idle time left in a frame (as a ratio of the vsync interval) above
 // which main thread compositing can be considered fast.
 const double kFastCompositingIdleTimeThreshold = .2;
-const int64_t kSecondsPerMinute = 60;
 
 constexpr int kDefaultPrioritizeCompositingAfterDelayMs = 100;
 
@@ -2308,93 +2306,11 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   // Unset the state of |task_priority_for_tracing|.
   main_thread_only().task_priority_for_tracing = std::nullopt;
 
-  RecordTaskUkm(queue.get(), task, *task_timing);
-
   MaybeUpdatePolicyOnTaskCompleted(queue.get(), *task_timing);
 
   find_in_page_budget_pool_controller_->OnTaskCompleted(queue.get(),
                                                         task_timing);
   ShutdownEmptyDetachedTaskQueues();
-}
-
-void MainThreadSchedulerImpl::RecordTaskUkm(
-    MainThreadTaskQueue* queue,
-    const base::sequence_manager::Task& task,
-    const TaskQueue::TaskTiming& task_timing) {
-  if (!helper_.ShouldRecordTaskUkm(task_timing.has_thread_time()))
-    return;
-
-  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
-    auto status = RecordTaskUkmImpl(
-        queue, task, task_timing,
-        page_scheduler->SelectFrameForUkmAttribution(), false);
-    UMA_HISTOGRAM_ENUMERATION(
-        "Scheduler.Experimental.Renderer.UkmRecordingStatus", status,
-        UkmRecordingStatus::kCount);
-  }
-}
-
-UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
-    MainThreadTaskQueue* queue,
-    const base::sequence_manager::Task& task,
-    const TaskQueue::TaskTiming& task_timing,
-    FrameSchedulerImpl* frame_scheduler,
-    bool precise_attribution) {
-  // Skip tasks which have deleted the frame or the page scheduler.
-  if (!frame_scheduler)
-    return UkmRecordingStatus::kErrorMissingFrame;
-  if (!frame_scheduler->GetPageScheduler())
-    return UkmRecordingStatus::kErrorDetachedFrame;
-
-  ukm::UkmRecorder* ukm_recorder = frame_scheduler->GetUkmRecorder();
-  // OOPIFs are not supported.
-  if (!ukm_recorder)
-    return UkmRecordingStatus::kErrorMissingUkmRecorder;
-
-  ukm::builders::RendererSchedulerTask builder(
-      frame_scheduler->GetUkmSourceId());
-
-  builder.SetVersion(kUkmMetricVersion);
-  builder.SetPageSchedulers(main_thread_only().page_schedulers.size());
-
-  builder.SetRendererBackgrounded(main_thread_only().renderer_backgrounded);
-  builder.SetRendererHidden(main_thread_only().renderer_hidden);
-  builder.SetRendererAudible(main_thread_only().is_audio_playing);
-  builder.SetUseCase(
-      static_cast<int>(main_thread_only().current_use_case.get()));
-  builder.SetTaskType(task.task_type);
-  builder.SetQueueType(static_cast<int>(
-      queue ? queue->queue_type() : MainThreadTaskQueue::QueueType::kDetached));
-  builder.SetFrameStatus(static_cast<int>(
-      GetFrameStatus(queue ? queue->GetFrameScheduler() : nullptr)));
-  builder.SetTaskDuration(task_timing.wall_duration().InMicroseconds());
-  builder.SetIsOOPIF(!frame_scheduler->GetPageScheduler()->IsMainFrameLocal());
-
-  if (main_thread_only().renderer_backgrounded) {
-    base::TimeDelta time_since_backgrounded =
-        (task_timing.end_time() -
-         main_thread_only().background_status_changed_at);
-
-    // Trade off for privacy: Round to seconds for times below 10 minutes and
-    // minutes afterwards.
-    int64_t seconds_since_backgrounded = 0;
-    if (time_since_backgrounded < base::Minutes(10)) {
-      seconds_since_backgrounded = time_since_backgrounded.InSeconds();
-    } else {
-      seconds_since_backgrounded =
-          time_since_backgrounded.InMinutes() * kSecondsPerMinute;
-    }
-
-    builder.SetSecondsSinceBackgrounded(seconds_since_backgrounded);
-  }
-
-  if (task_timing.has_thread_time()) {
-    builder.SetTaskCPUDuration(task_timing.thread_duration().InMicroseconds());
-  }
-
-  builder.Record(ukm_recorder);
-
-  return UkmRecordingStatus::kSuccess;
 }
 
 TaskPriority MainThreadSchedulerImpl::ComputePriority(

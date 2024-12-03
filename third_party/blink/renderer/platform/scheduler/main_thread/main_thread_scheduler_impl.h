@@ -72,7 +72,6 @@ namespace main_thread_scheduler_impl_unittest {
 class MainThreadSchedulerImplForTest;
 class MainThreadSchedulerImplTest;
 class MockPageSchedulerImpl;
-FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest, ShouldIgnoreTaskForUkm);
 FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest, Tracing);
 FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest,
                      LogIpcsPostedToDocumentsInBackForwardCache);
@@ -404,9 +403,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   FRIEND_TEST_ALL_PREFIXES(
       main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest,
-      ShouldIgnoreTaskForUkm);
-  FRIEND_TEST_ALL_PREFIXES(
-      main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest,
       Tracing);
   FRIEND_TEST_ALL_PREFIXES(
       main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest,
@@ -617,21 +613,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   std::optional<TaskPriority> ComputeCompositorPriorityForMainFrame() const;
 
   static void RunIdleTask(Thread::IdleTask, base::TimeTicks deadline);
-
-  // Probabilistically record all task metadata for the current task.
-  // If task belongs to a per-frame queue, this task is attributed to
-  // a particular Page, otherwise it's attributed to all Pages in the process.
-  void RecordTaskUkm(
-      MainThreadTaskQueue* queue,
-      const base::sequence_manager::Task& task,
-      const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
-
-  UkmRecordingStatus RecordTaskUkmImpl(
-      MainThreadTaskQueue* queue,
-      const base::sequence_manager::Task& task,
-      const base::sequence_manager::TaskQueue::TaskTiming& task_timing,
-      FrameSchedulerImpl* frame_scheduler,
-      bool precise_attribution);
 
   void ShutdownAllQueues();
 

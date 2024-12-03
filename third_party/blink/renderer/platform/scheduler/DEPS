@@ -54,7 +54,6 @@ specific_include_rules = {
   ".*test\.cc": [
     "+base/metrics/field_trial_param_associator.h",
     "+base/task/sequence_manager/test",
-    "+components/ukm/test_ukm_recorder.h",
     "+testing",
   ],
   "sequence_manager_fuzzer.cc": [

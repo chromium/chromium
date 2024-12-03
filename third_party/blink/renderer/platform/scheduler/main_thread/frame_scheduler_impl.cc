@@ -1221,18 +1221,6 @@ void FrameSchedulerImpl::RemovePauseSubresourceLoadingHandle() {
   }
 }
 
-ukm::UkmRecorder* FrameSchedulerImpl::GetUkmRecorder() {
-  if (!delegate_)
-    return nullptr;
-  return delegate_->GetUkmRecorder();
-}
-
-ukm::SourceId FrameSchedulerImpl::GetUkmSourceId() {
-  if (!delegate_)
-    return ukm::kInvalidSourceId;
-  return delegate_->GetUkmSourceId();
-}
-
 void FrameSchedulerImpl::OnTaskQueueCreated(
     MainThreadTaskQueue* task_queue,
     base::sequence_manager::TaskQueue::QueueEnabledVoter* voter) {

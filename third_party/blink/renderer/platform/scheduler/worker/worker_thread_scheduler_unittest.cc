@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
@@ -91,9 +90,6 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
       : WorkerThreadScheduler(ThreadType::kTestThread, manager, proxy),
         clock_(clock_),
         timeline_(timeline) {}
-
-  using WorkerThreadScheduler::SetUkmRecorderForTest;
-  using WorkerThreadScheduler::SetUkmTaskSamplingRateForTest;
 
   void AddTaskTimeObserver(base::sequence_manager::TaskTimeObserver* observer) {
     GetHelper().AddTaskTimeObserver(observer);
@@ -453,138 +449,6 @@ TEST_F(WorkerThreadSchedulerTest, TestMicrotaskCheckpointTiming) {
   EXPECT_EQ(start_time, observer.result().back().first);
   EXPECT_EQ(start_time + kTaskTime + kMicrotaskTime,
             observer.result().back().second);
-}
-
-namespace {
-
-class FrameSchedulerDelegateWithUkmSourceId : public FrameScheduler::Delegate {
- public:
-  FrameSchedulerDelegateWithUkmSourceId(ukm::SourceId source_id)
-      : source_id_(source_id) {}
-
-  ~FrameSchedulerDelegateWithUkmSourceId() override {}
-
-  ukm::UkmRecorder* GetUkmRecorder() override { return nullptr; }
-
-  ukm::SourceId GetUkmSourceId() override { return source_id_; }
-  void OnTaskCompleted(base::TimeTicks,
-                       base::TimeTicks) override {}
-
-  void UpdateTaskTime(base::TimeDelta time) override {}
-
-  void UpdateBackForwardCacheDisablingFeatures(BlockingDetails) override {}
-
-  const base::UnguessableToken& GetAgentClusterId() const override {
-    return base::UnguessableToken::Null();
-  }
-
-  DocumentResourceCoordinator* GetDocumentResourceCoordinator() override {
-    return nullptr;
-  }
-
- private:
-  ukm::SourceId source_id_;
-};
-
-}  // namespace
-
-class WorkerThreadSchedulerWithProxyTest : public testing::Test {
- public:
-  WorkerThreadSchedulerWithProxyTest()
-      : task_environment_(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
-        sequence_manager_(
-            base::sequence_manager::SequenceManagerForTest::Create(
-                nullptr,
-                task_environment_.GetMainThreadTaskRunner(),
-                task_environment_.GetMockTickClock(),
-                base::sequence_manager::SequenceManager::Settings::Builder()
-                    .SetPrioritySettings(CreatePrioritySettings())
-                    .Build())) {
-    frame_scheduler_delegate_ =
-        std::make_unique<FrameSchedulerDelegateWithUkmSourceId>(42);
-    frame_scheduler_ = FakeFrameScheduler::Builder()
-                           .SetIsPageVisible(false)
-                           .SetFrameType(FrameScheduler::FrameType::kSubframe)
-                           .SetIsCrossOriginToNearestMainFrame(true)
-                           .SetDelegate(frame_scheduler_delegate_.get())
-                           .Build();
-    frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
-
-    worker_scheduler_proxy_ =
-        std::make_unique<WorkerSchedulerProxy>(frame_scheduler_.get());
-
-    scheduler_ = std::make_unique<WorkerThreadSchedulerForTest>(
-        sequence_manager_.get(), task_environment_.GetMockTickClock(),
-        &timeline_, worker_scheduler_proxy_.get());
-
-    task_environment_.FastForwardBy(base::Milliseconds(5));
-
-    scheduler_->Init();
-    scheduler_->AttachToCurrentThread();
-  }
-
-  WorkerThreadSchedulerWithProxyTest(
-      const WorkerThreadSchedulerWithProxyTest&) = delete;
-  WorkerThreadSchedulerWithProxyTest& operator=(
-      const WorkerThreadSchedulerWithProxyTest&) = delete;
-  ~WorkerThreadSchedulerWithProxyTest() override = default;
-
-  void TearDown() override {
-    task_environment_.FastForwardUntilNoTasksRemain();
-  }
-
- protected:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<base::sequence_manager::SequenceManagerForTest>
-      sequence_manager_;
-  Vector<String> timeline_;
-  std::unique_ptr<FrameScheduler::Delegate> frame_scheduler_delegate_;
-  std::unique_ptr<FrameScheduler> frame_scheduler_;
-  std::unique_ptr<WorkerSchedulerProxy> worker_scheduler_proxy_;
-  std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
-  scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
-  scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
-};
-
-TEST_F(WorkerThreadSchedulerWithProxyTest, UkmTaskRecording) {
-  internal::ProcessState::Get()->is_process_backgrounded = true;
-
-  std::unique_ptr<ukm::TestUkmRecorder> owned_ukm_recorder =
-      std::make_unique<ukm::TestUkmRecorder>();
-  ukm::TestUkmRecorder* ukm_recorder = owned_ukm_recorder.get();
-
-  scheduler_->SetUkmTaskSamplingRateForTest(1);
-  scheduler_->SetUkmRecorderForTest(std::move(owned_ukm_recorder));
-
-  base::sequence_manager::FakeTask task(
-      static_cast<int>(TaskType::kJavascriptTimerDelayedLowNesting));
-  base::sequence_manager::FakeTaskTiming task_timing(
-      base::TimeTicks() + base::Milliseconds(200),
-      base::TimeTicks() + base::Milliseconds(700),
-      base::ThreadTicks() + base::Milliseconds(250),
-      base::ThreadTicks() + base::Milliseconds(500));
-
-  scheduler_->OnTaskCompleted(nullptr, task, &task_timing, nullptr);
-
-  auto entries = ukm_recorder->GetEntriesByName("RendererSchedulerTask");
-
-  EXPECT_EQ(entries.size(), static_cast<size_t>(1));
-
-  ukm::TestUkmRecorder::ExpectEntryMetric(
-      entries[0], "ThreadType", static_cast<int>(ThreadType::kTestThread));
-  ukm::TestUkmRecorder::ExpectEntryMetric(entries[0], "RendererBackgrounded",
-                                          true);
-  ukm::TestUkmRecorder::ExpectEntryMetric(
-      entries[0], "TaskType",
-      static_cast<int>(TaskType::kJavascriptTimerDelayedLowNesting));
-  ukm::TestUkmRecorder::ExpectEntryMetric(
-      entries[0], "FrameStatus",
-      static_cast<int>(FrameStatus::kCrossOriginBackground));
-  ukm::TestUkmRecorder::ExpectEntryMetric(entries[0], "TaskDuration", 500000);
-  ukm::TestUkmRecorder::ExpectEntryMetric(entries[0], "TaskCPUDuration",
-                                          250000);
 }
 
 }  // namespace worker_thread_scheduler_unittest
