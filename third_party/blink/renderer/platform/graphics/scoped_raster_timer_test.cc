@@ -87,7 +87,7 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
   std::unique_ptr<CanvasResourceProvider> provider =
       CanvasResourceProvider::CreateSharedImageProvider(
           gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
-          SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kMedium,
+          SkColorSpace::MakeSRGB(),
           CanvasResourceProvider::ShouldInitialize::kCallClear,
           context_provider_wrapper_, RasterMode::kCPU,
           shared_image_usage_flags);
@@ -121,7 +121,7 @@ TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
-      SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kMedium,
+      SkColorSpace::MakeSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
 

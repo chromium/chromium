@@ -34,8 +34,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
       CanvasResourceSharedBitmap::Create(
           gfx::Size(10, 10), viz::SinglePlaneFormat::kRGBA_8888,
           kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-          /*CanvasResourceProvider=*/nullptr, shared_image_interface_provider,
-          cc::PaintFlags::FilterQuality::kLow);
+          /*CanvasResourceProvider=*/nullptr, shared_image_interface_provider);
   EXPECT_TRUE(!!canvas_resource);
   viz::TransferableResource resource;
   CanvasResource::ReleaseCallback release_callback;

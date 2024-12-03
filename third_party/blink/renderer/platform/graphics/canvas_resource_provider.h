@@ -113,7 +113,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
-      cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
       CanvasResourceHost* resource_host = nullptr);
 
@@ -122,7 +121,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
-      cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host = nullptr);
@@ -132,7 +130,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
-      cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
@@ -149,7 +146,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
-      cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       CanvasResourceHost* resource_host = nullptr);
 
@@ -158,7 +154,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
-      cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       CanvasResourceHost* resource_host = nullptr);
@@ -187,9 +182,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
   gfx::ColorSpace GetColorSpace() const;
-  void SetFilterQuality(cc::PaintFlags::FilterQuality quality) {
-    filter_quality_ = quality;
-  }
   gfx::Size Size() const;
   virtual bool IsValid() const = 0;
   virtual bool IsAccelerated() const = 0;
@@ -362,9 +354,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       const {
     return context_provider_wrapper_;
   }
-  cc::PaintFlags::FilterQuality FilterQuality() const {
-    return filter_quality_;
-  }
 
   scoped_refptr<StaticBitmapImage> SnapshotInternal(ImageOrientation,
                                                     FlushReason);
@@ -375,7 +364,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                          SkColorType sk_color_type,
                          SkAlphaType alpha_type,
                          sk_sp<SkColorSpace> sk_color_space,
-                         cc::PaintFlags::FilterQuality,
                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>
                              context_provider_wrapper,
                          CanvasResourceHost* resource_host);
@@ -452,7 +440,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
   SkImageInfo info_;
-  cc::PaintFlags::FilterQuality filter_quality_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   raw_ptr<CanvasResourceHost> resource_host_ = nullptr;

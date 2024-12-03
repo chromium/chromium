@@ -55,9 +55,6 @@ void CanvasResourceHost::DiscardResourceProvider() {
 void CanvasResourceHost::SetFilterQuality(
     cc::PaintFlags::FilterQuality filter_quality) {
   filter_quality_ = filter_quality;
-  if (resource_provider_) {
-    resource_provider_->SetFilterQuality(filter_quality);
-  }
   if (cc_layer_) {
     cc_layer_->SetFilterQuality(filter_quality);
   }

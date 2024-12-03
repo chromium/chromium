@@ -340,18 +340,16 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
     const SkImageInfo& info,
     viz::RasterContextProvider* raster_context_provider) {
-  constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
     return CanvasResourceProvider::CreateBitmapProvider(
         gfx::Size(info.width(), info.height()), info.colorType(),
-        info.alphaType(), info.refColorSpace(), kFilterQuality,
-        kShouldInitialize);
+        info.alphaType(), info.refColorSpace(), kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(info.width(), info.height()), info.colorType(),
-      info.alphaType(), info.refColorSpace(), kFilterQuality, kShouldInitialize,
+      info.alphaType(), info.refColorSpace(), kShouldInitialize,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }

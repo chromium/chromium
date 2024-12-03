@@ -556,11 +556,10 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   const SkImageInfo resource_info = SkImageInfo::Make(
       SkISize::Make(surface_size.width(), surface_size.height()),
       GetRenderingContextSkColorInfo());
-  const cc::PaintFlags::FilterQuality filter_quality = FilterQuality();
   if (use_shared_image) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         Size(), resource_info.colorType(), resource_info.alphaType(),
-        resource_info.refColorSpace(), filter_quality,
+        resource_info.refColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(),
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
@@ -571,7 +570,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
         GetOrCreateResourceDispatcher()->GetWeakPtr();
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
         Size(), resource_info.colorType(), resource_info.alphaType(),
-        resource_info.refColorSpace(), filter_quality,
+        resource_info.refColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
@@ -585,7 +584,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
     provider = CanvasResourceProvider::CreateBitmapProvider(
         Size(), resource_info.colorType(), resource_info.alphaType(),
-        resource_info.refColorSpace(), filter_quality,
+        resource_info.refColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kCallClear, this);
   }
 

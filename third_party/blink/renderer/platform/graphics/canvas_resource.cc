@@ -54,7 +54,6 @@
 namespace blink {
 
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
-                               cc::PaintFlags::FilterQuality filter_quality,
                                gfx::Size size,
                                viz::SharedImageFormat format,
                                SkAlphaType alpha_type,
@@ -66,8 +65,7 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
       size_(size),
       format_(format),
       alpha_type_(alpha_type),
-      color_space_(color_space),
-      filter_quality_(filter_quality) {}
+      color_space_(color_space) {}
 
 CanvasResource::~CanvasResource() {}
 
@@ -270,10 +268,8 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
     gfx::ColorSpace color_space,
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-        shared_image_interface_provider,
-    cc::PaintFlags::FilterQuality filter_quality)
+        shared_image_interface_provider)
     : CanvasResource(std::move(provider),
-                     filter_quality,
                      size,
                      format,
                      alpha_type,
@@ -343,11 +339,10 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
     gfx::ColorSpace color_space,
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-        shared_image_interface_provider,
-    cc::PaintFlags::FilterQuality filter_quality) {
+        shared_image_interface_provider) {
   auto resource = AdoptRef(new CanvasResourceSharedBitmap(
       size, format, alpha_type, color_space, std::move(provider),
-      std::move(shared_image_interface_provider), filter_quality));
+      std::move(shared_image_interface_provider)));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -382,11 +377,9 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     gfx::ColorSpace color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
     : CanvasResource(std::move(provider),
-                     filter_quality,
                      size,
                      format,
                      alpha_type,
@@ -485,14 +478,13 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
     gfx::ColorSpace color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags) {
   TRACE_EVENT0("blink", "CanvasResourceSharedImage::Create");
   auto resource = base::AdoptRef(new CanvasResourceSharedImage(
       size, format, alpha_type, color_space,
-      std::move(context_provider_wrapper), std::move(provider), filter_quality,
-      is_accelerated, shared_image_usage_flags));
+      std::move(context_provider_wrapper), std::move(provider), is_accelerated,
+      shared_image_usage_flags));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -819,15 +811,13 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     const viz::TransferableResource& transferable_resource,
     viz::ReleaseCallback release_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality) {
+    base::WeakPtr<CanvasResourceProvider> provider) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
   CHECK(client_si);
   CHECK(client_si->mailbox() == transferable_resource.mailbox());
   auto resource = AdoptRef(new ExternalCanvasResource(
       std::move(client_si), transferable_resource, std::move(release_callback),
-      std::move(context_provider_wrapper), std::move(provider),
-      filter_quality));
+      std::move(context_provider_wrapper), std::move(provider)));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -935,10 +925,8 @@ ExternalCanvasResource::ExternalCanvasResource(
     const viz::TransferableResource& transferable_resource,
     viz::ReleaseCallback out_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality)
+    base::WeakPtr<CanvasResourceProvider> provider)
     : CanvasResource(std::move(provider),
-                     filter_quality,
                      transferable_resource.size,
                      transferable_resource.format,
                      kPremul_SkAlphaType,
@@ -960,13 +948,11 @@ scoped_refptr<CanvasResourceSwapChain> CanvasResourceSwapChain::Create(
     SkAlphaType alpha_type,
     gfx::ColorSpace color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality) {
+    base::WeakPtr<CanvasResourceProvider> provider) {
   TRACE_EVENT0("blink", "CanvasResourceSwapChain::Create");
-  auto resource = AdoptRef(
-      new CanvasResourceSwapChain(size, format, alpha_type, color_space,
-                                  std::move(context_provider_wrapper),
-                                  std::move(provider), filter_quality));
+  auto resource = AdoptRef(new CanvasResourceSwapChain(
+      size, format, alpha_type, color_space,
+      std::move(context_provider_wrapper), std::move(provider)));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -1100,10 +1086,8 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     SkAlphaType alpha_type,
     gfx::ColorSpace color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality)
+    base::WeakPtr<CanvasResourceProvider> provider)
     : CanvasResource(std::move(provider),
-                     filter_quality,
                      size,
                      format,
                      alpha_type,

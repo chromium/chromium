@@ -174,14 +174,6 @@ class PLATFORM_EXPORT CanvasResource
   // should not be recycled for writing again but can be safely read from.
   virtual void NotifyResourceLost() = 0;
 
-  void SetFilterQuality(cc::PaintFlags::FilterQuality filter) {
-    filter_quality_ = filter;
-  }
-  // The filter quality to use when the resource is drawn by the compositor.
-  cc::PaintFlags::FilterQuality FilterQuality() const {
-    return filter_quality_;
-  }
-
   SkImageInfo CreateSkImageInfo() const;
 
   bool is_cross_thread() const {
@@ -192,7 +184,6 @@ class PLATFORM_EXPORT CanvasResource
 
  protected:
   CanvasResource(base::WeakPtr<CanvasResourceProvider>,
-                 cc::PaintFlags::FilterQuality,
                  gfx::Size size,
                  viz::SharedImageFormat format,
                  SkAlphaType alpha_type,
@@ -250,7 +241,6 @@ class PLATFORM_EXPORT CanvasResource
   viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
-  cc::PaintFlags::FilterQuality filter_quality_;
   LastUnrefCallback last_unref_callback_;
 };
 
@@ -263,8 +253,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       SkAlphaType alpha_type,
       gfx::ColorSpace color_space,
       base::WeakPtr<CanvasResourceProvider>,
-      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
-      cc::PaintFlags::FilterQuality);
+      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
   ~CanvasResourceSharedBitmap() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const final;
@@ -298,8 +287,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       SkAlphaType alpha_type,
       gfx::ColorSpace color_space,
       base::WeakPtr<CanvasResourceProvider>,
-      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
-      cc::PaintFlags::FilterQuality);
+      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
   bool UsesAcceleratedRaster() const final { return false; }
 
@@ -319,7 +307,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       gfx::ColorSpace color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
-      cc::PaintFlags::FilterQuality,
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags);
   ~CanvasResourceSharedImage() override;
@@ -406,7 +393,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
                             gfx::ColorSpace color_space,
                             base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                             base::WeakPtr<CanvasResourceProvider>,
-                            cc::PaintFlags::FilterQuality,
                             bool is_accelerated,
                             gpu::SharedImageUsageSet shared_image_usage_flags);
 
@@ -463,8 +449,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       const viz::TransferableResource& transferable_resource,
       viz::ReleaseCallback release_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>,
-      cc::PaintFlags::FilterQuality);
+      base::WeakPtr<CanvasResourceProvider>);
 
   ~ExternalCanvasResource() override;
   bool IsRecycleable() const final { return IsValid(); }
@@ -499,8 +484,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
                          const viz::TransferableResource& transferable_resource,
                          viz::ReleaseCallback out_callback,
                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                         base::WeakPtr<CanvasResourceProvider>,
-                         cc::PaintFlags::FilterQuality);
+                         base::WeakPtr<CanvasResourceProvider>);
 
   scoped_refptr<gpu::ClientSharedImage> client_si_;
   const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
@@ -519,8 +503,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
       SkAlphaType alpha_type,
       gfx::ColorSpace color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>,
-      cc::PaintFlags::FilterQuality);
+      base::WeakPtr<CanvasResourceProvider>);
   ~CanvasResourceSwapChain() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
@@ -556,8 +539,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
                           SkAlphaType alpha_type,
                           gfx::ColorSpace color_space,
                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                          base::WeakPtr<CanvasResourceProvider>,
-                          cc::PaintFlags::FilterQuality);
+                          base::WeakPtr<CanvasResourceProvider>);
 
   const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
       context_provider_wrapper_;

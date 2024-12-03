@@ -64,9 +64,8 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(source->Size().width(), source->Size().height()),
       image_info.colorType(), image_info.alphaType(),
-      image_info.refColorSpace(), cc::PaintFlags::FilterQuality::kLow,
-      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
-      RasterMode::kGPU, kSharedImageUsageFlags);
+      image_info.refColorSpace(), CanvasResourceProvider::ShouldInitialize::kNo,
+      context_provider_wrapper, RasterMode::kGPU, kSharedImageUsageFlags);
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 

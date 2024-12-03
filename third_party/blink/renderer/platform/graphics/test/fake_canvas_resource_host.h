@@ -43,7 +43,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
       return ResourceProvider();
     const SkImageInfo resource_info =
         SkImageInfo::MakeN32Premul(Size().width(), Size().height());
-    constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kMedium;
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kCallClear;
     std::unique_ptr<CanvasResourceProvider> provider;
@@ -54,7 +53,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
           gpu::SHARED_IMAGE_USAGE_SCANOUT;
       provider = CanvasResourceProvider::CreateSharedImageProvider(
           Size(), resource_info.colorType(), resource_info.alphaType(),
-          resource_info.refColorSpace(), kFilterQuality, kShouldInitialize,
+          resource_info.refColorSpace(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(),
           hint == RasterModeHint::kPreferGPU ? RasterMode::kGPU
                                              : RasterMode::kCPU,
@@ -63,14 +62,13 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     if (!provider) {
       provider = CanvasResourceProvider::CreateSharedBitmapProvider(
           Size(), resource_info.colorType(), resource_info.alphaType(),
-          resource_info.refColorSpace(), kFilterQuality, kShouldInitialize,
+          resource_info.refColorSpace(), kShouldInitialize,
           SharedGpuContext::SharedImageInterfaceProvider(), this);
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateBitmapProvider(
           Size(), resource_info.colorType(), resource_info.alphaType(),
-          resource_info.refColorSpace(), kFilterQuality, kShouldInitialize,
-          this);
+          resource_info.refColorSpace(), kShouldInitialize, this);
     }
 
     ReplaceResourceProvider(std::move(provider));

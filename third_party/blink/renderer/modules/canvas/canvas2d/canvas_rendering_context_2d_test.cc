@@ -477,7 +477,6 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
                                kN32_SkColorType,
                                kPremul_SkAlphaType,
                                SkColorSpace::MakeSRGB(),
-                               cc::PaintFlags::FilterQuality::kLow,
                                SharedGpuContext::ContextProviderWrapper(),
                                resource_host),
         is_accelerated_(hint != RasterModeHint::kPreferCPU),
@@ -502,7 +501,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
         // which corresponds to SRGB.
         gfx::ColorSpace::CreateSRGB(),
         SharedGpuContext::ContextProviderWrapper(), CreateWeakPtr(),
-        cc::PaintFlags::FilterQuality::kLow, IsAccelerated(),
+        IsAccelerated(),
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE));
   }
