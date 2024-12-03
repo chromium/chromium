@@ -718,10 +718,15 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             delegate)));
   }
 
-  if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_DATA) &&
-      tab_group_sync_service_.value() &&
+  // TODO(crbug.com/381505059): Check if the collab service status should be
+  // used.
+  bool data_sharing_enabled =
       base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
+          data_sharing::features::kDataSharingFeature) ||
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingJoinOnly);
+  if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_DATA) &&
+      tab_group_sync_service_.value() && data_sharing_enabled) {
     syncer::DataTypeControllerDelegate* delegate =
         tab_group_sync_service_.value()
             ->GetSharedTabGroupControllerDelegate()
@@ -861,13 +866,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-  // TODO(crbug.com/381505059): Check if it is worth having a helper to check
-  // both flags.
-  bool data_sharing_enabled =
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) ||
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingJoinOnly);
   // `data_sharing_service_` is null on iOS WebView.
   if (data_sharing_service_.value() && data_sharing_enabled &&
       !disabled_types.Has(syncer::COLLABORATION_GROUP)) {
