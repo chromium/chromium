@@ -19,9 +19,6 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 // <if expr="is_chromeos or is_win">
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 // </if>
-// <if expr="chromeos_ash">
-import {$} from 'chrome://resources/js/util.js';
-// </if>
 // clang-format on
 
 
@@ -80,7 +77,7 @@ function handlePathInfo(
   getRequiredElement('profile_path').textContent = profilePath;
 }
 
-// <if expr="chromeos_lacros or is_win">
+// <if expr="is_win">
 /**
  * Callback from the backend with the OS version to display.
  * @param osVersion The OS version to display.
@@ -131,28 +128,6 @@ function returnCustomizationId(response: {[customizationId: string]: any}) {
 
 // </if>
 
-// <if expr="chromeos_ash">
-/**
- * Callback from the backend to inform if Lacros is enabled or not.
- * @param enabled True if it is enabled.
- */
-function returnLacrosEnabled(enabled: string) {
-  getRequiredElement('os-link-container').hidden = !enabled;
-
-  const crosUrlRedirectButton = $('os-link-href');
-  if (crosUrlRedirectButton) {
-    crosUrlRedirectButton.onclick = crosUrlVersionRedirect;
-  }
-}
-
-/**
- * Called when the user clicks on the os-link-href button.
- */
-function crosUrlVersionRedirect() {
-  chrome.send('crosUrlVersionRedirect');
-}
-// </if>
-
 async function copyVersionToClipboard() {
   await navigator.clipboard.writeText(
       getRequiredElement('copy-content').innerText);
@@ -187,16 +162,9 @@ function announceCopy(id: string) {
   messagesDiv.append(div);
 }
 
-// <if expr="chromeos_lacros">
-function copyOSContentToClipboard() {
-  navigator.clipboard.writeText(
-      getRequiredElement('copy-os-content').innerText);
-}
-// </if>
-
 /* All the work we do onload. */
 function initialize() {
-  // <if expr="chromeos_lacros or is_win">
+  // <if expr="is_win">
   addWebUiListener('return-os-version', returnOsVersion);
   // </if>
 
@@ -209,14 +177,6 @@ function initialize() {
   getRequiredElement('arc_holder').hidden = true;
   chrome.chromeosInfoPrivate.get(['customizationId'])
       .then(returnCustomizationId);
-  // </if>
-
-  // <if expr="chromeos_ash">
-  addWebUiListener('return-lacros-enabled', returnLacrosEnabled);
-  // </if>
-  // <if expr="chromeos_lacros">
-  // We always display the container in Lacros
-  getRequiredElement('os-link-container').hidden = false;
   // </if>
 
   chrome.send('requestVersionInfo');
@@ -238,11 +198,6 @@ function initialize() {
 
   getRequiredElement('copy-variations-to-clipboard')
       .addEventListener('click', copyVariationsToClipboard);
-
-  // <if expr="chromeos_lacros">
-  getRequiredElement('copy-os-content-to-clipboard')
-      .addEventListener('click', copyOSContentToClipboard);
-  // </if>
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
