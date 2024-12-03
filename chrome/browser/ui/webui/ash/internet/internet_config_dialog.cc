@@ -203,9 +203,7 @@ InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_CONFIG);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kInternetConfigDialogResources,
-                      kInternetConfigDialogResourcesSize),
+      source, kInternetConfigDialogResources,
       IDR_INTERNET_CONFIG_DIALOG_INTERNET_CONFIG_DIALOG_CONTAINER_HTML);
   // Enabling trusted types via trusted_types_util must be done after
   // webui::SetupWebUIDataSource to override the trusted type CSP with correct

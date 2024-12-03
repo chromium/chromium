@@ -32,9 +32,8 @@ SensorInfoUI::SensorInfoUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISensorInfoHost);
   // Adds required resources.
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kSensorInfoResources, kSensorInfoResourcesSize),
-      IDR_SENSOR_INFO_SENSOR_INFO_HTML);
+  webui::SetupWebUIDataSource(source, kSensorInfoResources,
+                              IDR_SENSOR_INFO_SENSOR_INFO_HTML);
 }
 
 SensorInfoUI::~SensorInfoUI() = default;

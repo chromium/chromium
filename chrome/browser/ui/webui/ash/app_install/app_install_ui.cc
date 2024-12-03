@@ -64,10 +64,8 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
       l10n_util::GetStringFUTF8(IDS_APP_INSTALL_DIALOG_INSTALL_TITLE,
                                 ui::GetChromeOSDeviceName()));
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kAppInstallResources, kAppInstallResourcesSize),
-      IDR_APP_INSTALL_MAIN_HTML);
+  webui::SetupWebUIDataSource(source, kAppInstallResources,
+                              IDR_APP_INSTALL_MAIN_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile,

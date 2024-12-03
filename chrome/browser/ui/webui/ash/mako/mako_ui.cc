@@ -76,8 +76,7 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIMakoURL);
 
-  base::span<const webui::ResourcePath> orca_resources =
-      base::make_span(kOrcaResources, kOrcaResourcesSize);
+  base::span<const webui::ResourcePath> orca_resources = kOrcaResources;
 
   LobsterService* lobster_service =
       ash::features::IsLobsterEnabled()
@@ -105,9 +104,10 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
   // TODO: b:333625296 - Add tests for this conditional behavior
   {
     std::vector<webui::ResourcePath> orca_en_us_resources;
-    std::copy_if(orca_resources.begin(), orca_resources.end(),
-                 std::back_inserter(orca_en_us_resources), should_use_resource);
-    webui::SetupWebUIDataSource(source, base::make_span(orca_en_us_resources),
+    std::ranges::copy_if(orca_resources,
+                         std::back_inserter(orca_en_us_resources),
+                         should_use_resource);
+    webui::SetupWebUIDataSource(source, orca_en_us_resources,
                                 IDR_MAKO_ORCA_HTML);
   }
 

@@ -87,8 +87,7 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
   ui::network_element::AddOncLocalizedStrings(html);
   html->UseStringsJs();
 
-  html->AddResourcePaths(base::make_span(kLockScreenReauthResources,
-                                         kLockScreenReauthResourcesSize));
+  html->AddResourcePaths(kLockScreenReauthResources);
   html->SetDefaultResource(IDR_LOCK_SCREEN_REAUTH_LOCK_SCREEN_NETWORK_HTML);
 }
 

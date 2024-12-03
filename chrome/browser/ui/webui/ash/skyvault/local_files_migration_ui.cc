@@ -62,9 +62,8 @@ LocalFilesMigrationUI::LocalFilesMigrationUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kSkyvaultResources, kSkyvaultResourcesSize),
-      IDR_SKYVAULT_LOCAL_FILES_HTML);
+  webui::SetupWebUIDataSource(source, kSkyvaultResources,
+                              IDR_SKYVAULT_LOCAL_FILES_HTML);
 
   webui::EnableTrustedTypesCSP(source);
 }

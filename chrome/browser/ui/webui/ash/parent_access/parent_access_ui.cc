@@ -86,10 +86,8 @@ void ParentAccessUI::SetUpResources() {
   source->EnableReplaceI18nInJS();
 
   // Forward data to the WebUI.
-  source->AddResourcePaths(
-      base::make_span(kParentAccessResources, kParentAccessResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kSupervisionResources, kSupervisionResourcesSize));
+  source->AddResourcePaths(kParentAccessResources);
+  source->AddResourcePaths(kSupervisionResources);
 
   source->UseStringsJs();
   source->AddBoolean("isParentAccessJellyEnabled",

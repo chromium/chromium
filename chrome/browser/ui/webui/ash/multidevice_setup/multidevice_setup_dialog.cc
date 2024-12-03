@@ -127,9 +127,7 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
   source->UseStringsJs();
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kMultideviceSetupResources,
-                      kMultideviceSetupResourcesSize),
+      source, kMultideviceSetupResources,
       IDR_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_HTML);
   // Enabling trusted types via trusted_types_util must be done after
   // webui::SetupWebUIDataSource to override the trusted type CSP with correct

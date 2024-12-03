@@ -246,8 +246,7 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
 }
 
 void AddAssistantScreensResources(content::WebUIDataSource* source) {
-  source->AddResourcePaths(
-      base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
+  source->AddResourcePaths(kAssistantOptinResources);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
@@ -794,14 +793,13 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
           "test_api/no_test_api.js",
           "test_api/test_api.js",
       });
-  for (const auto& path : base::make_span(kOobeResources, kOobeResourcesSize)) {
+  for (const auto& path : kOobeResources) {
     if (!kConditionalResources.contains(path.path)) {
       source->AddResourcePath(path.path, path.id);
     }
   }
   // Add Gaia Authenticator resources
-  source->AddResourcePaths(
-      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
+  source->AddResourcePaths(kGaiaAuthHostResources);
 
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     source->AddResourcePath(

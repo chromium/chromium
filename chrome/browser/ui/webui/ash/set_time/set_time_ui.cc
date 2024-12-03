@@ -197,10 +197,8 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
 
   source->AddLocalizedStrings(values);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSetTimeDialogResources, kSetTimeDialogResourcesSize),
-      IDR_SET_TIME_DIALOG_SET_TIME_HTML);
+  webui::SetupWebUIDataSource(source, kSetTimeDialogResources,
+                              IDR_SET_TIME_DIALOG_SET_TIME_HTML);
 }
 
 SetTimeUI::~SetTimeUI() = default;

@@ -35,9 +35,8 @@ AudioUI::AudioUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIAudioHost);
 
-  webui::SetupWebUIDataSource(
-      html_source, base::make_span(kAudioResources, kAudioResourcesSize),
-      IDR_AUDIO_AUDIO_HTML);
+  webui::SetupWebUIDataSource(html_source, kAudioResources,
+                              IDR_AUDIO_AUDIO_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AudioUI)

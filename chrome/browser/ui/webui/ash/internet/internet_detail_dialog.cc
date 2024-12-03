@@ -184,9 +184,7 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_DETAIL);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kInternetDetailDialogResources,
-                      kInternetDetailDialogResourcesSize),
+      source, kInternetDetailDialogResources,
       IDR_INTERNET_DETAIL_DIALOG_INTERNET_DETAIL_DIALOG_CONTAINER_HTML);
   source->DisableTrustedTypesCSP();
 }

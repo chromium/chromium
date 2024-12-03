@@ -25,9 +25,7 @@ LauncherInternalsUI::LauncherInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUILauncherInternalsHost);
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kLauncherInternalsResources,
-                                              kLauncherInternalsResourcesSize),
+  webui::SetupWebUIDataSource(source, kLauncherInternalsResources,
                               IDR_LAUNCHER_INTERNALS_INDEX_HTML);
 }
 

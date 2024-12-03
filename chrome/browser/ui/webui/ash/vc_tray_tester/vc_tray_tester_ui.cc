@@ -29,10 +29,8 @@ VcTrayTesterUI::VcTrayTesterUI(content::WebUI* web_ui)
                                              chrome::kChromeUIVcTrayTesterHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kVcTrayTesterResources, kVcTrayTesterResourcesSize),
-      IDR_VC_TRAY_TESTER_MAIN_HTML);
+  webui::SetupWebUIDataSource(html_source, kVcTrayTesterResources,
+                              IDR_VC_TRAY_TESTER_MAIN_HTML);
 
   // Add message handler.
   // web_ui->AddMessageHandler(std::make_unique<NotificationTesterHandler>());

@@ -34,10 +34,8 @@ DlpInternalsUI::DlpInternalsUI(content::WebUI* web_ui)
       "isReportingEnabled",
       rules_manager ? rules_manager->IsReportingEnabled() : false);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kDlpInternalsResources, kDlpInternalsResourcesSize),
-      IDR_DLP_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(source, kDlpInternalsResources,
+                              IDR_DLP_INTERNALS_INDEX_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
       "require-trusted-types-for 'script';");

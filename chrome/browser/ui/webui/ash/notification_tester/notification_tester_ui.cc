@@ -33,9 +33,7 @@ NotificationTesterUI::NotificationTesterUI(content::WebUI* web_ui)
           Profile::FromWebUI(web_ui), chrome::kChromeUINotificationTesterHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kNotificationTesterResources,
-                                              kNotificationTesterResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kNotificationTesterResources,
                               IDR_NOTIFICATION_TESTER_INDEX_HTML);
 
   // Add message handler.

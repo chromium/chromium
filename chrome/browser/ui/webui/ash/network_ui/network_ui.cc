@@ -1042,9 +1042,8 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   ui::network_element::AddOncLocalizedStrings(html);
   traffic_counters::AddResources(html);
 
-  webui::SetupWebUIDataSource(
-      html, base::make_span(kNetworkUiResources, kNetworkUiResourcesSize),
-      IDR_NETWORK_UI_NETWORK_HTML);
+  webui::SetupWebUIDataSource(html, kNetworkUiResources,
+                              IDR_NETWORK_UI_NETWORK_HTML);
   // Enabling trusted types via trusted_types_util must be done after
   // webui::SetupWebUIDataSource to override the trusted type CSP with correct
   // policies for JS WebUIs.

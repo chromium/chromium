@@ -92,8 +92,7 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
 
   source->AddLocalizedStrings(localized_strings);
   source->UseStringsJs();
-  source->AddResourcePaths(
-      base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
+  source->AddResourcePaths(kAssistantOptinResources);
   source->SetDefaultResource(IDR_ASSISTANT_OPTIN_ASSISTANT_OPTIN_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,

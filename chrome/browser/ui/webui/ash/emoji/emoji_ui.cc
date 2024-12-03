@@ -117,15 +117,13 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
       chrome::kChromeUIEmojiPickerHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
-      IDR_EMOJI_PICKER_INDEX_HTML);
-  source->AddResourcePaths(base::make_span(kEmoji, kEmojiSize));
+  webui::SetupWebUIDataSource(source, kEmojiPickerResources,
+                              IDR_EMOJI_PICKER_INDEX_HTML);
+  source->AddResourcePaths(kEmoji);
 
   // Add seal extra resources.
   if (SealUtils::ShouldEnable()) {
-    source->AddResourcePaths(
-        base::make_span(kSealResources, kSealResourcesSize));
+    source->AddResourcePaths(kSealResources);
   }
 
   // Some web components defined in seal extra resources are based on lit; so

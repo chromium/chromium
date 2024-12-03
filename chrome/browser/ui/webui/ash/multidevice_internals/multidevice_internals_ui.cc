@@ -32,11 +32,8 @@ MultideviceInternalsUI::MultideviceInternalsUI(content::WebUI* web_ui)
           chrome::kChromeUIMultiDeviceInternalsHost);
   html_source->AddBoolean("isPhoneHubEnabled", features::IsPhoneHubEnabled());
 
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kMultideviceInternalsResources,
-                      kMultideviceInternalsResourcesSize),
-      IDR_MULTIDEVICE_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(html_source, kMultideviceInternalsResources,
+                              IDR_MULTIDEVICE_INTERNALS_INDEX_HTML);
 
   web_ui->AddMessageHandler(
       std::make_unique<multidevice::MultideviceLogsHandler>());

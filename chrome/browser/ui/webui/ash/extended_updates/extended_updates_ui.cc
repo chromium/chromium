@@ -70,10 +70,8 @@ ExtendedUpdatesUI::ExtendedUpdatesUI(content::WebUI* web_ui)
       l10n_util::GetStringFUTF16(IDS_EXTENDED_UPDATES_DIALOG_POPUP_DESCRIPTION,
                                  ui::GetChromeOSDeviceName()));
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kExtendedUpdatesResources, kExtendedUpdatesResourcesSize),
-      IDR_EXTENDED_UPDATES_EXTENDED_UPDATES_HTML);
+  webui::SetupWebUIDataSource(source, kExtendedUpdatesResources,
+                              IDR_EXTENDED_UPDATES_EXTENDED_UPDATES_HTML);
 
   // For OOBE Adaptive Dialog.
   OobeUI::AddOobeComponents(source);

@@ -26,11 +26,8 @@ RemoteMaintenanceCurtainUI::RemoteMaintenanceCurtainUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIRemoteManagementCurtainHost);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kRemoteMaintenanceCurtainResources,
-                      kRemoteMaintenanceCurtainResourcesSize),
-      IDR_REMOTE_MAINTENANCE_CURTAIN_MAIN_HTML);
+  webui::SetupWebUIDataSource(source, kRemoteMaintenanceCurtainResources,
+                              IDR_REMOTE_MAINTENANCE_CURTAIN_MAIN_HTML);
 
   // Add OOBE resources so our WebUI can find the OOBE WebUI resources (css,
   // javascript files, ...) at runtime.

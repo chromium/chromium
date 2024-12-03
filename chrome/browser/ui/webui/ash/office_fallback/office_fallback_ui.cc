@@ -46,10 +46,8 @@ OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)
        IDS_OFFICE_FALLBACK_OPEN_IN_BASIC_EDITOR},
   };
   source->AddLocalizedStrings(kStrings);
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kOfficeFallbackResources, kOfficeFallbackResourcesSize),
-      IDR_OFFICE_FALLBACK_MAIN_HTML);
+  webui::SetupWebUIDataSource(source, kOfficeFallbackResources,
+                              IDR_OFFICE_FALLBACK_MAIN_HTML);
 }
 
 OfficeFallbackUI::~OfficeFallbackUI() = default;

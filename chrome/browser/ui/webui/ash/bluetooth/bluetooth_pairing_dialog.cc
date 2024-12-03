@@ -147,9 +147,7 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
   source->AddLocalizedString("title", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kBluetoothPairingDialogResources,
-                      kBluetoothPairingDialogResourcesSize),
+      source, kBluetoothPairingDialogResources,
       IDR_BLUETOOTH_PAIRING_DIALOG_BLUETOOTH_PAIRING_DIALOG_CONTAINER_HTML);
   // Enabling trusted types via trusted_types_util must be done after
   // webui::SetupWebUIDataSource to override the trusted type CSP with correct

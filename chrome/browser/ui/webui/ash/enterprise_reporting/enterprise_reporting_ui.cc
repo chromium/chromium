@@ -71,9 +71,7 @@ EnterpriseReportingUI::EnterpriseReportingUI(content::WebUI* web_ui)
 
   // Add required resources.
   webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kEnterpriseReportingResources,
-                      kEnterpriseReportingResourcesSize),
+      html_source, kEnterpriseReportingResources,
       IDR_ENTERPRISE_REPORTING_ENTERPRISE_REPORTING_HTML);
 }
 

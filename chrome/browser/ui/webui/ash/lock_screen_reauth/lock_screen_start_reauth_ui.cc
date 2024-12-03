@@ -136,10 +136,8 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       l10n_util::GetStringUTF16(
           IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_TOOLTIP));
 
-  source->AddResourcePaths(base::make_span(kLockScreenReauthResources,
-                                           kLockScreenReauthResourcesSize));
-  source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
-                                           kGaiaActionButtonsResourcesSize));
+  source->AddResourcePaths(kLockScreenReauthResources);
+  source->AddResourcePaths(kGaiaActionButtonsResources);
   source->SetDefaultResource(
       IDR_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_APP_HTML);
 

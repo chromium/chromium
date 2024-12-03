@@ -111,9 +111,8 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"googleDrive", IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE},
   };
   source->AddLocalizedStrings(kStrings);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
-      IDR_CLOUD_UPLOAD_MAIN_HTML);
+  webui::SetupWebUIDataSource(source, kCloudUploadResources,
+                              IDR_CLOUD_UPLOAD_MAIN_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");

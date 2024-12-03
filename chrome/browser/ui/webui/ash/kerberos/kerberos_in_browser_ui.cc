@@ -42,9 +42,8 @@ KerberosInBrowserUI::KerberosInBrowserUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIKerberosInBrowserHost);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kKerberosResources, kKerberosResourcesSize),
-      IDR_KERBEROS_KERBEROS_IN_BROWSER_DIALOG_HTML);
+  webui::SetupWebUIDataSource(source, kKerberosResources,
+                              IDR_KERBEROS_KERBEROS_IN_BROWSER_DIALOG_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"kerberosInBrowserTitle", IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_TITLE},

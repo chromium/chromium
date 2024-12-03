@@ -129,15 +129,12 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(
       std::make_unique<StorageHandler>(profile, html_source));
 
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kOsSettingsResources, kOsSettingsResourcesSize),
-      IDR_OS_SETTINGS_OS_SETTINGS_HTML);
+  webui::SetupWebUIDataSource(html_source, kOsSettingsResources,
+                              IDR_OS_SETTINGS_OS_SETTINGS_HTML);
   ash::EnableTrustedTypesCSP(html_source);
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
-  html_source->AddResourcePaths(
-      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+  html_source->AddResourcePaths(kSettingsSharedResources);
 #endif
 
   // Flag for using updated icons in search results and pages.

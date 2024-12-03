@@ -30,9 +30,7 @@ HealthdInternalsUI::HealthdInternalsUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIHealthdInternalsHost);
 
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kHealthdInternalsResources,
-                                              kHealthdInternalsResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kHealthdInternalsResources,
                               IDR_HEALTHD_INTERNALS_HEALTHD_INTERNALS_HTML);
 }
 

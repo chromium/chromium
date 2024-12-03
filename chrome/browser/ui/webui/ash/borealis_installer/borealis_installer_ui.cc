@@ -58,9 +58,7 @@ BorealisInstallerUI::BorealisInstallerUI(content::WebUI* web_ui)
   };
   html_source->AddLocalizedStrings(kStrings);
 
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kBorealisInstallerResources,
-                                              kBorealisInstallerResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kBorealisInstallerResources,
                               IDR_BOREALIS_INSTALLER_BOREALIS_INSTALLER_HTML);
 }
 

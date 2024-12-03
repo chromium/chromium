@@ -29,9 +29,7 @@ ManageMirrorSyncUI::ManageMirrorSyncUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIManageMirrorSyncHost);
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kManageMirrorsyncResources,
-                                              kManageMirrorsyncResourcesSize),
+  webui::SetupWebUIDataSource(source, kManageMirrorsyncResources,
                               IDR_MANAGE_MIRRORSYNC_INDEX_HTML);
 }
 
