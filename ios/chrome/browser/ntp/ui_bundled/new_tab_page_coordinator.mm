@@ -281,8 +281,10 @@
   TabGroupIndicatorCoordinator* _tabGroupIndicatorCoordinator;
   // Indicates whether the fakebox was tapped as part of an omnibox focus event.
   BOOL _fakeboxTapped;
-  // Whether an account menu is displayed on top of this NTP.
-  BOOL _accountMenuCoordinatorStarted;
+  // Whether the account menu is displayed on top of this NTP.
+  BOOL _showAccountMenuInProgress;
+  // Whether the signin menu is displayed on top of this NTP.
+  BOOL _showSigninCommandInProgress;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -897,6 +899,10 @@
 }
 
 - (void)identityDiscWasTapped:(UIView*)identityDisc {
+  if (_showAccountMenuInProgress || _showSigninCommandInProgress) {
+    // Double tap, or tap before dismissing of the previous one is complete.
+    return;
+  }
   if (IsHomeCustomizationEnabled()) {
     [self dismissCustomizationMenu];
   }
@@ -910,25 +916,30 @@
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
     if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-      if (_accountMenuCoordinatorStarted) {
-        // Double tap, or tap before dismiss of the previous one is complete.
-        return;
-      }
-      _accountMenuCoordinatorStarted = YES;
+      _showAccountMenuInProgress = YES;
       __weak __typeof(self) weakSelf = self;
       [handler showAccountMenuWithAnchorView:identityDisc
-                                  completion:^() {
-                                    [weakSelf accountMenuCoordinatorIsStopped];
+                                  completion:^{
+                                    [weakSelf showAccountMenuDidFinish];
                                   }];
 
     } else {
       [handler showSettingsFromViewController:self.baseViewController];
     }
   } else {
+    __weak __typeof(self) weakSelf = self;
+    _showSigninCommandInProgress = YES;
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
         initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
+                 identity:nil
               accessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_NTP_SIGNED_OUT_ICON];
+                              ACCESS_POINT_NTP_SIGNED_OUT_ICON
+              promoAction:signin_metrics::PromoAction::
+                              PROMO_ACTION_NO_SIGNIN_PROMO
+               completion:^(SigninCoordinatorResult result,
+                            SigninCompletionInfo* info) {
+                 [weakSelf showSigninCommandDidFinish];
+               }];
     [handler showSignin:showSigninCommand
         baseViewController:self.baseViewController];
   }
@@ -1142,12 +1153,13 @@
 #pragma mark - FeedSignInPromoDelegate
 
 - (void)showSignInPromoUI {
-  // Both possible flows (sign-in only and sign-in + sync) involve sign-in. So
-  // they shouldn't be offered if sign-in is disallowed.
   if (![self isSignInAllowed]) {
     [self showSignInDisableMessage];
     [self.feedMetricsRecorder recordShowSignInRelatedUIWithType:
                                   feed::FeedSignInUI::kShowSignInDisableToast];
+    return;
+  }
+  if (_showAccountMenuInProgress || _showSigninCommandInProgress) {
     return;
   }
 
@@ -1156,10 +1168,19 @@
                                ->HasIdentities();
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+  __weak __typeof(self) weakSelf = self;
+  _showSigninCommandInProgress = YES;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninOnly
+               identity:nil
             accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO];
+                            ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+             completion:^(SigninCoordinatorResult result,
+                          SigninCompletionInfo* info) {
+               [weakSelf showSigninCommandDidFinish];
+             }];
   [handler showSignin:command baseViewController:self.NTPViewController];
   [self.feedMetricsRecorder recordShowSignInRelatedUIWithType:
                                 feed::FeedSignInUI::kShowSignInOnlyFlow];
@@ -1177,6 +1198,9 @@
                                   feed::FeedSyncPromo::kShowDisableToast];
     return;
   }
+  if (_showAccountMenuInProgress || _showSigninCommandInProgress) {
+    return;
+  }
 
   ProfileIOS* profile = self.browser->GetProfile();
   id<ApplicationCommands> handler = HandlerForProtocol(
@@ -1186,10 +1210,19 @@
                            ->HasIdentities()
                        ? AuthenticationOperation::kSigninOnly
                        : AuthenticationOperation::kInstantSignin;
+  __weak __typeof(self) weakSelf = self;
+  _showSigninCommandInProgress = YES;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
+               identity:nil
             accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_NTP_FEED_BOTTOM_PROMO];
+                            ACCESS_POINT_NTP_FEED_BOTTOM_PROMO
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+             completion:^(SigninCoordinatorResult result,
+                          SigninCompletionInfo* info) {
+               [weakSelf showSigninCommandDidFinish];
+             }];
   [handler showSignin:command baseViewController:self.NTPViewController];
   // TODO(crbug.com/40066051): Strictly speaking this should record a bucket
   // other than kShowSyncFlow. But I don't think we care too much about this
@@ -1587,8 +1620,22 @@
 
 // Update the state, to take into account that the menu coordinator is stopped.
 - (void)accountMenuCoordinatorIsStopped {
-  CHECK(_accountMenuCoordinatorStarted);
-  _accountMenuCoordinatorStarted = NO;
+  CHECK(_showAccountMenuInProgress);
+  _showAccountMenuInProgress = NO;
+}
+
+// Update the state, to take into account that the account menu coordinator is
+// stopped.
+- (void)showAccountMenuDidFinish {
+  CHECK(_showAccountMenuInProgress, base::NotFatalUntil::M135);
+  _showAccountMenuInProgress = NO;
+}
+
+// Update the state, to take into account that the signin coordinator
+// coordinator is stopped.
+- (void)showSigninCommandDidFinish {
+  CHECK(_showSigninCommandInProgress, base::NotFatalUntil::M135);
+  _showSigninCommandInProgress = NO;
 }
 
 // Updates the feed visibility or content based on the supervision state
