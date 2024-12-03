@@ -143,8 +143,9 @@ suite('UpdateVoicePack', () => {
       });
 
       test(
-          'and only eSpeak voices for language, disables language',
+          'and only eSpeak voices for language, disables language on ChromeOS',
           async () => {
+            chrome.readingMode.isChromeOsAsh = true;
             createAndSetVoices(app, speechSynthesis, [
               {lang: lang, name: 'eSpeak Portuguese'},
             ]);
@@ -154,6 +155,22 @@ suite('UpdateVoicePack', () => {
 
             assertFalse(app.enabledLangs.includes(lang));
             assertFalse(
+                chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
+          });
+
+      test(
+          'and only system voices for language, keeps language for desktop',
+          async () => {
+            chrome.readingMode.isChromeOsAsh = false;
+            createAndSetVoices(app, speechSynthesis, [
+              {lang: lang, name: 'System Portuguese'},
+            ]);
+
+            app.updateVoicePackStatus(lang, 'kOther');
+            await microtasksFinished();
+
+            assertTrue(app.enabledLangs.includes(lang));
+            assertTrue(
                 chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
           });
 
