@@ -28,12 +28,11 @@ constexpr char kDocumentWithNamedElement[] = "/select.html";
 
 using State = LensOverlayController::State;
 
-// TODO(crbug.com/365448173): Split overlay and side panel browser test into
-// different files.
-class LensWebUIBrowserTest : public WebUIMochaBrowserTest {
+class LensOverlayWebUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
-  LensWebUIBrowserTest() {
+  LensOverlayWebUIBrowserTest() {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
+    set_test_loader_host(chrome::kChromeUILensOverlayHost);
     scoped_feature_list_.InitWithFeatures(
         {lens::features::kLensOverlay},
         {lens::features::kLensOverlayContextualSearchbox});
@@ -66,10 +65,9 @@ class LensWebUIBrowserTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class LensOverlayTest : public LensWebUIBrowserTest {
+class LensOverlayTest : public LensOverlayWebUIBrowserTest {
  protected:
   void RunOverlayTest(const std::string& file, const std::string& trigger) {
-    set_test_loader_host(chrome::kChromeUILensOverlayHost);
     WaitForPaint();
 
     // State should start in off.
@@ -94,16 +92,6 @@ class LensOverlayTest : public LensWebUIBrowserTest {
     // Clean up (the searchbox handler will leave a dangling pointer if not
     // explicitly destroyed).
     controller->ResetSidePanelSearchboxHandler();
-  }
-
-  void RunSidePanelTest(const std::string& file, const std::string& trigger) {
-    set_test_loader_host(chrome::kChromeUILensSidePanelHost);
-    RunTest(file, trigger);
-  }
-
-  void RunGhostLoaderTest(const std::string& file, const std::string& trigger) {
-    set_test_loader_host(chrome::kChromeUILensSidePanelHost);
-    RunTest(file, trigger);
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
@@ -205,27 +193,4 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, MAYBE_TranslateButton) {
   RunOverlayTest("lens/overlay/translate_button_test.js", "mocha.run()");
 }
 
-using LensSidePanelTest = LensOverlayTest;
-IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelResultsFrame) {
-  RunSidePanelTest("lens/side_panel/results_frame_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SearchboxBackButton) {
-  RunSidePanelTest("lens/side_panel/searchbox_back_button_test.js",
-                   "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(LensSidePanelTest, ErrorPage) {
-  RunSidePanelTest("lens/side_panel/error_page_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(LensSidePanelTest, GhostLoaderState) {
-  RunSidePanelTest("lens/side_panel/ghost_loader_state_test.js", "mocha.run()");
-}
-
-using LensGhostLoaderTest = LensOverlayTest;
-IN_PROC_BROWSER_TEST_F(LensGhostLoaderTest, GhostLoaderState) {
-  RunGhostLoaderTest("lens/ghost_loader/ghost_loader_state_test.js",
-                     "mocha.run()");
-}
 }  // namespace
