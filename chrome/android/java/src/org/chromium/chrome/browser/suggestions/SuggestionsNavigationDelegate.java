@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 /** Extension of {@link NativePageNavigationDelegate} with suggestions-specific methods. */
@@ -43,6 +44,8 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
     public void navigateToSuggestionUrl(int windowOpenDisposition, String url, boolean inGroup) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
         if (inGroup) {
+            assert windowOpenDisposition != WindowOpenDisposition.NEW_WINDOW
+                    : "Tabs in groups cannot be opened in a new window.";
             openUrlInGroup(windowOpenDisposition, loadUrlParams);
         } else {
             openUrl(windowOpenDisposition, loadUrlParams);
