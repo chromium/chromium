@@ -6245,7 +6245,6 @@
                 {
                     "name": "Enabled_Teamfood",
                     "params": {
-                        "enable-cluster-info-optimization": "true",
                         "file-upload-limit-bytes": "200000000",
                         "send-page-url-for-contextualization": "true",
                         "use-inner-text-as-context": "true",
@@ -6256,8 +6255,7 @@
                         "use-webpage-vit-param": "true"
                     },
                     "enable_features": [
-                        "LensOverlayContextualSearchbox",
-                        "LensOverlayLatencyOptimizations"
+                        "LensOverlayContextualSearchbox"
                     ]
                 }
             ]
