@@ -101,6 +101,12 @@ void MaybeRecordContextualSearchBoxShown(
     bool shown,
     lens::PageContentMimeType page_content_type);
 
+// Records the time from the time the user navigates the document to when the
+// contextual search box is interacted with, sliced by content type.
+void RecordContextualSearchboxTimeToInteractionAfterNavigation(
+    base::TimeDelta time_to_interaction,
+    lens::PageContentMimeType page_content_type);
+
 // Records the size of the document where the contextual search box was shown,
 // sliced by content type.
 void RecordDocumentSizeBytes(lens::PageContentMimeType page_content_type,

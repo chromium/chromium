@@ -1339,6 +1339,7 @@ class LensOverlayController::UnderlyingWebContentsObserver
       return;
     }
     if (lens_overlay_controller_->state() == State::kLivePageAndResults) {
+      lens_overlay_controller_->UpdateNavigationTime();
       lens_overlay_controller_->UpdateGhostLoaderState(
           /*suppress_ghost_loader=*/false, /*reset_loading_state=*/true);
       return;
@@ -1839,6 +1840,7 @@ void LensOverlayController::CloseUIPart2(
   fullscreen_observation_.Reset();
   lens_overlay_blur_layer_delegate_.reset();
   overlay_searchbox_handler_.reset();
+  last_navigation_time_.reset();
 
   if (overlay_view_) {
     // Remove and delete the overlay view and web view. Not doing so will result
@@ -2579,6 +2581,13 @@ void LensOverlayController::IssueSearchBoxRequest(
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
     std::map<std::string, std::string> additional_query_params) {
+  // Log the interaction time here so the time to fetch new page bytes is not
+  // intcluded.
+  RecordContextualSearchboxTimeToInteractionAfterNavigation();
+  RecordTimeToFirstInteraction(
+      lens::LensOverlayFirstInteractionType::kSearchbox);
+  search_performed_in_session_ = true;
+
   // Do not attempt to contextualize if CSB is disabled or if the user is not in
   // the contextual search flow (aka, issues an image request already).
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled() ||
@@ -2643,9 +2652,6 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
         selected_region_bitmap);
   }
   CloseSearchBubble();
-  RecordTimeToFirstInteraction(
-      lens::LensOverlayFirstInteractionType::kSearchbox);
-  search_performed_in_session_ = true;
 
   // If we are in the zero state, this request must have come from CSB. In that
   // case, hide the overlay to allow live page to show through.
@@ -2726,6 +2732,18 @@ void LensOverlayController::RecordTimeToFirstInteraction(
   lens::RecordTimeToFirstInteraction(invocation_source_,
                                      time_to_first_interaction,
                                      interaction_type, source_id);
+}
+
+void LensOverlayController::
+    RecordContextualSearchboxTimeToInteractionAfterNavigation() {
+  if (!last_navigation_time_.has_value()) {
+    return;
+  }
+  base::TimeDelta time_to_interaction =
+      base::TimeTicks::Now() - last_navigation_time_.value();
+  lens::RecordContextualSearchboxTimeToInteractionAfterNavigation(
+      time_to_interaction, initialization_data_->page_content_type_);
+  last_navigation_time_.reset();
 }
 
 void LensOverlayController::RecordEndOfSessionMetrics(
@@ -2860,6 +2878,10 @@ void LensOverlayController::MaybeShowDelayedTutorialIPH(const GURL& url) {
         base::BindOnce(&LensOverlayController::ShowTutorialIPH,
                        weak_factory_.GetWeakPtr()));
   }
+}
+
+void LensOverlayController::UpdateNavigationTime() {
+  last_navigation_time_ = base::TimeTicks::Now();
 }
 
 bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {

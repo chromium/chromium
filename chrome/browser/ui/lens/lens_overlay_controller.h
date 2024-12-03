@@ -412,6 +412,9 @@ class LensOverlayController : public LensSearchboxClient,
   // queued IPH.
   void MaybeShowDelayedTutorialIPH(const GURL& url);
 
+  // Updates the navigation time for the current page.
+  void UpdateNavigationTime();
+
   // Testing function to issue a Lens region selection request.
   void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
                                         bool is_click);
@@ -947,6 +950,10 @@ class LensOverlayController : public LensSearchboxClient,
   void RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType interaction_type);
 
+  // Records the UMA for the first time the user interacts with the contextual
+  // searchbox after the page has been navigated.
+  void RecordContextualSearchboxTimeToInteractionAfterNavigation();
+
   // Records UMA and UKM metrics for dismissal and end of session metrics.
   // This includes dismissal source, session length, and whether a search was
   // recorded in the session.
@@ -1121,6 +1128,11 @@ class LensOverlayController : public LensSearchboxClient,
   // The time at which the overlay was invoked, since epoch. Used to calculate
   // timeToWebUIReady on the WebUI side.
   base::Time invocation_time_since_epoch_;
+
+  // The time at which the live page navigated while in the contextual searchbox
+  // flow. Used to compute timing metrics. Is empty if the user is not in the
+  // contextual searchbox flow, or this navigation has already been recorded.
+  std::optional<base::TimeTicks> last_navigation_time_;
 
   // Indicates whether a trigger for the HaTS survey has occurred in the current
   // session. Note that a trigger does not mean the survey will actually be

@@ -308,6 +308,19 @@ void MaybeRecordContextualSearchBoxShown(
   base::UmaHistogramBoolean(sliced_invoked_histogram_name, shown);
 }
 
+void RecordContextualSearchboxTimeToInteractionAfterNavigation(
+    base::TimeDelta time_to_interaction,
+    lens::PageContentMimeType page_content_type) {
+  const auto sliced_time_to_interaction_histogram_name =
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType." +
+      DocumentTypeToString(page_content_type) +
+      ".TimeFromNavigationToFirstInteraction";
+  base::UmaHistogramCustomTimes(sliced_time_to_interaction_histogram_name,
+                                time_to_interaction,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
 void RecordDocumentSizeBytes(lens::PageContentMimeType page_content_type,
                              size_t document_size_bytes) {
   const auto sliced_invoked_histogram_name =

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <!-- Represents the MIME types that are retrieved from the page content.
-         Corresponds to the content type set in the request to the server. -->
+               Corresponds to the content type set in the request to the server. -->
 
 <variants name="ContentTypes">
   <variant name="Html"/>
@@ -222,6 +222,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded once when the contextual search box is shown, sliced by document
     type.
+  </summary>
+  <token key="DocumentType" variants="DocumentTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSearchBox.ByDocumentType.{DocumentType}.TimeFromNavigationToFirstInteraction"
+    units="ms" expires_after="2025-05-06">
+  <owner>mercerd@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once after the first query issued from the contextual searchbox
+    following a navigation to a new page while the results side panel is open,
+    sliced by document type. Measures the elapsed time between when the page
+    navigated and when the user subsequently interacts with the contextual
+    searchbox.
   </summary>
   <token key="DocumentType" variants="DocumentTypes"/>
 </histogram>
