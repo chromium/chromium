@@ -158,7 +158,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                 && !doesNotificationNeedUpdate(notificationId, mediaType)) {
             return;
         }
-        destroyNotification(notificationId);
+        destroyNotification(notificationId, mediaType);
         if (mediaType != MediaType.NO_MEDIA) {
             createNotification(notificationId, mediaType, url, isIncognito);
         }
@@ -170,7 +170,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
      *
      * @param notificationId Unique id of the notification.
      */
-    private void destroyNotification(int notificationId) {
+    private void destroyNotification(int notificationId, @MediaType int mediaType) {
         if (doesNotificationExist(notificationId)) {
             if (mNotificationsType.get(notificationId) == MediaType.SCREEN_CAPTURE) {
                 final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(notificationId);
@@ -183,7 +183,9 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                     }
                 }
             }
-            if (BuildConfig.IS_DESKTOP_ANDROID) {
+            // TODO(crbug.com/352186941): For now, only tab sharing is supported which does not
+            // require a foreground service.
+            if (BuildConfig.IS_DESKTOP_ANDROID && mediaType != MediaType.SCREEN_CAPTURE) {
                 if (mNotifications.size() > 1 && mNotifications.firstKey() == notificationId) {
                     // For large screen device, we use the previous notification to update
                     // foreground
@@ -241,7 +243,9 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                         appContext.getString(R.string.app_name),
                         contentIntent,
                         stopIntent);
-        if (BuildConfig.IS_DESKTOP_ANDROID) {
+        // TODO(crbug.com/352186941): For now, only tab sharing is supported which does not require
+        // a foreground service.
+        if (BuildConfig.IS_DESKTOP_ANDROID && mediaType != MediaType.SCREEN_CAPTURE) {
             // For large screen device, we use the latest notification to start or update
             // the foreground service.
             startOrUpdateForegroundService(notificationId, notification);
