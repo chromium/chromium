@@ -4,8 +4,10 @@
 
 #include "ui/events/blink/web_input_event.h"
 
+#include "base/feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/blink_features.h"
@@ -104,7 +106,7 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
       WebInputEvent::Type::kMouseWheel,
       EventFlagsToWebEventModifiers(event.flags()), event.time_stamp());
 
-  webkit_event.button = blink::WebMouseEvent::Button::kNoButton;
+  webkit_event.button = blink::WebPointerProperties::Button::kNoButton;
   webkit_event.delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;
 
   float offset_ordinal_x = event.x_offset_ordinal();
@@ -236,6 +238,11 @@ blink::WebMouseEvent MakeWebMouseEvent(const MouseEvent& event) {
 #else
       MakeWebMouseEventFromUiEvent(event);
 #endif
+
+  if (base::FeatureList::IsEnabled(blink::features::kClickToCapturedPointer)) {
+    webkit_event.UpdateEventModifiersToMatchButton();
+  }
+
   // Replace the event's coordinate fields with translated position data from
   // |event|.
   webkit_event.SetPositionInWidget(event.x(), event.y());
@@ -402,7 +409,7 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
   blink::WebMouseEvent webkit_event(
       type, EventFlagsToWebEventModifiers(event.flags()), event.time_stamp(),
       event.pointer_details().id);
-  webkit_event.button = blink::WebMouseEvent::Button::kNoButton;
+  webkit_event.button = blink::WebPointerProperties::Button::kNoButton;
   int button_flags = event.flags();
   if (event.type() == EventType::kMousePressed ||
       event.type() == EventType::kMouseReleased) {
@@ -416,16 +423,21 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
   // TODO(mustaq): This |if| ordering look suspicious. Replacing with if-else &
   // changing the order to L/R/M/B/F breaks
   // pointerevent_pointermove_on_chorded_mouse_button-manual.html! Investigate.
-  if (button_flags & EF_BACK_MOUSE_BUTTON)
-    webkit_event.button = blink::WebMouseEvent::Button::kBack;
-  if (button_flags & EF_FORWARD_MOUSE_BUTTON)
-    webkit_event.button = blink::WebMouseEvent::Button::kForward;
-  if (button_flags & EF_LEFT_MOUSE_BUTTON)
-    webkit_event.button = blink::WebMouseEvent::Button::kLeft;
-  if (button_flags & EF_MIDDLE_MOUSE_BUTTON)
-    webkit_event.button = blink::WebMouseEvent::Button::kMiddle;
-  if (button_flags & EF_RIGHT_MOUSE_BUTTON)
-    webkit_event.button = blink::WebMouseEvent::Button::kRight;
+  if (button_flags & EF_BACK_MOUSE_BUTTON) {
+    webkit_event.button = blink::WebPointerProperties::Button::kBack;
+  }
+  if (button_flags & EF_FORWARD_MOUSE_BUTTON) {
+    webkit_event.button = blink::WebPointerProperties::Button::kForward;
+  }
+  if (button_flags & EF_LEFT_MOUSE_BUTTON) {
+    webkit_event.button = blink::WebPointerProperties::Button::kLeft;
+  }
+  if (button_flags & EF_MIDDLE_MOUSE_BUTTON) {
+    webkit_event.button = blink::WebPointerProperties::Button::kMiddle;
+  }
+  if (button_flags & EF_RIGHT_MOUSE_BUTTON) {
+    webkit_event.button = blink::WebPointerProperties::Button::kRight;
+  }
 
   webkit_event.click_count = click_count;
   webkit_event.tilt_x = event.pointer_details().tilt_x;
@@ -447,7 +459,7 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
       WebInputEvent::Type::kMouseWheel,
       EventFlagsToWebEventModifiers(event.flags()), event.time_stamp());
 
-  webkit_event.button = blink::WebMouseEvent::Button::kNoButton;
+  webkit_event.button = blink::WebPointerProperties::Button::kNoButton;
 
   webkit_event.delta_x = event.x_offset();
   webkit_event.delta_y = event.y_offset();

@@ -769,6 +769,8 @@
       name: "CheckVisibilityExtraProperties",
       status: "stable",
     },
+    // crbug.com/40851596: Send click to the capture pointer target instead of
+    // the common ancestor of pointerdown and pointerup targets.
     {
       name: "ClickToCapturedPointer",
       status: "experimental",
