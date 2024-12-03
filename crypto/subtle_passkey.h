@@ -12,6 +12,14 @@ class Nigori;
 }
 
 namespace crypto {
+class SubtlePassKey;
+}  // namespace crypto
+
+namespace chromeos::onc {
+crypto::SubtlePassKey MakeCryptoPassKey();
+}
+
+namespace crypto {
 
 // A crypto::SubtlePassKey allows you to call subtle, difficult-to-get-right, or
 // mistake-prone APIs, or APIs that allow you to make detailed cryptographic
@@ -34,6 +42,10 @@ class CRYPTO_EXPORT SubtlePassKey final {
 
   // This class uses custom PBKDF2 parameters - the Nigori spec requires this.
   friend class syncer::Nigori;
+
+  // ONC EncryptedConfiguration objects can contain and require us to use
+  // arbitrary (possibly attacker-supplied) PBKDF2 parameters.
+  friend SubtlePassKey chromeos::onc::MakeCryptoPassKey();
 };
 
 }  // namespace crypto

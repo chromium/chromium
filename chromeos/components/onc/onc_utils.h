@@ -27,8 +27,7 @@ using CertPEMsByGUIDMap = std::map<std::string, std::string>;
 // dictionary, the function populates |dict| and returns true, otherwise returns
 // false and |dict| is unchanged.
 COMPONENT_EXPORT(CHROMEOS_ONC)
-std::optional<base::Value::Dict> ReadDictionaryFromJson(
-    const std::string& json);
+std::optional<base::Value::Dict> ReadDictionaryFromJson(std::string_view json);
 
 // Decrypts the given EncryptedConfiguration |onc| (see the ONC specification)
 // with a key derived from the ONC configuration's salt. The resulting
