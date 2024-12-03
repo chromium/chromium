@@ -374,7 +374,7 @@
     {
       // https://chromestatus.com/feature/5083257285378048
       name: "AnimationProgressAPI",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AnimationWorklet",
