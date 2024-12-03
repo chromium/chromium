@@ -11,6 +11,7 @@ include_rules = [
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
   "+components/security_interstitials/content",
+  "+components/security_interstitials/core",
   "+components/sessions/content",
   "+components/sessions/core/session_id.h",
   "+components/version_info",

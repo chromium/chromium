@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/common/scheme_logger.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
@@ -220,9 +221,8 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
       &SafeBrowsingUrlCheckerImpl::OnBlockingPageCompleteAndMaybeDeleteSelf,
       weak_factory_.GetWeakPtr(), performed_check);
   resource.callback_sequence = base::SequencedTaskRunner::GetCurrentDefault();
-  resource.render_process_id = render_process_id_;
-  resource.render_frame_token = render_frame_token_;
-  resource.frame_tree_node_id = frame_tree_node_id_;
+  resource.rfh_locator = security_interstitials::UnsafeResourceLocator(
+      render_process_id_, render_frame_token_, frame_tree_node_id_);
   resource.navigation_id = navigation_id_;
   resource.weak_web_state = weak_web_state_;
   resource.threat_source = threat_source;

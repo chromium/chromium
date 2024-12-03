@@ -162,11 +162,12 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   // load respectively. We consider both cases here. Also, we need to cancel
   // corresponding prerenders for both case.
   content::RenderFrameHost* rfh = nullptr;
-  if (resource.render_frame_token) {
+  if (resource.rfh_locator.render_frame_token) {
     rfh = content::RenderFrameHost::FromFrameToken(
         content::GlobalRenderFrameHostToken(
-            resource.render_process_id,
-            blink::LocalFrameToken(resource.render_frame_token.value())));
+            resource.rfh_locator.render_process_id,
+            blink::LocalFrameToken(
+                resource.rfh_locator.render_frame_token.value())));
   }
 
   // Handle subresource load in prerendered pages.
@@ -193,7 +194,7 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   // below also mentions. We plan to change the cancellation way from using
   // BLOCKED_BY_CLIENT as the subresource load case.
   if (web_contents->IsPrerenderedFrame(
-          content::FrameTreeNodeId(resource.frame_tree_node_id))) {
+          content::FrameTreeNodeId(resource.rfh_locator.frame_tree_node_id))) {
     // TODO(mcnee): If we were to indicate that this does not show an
     // interstitial, the loader throttle would cancel with ERR_ABORTED to
     // suppress an error page, instead of blocking using ERR_BLOCKED_BY_CLIENT.
@@ -222,7 +223,7 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   // and referrer URL from the navigation entry now, since they are required for
   // threat reporting, and the entry will be destroyed once the request is
   // failed.
-  if (AsyncCheckTracker::IsMainPageLoadPending(resource)) {
+  if (AsyncCheckTracker::IsMainPageResourceLoadPending(resource)) {
     content::NavigationEntry* entry =
         unsafe_resource_util::GetNavigationEntryForResource(resource);
     if (entry) {

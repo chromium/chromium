@@ -73,17 +73,17 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
   safe_browsing::UpdatePrefsBeforeSecurityInterstitial(prefs);
 
   security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions
-      display_options(BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
-                      is_extended_reporting_opt_in_allowed,
-                      web_contents->GetBrowserContext()->IsOffTheRecord(),
-                      IsExtendedReportingEnabledBypassDeprecationFlag(*prefs),
-                      IsExtendedReportingPolicyManaged(*prefs),
-                      IsEnhancedProtectionEnabled(*prefs),
-                      is_proceed_anyway_disabled,
-                      true,  // should_open_links_in_new_tab
-                      true,  // always_show_back_to_safety
-                      true,  // is_enhanced_protection_message_enabled
-                      IsSafeBrowsingPolicyManaged(*prefs), kHelpCenterLink);
+      display_options(
+          BaseBlockingPage::IsMainPageResourceLoadPending(unsafe_resources),
+          is_extended_reporting_opt_in_allowed,
+          web_contents->GetBrowserContext()->IsOffTheRecord(),
+          IsExtendedReportingEnabledBypassDeprecationFlag(*prefs),
+          IsExtendedReportingPolicyManaged(*prefs),
+          IsEnhancedProtectionEnabled(*prefs), is_proceed_anyway_disabled,
+          true,  // should_open_links_in_new_tab
+          true,  // always_show_back_to_safety
+          true,  // is_enhanced_protection_message_enabled
+          IsSafeBrowsingPolicyManaged(*prefs), kHelpCenterLink);
 
   auto* trigger_manager =
       g_browser_process->safe_browsing_service()

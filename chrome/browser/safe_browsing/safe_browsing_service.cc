@@ -866,15 +866,15 @@ bool SafeBrowsingServiceImpl::IsURLAllowlisted(
     return true;
   }
 
-  security_interstitials::UnsafeResource resource;
-  resource.url = url;
-  resource.original_url = url;
-  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   const content::GlobalRenderFrameHostId primary_main_frame_id =
       primary_main_frame->GetGlobalId();
-  resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
-  return ui_manager_->IsAllowlisted(resource);
+  auto rfh_locator =
+      security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
+          primary_main_frame_id.child_id,
+          primary_main_frame->GetFrameToken().value());
+  return ui_manager_->IsAllowlisted(url, rfh_locator,
+                                    /*navigation_id=*/std::nullopt,
+                                    SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
 }
 
 void SafeBrowsingServiceImpl::MaybeSendExternalAppRedirectReport(

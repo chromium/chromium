@@ -108,7 +108,7 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
   // enhanced protection is supported on aw.
   BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options =
       BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-          IsMainPageLoadPending(unsafe_resources),
+          IsMainPageResourceLoadPending(unsafe_resources),
           safe_browsing::IsExtendedReportingOptInAllowed(*pref_service),
           browser_context->IsOffTheRecord(),
           safe_browsing::IsExtendedReportingEnabledBypassDeprecationFlag(
