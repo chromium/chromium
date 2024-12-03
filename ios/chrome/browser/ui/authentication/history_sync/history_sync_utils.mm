@@ -7,7 +7,11 @@
 #import "base/time/time.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/pref_names.h"
 
 namespace {
@@ -22,6 +26,42 @@ constexpr base::TimeDelta kDelayBeforeReshowPrompt = base::Days(14);
 }  // namespace
 
 namespace history_sync {
+
+HistorySyncSkipReason GetSkipReason(
+    syncer::SyncService* syncService,
+    AuthenticationService* authenticationService,
+    PrefService* prefService,
+    BOOL isOptional) {
+  if (syncService->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      syncService->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kTabs) ||
+      syncService->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kHistory)) {
+    // Skip History Sync Opt-in if sync is disabled, or if history or
+    // tabs sync is disabled by policy.
+    return history_sync::HistorySyncSkipReason::kSyncForbiddenByPolicies;
+  }
+  if (!authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // Don't show history sync opt-in screen if no signed-in user account.
+    return history_sync::HistorySyncSkipReason::kNotSignedIn;
+  }
+  syncer::SyncUserSettings* userSettings = syncService->GetUserSettings();
+  if (userSettings->GetSelectedTypes().HasAll(
+          {syncer::UserSelectableType::kHistory,
+           syncer::UserSelectableType::kTabs})) {
+    // History opt-in is already set. This value is kept between signout/signin.
+    // In this case the UI can be skipped.
+    return history_sync::HistorySyncSkipReason::kAlreadyOptedIn;
+  }
+
+  if (history_sync::IsDeclinedTooOften(prefService) && isOptional) {
+    return history_sync::HistorySyncSkipReason::kDeclinedTooOften;
+  }
+
+  return history_sync::HistorySyncSkipReason::kNone;
+}
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(

@@ -41,6 +41,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/sharing/ui_bundled",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_activity_observer",

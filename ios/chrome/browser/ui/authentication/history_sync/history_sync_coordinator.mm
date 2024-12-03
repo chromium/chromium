@@ -55,61 +55,25 @@
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-+ (HistorySyncSkipReason)
-    getHistorySyncOptInSkipReason:(syncer::SyncService*)syncService
-            authenticationService:(AuthenticationService*)authenticationService
-                      prefService:(PrefService*)prefService
-            isHistorySyncOptional:(BOOL)isOptional {
-  if (syncService->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-      syncService->GetUserSettings()->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kTabs) ||
-      syncService->GetUserSettings()->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kHistory)) {
-    // Skip History Sync Opt-in if sync is disabled, or if history or
-    // tabs sync is disabled by policy.
-    return HistorySyncSkipReason::kSyncForbiddenByPolicies;
-  }
-  if (!authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
-    // Don't show history sync opt-in screen if no signed-in user account.
-    return HistorySyncSkipReason::kNotSignedIn;
-  }
-  syncer::SyncUserSettings* userSettings = syncService->GetUserSettings();
-  if (userSettings->GetSelectedTypes().HasAll(
-          {syncer::UserSelectableType::kHistory,
-           syncer::UserSelectableType::kTabs})) {
-    // History opt-in is already set. This value is kept between signout/signin.
-    // In this case the UI can be skipped.
-    return HistorySyncSkipReason::kAlreadyOptedIn;
-  }
-
-  if (history_sync::IsDeclinedTooOften(prefService) && isOptional) {
-    return HistorySyncSkipReason::kDeclinedTooOften;
-  }
-
-  return HistorySyncSkipReason::kNone;
-}
-
-+ (void)recordHistorySyncSkipMetric:(HistorySyncSkipReason)reason
++ (void)recordHistorySyncSkipMetric:(history_sync::HistorySyncSkipReason)reason
                         accessPoint:(signin_metrics::AccessPoint)accessPoint {
   switch (reason) {
-    case HistorySyncSkipReason::kNotSignedIn:
-    case HistorySyncSkipReason::kSyncForbiddenByPolicies:
-    case HistorySyncSkipReason::kDeclinedTooOften:
+    case history_sync::HistorySyncSkipReason::kNotSignedIn:
+    case history_sync::HistorySyncSkipReason::kSyncForbiddenByPolicies:
+    case history_sync::HistorySyncSkipReason::kDeclinedTooOften:
       base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Skipped"));
       base::UmaHistogramEnumeration(
           "Signin.HistorySyncOptIn.Skipped", accessPoint,
           signin_metrics::AccessPoint::ACCESS_POINT_MAX);
       break;
-    case HistorySyncSkipReason::kAlreadyOptedIn:
+    case history_sync::HistorySyncSkipReason::kAlreadyOptedIn:
       base::RecordAction(
           base::UserMetricsAction("Signin_HistorySync_AlreadyOptedIn"));
       base::UmaHistogramEnumeration(
           "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint,
           signin_metrics::AccessPoint::ACCESS_POINT_MAX);
       break;
-    case HistorySyncSkipReason::kNone:
+    case history_sync::HistorySyncSkipReason::kNone:
       // This method should not be called if the screen should be shown.
       // If a metric should be recorded in this case, it should be handled in
       // HistorySyncCoordinator instance methods instead of this class method
@@ -149,12 +113,9 @@
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   _prefService = profile->GetPrefs();
   // Check if History Sync Opt-In should be skipped.
-  HistorySyncSkipReason skipReason = [HistorySyncCoordinator
-      getHistorySyncOptInSkipReason:syncService
-              authenticationService:authenticationService
-                        prefService:_prefService
-              isHistorySyncOptional:_isOptional];
-  if (skipReason != HistorySyncSkipReason::kNone) {
+  history_sync::HistorySyncSkipReason skipReason = history_sync::GetSkipReason(
+      syncService, authenticationService, _prefService, _isOptional);
+  if (skipReason != history_sync::HistorySyncSkipReason::kNone) {
     [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason
                                             accessPoint:_accessPoint];
     [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];

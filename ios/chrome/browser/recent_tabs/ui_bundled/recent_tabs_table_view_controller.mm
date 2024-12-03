@@ -86,6 +86,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -1915,12 +1916,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // In case it's not necessary to show the history opt-in, but the promo action
   // button is still available, sync errors should be checked to show the
   // correct screen to handle the error (ex. passphrase screen).
-  HistorySyncSkipReason skipReason = [HistorySyncCoordinator
-      getHistorySyncOptInSkipReason:self.syncService
-              authenticationService:authenticationService
-                        prefService:_profile->GetPrefs()
-              isHistorySyncOptional:NO];
-  return skipReason == HistorySyncSkipReason::kNone;
+  return history_sync::GetSkipReason(self.syncService, authenticationService,
+                                     _profile->GetPrefs(), NO) ==
+         history_sync::HistorySyncSkipReason::kNone;
 }
 
 @end
