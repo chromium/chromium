@@ -107,6 +107,12 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     @Override
     public AccessTokenData getAuthToken(Account account, String authTokenScope)
             throws AuthException {
+        return getAccessToken(account, authTokenScope);
+    }
+
+    @Override
+    public AccessTokenData getAccessToken(Account account, String authTokenScope)
+            throws AuthException {
         ThreadUtils.assertOnBackgroundThread();
         assert AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(account.type);
         try {
@@ -127,6 +133,11 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
 
     @Override
     public void invalidateAuthToken(String authToken) throws AuthException {
+        invalidateAccessToken(authToken);
+    }
+
+    @Override
+    public void invalidateAccessToken(String authToken) throws AuthException {
         try {
             GoogleAuthUtil.clearToken(ContextUtils.getApplicationContext(), authToken);
         } catch (GoogleAuthException ex) {
