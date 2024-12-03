@@ -416,9 +416,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
       "script-src chrome://resources chrome://webui-test 'self';");
   ash::EnableTrustedTypesCSP(html_source);
 
-  const auto resources = base::make_span(kAshDiagnosticsAppResources,
-                                         kAshDiagnosticsAppResourcesSize);
-  SetUpWebUIDataSource(html_source, resources,
+  SetUpWebUIDataSource(html_source, kAshDiagnosticsAppResources,
                        IDR_ASH_DIAGNOSTICS_APP_INDEX_HTML);
 
   SetUpPluralStringHandler(web_ui);

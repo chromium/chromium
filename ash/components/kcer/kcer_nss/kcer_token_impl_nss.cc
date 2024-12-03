@@ -116,8 +116,8 @@ base::expected<crypto::ScopedSECKEYPrivateKey, Error> GetSECKEYPrivateKey(
   std::vector<uint8_t> pkcs11_id = key.GetPkcs11IdInternal().value();
   if (pkcs11_id.empty()) {
     CHECK(!key.GetSpkiInternal()->empty());
-    pkcs11_id = SECItemToBytes(crypto::MakeNssIdFromSpki(
-        base::make_span(key.GetSpkiInternal().value())));
+    pkcs11_id = SECItemToBytes(
+        crypto::MakeNssIdFromSpki(base::span(key.GetSpkiInternal().value())));
   }
   if (pkcs11_id.empty()) {
     return base::unexpected(Error::kFailedToGetKeyId);
@@ -932,8 +932,8 @@ void SetCertProvisioningProfileIdOnWorkerThread(
 scoped_refptr<const Cert> BuildKcerCert(
     Token token,
     const net::ScopedCERTCertificate& nss_cert) {
-  Pkcs11Id id_bytes(SECItemToBytes(crypto::MakeNssIdFromSpki(base::make_span(
-      nss_cert->derPublicKey.data, nss_cert->derPublicKey.len))));
+  Pkcs11Id id_bytes(SECItemToBytes(crypto::MakeNssIdFromSpki(
+      base::span(nss_cert->derPublicKey.data, nss_cert->derPublicKey.len))));
 
   std::string nickname;
   if (nss_cert->nickname) {

@@ -266,9 +266,9 @@ void KcerTokenUtils::ImportCert(
   AddAttribute(cert_attrs, chromeos::PKCS11_CKA_VALUE, cert_der.value());
   AddAttribute(cert_attrs, chromeos::PKCS11_CKA_ISSUER, issuer_name_der);
   AddAttribute(cert_attrs, chromeos::PKCS11_CKA_SUBJECT, subject_name_der);
-  AddAttribute(
-      cert_attrs, chromeos::PKCS11_CKA_SERIAL_NUMBER,
-      base::make_span(serial_number_der.get(), size_t(serial_number_der_size)));
+  AddAttribute(cert_attrs, chromeos::PKCS11_CKA_SERIAL_NUMBER,
+               base::span(serial_number_der.get(),
+                          static_cast<size_t>(serial_number_der_size)));
   if (!is_hardware_backed) {
     AddAttribute(cert_attrs, chaps::kForceSoftwareAttribute, MakeSpan(&kTrue));
   }

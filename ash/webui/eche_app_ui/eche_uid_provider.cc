@@ -66,7 +66,7 @@ void EcheUidProvider::GenerateKeyPair(
   // first 32 bytes of what BoringSSL calls the private key.
   pref_service_->SetString(
       kEcheAppSeedPref,
-      ConvertBinaryToString(base::make_span(private_key, kSeedSizeInByte)));
+      ConvertBinaryToString(base::span(private_key, kSeedSizeInByte)));
 }
 
 std::optional<std::vector<uint8_t>> EcheUidProvider::ConvertStringToBinary(

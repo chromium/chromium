@@ -38,14 +38,9 @@ void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui,
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeUIUntrustedProjectorUrl);
 
-  source->AddResourcePaths(
-      base::make_span(kAshProjectorAppUntrustedResources,
-                      kAshProjectorAppUntrustedResourcesSize));
-  source->AddResourcePaths(base::make_span(kAshProjectorCommonResources,
-                                           kAshProjectorCommonResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kChromeosProjectorAppBundleResources,
-                      kChromeosProjectorAppBundleResourcesSize));
+  source->AddResourcePaths(kAshProjectorAppUntrustedResources);
+  source->AddResourcePaths(kAshProjectorCommonResources);
+  source->AddResourcePaths(kChromeosProjectorAppBundleResources);
 
   source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_UNTRUSTED_INDEX_HTML);
   source->AddLocalizedString("appTitle", IDS_ASH_PROJECTOR_DISPLAY_SOURCE);

@@ -71,7 +71,7 @@ base::span<const uint8_t> GetAttributeValue(
   if (!attr || !attr->has_value()) {
     return {};
   }
-  return base::as_bytes(base::make_span(attr->value()));
+  return base::as_byte_span(attr->value());
 }
 
 bool GetIsHardwareBacked(const chaps::Attribute* attr,
@@ -178,7 +178,7 @@ Pkcs11Id MakePkcs11IdFromEcKey(bssl::UniquePtr<EC_KEY> ec_key) {
   }
   bssl::UniquePtr<uint8_t> point_bytes_deleter(point_bytes);
 
-  return MakePkcs11Id(base::make_span(point_bytes, point_bytes_len));
+  return MakePkcs11Id(base::span(point_bytes, point_bytes_len));
 }
 
 // Calculates PKCS#11 id for the provided public key SPKI.
@@ -652,7 +652,7 @@ void KcerTokenImpl::GenerateEcKeyImpl(GenerateEcKeyTask task) {
   AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_VERIFY, MakeSpan(&kTrue));
   AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_WRAP, MakeSpan(&kTrue));
   AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_EC_PARAMS,
-               base::make_span(ec_params_der, ec_params_der_len));
+               base::span(ec_params_der, ec_params_der_len));
 
   chaps::AttributeList private_key_attrs;
   AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_TOKEN, MakeSpan(&kTrue));
@@ -732,7 +732,7 @@ void KcerTokenImpl::DidGetEcPublicKey(
   const uint8_t* ec_point_data = ASN1_STRING_data(ec_point_oct.get());
   size_t ec_point_data_len = ASN1_STRING_length(ec_point_oct.get());
   base::span<const uint8_t> ec_point =
-      base::make_span(ec_point_data, ec_point_data_len);
+      base::span(ec_point_data, ec_point_data_len);
 
   base::expected<PublicKey, Error> kcer_public_key =
       MakeEcPublicKey(token_, ec_point);
@@ -1193,7 +1193,7 @@ void KcerTokenImpl::RemoveCertImpl(RemoveCertTask task) {
 
   const CRYPTO_BUFFER* buffer = task.cert->GetX509Cert()->cert_buffer();
   base::span<const uint8_t> cert_der =
-      base::make_span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer));
+      base::span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer));
 
   CK_OBJECT_CLASS cert_class = CKO_CERTIFICATE;
   chaps::AttributeList attributes;
@@ -1474,7 +1474,7 @@ void KcerTokenImpl::ListKeysDidGetOneEcKey(ListKeysTask task,
   const uint8_t* ec_point_data = ASN1_STRING_data(ec_point_oct.get());
   size_t ec_point_data_len = ASN1_STRING_length(ec_point_oct.get());
   base::span<const uint8_t> ec_point =
-      base::make_span(ec_point_data, ec_point_data_len);
+      base::span(ec_point_data, ec_point_data_len);
 
   PublicKeySpki spki = MakeEcSpki(ec_point);
   if (spki->empty()) {

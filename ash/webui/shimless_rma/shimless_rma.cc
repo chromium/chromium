@@ -489,9 +489,8 @@ ShimlessRMADialogUI::ShimlessRMADialogUI(
       "script-src chrome://resources chrome://webui-test 'self';");
   ash::EnableTrustedTypesCSP(html_source);
 
-  const auto resources =
-      base::make_span(kAshShimlessRmaResources, kAshShimlessRmaResourcesSize);
-  SetUpWebUIDataSource(html_source, resources, IDR_ASH_SHIMLESS_RMA_INDEX_HTML);
+  SetUpWebUIDataSource(html_source, kAshShimlessRmaResources,
+                       IDR_ASH_SHIMLESS_RMA_INDEX_HTML);
 
   AddShimlessRmaStrings(html_source);
   AddDevicePlaceholderStrings(html_source);

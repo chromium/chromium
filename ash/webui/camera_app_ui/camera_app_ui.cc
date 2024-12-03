@@ -92,8 +92,7 @@ void CreateAndAddCameraAppUIHTMLSource(content::BrowserContext* browser_context,
   ash::EnableTrustedTypesCSP(source);
 
   // Add all settings resources.
-  source->AddResourcePaths(
-      base::make_span(kAshCameraAppResources, kAshCameraAppResourcesSize));
+  source->AddResourcePaths(kAshCameraAppResources);
 
   delegate->PopulateLoadTimeData(source);
 

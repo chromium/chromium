@@ -133,8 +133,7 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIRecorderAppHost);
 
-  source->AddResourcePaths(
-      base::make_span(kRecorderAppResources, kRecorderAppResourcesSize));
+  source->AddResourcePaths(kRecorderAppResources);
 
   source->AddResourcePath("", IDR_RECORDER_APP_INDEX_HTML);
 

@@ -40,8 +40,7 @@ void CreateAndAddHelpAppUntrustedDataSource(
   source->DisableTrustedTypesCSP();
 
   // Add all resources from chromeos_help_app_bundle.pak.
-  source->AddResourcePaths(base::make_span(
-      kChromeosHelpAppBundleResources, kChromeosHelpAppBundleResourcesSize));
+  source->AddResourcePaths(kChromeosHelpAppBundleResources);
 
   MaybeConfigureTestableDataSource(source, "help_app/untrusted");
 

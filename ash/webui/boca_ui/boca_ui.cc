@@ -36,12 +36,10 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
       browser_context, kChromeBocaAppUntrustedURL);
 
   source->AddResourcePath("", IDR_ASH_BOCA_UI_INDEX_HTML);
-  source->AddResourcePaths(
-      base::make_span(kAshBocaUiResources, kAshBocaUiResourcesSize));
+  source->AddResourcePaths(kAshBocaUiResources);
 
   // Resources obtained from CIPD.
-  source->AddResourcePaths(base::make_span(
-      kChromeosBocaAppBundleResources, kChromeosBocaAppBundleResourcesSize));
+  source->AddResourcePaths(kChromeosBocaAppBundleResources);
   return source;
 }
 

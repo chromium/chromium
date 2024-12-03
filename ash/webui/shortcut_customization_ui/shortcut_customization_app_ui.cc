@@ -290,10 +290,7 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
 
   ash::EnableTrustedTypesCSP(source);
 
-  const auto resources =
-      base::make_span(kAshShortcutCustomizationAppResources,
-                      kAshShortcutCustomizationAppResourcesSize);
-  SetUpWebUIDataSource(source, resources,
+  SetUpWebUIDataSource(source, kAshShortcutCustomizationAppResources,
                        IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_INDEX_HTML);
   AddLocalizedStrings(source);
 

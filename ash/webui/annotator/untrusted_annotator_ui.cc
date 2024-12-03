@@ -41,14 +41,9 @@ void CreateAndAddAnnotatorHTMLSource(
 
   // TODO(b/216523790): Split untrusted annotator resources into a separate
   // bundle.
-  source->AddResourcePaths(
-      base::make_span(kAshAnnotatorUntrustedResources,
-                      kAshAnnotatorUntrustedResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kChromeosProjectorAppBundleResources,
-                      kChromeosProjectorAppBundleResourcesSize));
-  source->AddResourcePaths(base::make_span(kAshProjectorCommonResources,
-                                           kAshProjectorCommonResourcesSize));
+  source->AddResourcePaths(kAshAnnotatorUntrustedResources);
+  source->AddResourcePaths(kChromeosProjectorAppBundleResources);
+  source->AddResourcePaths(kAshProjectorCommonResources);
   source->AddResourcePath("",
                           IDR_ASH_ANNOTATOR_UNTRUSTED_ANNOTATOR_HTML);
 

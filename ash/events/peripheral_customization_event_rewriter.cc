@@ -252,7 +252,7 @@ std::vector<std::unique_ptr<ui::Event>> GenerateFullKeyEventSequence(
       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN},
       {ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT, ui::EF_SHIFT_DOWN},
   };
-  static constexpr auto kModifierSpan = base::make_span(kModifiers);
+  static constexpr auto kModifierSpan = base::span(kModifiers);
 
   CHECK(rewritten_event);
   std::vector<std::unique_ptr<ui::Event>> rewritten_events;

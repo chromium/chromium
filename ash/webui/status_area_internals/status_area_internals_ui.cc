@@ -59,9 +59,7 @@ StatusAreaInternalsUI::StatusAreaInternalsUI(content::WebUI* web_ui)
           kChromeUIStatusAreaInternalsHost);
 
   // Add required resources.
-  SetupWebUIDataSource(html_source,
-                       base::make_span(kAshStatusAreaInternalsResources,
-                                       kAshStatusAreaInternalsResourcesSize),
+  SetupWebUIDataSource(html_source, kAshStatusAreaInternalsResources,
                        IDR_ASH_STATUS_AREA_INTERNALS_MAIN_HTML);
 }
 

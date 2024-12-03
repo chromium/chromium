@@ -52,8 +52,7 @@ void AddStrings(content::WebUIDataSource* source) {
 
 void AddResources(content::WebUIDataSource* source) {
   source->AddResourcePath("", IDR_ASH_VC_BACKGROUND_INDEX_HTML);
-  source->AddResourcePaths(base::make_span(kAshVcBackgroundResources,
-                                           kAshVcBackgroundResourcesSize));
+  source->AddResourcePaths(kAshVcBackgroundResources);
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)

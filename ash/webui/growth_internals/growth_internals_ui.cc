@@ -38,8 +38,7 @@ GrowthInternalsUI::GrowthInternalsUI(content::WebUI* web_ui)
           std::string(kGrowthInternalsHost));
 
   data_source->AddResourcePath("", IDR_GROWTH_INTERNALS_INDEX_HTML);
-  data_source->AddResourcePaths(base::make_span(kGrowthInternalsResources,
-                                                kGrowthInternalsResourcesSize));
+  data_source->AddResourcePaths(kGrowthInternalsResources);
 
   data_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,

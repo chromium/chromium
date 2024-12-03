@@ -35,8 +35,7 @@ ColorInternalsUI::ColorInternalsUI(content::WebUI* web_ui)
   data_source->AddResourcePath(
       "color_internals_tokens.json",
       IDR_WEBUI_UI_CHROMEOS_STYLES_COLOR_INTERNALS_TOKENS_JSON);
-  data_source->AddResourcePaths(base::make_span(
-      kAshColorInternalsResources, kAshColorInternalsResourcesSize));
+  data_source->AddResourcePaths(kAshColorInternalsResources);
 }
 
 void ColorInternalsUI::BindInterface(
