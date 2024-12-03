@@ -96,6 +96,8 @@ try_.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
+    # TODO: crbug.com/357471499 - Set ssd=True after bot migration.
+    ssd = None,
     execution_timeout = 6 * time.hour,
 )
 
@@ -113,5 +115,7 @@ try_.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
+    # TODO: crbug.com/357471499 - Set ssd=True after bot migration.
+    ssd = None,
     execution_timeout = 6 * time.hour,
 )
