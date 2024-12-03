@@ -920,6 +920,15 @@ BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
 // is enabled *and* the iOS version is >= 17 (required for multiprofile).
 bool AreSeparateProfilesForManagedAccountsEnabled();
 
+// Feature flag to assign each managed account to its own separate profile.
+// DO NOT CHECK DIRECTLY, use IsManagedProfileCreationUpdatedScreenEnabled()!
+BASE_DECLARE_FEATURE(kManagedProfileCreationUpdatedScreen);
+
+// Returns whether the feature to put each managed account into its own separate
+// profile is enabled. This is the case if
+// `kManagedProfileCreationUpdatedScreen`.
+bool IsManagedProfileCreationUpdatedScreenEnabled();
+
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 

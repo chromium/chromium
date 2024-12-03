@@ -5835,6 +5835,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "managed-profile-creation-updated-screen",
+    "owners": ["ydago@chromium.org", "chrome-signin-team@google.com", "cbe-magic@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "mantis-feature-key",
     "owners": [ "cros-mantis@google.com" ],
     "expiry_milestone": 140

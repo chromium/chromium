@@ -629,6 +629,11 @@ extern const char kLockBottomToolbarDescription[];
 extern const char kMagicStackName[];
 extern const char kMagicStackDescription[];
 
+// Title and description for the flag that controls displaying the updated
+// screens for managed profile creation.
+extern const char kManagedProfileCreationUpdatedScreenName[];
+extern const char kManagedProfileCreationUpdatedScreenDescription[];
+
 // Title and description for the flag that controls sending metrickit non-crash
 // reports.
 extern const char kMetrickitNonCrashReportName[];

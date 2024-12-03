@@ -325,6 +325,11 @@ extern const char kMagicStackDescription[] =
     "When enabled, a Magic Stack will be shown in the Home surface displaying "
     "a variety of modules.";
 
+const char kManagedProfileCreationUpdatedScreenName[] =
+    "Enable managed profile creation updated screen";
+const char kManagedProfileCreationUpdatedScreenDescription[] =
+    "When enabled, managed profile cration will use the new sheets";
+
 const char kCredentialProviderExtensionPromoName[] =
     "Enable the Credential Provider Extension promo.";
 const char kCredentialProviderExtensionPromoDescription[] =

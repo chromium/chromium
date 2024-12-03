@@ -1136,6 +1136,14 @@ bool AreSeparateProfilesForManagedAccountsEnabled() {
   return base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts);
 }
 
+BASE_FEATURE(kManagedProfileCreationUpdatedScreen,
+             "ManagedProfileCreationUpdatedScreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsManagedProfileCreationUpdatedScreenEnabled() {
+  return base::FeatureList::IsEnabled(kManagedProfileCreationUpdatedScreen);
+}
+
 BASE_FEATURE(kOmahaResyncTimerOnForeground,
              "OmahaResyncTimerOnForeground",
              base::FEATURE_DISABLED_BY_DEFAULT);
