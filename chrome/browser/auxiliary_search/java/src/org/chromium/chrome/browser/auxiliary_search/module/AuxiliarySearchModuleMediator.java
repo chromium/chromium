@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.auxiliary_search.module;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.ClickInfo;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
+import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -21,7 +23,6 @@ public class AuxiliarySearchModuleMediator {
     private final PropertyModel mModel;
     private final ModuleDelegate mModuleDelegate;
     private final Runnable mOpenSettingsRunnable;
-
     private final boolean mIsShareTabsDefaultEnabledByOs;
 
     /** Whether the module is currently showing. */
@@ -41,17 +42,41 @@ public class AuxiliarySearchModuleMediator {
         mOpenSettingsRunnable = openSettingsRunnable;
 
         mIsShareTabsDefaultEnabledByOs = AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled();
+
+        if (mIsShareTabsDefaultEnabledByOs) {
+            mModel.set(
+                    AuxiliarySearchModuleProperties.MODULE_CONTENT_TEXT_RES_ID,
+                    R.string.auxiliary_search_module_content);
+            mModel.set(
+                    AuxiliarySearchModuleProperties.MODULE_FIRST_BUTTON_TEXT_RES_ID,
+                    R.string.auxiliary_search_module_button_go_to_settings);
+            mModel.set(
+                    AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_TEXT_RES_ID,
+                    R.string.auxiliary_search_module_button_got_it);
+        } else {
+            mModel.set(
+                    AuxiliarySearchModuleProperties.MODULE_CONTENT_TEXT_RES_ID,
+                    R.string.auxiliary_search_module_content_default_off);
+            mModel.set(
+                    AuxiliarySearchModuleProperties.MODULE_FIRST_BUTTON_TEXT_RES_ID,
+                    R.string.auxiliary_search_module_button_no_thanks);
+            mModel.set(
+                    AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_TEXT_RES_ID,
+                    R.string.auxiliary_search_module_button_turn_on);
+        }
     }
 
     void showModule() {
         if (mIsShown) return;
 
         mIsShown = true;
+
         if (mIsShareTabsDefaultEnabledByOs) {
             setDefaultOptInCard();
         } else {
             setDefaultOptOutCard();
         }
+
         mModuleDelegate.onDataReady(ModuleType.AUXILIARY_SEARCH, mModel);
     }
 
@@ -93,7 +118,7 @@ public class AuxiliarySearchModuleMediator {
         mModel.set(
                 AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_ON_CLICK_LISTENER,
                 view -> {
-                    mOpenSettingsRunnable.run();
+                    AuxiliarySearchConfigManager.getInstance().notifyShareTabsStateChanged(true);
                     onButtonClicked(ClickInfo.TURN_ON);
                 });
     }
@@ -103,11 +128,8 @@ public class AuxiliarySearchModuleMediator {
         mModuleDelegate.onModuleClicked(ModuleType.AUXILIARY_SEARCH);
         mModuleDelegate.removeModule(ModuleType.AUXILIARY_SEARCH);
 
-        if (type != ClickInfo.TURN_ON) {
-            SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
-            prefManager.writeBoolean(
-                    ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_USER_RESPONDED, true);
-        }
+        SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
+        prefManager.writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_USER_RESPONDED, true);
 
         AuxiliarySearchMetrics.recordClickButtonInfo(type);
     }

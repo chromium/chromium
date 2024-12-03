@@ -15,9 +15,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.auxiliary_search.R;
+import org.chromium.ui.widget.TextViewWithLeading;
 
 /** The view for the auxiliary search module. */
 public class AuxiliarySearchModuleView extends LinearLayout {
+    private TextViewWithLeading mContentView;
     private TextView mFirstButtonView;
     private Button mSecondButtonView;
 
@@ -29,6 +31,7 @@ public class AuxiliarySearchModuleView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mContentView = findViewById(R.id.auxiliary_search_module_content);
         mFirstButtonView = findViewById(R.id.auxiliary_search_first_button);
         mSecondButtonView = findViewById(R.id.auxiliary_search_second_button);
     }
@@ -39,5 +42,29 @@ public class AuxiliarySearchModuleView extends LinearLayout {
 
     void setSecondButtonOnClickListener(@NonNull View.OnClickListener onClickListener) {
         mSecondButtonView.setOnClickListener(onClickListener);
+    }
+
+    void setContentText(@NonNull String text) {
+        mContentView.setText(text);
+    }
+
+    void setFirstButtonText(@NonNull String text) {
+        mFirstButtonView.setText(text);
+    }
+
+    void setSecondButtonText(@NonNull String text) {
+        mSecondButtonView.setText(text);
+    }
+
+    void setContentTextResId(int resId) {
+        mContentView.setText(getContext().getString(resId));
+    }
+
+    void setFirstButtonTextResId(int resId) {
+        mFirstButtonView.setText(getContext().getString(resId));
+    }
+
+    void setSecondButtonTextResId(int resId) {
+        mSecondButtonView.setText(getContext().getString(resId));
     }
 }

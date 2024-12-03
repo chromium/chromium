@@ -23,6 +23,16 @@ public class AuxiliarySearchModuleViewBinder {
                     model.get(
                             AuxiliarySearchModuleProperties
                                     .MODULE_SECOND_BUTTON_ON_CLICK_LISTENER));
+        } else if (AuxiliarySearchModuleProperties.MODULE_CONTENT_TEXT_RES_ID == propertyKey) {
+            moduleView.setContentTextResId(
+                    model.get(AuxiliarySearchModuleProperties.MODULE_CONTENT_TEXT_RES_ID));
+        } else if (AuxiliarySearchModuleProperties.MODULE_FIRST_BUTTON_TEXT_RES_ID == propertyKey) {
+            moduleView.setFirstButtonTextResId(
+                    model.get(AuxiliarySearchModuleProperties.MODULE_FIRST_BUTTON_TEXT_RES_ID));
+        } else if (AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_TEXT_RES_ID
+                == propertyKey) {
+            moduleView.setSecondButtonTextResId(
+                    model.get(AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_TEXT_RES_ID));
         } else {
             assert false : "Unhandled property detected in AuxiliarySearchModuleViewBinder!";
         }

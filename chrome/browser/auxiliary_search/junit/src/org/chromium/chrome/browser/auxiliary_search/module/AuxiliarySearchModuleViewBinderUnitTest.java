@@ -59,4 +59,28 @@ public class AuxiliarySearchModuleViewBinderUnitTest {
                 mOnClickListener);
         verify(mView).setSecondButtonOnClickListener(eq(mOnClickListener));
     }
+
+    @Test
+    @SmallTest
+    public void testSetContentTextResId() {
+        int resId = 10;
+        mPropertyModel.set(AuxiliarySearchModuleProperties.MODULE_CONTENT_TEXT_RES_ID, resId);
+        verify(mView).setContentTextResId(eq(resId));
+    }
+
+    @Test
+    @SmallTest
+    public void testSetFirstButtonTextResId() {
+        int resId = 10;
+        mPropertyModel.set(AuxiliarySearchModuleProperties.MODULE_FIRST_BUTTON_TEXT_RES_ID, resId);
+        verify(mView).setFirstButtonTextResId(eq(resId));
+    }
+
+    @Test
+    @SmallTest
+    public void testSetSecondButtonTextResId() {
+        int resId = 10;
+        mPropertyModel.set(AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_TEXT_RES_ID, resId);
+        verify(mView).setSecondButtonTextResId(eq(resId));
+    }
 }

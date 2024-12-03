@@ -12,9 +12,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -33,10 +37,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager.ShareTabsWithOsStateListener;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.ClickInfo;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
+import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -52,10 +59,13 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     @Mock private AuxiliarySearchHooks mHooks;
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private PropertyModel mPropertyModel;
-    private View mView;
+
     @Mock private Runnable mOpenSettingsRunnable;
     @Captor private ArgumentCaptor<OnClickListener> mFirstButtonClickListenerCaptor;
     @Captor private ArgumentCaptor<OnClickListener> mSecondButtonClickListenerCaptor;
+
+    private Context mContext;
+    private View mView;
 
     private AuxiliarySearchControllerFactory mFactory;
 
@@ -63,6 +73,12 @@ public class AuxiliarySearchModuleMediatorUnitTest {
 
     @Before
     public void setup() {
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        org.chromium.chrome.browser.auxiliary_search.R.style
+                                .Theme_BrowserUI_DayNight);
+
         mFactory = AuxiliarySearchControllerFactory.getInstance();
         mHooks = Mockito.mock(AuxiliarySearchHooks.class);
         when(mHooks.isEnabled()).thenReturn(true);
@@ -82,14 +98,13 @@ public class AuxiliarySearchModuleMediatorUnitTest {
         assertTrue(mFactory.isSettingDefaultEnabledByOs());
 
         createMediator();
+        inflateViewAndVerify(/* isDefaultOptIn= */ true);
+
         mMediator.showModule();
         verifyShowModuleComplete();
 
         // Verifies the case of clicking the "Go to settings" button.
-        clickButtonAndVerify(
-                mFirstButtonClickListenerCaptor.getValue(),
-                ClickInfo.OPEN_SETTINGS,
-                /* recordUserResponse= */ true);
+        clickButtonAndVerify(mFirstButtonClickListenerCaptor.getValue(), ClickInfo.OPEN_SETTINGS);
         verify(mOpenSettingsRunnable).run();
     }
 
@@ -100,14 +115,13 @@ public class AuxiliarySearchModuleMediatorUnitTest {
         assertTrue(mFactory.isSettingDefaultEnabledByOs());
 
         createMediator();
+        inflateViewAndVerify(/* isDefaultOptIn= */ true);
+
         mMediator.showModule();
         verifyShowModuleComplete();
 
         // Verifies the case of clicking the "Got it" button.
-        clickButtonAndVerify(
-                mSecondButtonClickListenerCaptor.getValue(),
-                ClickInfo.OPT_IN,
-                /* recordUserResponse= */ true);
+        clickButtonAndVerify(mSecondButtonClickListenerCaptor.getValue(), ClickInfo.OPT_IN);
 
         AuxiliarySearchUtils.resetSharedPreferenceForTesting();
     }
@@ -119,14 +133,13 @@ public class AuxiliarySearchModuleMediatorUnitTest {
         assertFalse(mFactory.isSettingDefaultEnabledByOs());
 
         createMediator();
+        inflateViewAndVerify(/* isDefaultOptIn= */ false);
+
         mMediator.showModule();
         verifyShowModuleComplete();
 
         // Verifies the case of clicking the "No thanks" button.
-        clickButtonAndVerify(
-                mFirstButtonClickListenerCaptor.getValue(),
-                ClickInfo.OPT_OUT,
-                /* recordUserResponse= */ true);
+        clickButtonAndVerify(mFirstButtonClickListenerCaptor.getValue(), ClickInfo.OPT_OUT);
     }
 
     @Test
@@ -136,17 +149,19 @@ public class AuxiliarySearchModuleMediatorUnitTest {
         assertFalse(mFactory.isSettingDefaultEnabledByOs());
 
         createMediator();
+        inflateViewAndVerify(/* isDefaultOptIn= */ false);
+        ShareTabsWithOsStateListener listener = Mockito.mock(ShareTabsWithOsStateListener.class);
+        AuxiliarySearchConfigManager.getInstance().addListener(listener);
+
         mMediator.showModule();
         verifyShowModuleComplete();
 
         // Verifies the case of clicking the "Turn on" button.
-        clickButtonAndVerify(
-                mSecondButtonClickListenerCaptor.getValue(),
-                ClickInfo.TURN_ON,
-                /* recordUserResponse= */ false);
-        verify(mOpenSettingsRunnable).run();
+        clickButtonAndVerify(mSecondButtonClickListenerCaptor.getValue(), ClickInfo.TURN_ON);
+        verify(listener).onConfigChanged(eq(true));
 
         AuxiliarySearchUtils.resetSharedPreferenceForTesting();
+        AuxiliarySearchConfigManager.getInstance().removeListener(listener);
     }
 
     @Test
@@ -197,6 +212,42 @@ public class AuxiliarySearchModuleMediatorUnitTest {
                         mPropertyModel, mModuleDelegate, mOpenSettingsRunnable);
     }
 
+    private void inflateViewAndVerify(boolean isDefaultOptIn) {
+        mView =
+                LayoutInflater.from(mContext)
+                        .inflate(
+                                org.chromium.chrome.browser.auxiliary_search.R.layout
+                                        .auxiliary_search_module_layout,
+                                null);
+
+        int contentTextResId;
+        int firstButtonTextResId;
+        int secondButtonTextResId;
+
+        if (isDefaultOptIn) {
+            contentTextResId = R.string.auxiliary_search_module_content;
+            firstButtonTextResId = R.string.auxiliary_search_module_button_go_to_settings;
+            secondButtonTextResId = R.string.auxiliary_search_module_button_got_it;
+        } else {
+            contentTextResId = R.string.auxiliary_search_module_content_default_off;
+            firstButtonTextResId = R.string.auxiliary_search_module_button_no_thanks;
+            secondButtonTextResId = R.string.auxiliary_search_module_button_turn_on;
+        }
+
+        verify(mPropertyModel)
+                .set(
+                        eq(AuxiliarySearchModuleProperties.MODULE_CONTENT_TEXT_RES_ID),
+                        eq(contentTextResId));
+        verify(mPropertyModel)
+                .set(
+                        eq(AuxiliarySearchModuleProperties.MODULE_FIRST_BUTTON_TEXT_RES_ID),
+                        eq(firstButtonTextResId));
+        verify(mPropertyModel)
+                .set(
+                        eq(AuxiliarySearchModuleProperties.MODULE_SECOND_BUTTON_TEXT_RES_ID),
+                        eq(secondButtonTextResId));
+    }
+
     private void verifyShowModuleComplete() {
         verify(mPropertyModel)
                 .set(
@@ -209,8 +260,7 @@ public class AuxiliarySearchModuleMediatorUnitTest {
         verify(mModuleDelegate).onDataReady(eq(ModuleType.AUXILIARY_SEARCH), eq(mPropertyModel));
     }
 
-    private void clickButtonAndVerify(
-            OnClickListener clickListener, @ClickInfo int clickInfo, boolean recordUserResponse) {
+    private void clickButtonAndVerify(OnClickListener clickListener, @ClickInfo int clickInfo) {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Search.AuxiliarySearch.Module.ClickInfo", clickInfo)
@@ -222,8 +272,7 @@ public class AuxiliarySearchModuleMediatorUnitTest {
         histogramWatcher.assertExpected();
 
         SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
-        assertEquals(
-                recordUserResponse,
+        assertTrue(
                 prefManager.readBoolean(
                         ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_USER_RESPONDED, false));
     }
