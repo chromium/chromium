@@ -7718,6 +7718,7 @@ test("unit_tests") {
       "../browser/webauthn/authenticator_request_dialog_model_unittest.cc",
       "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
       "../browser/webauthn/cablev2_devices_unittest.cc",
+      "../browser/webauthn/challenge_url_fetcher_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
       "../browser/webauthn/enclave_manager_unittest.cc",
       "../common/importer/mock_importer_bridge.cc",
