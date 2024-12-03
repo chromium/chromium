@@ -81,14 +81,13 @@ class ScopedRasterTimerTest : public Test {
 
 TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
   base::ScopedMockElapsedTimersForTest mock_timer;
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
   std::unique_ptr<CanvasResourceProvider> provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          kInfo, cc::PaintFlags::FilterQuality::kMedium,
+          gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
+          SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kMedium,
           CanvasResourceProvider::ShouldInitialize::kCallClear,
           context_provider_wrapper_, RasterMode::kCPU,
           shared_image_usage_flags);
@@ -119,10 +118,10 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
 
 TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
   base::ScopedMockElapsedTimersForTest mock_timer;
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kInfo, cc::PaintFlags::FilterQuality::kMedium,
+      gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
+      SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kMedium,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
 

@@ -217,8 +217,8 @@ TEST_F(BadSharedGpuContextTest, AccelerateImageBufferSurfaceCreationFails) {
   // return a nullptr provider
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          SkImageInfo::MakeN32Premul(10, 10),
-          cc::PaintFlags::FilterQuality::kLow,
+          gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
+          SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kLow,
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           gpu::SharedImageUsageSet());
@@ -244,8 +244,8 @@ TEST_F(SharedGpuContextTestViz, AccelerateImageBufferSurfaceAutoRecovery) {
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          SkImageInfo::MakeN32Premul(10, 10),
-          cc::PaintFlags::FilterQuality::kLow,
+          gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
+          SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kLow,
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           gpu::SharedImageUsageSet());

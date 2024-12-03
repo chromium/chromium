@@ -53,7 +53,8 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
           gpu::SHARED_IMAGE_USAGE_SCANOUT;
       provider = CanvasResourceProvider::CreateSharedImageProvider(
-          resource_info, kFilterQuality, kShouldInitialize,
+          Size(), resource_info.colorType(), resource_info.alphaType(),
+          resource_info.refColorSpace(), kFilterQuality, kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(),
           hint == RasterModeHint::kPreferGPU ? RasterMode::kGPU
                                              : RasterMode::kCPU,
