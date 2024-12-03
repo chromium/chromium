@@ -169,7 +169,8 @@ public class TabArchiver implements TabWindowManager.Observer {
         unarchiveAndRestoreTabs(
                 regularTabCreator,
                 TabModelUtils.convertTabListToListOfTabs(mArchivedTabGroupModelFilter),
-                /* updateTimestamp= */ false);
+                /* updateTimestamp= */ false,
+                /* areTabsBeingOpened= */ false);
         RecordUserAction.record("Tabs.ArchivedTabRescued");
     }
 
@@ -230,9 +231,13 @@ public class TabArchiver implements TabWindowManager.Observer {
      * @param tabCreator The {@link TabCreator} to use when recreating the tabs.
      * @param tabs The {@link Tab}s to unarchive.
      * @param updateTimestamp Whether the Tab's timestamp should be updated.
+     * @param areTabsBeingOpened Whether the restored tab is being opened.
      */
     public void unarchiveAndRestoreTabs(
-            TabCreator tabCreator, List<Tab> tabs, boolean updateTimestamp) {
+            TabCreator tabCreator,
+            List<Tab> tabs,
+            boolean updateTimestamp,
+            boolean areTabsBeingOpened) {
         ThreadUtils.assertOnUiThread();
         for (Tab tab : tabs) {
             // Update the timestamp so that the tab isn't immediately re-archived on the next pass.
@@ -241,7 +246,10 @@ public class TabArchiver implements TabWindowManager.Observer {
             }
 
             TabState tabState = prepareTabState(tab);
-            Tab newTab = tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+            // Restore tab at the "start" of the list.
+            Tab newTab =
+                    tabCreator.createFrozenTab(
+                            tabState, tab.getId(), areTabsBeingOpened ? INVALID_TAB_INDEX : 0);
             newTab.onTabRestoredFromArchivedTabModel();
         }
 

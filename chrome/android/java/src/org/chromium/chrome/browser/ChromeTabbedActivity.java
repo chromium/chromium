@@ -1886,7 +1886,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     archivedOrchestrator
                             .getTabArchiver()
                             .unarchiveAndRestoreTabs(
-                                    tabModel.getTabCreator(), Arrays.asList(archivedTab), true);
+                                    tabModel.getTabCreator(),
+                                    Arrays.asList(archivedTab),
+                                    /* updateTimestamp= */ true,
+                                    /* areTabsBeingOpened= */ false);
                 } else {
                     mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
                 }

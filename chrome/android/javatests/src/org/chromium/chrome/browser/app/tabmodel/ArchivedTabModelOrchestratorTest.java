@@ -230,7 +230,8 @@ public class ArchivedTabModelOrchestratorTest {
                                 .unarchiveAndRestoreTabs(
                                         mRegularTabCreator,
                                         Arrays.asList(mArchivedTabModel.getTabAt(0)),
-                                        /* updateTimestamp= */ true));
+                                        /* updateTimestamp= */ true,
+                                        /* areTabsBeingOpened= */ false));
 
         // Now the timestamp has been updated, no tabs should get archived.
         runOnUiThreadBlocking(

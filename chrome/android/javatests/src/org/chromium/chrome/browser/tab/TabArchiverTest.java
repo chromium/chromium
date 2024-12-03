@@ -222,7 +222,8 @@ public class TabArchiverTest {
                         mTabArchiver.unarchiveAndRestoreTabs(
                                 mRegularTabCreator,
                                 Arrays.asList(mArchivedTabModel.getTabAt(0)),
-                                /* updateTimestamp= */ true));
+                                /* updateTimestamp= */ true,
+                                /* areTabsBeingOpened= */ false));
         watcher.assertExpected();
 
         assertEquals(2, mRegularTabModel.getCount());
@@ -278,7 +279,8 @@ public class TabArchiverTest {
                         mTabArchiver.unarchiveAndRestoreTabs(
                                 mRegularTabCreator,
                                 Arrays.asList(mArchivedTabModel.getTabAt(0)),
-                                /* updateTimestamp= */ false));
+                                /* updateTimestamp= */ false,
+                                /* areTabsBeingOpened= */ false));
         watcher.assertExpected();
 
         assertEquals(2, mRegularTabModel.getCount());
@@ -289,7 +291,7 @@ public class TabArchiverTest {
                 () ->
                         assertEquals(
                                 previousTimestampMillis,
-                                mRegularTabModel.getTabAt(1).getTimestampMillis()));
+                                mRegularTabModel.getTabAt(0).getTimestampMillis()));
     }
 
     @Test
