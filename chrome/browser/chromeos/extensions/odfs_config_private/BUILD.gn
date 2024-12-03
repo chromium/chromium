@@ -63,7 +63,6 @@ source_set("unit_tests") {
     "//chrome/common/extensions/api",
     "//chrome/test:test_support",
     "//chromeos/constants",
-    "//chromeos/startup",
     "//components/prefs",
     "//testing/gmock",
     "//testing/gtest",

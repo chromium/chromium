@@ -258,7 +258,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLacrosChromeAdditionalArgsFile[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromeAdditionalEnv[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromePath[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosMojoSocketForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLacrosSelectionPolicyIgnore[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -34,38 +34,6 @@ bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile);
 // Returns the UUID and version for all tracked interfaces. Exposed for testing.
 const base::flat_map<base::Token, uint32_t>& GetInterfaceVersions();
 
-// Represents how to launch Lacros Chrome.
-struct InitialBrowserAction {
-  explicit InitialBrowserAction(crosapi::mojom::InitialBrowserAction action);
-  InitialBrowserAction(InitialBrowserAction&&);
-  InitialBrowserAction& operator=(InitialBrowserAction&&);
-  ~InitialBrowserAction();
-
-  // Mode how to launch Lacros chrome.
-  crosapi::mojom::InitialBrowserAction action;
-
-  // If action is kOpenWindowWithUrls, URLs here is passed to Lacros Chrome,
-  // and they will be opened.
-  std::vector<GURL> urls;
-
-  // Where this request comes from.
-  crosapi::mojom::OpenUrlFrom from = crosapi::mojom::OpenUrlFrom::kUnspecified;
-};
-
-// Returns the initial parameter to be passed to Crosapi client,
-// such as lacros-chrome.
-mojom::BrowserInitParamsPtr GetBrowserInitParams(
-    InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled,
-    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection);
-
-// Creates a memory backed file containing the serialized |params|,
-// and returns its FD.
-base::ScopedFD CreateStartupData(
-    InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled,
-    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection);
-
 // Returns the device settings needed for Lacros.
 mojom::DeviceSettingsPtr GetDeviceSettings();
 

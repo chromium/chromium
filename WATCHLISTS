@@ -669,10 +669,6 @@
                   '|chrome/browser/ash/crosapi/rootfs_lacros_loader' \
                   '|chrome/browser/ash/crosapi/stateful_lacros_loader'
     },
-    'browser_params': {
-      'filepath': 'chromeos/startup/browser_init_params'\
-                  '|chromeos/startup/browser_params_proxy'
-    },
     'browser_scheduler': {
       'filepath': 'content/browser/scheduler'
     },
@@ -2702,7 +2698,6 @@
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
     'browser_manager': ['elkurin+watch@chromium.org'],
-    'browser_params': ['andreaorru+watch@chromium.org'],
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
     'browsing_data': ['dullweber+watch@chromium.org',
                       'msramek+watch@chromium.org'],

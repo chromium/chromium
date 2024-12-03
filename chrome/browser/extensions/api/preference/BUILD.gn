@@ -31,9 +31,6 @@ source_set("preference") {
   ]
 
   if (is_chromeos) {
-    deps += [
-      "//chrome/browser/chromeos/extensions:constants",
-      "//chromeos/startup:startup",
-    ]
+    deps += [ "//chrome/browser/chromeos/extensions:constants" ]
   }
 }

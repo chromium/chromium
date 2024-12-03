@@ -118,7 +118,6 @@ source_set("app_service") {
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos/arc",
       "//chromeos/crosapi/mojom",
-      "//chromeos/startup",
       "//components/webapk:proto",
       "//third_party/smhasher:murmurhash2",
       "//ui/wm/public",
