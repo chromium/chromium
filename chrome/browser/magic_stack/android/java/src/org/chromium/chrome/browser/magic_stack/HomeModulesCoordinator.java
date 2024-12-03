@@ -345,7 +345,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     public void removeModule(@ModuleType int moduleType) {
         boolean isModuleRemoved = mMediator.remove(moduleType);
 
-        if (isModuleRemoved && mModel.size() < mItemPerScreen) {
+        if (isModuleRemoved && (mModel.size() < mItemPerScreen || mModel.size() == 1)) {
             mRecyclerView.invalidateItemDecorations();
         }
     }

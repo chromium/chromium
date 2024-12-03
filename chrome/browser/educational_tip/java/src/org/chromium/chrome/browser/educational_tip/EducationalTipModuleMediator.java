@@ -92,7 +92,10 @@ public class EducationalTipModuleMediator {
             // The shouldDisplay flag should be true in this situation because if the other default
             // browser promotion is visible to the user, this educational tip module should already
             // be hidden.
-            assert shouldDisplay;
+            if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.EDUCATIONAL_TIP_MODULE, FORCE_DEFAULT_BROWSER, false)) {
+                assert shouldDisplay;
+            }
 
             DefaultBrowserPromoUtils defaultBrowserPromoUtils =
                     DefaultBrowserPromoUtils.getInstance();
