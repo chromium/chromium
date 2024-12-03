@@ -381,3 +381,7 @@
 -All/FormSubmittedHookTest.TestFormSubmittedHook/1
 -All/FormSubmittedHookTest.TestFormSubmittedHookAcrossIframes/0
 -All/FormSubmittedHookTest.TestFormSubmittedHookAcrossIframes/1
+
+# TODO(crbug.com/381917887): This test has been failing since
+# https://crrev.com/c/6038336.
+-SharedPasswordControllerTest.PasswordManagerIsNotifiedAboutModelPredictions
