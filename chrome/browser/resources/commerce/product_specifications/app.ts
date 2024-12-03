@@ -700,6 +700,7 @@ export class ProductSpecificationsElement extends PolymerElement {
         this.setName_, urls.map(url => ({url})));
     if (createdSet) {
       this.id_ = createdSet.uuid;
+      document.title = this.setName_;
       window.history.replaceState(undefined, '', `?id=${this.id_.value}`);
     }
     this.populateTable_(urls);
