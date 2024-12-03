@@ -48,6 +48,11 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
     return detailed_view_->your_devices_row_;
   }
 
+  HoverHighlightView* GetContactsRow() const {
+    CHECK(detailed_view_);
+    return detailed_view_->contacts_row_;
+  }
+
   size_t GetCloseBubbleCallCount() const {
     return detailed_view_delegate_.close_bubble_call_count();
   }
@@ -130,6 +135,20 @@ TEST_F(NearbyShareDetailedViewImplTest, QuickShareV2_ToggleYourDevices) {
   HoverHighlightView* your_devices_row = GetYourDevicesRow();
   LeftClickOn(your_devices_row);
   EXPECT_EQ(::nearby_share::mojom::Visibility::kYourDevices,
+            test_delegate_->GetVisibility());
+}
+
+TEST_F(NearbyShareDetailedViewImplTest, QuickShareV2_ToggleContacts) {
+  test_delegate_->SetEnabled(true);
+  test_delegate_->SetVisibility(
+      ::nearby_share::mojom::Visibility::kYourDevices);
+  SetUpDetailedView();
+  EXPECT_EQ(::nearby_share::mojom::Visibility::kYourDevices,
+            test_delegate_->GetVisibility());
+
+  HoverHighlightView* contacts_row = GetContactsRow();
+  LeftClickOn(contacts_row);
+  EXPECT_EQ(::nearby_share::mojom::Visibility::kAllContacts,
             test_delegate_->GetVisibility());
 }
 
