@@ -2513,10 +2513,10 @@ chromium-metrics-reviews@google.com.
   <owner>ayman@chromium.org</owner>
   <owner>davidjm@chromium.org</owner>
   <summary>
-    Records if we find a BuyableProductAnnotation in the response from our
-    endpoint which provides page annotations to enrich the user experience. The
-    endpoint is called for every Tab when we enter the Tab grid switcher and is
-    cached with a time to live of 1 hour.
+    (Android only) Records if we find a BuyableProductAnnotation in the response
+    from our endpoint which provides page annotations to enrich the user
+    experience. The endpoint is called for every Tab when we enter the Tab grid
+    switcher and is cached with a time to live of 1 hour.
   </summary>
 </histogram>
 
@@ -2525,9 +2525,9 @@ chromium-metrics-reviews@google.com.
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
-    Records the realtime duration it took to restore all the tab states per
-    {TabModelSelectorType}. Recorded after tab model selector restoration
-    completes successfully. Android-only.
+    (Android only) Records the realtime duration it took to restore all the tab
+    states per {TabModelSelectorType}. Recorded after tab model selector
+    restoration completes successfully. Android-only.
   </summary>
   <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
 </histogram>
@@ -2537,9 +2537,9 @@ chromium-metrics-reviews@google.com.
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
-    Records the average realtime duration it took per-tab to restore all the tab
-    states. Bucketed by {TabModelSelectorType}. Recorded after tab model
-    selector restoration completes successfully. Android-only.
+    (Android only) Records the average realtime duration it took per-tab to
+    restore all the tab states. Bucketed by {TabModelSelectorType}. Recorded
+    after tab model selector restoration completes successfully. Android-only.
   </summary>
   <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
 </histogram>
@@ -2548,7 +2548,9 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-30">
   <owner>davidjm@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
-  <summary>Records the number of {TabType} Tabs loaded on startup.</summary>
+  <summary>
+    (Android only) Records the number of {TabType} Tabs loaded on startup.
+  </summary>
   <token key="TabType">
     <variant name="Incognito" summary="Incognito"/>
     <variant name="Regular" summary="Regular"/>
@@ -2560,8 +2562,8 @@ chromium-metrics-reviews@google.com.
   <owner>wylieb@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
-    Records the number of duplicate tabs in the tab metadata found at startup
-    per {TabModelSelectorType}.
+    (Android only) Records the number of duplicate tabs in the tab metadata
+    found at startup per {TabModelSelectorType}.
   </summary>
   <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
 </histogram>
@@ -2571,7 +2573,7 @@ chromium-metrics-reviews@google.com.
   <owner>davidjm@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
-    Records the number of {TabType} Tabs loaded on startup per
+    (Android only) Records the number of {TabType} Tabs loaded on startup per
     {TabModelSelectorType}.
   </summary>
   <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
@@ -2579,6 +2581,17 @@ chromium-metrics-reviews@google.com.
     <variant name="Incognito" summary="Incognito"/>
     <variant name="Regular" summary="Regular"/>
   </token>
+</histogram>
+
+<histogram name="Tabs.Startup.UniqueUrlCount.{TabModelSelectorType}"
+    units="count" expires_after="2025-05-04">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the number of duplicate tab URLs found at startup per
+    {TabModelSelectorType}.
+  </summary>
+  <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
 </histogram>
 
 <histogram name="Tabs.StateTransfer.TabDistanceInactiveToActive" units="tabs"

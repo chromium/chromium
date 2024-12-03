@@ -39,6 +39,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -514,6 +515,12 @@ public class TabPersistentStoreTest {
             Assert.assertEquals(false, details.isIncognitoActiveIndex);
         }
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes("Tabs.Startup.UniqueUrlCount.Regular", 1, 5)
+                        .expectIntRecordTimes("Tabs.Startup.UniqueUrlCount.Regular", 2, 1)
+                        .build();
+
         // Restore the TabStates.  The first Tab added should be the most recently selected tab.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -528,6 +535,7 @@ public class TabPersistentStoreTest {
             int tabId = info.contents[i].tabId;
             Assert.assertNotNull(regularCreator.created.get(tabId));
         }
+        watcher.assertExpected();
     }
 
     @Test
