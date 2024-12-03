@@ -5,25 +5,16 @@
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
 ShareExtensionService* ShareExtensionServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<ShareExtensionService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
-}
-
-// static
-ShareExtensionService* ShareExtensionServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return static_cast<ShareExtensionService*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<ShareExtensionService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -33,9 +24,8 @@ ShareExtensionServiceFactory* ShareExtensionServiceFactory::GetInstance() {
 }
 
 ShareExtensionServiceFactory::ShareExtensionServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ShareExtensionService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("ShareExtensionService",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
 }
@@ -47,14 +37,7 @@ ShareExtensionServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
-  bookmarks::BookmarkModel* bookmark_model =
-      ios::BookmarkModelFactory::GetForProfile(profile);
-
   return std::make_unique<ShareExtensionService>(
-      bookmark_model, ReadingListModelFactory::GetForProfile(profile));
-}
-
-web::BrowserState* ShareExtensionServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
+      ios::BookmarkModelFactory::GetForProfile(profile),
+      ReadingListModelFactory::GetForProfile(profile));
 }
