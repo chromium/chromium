@@ -108,6 +108,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
 
   // WebGPUSwapBufferProvider::Client implementation
   void OnTextureTransferred() override;
+  void InitializeLayer(cc::Layer* layer) override;
   void SetNeedsCompositingUpdate() override;
 
  private:

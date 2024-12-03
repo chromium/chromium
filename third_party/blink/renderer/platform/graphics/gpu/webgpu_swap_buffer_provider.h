@@ -40,6 +40,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     // Called to make the WebGPU/Dawn stop accessing the texture prior to its
     // transfer to the compositor/video frame
     virtual void OnTextureTransferred() = 0;
+    virtual void InitializeLayer(cc::Layer* layer) = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
   };
 

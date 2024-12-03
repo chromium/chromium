@@ -326,6 +326,9 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
   void DrawingBufferClientRestorePixelLocalStorage() override {
     // Not unit tested yet. Tested with end-to-end tests.
   }
+  void DrawingBufferClientInitializeLayer(cc::Layer* layer) override {
+    // Not unit tested yet. Tested with end-to-end tests.
+  }
 
   // Testing methods.
   gpu::SyncToken MostRecentlyWaitedSyncToken() const {

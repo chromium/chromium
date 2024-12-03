@@ -7357,6 +7357,11 @@ void WebGLRenderingContextBase::
   }
 }
 
+void WebGLRenderingContextBase::DrawingBufferClientInitializeLayer(
+    cc::Layer* layer) {
+  Host()->InitializeLayerWithCSSProperties(layer);
+}
+
 ScriptValue WebGLRenderingContextBase::GetBooleanParameter(
     ScriptState* script_state,
     GLenum pname) {

@@ -49,6 +49,10 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
     return GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode());
   }
 
+  // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
+  // properties. This is a no-op if `this` is not an HTMLCanvasElement.
+  virtual void InitializeLayerWithCSSProperties(cc::Layer* layer) {}
+
   bool IsComposited() const;
   bool IsResourceValid();
   virtual bool HasPlacedElements() const { return false; }
@@ -138,6 +142,9 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
   gfx::Size size_;
   bool always_enable_raster_timers_for_testing_ = false;
+  // TODO(380896841): Extremely confusingly, this cc::TextureLayer, which in
+  // this superclass of CanvasRenderingContextHost, is only used by 2D
+  // canvases.
   scoped_refptr<cc::TextureLayer> cc_layer_;
   OpacityMode opacity_mode_ = kNonOpaque;
 };

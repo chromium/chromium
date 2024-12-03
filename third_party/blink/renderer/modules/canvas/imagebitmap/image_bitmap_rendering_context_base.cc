@@ -23,7 +23,9 @@ ImageBitmapRenderingContextBase::ImageBitmapRenderingContextBase(
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(host, attrs, CanvasRenderingAPI::kBitmaprenderer),
       image_layer_bridge_(MakeGarbageCollected<ImageLayerBridge>(
-          attrs.alpha ? kNonOpaque : kOpaque)) {}
+          attrs.alpha ? kNonOpaque : kOpaque)) {
+  host->InitializeLayerWithCSSProperties(image_layer_bridge_->CcLayer());
+}
 
 ImageBitmapRenderingContextBase::~ImageBitmapRenderingContextBase() = default;
 

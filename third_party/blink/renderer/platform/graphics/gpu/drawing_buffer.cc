@@ -1254,6 +1254,9 @@ bool DrawingBuffer::CopyToVideoFrame(
 cc::Layer* DrawingBuffer::CcLayer() {
   if (!layer_) {
     layer_ = cc::TextureLayer::CreateForMailbox(this);
+    if (client_) {
+      client_->DrawingBufferClientInitializeLayer(layer_.get());
+    }
 
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
@@ -1269,7 +1272,6 @@ cc::Layer* DrawingBuffer::CcLayer() {
       layer_->SetPremultipliedAlpha(requested_alpha_type_ !=
                                     kUnpremul_SkAlphaType);
     }
-    layer_->SetFilterQuality(filter_quality_);
   }
 
   return layer_.get();

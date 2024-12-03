@@ -757,6 +757,12 @@ void GPUCanvasContext::OnTextureTransferred() {
   swap_texture_ = nullptr;
 }
 
+void GPUCanvasContext::InitializeLayer(cc::Layer* layer) {
+  if (Host()) {
+    Host()->InitializeLayerWithCSSProperties(layer);
+  }
+}
+
 void GPUCanvasContext::SetNeedsCompositingUpdate() {
   if (Host()) {
     Host()->SetNeedsCompositingUpdate();

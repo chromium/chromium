@@ -233,8 +233,10 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
     // Create a layer that will be used by the canvas and will ask for a
     // SharedImage each frame.
     layer_ = cc::TextureLayer::CreateForMailbox(this);
+    if (client_) {
+      client_->InitializeLayer(layer_.get());
+    }
     layer_->SetIsDrawable(true);
-    layer_->SetFilterQuality(filter_quality_);
 
     // TODO(cwallez@chromium.org): These flags aren't taken into account when
     // the layer is promoted to an overlay. Make sure we have fallback /

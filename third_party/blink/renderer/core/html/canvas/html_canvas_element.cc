@@ -663,6 +663,10 @@ void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
   dirty_rect_.Union(gfx::Rect(gfx::SkIRectToRect(rect)));
 }
 
+void HTMLCanvasElement::InitializeLayerWithCSSProperties(cc::Layer* layer) {
+  layer->SetFilterQuality(FilterQuality());
+}
+
 void HTMLCanvasElement::PreFinalizeFrame() {
   RecordCanvasSizeToUMA();
 
@@ -957,13 +961,20 @@ bool HTMLCanvasElement::LowLatencyEnabled() const {
 
 void HTMLCanvasElement::SetFilterQuality(
     cc::PaintFlags::FilterQuality filter_quality) {
+  // HTMLCanvasElement, via CanvasRenderingContextHost, inherits from
+  // CanvasResourceHost. It is in that class that the FilterQuality member
+  // variable is stored, and via that class that the 2D canvas' cc::Layer
+  // updates its state.
   CanvasResourceHost::SetFilterQuality(filter_quality);
+
   if (surface_layer_bridge_) {
     if (auto* surface_layer = surface_layer_bridge_->GetCcLayer()) {
-      surface_layer->SetFilterQuality(FilterQuality());
+      surface_layer->SetFilterQuality(filter_quality);
     }
   }
 
+  // It is via this call on CanvasRenderingContext that non-2D canvases'
+  // cc::Layers are updated.
   if (context_ &&
       (IsWebGL() || IsWebGPU() || IsImageBitmapRenderingContext())) {
     context_->SetFilterQuality(filter_quality);
@@ -1797,7 +1808,7 @@ void HTMLCanvasElement::RegisterContentsLayer(cc::Layer* layer) {
   // This is called when a new SurfaceLayer (or sometimes SolidColorLayer) is
   // attached to `surface_layer_bridge_`. Initialize the paint flags for this
   // layer from the CSS properties of this element.
-  layer->SetFilterQuality(FilterQuality());
+  InitializeLayerWithCSSProperties(layer);
   SetNeedsCompositingUpdate();
 }
 

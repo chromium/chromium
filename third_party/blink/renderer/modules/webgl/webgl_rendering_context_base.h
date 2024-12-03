@@ -751,6 +751,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool DrawingBufferClientUserAllocatedMultisampledRenderbuffers() override;
   void DrawingBufferClientForceLostContextWithAutoRecovery(
       const char* reason) override;
+  void DrawingBufferClientInitializeLayer(cc::Layer* layer) override;
 
   // All draw calls should go through this wrapper so that various
   // bookkeeping related to compositing and preserveDrawingBuffer
