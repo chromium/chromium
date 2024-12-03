@@ -18,7 +18,6 @@
 #include "base/base_export.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
-#include "base/sequence_checker_impl.h"
 #include "base/threading/platform_thread_ref.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -372,9 +371,15 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
       ProcessId process_id,
       PlatformThreadId thread_id);
 
-  // Returns a SequenceChecker which should be used to verify that all
-  // cross-process priority changes are performed without races.
-  static SequenceCheckerImpl& GetCrossProcessThreadPrioritySequenceChecker();
+  // DCHECKs that the caller is on the correct sequence to perform cross-process
+  // priority changes without races.
+  //
+  // This does not simply return a `SequenceChecker&` and let the caller do the
+  // check, because doing so requires an `#include` of sequence_checker.h (since
+  // `SequenceChecker` is an alias rather than a forward-declarable class),
+  // which complicates life for other base/ headers trying to avoid circular
+  // dependencies.
+  static void DcheckCrossProcessThreadPrioritySequence();
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

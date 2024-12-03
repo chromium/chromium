@@ -240,8 +240,7 @@ bool Process::SetPriority(Priority priority) {
   // Should not be called concurrently with other functions
   // like SetThreadType().
   if (PlatformThreadChromeOS::IsThreadsBgFeatureEnabled()) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(
-        PlatformThreadChromeOS::GetCrossProcessThreadPrioritySequenceChecker());
+    PlatformThreadChromeOS::DcheckCrossProcessThreadPrioritySequence();
 
     int process_id = process_;
     bool background = priority == Priority::kBestEffort;
