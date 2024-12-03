@@ -5,15 +5,12 @@
 #include "ios/chrome/browser/passwords/model/credentials_cleaner_runner_factory.h"
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/credentials_cleaner_runner.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/web/public/browser_state.h"
 
 CredentialsCleanerRunnerFactory::CredentialsCleanerRunnerFactory()
-    : BrowserStateKeyedServiceFactory(
-          "CredentialsCleanerRunner",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("CredentialsCleanerRunner") {}
 
 CredentialsCleanerRunnerFactory::~CredentialsCleanerRunnerFactory() = default;
 
@@ -25,8 +22,9 @@ CredentialsCleanerRunnerFactory::GetInstance() {
 
 password_manager::CredentialsCleanerRunner*
 CredentialsCleanerRunnerFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<password_manager::CredentialsCleanerRunner*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<password_manager::CredentialsCleanerRunner>(
+          profile, /*create=*/true);
 }
 
 std::unique_ptr<KeyedService>
