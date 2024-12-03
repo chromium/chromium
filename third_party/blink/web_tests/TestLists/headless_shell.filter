@@ -906,9 +906,7 @@
 -external/wpt/service-workers/service-worker/client-navigate.https.html
 -external/wpt/service-workers/service-worker/clients-matchall-frozen.https.html
 -external/wpt/service-workers/service-worker/clients-matchall-order.https.html
--external/wpt/service-workers/service-worker/controller-on-reload.https.html
 -external/wpt/service-workers/service-worker/fetch-event-referrer-policy.https.html
--external/wpt/service-workers/service-worker/fetch-request-xhr.https.html
 -external/wpt/service-workers/service-worker/navigate-window.https.html
 -external/wpt/service-workers/service-worker/partitioned-matchAll.tentative.https.html
 -external/wpt/shadow-dom/accesskey.tentative.html
